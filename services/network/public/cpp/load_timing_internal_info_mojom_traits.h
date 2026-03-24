@@ -20,8 +20,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     EnumTraits<network::mojom::SessionSource, net::SessionSource> {
   static network::mojom::SessionSource ToMojom(
       net::SessionSource session_source);
-  static bool FromMojom(network::mojom::SessionSource in,
-                        net::SessionSource* out);
+  static net::SessionSource FromMojom(network::mojom::SessionSource in);
 };
 
 template <>
@@ -30,8 +29,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
                net::AdvertisedAltSvcState> {
   static network::mojom::AdvertisedAltSvcState ToMojom(
       net::AdvertisedAltSvcState advertised_alt_svc_state);
-  static bool FromMojom(network::mojom::AdvertisedAltSvcState in,
-                        net::AdvertisedAltSvcState* out);
+  static net::AdvertisedAltSvcState FromMojom(
+      network::mojom::AdvertisedAltSvcState in);
 };
 
 template <>

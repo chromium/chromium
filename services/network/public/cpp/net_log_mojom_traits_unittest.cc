@@ -4,16 +4,11 @@
 
 #include "services/network/public/cpp/net_log_mojom_traits.h"
 
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
 namespace {
-
-template <typename MojoType, typename NativeType>
-bool SerializeAndDeserializeEnum(NativeType in, NativeType* out) {
-  MojoType intermediate = mojo::EnumTraits<MojoType, NativeType>::ToMojom(in);
-  return mojo::EnumTraits<MojoType, NativeType>::FromMojom(intermediate, out);
-}
 
 TEST(NetLogTraitsTest, Roundtrips_CaptureMode) {
   for (const net::NetLogCaptureMode capture_mode :
@@ -21,8 +16,8 @@ TEST(NetLogTraitsTest, Roundtrips_CaptureMode) {
         net::NetLogCaptureMode::kIncludeSensitive,
         net::NetLogCaptureMode::kEverything}) {
     net::NetLogCaptureMode roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::NetLogCaptureMode>(
-        capture_mode, &roundtrip));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::NetLogCaptureMode>(
+        capture_mode, roundtrip));
     EXPECT_EQ(capture_mode, roundtrip);
   }
 }
@@ -32,8 +27,8 @@ TEST(NetLogTraitsTest, Roundtrips_EventPhase) {
        {net::NetLogEventPhase::NONE, net::NetLogEventPhase::BEGIN,
         net::NetLogEventPhase::END}) {
     net::NetLogEventPhase roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::NetLogEventPhase>(
-        event_phase, &roundtrip));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::NetLogEventPhase>(
+        event_phase, roundtrip));
     EXPECT_EQ(event_phase, roundtrip);
   }
 }

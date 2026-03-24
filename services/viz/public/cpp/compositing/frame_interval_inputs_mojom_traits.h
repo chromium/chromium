@@ -17,8 +17,8 @@ struct EnumTraits<viz::mojom::ContentFrameIntervalType,
                   viz::ContentFrameIntervalType> {
   static viz::mojom::ContentFrameIntervalType ToMojom(
       viz::ContentFrameIntervalType type);
-  static bool FromMojom(viz::mojom::ContentFrameIntervalType input,
-                        viz::ContentFrameIntervalType* out);
+  static viz::ContentFrameIntervalType FromMojom(
+      viz::mojom::ContentFrameIntervalType input);
 };
 
 template <>

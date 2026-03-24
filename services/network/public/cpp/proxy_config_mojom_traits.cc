@@ -29,8 +29,9 @@ bool StructTraits<network::mojom::ProxyHostMatchingRulesDataView,
     Read(network::mojom::ProxyHostMatchingRulesDataView data,
          net::ProxyHostMatchingRules* out_proxy_bypass_rules) {
   std::vector<std::string> rules;
-  if (!data.ReadRules(&rules))
+  if (!data.ReadRules(&rules)) {
     return false;
+  }
   for (const auto& rule : rules) {
     if (!out_proxy_bypass_rules->AddRuleFromString(rule)) {
       mojo::debug::ScopedMessageErrorCrashKey crash_key_value(
@@ -69,22 +70,18 @@ EnumTraits<network::mojom::ProxyRulesType, net::ProxyConfig::ProxyRules::Type>::
   return network::mojom::ProxyRulesType::EMPTY;
 }
 
-bool EnumTraits<network::mojom::ProxyRulesType,
-                net::ProxyConfig::ProxyRules::Type>::
-    FromMojom(network::mojom::ProxyRulesType mojo_proxy_rules_type,
-              net::ProxyConfig::ProxyRules::Type* out) {
+net::ProxyConfig::ProxyRules::Type
+EnumTraits<network::mojom::ProxyRulesType, net::ProxyConfig::ProxyRules::Type>::
+    FromMojom(network::mojom::ProxyRulesType mojo_proxy_rules_type) {
   switch (mojo_proxy_rules_type) {
     case network::mojom::ProxyRulesType::EMPTY:
-      *out = net::ProxyConfig::ProxyRules::Type::EMPTY;
-      return true;
+      return net::ProxyConfig::ProxyRules::Type::EMPTY;
     case network::mojom::ProxyRulesType::PROXY_LIST:
-      *out = net::ProxyConfig::ProxyRules::Type::PROXY_LIST;
-      return true;
+      return net::ProxyConfig::ProxyRules::Type::PROXY_LIST;
     case network::mojom::ProxyRulesType::PROXY_LIST_PER_SCHEME:
-      *out = net::ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
-      return true;
+      return net::ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
   }
-  return false;
+  NOTREACHED();
 }
 
 network::mojom::ProxyOverrideRuleResult
@@ -100,23 +97,19 @@ EnumTraits<network::mojom::ProxyOverrideRuleResult,
   }
 }
 
-bool EnumTraits<
-    network::mojom::ProxyOverrideRuleResult,
-    net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result>::
-    FromMojom(
-        network::mojom::ProxyOverrideRuleResult mojom_result,
-        net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result* out) {
+net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result
+EnumTraits<network::mojom::ProxyOverrideRuleResult,
+           net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result>::
+    FromMojom(network::mojom::ProxyOverrideRuleResult mojom_result) {
   switch (mojom_result) {
     case network::mojom::ProxyOverrideRuleResult::kNotFound:
-      *out = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
+      return net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
           kNotFound;
-      return true;
     case network::mojom::ProxyOverrideRuleResult::kResolved:
-      *out = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
+      return net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
           kResolved;
-      return true;
   }
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<network::mojom::ProxyRulesDataView,

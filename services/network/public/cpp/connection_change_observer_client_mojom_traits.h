@@ -18,8 +18,8 @@ struct EnumTraits<network::mojom::NetworkChangeEvent, net::NetworkChangeEvent> {
   static network::mojom::NetworkChangeEvent ToMojom(
       net::NetworkChangeEvent event_type);
 
-  static bool FromMojom(network::mojom::NetworkChangeEvent event_type,
-                        net::NetworkChangeEvent* out);
+  static net::NetworkChangeEvent FromMojom(
+      network::mojom::NetworkChangeEvent event_type);
 };
 
 template <>

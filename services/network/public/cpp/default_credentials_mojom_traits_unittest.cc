@@ -15,19 +15,13 @@
 namespace network {
 namespace {
 
-template <typename MojoType, typename NativeType>
-bool SerializeAndDeserializeEnum(NativeType in, NativeType* out) {
-  MojoType intermediate = mojo::EnumTraits<MojoType, NativeType>::ToMojom(in);
-  return mojo::EnumTraits<MojoType, NativeType>::FromMojom(intermediate, out);
-}
-
 TEST(DefaultCredentialsTraitsTest, Roundtrips_DefaultCredentials) {
   for (net::HttpAuthPreferences::DefaultCredentials default_credentials :
        {net::HttpAuthPreferences::ALLOW_DEFAULT_CREDENTIALS,
         net::HttpAuthPreferences::DISALLOW_DEFAULT_CREDENTIALS}) {
     net::HttpAuthPreferences::DefaultCredentials roundtrip;
-    ASSERT_TRUE(SerializeAndDeserializeEnum<mojom::DefaultCredentials>(
-        default_credentials, &roundtrip));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DefaultCredentials>(
+        default_credentials, roundtrip));
     EXPECT_EQ(default_credentials, roundtrip);
   }
 }

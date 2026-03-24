@@ -36,18 +36,15 @@ struct EnumTraits<tracing::mojom::BufferFillPolicy,
     }
   }
 
-  static bool FromMojom(tracing::mojom::BufferFillPolicy input,
-                        perfetto::TraceConfig::BufferConfig::FillPolicy* out) {
+  static perfetto::TraceConfig::BufferConfig::FillPolicy FromMojom(
+      tracing::mojom::BufferFillPolicy input) {
     switch (input) {
       case tracing::mojom::BufferFillPolicy::kUnspecified:
-        *out = perfetto::TraceConfig::BufferConfig::UNSPECIFIED;
-        return true;
+        return perfetto::TraceConfig::BufferConfig::UNSPECIFIED;
       case tracing::mojom::BufferFillPolicy::kRingBuffer:
-        *out = perfetto::TraceConfig::BufferConfig::RING_BUFFER;
-        return true;
+        return perfetto::TraceConfig::BufferConfig::RING_BUFFER;
       case tracing::mojom::BufferFillPolicy::kDiscard:
-        *out = perfetto::TraceConfig::BufferConfig::DISCARD;
-        return true;
+        return perfetto::TraceConfig::BufferConfig::DISCARD;
     }
   }
 };

@@ -26,25 +26,20 @@ EnumTraits<viz::mojom::ContentFrameIntervalType,
   NOTREACHED();
 }
 
-bool EnumTraits<viz::mojom::ContentFrameIntervalType,
-                viz::ContentFrameIntervalType>::
-    FromMojom(viz::mojom::ContentFrameIntervalType input,
-              viz::ContentFrameIntervalType* out) {
+viz::ContentFrameIntervalType EnumTraits<viz::mojom::ContentFrameIntervalType,
+                                         viz::ContentFrameIntervalType>::
+    FromMojom(viz::mojom::ContentFrameIntervalType input) {
   switch (input) {
     case viz::mojom::ContentFrameIntervalType::kVideo:
-      *out = viz::ContentFrameIntervalType::kVideo;
-      return true;
+      return viz::ContentFrameIntervalType::kVideo;
     case viz::mojom::ContentFrameIntervalType::kAnimatingImage:
-      *out = viz::ContentFrameIntervalType::kAnimatingImage;
-      return true;
+      return viz::ContentFrameIntervalType::kAnimatingImage;
     case viz::mojom::ContentFrameIntervalType::kScrollBarFadeOutAnimation:
-      *out = viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
-      return true;
+      return viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
     case viz::mojom::ContentFrameIntervalType::kCompositorScroll:
-      *out = viz::ContentFrameIntervalType::kCompositorScroll;
-      return true;
+      return viz::ContentFrameIntervalType::kCompositorScroll;
   }
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<viz::mojom::ContentFrameIntervalInfoDataView,

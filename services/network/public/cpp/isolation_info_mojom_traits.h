@@ -27,8 +27,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
                net::IsolationInfo::RequestType> {
   static network::mojom::IsolationInfoRequestType ToMojom(
       net::IsolationInfo::RequestType request_type);
-  static bool FromMojom(network::mojom::IsolationInfoRequestType request_type,
-                        net::IsolationInfo::RequestType* out);
+  static net::IsolationInfo::RequestType FromMojom(
+      network::mojom::IsolationInfoRequestType input);
 };
 
 template <>
@@ -37,9 +37,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
                net::IsolationInfo::FrameAncestorRelation> {
   static network::mojom::IsolationInfoFrameAncestorRelation ToMojom(
       net::IsolationInfo::FrameAncestorRelation frame_ancestor_relation);
-  static bool FromMojom(network::mojom::IsolationInfoFrameAncestorRelation
-                            frame_ancestor_relation,
-                        net::IsolationInfo::FrameAncestorRelation* out);
+  static net::IsolationInfo::FrameAncestorRelation FromMojom(
+      network::mojom::IsolationInfoFrameAncestorRelation input);
 };
 
 template <>

@@ -107,8 +107,7 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme> {
   static network::mojom::ProxyScheme ToMojom(net::ProxyServer::Scheme scheme);
-  static bool FromMojom(network::mojom::ProxyScheme scheme,
-                        net::ProxyServer::Scheme* out);
+  static net::ProxyServer::Scheme FromMojom(network::mojom::ProxyScheme scheme);
 };
 
 template <>

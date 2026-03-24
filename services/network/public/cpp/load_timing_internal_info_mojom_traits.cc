@@ -23,18 +23,16 @@ EnumTraits<network::mojom::SessionSource, net::SessionSource>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::SessionSource, net::SessionSource>::FromMojom(
-    network::mojom::SessionSource in,
-    net::SessionSource* out) {
+net::SessionSource
+EnumTraits<network::mojom::SessionSource, net::SessionSource>::FromMojom(
+    network::mojom::SessionSource in) {
   switch (in) {
     case network::mojom::SessionSource::kNew:
-      *out = net::SessionSource::kNew;
-      return true;
+      return net::SessionSource::kNew;
     case network::mojom::SessionSource::kExisting:
-      *out = net::SessionSource::kExisting;
-      return true;
+      return net::SessionSource::kExisting;
   }
-  return false;
+  NOTREACHED();
 }
 
 network::mojom::AdvertisedAltSvcState
@@ -51,22 +49,18 @@ EnumTraits<network::mojom::AdvertisedAltSvcState, net::AdvertisedAltSvcState>::
   NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::AdvertisedAltSvcState,
-                net::AdvertisedAltSvcState>::
-    FromMojom(network::mojom::AdvertisedAltSvcState in,
-              net::AdvertisedAltSvcState* out) {
+net::AdvertisedAltSvcState
+EnumTraits<network::mojom::AdvertisedAltSvcState, net::AdvertisedAltSvcState>::
+    FromMojom(network::mojom::AdvertisedAltSvcState in) {
   switch (in) {
     case network::mojom::AdvertisedAltSvcState::kUnknown:
-      *out = net::AdvertisedAltSvcState::kUnknown;
-      return true;
+      return net::AdvertisedAltSvcState::kUnknown;
     case network::mojom::AdvertisedAltSvcState::kQuicNotBroken:
-      *out = net::AdvertisedAltSvcState::kQuicNotBroken;
-      return true;
+      return net::AdvertisedAltSvcState::kQuicNotBroken;
     case network::mojom::AdvertisedAltSvcState::kQuicBroken:
-      *out = net::AdvertisedAltSvcState::kQuicBroken;
-      return true;
+      return net::AdvertisedAltSvcState::kQuicBroken;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

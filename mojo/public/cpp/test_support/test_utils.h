@@ -5,7 +5,9 @@
 #ifndef MOJO_PUBLIC_CPP_TEST_SUPPORT_TEST_UTILS_H_
 #define MOJO_PUBLIC_CPP_TEST_SUPPORT_TEST_UTILS_H_
 
+#include <concepts>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -16,6 +18,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/types/to_address.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 
@@ -78,14 +81,40 @@ bool SerializeAndDeserialize(MojomStructPtr& input, UserStructType& output) {
   return MojomType::DeserializeFromMessage(std::move(message), &output);
 }
 
+template <typename MojoT, typename T>
+  requires(requires(MojoT in) {
+    { mojo::EnumTraits<MojoT, T>::FromMojom(in) } -> std::same_as<T>;
+  })
+bool DeserializeEnum(MojoT in, T& out) {
+  out = mojo::EnumTraits<MojoT, T>::FromMojom(in);
+  return true;
+}
+
+template <typename MojoT, typename T>
+  requires(requires(MojoT in) {
+    {
+      mojo::EnumTraits<MojoT, T>::FromMojom(in)
+    } -> std::same_as<std::optional<T>>;
+  })
+bool DeserializeEnum(MojoT in, T& out) {
+  std::optional<T> result = mojo::EnumTraits<MojoT, T>::FromMojom(in);
+  if (result) {
+    out = *result;
+  }
+  return result.has_value();
+}
+
+template <typename MojoT, typename T>
+bool DeserializeEnum(MojoT in, T& out) {
+  return mojo::EnumTraits<MojoT, T>::FromMojom(in, &out);
+}
+
 // This overload is used for mojom enums. The C++ enum type is given as an
 // input, and returned as an output.
-template <typename MojomType,
-          typename UserEnumType,
-          std::enable_if_t<std::is_enum<UserEnumType>::value, int> = 0>
-bool SerializeAndDeserialize(UserEnumType input, UserEnumType& output) {
-  MojomType mode = mojo::EnumTraits<MojomType, UserEnumType>::ToMojom(input);
-  return mojo::EnumTraits<MojomType, UserEnumType>::FromMojom(mode, &output);
+template <typename MojoT, typename T>
+  requires std::is_enum_v<T>
+bool SerializeAndDeserialize(T input, T& output) {
+  return DeserializeEnum(mojo::EnumTraits<MojoT, T>::ToMojom(input), output);
 }
 
 // Writes a message to |handle| with message data |text|. Returns true on

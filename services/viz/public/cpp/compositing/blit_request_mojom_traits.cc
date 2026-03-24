@@ -32,18 +32,16 @@ viz::mojom::LetterboxingBehavior EnumTraits<
 }
 
 // static
-bool EnumTraits<viz::mojom::LetterboxingBehavior, viz::LetterboxingBehavior>::
-    FromMojom(viz::mojom::LetterboxingBehavior input,
-              viz::LetterboxingBehavior* out) {
+viz::LetterboxingBehavior
+EnumTraits<viz::mojom::LetterboxingBehavior, viz::LetterboxingBehavior>::
+    FromMojom(viz::mojom::LetterboxingBehavior input) {
   switch (input) {
     case viz::mojom::LetterboxingBehavior::kDoNotLetterbox:
-      *out = viz::LetterboxingBehavior::kDoNotLetterbox;
-      return true;
+      return viz::LetterboxingBehavior::kDoNotLetterbox;
     case viz::mojom::LetterboxingBehavior::kLetterbox:
-      *out = viz::LetterboxingBehavior::kLetterbox;
-      return true;
+      return viz::LetterboxingBehavior::kLetterbox;
   }
-  return false;
+  NOTREACHED();
 }
 
 gpu::ExportedSharedImage

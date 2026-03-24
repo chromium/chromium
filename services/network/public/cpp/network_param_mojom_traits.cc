@@ -42,8 +42,9 @@ bool StructTraits<
                                  net::ResolveErrorInfo* out) {
   // There should not be a secure network error if the error code indicates no
   // error.
-  if (data.error() == net::OK && data.is_secure_network_error())
+  if (data.error() == net::OK && data.is_secure_network_error()) {
     return false;
+  }
   *out = net::ResolveErrorInfo(data.error(), data.is_secure_network_error());
   return true;
 }
@@ -80,31 +81,25 @@ EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::
-    FromMojom(network::mojom::ProxyScheme scheme,
-              net::ProxyServer::Scheme* out) {
+net::ProxyServer::Scheme
+EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::FromMojom(
+    network::mojom::ProxyScheme scheme) {
   using net::ProxyServer;
   switch (scheme) {
     case network::mojom::ProxyScheme::kInvalid:
-      *out = ProxyServer::SCHEME_INVALID;
-      return true;
+      return ProxyServer::SCHEME_INVALID;
     case network::mojom::ProxyScheme::kHttp:
-      *out = ProxyServer::SCHEME_HTTP;
-      return true;
+      return ProxyServer::SCHEME_HTTP;
     case network::mojom::ProxyScheme::kSocks4:
-      *out = ProxyServer::SCHEME_SOCKS4;
-      return true;
+      return ProxyServer::SCHEME_SOCKS4;
     case network::mojom::ProxyScheme::kSocks5:
-      *out = ProxyServer::SCHEME_SOCKS5;
-      return true;
+      return ProxyServer::SCHEME_SOCKS5;
     case network::mojom::ProxyScheme::kHttps:
-      *out = ProxyServer::SCHEME_HTTPS;
-      return true;
+      return ProxyServer::SCHEME_HTTPS;
     case network::mojom::ProxyScheme::kQuic:
-      *out = ProxyServer::SCHEME_QUIC;
-      return true;
+      return ProxyServer::SCHEME_QUIC;
   }
-  return false;
+  NOTREACHED();
 }
 
 std::optional<net::HostPortPair>

@@ -17,8 +17,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_IP_ADDRESS)
     EnumTraits<network::mojom::AddressFamily, net::AddressFamily> {
   static network::mojom::AddressFamily ToMojom(
       net::AddressFamily address_family);
-  static bool FromMojom(network::mojom::AddressFamily address_family,
-                        net::AddressFamily* out);
+  static net::AddressFamily FromMojom(
+      network::mojom::AddressFamily address_family);
 };
 
 }  // namespace mojo

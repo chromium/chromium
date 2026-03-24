@@ -17,8 +17,8 @@ struct EnumTraits<proxy_resolver::mojom::MacProxyStatus,
   static proxy_resolver::mojom::MacProxyStatus ToMojom(
       net::MacProxyResolutionStatus input);
 
-  static bool FromMojom(proxy_resolver::mojom::MacProxyStatus input,
-                        net::MacProxyResolutionStatus* output);
+  static net::MacProxyResolutionStatus FromMojom(
+      proxy_resolver::mojom::MacProxyStatus input);
 };
 
 }  // namespace mojo

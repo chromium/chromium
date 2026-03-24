@@ -35,32 +35,25 @@ struct EnumTraits<viz::mojom::ContextLostReason,
     NOTREACHED();
   }
 
-  static bool FromMojom(viz::mojom::ContextLostReason reason,
-                        gpu::error::ContextLostReason* out) {
+  static gpu::error::ContextLostReason FromMojom(
+      viz::mojom::ContextLostReason reason) {
     switch (reason) {
       case viz::mojom::ContextLostReason::GUILTY:
-        *out = gpu::error::kGuilty;
-        return true;
+        return gpu::error::kGuilty;
       case viz::mojom::ContextLostReason::INNOCENT:
-        *out = gpu::error::kInnocent;
-        return true;
+        return gpu::error::kInnocent;
       case viz::mojom::ContextLostReason::UNKNOWN:
-        *out = gpu::error::kUnknown;
-        return true;
+        return gpu::error::kUnknown;
       case viz::mojom::ContextLostReason::OUT_OF_MEMORY:
-        *out = gpu::error::kOutOfMemory;
-        return true;
+        return gpu::error::kOutOfMemory;
       case viz::mojom::ContextLostReason::MAKE_CURRENT_FAILED:
-        *out = gpu::error::kMakeCurrentFailed;
-        return true;
+        return gpu::error::kMakeCurrentFailed;
       case viz::mojom::ContextLostReason::GPU_CHANNEL_LOST:
-        *out = gpu::error::kGpuChannelLost;
-        return true;
+        return gpu::error::kGpuChannelLost;
       case viz::mojom::ContextLostReason::INVALID_GPU_MESSAGE:
-        *out = gpu::error::kInvalidGpuMessage;
-        return true;
+        return gpu::error::kInvalidGpuMessage;
     }
-    return false;
+    NOTREACHED();
   }
 };
 

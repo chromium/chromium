@@ -38,30 +38,23 @@ struct EnumTraits<network::mojom::HashAlgorithm,
     NOTREACHED();
   }
 
-  static bool FromMojom(network::mojom::HashAlgorithm input,
-                        net::ct::DigitallySigned::HashAlgorithm* output) {
+  static net::ct::DigitallySigned::HashAlgorithm FromMojom(
+      network::mojom::HashAlgorithm input) {
     switch (input) {
       case network::mojom::HashAlgorithm::HASH_ALGO_NONE:
-        *output = net::ct::DigitallySigned::HASH_ALGO_NONE;
-        return true;
+        return net::ct::DigitallySigned::HASH_ALGO_NONE;
       case network::mojom::HashAlgorithm::HASH_ALGO_MD5:
-        *output = net::ct::DigitallySigned::HASH_ALGO_MD5;
-        return true;
+        return net::ct::DigitallySigned::HASH_ALGO_MD5;
       case network::mojom::HashAlgorithm::HASH_ALGO_SHA1:
-        *output = net::ct::DigitallySigned::HASH_ALGO_SHA1;
-        return true;
+        return net::ct::DigitallySigned::HASH_ALGO_SHA1;
       case network::mojom::HashAlgorithm::HASH_ALGO_SHA224:
-        *output = net::ct::DigitallySigned::HASH_ALGO_SHA224;
-        return true;
+        return net::ct::DigitallySigned::HASH_ALGO_SHA224;
       case network::mojom::HashAlgorithm::HASH_ALGO_SHA256:
-        *output = net::ct::DigitallySigned::HASH_ALGO_SHA256;
-        return true;
+        return net::ct::DigitallySigned::HASH_ALGO_SHA256;
       case network::mojom::HashAlgorithm::HASH_ALGO_SHA384:
-        *output = net::ct::DigitallySigned::HASH_ALGO_SHA384;
-        return true;
+        return net::ct::DigitallySigned::HASH_ALGO_SHA384;
       case network::mojom::HashAlgorithm::HASH_ALGO_SHA512:
-        *output = net::ct::DigitallySigned::HASH_ALGO_SHA512;
-        return true;
+        return net::ct::DigitallySigned::HASH_ALGO_SHA512;
     }
     NOTREACHED();
   }
@@ -85,21 +78,17 @@ struct EnumTraits<network::mojom::SignatureAlgorithm,
     NOTREACHED();
   }
 
-  static bool FromMojom(network::mojom::SignatureAlgorithm input,
-                        net::ct::DigitallySigned::SignatureAlgorithm* output) {
+  static net::ct::DigitallySigned::SignatureAlgorithm FromMojom(
+      network::mojom::SignatureAlgorithm input) {
     switch (input) {
       case network::mojom::SignatureAlgorithm::SIG_ALGO_ANONYMOUS:
-        *output = net::ct::DigitallySigned::SIG_ALGO_ANONYMOUS;
-        return true;
+        return net::ct::DigitallySigned::SIG_ALGO_ANONYMOUS;
       case network::mojom::SignatureAlgorithm::SIG_ALGO_RSA:
-        *output = net::ct::DigitallySigned::SIG_ALGO_RSA;
-        return true;
+        return net::ct::DigitallySigned::SIG_ALGO_RSA;
       case network::mojom::SignatureAlgorithm::SIG_ALGO_DSA:
-        *output = net::ct::DigitallySigned::SIG_ALGO_DSA;
-        return true;
+        return net::ct::DigitallySigned::SIG_ALGO_DSA;
       case network::mojom::SignatureAlgorithm::SIG_ALGO_ECDSA:
-        *output = net::ct::DigitallySigned::SIG_ALGO_ECDSA;
-        return true;
+        return net::ct::DigitallySigned::SIG_ALGO_ECDSA;
     }
     NOTREACHED();
   }

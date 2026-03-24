@@ -9,24 +9,20 @@
 namespace mojo {
 
 // static
-bool EnumTraits<network::mojom::NetLogCaptureMode, net::NetLogCaptureMode>::
-    FromMojom(network::mojom::NetLogCaptureMode capture_mode,
-              net::NetLogCaptureMode* out) {
+net::NetLogCaptureMode
+EnumTraits<network::mojom::NetLogCaptureMode, net::NetLogCaptureMode>::
+    FromMojom(network::mojom::NetLogCaptureMode capture_mode) {
   switch (capture_mode) {
     case network::mojom::NetLogCaptureMode::HEAVILY_REDACTED:
-      *out = net::NetLogCaptureMode::kHeavilyRedacted;
-      return true;
+      return net::NetLogCaptureMode::kHeavilyRedacted;
     case network::mojom::NetLogCaptureMode::DEFAULT:
-      *out = net::NetLogCaptureMode::kDefault;
-      return true;
+      return net::NetLogCaptureMode::kDefault;
     case network::mojom::NetLogCaptureMode::INCLUDE_PRIVACY_INFO:
-      *out = net::NetLogCaptureMode::kIncludeSensitive;
-      return true;
+      return net::NetLogCaptureMode::kIncludeSensitive;
     case network::mojom::NetLogCaptureMode::EVERYTHING:
-      *out = net::NetLogCaptureMode::kEverything;
-      return true;
+      return net::NetLogCaptureMode::kEverything;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -48,21 +44,18 @@ EnumTraits<network::mojom::NetLogCaptureMode, net::NetLogCaptureMode>::ToMojom(
 }
 
 // static
-bool EnumTraits<network::mojom::NetLogEventPhase, net::NetLogEventPhase>::
-    FromMojom(network::mojom::NetLogEventPhase capture_mode,
-              net::NetLogEventPhase* out) {
+net::NetLogEventPhase
+EnumTraits<network::mojom::NetLogEventPhase, net::NetLogEventPhase>::FromMojom(
+    network::mojom::NetLogEventPhase capture_mode) {
   switch (capture_mode) {
     case network::mojom::NetLogEventPhase::BEGIN:
-      *out = net::NetLogEventPhase::BEGIN;
-      return true;
+      return net::NetLogEventPhase::BEGIN;
     case network::mojom::NetLogEventPhase::END:
-      *out = net::NetLogEventPhase::END;
-      return true;
+      return net::NetLogEventPhase::END;
     case network::mojom::NetLogEventPhase::NONE:
-      *out = net::NetLogEventPhase::NONE;
-      return true;
+      return net::NetLogEventPhase::NONE;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "net/base/address_list.h"
 
 namespace mojo {
@@ -30,23 +31,19 @@ EnumTraits<proxy_resolver::mojom::HostResolveOperation,
 }
 
 // static
-bool EnumTraits<proxy_resolver::mojom::HostResolveOperation,
-                net::ProxyResolveDnsOperation>::
-    FromMojom(proxy_resolver::mojom::HostResolveOperation input,
-              net::ProxyResolveDnsOperation* output) {
+net::ProxyResolveDnsOperation
+EnumTraits<proxy_resolver::mojom::HostResolveOperation,
+           net::ProxyResolveDnsOperation>::
+    FromMojom(proxy_resolver::mojom::HostResolveOperation input) {
   switch (input) {
     case proxy_resolver::mojom::HostResolveOperation::DNS_RESOLVE:
-      *output = net::ProxyResolveDnsOperation::DNS_RESOLVE;
-      return true;
+      return net::ProxyResolveDnsOperation::DNS_RESOLVE;
     case proxy_resolver::mojom::HostResolveOperation::DNS_RESOLVE_EX:
-      *output = net::ProxyResolveDnsOperation::DNS_RESOLVE_EX;
-      return true;
+      return net::ProxyResolveDnsOperation::DNS_RESOLVE_EX;
     case proxy_resolver::mojom::HostResolveOperation::MY_IP_ADDRESS:
-      *output = net::ProxyResolveDnsOperation::MY_IP_ADDRESS;
-      return true;
+      return net::ProxyResolveDnsOperation::MY_IP_ADDRESS;
     case proxy_resolver::mojom::HostResolveOperation::MY_IP_ADDRESS_EX:
-      *output = net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX;
-      return true;
+      return net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX;
   }
 
   NOTREACHED();

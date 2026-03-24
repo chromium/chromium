@@ -30,27 +30,22 @@ EnumTraits<viz::mojom::ThreadType, viz::Thread::Type>::ToMojom(
 }
 
 // static
-bool EnumTraits<viz::mojom::ThreadType, viz::Thread::Type>::FromMojom(
-    viz::mojom::ThreadType input,
-    viz::Thread::Type* out) {
+viz::Thread::Type
+EnumTraits<viz::mojom::ThreadType, viz::Thread::Type>::FromMojom(
+    viz::mojom::ThreadType input) {
   switch (input) {
     case viz::mojom::ThreadType::kMain:
-      *out = viz::Thread::Type::kMain;
-      return true;
+      return viz::Thread::Type::kMain;
     case viz::mojom::ThreadType::kIO:
-      *out = viz::Thread::Type::kIO;
-      return true;
+      return viz::Thread::Type::kIO;
     case viz::mojom::ThreadType::kCompositor:
-      *out = viz::Thread::Type::kCompositor;
-      return true;
+      return viz::Thread::Type::kCompositor;
     case viz::mojom::ThreadType::kVideo:
-      *out = viz::Thread::Type::kVideo;
-      return true;
+      return viz::Thread::Type::kVideo;
     case viz::mojom::ThreadType::kOther:
-      *out = viz::Thread::Type::kOther;
-      return true;
+      return viz::Thread::Type::kOther;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

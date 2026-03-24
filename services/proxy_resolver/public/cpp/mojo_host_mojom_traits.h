@@ -19,8 +19,8 @@ struct COMPONENT_EXPORT(PROXY_RESOLVER_CPP)
   static proxy_resolver::mojom::HostResolveOperation ToMojom(
       net::ProxyResolveDnsOperation input);
 
-  static bool FromMojom(proxy_resolver::mojom::HostResolveOperation input,
-                        net::ProxyResolveDnsOperation* output);
+  static net::ProxyResolveDnsOperation FromMojom(
+      proxy_resolver::mojom::HostResolveOperation input);
 };
 
 }  // namespace mojo

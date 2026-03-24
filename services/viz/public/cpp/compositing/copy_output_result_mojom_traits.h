@@ -26,8 +26,8 @@ struct EnumTraits<viz::mojom::CopyOutputResultFormat,
   static viz::mojom::CopyOutputResultFormat ToMojom(
       viz::CopyOutputResult::Format format);
 
-  static bool FromMojom(viz::mojom::CopyOutputResultFormat input,
-                        viz::CopyOutputResult::Format* out);
+  static viz::CopyOutputResult::Format FromMojom(
+      viz::mojom::CopyOutputResultFormat input);
 };
 
 template <>
@@ -36,8 +36,8 @@ struct EnumTraits<viz::mojom::CopyOutputResultDestination,
   static viz::mojom::CopyOutputResultDestination ToMojom(
       viz::CopyOutputResult::Destination destination);
 
-  static bool FromMojom(viz::mojom::CopyOutputResultDestination input,
-                        viz::CopyOutputResult::Destination* out);
+  static viz::CopyOutputResult::Destination FromMojom(
+      viz::mojom::CopyOutputResultDestination input);
 };
 
 template <>
@@ -46,8 +46,8 @@ struct EnumTraits<viz::mojom::CopyOutputResultError,
   static viz::mojom::CopyOutputResultError ToMojom(
       viz::CopyOutputResult::Error format);
 
-  static bool FromMojom(viz::mojom::CopyOutputResultError input,
-                        viz::CopyOutputResult::Error* out);
+  static viz::CopyOutputResult::Error FromMojom(
+      viz::mojom::CopyOutputResultError input);
 };
 
 template <>

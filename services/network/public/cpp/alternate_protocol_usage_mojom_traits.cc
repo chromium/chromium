@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/alternate_protocol_usage_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 network::mojom::AlternateProtocolUsage EnumTraits<
@@ -30,37 +32,28 @@ network::mojom::AlternateProtocolUsage EnumTraits<
   }
 }
 
-bool EnumTraits<network::mojom::AlternateProtocolUsage,
-                net::AlternateProtocolUsage>::
-    FromMojom(network::mojom::AlternateProtocolUsage input,
-              net::AlternateProtocolUsage* output) {
+net::AlternateProtocolUsage EnumTraits<network::mojom::AlternateProtocolUsage,
+                                       net::AlternateProtocolUsage>::
+    FromMojom(network::mojom::AlternateProtocolUsage input) {
   switch (input) {
     case network::mojom::AlternateProtocolUsage::kNoRace:
-      *output = net::ALTERNATE_PROTOCOL_USAGE_NO_RACE;
-      return true;
+      return net::ALTERNATE_PROTOCOL_USAGE_NO_RACE;
     case network::mojom::AlternateProtocolUsage::kWonRace:
-      *output = net::ALTERNATE_PROTOCOL_USAGE_WON_RACE;
-      return true;
+      return net::ALTERNATE_PROTOCOL_USAGE_WON_RACE;
     case network::mojom::AlternateProtocolUsage::kMainJobWonRace:
-      *output = net::ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE;
-      return true;
+      return net::ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE;
     case network::mojom::AlternateProtocolUsage::kMappingMissing:
-      *output = net::ALTERNATE_PROTOCOL_USAGE_MAPPING_MISSING;
-      return true;
+      return net::ALTERNATE_PROTOCOL_USAGE_MAPPING_MISSING;
     case network::mojom::AlternateProtocolUsage::kBroken:
-      *output = net::ALTERNATE_PROTOCOL_USAGE_BROKEN;
-      return true;
+      return net::ALTERNATE_PROTOCOL_USAGE_BROKEN;
     case network::mojom::AlternateProtocolUsage::kDnsAlpnH3JobWonWithoutRace:
-      *output = net::ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE;
-      return true;
+      return net::ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE;
     case network::mojom::AlternateProtocolUsage::kDnsAlpnH3JobWonRace:
-      *output = net::ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE;
-      return true;
+      return net::ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE;
     case network::mojom::AlternateProtocolUsage::kMaxValue:
-      *output = net::ALTERNATE_PROTOCOL_USAGE_MAX;
-      return true;
+      return net::ALTERNATE_PROTOCOL_USAGE_MAX;
     default:
-      return false;
+      NOTREACHED();
   }
 }
 

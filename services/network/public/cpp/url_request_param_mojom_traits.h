@@ -18,8 +18,7 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     EnumTraits<network::mojom::RequestPriority, net::RequestPriority> {
   static network::mojom::RequestPriority ToMojom(net::RequestPriority priority);
-  static bool FromMojom(network::mojom::RequestPriority in,
-                        net::RequestPriority* out);
+  static net::RequestPriority FromMojom(network::mojom::RequestPriority in);
 };
 
 template <>
@@ -27,8 +26,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     EnumTraits<network::mojom::URLRequestReferrerPolicy, net::ReferrerPolicy> {
   static network::mojom::URLRequestReferrerPolicy ToMojom(
       net::ReferrerPolicy policy);
-  static bool FromMojom(network::mojom::URLRequestReferrerPolicy in,
-                        net::ReferrerPolicy* out);
+  static net::ReferrerPolicy FromMojom(
+      network::mojom::URLRequestReferrerPolicy in);
 };
 
 }  // namespace mojo

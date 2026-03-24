@@ -27,24 +27,19 @@ EnumTraits<memory_instrumentation::mojom::DumpType,
 }
 
 // static
-bool EnumTraits<memory_instrumentation::mojom::DumpType,
-                base::trace_event::MemoryDumpType>::
-    FromMojom(memory_instrumentation::mojom::DumpType input,
-              base::trace_event::MemoryDumpType* out) {
+base::trace_event::MemoryDumpType
+EnumTraits<memory_instrumentation::mojom::DumpType,
+           base::trace_event::MemoryDumpType>::
+    FromMojom(memory_instrumentation::mojom::DumpType input) {
   switch (input) {
     case memory_instrumentation::mojom::DumpType::PERIODIC_INTERVAL:
-      *out = base::trace_event::MemoryDumpType::kPeriodicInterval;
-      break;
+      return base::trace_event::MemoryDumpType::kPeriodicInterval;
     case memory_instrumentation::mojom::DumpType::EXPLICITLY_TRIGGERED:
-      *out = base::trace_event::MemoryDumpType::kExplicitlyTriggered;
-      break;
+      return base::trace_event::MemoryDumpType::kExplicitlyTriggered;
     case memory_instrumentation::mojom::DumpType::SUMMARY_ONLY:
-      *out = base::trace_event::MemoryDumpType::kSummaryOnly;
-      break;
-    default:
-      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
+      return base::trace_event::MemoryDumpType::kSummaryOnly;
   }
-  return true;
+  NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
 }
 
 // static
@@ -65,24 +60,19 @@ EnumTraits<memory_instrumentation::mojom::LevelOfDetail,
 }
 
 // static
-bool EnumTraits<memory_instrumentation::mojom::LevelOfDetail,
-                base::trace_event::MemoryDumpLevelOfDetail>::
-    FromMojom(memory_instrumentation::mojom::LevelOfDetail input,
-              base::trace_event::MemoryDumpLevelOfDetail* out) {
+base::trace_event::MemoryDumpLevelOfDetail
+EnumTraits<memory_instrumentation::mojom::LevelOfDetail,
+           base::trace_event::MemoryDumpLevelOfDetail>::
+    FromMojom(memory_instrumentation::mojom::LevelOfDetail input) {
   switch (input) {
     case memory_instrumentation::mojom::LevelOfDetail::BACKGROUND:
-      *out = base::trace_event::MemoryDumpLevelOfDetail::kBackground;
-      break;
+      return base::trace_event::MemoryDumpLevelOfDetail::kBackground;
     case memory_instrumentation::mojom::LevelOfDetail::LIGHT:
-      *out = base::trace_event::MemoryDumpLevelOfDetail::kLight;
-      break;
+      return base::trace_event::MemoryDumpLevelOfDetail::kLight;
     case memory_instrumentation::mojom::LevelOfDetail::DETAILED:
-      *out = base::trace_event::MemoryDumpLevelOfDetail::kDetailed;
-      break;
-    default:
-      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
+      return base::trace_event::MemoryDumpLevelOfDetail::kDetailed;
   }
-  return true;
+  NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
 }
 
 // static
@@ -101,21 +91,17 @@ EnumTraits<memory_instrumentation::mojom::Determinism,
 }
 
 // static
-bool EnumTraits<memory_instrumentation::mojom::Determinism,
-                base::trace_event::MemoryDumpDeterminism>::
-    FromMojom(memory_instrumentation::mojom::Determinism input,
-              base::trace_event::MemoryDumpDeterminism* out) {
+base::trace_event::MemoryDumpDeterminism
+EnumTraits<memory_instrumentation::mojom::Determinism,
+           base::trace_event::MemoryDumpDeterminism>::
+    FromMojom(memory_instrumentation::mojom::Determinism input) {
   switch (input) {
     case memory_instrumentation::mojom::Determinism::NONE:
-      *out = base::trace_event::MemoryDumpDeterminism::kNone;
-      break;
+      return base::trace_event::MemoryDumpDeterminism::kNone;
     case memory_instrumentation::mojom::Determinism::FORCE_GC:
-      *out = base::trace_event::MemoryDumpDeterminism::kForceGc;
-      break;
-    default:
-      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
+      return base::trace_event::MemoryDumpDeterminism::kForceGc;
   }
-  return true;
+  NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
 }
 
 // static
@@ -124,12 +110,15 @@ bool StructTraits<memory_instrumentation::mojom::RequestArgsDataView,
     Read(memory_instrumentation::mojom::RequestArgsDataView input,
          base::trace_event::MemoryDumpRequestArgs* out) {
   out->dump_guid = input.dump_guid();
-  if (!input.ReadDumpType(&out->dump_type))
+  if (!input.ReadDumpType(&out->dump_type)) {
     return false;
-  if (!input.ReadLevelOfDetail(&out->level_of_detail))
+  }
+  if (!input.ReadLevelOfDetail(&out->level_of_detail)) {
     return false;
-  if (!input.ReadDeterminism(&out->determinism))
+  }
+  if (!input.ReadDeterminism(&out->determinism)) {
     return false;
+  }
   return true;
 }
 
@@ -157,8 +146,9 @@ bool UnionTraits<
   switch (input.tag()) {
     case RawAllocatorDumpEntryValue::Tag::kValueString: {
       std::string value_string;
-      if (!input.ReadValueString(&value_string))
+      if (!input.ReadValueString(&value_string)) {
         return false;
+      }
       out->value_string = std::move(value_string);
       out->entry_type = base::trace_event::MemoryAllocatorDump::Entry::kString;
       break;
@@ -179,10 +169,12 @@ bool StructTraits<memory_instrumentation::mojom::RawAllocatorDumpEntryDataView,
                   base::trace_event::MemoryAllocatorDump::Entry>::
     Read(memory_instrumentation::mojom::RawAllocatorDumpEntryDataView input,
          base::trace_event::MemoryAllocatorDump::Entry* out) {
-  if (!input.ReadName(&out->name) || !input.ReadUnits(&out->units))
+  if (!input.ReadName(&out->name) || !input.ReadUnits(&out->units)) {
     return false;
-  if (!input.ReadValue(out))
+  }
+  if (!input.ReadValue(out)) {
     return false;
+  }
   return true;
 }
 
@@ -192,18 +184,22 @@ bool StructTraits<memory_instrumentation::mojom::RawAllocatorDumpDataView,
     Read(memory_instrumentation::mojom::RawAllocatorDumpDataView input,
          std::unique_ptr<base::trace_event::MemoryAllocatorDump>* out) {
   std::string absolute_name;
-  if (!input.ReadAbsoluteName(&absolute_name))
+  if (!input.ReadAbsoluteName(&absolute_name)) {
     return false;
+  }
   base::trace_event::MemoryDumpLevelOfDetail level_of_detail;
-  if (!input.ReadLevelOfDetail(&level_of_detail))
+  if (!input.ReadLevelOfDetail(&level_of_detail)) {
     return false;
+  }
   auto mad = std::make_unique<base::trace_event::MemoryAllocatorDump>(
       absolute_name, level_of_detail,
       base::trace_event::MemoryAllocatorDumpGuid(input.id()));
-  if (input.weak())
+  if (input.weak()) {
     mad->set_flags(base::trace_event::MemoryAllocatorDump::kWeak);
-  if (!input.ReadEntries(mad->mutable_entries_for_serialization()))
+  }
+  if (!input.ReadEntries(mad->mutable_entries_for_serialization())) {
     return false;
+  }
   *out = std::move(mad);
   return true;
 }
@@ -214,15 +210,18 @@ bool StructTraits<memory_instrumentation::mojom::RawProcessMemoryDumpDataView,
     Read(memory_instrumentation::mojom::RawProcessMemoryDumpDataView input,
          std::unique_ptr<base::trace_event::ProcessMemoryDump>* out) {
   base::trace_event::MemoryDumpArgs dump_args;
-  if (!input.ReadLevelOfDetail(&dump_args.level_of_detail))
+  if (!input.ReadLevelOfDetail(&dump_args.level_of_detail)) {
     return false;
+  }
   std::vector<base::trace_event::ProcessMemoryDump::MemoryAllocatorDumpEdge>
       edges;
-  if (!input.ReadAllocatorDumpEdges(&edges))
+  if (!input.ReadAllocatorDumpEdges(&edges)) {
     return false;
+  }
   std::vector<std::unique_ptr<base::trace_event::MemoryAllocatorDump>> dumps;
-  if (!input.ReadAllocatorDumps(&dumps))
+  if (!input.ReadAllocatorDumps(&dumps)) {
     return false;
+  }
   auto pmd = std::make_unique<base::trace_event::ProcessMemoryDump>(dump_args);
   pmd->SetAllocatorDumpsForSerialization(std::move(dumps));
   pmd->SetAllEdgesForSerialization(edges);

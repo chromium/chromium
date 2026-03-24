@@ -18,8 +18,8 @@ struct EnumTraits<viz::mojom::BeginFrameArgsType,
   static viz::mojom::BeginFrameArgsType ToMojom(
       viz::BeginFrameArgs::BeginFrameArgsType type);
 
-  static bool FromMojom(viz::mojom::BeginFrameArgsType input,
-                        viz::BeginFrameArgs::BeginFrameArgsType* out);
+  static viz::BeginFrameArgs::BeginFrameArgsType FromMojom(
+      viz::mojom::BeginFrameArgsType input);
 };
 
 template <>

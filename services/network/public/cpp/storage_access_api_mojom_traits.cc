@@ -11,17 +11,14 @@
 
 namespace mojo {
 
-bool EnumTraits<network::mojom::StorageAccessApiStatus,
-                net::StorageAccessApiStatus>::
-    FromMojom(network::mojom::StorageAccessApiStatus status,
-              net::StorageAccessApiStatus* out) {
+net::StorageAccessApiStatus EnumTraits<network::mojom::StorageAccessApiStatus,
+                                       net::StorageAccessApiStatus>::
+    FromMojom(network::mojom::StorageAccessApiStatus status) {
   switch (status) {
     case network::mojom::StorageAccessApiStatus::kNone:
-      *out = net::StorageAccessApiStatus::kNone;
-      return true;
+      return net::StorageAccessApiStatus::kNone;
     case network::mojom::StorageAccessApiStatus::kAccessViaAPI:
-      *out = net::StorageAccessApiStatus::kAccessViaAPI;
-      return true;
+      return net::StorageAccessApiStatus::kAccessViaAPI;
   }
   NOTREACHED();
 }

@@ -16,8 +16,7 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     EnumTraits<network::mojom::SourceType, net::SourceStreamType> {
   static network::mojom::SourceType ToMojom(net::SourceStreamType type);
-  static bool FromMojom(network::mojom::SourceType in,
-                        net::SourceStreamType* out);
+  static net::SourceStreamType FromMojom(network::mojom::SourceType in);
 };
 
 }  // namespace mojo

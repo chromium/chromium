@@ -44,22 +44,19 @@ EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
 }
 
 // static
-bool EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
-                viz::CompositorFrameTransitionDirective::Type>::
-    FromMojom(viz::mojom::CompositorFrameTransitionDirectiveType input,
-              viz::CompositorFrameTransitionDirective::Type* out) {
+viz::CompositorFrameTransitionDirective::Type
+EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
+           viz::CompositorFrameTransitionDirective::Type>::
+    FromMojom(viz::mojom::CompositorFrameTransitionDirectiveType input) {
   switch (input) {
     case viz::mojom::CompositorFrameTransitionDirectiveType::kSave:
-      *out = viz::CompositorFrameTransitionDirective::Type::kSave;
-      return true;
+      return viz::CompositorFrameTransitionDirective::Type::kSave;
     case viz::mojom::CompositorFrameTransitionDirectiveType::kAnimateRenderer:
-      *out = viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer;
-      return true;
+      return viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer;
     case viz::mojom::CompositorFrameTransitionDirectiveType::kRelease:
-      *out = viz::CompositorFrameTransitionDirective::Type::kRelease;
-      return true;
+      return viz::CompositorFrameTransitionDirective::Type::kRelease;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

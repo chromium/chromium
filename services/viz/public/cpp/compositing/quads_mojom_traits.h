@@ -60,18 +60,15 @@ struct EnumTraits<viz::mojom::ProtectedVideoState, gfx::ProtectedVideoType> {
     NOTREACHED();
   }
 
-  static bool FromMojom(viz::mojom::ProtectedVideoState input,
-                        gfx::ProtectedVideoType* out) {
+  static gfx::ProtectedVideoType FromMojom(
+      viz::mojom::ProtectedVideoState input) {
     switch (input) {
       case viz::mojom::ProtectedVideoState::kClear:
-        *out = gfx::ProtectedVideoType::kClear;
-        return true;
+        return gfx::ProtectedVideoType::kClear;
       case viz::mojom::ProtectedVideoState::kHardwareProtected:
-        *out = gfx::ProtectedVideoType::kHardwareProtected;
-        return true;
+        return gfx::ProtectedVideoType::kHardwareProtected;
       case viz::mojom::ProtectedVideoState::kSoftwareProtected:
-        *out = gfx::ProtectedVideoType::kSoftwareProtected;
-        return true;
+        return gfx::ProtectedVideoType::kSoftwareProtected;
     }
     NOTREACHED();
   }
@@ -91,18 +88,14 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
     NOTREACHED();
   }
 
-  static bool FromMojom(viz::mojom::OverlayPriority input,
-                        viz::OverlayPriority* out) {
+  static viz::OverlayPriority FromMojom(viz::mojom::OverlayPriority input) {
     switch (input) {
       case viz::mojom::OverlayPriority::kLow:
-        *out = viz::OverlayPriority::kLow;
-        return true;
+        return viz::OverlayPriority::kLow;
       case viz::mojom::OverlayPriority::kRegular:
-        *out = viz::OverlayPriority::kRegular;
-        return true;
+        return viz::OverlayPriority::kRegular;
       case viz::mojom::OverlayPriority::kRequired:
-        *out = viz::OverlayPriority::kRequired;
-        return true;
+        return viz::OverlayPriority::kRequired;
     }
     NOTREACHED();
   }
@@ -581,8 +574,9 @@ struct ArrayTraits<viz::QuadList> {
     // Only serialize the SharedQuadState if we haven't seen it before and
     // therefore have not already serialized it.
     const viz::SharedQuadState* current_sqs = (*iterator.it)->shared_quad_state;
-    if (current_sqs != iterator.last_shared_quad_state)
+    if (current_sqs != iterator.last_shared_quad_state) {
       dq.shared_quad_state = current_sqs;
+    }
     return dq;
   }
 

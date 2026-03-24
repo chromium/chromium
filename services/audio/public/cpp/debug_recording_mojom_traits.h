@@ -15,8 +15,8 @@ struct EnumTraits<audio::mojom::DebugRecordingStreamType,
                   media::AudioDebugRecordingStreamType> {
   static audio::mojom::DebugRecordingStreamType ToMojom(
       media::AudioDebugRecordingStreamType stream_type);
-  static bool FromMojom(audio::mojom::DebugRecordingStreamType type,
-                        media::AudioDebugRecordingStreamType* output);
+  static media::AudioDebugRecordingStreamType FromMojom(
+      audio::mojom::DebugRecordingStreamType type);
 };
 
 }  // namespace mojo

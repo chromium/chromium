@@ -14,41 +14,34 @@
 
 namespace mojo {
 
-bool EnumTraits<network::mojom::IsolationInfoRequestType,
-                net::IsolationInfo::RequestType>::
-    FromMojom(network::mojom::IsolationInfoRequestType request_type,
-              net::IsolationInfo::RequestType* out) {
+net::IsolationInfo::RequestType
+EnumTraits<network::mojom::IsolationInfoRequestType,
+           net::IsolationInfo::RequestType>::
+    FromMojom(network::mojom::IsolationInfoRequestType request_type) {
   switch (request_type) {
     case network::mojom::IsolationInfoRequestType::kMainFrame:
-      *out = net::IsolationInfo::RequestType::kMainFrame;
-      return true;
+      return net::IsolationInfo::RequestType::kMainFrame;
     case network::mojom::IsolationInfoRequestType::kSubFrame:
-      *out = net::IsolationInfo::RequestType::kSubFrame;
-      return true;
+      return net::IsolationInfo::RequestType::kSubFrame;
     case network::mojom::IsolationInfoRequestType::kOther:
-      *out = net::IsolationInfo::RequestType::kOther;
-      return true;
+      return net::IsolationInfo::RequestType::kOther;
   }
-  return false;
+  NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::IsolationInfoFrameAncestorRelation,
-                net::IsolationInfo::FrameAncestorRelation>::
-    FromMojom(network::mojom::IsolationInfoFrameAncestorRelation
-                  frame_ancestor_relation,
-              net::IsolationInfo::FrameAncestorRelation* out) {
-  switch (frame_ancestor_relation) {
+net::IsolationInfo::FrameAncestorRelation
+EnumTraits<network::mojom::IsolationInfoFrameAncestorRelation,
+           net::IsolationInfo::FrameAncestorRelation>::
+    FromMojom(network::mojom::IsolationInfoFrameAncestorRelation input) {
+  switch (input) {
     case network::mojom::IsolationInfoFrameAncestorRelation::kSameOrigin:
-      *out = net::IsolationInfo::FrameAncestorRelation::kSameOrigin;
-      return true;
+      return net::IsolationInfo::FrameAncestorRelation::kSameOrigin;
     case network::mojom::IsolationInfoFrameAncestorRelation::kSameSite:
-      *out = net::IsolationInfo::FrameAncestorRelation::kSameSite;
-      return true;
+      return net::IsolationInfo::FrameAncestorRelation::kSameSite;
     case network::mojom::IsolationInfoFrameAncestorRelation::kCrossSite:
-      *out = net::IsolationInfo::FrameAncestorRelation::kCrossSite;
-      return true;
+      return net::IsolationInfo::FrameAncestorRelation::kCrossSite;
   }
-  return false;
+  NOTREACHED();
 }
 
 network::mojom::IsolationInfoRequestType EnumTraits<

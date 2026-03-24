@@ -4,6 +4,8 @@
 
 #include "services/proxy_resolver_win/public/cpp/proxy_resolver_win_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -43,49 +45,37 @@ EnumTraits<proxy_resolver::mojom::WinHttpStatus, net::WinHttpStatus>::ToMojom(
 }
 
 // static
-bool EnumTraits<proxy_resolver::mojom::WinHttpStatus, net::WinHttpStatus>::
-    FromMojom(proxy_resolver::mojom::WinHttpStatus input,
-              net::WinHttpStatus* output) {
+net::WinHttpStatus
+EnumTraits<proxy_resolver::mojom::WinHttpStatus, net::WinHttpStatus>::FromMojom(
+    proxy_resolver::mojom::WinHttpStatus input) {
   switch (input) {
     case proxy_resolver::mojom::WinHttpStatus::kOk:
-      *output = net::WinHttpStatus::kOk;
-      return true;
+      return net::WinHttpStatus::kOk;
     case proxy_resolver::mojom::WinHttpStatus::kAborted:
-      *output = net::WinHttpStatus::kAborted;
-      return true;
+      return net::WinHttpStatus::kAborted;
     case proxy_resolver::mojom::WinHttpStatus::kWinHttpOpenFailed:
-      *output = net::WinHttpStatus::kWinHttpOpenFailed;
-      return true;
+      return net::WinHttpStatus::kWinHttpOpenFailed;
     case proxy_resolver::mojom::WinHttpStatus::kWinHttpSetTimeoutsFailed:
-      *output = net::WinHttpStatus::kWinHttpSetTimeoutsFailed;
-      return true;
+      return net::WinHttpStatus::kWinHttpSetTimeoutsFailed;
     case proxy_resolver::mojom::WinHttpStatus::kWinHttpSetStatusCallbackFailed:
-      *output = net::WinHttpStatus::kWinHttpSetStatusCallbackFailed;
-      return true;
+      return net::WinHttpStatus::kWinHttpSetStatusCallbackFailed;
     case proxy_resolver::mojom::WinHttpStatus::
         kWinHttpGetIEProxyConfigForCurrentUserFailed:
-      *output =
-          net::WinHttpStatus::kWinHttpGetIEProxyConfigForCurrentUserFailed;
-      return true;
+      return net::WinHttpStatus::kWinHttpGetIEProxyConfigForCurrentUserFailed;
     case proxy_resolver::mojom::WinHttpStatus::
         kWinHttpCreateProxyResolverFailed:
-      *output = net::WinHttpStatus::kWinHttpCreateProxyResolverFailed;
-      return true;
+      return net::WinHttpStatus::kWinHttpCreateProxyResolverFailed;
     case proxy_resolver::mojom::WinHttpStatus::kWinHttpGetProxyForURLExFailed:
-      *output = net::WinHttpStatus::kWinHttpGetProxyForURLExFailed;
-      return true;
+      return net::WinHttpStatus::kWinHttpGetProxyForURLExFailed;
     case proxy_resolver::mojom::WinHttpStatus::kStatusCallbackFailed:
-      *output = net::WinHttpStatus::kStatusCallbackFailed;
-      return true;
+      return net::WinHttpStatus::kStatusCallbackFailed;
     case proxy_resolver::mojom::WinHttpStatus::kWinHttpGetProxyResultFailed:
-      *output = net::WinHttpStatus::kWinHttpGetProxyResultFailed;
-      return true;
+      return net::WinHttpStatus::kWinHttpGetProxyResultFailed;
     case proxy_resolver::mojom::WinHttpStatus::kEmptyProxyList:
-      *output = net::WinHttpStatus::kEmptyProxyList;
-      return true;
+      return net::WinHttpStatus::kEmptyProxyList;
   }
 
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

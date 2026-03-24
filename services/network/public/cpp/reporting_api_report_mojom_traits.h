@@ -21,8 +21,8 @@ struct EnumTraits<network::mojom::ReportingApiReportStatus,
                   net::ReportingReport::Status> {
   static network::mojom::ReportingApiReportStatus ToMojom(
       net::ReportingReport::Status input);
-  static bool FromMojom(network::mojom::ReportingApiReportStatus input,
-                        net::ReportingReport::Status* output);
+  static net::ReportingReport::Status FromMojom(
+      network::mojom::ReportingApiReportStatus input);
 };
 
 template <>

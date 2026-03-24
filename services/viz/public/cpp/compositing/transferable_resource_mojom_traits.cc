@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/exported_shared_image_mojom_traits.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
@@ -48,23 +49,20 @@ EnumTraits<viz::mojom::SynchronizationType,
 }
 
 // static
-bool EnumTraits<viz::mojom::SynchronizationType,
-                viz::TransferableResource::SynchronizationType>::
-    FromMojom(viz::mojom::SynchronizationType input,
-              viz::TransferableResource::SynchronizationType* out) {
+viz::TransferableResource::SynchronizationType
+EnumTraits<viz::mojom::SynchronizationType,
+           viz::TransferableResource::SynchronizationType>::
+    FromMojom(viz::mojom::SynchronizationType input) {
   switch (input) {
     case viz::mojom::SynchronizationType::kSyncToken:
-      *out = viz::TransferableResource::SynchronizationType::kSyncToken;
-      return true;
+      return viz::TransferableResource::SynchronizationType::kSyncToken;
     case viz::mojom::SynchronizationType::kGpuCommandsCompleted:
-      *out =
-          viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
-      return true;
+      return viz::TransferableResource::SynchronizationType::
+          kGpuCommandsCompleted;
     case viz::mojom::SynchronizationType::kReleaseFence:
-      *out = viz::TransferableResource::SynchronizationType::kReleaseFence;
-      return true;
+      return viz::TransferableResource::SynchronizationType::kReleaseFence;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -110,61 +108,45 @@ EnumTraits<viz::mojom::ResourceSource,
 }
 
 // static
-bool EnumTraits<viz::mojom::ResourceSource,
-                viz::TransferableResource::ResourceSource>::
-    FromMojom(viz::mojom::ResourceSource input,
-              viz::TransferableResource::ResourceSource* out) {
+viz::TransferableResource::ResourceSource
+EnumTraits<viz::mojom::ResourceSource,
+           viz::TransferableResource::ResourceSource>::
+    FromMojom(viz::mojom::ResourceSource input) {
   switch (input) {
     case viz::mojom::ResourceSource::kUnknown:
-      *out = viz::TransferableResource::ResourceSource::kUnknown;
-      return true;
+      return viz::TransferableResource::ResourceSource::kUnknown;
     case viz::mojom::ResourceSource::kAR:
-      *out = viz::TransferableResource::ResourceSource::kAR;
-      return true;
+      return viz::TransferableResource::ResourceSource::kAR;
     case viz::mojom::ResourceSource::kCanvas:
-      *out = viz::TransferableResource::ResourceSource::kCanvas;
-      return true;
+      return viz::TransferableResource::ResourceSource::kCanvas;
     case viz::mojom::ResourceSource::kDrawingBuffer:
-      *out = viz::TransferableResource::ResourceSource::kDrawingBuffer;
-      return true;
+      return viz::TransferableResource::ResourceSource::kDrawingBuffer;
     case viz::mojom::ResourceSource::kExoBuffer:
-      *out = viz::TransferableResource::ResourceSource::kExoBuffer;
-      return true;
+      return viz::TransferableResource::ResourceSource::kExoBuffer;
     case viz::mojom::ResourceSource::kHeadsUpDisplay:
-      *out = viz::TransferableResource::ResourceSource::kHeadsUpDisplay;
-      return true;
+      return viz::TransferableResource::ResourceSource::kHeadsUpDisplay;
     case viz::mojom::ResourceSource::kImageLayerBridge:
-      *out = viz::TransferableResource::ResourceSource::kImageLayerBridge;
-      return true;
+      return viz::TransferableResource::ResourceSource::kImageLayerBridge;
     case viz::mojom::ResourceSource::kPPBGraphics3D:
-      *out = viz::TransferableResource::ResourceSource::kPPBGraphics3D;
-      return true;
+      return viz::TransferableResource::ResourceSource::kPPBGraphics3D;
     case viz::mojom::ResourceSource::kPepperGraphics2D:
-      *out = viz::TransferableResource::ResourceSource::kPepperGraphics2D;
-      return true;
+      return viz::TransferableResource::ResourceSource::kPepperGraphics2D;
     case viz::mojom::ResourceSource::kViewTransition:
-      *out = viz::TransferableResource::ResourceSource::kViewTransition;
-      return true;
+      return viz::TransferableResource::ResourceSource::kViewTransition;
     case viz::mojom::ResourceSource::kStaleContent:
-      *out = viz::TransferableResource::ResourceSource::kStaleContent;
-      return true;
+      return viz::TransferableResource::ResourceSource::kStaleContent;
     case viz::mojom::ResourceSource::kTest:
-      *out = viz::TransferableResource::ResourceSource::kTest;
-      return true;
+      return viz::TransferableResource::ResourceSource::kTest;
     case viz::mojom::ResourceSource::kTileRasterTask:
-      *out = viz::TransferableResource::ResourceSource::kTileRasterTask;
-      return true;
+      return viz::TransferableResource::ResourceSource::kTileRasterTask;
     case viz::mojom::ResourceSource::kUI:
-      *out = viz::TransferableResource::ResourceSource::kUI;
-      return true;
+      return viz::TransferableResource::ResourceSource::kUI;
     case viz::mojom::ResourceSource::kVideo:
-      *out = viz::TransferableResource::ResourceSource::kVideo;
-      return true;
+      return viz::TransferableResource::ResourceSource::kVideo;
     case viz::mojom::ResourceSource::kWebGPUSwapBuffer:
-      *out = viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer;
-      return true;
+      return viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

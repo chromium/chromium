@@ -26,21 +26,17 @@
 
 namespace mojo {
 
-bool EnumTraits<network::mojom::SiteType, net::SiteType>::FromMojom(
-    network::mojom::SiteType site_type,
-    net::SiteType* out) {
+net::SiteType EnumTraits<network::mojom::SiteType, net::SiteType>::FromMojom(
+    network::mojom::SiteType site_type) {
   switch (site_type) {
     case network::mojom::SiteType::kPrimary:
-      *out = net::SiteType::kPrimary;
-      return true;
+      return net::SiteType::kPrimary;
     case network::mojom::SiteType::kAssociated:
-      *out = net::SiteType::kAssociated;
-      return true;
+      return net::SiteType::kAssociated;
     case network::mojom::SiteType::kService:
-      *out = net::SiteType::kService;
-      return true;
+      return net::SiteType::kService;
   }
-  return false;
+  NOTREACHED();
 }
 
 network::mojom::SiteType
@@ -62,12 +58,14 @@ bool StructTraits<network::mojom::FirstPartySetEntryDataView,
     Read(network::mojom::FirstPartySetEntryDataView entry,
          net::FirstPartySetEntry* out) {
   net::SchemefulSite primary;
-  if (!entry.ReadPrimary(&primary))
+  if (!entry.ReadPrimary(&primary)) {
     return false;
+  }
 
   net::SiteType site_type;
-  if (!entry.ReadSiteType(&site_type))
+  if (!entry.ReadSiteType(&site_type)) {
     return false;
+  }
 
   *out = net::FirstPartySetEntry(primary, site_type);
   return true;
@@ -78,12 +76,14 @@ bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
     Read(network::mojom::FirstPartySetMetadataDataView metadata,
          net::FirstPartySetMetadata* out_metadata) {
   std::optional<net::FirstPartySetEntry> frame_entry;
-  if (!metadata.ReadFrameEntry(&frame_entry))
+  if (!metadata.ReadFrameEntry(&frame_entry)) {
     return false;
+  }
 
   std::optional<net::FirstPartySetEntry> top_frame_entry;
-  if (!metadata.ReadTopFrameEntry(&top_frame_entry))
+  if (!metadata.ReadTopFrameEntry(&top_frame_entry)) {
     return false;
+  }
 
   *out_metadata = net::FirstPartySetMetadata(std::move(frame_entry),
                                              std::move(top_frame_entry));
@@ -96,8 +96,9 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
     Read(network::mojom::GlobalFirstPartySetsDataView sets,
          net::GlobalFirstPartySets* out_sets) {
   base::Version public_sets_version;
-  if (!sets.ReadPublicSetsVersion(&public_sets_version))
+  if (!sets.ReadPublicSetsVersion(&public_sets_version)) {
     return false;
+  }
 
   net::FirstPartySetsContextConfig public_config;
   if (!sets.ReadPublicConfig(&public_config)) {
@@ -105,8 +106,9 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
   }
 
   net::FirstPartySetsContextConfig manual_config;
-  if (!sets.ReadManualConfig(&manual_config))
+  if (!sets.ReadManualConfig(&manual_config)) {
     return false;
+  }
 
   *out_sets = net::GlobalFirstPartySets(std::move(public_sets_version),
                                         std::move(public_config),
@@ -120,8 +122,9 @@ bool StructTraits<network::mojom::FirstPartySetEntryOverrideDataView,
     Read(network::mojom::FirstPartySetEntryOverrideDataView override,
          net::FirstPartySetEntryOverride* out) {
   std::optional<net::FirstPartySetEntry> entry;
-  if (!override.ReadEntry(&entry))
+  if (!override.ReadEntry(&entry)) {
     return false;
+  }
 
   if (entry.has_value()) {
     *out = net::FirstPartySetEntryOverride(entry.value());
@@ -158,8 +161,9 @@ bool StructTraits<network::mojom::FirstPartySetsCacheFilterDataView,
     Read(network::mojom::FirstPartySetsCacheFilterDataView cache_filter,
          net::FirstPartySetsCacheFilter* out_cache_filter) {
   base::flat_map<net::SchemefulSite, int64_t> filter;
-  if (!cache_filter.ReadFilter(&filter))
+  if (!cache_filter.ReadFilter(&filter)) {
     return false;
+  }
 
   *out_cache_filter = net::FirstPartySetsCacheFilter(
       std::move(filter), cache_filter.browser_run_id());

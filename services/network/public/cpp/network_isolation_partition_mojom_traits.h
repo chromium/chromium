@@ -16,9 +16,8 @@ struct EnumTraits<network::mojom::NetworkIsolationPartition,
                   net::NetworkIsolationPartition> {
   static network::mojom::NetworkIsolationPartition ToMojom(
       net::NetworkIsolationPartition network_isolation_partition);
-  static bool FromMojom(
-      network::mojom::NetworkIsolationPartition network_isolation_partition,
-      net::NetworkIsolationPartition* out);
+  static net::NetworkIsolationPartition FromMojom(
+      network::mojom::NetworkIsolationPartition network_isolation_partition);
 };
 
 }  // namespace mojo

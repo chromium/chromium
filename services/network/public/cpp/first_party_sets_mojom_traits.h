@@ -27,7 +27,7 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     EnumTraits<network::mojom::SiteType, net::SiteType> {
   static network::mojom::SiteType ToMojom(net::SiteType site_type);
 
-  static bool FromMojom(network::mojom::SiteType site_type, net::SiteType* out);
+  static net::SiteType FromMojom(network::mojom::SiteType site_type);
 };
 
 template <>

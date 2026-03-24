@@ -11,27 +11,23 @@
 
 namespace mojo {
 
-bool EnumTraits<network::mojom::NetworkIsolationPartition,
-                net::NetworkIsolationPartition>::
+net::NetworkIsolationPartition
+EnumTraits<network::mojom::NetworkIsolationPartition,
+           net::NetworkIsolationPartition>::
     FromMojom(
-        network::mojom::NetworkIsolationPartition network_isolation_partition,
-        net::NetworkIsolationPartition* out) {
+        network::mojom::NetworkIsolationPartition network_isolation_partition) {
   using network::mojom::NetworkIsolationPartition;
   switch (network_isolation_partition) {
     case NetworkIsolationPartition::kGeneral:
-      *out = net::NetworkIsolationPartition::kGeneral;
-      return true;
+      return net::NetworkIsolationPartition::kGeneral;
     case NetworkIsolationPartition::kProtectedAudienceSellerWorklet:
-      *out = net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet;
-      return true;
+      return net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet;
     case NetworkIsolationPartition::kFedCmUncredentialedRequests:
-      *out = net::NetworkIsolationPartition::kFedCmUncredentialedRequests;
-      return true;
+      return net::NetworkIsolationPartition::kFedCmUncredentialedRequests;
     case NetworkIsolationPartition::kDnsOverHttps:
-      *out = net::NetworkIsolationPartition::kDnsOverHttps;
-      return true;
+      return net::NetworkIsolationPartition::kDnsOverHttps;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

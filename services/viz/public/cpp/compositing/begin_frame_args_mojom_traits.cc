@@ -27,22 +27,19 @@ EnumTraits<viz::mojom::BeginFrameArgsType,
 }
 
 // static
-bool EnumTraits<viz::mojom::BeginFrameArgsType,
-                viz::BeginFrameArgs::BeginFrameArgsType>::
-    FromMojom(viz::mojom::BeginFrameArgsType input,
-              viz::BeginFrameArgs::BeginFrameArgsType* out) {
+viz::BeginFrameArgs::BeginFrameArgsType
+EnumTraits<viz::mojom::BeginFrameArgsType,
+           viz::BeginFrameArgs::BeginFrameArgsType>::
+    FromMojom(viz::mojom::BeginFrameArgsType input) {
   switch (input) {
     case viz::mojom::BeginFrameArgsType::INVALID:
-      *out = viz::BeginFrameArgs::BeginFrameArgsType::INVALID;
-      return true;
+      return viz::BeginFrameArgs::BeginFrameArgsType::INVALID;
     case viz::mojom::BeginFrameArgsType::NORMAL:
-      *out = viz::BeginFrameArgs::BeginFrameArgsType::NORMAL;
-      return true;
+      return viz::BeginFrameArgs::BeginFrameArgsType::NORMAL;
     case viz::mojom::BeginFrameArgsType::MISSED:
-      *out = viz::BeginFrameArgs::BeginFrameArgsType::MISSED;
-      return true;
+      return viz::BeginFrameArgs::BeginFrameArgsType::MISSED;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

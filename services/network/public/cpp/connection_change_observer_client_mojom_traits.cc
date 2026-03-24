@@ -4,30 +4,27 @@
 
 #include "services/network/public/cpp/connection_change_observer_client_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/reconnect_notifier.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom-shared.h"
 
 namespace mojo {
 
-bool EnumTraits<network::mojom::NetworkChangeEvent, net::NetworkChangeEvent>::
-    FromMojom(network::mojom::NetworkChangeEvent event_type,
-              net::NetworkChangeEvent* out) {
+net::NetworkChangeEvent
+EnumTraits<network::mojom::NetworkChangeEvent, net::NetworkChangeEvent>::
+    FromMojom(network::mojom::NetworkChangeEvent event_type) {
   switch (event_type) {
     case network::mojom::NetworkChangeEvent::kConnected:
-      *out = net::NetworkChangeEvent::kConnected;
-      return true;
+      return net::NetworkChangeEvent::kConnected;
     case network::mojom::NetworkChangeEvent::kSoonToDisconnect:
-      *out = net::NetworkChangeEvent::kSoonToDisconnect;
-      return true;
+      return net::NetworkChangeEvent::kSoonToDisconnect;
     case network::mojom::NetworkChangeEvent::kDisconnected:
-      *out = net::NetworkChangeEvent::kDisconnected;
-      return true;
+      return net::NetworkChangeEvent::kDisconnected;
     case network::mojom::NetworkChangeEvent::kDefaultNetworkChanged:
-      *out = net::NetworkChangeEvent::kDefaultNetworkChanged;
-      return true;
+      return net::NetworkChangeEvent::kDefaultNetworkChanged;
   }
-  return false;
+  NOTREACHED();
 }
 
 network::mojom::NetworkChangeEvent EnumTraits<

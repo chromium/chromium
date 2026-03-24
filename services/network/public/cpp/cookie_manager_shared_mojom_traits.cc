@@ -61,50 +61,38 @@ EnumTraits<network::mojom::CookieExemptionReason,
   NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::CookieExemptionReason,
-                net::CookieInclusionStatus::ExemptionReason>::
-    FromMojom(network::mojom::CookieExemptionReason input,
-              net::CookieInclusionStatus::ExemptionReason* output) {
+net::CookieInclusionStatus::ExemptionReason
+EnumTraits<network::mojom::CookieExemptionReason,
+           net::CookieInclusionStatus::ExemptionReason>::
+    FromMojom(network::mojom::CookieExemptionReason input) {
   switch (input) {
     case network::mojom::CookieExemptionReason::kNone:
-      *output = net::CookieInclusionStatus::ExemptionReason::kNone;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::kNone;
     case network::mojom::CookieExemptionReason::kUserSetting:
-      *output = net::CookieInclusionStatus::ExemptionReason::kUserSetting;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::kUserSetting;
     case network::mojom::CookieExemptionReason::k3PCDMetadata:
-      *output = net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
     case network::mojom::CookieExemptionReason::k3PCDDeprecationTrial:
-      *output =
-          net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial;
     case network::mojom::CookieExemptionReason::kTopLevel3PCDDeprecationTrial:
-      *output = net::CookieInclusionStatus::ExemptionReason::
+      return net::CookieInclusionStatus::ExemptionReason::
           kTopLevel3PCDDeprecationTrial;
-      return true;
     case network::mojom::CookieExemptionReason::k3PCDHeuristics:
-      *output = net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
     case network::mojom::CookieExemptionReason::kEnterprisePolicy:
-      *output = net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy;
     case network::mojom::CookieExemptionReason::kStorageAccess:
-      *output = net::CookieInclusionStatus::ExemptionReason::kStorageAccess;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::kStorageAccess;
     case network::mojom::CookieExemptionReason::kTopLevelStorageAccess:
-      *output =
-          net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::
+          kTopLevelStorageAccess;
     case network::mojom::CookieExemptionReason::kScheme:
-      *output = net::CookieInclusionStatus::ExemptionReason::kScheme;
-      return true;
+      return net::CookieInclusionStatus::ExemptionReason::kScheme;
     case network::mojom::CookieExemptionReason::kSameSiteNoneCookiesInSandbox:
-      *output = net::CookieInclusionStatus::ExemptionReason::
+      return net::CookieInclusionStatus::ExemptionReason::
           kSameSiteNoneCookiesInSandbox;
-      return true;
   }
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<network::mojom::ExclusionReasonsDataView,

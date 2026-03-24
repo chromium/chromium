@@ -37,8 +37,7 @@ struct COMPONENT_EXPORT(WEBNN_MOJOM_TRAITS)
     EnumTraits<webnn::mojom::DataType, webnn::OperandDataType> {
   static webnn::mojom::DataType ToMojom(webnn::OperandDataType input);
 
-  static bool FromMojom(webnn::mojom::DataType input,
-                        webnn::OperandDataType* output);
+  static webnn::OperandDataType FromMojom(webnn::mojom::DataType input);
 };
 
 }  // namespace mojo

@@ -15,8 +15,8 @@ template <>
 struct EnumTraits<proxy_resolver::mojom::WinHttpStatus, net::WinHttpStatus> {
   static proxy_resolver::mojom::WinHttpStatus ToMojom(net::WinHttpStatus input);
 
-  static bool FromMojom(proxy_resolver::mojom::WinHttpStatus input,
-                        net::WinHttpStatus* output);
+  static net::WinHttpStatus FromMojom(
+      proxy_resolver::mojom::WinHttpStatus input);
 };
 
 }  // namespace mojo

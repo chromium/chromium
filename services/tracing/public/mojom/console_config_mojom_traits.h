@@ -31,18 +31,15 @@ struct EnumTraits<tracing::mojom::ConsoleOutput,
     }
   }
 
-  static bool FromMojom(tracing::mojom::ConsoleOutput input,
-                        perfetto::protos::gen::ConsoleConfig::Output* out) {
+  static perfetto::protos::gen::ConsoleConfig::Output FromMojom(
+      tracing::mojom::ConsoleOutput input) {
     switch (input) {
       case tracing::mojom::ConsoleOutput::kOutputUnspecified:
-        *out = perfetto::protos::gen::ConsoleConfig::OUTPUT_UNSPECIFIED;
-        return true;
+        return perfetto::protos::gen::ConsoleConfig::OUTPUT_UNSPECIFIED;
       case tracing::mojom::ConsoleOutput::kOutputStdOut:
-        *out = perfetto::protos::gen::ConsoleConfig::OUTPUT_STDOUT;
-        return true;
+        return perfetto::protos::gen::ConsoleConfig::OUTPUT_STDOUT;
       case tracing::mojom::ConsoleOutput::kOutputStdErr:
-        *out = perfetto::protos::gen::ConsoleConfig::OUTPUT_STDERR;
-        return true;
+        return perfetto::protos::gen::ConsoleConfig::OUTPUT_STDERR;
     }
   }
 };

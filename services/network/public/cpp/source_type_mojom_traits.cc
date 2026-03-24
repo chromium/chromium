@@ -29,31 +29,25 @@ EnumTraits<network::mojom::SourceType, net::SourceStreamType>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::SourceType, net::SourceStreamType>::FromMojom(
-    network::mojom::SourceType in,
-    net::SourceStreamType* out) {
+net::SourceStreamType
+EnumTraits<network::mojom::SourceType, net::SourceStreamType>::FromMojom(
+    network::mojom::SourceType in) {
   switch (in) {
     case network::mojom::SourceType::kBrotli:
-      *out = net::SourceStreamType::kBrotli;
-      return true;
+      return net::SourceStreamType::kBrotli;
     case network::mojom::SourceType::kDeflate:
-      *out = net::SourceStreamType::kDeflate;
-      return true;
+      return net::SourceStreamType::kDeflate;
     case network::mojom::SourceType::kGzip:
-      *out = net::SourceStreamType::kGzip;
-      return true;
+      return net::SourceStreamType::kGzip;
     case network::mojom::SourceType::kZstd:
-      *out = net::SourceStreamType::kZstd;
-      return true;
+      return net::SourceStreamType::kZstd;
     case network::mojom::SourceType::kNone:
-      *out = net::SourceStreamType::kNone;
-      return true;
+      return net::SourceStreamType::kNone;
     case network::mojom::SourceType::kUnknown:
-      *out = net::SourceStreamType::kUnknown;
-      return true;
+      return net::SourceStreamType::kUnknown;
   }
 
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

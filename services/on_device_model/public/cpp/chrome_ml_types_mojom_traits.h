@@ -20,7 +20,7 @@ namespace mojo {
 template <>
 struct EnumTraits<on_device_model::mojom::Token, ml::Token> {
   static on_device_model::mojom::Token ToMojom(ml::Token input);
-  static bool FromMojom(on_device_model::mojom::Token input, ml::Token* output);
+  static ml::Token FromMojom(on_device_model::mojom::Token input);
 };
 
 template <>
@@ -67,8 +67,8 @@ struct EnumTraits<on_device_model::mojom::ModelBackendType,
                   ml::ModelBackendType> {
   static on_device_model::mojom::ModelBackendType ToMojom(
       ml::ModelBackendType input);
-  static bool FromMojom(on_device_model::mojom::ModelBackendType input,
-                        ml::ModelBackendType* output);
+  static ml::ModelBackendType FromMojom(
+      on_device_model::mojom::ModelBackendType input);
 };
 
 template <>
@@ -76,8 +76,8 @@ struct EnumTraits<on_device_model::mojom::ModelPerformanceHint,
                   ml::ModelPerformanceHint> {
   static on_device_model::mojom::ModelPerformanceHint ToMojom(
       ml::ModelPerformanceHint input);
-  static bool FromMojom(on_device_model::mojom::ModelPerformanceHint input,
-                        ml::ModelPerformanceHint* output);
+  static ml::ModelPerformanceHint FromMojom(
+      on_device_model::mojom::ModelPerformanceHint input);
 };
 
 template <>

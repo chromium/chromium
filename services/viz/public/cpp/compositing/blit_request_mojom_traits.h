@@ -18,8 +18,8 @@ template <>
 struct EnumTraits<viz::mojom::LetterboxingBehavior, viz::LetterboxingBehavior> {
   static viz::mojom::LetterboxingBehavior ToMojom(
       viz::LetterboxingBehavior behavior);
-  static bool FromMojom(viz::mojom::LetterboxingBehavior input,
-                        viz::LetterboxingBehavior* out);
+  static viz::LetterboxingBehavior FromMojom(
+      viz::mojom::LetterboxingBehavior input);
 };
 
 template <>

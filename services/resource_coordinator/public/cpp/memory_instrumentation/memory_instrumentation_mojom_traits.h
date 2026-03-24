@@ -22,8 +22,8 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
                base::trace_event::MemoryDumpType> {
   static memory_instrumentation::mojom::DumpType ToMojom(
       base::trace_event::MemoryDumpType type);
-  static bool FromMojom(memory_instrumentation::mojom::DumpType input,
-                        base::trace_event::MemoryDumpType* out);
+  static base::trace_event::MemoryDumpType FromMojom(
+      memory_instrumentation::mojom::DumpType input);
 };
 
 template <>
@@ -32,8 +32,8 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
                base::trace_event::MemoryDumpLevelOfDetail> {
   static memory_instrumentation::mojom::LevelOfDetail ToMojom(
       base::trace_event::MemoryDumpLevelOfDetail level_of_detail);
-  static bool FromMojom(memory_instrumentation::mojom::LevelOfDetail input,
-                        base::trace_event::MemoryDumpLevelOfDetail* out);
+  static base::trace_event::MemoryDumpLevelOfDetail FromMojom(
+      memory_instrumentation::mojom::LevelOfDetail input);
 };
 
 template <>
@@ -42,8 +42,8 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
                base::trace_event::MemoryDumpDeterminism> {
   static memory_instrumentation::mojom::Determinism ToMojom(
       base::trace_event::MemoryDumpDeterminism determinism);
-  static bool FromMojom(memory_instrumentation::mojom::Determinism input,
-                        base::trace_event::MemoryDumpDeterminism* out);
+  static base::trace_event::MemoryDumpDeterminism FromMojom(
+      memory_instrumentation::mojom::Determinism input);
 };
 
 template <>
@@ -198,8 +198,9 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
       const std::unique_ptr<base::trace_event::ProcessMemoryDump>& pmd) {
     std::vector<std::unique_ptr<base::trace_event::MemoryAllocatorDump>> dumps;
     dumps.reserve(pmd->mutable_allocator_dumps_for_serialization()->size());
-    for (auto& it : *pmd->mutable_allocator_dumps_for_serialization())
+    for (auto& it : *pmd->mutable_allocator_dumps_for_serialization()) {
       dumps.push_back(std::move(it.second));
+    }
     return dumps;
   }
   static base::trace_event::MemoryDumpLevelOfDetail level_of_detail(

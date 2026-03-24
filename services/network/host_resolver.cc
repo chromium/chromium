@@ -36,8 +36,9 @@ HostResolver::ResolveHostCallback& GetResolveHostCallback() {
 std::optional<net::HostResolver::ResolveHostParameters>
 ConvertOptionalParameters(
     const mojom::ResolveHostParametersPtr& mojo_parameters) {
-  if (!mojo_parameters)
+  if (!mojo_parameters) {
     return std::nullopt;
+  }
 
   net::HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = mojo_parameters->dns_query_type;
@@ -60,8 +61,9 @@ ConvertOptionalParameters(
   parameters.include_canonical_name = mojo_parameters->include_canonical_name;
   parameters.loopback_only = mojo_parameters->loopback_only;
   parameters.is_speculative = mojo_parameters->is_speculative;
-  mojo::EnumTraits<mojom::SecureDnsPolicy, net::SecureDnsPolicy>::FromMojom(
-      mojo_parameters->secure_dns_policy, &parameters.secure_dns_policy);
+  parameters.secure_dns_policy =
+      mojo::EnumTraits<mojom::SecureDnsPolicy, net::SecureDnsPolicy>::FromMojom(
+          mojo_parameters->secure_dns_policy);
   return parameters;
 }
 }  // namespace
@@ -120,15 +122,17 @@ void HostResolver::ResolveHost(
       ConvertOptionalParameters(optional_parameters), net_log_);
 
   mojo::PendingReceiver<mojom::ResolveHostHandle> control_handle_receiver;
-  if (optional_parameters)
+  if (optional_parameters) {
     control_handle_receiver = std::move(optional_parameters->control_handle);
+  }
 
   int rv = request->Start(
       std::move(control_handle_receiver), std::move(response_client),
       base::BindOnce(&HostResolver::OnResolveHostComplete,
                      base::Unretained(this), request.get()));
-  if (rv != net::ERR_IO_PENDING)
+  if (rv != net::ERR_IO_PENDING) {
     return;
+  }
 
   // Store the request with the resolver so it can be cancelled on resolver
   // shutdown.

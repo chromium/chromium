@@ -4,6 +4,8 @@
 
 #include "services/audio/public/cpp/debug_recording_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 audio::mojom::DebugRecordingStreamType
@@ -21,20 +23,17 @@ EnumTraits<audio::mojom::DebugRecordingStreamType,
   NOTREACHED();
 }
 
-bool EnumTraits<audio::mojom::DebugRecordingStreamType,
-                media::AudioDebugRecordingStreamType>::
-    FromMojom(audio::mojom::DebugRecordingStreamType stream_type,
-              media::AudioDebugRecordingStreamType* out) {
+media::AudioDebugRecordingStreamType
+EnumTraits<audio::mojom::DebugRecordingStreamType,
+           media::AudioDebugRecordingStreamType>::
+    FromMojom(audio::mojom::DebugRecordingStreamType stream_type) {
   switch (stream_type) {
     case audio::mojom::DebugRecordingStreamType::kInput:
-      *out = media::AudioDebugRecordingStreamType::kInput;
-      return true;
+      return media::AudioDebugRecordingStreamType::kInput;
     case audio::mojom::DebugRecordingStreamType::kOutput:
-      *out = media::AudioDebugRecordingStreamType::kOutput;
-      return true;
+      return media::AudioDebugRecordingStreamType::kOutput;
     case audio::mojom::DebugRecordingStreamType::kLoopback:
-      *out = media::AudioDebugRecordingStreamType::kLoopback;
-      return true;
+      return media::AudioDebugRecordingStreamType::kLoopback;
   }
   NOTREACHED();
 }

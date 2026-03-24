@@ -32,25 +32,20 @@ struct EnumTraits<viz::mojom::OverlayStrategy, viz::OverlayStrategy> {
     NOTREACHED();
   }
 
-  static bool FromMojom(viz::mojom::OverlayStrategy reason,
-                        viz::OverlayStrategy* out) {
+  static viz::OverlayStrategy FromMojom(viz::mojom::OverlayStrategy reason) {
     switch (reason) {
       case viz::mojom::OverlayStrategy::kFullscreen:
-        *out = viz::OverlayStrategy::kFullscreen;
-        return true;
+        return viz::OverlayStrategy::kFullscreen;
       case viz::mojom::OverlayStrategy::kSingleOnTop:
-        *out = viz::OverlayStrategy::kSingleOnTop;
-        return true;
+        return viz::OverlayStrategy::kSingleOnTop;
       case viz::mojom::OverlayStrategy::kUnderlay:
-        *out = viz::OverlayStrategy::kUnderlay;
-        return true;
+        return viz::OverlayStrategy::kUnderlay;
 #if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
       case viz::mojom::OverlayStrategy::kUnderlayCast:
-        *out = viz::OverlayStrategy::kUnderlayCast;
-        return true;
+        return viz::OverlayStrategy::kUnderlayCast;
 #endif
     }
-    return false;
+    NOTREACHED();
   }
 };
 

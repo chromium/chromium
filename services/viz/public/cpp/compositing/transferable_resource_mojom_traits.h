@@ -54,8 +54,8 @@ struct EnumTraits<viz::mojom::SynchronizationType,
   static viz::mojom::SynchronizationType ToMojom(
       viz::TransferableResource::SynchronizationType type);
 
-  static bool FromMojom(viz::mojom::SynchronizationType input,
-                        viz::TransferableResource::SynchronizationType* out);
+  static viz::TransferableResource::SynchronizationType FromMojom(
+      viz::mojom::SynchronizationType input);
 };
 
 template <>
@@ -64,8 +64,8 @@ struct EnumTraits<viz::mojom::ResourceSource,
   static viz::mojom::ResourceSource ToMojom(
       viz::TransferableResource::ResourceSource source);
 
-  static bool FromMojom(viz::mojom::ResourceSource input,
-                        viz::TransferableResource::ResourceSource* out);
+  static viz::TransferableResource::ResourceSource FromMojom(
+      viz::mojom::ResourceSource input);
 };
 
 template <>

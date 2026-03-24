@@ -38,8 +38,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
   static network::mojom::CookieExemptionReason ToMojom(
       net::CookieInclusionStatus::ExemptionReason input);
 
-  static bool FromMojom(network::mojom::CookieExemptionReason input,
-                        net::CookieInclusionStatus::ExemptionReason* output);
+  static net::CookieInclusionStatus::ExemptionReason FromMojom(
+      network::mojom::CookieExemptionReason input);
 };
 
 template <>

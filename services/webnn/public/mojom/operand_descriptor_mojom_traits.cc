@@ -101,11 +101,10 @@ EnumTraits<webnn::mojom::DataType, webnn::OperandDataType>::ToMojom(
 }
 
 // static
-bool EnumTraits<webnn::mojom::DataType, webnn::OperandDataType>::FromMojom(
-    webnn::mojom::DataType input,
-    webnn::OperandDataType* output) {
-  *output = FromMojoDataType(input);
-  return true;
+webnn::OperandDataType
+EnumTraits<webnn::mojom::DataType, webnn::OperandDataType>::FromMojom(
+    webnn::mojom::DataType input) {
+  return FromMojoDataType(input);
 }
 
 }  // namespace mojo

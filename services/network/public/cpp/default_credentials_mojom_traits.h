@@ -17,8 +17,8 @@ struct EnumTraits<network::mojom::DefaultCredentials,
   static network::mojom::DefaultCredentials ToMojom(
       net::HttpAuthPreferences::DefaultCredentials input);
 
-  static bool FromMojom(network::mojom::DefaultCredentials input,
-                        net::HttpAuthPreferences::DefaultCredentials* output);
+  static net::HttpAuthPreferences::DefaultCredentials FromMojom(
+      network::mojom::DefaultCredentials input);
 };
 
 }  // namespace mojo

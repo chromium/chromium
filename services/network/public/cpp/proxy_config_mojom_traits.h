@@ -53,8 +53,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
  public:
   static network::mojom::ProxyRulesType ToMojom(
       net::ProxyConfig::ProxyRules::Type net_proxy_rules_type);
-  static bool FromMojom(network::mojom::ProxyRulesType mojo_proxy_rules_type,
-                        net::ProxyConfig::ProxyRules::Type* out);
+  static net::ProxyConfig::ProxyRules::Type FromMojom(
+      network::mojom::ProxyRulesType mojo_proxy_rules_type);
 };
 
 template <>
@@ -64,9 +64,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
  public:
   static network::mojom::ProxyOverrideRuleResult ToMojom(
       net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result result);
-  static bool FromMojom(
-      network::mojom::ProxyOverrideRuleResult mojom_result,
-      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result* out);
+  static net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result
+  FromMojom(network::mojom::ProxyOverrideRuleResult mojom_result);
 };
 
 template <>

@@ -16,7 +16,7 @@ template <>
 struct EnumTraits<viz::mojom::ThreadType, viz::Thread::Type> {
   static viz::mojom::ThreadType ToMojom(viz::Thread::Type type);
 
-  static bool FromMojom(viz::mojom::ThreadType input, viz::Thread::Type* out);
+  static viz::Thread::Type FromMojom(viz::mojom::ThreadType input);
 };
 
 template <>

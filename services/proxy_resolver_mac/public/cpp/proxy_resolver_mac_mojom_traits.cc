@@ -4,6 +4,8 @@
 
 #include "services/proxy_resolver_mac/public/cpp/proxy_resolver_mac_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -33,36 +35,28 @@ EnumTraits<proxy_resolver::mojom::MacProxyStatus,
 }
 
 // static
-bool EnumTraits<proxy_resolver::mojom::MacProxyStatus,
-                net::MacProxyResolutionStatus>::
-    FromMojom(proxy_resolver::mojom::MacProxyStatus input,
-              net::MacProxyResolutionStatus* output) {
+net::MacProxyResolutionStatus EnumTraits<proxy_resolver::mojom::MacProxyStatus,
+                                         net::MacProxyResolutionStatus>::
+    FromMojom(proxy_resolver::mojom::MacProxyStatus input) {
   switch (input) {
     case proxy_resolver::mojom::MacProxyStatus::kOk:
-      *output = net::MacProxyResolutionStatus::kOk;
-      return true;
+      return net::MacProxyResolutionStatus::kOk;
     case proxy_resolver::mojom::MacProxyStatus::kSystemConfigurationError:
-      *output = net::MacProxyResolutionStatus::kSystemConfigurationError;
-      return true;
+      return net::MacProxyResolutionStatus::kSystemConfigurationError;
     case proxy_resolver::mojom::MacProxyStatus::
         kCFNetworkExecutePacScriptFailed:
-      *output = net::MacProxyResolutionStatus::kCFNetworkExecutePacScriptFailed;
-      return true;
+      return net::MacProxyResolutionStatus::kCFNetworkExecutePacScriptFailed;
     case proxy_resolver::mojom::MacProxyStatus::kPacScriptFetchFailed:
-      *output = net::MacProxyResolutionStatus::kPacScriptFetchFailed;
-      return true;
+      return net::MacProxyResolutionStatus::kPacScriptFetchFailed;
     case proxy_resolver::mojom::MacProxyStatus::kPacScriptExecutionFailed:
-      *output = net::MacProxyResolutionStatus::kPacScriptExecutionFailed;
-      return true;
+      return net::MacProxyResolutionStatus::kPacScriptExecutionFailed;
     case proxy_resolver::mojom::MacProxyStatus::kCFNetworkResolutionError:
-      *output = net::MacProxyResolutionStatus::kCFNetworkResolutionError;
-      return true;
+      return net::MacProxyResolutionStatus::kCFNetworkResolutionError;
     case proxy_resolver::mojom::MacProxyStatus::kEmptyProxyList:
-      *output = net::MacProxyResolutionStatus::kEmptyProxyList;
-      return true;
+      return net::MacProxyResolutionStatus::kEmptyProxyList;
   }
 
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

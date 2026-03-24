@@ -27,18 +27,15 @@ struct EnumTraits<viz::mojom::VerticalScrollDirection,
     NOTREACHED();
   }
 
-  static bool FromMojom(viz::mojom::VerticalScrollDirection in,
-                        viz::VerticalScrollDirection* out) {
+  static viz::VerticalScrollDirection FromMojom(
+      viz::mojom::VerticalScrollDirection in) {
     switch (in) {
       case viz::mojom::VerticalScrollDirection::kNull:
-        *out = viz::VerticalScrollDirection::kNull;
-        return true;
+        return viz::VerticalScrollDirection::kNull;
       case viz::mojom::VerticalScrollDirection::kDown:
-        *out = viz::VerticalScrollDirection::kDown;
-        return true;
+        return viz::VerticalScrollDirection::kDown;
       case viz::mojom::VerticalScrollDirection::kUp:
-        *out = viz::VerticalScrollDirection::kUp;
-        return true;
+        return viz::VerticalScrollDirection::kUp;
     }
     NOTREACHED();
   }

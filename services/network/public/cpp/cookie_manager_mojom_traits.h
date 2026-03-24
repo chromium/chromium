@@ -26,22 +26,20 @@ namespace mojo {
 template <>
 struct EnumTraits<network::mojom::CookieSourceType, net::CookieSourceType> {
   static network::mojom::CookieSourceType ToMojom(net::CookieSourceType input);
-  static bool FromMojom(network::mojom::CookieSourceType input,
-                        net::CookieSourceType* output);
+  static net::CookieSourceType FromMojom(
+      network::mojom::CookieSourceType input);
 };
 
 template <>
 struct EnumTraits<network::mojom::CookiePriority, net::CookiePriority> {
   static network::mojom::CookiePriority ToMojom(net::CookiePriority input);
-  static bool FromMojom(network::mojom::CookiePriority input,
-                        net::CookiePriority* output);
+  static net::CookiePriority FromMojom(network::mojom::CookiePriority input);
 };
 
 template <>
 struct EnumTraits<network::mojom::CookieSameSite, net::CookieSameSite> {
   static network::mojom::CookieSameSite ToMojom(net::CookieSameSite input);
-  static bool FromMojom(network::mojom::CookieSameSite input,
-                        net::CookieSameSite* output);
+  static net::CookieSameSite FromMojom(network::mojom::CookieSameSite input);
 };
 
 template <>
@@ -49,8 +47,8 @@ struct EnumTraits<network::mojom::CookieEffectiveSameSite,
                   net::CookieEffectiveSameSite> {
   static network::mojom::CookieEffectiveSameSite ToMojom(
       net::CookieEffectiveSameSite input);
-  static bool FromMojom(network::mojom::CookieEffectiveSameSite input,
-                        net::CookieEffectiveSameSite* output);
+  static net::CookieEffectiveSameSite FromMojom(
+      network::mojom::CookieEffectiveSameSite input);
 };
 
 template <>
@@ -58,8 +56,8 @@ struct EnumTraits<network::mojom::CookieAccessSemantics,
                   net::CookieAccessSemantics> {
   static network::mojom::CookieAccessSemantics ToMojom(
       net::CookieAccessSemantics input);
-  static bool FromMojom(network::mojom::CookieAccessSemantics input,
-                        net::CookieAccessSemantics* output);
+  static net::CookieAccessSemantics FromMojom(
+      network::mojom::CookieAccessSemantics input);
 };
 
 template <>
@@ -67,8 +65,8 @@ struct EnumTraits<network::mojom::CookieScopeSemantics,
                   net::CookieScopeSemantics> {
   static network::mojom::CookieScopeSemantics ToMojom(
       net::CookieScopeSemantics input);
-  static bool FromMojom(network::mojom::CookieScopeSemantics input,
-                        net::CookieScopeSemantics* output);
+  static net::CookieScopeSemantics FromMojom(
+      network::mojom::CookieScopeSemantics input);
 };
 
 template <>
@@ -76,9 +74,8 @@ struct EnumTraits<network::mojom::ContextType,
                   net::CookieOptions::SameSiteCookieContext::ContextType> {
   static network::mojom::ContextType ToMojom(
       net::CookieOptions::SameSiteCookieContext::ContextType input);
-  static bool FromMojom(
-      network::mojom::ContextType input,
-      net::CookieOptions::SameSiteCookieContext::ContextType* output);
+  static net::CookieOptions::SameSiteCookieContext::ContextType FromMojom(
+      network::mojom::ContextType input);
 };
 
 template <>
@@ -88,10 +85,10 @@ struct EnumTraits<network::mojom::CookieSameSiteContextMetadataDowngradeType,
   static network::mojom::CookieSameSiteContextMetadataDowngradeType ToMojom(
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::
           ContextDowngradeType input);
-  static bool FromMojom(
-      network::mojom::CookieSameSiteContextMetadataDowngradeType input,
-      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
-          ContextDowngradeType* output);
+  static net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+      ContextDowngradeType
+      FromMojom(
+          network::mojom::CookieSameSiteContextMetadataDowngradeType input);
 };
 
 template <>
@@ -101,10 +98,9 @@ struct EnumTraits<network::mojom::ContextRedirectTypeBug1221316,
   static network::mojom::ContextRedirectTypeBug1221316 ToMojom(
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::
           ContextRedirectTypeBug1221316 input);
-  static bool FromMojom(
-      network::mojom::ContextRedirectTypeBug1221316 input,
-      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
-          ContextRedirectTypeBug1221316* output);
+  static net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+      ContextRedirectTypeBug1221316
+      FromMojom(network::mojom::ContextRedirectTypeBug1221316 input);
 };
 
 template <>
@@ -114,10 +110,8 @@ struct EnumTraits<
   static network::mojom::HttpMethod ToMojom(
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
           input);
-  static bool FromMojom(
-      network::mojom::HttpMethod input,
-      net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod*
-          output);
+  static net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
+  FromMojom(network::mojom::HttpMethod input);
 };
 
 template <>
@@ -125,8 +119,8 @@ struct EnumTraits<network::mojom::CookieSourceScheme, net::CookieSourceScheme> {
   static network::mojom::CookieSourceScheme ToMojom(
       net::CookieSourceScheme input);
 
-  static bool FromMojom(network::mojom::CookieSourceScheme input,
-                        net::CookieSourceScheme* output);
+  static net::CookieSourceScheme FromMojom(
+      network::mojom::CookieSourceScheme input);
 };
 
 template <>
@@ -134,8 +128,8 @@ struct EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause> {
   static network::mojom::CookieChangeCause ToMojom(
       net::CookieChangeCause input);
 
-  static bool FromMojom(network::mojom::CookieChangeCause input,
-                        net::CookieChangeCause* output);
+  static net::CookieChangeCause FromMojom(
+      network::mojom::CookieChangeCause input);
 };
 
 template <>
@@ -210,8 +204,10 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
 template <>
 struct EnumTraits<network::mojom::AncestorChainBit,
                   net::CookiePartitionKey::AncestorChainBit> {
-  static network::mojom::AncestorChainBit ToMojom(bool input);
-  static bool FromMojom(network::mojom::AncestorChainBit input);
+  static network::mojom::AncestorChainBit ToMojom(
+      net::CookiePartitionKey::AncestorChainBit input);
+  static net::CookiePartitionKey::AncestorChainBit FromMojom(
+      network::mojom::AncestorChainBit input);
 };
 
 template <>
@@ -228,9 +224,10 @@ struct StructTraits<network::mojom::CookiePartitionKeyDataView,
 
   static network::mojom::AncestorChainBit ancestor_chain_bit(
       const net::CookiePartitionKey& cpk) {
-    return EnumTraits<
-        network::mojom::AncestorChainBit,
-        net::CookiePartitionKey::AncestorChainBit>::ToMojom(cpk.IsThirdParty());
+    return EnumTraits<network::mojom::AncestorChainBit,
+                      net::CookiePartitionKey::AncestorChainBit>::
+        ToMojom(net::CookiePartitionKey::BoolToAncestorChainBit(
+            cpk.IsThirdParty()));
   }
 
   static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,

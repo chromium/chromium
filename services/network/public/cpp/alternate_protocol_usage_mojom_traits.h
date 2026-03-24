@@ -16,8 +16,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_IP_ADDRESS)
                net::AlternateProtocolUsage> {
   static network::mojom::AlternateProtocolUsage ToMojom(
       net::AlternateProtocolUsage input);
-  static bool FromMojom(network::mojom::AlternateProtocolUsage input,
-                        net::AlternateProtocolUsage* output);
+  static net::AlternateProtocolUsage FromMojom(
+      network::mojom::AlternateProtocolUsage input);
 };
 }  // namespace mojo
 

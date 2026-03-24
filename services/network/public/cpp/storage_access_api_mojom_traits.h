@@ -18,8 +18,8 @@ struct COMPONENT_EXPORT(STORAGE_ACCESS_API_MOJOM_TRAITS)
   static network::mojom::StorageAccessApiStatus ToMojom(
       net::StorageAccessApiStatus status);
 
-  static bool FromMojom(network::mojom::StorageAccessApiStatus status,
-                        net::StorageAccessApiStatus* out);
+  static net::StorageAccessApiStatus FromMojom(
+      network::mojom::StorageAccessApiStatus status);
 };
 
 }  // namespace mojo

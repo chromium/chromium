@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/p2p_param_traits.h"
 
+#include "base/notreached.h"
 #include "ipc/param_traits_utils.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
 
@@ -40,23 +41,19 @@ EnumTraits<network::mojom::EcnMarking, webrtc::EcnMarking>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<network::mojom::EcnMarking, webrtc::EcnMarking>::FromMojom(
-    network::mojom::EcnMarking input,
-    webrtc::EcnMarking* output) {
+webrtc::EcnMarking
+EnumTraits<network::mojom::EcnMarking, webrtc::EcnMarking>::FromMojom(
+    network::mojom::EcnMarking input) {
   switch (input) {
     case network::mojom::EcnMarking::kNotEct:
-      *output = webrtc::EcnMarking::kNotEct;
-      return true;
+      return webrtc::EcnMarking::kNotEct;
     case network::mojom::EcnMarking::kEct1:
-      *output = webrtc::EcnMarking::kEct1;
-      return true;
+      return webrtc::EcnMarking::kEct1;
     case network::mojom::EcnMarking::kEct0:
-      *output = webrtc::EcnMarking::kEct0;
-      return true;
+      return webrtc::EcnMarking::kEct0;
     case network::mojom::EcnMarking::kCe:
-      *output = webrtc::EcnMarking::kCe;
-      return true;
+      return webrtc::EcnMarking::kCe;
   }
-  return false;
+  NOTREACHED();
 }
 }  // namespace mojo

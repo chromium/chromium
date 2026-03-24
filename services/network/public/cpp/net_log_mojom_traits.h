@@ -16,16 +16,16 @@ template <>
 struct EnumTraits<network::mojom::NetLogCaptureMode, net::NetLogCaptureMode> {
   static network::mojom::NetLogCaptureMode ToMojom(
       net::NetLogCaptureMode capture_mode);
-  static bool FromMojom(network::mojom::NetLogCaptureMode capture_mode,
-                        net::NetLogCaptureMode* out);
+  static net::NetLogCaptureMode FromMojom(
+      network::mojom::NetLogCaptureMode capture_mode);
 };
 
 template <>
 struct EnumTraits<network::mojom::NetLogEventPhase, net::NetLogEventPhase> {
   static network::mojom::NetLogEventPhase ToMojom(
       net::NetLogEventPhase capture_mode);
-  static bool FromMojom(network::mojom::NetLogEventPhase capture_mode,
-                        net::NetLogEventPhase* out);
+  static net::NetLogEventPhase FromMojom(
+      network::mojom::NetLogEventPhase capture_mode);
 };
 
 }  // namespace mojo

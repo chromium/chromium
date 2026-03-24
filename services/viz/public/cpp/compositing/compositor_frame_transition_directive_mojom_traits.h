@@ -21,9 +21,8 @@ struct EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
   static viz::mojom::CompositorFrameTransitionDirectiveType ToMojom(
       viz::CompositorFrameTransitionDirective::Type type);
 
-  static bool FromMojom(
-      viz::mojom::CompositorFrameTransitionDirectiveType input,
-      viz::CompositorFrameTransitionDirective::Type* out);
+  static viz::CompositorFrameTransitionDirective::Type FromMojom(
+      viz::mojom::CompositorFrameTransitionDirectiveType input);
 };
 
 template <>

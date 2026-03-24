@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <concepts>
 #include <functional>
 #include <optional>
 #include <type_traits>
@@ -344,22 +345,43 @@ struct EnumHashImpl {
 };
 
 template <typename MojomType, typename T>
-T ConvertEnumValue(MojomType input) {
-  T output;
-  bool result = EnumTraits<MojomType, T>::FromMojom(input, &output);
+  requires(requires(MojomType in) {
+    { EnumTraits<MojomType, T>::FromMojom(in) } -> std::same_as<T>;
+  })
+T ConvertEnumValue(MojomType in) {
+  return EnumTraits<MojomType, T>::FromMojom(in);
+}
+
+template <typename MojomType, typename T>
+  requires(requires(MojomType in) {
+    {
+      EnumTraits<MojomType, T>::FromMojom(in)
+    } -> std::same_as<std::optional<T>>;
+  })
+T ConvertEnumValue(MojomType in) {
+  std::optional<T> out = EnumTraits<MojomType, T>::FromMojom(in);
+  DCHECK(out.has_value());
+  return *out;
+}
+
+template <typename MojomType, typename T>
+T ConvertEnumValue(MojomType in) {
+  T out;
+  bool result = EnumTraits<MojomType, T>::FromMojom(in, &out);
   DCHECK(result);
-  return output;
+  return out;
+}
+
+template <typename MojomType>
+  requires(requires(MojomType in) {
+    { ToKnownEnumValue(in) } -> std::same_as<MojomType>;
+  })
+MojomType ToKnownEnumValueHelper(MojomType in) {
+  return ToKnownEnumValue(in);
 }
 
 template <typename MojomType>
 MojomType ToKnownEnumValueHelper(MojomType in) {
-  if constexpr (requires {
-                  {
-                    ToKnownEnumValue(std::declval<MojomType>())
-                  } -> std::same_as<MojomType>;
-                }) {
-    return ToKnownEnumValue(in);
-  }
   return in;
 }
 

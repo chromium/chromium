@@ -27,7 +27,7 @@ enum class ChallengeResult;
 enum class InclusionResult;
 enum class RefreshResult;
 struct SessionDisplay;
-}
+}  // namespace net::device_bound_sessions
 
 namespace net {
 enum class CookieSameSite;
@@ -68,21 +68,18 @@ struct EnumTraits<network::mojom::DeviceBoundSessionAccessType,
     }
   }
 
-  static bool FromMojom(
-      network::mojom::DeviceBoundSessionAccessType input,
-      net::device_bound_sessions::SessionAccess::AccessType* output) {
+  static net::device_bound_sessions::SessionAccess::AccessType FromMojom(
+      network::mojom::DeviceBoundSessionAccessType input) {
     using enum net::device_bound_sessions::SessionAccess::AccessType;
     switch (input) {
       case network::mojom::DeviceBoundSessionAccessType::kCreation:
-        *output = kCreation;
-        return true;
+        return kCreation;
       case network::mojom::DeviceBoundSessionAccessType::kUpdate:
-        *output = kUpdate;
-        return true;
+        return kUpdate;
       case network::mojom::DeviceBoundSessionAccessType::kTermination:
-        *output = kTermination;
-        return true;
+        return kTermination;
     }
+    NOTREACHED();
   }
 };
 
@@ -141,38 +138,31 @@ struct EnumTraits<network::mojom::DeviceBoundSessionDeletionReason,
     }
   }
 
-  static bool FromMojom(network::mojom::DeviceBoundSessionDeletionReason input,
-                        net::device_bound_sessions::DeletionReason* output) {
+  static net::device_bound_sessions::DeletionReason FromMojom(
+      network::mojom::DeviceBoundSessionDeletionReason input) {
     using enum net::device_bound_sessions::DeletionReason;
     switch (input) {
       case network::mojom::DeviceBoundSessionDeletionReason::kExpired:
-        *output = kExpired;
-        return true;
+        return kExpired;
       case network::mojom::DeviceBoundSessionDeletionReason::
           kFailedToRestoreKey:
-        *output = kFailedToRestoreKey;
-        return true;
+        return kFailedToRestoreKey;
       case network::mojom::DeviceBoundSessionDeletionReason::kFailedToUnwrapKey:
-        *output = kFailedToUnwrapKey;
-        return true;
+        return kFailedToUnwrapKey;
       case network::mojom::DeviceBoundSessionDeletionReason::
           kStoragePartitionCleared:
-        *output = kStoragePartitionCleared;
-        return true;
+        return kStoragePartitionCleared;
       case network::mojom::DeviceBoundSessionDeletionReason::kClearBrowsingData:
-        *output = kClearBrowsingData;
-        return true;
+        return kClearBrowsingData;
       case network::mojom::DeviceBoundSessionDeletionReason::kServerRequested:
-        *output = kServerRequested;
-        return true;
+        return kServerRequested;
       case network::mojom::DeviceBoundSessionDeletionReason::
           kInvalidSessionParams:
-        *output = kInvalidSessionParams;
-        return true;
+        return kInvalidSessionParams;
       case network::mojom::DeviceBoundSessionDeletionReason::kRefreshFatalError:
-        *output = kRefreshFatalError;
-        return true;
+        return kRefreshFatalError;
     }
+    NOTREACHED();
   }
 };
 
@@ -195,20 +185,17 @@ struct EnumTraits<
     }
   }
 
-  static bool FromMojom(
-      network::mojom::DeviceBoundSessionScopeSpecificationType input,
-      net::device_bound_sessions::SessionParams::Scope::Specification::Type*
-          output) {
+  static net::device_bound_sessions::SessionParams::Scope::Specification::Type
+  FromMojom(network::mojom::DeviceBoundSessionScopeSpecificationType input) {
     using enum net::device_bound_sessions::SessionParams::Scope::Specification::
         Type;
     switch (input) {
       case network::mojom::DeviceBoundSessionScopeSpecificationType::kExclude:
-        *output = kExclude;
-        return true;
+        return kExclude;
       case network::mojom::DeviceBoundSessionScopeSpecificationType::kInclude:
-        *output = kInclude;
-        return true;
+        return kInclude;
     }
+    NOTREACHED();
   }
 };
 
@@ -403,249 +390,181 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
     }
   }
 
-  static bool FromMojom(
-      network::mojom::DeviceBoundSessionError input,
-      net::device_bound_sessions::SessionError::ErrorType* output) {
+  static net::device_bound_sessions::SessionError::ErrorType FromMojom(
+      network::mojom::DeviceBoundSessionError input) {
     using enum net::device_bound_sessions::SessionError::ErrorType;
     switch (input) {
       case network::mojom::DeviceBoundSessionError::kSuccess:
-        *output = kSuccess;
-        return true;
+        return kSuccess;
       case network::mojom::DeviceBoundSessionError::kKeyError:
-        *output = kKeyError;
-        return true;
+        return kKeyError;
       case network::mojom::DeviceBoundSessionError::kSigningError:
-        *output = kSigningError;
-        return true;
+        return kSigningError;
       case network::mojom::DeviceBoundSessionError::kServerRequestedTermination:
-        *output = kServerRequestedTermination;
-        return true;
+        return kServerRequestedTermination;
       case network::mojom::DeviceBoundSessionError::kInvalidSessionId:
-        *output = kInvalidSessionId;
-        return true;
+        return kInvalidSessionId;
       case network::mojom::DeviceBoundSessionError::kInvalidChallenge:
-        *output = kInvalidChallenge;
-        return true;
+        return kInvalidChallenge;
       case network::mojom::DeviceBoundSessionError::kTooManyChallenges:
-        *output = kTooManyChallenges;
-        return true;
+        return kTooManyChallenges;
       case network::mojom::DeviceBoundSessionError::kInvalidFetcherUrl:
-        *output = kInvalidFetcherUrl;
-        return true;
+        return kInvalidFetcherUrl;
       case network::mojom::DeviceBoundSessionError::kInvalidRefreshUrl:
-        *output = kInvalidRefreshUrl;
-        return true;
+        return kInvalidRefreshUrl;
       case network::mojom::DeviceBoundSessionError::kTransientHttpError:
-        *output = kTransientHttpError;
-        return true;
+        return kTransientHttpError;
       case network::mojom::DeviceBoundSessionError::
           kScopeOriginSameSiteMismatch:
-        *output = kScopeOriginSameSiteMismatch;
-        return true;
+        return kScopeOriginSameSiteMismatch;
       case network::mojom::DeviceBoundSessionError::kRefreshUrlSameSiteMismatch:
-        *output = kRefreshUrlSameSiteMismatch;
-        return true;
+        return kRefreshUrlSameSiteMismatch;
       case network::mojom::DeviceBoundSessionError::kMismatchedSessionId:
-        *output = kMismatchedSessionId;
-        return true;
+        return kMismatchedSessionId;
       case network::mojom::DeviceBoundSessionError::kMissingScope:
-        *output = kMissingScope;
-        return true;
+        return kMissingScope;
       case network::mojom::DeviceBoundSessionError::kNoCredentials:
-        *output = kNoCredentials;
-        return true;
+        return kNoCredentials;
       case network::mojom::DeviceBoundSessionError::
           kSubdomainRegistrationWellKnownUnavailable:
-        *output = kSubdomainRegistrationWellKnownUnavailable;
-        return true;
+        return kSubdomainRegistrationWellKnownUnavailable;
       case network::mojom::DeviceBoundSessionError::
           kSubdomainRegistrationUnauthorized:
-        *output = kSubdomainRegistrationUnauthorized;
-        return true;
+        return kSubdomainRegistrationUnauthorized;
       case network::mojom::DeviceBoundSessionError::
           kSubdomainRegistrationWellKnownMalformed:
-        *output = kSubdomainRegistrationWellKnownMalformed;
-        return true;
+        return kSubdomainRegistrationWellKnownMalformed;
       case network::mojom::DeviceBoundSessionError::
           kSessionProviderWellKnownUnavailable:
-        *output = kSessionProviderWellKnownUnavailable;
-        return true;
+        return kSessionProviderWellKnownUnavailable;
       case network::mojom::DeviceBoundSessionError::
           kRelyingPartyWellKnownUnavailable:
-        *output = kRelyingPartyWellKnownUnavailable;
-        return true;
+        return kRelyingPartyWellKnownUnavailable;
       case network::mojom::DeviceBoundSessionError::
           kFederatedKeyThumbprintMismatch:
-        *output = kFederatedKeyThumbprintMismatch;
-        return true;
+        return kFederatedKeyThumbprintMismatch;
       case network::mojom::DeviceBoundSessionError::kInvalidFederatedSessionUrl:
-        *output = kInvalidFederatedSessionUrl;
-        return true;
+        return kInvalidFederatedSessionUrl;
       case network::mojom::DeviceBoundSessionError::kInvalidFederatedKey:
-        *output = kInvalidFederatedKey;
-        return true;
+        return kInvalidFederatedKey;
       case network::mojom::DeviceBoundSessionError::kTooManyRelyingOriginLabels:
-        *output = kTooManyRelyingOriginLabels;
-        return true;
+        return kTooManyRelyingOriginLabels;
       case network::mojom::DeviceBoundSessionError::kBoundCookieSetForbidden:
-        *output = kBoundCookieSetForbidden;
-        return true;
+        return kBoundCookieSetForbidden;
       case network::mojom::DeviceBoundSessionError::kNetError:
-        *output = kNetError;
-        return true;
+        return kNetError;
       case network::mojom::DeviceBoundSessionError::kProxyError:
-        *output = kProxyError;
-        return true;
+        return kProxyError;
       case network::mojom::DeviceBoundSessionError::kEmptySessionConfig:
-        *output = kEmptySessionConfig;
-        return true;
+        return kEmptySessionConfig;
       case network::mojom::DeviceBoundSessionError::kInvalidCredentialsConfig:
-        *output = kInvalidCredentialsConfig;
-        return true;
+        return kInvalidCredentialsConfig;
       case network::mojom::DeviceBoundSessionError::kInvalidCredentialsType:
-        *output = kInvalidCredentialsType;
-        return true;
+        return kInvalidCredentialsType;
       case network::mojom::DeviceBoundSessionError::
           kInvalidCredentialsEmptyName:
-        *output = kInvalidCredentialsEmptyName;
-        return true;
+        return kInvalidCredentialsEmptyName;
       case network::mojom::DeviceBoundSessionError::kInvalidCredentialsCookie:
-        *output = kInvalidCredentialsCookie;
-        return true;
+        return kInvalidCredentialsCookie;
       case network::mojom::DeviceBoundSessionError::kPersistentHttpError:
-        *output = kPersistentHttpError;
-        return true;
+        return kPersistentHttpError;
       case network::mojom::DeviceBoundSessionError::
           kRegistrationAttemptedChallenge:
-        *output = kRegistrationAttemptedChallenge;
-        return true;
+        return kRegistrationAttemptedChallenge;
       case network::mojom::DeviceBoundSessionError::kInvalidScopeOrigin:
-        *output = kInvalidScopeOrigin;
-        return true;
+        return kInvalidScopeOrigin;
       case network::mojom::DeviceBoundSessionError::kScopeOriginContainsPath:
-        *output = kScopeOriginContainsPath;
-        return true;
+        return kScopeOriginContainsPath;
       case network::mojom::DeviceBoundSessionError::kRefreshInitiatorNotString:
-        *output = kRefreshInitiatorNotString;
-        return true;
+        return kRefreshInitiatorNotString;
       case network::mojom::DeviceBoundSessionError::
           kRefreshInitiatorInvalidHostPattern:
-        *output = kRefreshInitiatorInvalidHostPattern;
-        return true;
+        return kRefreshInitiatorInvalidHostPattern;
       case network::mojom::DeviceBoundSessionError::kInvalidScopeSpecification:
-        *output = kInvalidScopeSpecification;
-        return true;
+        return kInvalidScopeSpecification;
       case network::mojom::DeviceBoundSessionError::
           kMissingScopeSpecificationType:
-        *output = kMissingScopeSpecificationType;
-        return true;
+        return kMissingScopeSpecificationType;
       case network::mojom::DeviceBoundSessionError::
           kEmptyScopeSpecificationDomain:
-        *output = kEmptyScopeSpecificationDomain;
-        return true;
+        return kEmptyScopeSpecificationDomain;
       case network::mojom::DeviceBoundSessionError::
           kEmptyScopeSpecificationPath:
-        *output = kEmptyScopeSpecificationPath;
-        return true;
+        return kEmptyScopeSpecificationPath;
       case network::mojom::DeviceBoundSessionError::
           kInvalidScopeSpecificationType:
-        *output = kInvalidScopeSpecificationType;
-        return true;
+        return kInvalidScopeSpecificationType;
       case network::mojom::DeviceBoundSessionError::kInvalidScopeIncludeSite:
-        *output = kInvalidScopeIncludeSite;
-        return true;
+        return kInvalidScopeIncludeSite;
       case network::mojom::DeviceBoundSessionError::kMissingScopeIncludeSite:
-        *output = kMissingScopeIncludeSite;
-        return true;
+        return kMissingScopeIncludeSite;
       case network::mojom::DeviceBoundSessionError::
           kFederatedNotAuthorizedByProvider:
-        *output = kFederatedNotAuthorizedByProvider;
-        return true;
+        return kFederatedNotAuthorizedByProvider;
       case network::mojom::DeviceBoundSessionError::
           kFederatedNotAuthorizedByRelyingParty:
-        *output = kFederatedNotAuthorizedByRelyingParty;
-        return true;
+        return kFederatedNotAuthorizedByRelyingParty;
       case network::mojom::DeviceBoundSessionError::
           kSessionProviderWellKnownMalformed:
-        *output = kSessionProviderWellKnownMalformed;
-        return true;
+        return kSessionProviderWellKnownMalformed;
       case network::mojom::DeviceBoundSessionError::
           kSessionProviderWellKnownHasProviderOrigin:
-        *output = kSessionProviderWellKnownHasProviderOrigin;
-        return true;
+        return kSessionProviderWellKnownHasProviderOrigin;
       case network::mojom::DeviceBoundSessionError::
           kRelyingPartyWellKnownMalformed:
-        *output = kRelyingPartyWellKnownMalformed;
-        return true;
+        return kRelyingPartyWellKnownMalformed;
       case network::mojom::DeviceBoundSessionError::
           kRelyingPartyWellKnownHasRelyingOrigins:
-        *output = kRelyingPartyWellKnownHasRelyingOrigins;
-        return true;
+        return kRelyingPartyWellKnownHasRelyingOrigins;
       case network::mojom::DeviceBoundSessionError::
           kInvalidFederatedSessionProviderSessionMissing:
-        *output = kInvalidFederatedSessionProviderSessionMissing;
-        return true;
+        return kInvalidFederatedSessionProviderSessionMissing;
       case network::mojom::DeviceBoundSessionError::
           kInvalidFederatedSessionWrongProviderOrigin:
-        *output = kInvalidFederatedSessionWrongProviderOrigin;
-        return true;
+        return kInvalidFederatedSessionWrongProviderOrigin;
       case network::mojom::DeviceBoundSessionError::
           kInvalidCredentialsCookieCreationTime:
-        *output = kInvalidCredentialsCookieCreationTime;
-        return true;
+        return kInvalidCredentialsCookieCreationTime;
       case network::mojom::DeviceBoundSessionError::
           kInvalidCredentialsCookieName:
-        *output = kInvalidCredentialsCookieName;
-        return true;
+        return kInvalidCredentialsCookieName;
       case network::mojom::DeviceBoundSessionError::
           kInvalidCredentialsCookieParsing:
-        *output = kInvalidCredentialsCookieParsing;
-        return true;
+        return kInvalidCredentialsCookieParsing;
       case network::mojom::DeviceBoundSessionError::
           kInvalidCredentialsCookieUnpermittedAttribute:
-        *output = kInvalidCredentialsCookieUnpermittedAttribute;
-        return true;
+        return kInvalidCredentialsCookieUnpermittedAttribute;
       case network::mojom::DeviceBoundSessionError::
           kInvalidCredentialsCookieInvalidDomain:
-        *output = kInvalidCredentialsCookieInvalidDomain;
-        return true;
+        return kInvalidCredentialsCookieInvalidDomain;
       case network::mojom::DeviceBoundSessionError::
           kInvalidCredentialsCookiePrefix:
-        *output = kInvalidCredentialsCookiePrefix;
-        return true;
+        return kInvalidCredentialsCookiePrefix;
       case network::mojom::DeviceBoundSessionError::kInvalidScopeRulePath:
-        *output = kInvalidScopeRulePath;
-        return true;
+        return kInvalidScopeRulePath;
       case network::mojom::DeviceBoundSessionError::
           kInvalidScopeRuleHostPattern:
-        *output = kInvalidScopeRuleHostPattern;
-        return true;
+        return kInvalidScopeRuleHostPattern;
       case network::mojom::DeviceBoundSessionError::
           kScopeRuleOriginScopedHostPatternMismatch:
-        *output = kScopeRuleOriginScopedHostPatternMismatch;
-        return true;
+        return kScopeRuleOriginScopedHostPatternMismatch;
       case network::mojom::DeviceBoundSessionError::
           kScopeRuleSiteScopedHostPatternMismatch:
-        *output = kScopeRuleSiteScopedHostPatternMismatch;
-        return true;
+        return kScopeRuleSiteScopedHostPatternMismatch;
       case network::mojom::DeviceBoundSessionError::kSigningQuotaExceeded:
-        *output = kSigningQuotaExceeded;
-        return true;
+        return kSigningQuotaExceeded;
       case network::mojom::DeviceBoundSessionError::kInvalidConfigJson:
-        *output = kInvalidConfigJson;
-        return true;
+        return kInvalidConfigJson;
       case network::mojom::DeviceBoundSessionError::
           kInvalidFederatedSessionProviderFailedToRestoreKey:
-        *output = kInvalidFederatedSessionProviderFailedToRestoreKey;
-        return true;
+        return kInvalidFederatedSessionProviderFailedToRestoreKey;
       case network::mojom::DeviceBoundSessionError::kFailedToUnwrapKey:
-        *output = kFailedToUnwrapKey;
-        return true;
+        return kFailedToUnwrapKey;
       case network::mojom::DeviceBoundSessionError::
           kSessionDeletedDuringRefresh:
-        *output = kSessionDeletedDuringRefresh;
-        return true;
+        return kSessionDeletedDuringRefresh;
     }
+    NOTREACHED();
   }
 };
 
@@ -655,8 +574,8 @@ struct EnumTraits<network::mojom::DeviceBoundSessionInclusionResult,
   static network::mojom::DeviceBoundSessionInclusionResult ToMojom(
       net::device_bound_sessions::InclusionResult inclusion_result);
 
-  static bool FromMojom(network::mojom::DeviceBoundSessionInclusionResult input,
-                        net::device_bound_sessions::InclusionResult* output);
+  static net::device_bound_sessions::InclusionResult FromMojom(
+      network::mojom::DeviceBoundSessionInclusionResult input);
 };
 
 template <>
@@ -845,8 +764,8 @@ struct EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
                   net::device_bound_sessions::RefreshResult> {
   static network::mojom::DeviceBoundSessionRefreshResult ToMojom(
       net::device_bound_sessions::RefreshResult input);
-  static bool FromMojom(network::mojom::DeviceBoundSessionRefreshResult input,
-                        net::device_bound_sessions::RefreshResult* output);
+  static net::device_bound_sessions::RefreshResult FromMojom(
+      network::mojom::DeviceBoundSessionRefreshResult input);
 };
 
 template <>
@@ -854,8 +773,8 @@ struct EnumTraits<network::mojom::DeviceBoundSessionChallengeResult,
                   net::device_bound_sessions::ChallengeResult> {
   static network::mojom::DeviceBoundSessionChallengeResult ToMojom(
       net::device_bound_sessions::ChallengeResult input);
-  static bool FromMojom(network::mojom::DeviceBoundSessionChallengeResult input,
-                        net::device_bound_sessions::ChallengeResult* output);
+  static net::device_bound_sessions::ChallengeResult FromMojom(
+      network::mojom::DeviceBoundSessionChallengeResult input);
 };
 
 // LINT.IfChange(SessionEventTypeDetails)

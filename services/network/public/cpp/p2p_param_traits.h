@@ -29,8 +29,7 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_P2P)
     EnumTraits<network::mojom::EcnMarking, webrtc::EcnMarking> {
   static network::mojom::EcnMarking ToMojom(webrtc::EcnMarking input);
-  static bool FromMojom(network::mojom::EcnMarking input,
-                        webrtc::EcnMarking* output);
+  static webrtc::EcnMarking FromMojom(network::mojom::EcnMarking input);
 };
 }  // namespace mojo
 
