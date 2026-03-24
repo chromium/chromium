@@ -2780,6 +2780,8 @@ export enum InvocationSource {
   CAPTURE_REGION_HOTKEY = 20,
   // From the in-product-help (IPH) entrypoint.
   IPH = 21,
+  // From the context menu.
+  WEB_CONTENTS_CONTEXT_MENU = 23,
 }
 
 ///////////////////////////////////////////////

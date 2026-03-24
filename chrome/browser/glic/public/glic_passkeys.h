@@ -7,6 +7,8 @@
 
 #include "base/types/pass_key.h"
 
+class RenderViewContextMenu;
+
 namespace extensions {
 class PdfViewerPrivateGlicSummarizeFunction;
 }
@@ -27,6 +29,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   // Example of how to add new friends:
   // friend class SomeClassThatNeedsAutoSubmit;
   // friend void SomeClass::SomeFunctionThatNeedsAutoSubmit();
+  friend class ::RenderViewContextMenu;
   friend class extensions::PdfViewerPrivateGlicSummarizeFunction;
   friend class ::PasswordChangeFromCheckupDelegate;
 };

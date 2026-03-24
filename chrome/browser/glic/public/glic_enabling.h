@@ -158,6 +158,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Whether the auto open for pdf flow is enabled.
   static bool IsAutoOpenForPdfEnabled(Profile* profile);
 
+  // Whether the tab web contents contextual menu item is enabled.
+  static bool IsContextualMenuItemEnabled(Profile* profile);
+
   // Whether the required feature flags for multi-instance - kGlicMultiInstance,
   // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled. When calling, be
   // sure that IsMultiInstanceEnabled() should not be used instead.
@@ -344,6 +347,11 @@ class GlicEnabling : public signin::IdentityManager::Observer {
 
   void UpdateEnabledStatus();
   void UpdateConsentStatus();
+
+  static bool IsTrustFirstOnboardingGatedFeatureEnabled(
+      Profile* profile,
+      const base::Feature& feature,
+      const base::FeatureParam<bool>& onboarding_param);
 
   raw_ptr<Profile> profile_;
   raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;

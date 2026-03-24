@@ -58,8 +58,9 @@ GlicEntrypoint GetEntrypointFromInvocationSource(
       return GlicEntrypoint::kAutoOpenedForPdf;
     case glic::mojom::InvocationSource::kIph:
       return GlicEntrypoint::kIph;
+    case glic::mojom::InvocationSource::kWebContentsContextMenu:
+      return GlicEntrypoint::kWebContentsContextMenu;
     default:
-      // All other ones, including mojom::InvocationSource::kUnsupported.
       return GlicEntrypoint::kOther;
   }
 }
@@ -70,6 +71,8 @@ std::string GetEntrypointString(GlicEntrypoint entrypoint) {
       return "AutoOpenedByContextualCue";
     case GlicEntrypoint::kAutoOpenedForPdf:
       return "AutoOpenedForPdf";
+    case GlicEntrypoint::kWebContentsContextMenu:
+      return "WebContentsContextMenu";
     case GlicEntrypoint::kIph:
       return "Iph";
     case GlicEntrypoint::kNavigationCapture:
