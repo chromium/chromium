@@ -502,7 +502,8 @@ void OnDeviceModelServiceController::BaseModelController::OnDisconnect(
   if (is_idle) {
     return;
   }
-  LOG(ERROR) << "Base model disconnected unexpectedly.";
+  LOG(ERROR) << "Base model disconnected unexpectedly; reason: " << reason
+             << ", description: " << description;
   base::TimeDelta delay =
       access_controller().OnDisconnectedFromRemote() - base::Time::Now();
   if (delay.is_positive()) {

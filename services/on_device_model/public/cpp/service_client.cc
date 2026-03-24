@@ -33,8 +33,8 @@ ServiceDisconnectReason ServiceClient::OnDisconnect(
     uint32_t custom_reason,
     const std::string& description) {
   remote_.reset();
-  LOG(ERROR) << "Unexpected on_device_model service disconnect: "
-             << description;
+  LOG(ERROR) << "Unexpected on_device_model service disconnect; reason: "
+             << custom_reason << ", description: " << description;
   switch (custom_reason) {
     case static_cast<uint32_t>(ServiceDisconnectReason::kGpuBlocked):
       return ServiceDisconnectReason::kGpuBlocked;

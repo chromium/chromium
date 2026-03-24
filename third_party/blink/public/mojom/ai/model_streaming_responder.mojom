@@ -48,6 +48,16 @@ enum ModelStreamingResponseStatus {
   kErrorInputTooLarge = 14,
   // Response was retracted due to low quality.
   kErrorResponseLowQuality = 15,
+  // The response exceeded output limits and was truncated.
+  kErrorResponseExceedsMaxTokens = 16,
+  // The response exceeded the remaining available context.
+  kErrorResponseExceedsRemainingContext = 17,
+  // Failed to parse the response.
+  kErrorResponseParsingFailed = 18,
+  // Failed to run safety checks.
+  kErrorFailedToRunSafety = 19,
+  // Failed to count tokens.
+  kErrorFailedToCountTokens = 20,
   // Append new items here.
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIModelStreamingResponseStatus)

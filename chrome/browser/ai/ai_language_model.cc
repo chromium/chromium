@@ -306,6 +306,8 @@ class AILanguageModel::PromptState
 
  private:
   void OnDisconnect(uint32_t custom_reason, const std::string& description) {
+    VLOG(1) << "LanguageModel ModelStreamingResponder disconnect; reason: "
+            << custom_reason << ", description: " << description;
     auto error = blink::mojom::ModelStreamingResponseStatus::kErrorUnknown;
     switch (static_cast<on_device_model::mojom::GenerateError>(custom_reason)) {
       case on_device_model::mojom::GenerateError::kUnknown:
@@ -442,8 +444,8 @@ class AILanguageModel::PromptState
       optimization_guide::SafetyChecker::Result safety_result) {
     // If output hit the token limit, it was truncated, so send an error.
     if (summary->output_token_count >= max_output_tokens_) {
-      // TODO(crbug.com/421983874): Use a more specific error in this case?
-      OnError(blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+      OnError(blink::mojom::ModelStreamingResponseStatus::
+                  kErrorResponseExceedsMaxTokens);
       return;
     }
     if (HandleSafetyError(std::move(safety_result))) {
@@ -470,7 +472,8 @@ class AILanguageModel::PromptState
   bool HandleSafetyError(
       optimization_guide::SafetyChecker::Result safety_result) {
     if (safety_result.failed_to_run) {
-      OnError(blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+      OnError(
+          blink::mojom::ModelStreamingResponseStatus::kErrorFailedToRunSafety);
       return true;
     }
     if (safety_result.is_unsafe) {
@@ -991,10 +994,14 @@ void AILanguageModel::PromptGetInputSizeComplete(
   if (!prompt_state_ || !prompt_state_->IsValid()) {
     return;
   }
-
+  if (!initial_session_ || !current_session_) {
+    prompt_state_->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+    return;
+  }
   if (!token_count) {
     prompt_state_->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+        blink::mojom::ModelStreamingResponseStatus::kErrorFailedToCountTokens);
     return;
   }
 
@@ -1051,10 +1058,9 @@ void AILanguageModel::OnPromptOutputComplete() {
   auto responder = prompt_state_->TakeResponder();
   auto result = context_->AddContextItem(std::move(item));
   if (result == Context::SpaceReservationResult::kInsufficientSpace) {
-    // TODO(crbug.com/421983874): Use a more specific error in this case?
     on_device_ai::SendStreamingStatus(
-        responder,
-        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+        responder, blink::mojom::ModelStreamingResponseStatus::
+                       kErrorResponseExceedsRemainingContext);
     return;
   }
 

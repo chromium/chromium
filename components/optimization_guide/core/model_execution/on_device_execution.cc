@@ -229,7 +229,8 @@ void OnDeviceExecution::OnRequestSafetyResult(
   TRACE_EVENT("optimization_guide", "OnDeviceExecution::OnRequestSafetyResult",
               "feature", base::ToString(feature_));
   if (safety_result.failed_to_run) {
-    CancelPendingResponse(Result::kFailedConstructingMessage);
+    CancelPendingResponse(Result::kFailedConstructingMessage,
+                          OnDeviceError::kFailedToRunSafety);
     return;
   }
   // Log the check executions.
@@ -398,7 +399,8 @@ void OnDeviceExecution::OnRawOutputSafetyResult(
               "OnDeviceExecution::OnRawOutputSafetyResult", "feature",
               base::ToString(feature_));
   if (safety_result.failed_to_run) {
-    CancelPendingResponse(Result::kFailedConstructingMessage);
+    CancelPendingResponse(Result::kFailedConstructingMessage,
+                          OnDeviceError::kFailedToRunSafety);
     return;
   }
   if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
@@ -459,7 +461,7 @@ void OnDeviceExecution::OnParsedResponse(
       case ResponseParsingError::kInvalidConfiguration:
       case ResponseParsingError::kFailed:
         CancelPendingResponse(Result::kFailedConstructingResponseMessage,
-                              OnDeviceError::kGenericFailure);
+                              OnDeviceError::kResponseParsingFailed);
         return;
     }
   }
@@ -477,7 +479,8 @@ void OnDeviceExecution::OnResponseSafetyResult(
               "OnDeviceExecution::OnResponseSafetyResult", "feature",
               base::ToString(feature_));
   if (safety_result.failed_to_run) {
-    CancelPendingResponse(Result::kFailedConstructingMessage);
+    CancelPendingResponse(Result::kFailedConstructingMessage,
+                          OnDeviceError::kFailedToRunSafety);
     return;
   }
   if (completeness == ResponseCompleteness::kComplete ||

@@ -40,8 +40,12 @@ enum class OnDeviceError : int {
   kCancelled = 10,
   // The response was low quality.
   kResponseLowQuality = 11,
+  // Failed to parse the response.
+  kResponseParsingFailed = 12,
+  // Failed to run the safety checks.
+  kFailedToRunSafety = 13,
   // Insert new values before this line.
-  kMaxValue = kResponseLowQuality
+  kMaxValue = kFailedToRunSafety
 };
 
 // A response type used for OnDeviceSession.

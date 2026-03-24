@@ -539,8 +539,10 @@ TEST_F(AIProofreaderTest, ServiceCrash) {
   fake_broker_->CrashService();
 
   EXPECT_FALSE(responder.WaitForCompletion());
-  EXPECT_EQ(responder.error_status(),
-            blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+  // TODO(crbug.com/494980521): Crashes should be yield kErrorSessionDestroyed.
+  EXPECT_EQ(
+      responder.error_status(),
+      blink::mojom::ModelStreamingResponseStatus::kErrorFailedToCountTokens);
 
   proofreader_remote = GetAIProofreaderRemote();
   EXPECT_THAT(Proofread(*proofreader_remote, kInputString), ElementsAre("hi"));

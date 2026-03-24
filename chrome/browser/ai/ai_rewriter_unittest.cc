@@ -658,8 +658,10 @@ TEST_F(AIRewriterTest, ServiceCrash) {
   fake_broker_->CrashService();
 
   EXPECT_FALSE(responder.WaitForCompletion());
-  EXPECT_EQ(responder.error_status(),
-            blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+  // TODO(crbug.com/494980521): Crashes should be yield kErrorSessionDestroyed.
+  EXPECT_EQ(
+      responder.error_status(),
+      blink::mojom::ModelStreamingResponseStatus::kErrorFailedToCountTokens);
 
   rewriter_remote = GetAIRewriterRemote();
   EXPECT_THAT(Rewrite(*rewriter_remote, kInputString, kContextString),

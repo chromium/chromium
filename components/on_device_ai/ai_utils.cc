@@ -31,6 +31,12 @@ blink::mojom::ModelStreamingResponseStatus ConvertOnDeviceError(
     case OnDeviceError::kResponseLowQuality:
       return blink::mojom::ModelStreamingResponseStatus::
           kErrorResponseLowQuality;
+    case OnDeviceError::kResponseParsingFailed:
+      return blink::mojom::ModelStreamingResponseStatus::
+          kErrorResponseParsingFailed;
+    case OnDeviceError::kFailedToRunSafety:
+      return blink::mojom::ModelStreamingResponseStatus::
+          kErrorFailedToRunSafety;
   }
 }
 

@@ -63,6 +63,19 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="ErrorResponseLowQuality">
     The response was retracted due to low quality.
   </int>
+  <int value="16" label="ErrorResponseExceedsMaxTokens">
+    The response exceeded output limits and was truncated.
+  </int>
+  <int value="17" label="ErrorResponseExceedsRemainingContext">
+    The response exceeded the remaining available context.
+  </int>
+  <int value="18" label="ErrorResponseParsingFailed">
+    Failed to parse the response.
+  </int>
+  <int value="19" label="ErrorFailedToRunSafety">
+    Failed to run safety checks.
+  </int>
+  <int value="20" label="ErrorFailedToCountTokens">Failed to count tokens.</int>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/model_streaming_responder.mojom:ModelStreamingResponseStatus) -->

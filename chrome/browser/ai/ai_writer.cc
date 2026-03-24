@@ -146,6 +146,7 @@ void AIWriter::DidGetExecutionInputSizeForWrite(
     return;
   }
 
+  // TODO(crbug.com/494980521): Catch real crash disconnects to surface errors.
   if (!session_wrapper_.session()) {
     on_device_ai::SendStreamingStatus(
         responder,
@@ -156,7 +157,7 @@ void AIWriter::DidGetExecutionInputSizeForWrite(
   if (!result.has_value()) {
     on_device_ai::SendStreamingStatus(
         responder,
-        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+        blink::mojom::ModelStreamingResponseStatus::kErrorFailedToCountTokens);
     return;
   }
 

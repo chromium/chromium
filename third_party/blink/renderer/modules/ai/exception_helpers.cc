@@ -46,7 +46,15 @@ const char kExceptionMessageSessionDestroyed[] =
     "The model execution session has been destroyed.";
 const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
 const char kExceptionMessageInputTooLarge[] = "The input is too large.";
-
+const char kExceptionMessageResponseExceedsMaxTokens[] =
+    "The response exceeded output limits and was truncated.";
+const char kExceptionMessageResponseExceedsRemainingContext[] =
+    "The response size exceeded the remaining available context.";
+const char kExceptionMessageResponseParsingFailed[] =
+    "Failed to parse the response.";
+const char kExceptionMessageFailedToRunSafety[] =
+    "Failed to run the safety checks.";
+const char kExceptionMessageFailedToCountTokens[] = "Failed to count tokens.";
 const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "Initializing a new session must either specify both topK and temperature, "
     "or neither of them.";
@@ -259,6 +267,26 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
       return DOMException::Create(
           kExceptionMessageResponseLowQuality,
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError));
+    case ModelStreamingResponseStatus::kErrorResponseExceedsMaxTokens:
+      return DOMException::Create(
+          kExceptionMessageResponseExceedsMaxTokens,
+          DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));
+    case ModelStreamingResponseStatus::kErrorResponseExceedsRemainingContext:
+      return DOMException::Create(
+          kExceptionMessageResponseExceedsRemainingContext,
+          DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));
+    case ModelStreamingResponseStatus::kErrorResponseParsingFailed:
+      return DOMException::Create(
+          kExceptionMessageResponseParsingFailed,
+          DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
+    case ModelStreamingResponseStatus::kErrorFailedToRunSafety:
+      return DOMException::Create(
+          kExceptionMessageFailedToRunSafety,
+          DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
+    case ModelStreamingResponseStatus::kErrorFailedToCountTokens:
+      return DOMException::Create(
+          kExceptionMessageFailedToCountTokens,
+          DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
     case ModelStreamingResponseStatus::kOngoing:
     case ModelStreamingResponseStatus::kComplete:
       NOTREACHED();
