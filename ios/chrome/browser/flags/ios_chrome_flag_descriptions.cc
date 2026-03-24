@@ -89,6 +89,10 @@ const char kAutofillAiReauthRequiredName[] = "Autofill AI Reauth Required";
 const char kAutofillAiReauthRequiredDescription[] =
     "Enables Autofill AI Reauth Required.";
 
+const char kAutofillAiValuablesIPHName[] = "IPH Autofill AI Valuables";
+const char kAutofillAiValuablesIPHDescription[] =
+    "Enables the In-Product Help for Autofill AI valuables.";
+
 const char kAutofillAiWithDataSchemaName[] = "Autofill AI With Data Schema";
 const char kAutofillAiWithDataSchemaDescription[] =
     "Enables Autofill AI With Data Schema.";
@@ -1565,6 +1569,15 @@ const char kSupervisedUserUseUrlFilteringServiceDescription[] =
     "directly from supervision services instead of using PrefService (no "
     "user-visible effect).";
 
+const char kSyncAccountSettingsName[] = "Sync account settings";
+const char kSyncAccountSettingsDescription[] =
+    "Enables syncing account settings to the server.";
+
+const char kSyncAutofillValuableMetadataName[] =
+    "Sync autofill valuable metadata";
+const char kSyncAutofillValuableMetadataDescription[] =
+    "Enables syncing valuable metadata for autofill to the server.";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
@@ -1578,6 +1591,16 @@ const char kSyncTrustedVaultInfobarMessageImprovementsName[] =
 const char kSyncTrustedVaultInfobarMessageImprovementsDescription[] =
     "Enables massage improvements for the UI of the trusted vault error "
     "infobar.";
+
+const char kSyncWalletFlightReservationsName[] =
+    "Sync wallet flight reservations";
+const char kSyncWalletFlightReservationsDescription[] =
+    "Enables syncing flight reservations in the wallet to the server.";
+
+const char kSyncWalletVehicleRegistrationsName[] =
+    "Sync wallet vehicle registrations";
+const char kSyncWalletVehicleRegistrationsDescription[] =
+    "Enables syncing vehicle registrations in the wallet to the server.";
 
 const char kTabGridDragAndDropName[] = "Enable Drag and Drop in Tab Grid";
 const char kTabGridDragAndDropDescription[] =

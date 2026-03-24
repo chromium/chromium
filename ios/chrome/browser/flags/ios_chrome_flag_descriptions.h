@@ -74,6 +74,9 @@ extern const char kAutofillAiCreateEntityDataManagerDescription[];
 extern const char kAutofillAiReauthRequiredName[];
 extern const char kAutofillAiReauthRequiredDescription[];
 
+extern const char kAutofillAiValuablesIPHName[];
+extern const char kAutofillAiValuablesIPHDescription[];
+
 extern const char kAutofillAiWithDataSchemaName[];
 extern const char kAutofillAiWithDataSchemaDescription[];
 
@@ -955,6 +958,12 @@ extern const char
 extern const char kSupervisedUserUseUrlFilteringServiceName[];
 extern const char kSupervisedUserUseUrlFilteringServiceDescription[];
 
+extern const char kSyncAccountSettingsName[];
+extern const char kSyncAccountSettingsDescription[];
+
+extern const char kSyncAutofillValuableMetadataName[];
+extern const char kSyncAutofillValuableMetadataDescription[];
+
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
@@ -963,6 +972,12 @@ extern const char kSyncThemesIosDescription[];
 
 extern const char kSyncTrustedVaultInfobarMessageImprovementsName[];
 extern const char kSyncTrustedVaultInfobarMessageImprovementsDescription[];
+
+extern const char kSyncWalletFlightReservationsName[];
+extern const char kSyncWalletFlightReservationsDescription[];
+
+extern const char kSyncWalletVehicleRegistrationsName[];
+extern const char kSyncWalletVehicleRegistrationsDescription[];
 
 extern const char kTabGridDragAndDropName[];
 extern const char kTabGridDragAndDropDescription[];

@@ -801,6 +801,11 @@ inline constexpr char kAutofillAiServerModelDescription[] =
     "Allows the client to trigger the server model for Autofill AI type "
     "predictions.";
 
+inline constexpr char kAutofillAiValuablesIPHName[] =
+    "IPH Autofill AI Valuables";
+inline constexpr char kAutofillAiValuablesIPHDescription[] =
+    "Enables the In-Product Help for Autofill AI valuables.";
+
 inline constexpr char kAutofillAiWalletFlightReservationName[] =
     "Autofill AI Google Wallet flight reservations";
 inline constexpr char kAutofillAiWalletFlightReservationDescription[] =
@@ -4205,10 +4210,29 @@ inline constexpr char kSyncAIThreadsName[] = "Sync AI Threads";
 inline constexpr char kSyncAIThreadsDescription[] =
     "Acquire AI Threads via sync.";
 
+inline constexpr char kSyncAccountSettingsName[] = "Sync account settings";
+inline constexpr char kSyncAccountSettingsDescription[] =
+    "Enables syncing account settings to the server.";
+
+inline constexpr char kSyncAutofillValuableMetadataName[] =
+    "Sync autofill valuable metadata";
+inline constexpr char kSyncAutofillValuableMetadataDescription[] =
+    "Enables syncing valuable metadata for autofill to the server.";
+
 inline constexpr char kSyncAutofillWalletCredentialDataName[] =
     "Sync Autofill Wallet Credential Data";
 inline constexpr char kSyncAutofillWalletCredentialDataDescription[] =
     "When enabled, allows syncing of the autofill wallet credential data type.";
+
+inline constexpr char kSyncWalletFlightReservationsName[] =
+    "Sync wallet flight reservations";
+inline constexpr char kSyncWalletFlightReservationsDescription[] =
+    "Enables syncing flight reservations in the wallet to the server.";
+
+inline constexpr char kSyncWalletVehicleRegistrationsName[] =
+    "Sync wallet vehicle registrations";
+inline constexpr char kSyncWalletVehicleRegistrationsDescription[] =
+    "Enables syncing vehicle registrations in the wallet to the server.";
 
 inline constexpr char kSyncGeminiThreadsName[] = "Sync Gemini Threads";
 inline constexpr char kSyncGeminiThreadsDescription[] =

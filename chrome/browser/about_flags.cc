@@ -9645,6 +9645,25 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncAutofillWalletCredentialDataDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletCredentialData)},
 
+    {"sync-account-settings", flag_descriptions::kSyncAccountSettingsName,
+     flag_descriptions::kSyncAccountSettingsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncAccountSettings)},
+
+    {"sync-autofill-valuable-metadata",
+     flag_descriptions::kSyncAutofillValuableMetadataName,
+     flag_descriptions::kSyncAutofillValuableMetadataDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncAutofillValuableMetadata)},
+
+    {"sync-wallet-flight-reservations",
+     flag_descriptions::kSyncWalletFlightReservationsName,
+     flag_descriptions::kSyncWalletFlightReservationsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncWalletFlightReservations)},
+
+    {"sync-wallet-vehicle-registrations",
+     flag_descriptions::kSyncWalletVehicleRegistrationsName,
+     flag_descriptions::kSyncWalletVehicleRegistrationsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncWalletVehicleRegistrations)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-labs-window-cycle-shortcut",
      flag_descriptions::kSameAppWindowCycleName,
@@ -12775,6 +12794,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-ai-server-model", flag_descriptions::kAutofillAiServerModelName,
      flag_descriptions::kAutofillAiServerModelDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiServerModel)},
+
+    {"autofill-ai-valuables-iph",
+     flag_descriptions::kAutofillAiValuablesIPHName,
+     flag_descriptions::kAutofillAiValuablesIPHDescription, kOsAll,
+     FEATURE_VALUE_TYPE(feature_engagement::kIPHAutofillAiValuablesFeature)},
 
     {"autofill-ai-wallet-flight-reservation",
      flag_descriptions::kAutofillAiWalletFlightReservationName,

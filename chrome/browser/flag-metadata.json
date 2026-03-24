@@ -801,6 +801,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "autofill-ai-valuables-iph",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-ai-wallet-flight-reservation",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160
@@ -9173,6 +9178,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "sync-account-settings",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "sync-ai-threads",
     "owners": [
       "chazzy@chromium.org",
@@ -9181,6 +9191,11 @@
       "top-chrome-desktop-ui@google.com"
     ],
     "expiry_milestone": 155
+  },
+  {
+    "name": "sync-autofill-valuable-metadata",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "sync-autofill-wallet-credential-data",
@@ -9209,6 +9224,16 @@
     "name": "sync-trusted-vault-infobar-message-improvements",
     "owners": ["ylahodiuk@google.com", "rgod@google.com"],
     "expiry_milestone": 144
+  },
+  {
+    "name": "sync-wallet-flight-reservations",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "sync-wallet-vehicle-registrations",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "system-keyboard-lock",
