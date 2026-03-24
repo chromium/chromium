@@ -20,11 +20,7 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUIContextualTasksHost);
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WebUIMochaBrowserTest::SetUpCommandLine(command_line);
-    // TODO(crbug.com/489032845): Re-enable crash-on-JS-error for tests.
-    command_line->AppendSwitch("disable-crash-on-webui-js-error");
-  }
+
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

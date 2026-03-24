@@ -343,10 +343,18 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
       throw new Error('Test postMessage error');
     };
 
-    mockTimer.tick(HANDSHAKE_INTERVAL_MS);
-    // No assertion on error, just ensure the test doesn't crash and the timer
-    // stops.
-    assertTrue(true, 'Test should not crash due to postMessage error');
+    // Suppress console.error to avoid crashing the test when JS error checking is enabled.
+    const originalConsoleError = console.error;
+    console.error = () => {};
+
+    try {
+      mockTimer.tick(HANDSHAKE_INTERVAL_MS);
+      // No assertion on error, just ensure the test doesn't crash and the timer
+      // stops.
+      assertTrue(true, 'Test should not crash due to postMessage error');
+    } finally {
+      console.error = originalConsoleError;
+    }
   });
 
   test('stops handshake after max attempts', () => {
