@@ -1329,7 +1329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.GestureTransition.Screenshot.SharedImageReceived"
-    enum="BooleanReceived" expires_after="2026-07-19">
+    enum="BooleanReceived" expires_after="2026-09-20">
   <owner>acondor@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -3463,7 +3463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.{TracedMethod}" units="ms"
-    expires_after="2026-07-19">
+    expires_after="2026-09-20">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>
