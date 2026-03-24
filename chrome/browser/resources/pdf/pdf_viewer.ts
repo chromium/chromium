@@ -1651,6 +1651,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
     // </if>
 
+    this.fire('save-initiated-for-testing');
+
     if (this.pdfGetSaveDataInBlocks_) {
       this.saveInBlocks_(requestType);
       return;

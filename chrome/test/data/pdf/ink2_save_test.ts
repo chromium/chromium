@@ -44,7 +44,7 @@ async function testSaveWithAnnotations() {
       mockPlugin.findMessage(getFirstSaveMessageName()) === undefined);
   chrome.test.assertTrue(actionMenu.open);
 
-  const onSave = eventToPromise('save', viewer);
+  const onSave = eventToPromise('save-initiated-for-testing', viewer);
 
   // Click on "Edited".
   const buttons = actionMenu.querySelectorAll('button');
@@ -79,7 +79,7 @@ chrome.test.runTests([
     downloadButton.click();
 
     // A message should be sent to the plugin to save as original.
-    await eventToPromise('save', viewer);
+    await eventToPromise('save-initiated-for-testing', viewer);
     const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
     chrome.test.assertEq(
@@ -129,7 +129,7 @@ chrome.test.runTests([
         mockPlugin.findMessage(getFirstSaveMessageName()) === undefined);
     chrome.test.assertTrue(actionMenu.open);
 
-    const onSave = eventToPromise('save', viewer);
+    const onSave = eventToPromise('save-initiated-for-testing', viewer);
 
     // Click on "Original".
     const buttons = actionMenu.querySelectorAll('button');
@@ -200,7 +200,7 @@ chrome.test.runTests([
     downloadButton.click();
 
     // A message should be sent to the plugin to save as original.
-    await eventToPromise('save', viewer);
+    await eventToPromise('save-initiated-for-testing', viewer);
     const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
     chrome.test.assertEq(
@@ -266,7 +266,7 @@ chrome.test.runTests([
     downloadButton.click();
 
     // A message should be sent to the plugin to save as original.
-    await eventToPromise('save', viewer);
+    await eventToPromise('save-initiated-for-testing', viewer);
     const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
     chrome.test.assertEq(
@@ -303,7 +303,7 @@ chrome.test.runTests([
     downloadButton.click();
 
     // A message should be sent to the plugin to save as original.
-    await eventToPromise('save', viewer);
+    await eventToPromise('save-initiated-for-testing', viewer);
     const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
     chrome.test.assertEq(
@@ -385,7 +385,7 @@ chrome.test.runTests([
     downloadButton.click();
 
     // A message should be sent to the plugin to save as original.
-    await eventToPromise('save', viewer);
+    await eventToPromise('save-initiated-for-testing', viewer);
     const saveMessage = mockPlugin.findMessage(getFirstSaveMessageName());
     chrome.test.assertTrue(saveMessage !== undefined);
     chrome.test.assertEq(
