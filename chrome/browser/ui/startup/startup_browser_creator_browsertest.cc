@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
@@ -1293,12 +1294,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   // |profile| restored the last open pages and opened the urls in an active new
   // window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(&profile));
-  BrowserWindowInterface* const pref_urls_opened_browser =
-      chrome::FindLastActiveWithProfile(&profile);
-  ASSERT_TRUE(pref_urls_opened_browser);
+
+  std::vector<BrowserWindowInterface*> profile_browsers;
+  ProfileBrowserCollection::GetForProfile(&profile)->ForEach(
+      [&profile_browsers](BrowserWindowInterface* browser) {
+        profile_browsers.push_back(browser);
+        return true;
+      });
+
   BrowserWindowInterface* const last_session_opened_browser =
-      FindOneOtherBrowserForProfile(&profile, pref_urls_opened_browser);
+      profile_browsers[0];
   ASSERT_TRUE(last_session_opened_browser);
+  BrowserWindowInterface* const pref_urls_opened_browser = profile_browsers[1];
+  ASSERT_TRUE(pref_urls_opened_browser);
   // Check the last-session-restored browser.
   EXPECT_NO_FATAL_FAILURE(
       wait_for_load_stop_for_browser(last_session_opened_browser));
