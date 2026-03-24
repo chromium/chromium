@@ -3093,9 +3093,7 @@
       name: "HideVideoControlsWhenUnneeded",
       status: "stable",
     },
-    {
-      name: "HighlightPointerEvents",
-    },
+
     {
       name: "HighlightsFromPoint",
       status: "stable",
