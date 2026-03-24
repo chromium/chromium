@@ -105,25 +105,6 @@ def handle_signal(signum, frame):
     sys.exit(0)
 
 
-def systemctl_user(action, unit):
-    run_command(["systemctl", "--user", action, unit])
-
-
-def unset_bad_systemd_env_vars():
-    env_vars_to_unset = [
-        "PIPEWIRE_REMOTE",
-        "PULSE_RUNTIME_PATH",
-        "PULSE_SINK",
-        "GDK_BACKEND",
-        "SSH_CONNECTION",
-    ]
-    if env_vars_to_unset:
-        print("Unsetting systemd user environment variables: "
-              f"{' '.join(env_vars_to_unset)}")
-        run_command(["systemctl", "--user", "unset-environment"] +
-                    env_vars_to_unset)
-
-
 def user_main(out_dir, keep_sessions=False):
     try:
         run_command(["systemctl", "is-active", "--quiet", "gdm3"])
@@ -133,20 +114,6 @@ def user_main(out_dir, keep_sessions=False):
         print("    sudo systemctl unmask gdm3.service")
         print("    sudo systemctl start gdm3.service")
         sys.exit(1)
-
-    # The single process host overrides the PipeWire remote, which will break
-    # the multi-process host. So we unset these environment variables and
-    # restart PipeWire.
-    print("Restarting PipeWire...")
-
-    systemctl_user("stop", "pipewire.socket")
-    systemctl_user("stop", "pipewire-pulse.socket")
-
-    unset_bad_systemd_env_vars()
-
-    systemctl_user("start", "pipewire.service")
-    systemctl_user("start", "pipewire-pulse.service")
-    systemctl_user("start", "wireplumber.service")
 
     print("Re-running script with sudo...")
     script_path = os.path.abspath(__file__)

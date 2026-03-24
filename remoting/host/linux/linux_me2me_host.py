@@ -1952,6 +1952,30 @@ def exec_self_via_login_shell():
   os.execv(args[0], args)
 
 
+def unset_crd_systemd_env_vars():
+    """Unsets environment variables set by this script that could interfere
+    with the multi-process host."""
+
+    env_vars_to_unset = [
+        "CHROME_REMOTE_DESKTOP_SESSION",
+        "DISPLAY",
+        "GDK_BACKEND",
+        "PIPEWIRE_REMOTE",
+        "PULSE_RUNTIME_PATH",
+        "PULSE_SINK",
+        "SSH_AUTH_SOCK",
+    ]
+    # If we immediately unset these environment variables, something (probably
+    # a (sub)process of gnome-session) will add them back, so we wait for a
+    # second to allow the GNOME session to terminate cleanly.
+    logging.info(
+      "Waiting for one second before unsetting systemd environment variables.")
+    time.sleep(1)
+    logging.info("Unsetting systemd user environment variables.")
+    subprocess.call(["systemctl", "--user", "unset-environment"] +
+                    env_vars_to_unset)
+
+
 def cleanup():
   logging.info("Cleanup.")
 
@@ -1963,6 +1987,7 @@ def cleanup():
       os.rmdir(os.path.dirname(g_desktop.xorg_conf))
 
   g_desktop = None
+  unset_crd_systemd_env_vars()
 
 
 class SignalHandler:
