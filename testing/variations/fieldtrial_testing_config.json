@@ -16456,6 +16456,29 @@
             ]
         }
     ],
+    "PageContentAnnotationsBatchAnnotationsTimeout": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "batch_annotations_timeout_seconds": "1"
+                    },
+                    "enable_features": [
+                        "PageContentAnnotations"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoAboutThisSite40Langs": [
         {
             "platforms": [
