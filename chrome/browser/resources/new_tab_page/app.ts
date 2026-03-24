@@ -5,9 +5,9 @@
 import './action_chips/action_chips.js';
 import './iframe.js';
 import './logo.js';
+import './ntp_searchbox.js';
 import '/strings.m.js';
 import 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
-import 'chrome://resources/cr_components/searchbox/searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_components/composebox/composebox.js';
@@ -16,11 +16,10 @@ import 'chrome://resources/cr_components/composebox/threads_rail.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
-import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -53,6 +52,7 @@ import {NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import type {MicrosoftAuthUntrustedDocumentRemote} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
+import type {NtpSearchboxElement} from './ntp_searchbox.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
@@ -165,7 +165,7 @@ export interface AppElement {
     customizeButtons: CustomizeButtonsElement,
     oneGoogleBarClipPath: HTMLElement,
     logo: LogoElement,
-    searchbox: SearchboxElement,
+    searchbox: NtpSearchboxElement,
     composebox: ComposeboxElement,
     undoToast: CrToastElement,
     undoToastMessage: HTMLElement,
@@ -1337,7 +1337,7 @@ export class AppElement extends AppElementBase {
         case $$(this, 'ntp-logo'):
           recordClick(NtpElement.LOGO);
           return;
-        case $$(this, 'cr-searchbox'):
+        case $$(this, 'ntp-searchbox'):
           recordClick(NtpElement.REALBOX);
           return;
         case $$(this, 'ntp-action-chips'):

@@ -76,21 +76,21 @@ std::string GetModelSelector(omnibox::ModelMode model) {
          base::NumberToString(static_cast<int>(model)) + "']";
 }
 
-const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
-const DeepQuery kContextualEntrypoint = {"ntp-app", "cr-searchbox", "#context",
+const DeepQuery kRealbox = {"ntp-app", "ntp-searchbox", "#inputWrapper"};
+const DeepQuery kContextualEntrypoint = {"ntp-app", "ntp-searchbox", "#context",
                                          "#entrypointButton", "#entrypoint"};
-const DeepQuery kContextMenuDialog = {"ntp-app", "cr-searchbox", "#context",
-                                      "#menu",   "#menu",        "#dialog"};
+const DeepQuery kContextMenuDialog = {"ntp-app", "ntp-searchbox", "#context",
+                                      "#menu",   "#menu",         "#dialog"};
 const DeepQuery kComposeboxInput = {"ntp-app", "cr-composebox",
                                     "cr-composebox-input", "#input"};
 const DeepQuery kComposeboxSubmitButton = {"ntp-app", "#composebox",
                                            "#submitContainer"};
 const DeepQuery kComposeboxDialog = {"ntp-app", "#composeboxDialog"};
 const DeepQuery kCreateImagesItem = {
-    "ntp-app", "cr-searchbox", "#context", "#menu",
+    "ntp-app", "ntp-searchbox", "#context", "#menu",
     GetModeSelector(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN)};
 const DeepQuery kCanvasItem = {
-    "ntp-app", "cr-searchbox", "#context", "#menu",
+    "ntp-app", "ntp-searchbox", "#context", "#menu",
     GetModeSelector(omnibox::ToolMode::TOOL_MODE_CANVAS)};
 const DeepQuery kToolChipButton = {"ntp-app", "cr-composebox", "#context",
                                    "cr-composebox-tool-chip",
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, DISABLED_Screenshots) {
           .num_page_load_animations());
 
   const DeepQuery kSearchboxContainer = {"ntp-app", "#content"};
-  const DeepQuery kContextMenuEntrypoint = {"ntp-app", "cr-searchbox",
+  const DeepQuery kContextMenuEntrypoint = {"ntp-app", "ntp-searchbox",
                                             "#context"};
 
   RunTestSequence(
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, AimButtonOpensComposebox) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxDialogOpenEvent);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxInputClearedEvent);
 
-  const DeepQuery kComposeButton = {"ntp-app", "cr-searchbox",
+  const DeepQuery kComposeButton = {"ntp-app", "ntp-searchbox",
                                     "#composeButton"};
 
   WebContentsInteractionTestUtil::StateChange composebox_dialog_open;
@@ -479,15 +479,15 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
   context_menu_open.where = kContextMenuDialog;
   context_menu_open.test_function = "(el) => el && el.open";
 
-  const DeepQuery kImageUploadItem = {"ntp-app", "cr-searchbox", "#context",
+  const DeepQuery kImageUploadItem = {"ntp-app", "ntp-searchbox", "#context",
                                       "#menu", "#imageUpload"};
-  const DeepQuery kFileUploadItem = {"ntp-app", "cr-searchbox", "#context",
+  const DeepQuery kFileUploadItem = {"ntp-app", "ntp-searchbox", "#context",
                                      "#menu", "#fileUpload"};
   const DeepQuery kFastModelItem = {
-      "ntp-app", "cr-searchbox", "#context", "#menu",
+      "ntp-app", "ntp-searchbox", "#context", "#menu",
       GetModelSelector(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR)};
   const DeepQuery kProModelItem = {
-      "ntp-app", "cr-searchbox", "#context", "#menu",
+      "ntp-app", "ntp-searchbox", "#context", "#menu",
       GetModelSelector(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO)};
 
   RunTestSequence(
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuClosedEvent);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSubmitEnabledEvent);
 
-  const DeepQuery kFirstTabItem = {"ntp-app", "cr-searchbox", "#context",
+  const DeepQuery kFirstTabItem = {"ntp-app", "ntp-searchbox", "#context",
                                    "#menu", ".dropdown-item[data-index='0']"};
   const DeepQuery kComposeboxFirstTabItem = {
       "ntp-app",  "#composebox",
