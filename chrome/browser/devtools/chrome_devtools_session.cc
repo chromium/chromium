@@ -27,11 +27,13 @@
 #include "chrome/browser/devtools/protocol/storage_handler.h"
 #include "chrome/browser/devtools/protocol/system_info_handler.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
+#include "chrome/browser/devtools/protocol/webmcp_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -84,6 +86,12 @@ ChromeDevToolsSession::ChromeDevToolsSession(
         channel->GetClient()->IsTrusted()) {
       autofill_handler_ =
           std::make_unique<AutofillHandler>(&dispatcher_, agent_host->GetId());
+    }
+    if (base::FeatureList::IsEnabled(blink::features::kDevToolsWebMCPSupport) &&
+        (IsDomainAvailableToUntrustedClient<WebMCPHandler>() ||
+         channel->GetClient()->IsTrusted())) {
+      webmcp_handler_ = std::make_unique<WebMCPHandler>(
+          &dispatcher_, agent_host->GetWebContents());
     }
   }
   if (IsDomainAvailableToUntrustedClient<ExtensionsHandler>() ||

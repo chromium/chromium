@@ -59,6 +59,11 @@
             {
                 "domain": "PWA",
                 "async": [ "changeAppUserSettings", "getOsAppState", "install", "launch", "launchFilesInApp", "uninstall" ]
+            },
+            {
+              "domain": "WebMCP",
+              "include": [ "enable" ],
+              "include_events": []
             }
         ]
     },

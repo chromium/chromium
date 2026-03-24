@@ -30,6 +30,7 @@ class SecurityHandler;
 class StorageHandler;
 class SystemInfoHandler;
 class TargetHandler;
+class WebMCPHandler;
 class WindowManagerHandler;
 
 class ChromeDevToolsSession : public protocol::FrontendChannel {
@@ -75,6 +76,7 @@ class ChromeDevToolsSession : public protocol::FrontendChannel {
   std::unique_ptr<StorageHandler> storage_handler_;
   std::unique_ptr<SystemInfoHandler> system_info_handler_;
   std::unique_ptr<TargetHandler> target_handler_;
+  std::unique_ptr<WebMCPHandler> webmcp_handler_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WindowManagerHandler> window_manager_handler_;
 #endif

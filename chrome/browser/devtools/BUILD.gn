@@ -42,6 +42,8 @@ if (enable_devtools_frontend) {
     "protocol/storage.h",
     "protocol/system_info.cc",
     "protocol/system_info.h",
+    "protocol/web_mcp.cc",
+    "protocol/web_mcp.h",
   ]
 
   if (is_chromeos) {
@@ -417,6 +419,8 @@ static_library("devtools") {
       "protocol/system_info_handler.h",
       "protocol/target_handler.cc",
       "protocol/target_handler.h",
+      "protocol/webmcp_handler.cc",
+      "protocol/webmcp_handler.h",
     ]
     if (is_chromeos) {
       deps += [
