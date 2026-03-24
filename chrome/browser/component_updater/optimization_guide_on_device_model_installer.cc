@@ -326,20 +326,25 @@ class OnDeviceModelComponentStateManagerDelegate final
 class ManifestComponentsInstallerPolicy final
     : public OptimizationGuideOnDeviceModelInstallerPolicy {
  public:
+  // `asset_id` is the key for the on-demand components in the manifest proto's
+  // `Assets.on_demand_components` map.
   // `asset_manager` has the lifetime till all profiles are closed. It could
   // slightly vary from lifetime of `this` which runs in separate task runner,
   // and could get destroyed slightly later than `state_manager`.
   ManifestComponentsInstallerPolicy(
+      std::string asset_id,
       std::string public_key_hex,
       std::string target_version,
       base::WeakPtr<optimization_guide::ManifestAssetManager> asset_manager)
-      : public_key_hex_(std::move(public_key_hex)),
+      : asset_id_(std::move(asset_id)),
+        public_key_hex_(std::move(public_key_hex)),
         target_version_(std::move(target_version)),
         asset_manager_(std::move(asset_manager)) {
     bool success = base::HexStringToBytes(public_key_hex_, &public_key_hash_);
     if (!success || public_key_hash_.size() != 32) {
       LOG(ERROR) << "Invalid public key hex: [" << public_key_hex_
-                 << "]  with hash size " << public_key_hash_.size();
+                 << "]  with hash size " << public_key_hash_.size()
+                 << " for asset: " << asset_id_;
     }
   }
 
@@ -362,7 +367,7 @@ class ManifestComponentsInstallerPolicy final
         FROM_HERE,
         base::BindOnce(
             &optimization_guide::ManifestAssetManager::OnAssetUninstalled,
-            asset_manager_, public_key_hex_));
+            asset_manager_, asset_id_));
   }
 
   base::FilePath GetRelativeInstallDir() const override {
@@ -375,7 +380,7 @@ class ManifestComponentsInstallerPolicy final
   }
 
   std::string GetName() const override {
-    return "Optimization Guide Manifest Component: " + public_key_hex_;
+    return "Optimization Guide Manifest Component: " + asset_id_;
   }
 
   update_client::InstallerAttributes GetInstallerAttributes() const override {
@@ -386,10 +391,11 @@ class ManifestComponentsInstallerPolicy final
                       const base::FilePath& install_dir,
                       base::DictValue manifest) override {
     if (asset_manager_) {
-      asset_manager_->OnAssetReady(public_key_hex_, version, install_dir);
+      asset_manager_->OnAssetReady(asset_id_, version, install_dir);
     }
   }
 
+  const std::string asset_id_;
   const std::string public_key_hex_;
   std::vector<uint8_t> public_key_hash_;
   const std::string target_version_;
@@ -411,6 +417,7 @@ class ManifestAssetManagerDelegateImpl final
   }
 
   void RegisterOnDemandComponent(
+      const std::string& asset_id,
       const std::string& public_key_hex,
       const std::string& target_version,
       base::WeakPtr<optimization_guide::ManifestAssetManager> manager)
@@ -424,38 +431,41 @@ class ManifestAssetManagerDelegateImpl final
 
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<ManifestComponentsInstallerPolicy>(
-            public_key_hex, target_version, manager));
+            asset_id, public_key_hex, target_version, manager));
 
     auto register_callback = base::BindOnce(
         [](base::WeakPtr<optimization_guide::ManifestAssetManager> manager,
-           ComponentUpdateService* cus, const std::string& public_key_hex,
+           ComponentUpdateService* cus, const std::string& asset_id,
+           const std::string& public_key_hex,
            const std::string& target_version) {
           if (manager) {
             manager->InstallerRegistered(
-                public_key_hex, target_version,
+                asset_id,
                 IsModelAlreadyInstalled(
                     cus, crx_file::id_util::GenerateIdFromHex(public_key_hex),
                     target_version));
           }
         },
-        manager, cus, public_key_hex, target_version);
+        manager, cus, asset_id, public_key_hex, target_version);
 
     installer->Register(cus, std::move(register_callback));
   }
 
-  void Uninstall(const std::string& public_key_hex,
+  void Uninstall(const std::string& asset_id,
+                 const std::string& public_key_hex,
                  base::WeakPtr<optimization_guide::ManifestAssetManager>
                      manager) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<ManifestComponentsInstallerPolicy>(
-            public_key_hex, /*target_version=*/std::string(),
+            asset_id, public_key_hex, /*target_version=*/std::string(),
             std::move(manager)))
         ->Uninstall();
   }
 
-  void RequestUpdate(const std::string& public_key_hex,
+  void RequestUpdate(const std::string& asset_id,
+                     const std::string& public_key_hex,
                      bool is_background) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (!g_browser_process) {

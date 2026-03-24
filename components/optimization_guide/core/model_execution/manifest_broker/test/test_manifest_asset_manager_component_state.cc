@@ -32,39 +32,38 @@ class TestManifestAssetManagerComponentState::DelegateImpl
   ~DelegateImpl() override = default;
 
   void RegisterOnDemandComponent(
+      const std::string& asset_id,
       const std::string& public_key_hex,
       const std::string& target_version,
       base::WeakPtr<ManifestAssetManager> manager) override {
-    bool is_already_installed = false;
     if (state_) {
-      state_->registered_components_.insert(public_key_hex);
-      state_->managers_[public_key_hex] = manager;
-      is_already_installed =
-          state_->already_installed_components_.contains(public_key_hex);
+      state_->registered_assets_.insert(asset_id);
+      state_->managers_[asset_id] = manager;
     }
-    manager->InstallerRegistered(public_key_hex, target_version,
-                                 is_already_installed);
+    manager->InstallerRegistered(asset_id, /*is_already_installed=*/false);
   }
 
-  void Uninstall(const std::string& public_key_hex,
+  void Uninstall(const std::string& asset_id,
+                 const std::string& public_key_hex,
                  base::WeakPtr<ManifestAssetManager> manager) override {
     if (state_) {
-      state_->uninstalled_components_.insert(public_key_hex);
+      state_->uninstalled_assets_.insert(asset_id);
     }
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ManifestAssetManager::OnAssetUninstalled, manager,
-                       public_key_hex),
+                       asset_id),
         base::Seconds(1));
   }
 
-  void RequestUpdate(const std::string& public_key_hex,
+  void RequestUpdate(const std::string& asset_id,
+                     const std::string& public_key_hex,
                      bool is_background) override {
     if (state_) {
       if (is_background) {
-        state_->background_updates_requested_.insert(public_key_hex);
+        state_->background_updates_requested_.insert(asset_id);
       } else {
-        state_->foreground_updates_requested_.insert(public_key_hex);
+        state_->foreground_updates_requested_.insert(asset_id);
       }
     }
   }
@@ -97,32 +96,32 @@ TestManifestAssetManagerComponentState::CreateDelegate() {
 }
 
 bool TestManifestAssetManagerComponentState::IsRegistered(
-    const std::string& public_key) const {
-  return registered_components_.contains(public_key);
+    const std::string& asset_id) const {
+  return registered_assets_.contains(asset_id);
 }
 
-bool TestManifestAssetManagerComponentState::WasUninstallRequested(
-    const std::string& public_key) const {
-  return uninstalled_components_.contains(public_key);
+bool TestManifestAssetManagerComponentState::WasUninstalled(
+    const std::string& asset_id) const {
+  return uninstalled_assets_.contains(asset_id);
 }
 
 bool TestManifestAssetManagerComponentState::WasOnDemandUpdateRequested(
-    const std::string& public_key) const {
-  return foreground_updates_requested_.contains(public_key);
+    const std::string& asset_id) const {
+  return foreground_updates_requested_.contains(asset_id);
 }
 
 bool TestManifestAssetManagerComponentState::WasBackgroundUpdateRequested(
-    const std::string& public_key) const {
-  return background_updates_requested_.contains(public_key);
+    const std::string& asset_id) const {
+  return background_updates_requested_.contains(asset_id);
 }
 
-void TestManifestAssetManagerComponentState::SimulateComponentReady(
-    const std::string& public_key,
+void TestManifestAssetManagerComponentState::SimulateAssetReady(
+    const std::string& asset_id,
     const base::Version& version,
     const base::FilePath& install_dir) {
-  auto it = managers_.find(public_key);
+  auto it = managers_.find(asset_id);
   if (it != managers_.end() && it->second) {
-    it->second->OnAssetReady(public_key, version, install_dir);
+    it->second->OnAssetReady(asset_id, version, install_dir);
   }
 }
 
