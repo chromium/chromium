@@ -64,7 +64,7 @@ const char kPopularSitesURLFormatWithArm[] =
     "https://www.gstatic.com/%ssuggested_sites_%s_%s_%d.json";
 const char kPopularSitesDefaultDirectory[] = "chrome/ntp/";
 const char kPopularSitesDefaultCountryCode[] = "DEFAULT";
-const char kPopularSitesDefaultVersion[] = "5";
+const char kPopularSitesDefaultVersion[] = "7";
 const int kSitesExplorationStartVersion = 6;
 const int kPopularSitesRedownloadIntervalHours = 24;
 #if BUILDFLAG(IS_IOS)
