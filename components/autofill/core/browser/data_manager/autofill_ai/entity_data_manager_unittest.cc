@@ -484,65 +484,6 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(vh));
 }
 
-class EntityDataManagerTest_SyncablePref
-    : public EntityDataManagerTest_InitiallyEmpty {
- private:
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiSetSyncablePrefFromAccountPref};
-};
-
-// Tests that the syncable pref is correctly migrated from the account keyed
-// pref.
-TEST_F(EntityDataManagerTest_SyncablePref,
-       SyncablePrefIsOffAndAccountKeyPrefIsOn_MigratePrefValue) {
-  // At first the user is not opted-in, therefore no migration happens.
-
-  // Opt the user in.
-  ASSERT_TRUE(client().SetUpPrefsAndIdentityForAutofillAi());
-  // Recreate the entity data manager to trigger possible pref migration.
-  RecreateEntityDataManager_Discouraged();
-  EXPECT_TRUE(prefs::IsAutofillAiSyncedOptInStatusEnabled(client().GetPrefs()));
-  // The first construction of the `EntityDataManager` triggered no migration
-  // because the user was not opted-in.
-  histogram_tester().ExpectBucketCount(
-      "Autofill.Ai.OptIn.PrefMigration",
-      EntityDataManager::AutofillAiPrefMigrationStatus::
-          kPrefNotMigratedAccountPrefNeverSet,
-      1);
-  // The second construction triggers a migration.
-  histogram_tester().ExpectBucketCount(
-      "Autofill.Ai.OptIn.PrefMigration",
-      EntityDataManager::AutofillAiPrefMigrationStatus::kPrefMigratedEnabled,
-      1);
-}
-
-// Tests that no migration happens if the syncable pref is already enabled.
-TEST_F(EntityDataManagerTest_SyncablePref, SyncablePrefIsOn_DoNotMigrate) {
-  // At first the user is not opted-in, therefore no migration happens.
-
-  // Opt the user in.
-  ASSERT_TRUE(client().SetUpPrefsAndIdentityForAutofillAi());
-  // Enable synced pref, which should lead to no migration.
-  client().GetPrefs()->SetBoolean(prefs::kAutofillAiSyncedOptInStatus, true);
-
-  // Recreate the entity data manager to trigger possible pref migration.
-  RecreateEntityDataManager_Discouraged();
-  // The first construction of the `EntityDataManager` triggered no migration
-  // because the user was not opted-in.
-  histogram_tester().ExpectBucketCount(
-      "Autofill.Ai.OptIn.PrefMigration",
-      EntityDataManager::AutofillAiPrefMigrationStatus::
-          kPrefNotMigratedAccountPrefNeverSet,
-      1);
-  // The first construction of the `EntityDataManager` triggered no migration
-  // because the synced pref has already been set.
-  histogram_tester().ExpectBucketCount(
-      "Autofill.Ai.OptIn.PrefMigration",
-      EntityDataManager::AutofillAiPrefMigrationStatus::
-          kPrefNotMigratedAlreadySet,
-      1);
-}
-
 TEST_F(
     EntityDataManagerTest_InitiallyEmpty,
     SyncablePrefIsOffAndAccountKeyPrefIsOn_FeatureOff_DoNotMigratePrefValue) {

@@ -55,40 +55,12 @@ EntityDataManager::EntityDataManager(
         std::make_unique<AutofillAiSaveStrikeDatabaseByHost>(strike_database);
   }
 
-  const bool user_is_opted_in =
-      GetAutofillAiOptInStatus(pref_service, identity_manager);
-  // Initial Autofill AI users have their opt-in pref stored keyed by their
-  // gaia-id and not syncable. On the other hand, the new Autofill AI opt-in
-  // pref (`prefs::kAutofillAiSyncedOptInStatus`) is a regular syncable pref.
-  // The following code block migrates users who opted-in to the old pref to the
-  // new syncable pref. For the time being, it does not remove the old pref to
-  // allow rollbacks.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAiSetSyncablePrefFromAccountPref)) {
-    using enum AutofillAiPrefMigrationStatus;
-    AutofillAiPrefMigrationStatus pref_migration =
-        kPrefNotMigratedAccountPrefNeverSet;
-    if (HasSetLocalAutofillAiOptInStatus(pref_service, identity_manager)) {
-      const PrefService::Preference& synced_pref = CHECK_DEREF(
-          pref_service->FindPreference(prefs::kAutofillAiSyncedOptInStatus));
-      if (!synced_pref.HasUserSetting()) {
-        pref_service->SetBoolean(prefs::kAutofillAiSyncedOptInStatus,
-                                 user_is_opted_in);
-        pref_migration =
-            user_is_opted_in ? kPrefMigratedEnabled : kPrefMigratedDisabled;
-      } else {
-        pref_migration = kPrefNotMigratedAlreadySet;
-      }
-    }
-    base::UmaHistogramEnumeration("Autofill.Ai.OptIn.PrefMigration",
-                                  pref_migration);
-  }
-
   // This assumes that `EntityDataManager` is created once on profile creation.
-  base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Status.Startup",
-                                user_is_opted_in
-                                    ? AutofillAiOptInStatus::kOptedIn
-                                    : AutofillAiOptInStatus::kOptedOut);
+  base::UmaHistogramEnumeration(
+      "Autofill.Ai.OptIn.Status.Startup",
+      GetAutofillAiOptInStatus(pref_service, identity_manager)
+          ? AutofillAiOptInStatus::kOptedIn
+          : AutofillAiOptInStatus::kOptedOut);
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillUseAccessibilityAnnotator) &&

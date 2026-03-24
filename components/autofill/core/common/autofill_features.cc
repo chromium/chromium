@@ -285,12 +285,6 @@ BASE_FEATURE_PARAM(bool,
                    "autofill_ai_model_use_cache_results",
                    false);
 
-// If enabled the current account keyed Autofill AI opt-in pref
-// (`prefs::kAutofillAiOptInStatus`) is migrated to to the syncable
-// `kAutofillAiOptInStatus` pref.
-BASE_FEATURE(kAutofillAiSetSyncablePrefFromAccountPref,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the client may trigger the server model for AutofillAI type
 // predictions using Private AI Compute.
 BASE_FEATURE(kAutofillAiUsePrivateAi, base::FEATURE_DISABLED_BY_DEFAULT);
