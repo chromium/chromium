@@ -2057,7 +2057,7 @@
 <translation id="2363475280045770326">儲存設定時發生錯誤</translation>
 <translation id="2363744066037724557">還原視窗 (&amp;R)</translation>
 <translation id="2365507699358342471">這個網站可以讀取已複製到剪貼簿的文字和圖片。</translation>
-<translation id="236588788378837122">按下 Ctrl + Shift + A 鍵即可開啟分頁搜尋功能。從現在起，你可以在這裡搜尋及關閉分頁。你可以隨時取消固定。</translation>
+<translation id="236588788378837122">按下 Ctrl + Shift + A 鍵即可開啟分頁搜尋功能。現在起，你可以在這裡搜尋及關閉分頁，還能隨時取消固定此工具。</translation>
 <translation id="2367972762794486313">顯示應用程式</translation>
 <translation id="2369058545741334020">以閱讀模式開啟</translation>
 <translation id="236939127352773362">當附近的裝置正在分享內容時</translation>
@@ -4449,7 +4449,7 @@
 <translation id="3954953195017194676">你最近並未擷取 WebRTC 事件記錄。</translation>
 <translation id="3955321697524543127">禁止網站連線至 USB 裝置</translation>
 <translation id="3957663711862465084">USB 設定</translation>
-<translation id="3957844511978444971">輕觸「接受」即表示您確認所選的這些 Google 服務設定。</translation>
+<translation id="3957844511978444971">輕觸「接受」即表示您確認選定的 Google 服務設定。</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3958110062351175311">已允許在工具列中顯示要求</translation>
 <translation id="3958821725268247062">你已經安裝過「<ph name="APP_NAME" />」了</translation>
@@ -5279,7 +5279,7 @@
 <translation id="4542520061254486227">讀取你在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上產生的資料</translation>
 <translation id="4543778593405494224">憑證管理員</translation>
 <translation id="4544174279960331769">預設的藍色顯示圖片</translation>
-<translation id="4544595896051435161">分頁搜尋功能已移動</translation>
+<translation id="4544595896051435161">分頁搜尋功能搬家了</translation>
 <translation id="4545028762441890696">如要重新啟用這個擴充功能，請接受新權限：</translation>
 <translation id="4545759655004063573">由於權限不足，因此無法儲存內容。請選擇其他儲存位置。</translation>
 <translation id="4546345569117159016">右鍵</translation>
@@ -7859,7 +7859,7 @@
 <translation id="6342069812937806050">剛剛</translation>
 <translation id="6343003829431264373">僅限偶數頁</translation>
 <translation id="6343262564968371601">搜尋 Google、檔案、應用程式等，尋找所需資訊</translation>
-<translation id="6343932110790212017">從現在起，你可以在這裡搜尋及關閉分頁。你可以隨時取消固定。</translation>
+<translation id="6343932110790212017">現在起，你可以在這裡搜尋及關閉分頁，還能隨時取消固定此工具。</translation>
 <translation id="6343981313228733146">視窗已向右上方移動</translation>
 <translation id="6344170822609224263">存取網路連線清單</translation>
 <translation id="6344576354370880196">已儲存的印表機</translation>
@@ -8116,7 +8116,7 @@
 <translation id="6525767484449074555">按一下「安裝」</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6527574156657772563">沒有可用的裝置。請在手機上登入 Google 帳戶，即可與這台 <ph name="DEVICE_TYPE" /> 連結。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="652969759100732863">按下 ⌘ + Shift + A 鍵即可開啟分頁搜尋功能。從現在起，你可以在這裡搜尋及關閉分頁。你可以隨時取消固定。</translation>
+<translation id="652969759100732863">按下 ⌘ + Shift + A 鍵即可開啟分頁搜尋功能。現在起，你可以在這裡搜尋及關閉分頁，還能隨時取消固定此工具。</translation>
 <translation id="6530030995840538405">AI 生成的<ph name="SUBJECT" />圖片 <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">這些是系統管理員強制套用的設定</translation>
 <translation id="6530267432324197764">由「<ph name="MANAGER" />」管理的設定檔</translation>
@@ -10128,7 +10128,7 @@
 <translation id="7887864092952184874">已配對藍牙滑鼠</translation>
 <translation id="7889371445710865055">變更語音輸入語言</translation>
 <translation id="7890147169288018054">查看網路資訊，例如你的 IP 位址或 MAC 位址</translation>
-<translation id="7890722904825422657">查看完整的分頁標題、輕鬆管理分頁群組，以及將分頁移到側邊，騰出垂直空間。</translation>
+<translation id="7890722904825422657">將分頁移到側邊，就能查看完整的分頁標題、輕鬆管理分頁群組，還能騰出垂直空間。</translation>
 <translation id="7892005672811746207">開啟「儲存群組」</translation>
 <translation id="7892384782944609022">無法配對。請選取裝置後再試一次。</translation>
 <translation id="7893008570150657497">存取你電腦中的相片、音樂及其他媒體</translation>

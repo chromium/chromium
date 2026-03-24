@@ -2069,7 +2069,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="237828693408258535">Diese Seite übersetzen?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung wird möglicherweise bald nicht mehr unterstützt}other{Diese Erweiterungen werden möglicherweise bald nicht mehr unterstützt}}</translation>
 <translation id="2378982052244864789">Erweiterungsverzeichnis auswählen</translation>
-<translation id="2379111564446699251">Wenn du die Schaltflächen in der Symbolleiste neu anordnen möchtest, zieh sie einfach an eine andere Stelle</translation>
+<translation id="2379111564446699251">Wenn du die Buttons in der Symbolleiste neu anordnen möchtest, zieh sie einfach an eine andere Stelle</translation>
 <translation id="2379281330731083556">Über das Systemdialogfeld drucken... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Das kann dazu führen, dass deine Mobilfunkverbindung für einige Minuten getrennt wird</translation>
 <translation id="2381499968174336913">Vorschau des geteilten Tabs</translation>
@@ -2391,7 +2391,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2589658397149952302">Drive-Dateien nie anzeigen</translation>
 <translation id="2593499352046705383">Erstelle vor der Installation auf jeden Fall ein Backup deiner Daten. Wenn du <ph name="DEVICE_OS" /> installierst, werden die Daten auf deiner Festplatte überschrieben. Weitere Informationen findest du unter g.co/flex/InstallGuide.</translation>
 <translation id="2597073208962000830">Nearby Share nutzt die Bluetooth-Suche, um Geräte in der Nähe zu finden.</translation>
-<translation id="2598136842498757793">Schaltflächen auf Symbolleiste anpassen</translation>
+<translation id="2598136842498757793">Buttons auf Symbolleiste anpassen</translation>
 <translation id="2598710988533271874">Neue Chrome-Version verfügbar</translation>
 <translation id="2599048253926156421">Nutzername in Zwischenablage kopiert</translation>
 <translation id="2602501489742255173">Zum Starten nach oben wischen</translation>
@@ -5244,7 +5244,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4515872537870654449">Wende dich für eine Reparatur an Dell. Wenn der Lüfter nicht funktioniert, wird das Dock ausgeschaltet.</translation>
 <translation id="4515942088136451195">Deine Organisation schränkt ein, was du speichern kannst</translation>
-<translation id="4516395361210407049">Schaltflächen auf Symbolleiste wurden zurückgesetzt</translation>
+<translation id="4516395361210407049">Buttons auf Symbolleiste wurden zurückgesetzt</translation>
 <translation id="4519331665958994620">Websites dürfen nachfragen, wenn sie meine Kamera verwenden möchten</translation>
 <translation id="4519605771716872386">Dateisynchronisierung aktiviert</translation>
 <translation id="4519935350946509010">Verbindungsfehler.</translation>
@@ -7285,7 +7285,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5938002010494270685">Sicherheitsupdate verfügbar</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5939719276406088041">Verknüpfung konnte nicht erstellt werden</translation>
-<translation id="5939723110967488589">Festlegen, welche Schaltflächen in der Symbolleiste angezeigt werden</translation>
+<translation id="5939723110967488589">Festlegen, welche Buttons in der Symbolleiste angezeigt werden</translation>
 <translation id="594048410531370124">Unbekannte Taste. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="5941153596444580863">Person hinzufügen...</translation>
 <translation id="5941343993301164315">Melde dich in <ph name="TOKEN_NAME" /> an.</translation>
@@ -8526,7 +8526,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="679845623837196966">Leseliste anzeigen</translation>
 <translation id="6798578729981748444">Schließe alle Firefox-Fenster, um den Import abzuschließen.</translation>
 <translation id="6798780071646309401">Feststelltaste an</translation>
-<translation id="679905836499387150">Ausgeblendete Schaltflächen der Symbolleiste</translation>
+<translation id="679905836499387150">Ausgeblendete Buttons der Symbolleiste</translation>
 <translation id="6800893479155997609">Top‑Apps für dein <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Festlegen, ob diese Erweiterung diese Website lesen oder ändern darf}other{Festlegen, ob diese Erweiterungen diese Website lesen oder ändern dürfen}}</translation>
 <translation id="6801435275744557998">Touchscreen kalibrieren</translation>
@@ -11603,7 +11603,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8859402192569844210">Nutzungsbedingungen konnten nicht geladen werden</translation>
 <translation id="8859662783913000679">Elternkonto</translation>
 <translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} Konto}other{{COUNT} Konten}}</translation>
-<translation id="8861568709166518036">Mit Schaltflächen auf dem Bildschirm kannst du zum Startbildschirm, zur vorherigen Seite und zwischen Apps wechseln. Wird automatisch aktiviert, wenn ChromeVox oder automatische Klicks aktiviert sind.</translation>
+<translation id="8861568709166518036">Mit Buttons auf dem Bildschirm kannst du zum Startbildschirm, zur vorherigen Seite und zwischen Apps wechseln. Wird automatisch aktiviert, wenn ChromeVox oder automatische Klicks aktiviert sind.</translation>
 <translation id="8862171793076850931">Die Berechtigung zum Streamen wurde abgelehnt. Öffne für weitere Informationen einen Hilfeartikel in einem neuen Tab.</translation>
 <translation id="8863753581171631212">Link in neuem <ph name="APP" />-Fenster öffnen</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> wird mit <ph name="APP_NAME" /> geteilt</translation>
