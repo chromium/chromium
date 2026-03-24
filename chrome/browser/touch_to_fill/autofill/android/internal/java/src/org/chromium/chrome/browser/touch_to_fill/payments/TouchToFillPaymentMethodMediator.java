@@ -460,6 +460,7 @@ class TouchToFillPaymentMethodMediator {
     private InputProtector mInputProtector = new InputProtector();
     private PersonalDataManager mPersonalDataManager;
     private PrefChangeRegistrar mPrefChangeRegistrar;
+    private boolean mDidShowBoldedAiTerms;
 
     void initialize(
             Context context,
@@ -476,6 +477,7 @@ class TouchToFillPaymentMethodMediator {
         mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
         mPrefChangeRegistrar.addObserver(
                 Pref.AUTOFILL_BNPL_ENABLED, this::updateBnplSuggestionOnPrefChange);
+        mDidShowBoldedAiTerms = true;
     }
 
     void updateBnplSuggestionOnPrefChange() {
@@ -817,7 +819,11 @@ class TouchToFillPaymentMethodMediator {
                                 R.string
                                         .autofill_pending_dialog_loading_accessibility_description)));
         progressScreenModel.add(
-                buildTermsForBnplProgressUi(mContext, this::showPaymentMethodSettings));
+                buildTermsForBnplSelectionAndProgressUi(
+                        mContext,
+                        /* didShowBoldedAiTerms= */ mDidShowBoldedAiTerms,
+                        /* isProgressUi= */ true,
+                        this::showPaymentMethodSettings));
 
         mModel.set(SHEET_ITEMS, progressScreenModel);
         mModel.set(
@@ -862,11 +868,13 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerContextModel(issuerContext)));
         }
 
+        mDidShowBoldedAiTerms =
+                mPersonalDataManager.isAutofillAmountExtractionAiTermsSeenPrefEnabled();
         sheetItems.add(
-                buildTermsForBnplSelectionUi(
+                buildTermsForBnplSelectionAndProgressUi(
                         mContext,
-                        /* hasSeenAiTerms= */ mPersonalDataManager
-                                .isAutofillAmountExtractionAiTermsSeenPrefEnabled(),
+                        /* didShowBoldedAiTerms= */ mDidShowBoldedAiTerms,
+                        /* isProgressUi= */ false,
                         this::showPaymentMethodSettings));
 
         mModel.set(
@@ -1530,21 +1538,19 @@ class TouchToFillPaymentMethodMediator {
     }
 
     @VisibleForTesting
-    static ListItem buildTermsForBnplSelectionUi(
-            Context context, boolean hasSeenAiTerms, Runnable onLinkClickCallback) {
+    static ListItem buildTermsForBnplSelectionAndProgressUi(
+            Context context,
+            boolean didShowBoldedAiTerms,
+            boolean isProgressUi,
+            Runnable onLinkClickCallback) {
         List<SpanApplier.SpanInfo> spanInfos = new ArrayList<>();
-        spanInfos.add(
-                new SpanApplier.SpanInfo(
-                        "<link>",
-                        "</link>",
-                        new ChromeClickableSpan(context, (view) -> onLinkClickCallback.run())));
 
         String termsString;
         if (ChromeFeatureList.isEnabled(
                 AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION)) {
             termsString =
                     context.getString(R.string.autofill_bnpl_issuer_bottom_sheet_ai_terms_label);
-            if (hasSeenAiTerms) {
+            if (didShowBoldedAiTerms) {
                 termsString = termsString.replace("<bold>", "").replace("</bold>", "");
             } else {
                 spanInfos.add(
@@ -1554,6 +1560,15 @@ class TouchToFillPaymentMethodMediator {
         } else {
             termsString = context.getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label);
         }
+
+        spanInfos.add(
+                new SpanApplier.SpanInfo(
+                        "<link>",
+                        "</link>",
+                        isProgressUi
+                                ? createGrayedOutLinkSpan(context)
+                                : new ChromeClickableSpan(
+                                        context, (view) -> onLinkClickCallback.run())));
 
         return new ListItem(
                 BNPL_SELECTION_PROGRESS_TERMS,
@@ -1566,54 +1581,27 @@ class TouchToFillPaymentMethodMediator {
                         .build());
     }
 
-    @VisibleForTesting
-    static ListItem buildTermsForBnplProgressUi(Context context, Runnable onLinkClickCallback) {
-        ClickableSpan unclickableLinkSpan =
-                new ClickableSpan() {
-                    @Override
-                    public void onClick(View widget) {
-                        // This is intentionally left empty as there are no click events
-                        // when disabled.
-                    }
+    private static ClickableSpan createGrayedOutLinkSpan(Context context) {
+        return new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                // This is intentionally left empty as there are no click events when disabled.
+            }
 
-                    @Override
-                    public void updateDrawState(TextPaint textPaint) {
-                        // Resolves the standard link color, just like ChromeClickableSpan does.
-                        int defaultColor =
-                                context.getColor(R.color.default_text_color_link_baseline);
-                        int linkColor =
-                                AttrUtils.resolveColor(
-                                        context.getTheme(),
-                                        R.attr.globalClickableSpanColor,
-                                        defaultColor);
-                        // Create the new color for the disabled link with 38% opacity.
-                        int alpha = (int) (255 * GRAYED_OUT_OPACITY_ALPHA);
-                        int lowOpacityColor = (linkColor & 0x00FFFFFF) | (alpha << 24);
-                        textPaint.setColor(lowOpacityColor);
-                        textPaint.setUnderlineText(true);
-                    }
-                };
-
-        return new ListItem(
-                BNPL_SELECTION_PROGRESS_TERMS,
-                new PropertyModel.Builder(BnplSelectionProgressTermsProperties.ALL_KEYS)
-                        .with(
-                                TERMS_TEXT,
-                                SpanApplier.applySpans(
-                                        ChromeFeatureList.isEnabled(
-                                                        AutofillFeatures
-                                                                .AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION)
-                                                ? context.getString(
-                                                                R.string
-                                                                        .autofill_bnpl_issuer_bottom_sheet_ai_terms_label)
-                                                        .replace("<bold>", "")
-                                                        .replace("</bold>", "")
-                                                : context.getString(
-                                                        R.string
-                                                                .autofill_bnpl_issuer_bottom_sheet_terms_label),
-                                        new SpanApplier.SpanInfo(
-                                                "<link>", "</link>", unclickableLinkSpan)))
-                        .build());
+            @Override
+            public void updateDrawState(TextPaint textPaint) {
+                // Resolves the standard link color, just like ChromeClickableSpan does.
+                int defaultColor = context.getColor(R.color.default_text_color_link_baseline);
+                int linkColor =
+                        AttrUtils.resolveColor(
+                                context.getTheme(), R.attr.globalClickableSpanColor, defaultColor);
+                // Create the new color for the disabled link with 38% opacity.
+                int alpha = (int) (255 * GRAYED_OUT_OPACITY_ALPHA);
+                int lowOpacityColor = (linkColor & 0x00FFFFFF) | (alpha << 24);
+                textPaint.setColor(lowOpacityColor);
+                textPaint.setUnderlineText(true);
+            }
+        };
     }
 
     private ListItem buildFooterForLegalMessage(List<LegalMessageLine> legalMessageLines) {

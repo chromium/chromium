@@ -1363,7 +1363,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
-    public void testBnplProgressScreenTerms_AiBasedAmountExtractionEnabled() {
+    public void testBnplProgressScreenTerms_AiBasedAmountExtractionEnabled_HasSeenAiTerms() {
+        when(mPersonalDataManager.isAutofillAmountExtractionAiTermsSeenPrefEnabled())
+                .thenReturn(true);
+
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
         mCoordinator.getMediatorForTesting().showProgressScreen();
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
@@ -1382,6 +1388,52 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
         assertEquals("There should be exactly one clickable span", 1, spans.length);
         assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ true);
+
+        // Verify no bold span for AI terms.
+        StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
+        assertEquals(0, styleSpans.length);
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
+    public void testBnplProgressScreenTerms_AiBasedAmountExtractionEnabled_HasNotSeenAiTerms() {
+        when(mPersonalDataManager.isAutofillAmountExtractionAiTermsSeenPrefEnabled())
+                .thenReturn(false);
+
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+
+        Optional<PropertyModel> termsModel =
+                getBnplSelectionProgressTermsModel(mTouchToFillPaymentMethodModel.get(SHEET_ITEMS));
+        assertTrue(termsModel.isPresent());
+
+        // Verify the expecteed terms text.
+        CharSequence termsText = termsModel.get().get(TERMS_TEXT);
+        assertThat(termsText.toString(), is(BNPL_AI_TERMS));
+
+        // Verify the expecteed terms is SpannableString type.
+        assertTrue("Terms text should be a SpannableString", termsText instanceof SpannableString);
+        SpannableString spannable = (SpannableString) termsText;
+        ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
+        assertEquals("There should be exactly one clickable span", 1, spans.length);
+        assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ true);
+
+        // Verify the bold span for AI terms.
+        StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
+        assertEquals(1, styleSpans.length);
+        StyleSpan boldTextSpan = styleSpans[0];
+        assertTrue(boldTextSpan.getStyle() == Typeface.BOLD);
+        assertEquals(
+                BNPL_AI_TERMS_BOLDED_TEXT,
+                spannable
+                        .toString()
+                        .substring(
+                                spannable.getSpanStart(boldTextSpan),
+                                spannable.getSpanEnd(boldTextSpan)));
     }
 
     @Test
