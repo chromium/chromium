@@ -59,6 +59,9 @@ public class SafetyHubTestRule implements TestRule {
     private FakePasswordCheckupClientHelper mFakePasswordCheckupClientHelper;
 
     private void setUp() {
+        // MockitoRule is not processed recursively in JUnit 4, and these are
+        // TestRule or TestWatcher implementations. Manual initialization is
+        // required.
         MockitoAnnotations.initMocks(this);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNatives);

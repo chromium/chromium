@@ -17,12 +17,14 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -45,6 +47,7 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
     ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
 })
 public class TopControlsStackerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final int OFFSET_NOT_OBSERVED = -1024;
 
     /** Mock implementation of TestLayer for testing purposes. */
@@ -228,7 +231,6 @@ public class TopControlsStackerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mVisibilityDelegate = new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH);
         doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
         mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer, mVisibilityDelegate);

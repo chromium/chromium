@@ -39,7 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -71,7 +70,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mContext = spy(ApplicationProvider.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);
 

@@ -24,11 +24,13 @@ import androidx.activity.ComponentActivity;
 import androidx.core.pip.PictureInPictureDelegate;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -47,6 +49,7 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ActorPictureInPictureControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorService;
     @Mock private ActorKeyedServiceFactory.Natives mActorKeyedServiceFactoryJni;
@@ -59,7 +62,6 @@ public class ActorPictureInPictureControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ActorKeyedServiceFactoryJni.setInstanceForTesting(mActorKeyedServiceFactoryJni);
 
         ComponentActivity realActivity =

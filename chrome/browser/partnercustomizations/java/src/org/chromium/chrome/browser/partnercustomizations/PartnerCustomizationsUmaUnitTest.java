@@ -27,12 +27,14 @@ import android.os.SystemClock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
@@ -55,6 +57,7 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PartnerCustomizationsUmaUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
 
     @Captor private ArgumentCaptor<LifecycleObserver> mLifeCycleObserverCaptor;
@@ -90,7 +93,6 @@ public class PartnerCustomizationsUmaUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         PartnerCustomizationsUma.resetStaticsForTesting();
         mPartnerCustomizationsUma = new PartnerCustomizationsUma();
     }

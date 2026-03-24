@@ -10,10 +10,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -32,14 +34,13 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
 public class PartnerBrowserCustomizationsRoboUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
 
     @Before
     public void setup() {
         CustomizationProviderDelegateUpstreamImpl.setHomepageForTesting(
                 JUnitTestGURLs.EXAMPLE_URL.getSpec());
-
-        MockitoAnnotations.openMocks(this);
     }
 
     @After

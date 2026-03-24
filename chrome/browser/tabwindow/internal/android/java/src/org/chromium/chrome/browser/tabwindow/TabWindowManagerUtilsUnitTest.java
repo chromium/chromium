@@ -10,11 +10,12 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
@@ -27,15 +28,11 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabWindowManagerUtilsUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Context mContext;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testGetTabGroupTitleInAnyWindow() {

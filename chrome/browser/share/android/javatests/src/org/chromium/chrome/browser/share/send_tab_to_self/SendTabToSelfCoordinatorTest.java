@@ -21,7 +21,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,13 +44,13 @@ import org.chromium.ui.base.WindowAndroid;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SendTabToSelfCoordinatorTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
 
         // Skip device lock UI on automotive.
         doAnswer(

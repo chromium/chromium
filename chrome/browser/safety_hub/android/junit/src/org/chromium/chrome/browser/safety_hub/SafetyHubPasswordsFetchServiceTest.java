@@ -20,7 +20,8 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
@@ -47,10 +48,12 @@ import java.util.Collection;
 /** Unit tests for SafetyHubPasswordsFetchService. */
 @RunWith(Enclosed.class)
 public class SafetyHubPasswordsFetchServiceTest {
+
     @RunWith(ParameterizedRobolectricTestRunner.class)
     @Batch(Batch.UNIT_TESTS)
     @Features.EnableFeatures({ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS})
     public static class SafetyHubPasswordsFetchServiceParamTests {
+        @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
         private static final String TEST_EMAIL_ADDRESS = "test@email.com";
 
         /** Returns all possible combinations for test parameterization. */
@@ -76,7 +79,6 @@ public class SafetyHubPasswordsFetchServiceTest {
         @Before
         public void setUp() {
             // Needed because of BaseRobolectricTestRule.
-            MockitoAnnotations.openMocks(this);
 
             mPrefService = mSafetyHubTestRule.getPrefService();
             mPasswordCheckupClientHelper = mSafetyHubTestRule.getPasswordCheckupClientHelper();
@@ -276,6 +278,7 @@ public class SafetyHubPasswordsFetchServiceTest {
     @Batch(Batch.UNIT_TESTS)
     @Features.EnableFeatures({ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS})
     public static class SafetyHubPasswordsFetchServiceSingleTests {
+        @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
         @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
         @Mock private Callback<Boolean> mTaskFinishedCallback;
@@ -287,7 +290,6 @@ public class SafetyHubPasswordsFetchServiceTest {
 
         @Before
         public void setUp() {
-            MockitoAnnotations.openMocks(this);
 
             mPrefService = mSafetyHubTestRule.getPrefService();
             mPasswordCheckupClientHelper = mSafetyHubTestRule.getPasswordCheckupClientHelper();
