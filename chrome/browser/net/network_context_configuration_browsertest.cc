@@ -1886,11 +1886,10 @@ class NetworkContextConfigurationProxySettingsBrowserTest
   const size_t kDefaultMaxConnectionsPerProxy = 64;
 
   NetworkContextConfigurationProxySettingsBrowserTest() {
-    // `kTcpSocketPoolProxyLimit` is specified as this test depends on a
-    // specific value, and not setting it causes test failures across field
-    // trials. `kPermitTcpSocketPoolConnectBackupJobs` is disabled as backup
-    // jobs cause extra connections without opening new WebSockets, breaking
-    // tests.
+    // Enable `kTcpSocketPoolProxyLimit`, and set to match
+    // `kDefaultMaxConnectionsPerProxy` to prevent changes via field trials.
+    // Disable `kPermitTcpSocketPoolConnectBackupJobs`, as backup jobs
+    // cause extra connections without opening new WebSockets, breaking tests.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
