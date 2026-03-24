@@ -38,14 +38,25 @@ source_set("annotation_reducer") {
     "query_classifier.cc",
     "query_classifier.h",
     "query_intent_type.h",
+    "query_intent_type_util.cc",
+    "query_intent_type_util.h",
+    "sync_bridge_data_provider.cc",
+    "sync_bridge_data_provider.h",
   ]
 
   public_deps = [ "//base" ]
+  deps = [
+    "//components/accessibility_annotator/core/data_models",
+    "//components/accessibility_annotator/core/storage",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "query_classifier_unittest.cc" ]
+  sources = [
+    "query_classifier_unittest.cc",
+    "sync_bridge_data_provider_unittest.cc",
+  ]
 
   deps = [
     ":annotation_reducer",
@@ -54,8 +65,13 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core/data_models",
+    "//components/accessibility_annotator/core/storage",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//components/sync/protocol",
+    "//components/version_info",
     "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
