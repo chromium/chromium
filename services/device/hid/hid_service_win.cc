@@ -581,6 +581,7 @@ void HidServiceWin::EnumerateBlocking(
 }
 
 HANDLE HidServiceWin::OpenDeviceThroughGcpw(std::wstring_view device_path) {
+  HID_LOG(ERROR) << "Going to open device through GCPW. " << device_path;
   // LINT.IfChange
   HANDLE pipe_handle = GetStdHandle(STD_INPUT_HANDLE);
   if (pipe_handle == INVALID_HANDLE_VALUE) {
