@@ -463,6 +463,10 @@ error::Error RasterDecoderImpl::HandleReadbackYUVImagePixelsINTERNALImmediate(
   const volatile raster::cmds::ReadbackYUVImagePixelsINTERNALImmediate& c =
       *static_cast<const volatile raster::cmds::
                        ReadbackYUVImagePixelsINTERNALImmediate*>(cmd_data);
+  GLuint src_x = static_cast<GLuint>(c.src_x);
+  GLuint src_y = static_cast<GLuint>(c.src_y);
+  GLuint src_width = static_cast<GLuint>(c.src_width);
+  GLuint src_height = static_cast<GLuint>(c.src_height);
   GLuint dst_width = static_cast<GLuint>(c.dst_width);
   GLuint dst_height = static_cast<GLuint>(c.dst_height);
   GLint shm_id = static_cast<GLint>(c.shm_id);
@@ -486,7 +490,8 @@ error::Error RasterDecoderImpl::HandleReadbackYUVImagePixelsINTERNALImmediate(
   if (mailbox == nullptr) {
     return error::kOutOfBounds;
   }
-  DoReadbackYUVImagePixelsINTERNAL(dst_width, dst_height, shm_id, shm_offset,
+  DoReadbackYUVImagePixelsINTERNAL(src_x, src_y, src_width, src_height,
+                                   dst_width, dst_height, shm_id, shm_offset,
                                    y_offset, y_stride, u_offset, u_stride,
                                    v_offset, v_stride, mailbox);
   return error::kNoError;

@@ -132,6 +132,12 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
    private:
     void SetRasterContextProvider(scoped_refptr<viz::RasterContextProvider>);
 
+    void OnAsyncReadbackCompleted(
+        scoped_refptr<media::VideoFrame> texture_frame,
+        scoped_refptr<media::VideoFrame> mapped_frame,
+        base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback,
+        bool success);
+
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
 

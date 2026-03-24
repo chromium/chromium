@@ -560,24 +560,30 @@ TEST_F(RasterFormatTest, ReadbackYUVImagePixelsINTERNALImmediate) {
       *GetBufferAs<cmds::ReadbackYUVImagePixelsINTERNALImmediate>();
   void* next_cmd = cmd.Set(
       &cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
-      static_cast<GLint>(13), static_cast<GLuint>(14), static_cast<GLuint>(15),
-      static_cast<GLuint>(16), static_cast<GLuint>(17), static_cast<GLuint>(18),
-      static_cast<GLuint>(19), static_cast<GLuint>(20), data);
+      static_cast<GLuint>(13), static_cast<GLuint>(14), static_cast<GLuint>(15),
+      static_cast<GLuint>(16), static_cast<GLint>(17), static_cast<GLuint>(18),
+      static_cast<GLuint>(19), static_cast<GLuint>(20), static_cast<GLuint>(21),
+      static_cast<GLuint>(22), static_cast<GLuint>(23), static_cast<GLuint>(24),
+      data);
   EXPECT_EQ(static_cast<uint32_t>(
                 cmds::ReadbackYUVImagePixelsINTERNALImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
             cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.dst_width);
-  EXPECT_EQ(static_cast<GLuint>(12), cmd.dst_height);
-  EXPECT_EQ(static_cast<GLint>(13), cmd.shm_id);
-  EXPECT_EQ(static_cast<GLuint>(14), cmd.shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.y_offset);
-  EXPECT_EQ(static_cast<GLuint>(16), cmd.y_stride);
-  EXPECT_EQ(static_cast<GLuint>(17), cmd.u_offset);
-  EXPECT_EQ(static_cast<GLuint>(18), cmd.u_stride);
-  EXPECT_EQ(static_cast<GLuint>(19), cmd.v_offset);
-  EXPECT_EQ(static_cast<GLuint>(20), cmd.v_stride);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.src_x);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.src_y);
+  EXPECT_EQ(static_cast<GLuint>(13), cmd.src_width);
+  EXPECT_EQ(static_cast<GLuint>(14), cmd.src_height);
+  EXPECT_EQ(static_cast<GLuint>(15), cmd.dst_width);
+  EXPECT_EQ(static_cast<GLuint>(16), cmd.dst_height);
+  EXPECT_EQ(static_cast<GLint>(17), cmd.shm_id);
+  EXPECT_EQ(static_cast<GLuint>(18), cmd.shm_offset);
+  EXPECT_EQ(static_cast<GLuint>(19), cmd.y_offset);
+  EXPECT_EQ(static_cast<GLuint>(20), cmd.y_stride);
+  EXPECT_EQ(static_cast<GLuint>(21), cmd.u_offset);
+  EXPECT_EQ(static_cast<GLuint>(22), cmd.u_stride);
+  EXPECT_EQ(static_cast<GLuint>(23), cmd.v_offset);
+  EXPECT_EQ(static_cast<GLuint>(24), cmd.v_stride);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

@@ -737,7 +737,11 @@ class RasterDecoderImpl final : public RasterDecoder,
                                          GLuint color_space_offset,
                                          GLuint pixels_offset,
                                          const volatile GLbyte* mailbox);
-  void DoReadbackYUVImagePixelsINTERNAL(GLuint dst_width,
+  void DoReadbackYUVImagePixelsINTERNAL(GLuint src_x,
+                                        GLuint src_y,
+                                        GLuint src_width,
+                                        GLuint src_height,
+                                        GLuint dst_width,
                                         GLuint dst_height,
                                         GLint shm_id,
                                         GLuint shm_offset,
@@ -2438,6 +2442,10 @@ void OnReadYUVImagePixelsDone(
 }  // namespace
 
 void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
+    GLuint src_x,
+    GLuint src_y,
+    GLuint src_width,
+    GLuint src_height,
     GLuint dst_width,
     GLuint dst_height,
     GLint shm_id,
@@ -2598,7 +2606,19 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     return;
   }
 
-  const SkIRect src_rect = SkIRect::MakeSize(sk_image->dimensions());
+  const SkIRect src_rect =
+      SkIRect::MakeXYWH(src_x, src_y, src_width, src_height);
+
+  if (!SkIRect::MakeSize(sk_image->dimensions()).contains(src_rect)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackYUVImagePixels",
+                       "SRC rect is outside of source image dimensions");
+    source_scoped_access->ApplyBackendSurfaceEndState();
+    shared_context_state_->SubmitIfNecessary(
+        std::move(end_semaphores),
+        source_scoped_access->NeedGraphiteContextSubmit());
+    return;
+  }
+
   const SkISize dst_size = SkISize::Make(dst_width, dst_height);
 
   // Readback is potentially slow, so report progress here.

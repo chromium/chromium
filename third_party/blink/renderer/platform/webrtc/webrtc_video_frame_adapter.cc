@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -232,6 +233,9 @@ bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     scoped_refptr<media::VideoFrame> source_frame) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webrtc"),
+               "WebRtcVideoFrameAdapter::SharedResources::"
+               "ConstructVideoFrameFromTexture");
   CHECK(source_frame->HasSharedImage());
 
   auto raster_context_provider = GetRasterContextProvider();
@@ -344,6 +348,9 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
     scoped_refptr<media::VideoFrame> source_frame) {
+  TRACE_EVENT0(
+      TRACE_DISABLED_BY_DEFAULT("webrtc"),
+      "WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu");
   CHECK(source_frame);
   // NV12 is the only supported format.
   DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
@@ -359,6 +366,9 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
 void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
     scoped_refptr<media::VideoFrame> frame,
     base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback) {
+  TRACE_EVENT0(
+      TRACE_DISABLED_BY_DEFAULT("webrtc"),
+      "WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync");
   // If no scaling required for GMB frame: Can just convert to mapped frame.
   // If the frame is textured, we still need to go through the full copy
   // mechanism below, even if no scaling is needed, because it will also
@@ -371,6 +381,8 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
     return;
   }
 
+  DCHECK(frame->HasSharedImage());
+
   auto raster_context_provider = GetRasterContextProvider();
   if (!raster_context_provider) {
     std::move(callback).Run(nullptr);
@@ -379,155 +391,96 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
 
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       raster_context_provider.get());
+  auto* ri = scoped_context.RasterInterface();
+  DCHECK(ri);
 
-  if (!disable_gmb_frames_ &&
-      CanUseGpuMemoryBufferReadback(
-          frame->format(), raster_context_provider->SharedImageInterface(),
-          raster_context_provider->ContextCapabilities())) {
-    if (!accelerated_frame_pool_) {
-      accelerated_frame_pool_ =
-          media::RenderableMappableSharedImageVideoFramePool::Create(
-              std::make_unique<Context>(raster_context_provider));
-    }
+  if (frame->HasSharedImage()) {
+    const gfx::Size out_size = frame->natural_size();
+    const gfx::Rect out_rect_even(
+        gfx::Size(out_size.width() & ~1u, out_size.height() & ~1u));
+    const gfx::Rect source_rect = frame->visible_rect();
 
-    scoped_refptr<media::VideoFrame> dst_frame;
-    {
-      // Blocking is necessary to create the GpuMemoryBuffer from this thread.
-      base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-      gfx::ColorSpace color_space = frame->ColorSpace();
-      // RGB formats will be converted to YUV, so original color space
-      // can't be used for scaled frame.
-      if (frame->format() == media::PIXEL_FORMAT_ARGB ||
-          frame->format() == media::PIXEL_FORMAT_ABGR ||
-          frame->format() == media::PIXEL_FORMAT_XRGB ||
-          frame->format() == media::PIXEL_FORMAT_XBGR) {
-        color_space = gfx::ColorSpace::CreateREC601();
-      }
-      dst_frame = accelerated_frame_pool_->MaybeCreateVideoFrame(
-          frame->natural_size(), color_space);
-    }
-
-    if (dst_frame) {
-      CHECK(dst_frame->HasSharedImage());
-      dst_frame->set_timestamp(frame->timestamp());
-      dst_frame->set_metadata(frame->metadata());
-
-      auto* ri = raster_context_provider->RasterInterface();
-      DCHECK(ri);
+    scoped_refptr<media::VideoFrame> output_frame =
+        pool_for_mapped_frames_.CreateFrame(media::PIXEL_FORMAT_I420, out_size,
+                                            gfx::Rect(out_size), out_size,
+                                            base::TimeDelta());
+    if (output_frame) {
+      auto finish_callback = base::BindOnce(
+          &WebRtcVideoFrameAdapter::SharedResources::OnAsyncReadbackCompleted,
+          this, frame, output_frame, std::move(callback));
+      auto keepalive_callback =
+          base::BindOnce([](scoped_refptr<media::VideoFrame> frame) {}, frame);
 
       auto src_sync_token = frame->acquire_sync_token();
-      auto src_shared_image = frame->shared_image();
-      std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
-          src_shared_image->BeginRasterAccess(ri, src_sync_token,
-                                              /*readonly=*/true);
+      auto shared_image = frame->shared_image();
+      std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+          shared_image->BeginRasterAccess(ri, src_sync_token,
+                                          /*readonly=*/true);
 
-      auto dst_sync_token = dst_frame->acquire_sync_token();
-      auto dst_shared_image = dst_frame->shared_image();
-      std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
-          dst_shared_image->BeginRasterAccess(ri, dst_sync_token,
-                                              /*readonly=*/false);
+      ri->ReadbackYUVPixelsAsync(
+          shared_image->mailbox(), shared_image->GetTextureTarget(),
+          source_rect, out_rect_even,
+          shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
+          output_frame->stride(media::VideoFrame::Plane::kY),
+          output_frame->GetWritableVisiblePlaneData(
+              media::VideoFrame::Plane::kY),
+          output_frame->stride(media::VideoFrame::Plane::kU),
+          output_frame->GetWritableVisiblePlaneData(
+              media::VideoFrame::Plane::kU),
+          output_frame->stride(media::VideoFrame::Plane::kV),
+          output_frame->GetWritableVisiblePlaneData(
+              media::VideoFrame::Plane::kV),
+          std::move(keepalive_callback), std::move(finish_callback));
 
-      ri->CopySharedImage(src_shared_image->mailbox(),
-                          dst_shared_image->mailbox(), frame->visible_rect(),
-                          gfx::Rect(frame->natural_size()));
-
-      gpu::SyncToken completion_sync_token =
-          gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
-      gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
-
-      media::SimpleSyncTokenClient simple_client(completion_sync_token);
-      dst_frame->UpdateAcquireSyncToken(completion_sync_token);
-      dst_frame->UpdateReleaseSyncToken(&simple_client);
-
-      auto on_scaling_done = base::BindOnce(
-          [](base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>
-                 callback,
-             scoped_refptr<media::VideoFrame> dst_frame, bool success) {
-            if (success) {
-              media::ConvertToMemoryMappedFrameAsync(std::move(dst_frame),
-                                                     std::move(callback));
-            } else {
-              std::move(callback).Run(nullptr);
-            }
-          },
-          std::move(callback), dst_frame);
-
-      if (!dst_frame->HasNativeMappableSharedImage()) {
-        // On windows we need to explicitly request copy of the
-        // texture data to the shared memory GMB.
-        // ri->WaitSyncTokenCHROMIUM(completion_sync_token.GetData());
-        // populate the dst_frame shared memory GMB with data from the GPU.
-        auto* sii = raster_context_provider->SharedImageInterface();
-
-        if (base::FeatureList::IsEnabled(kUseCopyToGpuMemoryBufferAsync)) {
-          auto on_copy_to_gmb_done = [](base::OnceCallback<void(bool)> callback,
-                                        bool success) {
-            if (!success) {
-              DLOG(ERROR) << "CopyToGpuMemoryBufferAsync failed!";
-              base::debug::DumpWithoutCrashing();
-            }
-            std::move(callback).Run(success);
-          };
-
-          sii->CopyToGpuMemoryBufferAsync(
-              completion_sync_token, dst_shared_image->mailbox(),
-              base::BindOnce(std::move(on_copy_to_gmb_done),
-                             std::move(on_scaling_done)));
-          return;
-        } else {
-          sii->CopyToGpuMemoryBuffer(completion_sync_token,
-                                     dst_shared_image->mailbox());
-
-          // Synchronize RasterInterface with SharedImageInterface.
-          auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
-          ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
-
-          media::SimpleSyncTokenClient simple_client_blt(
-              copy_to_gmb_done_sync_token);
-          dst_frame->UpdateAcquireSyncToken(copy_to_gmb_done_sync_token);
-          dst_frame->UpdateReleaseSyncToken(&simple_client_blt);
-
-          completion_sync_token = copy_to_gmb_done_sync_token;
-        }
-      }
-
-      unsigned query_id = 0;
-      ri->GenQueriesEXT(1, &query_id);
-      ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
-      ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
-
-      auto on_query_done = base::BindOnce(
-          [](base::OnceCallback<void(bool)> callback,
-             scoped_refptr<viz::RasterContextProvider> ri_provider,
-             unsigned query_id) {
-            auto* ri = ri_provider->RasterInterface();
-            ri->DeleteQueriesEXT(1, &query_id);
-            std::move(callback).Run(true);
-          },
-          std::move(on_scaling_done), raster_context_provider, query_id);
-
-      auto* context_support = raster_context_provider->ContextSupport();
-      DCHECK(context_support);
-      context_support->SignalQuery(query_id, std::move(on_query_done));
-
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
       return;
     }
-
-    DLOG(WARNING) << "Disabling GpuMemoryBuffer based readback due to failure.";
-    disable_gmb_frames_ = true;
-    accelerated_frame_pool_.reset();
   }
 
-  // if not succeeded in scaling above, just map the frame as is via
-  // ConvertToMemoryMappedFrameAsync();
-  if (frame->HasMappableSharedImage()) {
-    media::ConvertToMemoryMappedFrameAsync(frame, std::move(callback));
-  } else {
-    frame = media::ReadbackTextureBackedFrameToMemorySync(
-        *frame, raster_context_provider->RasterInterface(),
-        &pool_for_mapped_frames_);
-    std::move(callback).Run(frame);
+  // if not succeeded in scaling above, just map the frame as is
+  frame = media::ReadbackTextureBackedFrameToMemorySync(
+      *frame, ri, &pool_for_mapped_frames_);
+  std::move(callback).Run(frame);
+}
+
+void WebRtcVideoFrameAdapter::SharedResources::OnAsyncReadbackCompleted(
+    scoped_refptr<media::VideoFrame> texture_frame,
+    scoped_refptr<media::VideoFrame> mapped_frame,
+    base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback,
+    bool success) {
+  TRACE_EVENT1(
+      TRACE_DISABLED_BY_DEFAULT("webrtc"),
+      "WebRtcVideoFrameAdapter::SharedResources::OnAsyncReadbackCompleted",
+      "success", success);
+  if (success) {
+    std::move(callback).Run(mapped_frame);
+    return;
   }
+
+  // Try to just map the `texture_frame` without scaling to ensure that it will
+  // be at least mapped outside of encoder.
+
+  if (texture_frame->HasMappableSharedImage()) {
+    media::ConvertToMemoryMappedFrameAsync(texture_frame, std::move(callback));
+    return;
+  }
+
+  DCHECK(texture_frame->HasSharedImage());
+
+  auto raster_context_provider = GetRasterContextProvider();
+  if (!raster_context_provider) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+      raster_context_provider.get());
+  auto* ri = scoped_context.RasterInterface();
+  DCHECK(ri);
+
+  auto frame = media::ReadbackTextureBackedFrameToMemorySync(
+      *texture_frame, ri, &pool_for_mapped_frames_);
+  std::move(callback).Run(frame);
 }
 
 void WebRtcVideoFrameAdapter::SharedResources::SetFeedback(

@@ -296,7 +296,11 @@ void ReadbackARGBImagePixelsINTERNALImmediate(GLint src_x,
   }
 }
 
-void ReadbackYUVImagePixelsINTERNALImmediate(GLuint dst_width,
+void ReadbackYUVImagePixelsINTERNALImmediate(GLuint src_x,
+                                             GLuint src_y,
+                                             GLuint src_width,
+                                             GLuint src_height,
+                                             GLuint dst_width,
                                              GLuint dst_height,
                                              GLint shm_id,
                                              GLuint shm_offset,
@@ -313,8 +317,9 @@ void ReadbackYUVImagePixelsINTERNALImmediate(GLuint dst_width,
       GetImmediateCmdSpaceTotalSize<
           raster::cmds::ReadbackYUVImagePixelsINTERNALImmediate>(size);
   if (c) {
-    c->Init(dst_width, dst_height, shm_id, shm_offset, y_offset, y_stride,
-            u_offset, u_stride, v_offset, v_stride, mailbox);
+    c->Init(src_x, src_y, src_width, src_height, dst_width, dst_height, shm_id,
+            shm_offset, y_offset, y_stride, u_offset, u_stride, v_offset,
+            v_stride, mailbox);
   }
 }
 

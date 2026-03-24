@@ -234,8 +234,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       shared_image->BeginRasterAccess(context_provider->RasterInterface(),
                                       image->GetSyncToken(), /*readonly=*/true);
   context_provider->RasterInterface()->ReadbackYUVPixelsAsync(
-      shared_image->mailbox(), shared_image->GetTextureTarget(), image_size,
-      gfx::Rect(image_size),
+      shared_image->mailbox(), shared_image->GetTextureTarget(),
+      gfx::Rect(image_size), gfx::Rect(image_size),
       shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
       output_frame->stride(media::VideoFrame::Plane::kY),
       output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kY),
@@ -243,7 +243,6 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kU),
       output_frame->stride(media::VideoFrame::Plane::kV),
       output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kV),
-      gfx::Point(0, 0),
       blink::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
                       weak_ptr_factory_.GetWeakPtr(), image),
       blink::BindOnce(

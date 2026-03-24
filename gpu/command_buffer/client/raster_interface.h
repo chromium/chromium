@@ -152,7 +152,7 @@ class RasterInterface : public InterfaceBase {
   virtual void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
-      const gfx::Size& source_size,
+      const gfx::Rect& source_rect,
       const gfx::Rect& output_rect,
       bool vertically_flip_texture,
       int y_plane_row_stride_bytes,
@@ -161,7 +161,6 @@ class RasterInterface : public InterfaceBase {
       base::span<uint8_t> u_plane_data,
       int v_plane_row_stride_bytes,
       base::span<uint8_t> v_plane_data,
-      const gfx::Point& paste_location,
       base::OnceCallback<void()> release_mailbox,
       base::OnceCallback<void(bool)> readback_done) = 0;
 
