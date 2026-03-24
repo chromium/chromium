@@ -321,7 +321,7 @@ size_t CountActiveFieldsInForms(const std::vector<FormData>& forms) {
 std::string FieldTypeToString(uint32_t type) {
   return base::StrCat(
       {base::NumberToString(type), "/",
-       FieldTypeToStringView(ToSafeFieldType(type, UNKNOWN_TYPE))});
+       FieldTypeToStringView(ToSafeFieldType(type).value_or(UNKNOWN_TYPE))});
 }
 
 LogBuffer& operator<<(LogBuffer& out, const AutofillPageQueryRequest& query) {

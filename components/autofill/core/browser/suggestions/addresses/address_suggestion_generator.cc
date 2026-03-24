@@ -113,7 +113,7 @@ FieldTypeSet GetAutofillOnTypingPossibleTypes() {
     if (!base::StringToInt(part, &current_value)) {
       return {};
     }
-    FieldType type = ToSafeFieldType(current_value, NO_SERVER_DATA);
+    FieldType type = ToSafeFieldType(current_value).value_or(NO_SERVER_DATA);
     if (!IsAddressType(type)) {
       return {};
     }

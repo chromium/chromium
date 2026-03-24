@@ -38,7 +38,8 @@ AutofillServerPrediction::~AutofillServerPrediction() = default;
 FieldType AutofillServerPrediction::server_type() const {
   return server_predictions.empty()
              ? NO_SERVER_DATA
-             : ToSafeFieldType(server_predictions[0].type(), NO_SERVER_DATA);
+             : ToSafeFieldType(server_predictions[0].type())
+                   .value_or(NO_SERVER_DATA);
 }
 
 bool AutofillServerPrediction::is_override() const {

@@ -246,8 +246,9 @@ TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictionsInvalidType) {
   {
     auto* field_response = model_response.add_field_responses();
     constexpr int invalid_field_type = 789;
-    static_assert(ToSafeFieldType(invalid_field_type, NO_SERVER_DATA) ==
-                  NO_SERVER_DATA);
+    static_assert(
+        ToSafeFieldType(invalid_field_type).value_or(NO_SERVER_DATA) ==
+        NO_SERVER_DATA);
     field_response->set_field_type(invalid_field_type);
   }
 

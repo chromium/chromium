@@ -197,7 +197,7 @@ FieldClassificationModelHandler::CreateMlPredictionLog(
   std::vector<std::string> model_types;
   for (int field_type_as_int : state_->metadata.output_type()) {
     FieldType field_type =
-        ToSafeFieldType(FieldType(field_type_as_int), NO_SERVER_DATA);
+        ToSafeFieldType(FieldType(field_type_as_int)).value_or(NO_SERVER_DATA);
     std::string field_type_name = (field_type != NO_SERVER_DATA)
                                       ? FieldTypeToString(field_type)
                                       : "[INVALID]";
@@ -419,7 +419,8 @@ void FieldClassificationModelHandler::OnModelUpdated(
 
   supported_types_.clear();
   for (int type : state.metadata.output_type()) {
-    supported_types_.insert(ToSafeFieldType(FieldType(type), NO_SERVER_DATA));
+    supported_types_.insert(
+        ToSafeFieldType(FieldType(type)).value_or(NO_SERVER_DATA));
   }
   state_.emplace(std::move(state));
 
@@ -482,9 +483,9 @@ std::pair<FieldType, float> FieldClassificationModelHandler::GetMostLikelyType(
            .has_confidence_threshold_per_field() ||
       model_output[max_index] >= state_->metadata.postprocessing_parameters()
                                      .confidence_threshold_per_field()) {
-    return {
-        ToSafeFieldType(state_->metadata.output_type(max_index), UNKNOWN_TYPE),
-        model_output[max_index]};
+    return {ToSafeFieldType(state_->metadata.output_type(max_index))
+                .value_or(UNKNOWN_TYPE),
+            model_output[max_index]};
   }
   return {NO_SERVER_DATA, 0.0};
 }

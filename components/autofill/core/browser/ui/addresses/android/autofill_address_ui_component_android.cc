@@ -34,9 +34,10 @@ AutofillAddressUiComponentAndroid
 AutofillAddressUiComponentAndroid::FromJavaAutofillAddressUiComponent(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_component) {
-  autofill::FieldType field_type = ToSafeFieldType(
-      Java_AutofillAddressUiComponent_getFieldType(env, j_component),
-      UNKNOWN_TYPE);
+  autofill::FieldType field_type =
+      ToSafeFieldType(
+          Java_AutofillAddressUiComponent_getFieldType(env, j_component))
+          .value_or(UNKNOWN_TYPE);
   std::string label =
       Java_AutofillAddressUiComponent_getLabel(env, j_component);
   bool is_required =

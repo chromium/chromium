@@ -160,7 +160,8 @@ TEST_F(AutofillFieldTest, UnionTypesFromServerTypes) {
 
   constexpr FieldType kInvalidFieldType =
       static_cast<FieldType>(15);  // nocheck
-  ASSERT_EQ(ToSafeFieldType(kInvalidFieldType, NO_SERVER_DATA), NO_SERVER_DATA);
+  ASSERT_EQ(ToSafeFieldType(kInvalidFieldType).value_or(NO_SERVER_DATA),
+            NO_SERVER_DATA);
 
   EXPECT_THAT(f(), ElementsAre(UNKNOWN_TYPE));
 

@@ -740,7 +740,7 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
       for (const auto& [underlying_field_type, value,
                         underlying_verification_status] : records) {
         FieldType field_type =
-            ToSafeFieldType(underlying_field_type, NO_SERVER_DATA);
+            ToSafeFieldType(underlying_field_type).value_or(NO_SERVER_DATA);
         std::optional<VerificationStatus> verification_status =
             ToSafeVerificationStatus(underlying_verification_status);
         if (field_type != NO_SERVER_DATA && verification_status) {

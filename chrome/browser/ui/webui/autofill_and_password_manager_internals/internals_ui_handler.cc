@@ -198,9 +198,9 @@ void InternalsUIHandler::OnGetAutofillAiCache(const base::ListValue& args) {
               .Set("rank",
                    base::NumberToString(
                        field_identifier.field_rank_in_signature_group()))
-              .Set("type",
-                   FieldTypeToStringView(ToSafeFieldType(
-                       field_response.field_type(), autofill::UNKNOWN_TYPE)));
+              .Set("type", FieldTypeToStringView(
+                               ToSafeFieldType(field_response.field_type())
+                                   .value_or(autofill::UNKNOWN_TYPE)));
       if (!field_response.formatting_meta().empty()) {
         field_info.Set("format", field_response.formatting_meta());
       }

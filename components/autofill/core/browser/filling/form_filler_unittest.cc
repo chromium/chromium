@@ -1677,7 +1677,7 @@ TEST_F(FormFillerTest, FillPassportEntity) {
     std::vector<FieldType> actual_types = base::ToVector(
         form_structure->fields()[field_index]->server_predictions(),
         [](const auto& p) {
-          return ToSafeFieldType(p.type(), NO_SERVER_DATA);
+          return ToSafeFieldType(p.type()).value_or(NO_SERVER_DATA);
         });
     CHECK(expected_types == actual_types);
   };

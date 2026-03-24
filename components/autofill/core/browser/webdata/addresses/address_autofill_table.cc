@@ -497,7 +497,7 @@ std::optional<std::vector<FieldTypeData>> ReadProfileTypeTokens(
   std::vector<FieldTypeData> field_type_data;
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
-    FieldType type = ToSafeFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
+    FieldType type = ToSafeFieldType(s.ColumnInt(0)).value_or(UNKNOWN_TYPE);
     if (!AutofillProfile::kDatabaseStoredTypes.contains(type)) {
       // This is possible in two cases:
       // - The database was tampered with by external means.

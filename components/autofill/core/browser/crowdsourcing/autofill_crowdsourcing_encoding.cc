@@ -599,7 +599,7 @@ bool HasPasswordManagerPrediction(const FieldSuggestion& field_suggestion) {
   return std::ranges::any_of(
       field_suggestion.predictions(), [](const auto& prediction) {
         auto group_type = GroupTypeOfFieldType(
-            ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
+            ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA));
         return group_type == FieldTypeGroup::kPasswordField ||
                group_type == FieldTypeGroup::kUsernameField;
       });
@@ -613,7 +613,7 @@ void MergePasswordManagerPredictions(
   CHECK_NE(&merge_to_predictions, &merge_from_predictions);
   for (const auto& prediction : merge_from_predictions.predictions()) {
     FieldTypeGroup group_type = GroupTypeOfFieldType(
-        ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
+        ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA));
     // Only add predictions relevant for PasswordManager.
     if (group_type == FieldTypeGroup::kPasswordField ||
         group_type == FieldTypeGroup::kUsernameField) {
@@ -797,7 +797,7 @@ void MaybeMergeServerPredictions(
     std::vector<FieldPrediction>& server_predictions) {
   const auto server_types =
       FieldTypeSet(server_predictions, [](const FieldPrediction& pred) {
-        return ToSafeFieldType(pred.type(), UNKNOWN_TYPE);
+        return ToSafeFieldType(pred.type()).value_or(UNKNOWN_TYPE);
       });
 
   if (server_types.contains_all({EMAIL_ADDRESS, LOYALTY_MEMBERSHIP_ID})) {
@@ -839,7 +839,8 @@ void ClearSmallAddressFormPredictions(
   // A small form must contain only address fields (or undetermined field types)
   // to be a small address form.
   auto is_address_or_undetermined_type = [](const FieldPrediction& prediction) {
-    FieldType type = ToSafeFieldType(prediction.type(), NO_SERVER_DATA);
+    FieldType type =
+        ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA);
     // For historic reasons, AutofillAI types are treated as "unknown type".
     // They don't influence the small form handling.
     if (GroupTypeOfFieldType(type) == FieldTypeGroup::kAutofillAi) {
@@ -882,7 +883,8 @@ void ClearSmallAddressFormPredictions(
         return false;
     }
     // Only address types should be wiped.
-    FieldType type = ToSafeFieldType(prediction.type(), NO_SERVER_DATA);
+    FieldType type =
+        ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA);
     return IsAddressType(type);
   };
 
@@ -1153,8 +1155,9 @@ void ServerPredictions::ApplyTo(FormStructure& form) const {
                                   : FieldPrediction::SOURCE_UNSPECIFIED,
         .server_type2 =
             field->server_predictions().size() >= 2
-                ? std::optional<FieldType>(ToSafeFieldType(
-                      field->server_predictions()[1].type(), NO_SERVER_DATA))
+                ? std::optional<FieldType>(
+                      ToSafeFieldType(field->server_predictions()[1].type())
+                          .value_or(NO_SERVER_DATA))
                 : std::nullopt,
         .prediction_source2 = field->server_predictions().size() >= 2
                                   ? field->server_predictions()[1].source()

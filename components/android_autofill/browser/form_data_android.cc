@@ -110,7 +110,7 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
       std::vector<FieldType> server_predictions;
       for (const auto& prediction : autofill_field->server_predictions()) {
         server_predictions.emplace_back(
-            ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
+            ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA));
       }
       std::string_view overall_type = [&] {
         if (HtmlFieldType html_field_type = autofill_field->html_type();

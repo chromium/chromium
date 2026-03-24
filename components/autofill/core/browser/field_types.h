@@ -604,8 +604,12 @@ enum class FieldTypeGroup {
   kMaxValue = kOneTimePassword,
 };
 
-constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
-                                    FieldType fallback_value);
+// Returns `raw_value` if it is a known FieldType constant.
+//
+// Validating FieldTypes in server responses is particularly important because
+// old clients may know fewer values than the server does.
+constexpr std::optional<FieldType> ToSafeFieldType(
+    std::underlying_type_t<FieldType> raw_value);
 
 constexpr HtmlFieldType ToSafeHtmlFieldType(
     std::underlying_type_t<HtmlFieldType> raw_value,
@@ -616,7 +620,7 @@ struct DenseSetTraits<FieldType>
     : EnumDenseSetTraits<FieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE> {
   static constexpr bool is_valid(FieldType x) {
     return x == NO_SERVER_DATA ||
-           ToSafeFieldType(std::to_underlying(x), NO_SERVER_DATA) !=
+           ToSafeFieldType(std::to_underlying(x)).value_or(NO_SERVER_DATA) !=
                NO_SERVER_DATA;
   }
 };
@@ -675,11 +679,11 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type);
 // Not all HtmlFieldTypes have a corresponding FieldType.
 FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type);
 
-// Returns |raw_value| if it corresponds to a non-deprecated enumeration
+// Returns `raw_value` if it corresponds to a non-deprecated enumeration
 // constant of FieldType other than MAX_VALID_FIELD_TYPE. Otherwise, returns
-// |fallback_value|.
-constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
-                                    FieldType fallback_value) {
+// std::nullopt.
+constexpr std::optional<FieldType> ToSafeFieldType(
+    std::underlying_type_t<FieldType> raw_value) {
   auto is_invalid = [](std::underlying_type_t<FieldType> t) {
     return t < NO_SERVER_DATA || t >= MAX_VALID_FIELD_TYPE ||
            // Work phone numbers (values [15,19]) are deprecated.
@@ -721,8 +725,10 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // future.
            (204 <= t && t <= 205) || (211 <= t && t <= 214);
   };
-  return is_invalid(raw_value) ? fallback_value
-                               : static_cast<FieldType>(raw_value);  // nocheck
+  if (is_invalid(raw_value)) {
+    return std::nullopt;
+  }
+  return static_cast<FieldType>(raw_value);  // nocheck
 }
 
 constexpr HtmlFieldType ToSafeHtmlFieldType(

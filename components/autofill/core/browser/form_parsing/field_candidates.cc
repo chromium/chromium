@@ -39,7 +39,7 @@ FieldType FieldCandidates::BestHeuristicType() const {
 
   const auto best_type_it = std::ranges::max_element(type_scores);
   const size_t index = std::distance(type_scores.begin(), best_type_it);
-  return ToSafeFieldType(index, NO_SERVER_DATA);
+  return ToSafeFieldType(index).value_or(NO_SERVER_DATA);
 }
 
 DenseSet<MatchAttribute> FieldCandidates::BestHeuristicTypeReason() const {

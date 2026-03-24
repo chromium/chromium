@@ -323,7 +323,8 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
   std::vector<std::tuple<FieldType, std::u16string, VerificationStatus>>
       modified_fields;
   for (int int_field_type : field_types) {
-    FieldType field_type = ToSafeFieldType(int_field_type, NO_SERVER_DATA);
+    FieldType field_type =
+        ToSafeFieldType(int_field_type).value_or(NO_SERVER_DATA);
     CHECK(field_type != NO_SERVER_DATA);
     VerificationStatus status =
         Java_AutofillProfile_getInfoStatus(env, jprofile, field_type);

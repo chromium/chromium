@@ -98,7 +98,7 @@ std::string ServerTypesToString(const AutofillField& field) {
   std::vector<std::string_view> server_types =
       base::ToVector(field.server_predictions(), [](const auto& prediction) {
         return FieldTypeToStringView(
-            ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
+            ToSafeFieldType(prediction.type()).value_or(NO_SERVER_DATA));
       });
 
   if (server_types.empty()) {
