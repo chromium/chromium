@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
 #include "chrome/browser/extensions/sync/extension_sync_service_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
-#include "chrome/browser/extensions/sync/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -308,11 +307,8 @@ std::string ExtensionSyncService::GetClientTag(
 }
 
 void ExtensionSyncService::OnExtensionManagementSettingsChanged() {
-  if (base::FeatureList::IsEnabled(
-          extensions::kReinstallSyncedExtensionsOnPolicyChange)) {
-    ReloadSyncData(syncer::EXTENSIONS);
-    ReloadSyncData(syncer::APPS);
-  }
+  ReloadSyncData(syncer::EXTENSIONS);
+  ReloadSyncData(syncer::APPS);
 }
 
 ExtensionSyncData ExtensionSyncService::CreateSyncData(
