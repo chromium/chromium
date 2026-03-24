@@ -14,17 +14,19 @@
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/ui/android/extensions/windowing/test/native_unit_test_support_jni/ExtensionWindowControllerBridgeNativeUnitTestSupport_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaGlobalRef;
 using testing::Return;
+using testing::ReturnRef;
 }  // namespace
 
 class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
@@ -34,45 +36,26 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
 
   void SetUp() override {
     SetUpProfile();
+    SetUpBrowserWindow();
+    SetUpTabModel();
     java_test_support_.Reset(
         Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_Constructor(
             AttachCurrentThread()));
-
-    BrowserWindowInterface* browser = reinterpret_cast<BrowserWindowInterface*>(
-        Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_getNativeBrowserWindowPtr(
-            AttachCurrentThread(), java_test_support_));
-
-    test_tab_model_ = std::make_unique<TestTabModel>(browser->GetProfile());
-    test_tab_model_->AssociateWithBrowserWindow(browser);
-  }
-
-  void SetUpProfile() {
-    task_environment_ = std::make_unique<content::BrowserTaskEnvironment>();
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
-    base::FilePath profile_path =
-        profile_manager()->user_data_dir().AppendASCII("test-profile");
-    profile_ = static_cast<TestingProfile*>(
-        profile_manager()->GetProfile(profile_path));
   }
 
   void TearDown() override {
-    test_tab_model_.reset();
-
     Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_tearDown(
         AttachCurrentThread(), java_test_support_);
+    test_tab_model_.reset();
+    mock_browser_.reset();
     TearDownProfile();
   }
 
-  void TearDownProfile() {
-    TestingBrowserProcess::DeleteInstance();
-    task_environment_.reset();
-  }
-
+ protected:
   void InvokeJavaOnAddedToTask() const {
     Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeOnAddedToTask(
-        AttachCurrentThread(), java_test_support_);
+        AttachCurrentThread(), java_test_support_,
+        reinterpret_cast<intptr_t>(mock_browser_.get()));
   }
 
   void InvokeJavaOnFeatureRemoved() const {
@@ -97,6 +80,40 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
   }
 
  private:
+  void SetUpProfile() {
+    task_environment_ = std::make_unique<content::BrowserTaskEnvironment>();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(
+        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
+    base::FilePath profile_path =
+        profile_manager()->user_data_dir().AppendASCII("test-profile");
+    profile_ = static_cast<TestingProfile*>(
+        profile_manager()->GetProfile(profile_path));
+  }
+
+  void SetUpBrowserWindow() {
+    mock_browser_ = std::make_unique<MockBrowserWindowInterface>();
+    ON_CALL(*mock_browser_, GetProfile())
+        .WillByDefault(testing::Return(profile_));
+    ON_CALL(*mock_browser_, GetSessionID())
+        .WillByDefault(testing::ReturnRef(session_id_));
+    ON_CALL(*mock_browser_, GetType())
+        .WillByDefault(
+            testing::Return(BrowserWindowInterface::Type::TYPE_NORMAL));
+    ON_CALL(*mock_browser_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+  }
+
+  void SetUpTabModel() {
+    test_tab_model_ = std::make_unique<TestTabModel>(profile_);
+    test_tab_model_->AssociateWithBrowserWindow(mock_browser_.get());
+  }
+
+  void TearDownProfile() {
+    TestingBrowserProcess::DeleteInstance();
+    task_environment_.reset();
+  }
+
   FakeProfileManager* profile_manager() {
     return static_cast<FakeProfileManager*>(
         g_browser_process->profile_manager());
@@ -107,9 +124,11 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
   // docs/threading_and_tasks_testing.md.
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
   raw_ptr<TestingProfile> profile_;
-  ScopedJavaGlobalRef<jobject> java_test_support_;
-
+  SessionID session_id_ = SessionID::NewUnique();
+  std::unique_ptr<MockBrowserWindowInterface> mock_browser_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<TestTabModel> test_tab_model_;
+  ScopedJavaGlobalRef<jobject> java_test_support_;
 };
 
 TEST_F(ExtensionWindowControllerBridgeUnitTest,

@@ -9,9 +9,6 @@ import android.graphics.Rect;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport;
 
 /**
  * Supports {@code extension_window_controller_bridge_unittest.cc}.
@@ -26,40 +23,21 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSu
  */
 @NullMarked
 final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
-    private static final int FAKE_CHROME_ANDROID_TASK_ID = 0;
-
-    private final ChromeAndroidTask mChromeAndroidTask;
     private final ExtensionWindowControllerBridgeImpl mExtensionWindowControllerBridge;
-    private final Profile mMockProfile;
 
     @CalledByNative
     private ExtensionWindowControllerBridgeNativeUnitTestSupport() {
-        // Create a real ChromeAndroidTask with mock dependencies, but don't mock @NativeMethods.
-        // This way we can have real ChromeAndroidTask internals, such as the native
-        // BrowserWindowInterface pointer that ExtensionWindowControllerBridge depends on.
-        var chromeAndroidTaskWithMockDeps =
-                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
-                        FAKE_CHROME_ANDROID_TASK_ID,
-                        /* mockNatives= */ false,
-                        /* isPendingTask= */ false,
-                        /* isDesktopMode= */ true);
-        mChromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        mMockProfile = chromeAndroidTaskWithMockDeps.mMockProfile;
-
-        mExtensionWindowControllerBridge =
-                new ExtensionWindowControllerBridgeImpl(mChromeAndroidTask, mMockProfile);
+        mExtensionWindowControllerBridge = new ExtensionWindowControllerBridgeImpl();
     }
 
     @CalledByNative
     private void tearDown() {
         mExtensionWindowControllerBridge.onFeatureRemoved();
-        mChromeAndroidTask.destroy();
     }
 
     @CalledByNative
-    private void invokeOnAddedToTask() {
-        // We don't care about nativeBrowserWindowPtr in the test, so we pass 0 here.
-        mExtensionWindowControllerBridge.onAddedToTask(/* nativeBrowserWindowPtr= */ 0);
+    private void invokeOnAddedToTask(long nativeBrowserWindowPtr) {
+        mExtensionWindowControllerBridge.onAddedToTask(nativeBrowserWindowPtr);
     }
 
     @CalledByNative
@@ -82,10 +60,5 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
     @CalledByNative
     private long invokeGetNativePtrForTesting() {
         return mExtensionWindowControllerBridge.getNativePtrForTesting();
-    }
-
-    @CalledByNative
-    private long getNativeBrowserWindowPtr() {
-        return mChromeAndroidTask.getOrCreateNativeBrowserWindowPtr(mMockProfile);
     }
 }

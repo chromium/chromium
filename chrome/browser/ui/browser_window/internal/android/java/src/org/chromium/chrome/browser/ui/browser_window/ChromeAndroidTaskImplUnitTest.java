@@ -109,7 +109,7 @@ public class ChromeAndroidTaskImplUnitTest {
             int taskId, boolean isPendingTask) {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
-                        taskId, /* mockNatives= */ true, isPendingTask, /* isDesktopMode= */ true);
+                        taskId, isPendingTask, /* isDesktopMode= */ true);
         var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
 
         // Move mock Activity to the "resumed" state.
@@ -710,7 +710,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);
@@ -817,7 +816,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);
@@ -1201,7 +1199,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);
@@ -3372,7 +3369,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);
@@ -3412,7 +3408,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);
@@ -3455,7 +3450,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);
@@ -3512,7 +3506,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);
@@ -3553,7 +3546,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);
@@ -3704,7 +3696,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1,
-                        /* mockNatives= */ true,
                         /* isPendingTask= */ false,
                         /* isDesktopMode= */ true,
                         SupportedProfileType.MIXED);

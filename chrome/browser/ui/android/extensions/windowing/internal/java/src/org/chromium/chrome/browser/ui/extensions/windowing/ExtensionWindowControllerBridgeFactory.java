@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.ui.extensions.windowing;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 
 /** Factory for creating an {@link ExtensionWindowControllerBridge}. */
 @NullMarked
@@ -17,8 +15,7 @@ public final class ExtensionWindowControllerBridgeFactory {
     // Mark as nullable to be consistent with the stub factory in
     // //chrome/browser/ui/android/extensions/windowing/stub.
     @Nullable
-    public static ExtensionWindowControllerBridge create(
-            ChromeAndroidTask chromeAndroidTask, Profile profile) {
-        return new ExtensionWindowControllerBridgeImpl(chromeAndroidTask, profile);
+    public static ExtensionWindowControllerBridge create() {
+        return new ExtensionWindowControllerBridgeImpl();
     }
 }

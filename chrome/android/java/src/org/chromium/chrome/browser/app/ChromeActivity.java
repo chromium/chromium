@@ -1102,9 +1102,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             chromeAndroidTask.addFeature(
                     new ChromeAndroidTaskFeatureKey(
                             ExtensionWindowControllerBridge.class, profile, activityWindowAndroid),
-                    () ->
-                            ExtensionWindowControllerBridgeFactory.create(
-                                    chromeAndroidTask, profile));
+                    ExtensionWindowControllerBridgeFactory::create);
 
             // 5. Make the ChromeAndroidTask available via OneshotSupplier.
             mChromeAndroidTaskSupplier.set(chromeAndroidTask);
