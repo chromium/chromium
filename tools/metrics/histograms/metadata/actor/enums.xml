@@ -108,6 +108,16 @@ chromium-metrics-reviews@google.com.
   <int value="907" label="LoginDeviceReauthFailed"/>
   <int value="908" label="LoginFeatureDisabled"/>
   <int value="909" label="LoginTooManyRequests"/>
+  <int value="910" label="LoginFederatedContinuation"/>
+  <int value="911" label="LoginFederatedAccountNotLoggedIn"/>
+  <int value="912" label="LoginFederatedAccountIsSignUp"/>
+  <int value="913" label="LoginFederatedAccountNotAvailable"/>
+  <int value="914" label="LoginFederatedIdpReturnedError"/>
+  <int value="915" label="LoginFederatedIdpNetworkError"/>
+  <int value="916" label="LoginFederatedTokenRequestAborted"/>
+  <int value="917" label="LoginFederatedFrameNotActive"/>
+  <int value="918" label="LoginFederatedExpectedAccountNotPresent"/>
+  <int value="919" label="LoginFederatedTimeout"/>
   <int value="1000" label="MediaControlNoMedia"/>
   <int value="1100" label="FormFillingAutofillUnavailable"/>
   <int value="1101" label="FormFillingNoSuggestionsAvailable"/>

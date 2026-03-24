@@ -53,14 +53,12 @@ struct ClickAction {
 // Information specific to a mouse move action.
 // Has no members because the target, included in ToolInvocation, is the only
 // needed parameter.
-struct MouseMoveAction {
-};
+struct MouseMoveAction {};
 
 // Information specific to a scroll-to action.
 // Has no members because the target, included in ToolInvocation, is the only
 // needed parameter.
-struct ScrollToAction {
-};
+struct ScrollToAction {};
 
 // Information specific to the type (keyboard input) action.  Note: TypeAction
 // may be implemented in multiple steps (e.g.  individual key events). In some
@@ -138,8 +136,6 @@ union ToolAction {
   ScriptToolAction script_tool;
   ScrollToAction scroll_to;
 };
-
-
 
 // LINT.IfChange(ActionResultCode)
 
@@ -466,6 +462,36 @@ enum ActionResultCode {
 
   // Multiple login requests were made at the same time.
   kLoginTooManyRequests = 909,
+
+  // Federated login requires continuation on a separate popup/window.
+  kLoginFederatedContinuation = 910,
+
+  // The user is not logged into the Identity Provider.
+  kLoginFederatedAccountNotLoggedIn = 911,
+
+  // The user does not have an account on the RP and would need to sign up.
+  kLoginFederatedAccountIsSignUp = 912,
+
+  // The account is not available for federated login.
+  kLoginFederatedAccountNotAvailable = 913,
+
+  // The Identity Provider returned an error during the federated login.
+  kLoginFederatedIdpReturnedError = 914,
+
+  // A network error occurred when communicating with the Identity Provider.
+  kLoginFederatedIdpNetworkError = 915,
+
+  // The federated login token request was aborted.
+  kLoginFederatedTokenRequestAborted = 916,
+
+  // The frame where the federated login was attempted is no longer active.
+  kLoginFederatedFrameNotActive = 917,
+
+  // The expected account for federated login was not present.
+  kLoginFederatedExpectedAccountNotPresent = 918,
+
+  // The federated login request timed out.
+  kLoginFederatedTimeout = 919,
 
   // Please see the comment above about adding new values.
 

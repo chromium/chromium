@@ -82,19 +82,26 @@ mojom::ActionResultCode LoginResultToActorResult(
     case actor_login::LoginStatusResult::kErrorDeviceReauthFailed:
       return mojom::ActionResultCode::kLoginDeviceReauthFailed;
     case actor_login::LoginStatusResult::kErrorFederatedContinuation:
-      // TODO(crbug.com/481685277): handle the continuation case.
+      return mojom::ActionResultCode::kLoginFederatedContinuation;
     case actor_login::LoginStatusResult::kErrorFederatedAccountNotLoggedIn:
+      return mojom::ActionResultCode::kLoginFederatedAccountNotLoggedIn;
     case actor_login::LoginStatusResult::kErrorFederatedAccountIsSignUp:
+      return mojom::ActionResultCode::kLoginFederatedAccountIsSignUp;
     case actor_login::LoginStatusResult::kErrorFederatedAccountNotAvailable:
+      return mojom::ActionResultCode::kLoginFederatedAccountNotAvailable;
     case actor_login::LoginStatusResult::kErrorFederatedIdpReturnedError:
+      return mojom::ActionResultCode::kLoginFederatedIdpReturnedError;
     case actor_login::LoginStatusResult::kErrorFederatedIdpNetworkError:
+      return mojom::ActionResultCode::kLoginFederatedIdpNetworkError;
     case actor_login::LoginStatusResult::kErrorFederatedTokenRequestAborted:
+      return mojom::ActionResultCode::kLoginFederatedTokenRequestAborted;
     case actor_login::LoginStatusResult::kErrorFederatedFrameNotActive:
+      return mojom::ActionResultCode::kLoginFederatedFrameNotActive;
     case actor_login::LoginStatusResult::
         kErrorFederatedExpectedAccountNotPresent:
+      return mojom::ActionResultCode::kLoginFederatedExpectedAccountNotPresent;
     case actor_login::LoginStatusResult::kErrorFederatedTimeout:
-      // TODO(crbug.com/477507796): Handle federated login errors.
-      return mojom::ActionResultCode::kLoginFillingNotAllowed;
+      return mojom::ActionResultCode::kLoginFederatedTimeout;
     case actor_login::LoginStatusResult::kRequiresButtonClick:
       // TODO(crbug.com/479505793): Consider adding a more specific error code.
       return mojom::ActionResultCode::kArgumentsInvalid;
