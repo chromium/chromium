@@ -936,6 +936,119 @@ android_java_prebuilt("package_httpengine_native_provider_java") {
   deps = [ ":repackage_httpengine_native_provider" ]
 }
 
+# Dependencies of cronet_package_without_native_apk that are not bundled within
+# the final Cronet jars that we are shipping to downstream users; instead, we
+# expect users to pull these themselves.
+#
+# Note: in general, only //third_party dependencies are expected here. If you
+# find yourself adding a non-third-party dependency to this list, you probably
+# want to ship the dependency in Cronet jars instead (see also "deps_to_package"
+# lists).
+#
+# CAUTION: this list must be kept in sync with the mechanisms that are used to
+# specify Cronet external dependencies (e.g. Google internal repo, Maven POM
+# files), otherwise users may end up with missing references, or pull
+# unnecessary dependencies. Also, be aware that users may be pulling versions of
+# these dependencies that are different from the versions currently in Chromium.
+cronet_package_without_nativejava_external_deps = [
+  # TODO(https://crbug.com/469672624): we should jarjar and bundle protobuf, as
+  # downstream users may end up pulling a version of protobuf that doesn't match
+  # the generated code.
+  "//third_party/android_deps:protobuf_lite_runtime_java",
+  "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+  "//third_party/androidx:androidx_annotation_annotation_java",
+]
+
+# This target is not intended to be a functional APK. Instead, it is used to
+# ensure that the jars we are shipping to downstream users can successfully go
+# through R8/D8 on their own, that our ProGuard configs are valid, and that the
+# resulting APK is free of unresolved references or duplicate classes (i.e. same
+# class being shipped in multiple jars).
+android_apk("cronet_package_without_nativejava_apk") {
+  apk_name = "CronetPackageWithoutNativejava"
+  android_manifest = "//build/android/AndroidManifest.xml"
+  deps = [
+           ":package_api_java",
+           ":package_httpengine_native_provider_java",
+           ":package_impl_common_java",
+           ":package_shared_java",
+         ] + cronet_package_without_nativejava_external_deps
+
+  # ProGuard is what checks for undefined references, so we need to enable it
+  # for the checking to actually happen. Also, this nicely doubles as a basic
+  # check for our ProGuard configs.
+  proguard_enabled = true
+
+  # Disable the trace_references check, which is an additional Chromium safety
+  # check that ensures the resulting DEX does not contain unresolved references.
+  # The reason why we disable this check is because it does not consider
+  # -dontwarn rules from ProGuard configs, and will therefore fail. Note that
+  # even with this check disabled, R8 itself will still check for unresolved
+  # references.
+  enable_proguard_checks = false
+  proguard_configs = [
+    "cronet_shared_proguard.cfg",
+    "cronet_impl_common_proguard.cfg",
+    "httpengine_native_provider_proguard.cfg",
+    "cronet_package_proguard.cfg",
+  ]
+}
+
+# Dependencies of cronet_package_with_native_apk that are not bundled within the
+# final Cronet jars that we are shipping to downstream users; instead, we expect
+# users to pull these themselves.
+#
+# Note: in general, only //third_party dependencies are expected here. If you
+# find yourself adding a non-third-party dependency to this list, you probably
+# want to ship the dependency in Cronet jars instead (see also "deps_to_package"
+# lists).
+#
+# CAUTION: this list must be kept in sync with the mechanisms that are used to
+# specify Cronet external dependencies (e.g. Google internal repo, Maven POM
+# files), otherwise users may end up with missing references, or pull
+# unnecessary dependencies. Also, be aware that users may be pulling versions of
+# these dependencies that are different from the versions currently in Chromium.
+cronet_package_with_nativejava_external_deps =
+    cronet_package_without_nativejava_external_deps +
+    [ "//third_party/android_deps:com_google_code_findbugs_jsr305_java" ]
+
+# This target is not intended to be a functional APK. Instead, it is used to
+# ensure that the jars we are shipping to downstream users can successfully go
+# through R8/D8 on their own, that our ProGuard configs are valid, and that the
+# resulting APK is free of unresolved references or duplicate classes (i.e. same
+# class being shipped in multiple jars).
+android_apk("cronet_package_with_nativejava_apk") {
+  apk_name = "CronetPackageWithNativejava"
+  android_manifest = "//build/android/AndroidManifest.xml"
+  deps = [
+           ":package_api_java",
+           ":package_httpengine_native_provider_java",
+           ":package_impl_common_java",
+           ":package_impl_native_java",
+           ":package_shared_java",
+         ] + cronet_package_with_nativejava_external_deps
+
+  # ProGuard is what checks for undefined references, so we need to enable it
+  # for the checking to actually happen. Also, this nicely doubles as a basic
+  # check for our ProGuard configs.
+  proguard_enabled = true
+
+  # Disable the trace_references check, which is an additional Chromium safety
+  # check that ensures the resulting DEX does not contain unresolved references.
+  # The reason why we disable this check is because it does not consider
+  # -dontwarn rules from ProGuard configs, and will therefore fail. Note that
+  # even with this check disabled, R8 itself will still check for unresolved
+  # references.
+  enable_proguard_checks = false
+  proguard_configs = [
+    "cronet_shared_proguard.cfg",
+    "cronet_impl_common_proguard.cfg",
+    "httpengine_native_provider_proguard.cfg",
+    "cronet_impl_native_proguard.cfg",
+    "cronet_package_proguard.cfg",
+  ]
+}
+
 template("jar_src") {
   action_with_pydeps(target_name) {
     _rebased_src_search_dirs =
@@ -2173,6 +2286,10 @@ group("cronet_non_test_package") {
     ":repackage_native",
     ":repackage_platform",
     ":repackage_shared",
+
+    # These are not shipped; they are purely for self-checking.
+    ":cronet_package_with_nativejava_apk",
+    ":cronet_package_without_nativejava_apk",
   ]
 }
 
