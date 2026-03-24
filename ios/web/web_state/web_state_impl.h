@@ -377,10 +377,7 @@ class WebStateImpl final : public WebState {
   void RemovePolicyDecider(WebStatePolicyDecider* decider) final;
 
  private:
-  // Type aliases for the various ObserverList map used by WebStateImpl (reused
-  // by the RealizedWebState class).
-  using WebStateObserverList = base::ObserverList<WebStateObserver, true>;
-
+  // A list of WebStatePolicyDecider.
   using WebStatePolicyDeciderList =
       base::ObserverList<WebStatePolicyDecider, true>;
 
