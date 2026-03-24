@@ -66,6 +66,7 @@ source_set("autofill") {
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/coordinator",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/ui",
     "//ios/chrome/browser/settings/autofill/utils:autofill_settings_ui_util",

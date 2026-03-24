@@ -46,6 +46,8 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_add_entities_menu_builder.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/utils/autofill_settings_ui_util.h"
@@ -175,6 +177,7 @@ bool CanDeleteItemType(NSInteger itemType) {
 
 @interface AutofillProfileTableViewController () <
     AutofillAIAddEntitiesMenuDelegate,
+    AutofillAIEntityEditCoordinatorDelegate,
     AutofillProfileEditCoordinatorDelegate,
     PersonalDataManagerObserver,
     PrefObserverDelegate,
@@ -235,6 +238,9 @@ bool CanDeleteItemType(NSInteger itemType) {
 
   // Reauthentication module.
   ReauthenticationModule* _reauthenticationModule;
+
+  // Coordinator to view/edit entity details.
+  AutofillAIEntityEditCoordinator* _autofillAiEntityEditCoordinator;
 }
 
 @property(nonatomic, getter=isAutofillProfileEnabled)
@@ -728,6 +734,7 @@ bool CanDeleteItemType(NSInteger itemType) {
   [self stopAutofillAddProfileCoordinator];
 
   [self stopAutofillProfileEditCoordinator];
+  [self stopAutofillAIEntityEditCoordinator];
   [self dismissDeletionSheet];
 
   // Remove pref changes registrations.
@@ -927,7 +934,10 @@ bool CanDeleteItemType(NSInteger itemType) {
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
           ItemTypeIdentityDoc ||
       [self.tableViewModel itemTypeForIndexPath:indexPath] == ItemTypeTravel) {
-    // TODO(crbug.com/480934103): handled in upcoming CLs
+    AutofillAIEntityItem* item =
+        base::apple::ObjCCastStrict<AutofillAIEntityItem>(
+            [self.tableViewModel itemAtIndexPath:indexPath]);
+    [self startAutofillAIEntityEditCoordinatorWithEntityID:item.guid];
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     return;
   }
@@ -1255,6 +1265,13 @@ bool CanDeleteItemType(NSInteger itemType) {
   [self stopAutofillProfileEditCoordinator];
 }
 
+#pragma mark - AutofillAIEntityEditCoordinatorDelegate
+
+- (void)autofillAIEntityEditCoordinatorDidFinish:
+    (AutofillAIEntityEditCoordinator*)coordinator {
+  [self stopAutofillAIEntityEditCoordinator];
+}
+
 #pragma mark - AutofillAIAddEntitiesMenuDelegate
 
 - (void)didSelectAddAutofillProfile {
@@ -1263,8 +1280,7 @@ bool CanDeleteItemType(NSInteger itemType) {
 
 // Called when an entity type is selected to be added.
 - (void)didSelectAddEntityWithType:(autofill::EntityType)type {
-  // TODO(crbug.com/480933727): create a new entity and start the edit
-  // coordinator.
+  [self startAutofillAIEntityEditCoordinatorWithEntityType:type];
 }
 
 #pragma mark - Private
@@ -1272,6 +1288,36 @@ bool CanDeleteItemType(NSInteger itemType) {
 - (void)dismissDeletionSheet {
   [_deletionSheetCoordinator stop];
   _deletionSheetCoordinator = nil;
+}
+
+- (void)startAutofillAIEntityEditCoordinatorWithEntityID:
+    (autofill::EntityInstance::EntityId)entityID {
+  [self stopAutofillAIEntityEditCoordinator];
+  _autofillAiEntityEditCoordinator = [[AutofillAIEntityEditCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser
+                              entityID:entityID];
+  _autofillAiEntityEditCoordinator.delegate = self;
+
+  [_autofillAiEntityEditCoordinator start];
+}
+
+- (void)startAutofillAIEntityEditCoordinatorWithEntityType:
+    (autofill::EntityType)entityType {
+  [self stopAutofillAIEntityEditCoordinator];
+  _autofillAiEntityEditCoordinator = [[AutofillAIEntityEditCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser
+                            entityType:entityType];
+  _autofillAiEntityEditCoordinator.delegate = self;
+
+  [_autofillAiEntityEditCoordinator start];
+}
+
+- (void)stopAutofillAIEntityEditCoordinator {
+  [_autofillAiEntityEditCoordinator stop];
+  _autofillAiEntityEditCoordinator.delegate = nil;
+  _autofillAiEntityEditCoordinator = nil;
 }
 
 - (void)stopAutofillProfileEditCoordinator {
