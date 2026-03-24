@@ -14,6 +14,10 @@ namespace contextual_tasks {
 int GetMatchingWordsCount(const std::string& query,
                           const std::string& candidate);
 
+// Gets the number of words in the given text after normalization like removing
+// punctuation and converting to lower case.
+int GetWordCount(const std::string& text);
+
 }  // namespace contextual_tasks
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_CONTEXT_SIGNAL_UTILS_H_

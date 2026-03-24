@@ -59,4 +59,11 @@ int GetMatchingWordsCount(const std::string& query,
   return num_matching_words;
 }
 
+int GetWordCount(const std::string& text) {
+  return static_cast<int>(
+      base::SplitStringPiece(GetNormalizedString(text), " ",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)
+          .size());
+}
+
 }  // namespace contextual_tasks

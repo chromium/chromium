@@ -50,4 +50,31 @@ TEST(GetMatchingWordsCountTest, NormalizedTextConsidered) {
       GetMatchingWordsCount("  test   query  ", "  This is a test query  "), 2);
 }
 
+TEST(GetWordCountTest, EmptyText) {
+  EXPECT_EQ(GetWordCount(""), 0);
+  EXPECT_EQ(GetWordCount("   "), 0);
+}
+
+TEST(GetWordCountTest, TextWithOnlyPunctuations) {
+  EXPECT_EQ(GetWordCount("!?, ."), 0);
+}
+
+TEST(GetWordCountTest, NormalText) {
+  EXPECT_EQ(GetWordCount("This is a test query"), 5);
+}
+
+TEST(GetWordCountTest, TextWithPunctuations) {
+  EXPECT_EQ(GetWordCount("Hello, world!"), 2);
+  EXPECT_EQ(GetWordCount("test-query"), 2);
+  EXPECT_EQ(GetWordCount("test.query"), 2);
+}
+
+TEST(GetWordCountTest, TextWithExtraSpaces) {
+  EXPECT_EQ(GetWordCount("  This   is  a test   query  "), 5);
+}
+
+TEST(GetWordCountTest, TextWithDuplicates) {
+  EXPECT_EQ(GetWordCount("test test query"), 3);
+}
+
 }  // namespace contextual_tasks
