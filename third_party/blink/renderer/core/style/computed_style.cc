@@ -380,11 +380,13 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
 
 bool ComputedStyle::NeedsReinsertLayoutTree(const ComputedStyle& old_style,
                                             const ComputedStyle& new_style) {
-  if (old_style.IsFloating() != new_style.IsFloating()) {
+  if (old_style.HasOutOfFlowPosition() != new_style.HasOutOfFlowPosition()) {
     return true;
   }
 
-  if (old_style.HasOutOfFlowPosition() != new_style.HasOutOfFlowPosition()) {
+  // If we are OOF-positioned a change in float status will have no effect.
+  if (!new_style.HasOutOfFlowPosition() &&
+      (old_style.IsFloating() != new_style.IsFloating())) {
     return true;
   }
 
