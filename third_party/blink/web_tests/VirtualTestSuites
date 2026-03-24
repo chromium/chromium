@@ -1017,25 +1017,7 @@
     ],
     "expires": "Jul 1, 2026"
   },
-  {
-    "prefix": "expect-no-linked-resources",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "http/tests/expect-no-linked-resources"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=DocumentPolicyExpectNoLinkedResources"
-    ],
-    "expires": "Jan 14, 2026",
-    "owners": [
-      "alexnj@google.com"
-    ]
-  },
+
   "The fast api bindings test requires access to V8 internals, so only the",
   "virtual test should be run.",
   {
