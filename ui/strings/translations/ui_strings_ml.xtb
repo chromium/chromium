@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{വായിക്കാത്ത ഒരു അറിയിപ്പ്}other{വായിക്കാത്ത # അറിയിപ്പുകൾ}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{അദൃശ്യ മോഡിൽ ചുവടെയുള്ള വിപുലീകരണം ഓണാക്കുക:}other{അദൃശ്യ മോഡിൽ ചുവടെയുള്ള വിപുലീകരണങ്ങൾ ഓണാക്കുക:}}</translation>
+<translation id="4230098358142093034">ഹോം</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{ഒരു മാസം മുമ്പ്}other{# മാസം മുമ്പ്}}</translation>
 <translation id="4277033906326892359"><ph name="COLUMN_NAME" /> എന്ന കോളം ആരോഹണക്രമത്തിൽ അടുക്കി</translation>
 <translation id="4289300219472526559">സംഭാഷണം ആരംഭിക്കുക</translation>

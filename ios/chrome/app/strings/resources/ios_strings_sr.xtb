@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2360196772093551345">Захтевај мобилни сајт</translation>
 <translation id="2362083820973145409">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отвара подешавања.</translation>
+<translation id="2367025302166767427">Проблем при попуњавању информација</translation>
 <translation id="2371084566192454134">Картице и групе картица</translation>
 <translation id="2371303771137626249">Ново</translation>
 <translation id="2381405137052800939">Основе</translation>
@@ -1345,6 +1346,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5819208479324046259">Овим управља <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронизује се…</translation>
+<translation id="583281660410589416">Непознато</translation>
 <translation id="5838430324585198889">Откључајте још функција за iPad помоћу Google апликација</translation>
 <translation id="583923961930319521">Користите лозинке на свим уређајима</translation>
 <translation id="5843013299019689749">Црна боја позадине</translation>

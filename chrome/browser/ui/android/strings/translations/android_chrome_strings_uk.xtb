@@ -699,6 +699,7 @@
 <translation id="3985215325736559418">Завантажити файл "<ph name="FILE_NAME" />" повторно?</translation>
 <translation id="3987993985790029246">Копіювати</translation>
 <translation id="3994236846568425219">Використовувати темну тему, якщо її ввімкнено на пристрої</translation>
+<translation id="399788104667917863">Закріпити на панелі інструментів</translation>
 <translation id="4000212216660919741">Дім у режимі офлайн</translation>
 <translation id="4000670338830950598">Налаштовуйте й керуйте Google Chrome за допомогою виділених елементів</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 пароль у вашому обліковому записі Google зламано}one{# пароль у вашому обліковому записі Google зламано}few{# паролі у вашому обліковому записі Google зламано}many{# паролів у вашому обліковому записі Google зламано}other{# пароля у вашому обліковому записі Google зламано}}</translation>

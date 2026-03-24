@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">共有されました</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> と削除ボタン</translation>
 <translation id="1062407476771304334">置換</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使用して暗号化されます。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />バックアップ データは、ドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />このサービスは [設定] でオフにできます。<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">バッテリーを交換または充電してください</translation>
 <translation id="1081015718268701546">Linux アプリは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="108486256082349153">携帯電話: <ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@
 <translation id="3470502288861289375">コピーしています...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> キーを押してから、<ph name="KEY_TWO" /> または <ph name="KEY_THREE" /> キーを押す</translation>
 <translation id="3477079411857374384">Control+Shift+Space</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やユーザーの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的で、この情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、デバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、デバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />位置情報の精度に関する詳細<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">シェルフは自動的に非表示になります</translation>
 <translation id="3496797737329654668">ゲームを始めましょう</translation>
@@ -877,6 +886,9 @@
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3743775386021959186">フォーカス モードがオンになっています。残り時間は <ph name="REMAINING_TIME" /> です</translation>
 <translation id="3750403286520637847">天気情報の提案を非表示にする</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />バックアップ データは、お子様のドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />このサービスは [設定] でオフにできます。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">画面をキャストしています</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> のショートカットが、<ph name="OLD_SHORTCUT" /> から <ph name="NEW_SHORTCUT" /> に変更されました</translation>
 <translation id="3765841986579723851">今日編集したファイル</translation>
@@ -1199,6 +1211,7 @@
 <translation id="4708185346211948049">来週の <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">USB-C ケーブルは USB4 に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
 <translation id="4730374152663651037">よく使用するアプリ</translation>
+<translation id="4731197594811674831">ホーム</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4734965478015604180">横</translation>
@@ -1343,6 +1356,10 @@
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />お使いのデバイスと使用状況に関する一般的な情報（バッテリー残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、集計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。データの確認、削除、アカウント設定の変更は、account.google.com で行えます。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">バッテリー ヘルス <ph name="BATTERY_HEALTH_PERCENTAGE" />% | サイクル数 <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">デスクをテンプレートとして保存</translation>
 <translation id="5168181903108465623">キャスト デバイスを利用できます</translation>
@@ -1601,6 +1618,10 @@
 <translation id="5916646100036936191">新しい通知、合計 <ph name="NOTIFICATION_COUNT" /> 件</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5920710855273935292">マイクはミュートです。</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />位置情報の精度に関する詳細<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029"><ph name="MANAGER" /> が更新するよう求めています</translation>
 <translation id="5939518447894949180">リセット</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> はオンになっています。</translation>
@@ -1647,6 +1668,10 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> 件のアプリで使用</translation>
 <translation id="6045998054441862242">ハイ コントラスト モードを有効にする</translation>
 <translation id="6047696787498798094">別のユーザーに切り替えると画面の共有は解除されます。続行してもよろしいですか？</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />このデバイスと使用状況に関する一般的な情報（バッテリー残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、集計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。これらの設定の詳細と変更方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">リンクを右クリックする</translation>
 <translation id="6054305421211936131">スマートカードでログイン</translation>
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
@@ -1755,6 +1780,8 @@
 <translation id="639644700271529076">CapsLock 機能はオフになっています</translation>
 <translation id="6406458002328242616">タイマーを編集します。<ph name="FOCUS_DURATION" />。</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、デバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />位置情報の使用をオフにするには、お使いのデバイスでメインの位置情報の設定をオフにします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">インストールする <ph name="VM_NAME" /> のバージョンを選択してください。</translation>
 <translation id="641469293210305670">アップデートとアプリのインストール</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
@@ -2421,6 +2448,8 @@
 <translation id="8481187309597259238">USB のアクセス許可の確認</translation>
 <translation id="8487660088084188539">これらの機能をオンにすると、入力したテキスト、ドキュメントの内容、ウェブページの URL が Google サーバーに送信されることがあります。この情報は、<ph name="LINK_TO_SERVICE_TERMS" /> に沿って、文章作成の提案や要約の生成、質問への回答、サービスの改善に使用されます。個人情報や機密情報は含めないでください。</translation>
 <translation id="8487699605742506766">アクセス ポイント</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />位置情報の使用をオフにするには、このデバイスでメインの位置情報の設定をオフにします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">キオスクアプリ「<ph name="UPDATED_APPS" />」を更新しました。更新処理を完了するためにデバイスを再起動してください。</translation>
 <translation id="8491237443345908933">新しいタブでリンクを開く</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>

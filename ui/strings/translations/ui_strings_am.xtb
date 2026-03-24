@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ያልተነበበ ማሳወቂያ}one{# ያልተነበቡ ማሳወቂያዎች}other{# ያልተነበቡ ማሳወቂያዎች}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{የሚከተለውን ቅጥያ በማንነት የማያሳውቅ ውስጥ ያብሩ፦}one{የሚከተለውን ቅጥያ በማንነት የማያሳውቅ ውስጥ ያብሩ፦}other{የሚከተሉትን ቅጥያዎች በማንነት የማያሳውቅ ውስጥ ያብሩ፦}}</translation>
+<translation id="4230098358142093034">መነሻ</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{ከ1 ወር በፊት}one{ከ# ወሮች በፊት}other{ከ# ወሮች በፊት}}</translation>
 <translation id="4277033906326892359">ዓምድ <ph name="COLUMN_NAME" /> በሽቅብታ ቅደም-ተከተል ተደርድሯል</translation>
 <translation id="4289300219472526559">መናገር ይጀምሩ</translation>

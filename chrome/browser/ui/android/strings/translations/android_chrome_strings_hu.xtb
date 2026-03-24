@@ -699,6 +699,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3985215325736559418">Ismét letölti a(z) <ph name="FILE_NAME" /> fájlt?</translation>
 <translation id="3987993985790029246">Link másolása</translation>
 <translation id="3994236846568425219">A sötét téma bekapcsolása, amikor az eszköz sötét témája be van kapcsolva</translation>
+<translation id="399788104667917863">Rögzítés az eszköztárra</translation>
 <translation id="4000212216660919741">Offline kezdőlap</translation>
 <translation id="4000670338830950598">A Google Chrome személyre szabása és vezérlése kiemelt elemmel</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 olyan jelszó található az Ön Google-fiókjában, amelyhez illetéktelenül hozzáfértek}other{# olyan jelszó található az Ön Google-fiókjában, amelyhez illetéktelenül hozzáfértek}}</translation>

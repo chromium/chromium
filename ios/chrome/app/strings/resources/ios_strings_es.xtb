@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar sitio web móvil</translation>
 <translation id="2362083820973145409">Has iniciado sesión como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre la configuración.</translation>
+<translation id="2367025302166767427">No se ha podido rellenar tu información</translation>
 <translation id="2371084566192454134">Pestañas y grupos de pestañas</translation>
 <translation id="2371303771137626249">Nuevo</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
@@ -1345,6 +1346,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5819208479324046259">Gestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
+<translation id="583281660410589416">Desconocido</translation>
 <translation id="5838430324585198889">Disfruta de más funciones para tu iPad con las apps de Google</translation>
 <translation id="583923961930319521">Usar contraseñas en todos tus dispositivos</translation>
 <translation id="5843013299019689749">Color de fondo negro</translation>

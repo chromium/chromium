@@ -493,6 +493,7 @@
 <translation id="2721190673959776287">Sample na mahusay na tulong sa produkto para sa Contextual Panel, na lalabas nang maraming beses sa isang araw.</translation>
 <translation id="2739887572830526131">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o i-delete ito kung hindi mo na ito kailangan.</translation>
 <translation id="2747003861858887689">Nakaraang field</translation>
+<translation id="2750583038402718064">Inilipat ang <ph name="WEBSITE_TITLE" /> sa posisyong <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Nakikita ng lahat ng nasa grupo ang mga pagbabagong ginawa</translation>
 <translation id="2755595981383829244">Makakatanggap ka na ngayon ng mga notification sa content</translation>
 <translation id="2761788987260570878">Kunan ng larawan ang hinahanap mo</translation>
@@ -1348,6 +1349,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5819208479324046259">Pinapamahalaan ng <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Nagsi-sync…</translation>
+<translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5838430324585198889">Mag-unlock ng higit pang feature para sa iyong iPad sa pamamagitan ng mga Google app</translation>
 <translation id="583923961930319521">Gamitin ang mga password sa lahat ng iyong device</translation>
 <translation id="5843013299019689749">Itim na kulay ng background</translation>
@@ -2032,6 +2034,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8209237163365258530">Mga Gemini <ph name="VERSION_NUMBER" /> na model</translation>
 <translation id="8211030355252954494">Nakatanggap ka ng mga password para sa <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Secure ang koneksyon</translation>
+<translation id="8213190397436801658">Home</translation>
 <translation id="8214293972734702249">Naka-pin ang <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Tingnan ang offline na bersyon sa bagong tab</translation>
 <translation id="8221665793629393739">Ang iyong paalalang bumisita ulit</translation>

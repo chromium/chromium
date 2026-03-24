@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">پرامپٹ درج کریں</translation>
 <translation id="115705039208660697">انناس</translation>
 <translation id="1164939766849482256">ڈاؤن ٹو ڈارک اسکرین سیور</translation>
-<translation id="1167755866710282443">کلیدوں کو حسب ضرورت بنانے کے لیے مینیو کھولیں۔ منتقل کرنے کے لیے مینیو کو گھسیٹیں۔</translation>
 <translation id="1171349345463658120">ریتیلی جھیل</translation>
 <translation id="1174073918202301297">شارٹ کٹ شامل ہو گیا</translation>
 <translation id="11743817593307477">‏اس کنٹرول کو اپنے مطلوبہ گیم ایکشن میں منتقل کرنے کے لیے تیر والی کلیدوں کا استعمال کریں۔ کنٹرول رکھنے کے لیے انٹر کلید کا استعمال کریں۔ منسوخ کرنے کے لیے Escape کلید استعمال کریں۔</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">‏کلید کی نقشہ سازی کا D-pad</translation>
 <translation id="3217462202230355157">یقینی بنائیں کہ آپ کا مائیک منسلک ہے یا اپنا <ph name="DEVICE_TYPE" /> ری سٹارٹ کرنے کی کوشش کریں</translation>
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
-<translation id="3226657629376379887">لے آؤٹ کارروائیوں کا مینیو</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے تقسیم کریں</translation>
 <translation id="3242622575335502454">ڈیجیٹل آرٹ</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7180865173735832675">حسب ضرورت بنائیں</translation>
-<translation id="7184043045742675738">اپنے بٹن کو حسب ضرورت بنانے کے لیے کسی بھی کلید پر کلک کریں۔ ماؤس یا تیر کے نشان والی کلیدوں کے ساتھ کلید کی پوزیشن تبدیل کریں۔</translation>
 <translation id="7187669805838282391">بدھ کو</translation>
 <translation id="7205318498545665455">اپنا مائیک منتخب کریں</translation>
 <translation id="7210635925306941239">سبزی مائل نیلا</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">ان پٹ کی ترتیبات</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> منتظم نے <ph name="DEVICE_TYPE" /> کے استعمال کیے جا سکنے کا وقت سیٹ کیا ہے۔</translation>
-<translation id="7613724632293948900">ماؤس یا تیر کے نشان والی کلیدوں کے ساتھ پوزیشن تبدیل کریں۔</translation>
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> منتخب کریں</translation>
 <translation id="7618774594543487847">نیوٹرل</translation>
 <translation id="7620771111601174153">ہیلپ سینٹر میں مزید جانیں</translation>

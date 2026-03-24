@@ -699,6 +699,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3985215325736559418">Ali želite znova prenesti datoteko <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiranje povezave</translation>
 <translation id="3994236846568425219">Vklop temne teme, ko je v napravi vklopljena temna tema</translation>
+<translation id="399788104667917863">Pripni v orodno vrstico</translation>
 <translation id="4000212216660919741">Začetna stran brez povezave</translation>
 <translation id="4000670338830950598">Prilagajanje in nadziranje brskalnika Google Chrome z označenim elementom</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 ogroženo geslo v računu Google}one{# ogroženo geslo v računu Google}two{# ogroženi gesli v računu Google}few{# ogrožena gesla v računu Google}other{# ogroženih gesel v računu Google}}</translation>

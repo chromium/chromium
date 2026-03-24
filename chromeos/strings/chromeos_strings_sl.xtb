@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Vnesite poziv</translation>
 <translation id="115705039208660697">ananasi</translation>
 <translation id="1164939766849482256">Ohranjevalnik zaslona od zore do mraka</translation>
-<translation id="1167755866710282443">Odprite meni za prilagajanje tipk. Povlecite meni, če ga želite premakniti.</translation>
 <translation id="1171349345463658120">peščena laguna</translation>
 <translation id="1174073918202301297">Bližnjica je bila dodana</translation>
 <translation id="11743817593307477">S puščičnimi tipkami ta kontrolnik premaknite na želeno dejanje v igri. S tipko Enter postavite kontrolnik. Če želite preklicati, uporabite tipko Escape.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Smerni gumb pri razporejanju tipk</translation>
 <translation id="3217462202230355157">Prepričajte se, da je mikrofon priključen, ali poskusite znova zagnati napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
-<translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
 <translation id="3227186760713762082">Deljenje vrednosti kategorije »<ph name="CATEGORY_TEXT" />« s/z: <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">digitalna umetnost</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
-<translation id="7184043045742675738">Če želite prilagoditi gumb, kliknite katero koli tipko. Prestavite tipko z miško ali puščičnimi tipkami.</translation>
 <translation id="7187669805838282391">v sredo</translation>
 <translation id="7205318498545665455">Izberite mikrofon</translation>
 <translation id="7210635925306941239">cijan</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">Nastavitve vnosa</translation>
 <translation id="7595982850646262331">Še <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Skrbnik <ph name="MANAGER" /> je določil, kdaj je mogoče uporabljati to napravo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="7613724632293948900">Prestavljanje z miško ali puščičnimi tipkami.</translation>
 <translation id="7618216277886673749">Izberite: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Nevtralna</translation>
 <translation id="7620771111601174153">Preberite več v centru za pomoč</translation>

@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1036436692654972538">保存到设备</translation>
 <translation id="1036881361735705143">C4 信封</translation>
+<translation id="1038168778161626396">仅加密</translation>
 <translation id="1038842779957582377">未知名称</translation>
 <translation id="1041998700806130099">工作表消息</translation>
 <translation id="1044897699341250361">这意味着什么</translation>
@@ -44,6 +45,7 @@
 <translation id="1068672505746868501">一律不翻译<ph name="SOURCE_LANGUAGE" />网页</translation>
 <translation id="1070333806075222467">金属（平滑）</translation>
 <translation id="1070901266639972381">夜间</translation>
+<translation id="1071917609930274619">数据加密</translation>
 <translation id="1073690811593784042">玻璃（彩色）</translation>
 <translation id="1074287282535157335">分 4 期支付或按月支付（需满足资格要求）</translation>
 <translation id="1074497978438210769">不安全</translation>
@@ -85,6 +87,7 @@
 <translation id="1138458427267715730">当网络中任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="1142713751288681188">纸张类型</translation>
 <translation id="1142965388643537393">旅行信息</translation>
+<translation id="1143142264369994168">证书签名人</translation>
 <translation id="1144136880160289237">目前您还没有任何活跃主题</translation>
 <translation id="1149617035358809955">验证您的身份，以便填充您的付款信息</translation>
 <translation id="1150565364351027703">太阳镜</translation>
@@ -137,6 +140,7 @@
 <translation id="1215738931000958575">使用 Google 账号中保存的信息自动填充密码、通行密钥、地址、支付方式和其他信息</translation>
 <translation id="1219129156119358924">系统安全</translation>
 <translation id="1219134100826635117">您的管理员已阻止此操作</translation>
+<translation id="1221024147024329929">PKCS #1，带有 RSA 加密的 MD2</translation>
 <translation id="1222060260947439312">右侧纸匣</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">卡号：</translation>
@@ -411,8 +415,10 @@
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1640180200866533862">用户政策</translation>
 <translation id="1640244768702815859">请尝试<ph name="BEGIN_LINK" />访问该网站的首页<ph name="END_LINK" />。</translation>
+<translation id="1640283014264083726">PKCS #1，带有 RSA 加密的 MD4</translation>
 <translation id="1641962500621836664">正在保存相机文件</translation>
 <translation id="1641976391427233992">将输出时间延迟至</translation>
+<translation id="1643072738649235303">采用 SHA-1 算法的 X9.62 ECDSA 签名</translation>
 <translation id="1643651787397909318">“前往 Chrome 安全检查页面”按钮，激活它即可访问“设置”中的 Chrome“安全检查”页面</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1645004815457365098">来源不明</translation>
@@ -695,6 +701,7 @@
 <translation id="2108755909498034140">重新启动计算机</translation>
 <translation id="2109845311767915560">分享的标签页分组</translation>
 <translation id="2111166930115883695">按空格键即可开始游戏</translation>
+<translation id="2113921862428609753">授权中心信息访问权限</translation>
 <translation id="2113977810652731515">信用卡</translation>
 <translation id="2114841414352855701">由于已被 <ph name="POLICY_NAME" /> 替换，该政策已忽略。</translation>
 <translation id="2118132148597630479">C5 信封</translation>
@@ -757,6 +764,7 @@
 <translation id="2190094353033916816">此政策在计算机级别和用户级别应用了不同的值。政策运行正常。</translation>
 <translation id="2191980191135734720">请在下一步中解锁屏幕，通常使用指纹解锁。您也可以<ph name="LINK_TEXT" />。</translation>
 <translation id="2194856509914051091">注意事项</translation>
+<translation id="2195729137168608510">电子邮件保护</translation>
 <translation id="2198183835992354675">已知旅客编号</translation>
 <translation id="2198215508485017216">发生意外错误。<ph name="BEGIN_LINK" />详细了解云端硬盘上传<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">“不喜欢”按钮，按 Enter 键可打开一个反馈表单，您可以在表单中详细说明不喜欢此建议的原因</translation>
@@ -1414,6 +1422,7 @@
 <translation id="3220264767789936523">正装</translation>
 <translation id="3223287115535306850">“应用正在启动”图标</translation>
 <translation id="3223425961342298674">已拒绝授予位置信息使用权限</translation>
+<translation id="3225319735946384299">代码签名</translation>
 <translation id="3225919329040284222">服务器提供的证书与内置预期证书不匹配。这些预期证书是针对某些高安全性网站提供的，以便为您提供保护。</translation>
 <translation id="3226128629678568754">按“重新加载”按钮，重新提交加载该网页所需的数据。</translation>
 <translation id="3226387218769101247">缩略图</translation>
@@ -1527,6 +1536,7 @@
 <translation id="3414952576877147120">大小：</translation>
 <translation id="341513675006332771">“玩 Chrome 恐龙游戏”按钮，激活它即可在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="3415471717466570460">您的搜索内容、最佳匹配结果和相应网页内容将发送给 Google，并且可能会由人工审核员查看，以改进此功能。这是一项实验性功能，并非始终准确无误。</translation>
+<translation id="3421387094817716717">椭圆曲线公共密钥</translation>
 <translation id="3422248202833853650">请尝试退出其他程序以释放内存。</translation>
 <translation id="3422472998109090673">目前无法访问 <ph name="HOST_NAME" />。</translation>
 <translation id="3422794267539320056">点按恐龙或按空格键即可开玩</translation>
@@ -1603,6 +1613,7 @@
 <translation id="3541016556608204104">详细了解 Chrome 企业版接口</translation>
 <translation id="3542628208405253498">虚拟卡图片</translation>
 <translation id="3542768452570884558">在新窗口中打开链接</translation>
+<translation id="3543597750097719865">采用 SHA-512 算法的 X9.62 ECDSA 签名</translation>
 <translation id="3543935938072367282">利用自动填充功能更快结账</translation>
 <translation id="3547442767634383572">工作资料概览</translation>
 <translation id="3547746132308051926">20 x 24 英寸</translation>
@@ -1797,6 +1808,7 @@
 <translation id="3815434930383843058">8 x 12 英寸</translation>
 <translation id="3816482573645936981">值（已被取代）</translation>
 <translation id="3817524650114746564">打开您计算机的代理设置</translation>
+<translation id="3820749202859700794">SECG 椭圆曲线 secp521r1（又称 NIST P-521）</translation>
 <translation id="382115839591654906"><ph name="CARD_NAME" />的银行卡验证码 (CVC)</translation>
 <translation id="3822492359574576064">锁定和使用鼠标</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2087,6 +2099,7 @@
 <translation id="4265635050210404830">会员卡</translation>
 <translation id="4265872034478892965">管理员允许</translation>
 <translation id="4267590181863312380">要访问您在其他设备上的历史记录，请登录并同步历史记录。登录后，您还可在您的所有设备上获取密码等信息。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
+<translation id="4268025649754414643">密钥加密</translation>
 <translation id="4269029136757623689">家用电扇</translation>
 <translation id="4269264543938335308">泳装</translation>
 <translation id="4269599248168651462">服务器证书颁发给了一个非唯一名称。</translation>
@@ -2144,6 +2157,7 @@
 <translation id="4332872603299969513">儿童文学</translation>
 <translation id="4333295216031073611">购物清单</translation>
 <translation id="4333561522337981382">管理您的所有显示屏上的窗口</translation>
+<translation id="4333854382783149454">PKCS #1，带有 RSA 加密的 SHA-1</translation>
 <translation id="4336913590841287350">此政策尚无法作为 iOS 用户政策受到支持。</translation>
 <translation id="4340575312453649552">对于您的设备来说，此广告占用了太多资源，因此 Chrome 已将其移除。</translation>
 <translation id="4340810192899866471">从 JSON 文件导入</translation>
@@ -2187,6 +2201,7 @@
 <translation id="4414515549596849729">Cookie 和网站数据</translation>
 <translation id="4415156962929755728">塑料（高光）</translation>
 <translation id="4415426530740016218">取货地址</translation>
+<translation id="4415748029120993980">SECG 椭圆曲线 secp384r1（又称 NIST P-384）</translation>
 <translation id="4419287616181386201">密码可在相应管理设置中删除</translation>
 <translation id="4424024547088906515">此服务器无法证明它是<ph name="DOMAIN" />；Chrome不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="4425750422187370446">运动服装</translation>
@@ -2584,6 +2599,7 @@
 <translation id="5087286274860437796">服务器的证书目前无效。</translation>
 <translation id="5087580092889165836">添加新卡</translation>
 <translation id="5088142053160410913">操作人员须知</translation>
+<translation id="5088534251099454936">PKCS #1，带有 RSA 加密的 SHA-512</translation>
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5093232627742069661">Z 型折</translation>
 <translation id="5093417502834168387">登录时遇到问题？请试试其他方式</translation>
@@ -2756,6 +2772,7 @@
 <translation id="5348330584842140856">此文件已不存在，因此无法移动</translation>
 <translation id="5349543692327946794">标签（喷墨纸）</translation>
 <translation id="5351548097010183514">建材和建筑用品</translation>
+<translation id="5352033265844765294">时间戳</translation>
 <translation id="5354143049423063163">对冲基金</translation>
 <translation id="5355557959165512791">您目前无法访问 <ph name="SITE" />，因为此证书已被撤消。网络错误和攻击行为通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="5359752295193133096">默认分享已打开的相关标签页，即可获得更快速、更贴合需求的回答。</translation>
@@ -2809,6 +2826,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5433756542371550806">命令行变体</translation>
+<translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />：
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />您的浏览记录
@@ -2858,6 +2876,7 @@
 <translation id="5499229993630251170">要继续此会话吗？</translation>
 <translation id="550365051221576010">填充所有字段</translation>
 <translation id="5506286895894263601">该列表未包含任何有效的快捷方式。</translation>
+<translation id="5507756662695126555">不可否认</translation>
 <translation id="5508443345185481044">相机与摄像机</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">受管理的书签</translation>
@@ -2940,6 +2959,7 @@
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="561165882404867731">使用 Google 翻译来翻译此页面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 想使用您计算机的位置信息</translation>
+<translation id="5614190747811328134">用户须知</translation>
 <translation id="5614520971155863709">卡牌游戏</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> 将您重定向的次数过多。</translation>
 <translation id="5619721953841297650">预设</translation>
@@ -2955,6 +2975,7 @@
 <translation id="5640474731385449758">此扩展程序“<ph name="EXTENSION_NAME" />”想通过 <ph name="HANDLER_HOSTNAME" /> 打开 <ph name="ORIGIN" /> 中的<ph name="PROTOCOL" />链接</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />。<ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">立体声系统及组件</translation>
+<translation id="5642508497713047">CRL 签名人</translation>
 <translation id="5644090287519800334">侧边 1，图片沿 X 轴位移</translation>
 <translation id="5644128326840674462">促销横幅</translation>
 <translation id="5645132789250840550">塑料（半光）</translation>
@@ -3037,6 +3058,7 @@
 <translation id="5783922175933467571">“<ph name="TAB_GROUP_DISPLAY_NAME" />”链接将在 48 小时后失效</translation>
 <translation id="5784606427469807560">确认您的信用卡时出现问题。请检查您的互联网连接，然后重试。</translation>
 <translation id="5785756445106461925">而且，此页中包含其他不安全的资源。他人能在这些资源传输过程中进行查看，攻击者也可以修改这些资源，从而改变此页的外观。</translation>
+<translation id="5787146423283493983">密钥协议</translation>
 <translation id="5793317771769868848">此付款方式将从本设备中删除</translation>
 <translation id="5794065675298686371">开启价格跟踪通知</translation>
 <translation id="5800727402210090597">手机维修和服务</translation>
@@ -3117,6 +3139,7 @@
 <translation id="5924510104057992926">打开前需要检查</translation>
 <translation id="5924782825030413055">上次用户意见征求更新的来源：</translation>
 <translation id="5925040402342933574">光盘（半光）</translation>
+<translation id="5925147183566400388">核证作业准则 (Certification Practice Statement) 指针</translation>
 <translation id="5926982310317673627">健身房和健身俱乐部</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">开启此设置即可使用“帮我写”功能</translation>
@@ -3205,6 +3228,7 @@
 <translation id="605237284704429106">正在填充 IBAN</translation>
 <translation id="6053584886670442526">您可在各种 Google 产品中使用已保存的地址。此地址已保存到您的 Google 账号 (<ph name="ACCOUNT" />)。</translation>
 <translation id="6053735090575989697">如需详细了解 Google 如何保护您的数据，请参阅我们的隐私权政策。</translation>
+<translation id="6055392876709372977">PKCS #1，带有 RSA 加密的 SHA-256</translation>
 <translation id="6055888660316801977">“无匹配的安全付款凭证”表单</translation>
 <translation id="6055982527635883756">信封（存档用）</translation>
 <translation id="6057177372083677067">在线视频</translation>
@@ -3260,6 +3284,7 @@
 <translation id="6131824478727057281">位置</translation>
 <translation id="6133320744616005677">继续允许</translation>
 <translation id="6133984428121856852">文件扩展名为空或格式错误。</translation>
+<translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
 <translation id="6139975341602920272">17 x 22 英寸</translation>
 <translation id="6143097244789397208">增强现实与虚拟现实</translation>
 <translation id="614327212146763975">允许使用移动传感器和光传感器</translation>
@@ -3372,6 +3397,7 @@
 <translation id="6326947323444967009">在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="6327065120806001832">本地网络访问权限</translation>
 <translation id="6328639280570009161">请尝试停用网络联想查询功能</translation>
+<translation id="6329742260390895689">如需自动填充信息，请在 Google 钱包设置中开启“在各项 Google 产品和服务中使用卡券”</translation>
 <translation id="6329815962353376655">&lt;输入问题&gt;</translation>
 <translation id="6331597954316706229">为获得最贴合个人需求的回答，请允许所有对话参考您已打开的相关标签页。</translation>
 <translation id="633348045801643466">在结账时显示<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />先买后付<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />选项</translation>
@@ -3390,6 +3416,7 @@
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
 <translation id="6351658970066645919">删除浏览数据</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{无}=1{1 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}=2{2 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}other{# 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}}</translation>
+<translation id="6354918092619878358">SECG 椭圆曲线 secp256r1（又称 ANSI X9.62 prime256v1 或 NIST P-256）</translation>
 <translation id="6355392890578844978">此浏览器并未由某个公司或其他组织管理。此设备上的活动可能在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">“<ph name="GROUP_TITLE_1" />”和“<ph name="GROUP_TITLE_2" />”标签页分组已不可用</translation>
 <translation id="6358088212770985041">修改付款方式</translation>
@@ -3459,6 +3486,7 @@
 <translation id="6436994298828707228">此连接已被阻止，因为它是公共页面发起的，旨在连接到您本地网络上的设备或服务器。</translation>
 <translation id="6437647869369934905">Google 绘图</translation>
 <translation id="643917412048333145">连衣裙</translation>
+<translation id="6440450906295708112">变体版本来源</translation>
 <translation id="6440503408713884761">已忽略</translation>
 <translation id="6443406338865242315">您已安装的扩展程序和插件</translation>
 <translation id="6444329331928531170">退休与养老金</translation>
@@ -3501,6 +3529,7 @@
 <translation id="6502510275417601303">关于新付款设置的提醒已关闭</translation>
 <translation id="6502991525169604759">不含您所做更改</translation>
 <translation id="6505072878288254563">正在翻译</translation>
+<translation id="6506374932220792071">采用 SHA-256 算法的 X9.62 ECDSA 签名</translation>
 <translation id="6506936645890046535">可以请求访问 Cookie</translation>
 <translation id="6506959208958864820">信封</translation>
 <translation id="6507117483253822672">随时随地在网上更自信地书写内容</translation>
@@ -3811,6 +3840,7 @@
 <translation id="7003278537452757231">地垫与地毯</translation>
 <translation id="7003322000677139268">车辆零配件</translation>
 <translation id="7004499039102548441">最近打开的标签页</translation>
+<translation id="7004562620237466965">仅用于解密</translation>
 <translation id="700483187606163535">您的信息会保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />。您可以在各项 Google 产品中使用这些信息更快地填写表单。</translation>
 <translation id="7006930604109697472">仍然发送</translation>
 <translation id="7009364359744329733">此卡目前不可用，请稍后再试。</translation>
@@ -3853,6 +3883,7 @@
 <translation id="7070144569727915108">系统设置</translation>
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
 <translation id="7075452647191940183">请求过大</translation>
+<translation id="7075513071073410194">PKCS #1，带有 RSA 加密的 MD5</translation>
 <translation id="7075896597860500885">不建议从该网站复制</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4380,6 +4411,7 @@
 <translation id="7862306158978555061">显示敏感信息</translation>
 <translation id="7865448901209910068">最快的速度</translation>
 <translation id="7865482168955081228">“先买后付”错误界面已关闭。</translation>
+<translation id="7869655448736341731">不限</translation>
 <translation id="7870207318911766769">系统会将结账页中的内容分享给 Google，以便提供这些选项。</translation>
 <translation id="7870281855125116701">发现了折扣</translation>
 <translation id="7871445724586827387">更改您的 Google 账号密码</translation>
@@ -4448,6 +4480,7 @@
 <translation id="7967636097426665267">通信设备</translation>
 <translation id="79682505114836835">值“<ph name="VALUE" />”是无效的十六进制颜色。</translation>
 <translation id="7968982339740310781">查看详情</translation>
+<translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
 <translation id="7976053965094442846">提供分期付款服务的“先买后付”发卡机构。键盘已隐藏。</translation>
 <translation id="7976214039405368314">请求次数过多</translation>
 <translation id="7977538094055660992">输出设备</translation>

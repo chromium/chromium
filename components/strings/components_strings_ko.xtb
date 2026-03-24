@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1036436692654972538">기기에 저장된 정보입니다</translation>
 <translation id="1036881361735705143">봉투 C4</translation>
+<translation id="1038168778161626396">암호화만</translation>
 <translation id="1038842779957582377">알 수 없는 이름</translation>
 <translation id="1041998700806130099">작업 시트 메시지</translation>
 <translation id="1044897699341250361">의미</translation>
@@ -44,6 +45,7 @@
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" />로 된 페이지는 번역하지 않음</translation>
 <translation id="1070333806075222467">금속(유광)</translation>
 <translation id="1070901266639972381">밤</translation>
+<translation id="1071917609930274619">데이터 암호화</translation>
 <translation id="1073690811593784042">유리(컬러)</translation>
 <translation id="1074287282535157335">할부 4회 결제 또는 월별 결제(자격 요건에 따라 다름)</translation>
 <translation id="1074497978438210769">주의 요함</translation>
@@ -85,6 +87,7 @@
 <translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1142713751288681188">용지 종류</translation>
 <translation id="1142965388643537393">여행 정보</translation>
+<translation id="1143142264369994168">인증서 서명자</translation>
 <translation id="1144136880160289237">아직 활성 주제가 없습니다.</translation>
 <translation id="1149617035358809955">결제 정보를 입력하기 위해 본인 인증을 시도 중입니다.</translation>
 <translation id="1150565364351027703">선글라스</translation>
@@ -137,6 +140,7 @@
 <translation id="1215738931000958575">Google 계정에 저장된 정보를 사용하여 비밀번호, 패스키, 주소, 결제 수단 등의 정보를 자동 완성합니다.</translation>
 <translation id="1219129156119358924">시스템 보안</translation>
 <translation id="1219134100826635117">관리자가 이 작업을 차단했습니다</translation>
+<translation id="1221024147024329929">PKCS #1 MD2(RSA 암호화 사용)</translation>
 <translation id="1222060260947439312">오른쪽 트레이</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">카드 번호:</translation>
@@ -411,8 +415,10 @@
 <translation id="1639239467298939599">로드 중</translation>
 <translation id="1640180200866533862">사용자 정책</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />사이트의 홈페이지를 방문<ph name="END_LINK" />해 보세요.</translation>
+<translation id="1640283014264083726">PKCS #1 MD4(RSA 암호화 사용)</translation>
 <translation id="1641962500621836664">카메라 파일을 저장 중</translation>
 <translation id="1641976391427233992">다음까지 출력 지연</translation>
+<translation id="1643072738649235303">SHA-1을 포함한 X9.62 ECDSA 서명</translation>
 <translation id="1643651787397909318">Chrome 안전 확인으로 이동 버튼, 설정의 Chrome 안전 확인 페이지로 이동하려면 활성화하세요.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1645004815457365098">알 수 없는 소스</translation>
@@ -695,6 +701,7 @@
 <translation id="2108755909498034140">컴퓨터 다시 시작</translation>
 <translation id="2109845311767915560">공유된 탭 그룹</translation>
 <translation id="2111166930115883695">플레이하려면 스페이스바를 누르세요.</translation>
+<translation id="2113921862428609753">기관 정보 액세스</translation>
 <translation id="2113977810652731515">카드</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" />이(가) 우선 적용되었기 때문에 무시됩니다.</translation>
 <translation id="2118132148597630479">봉투 C5</translation>
@@ -757,6 +764,7 @@
 <translation id="2190094353033916816">이 정책은 머신 및 사용자 수준에서 서로 다른 값을 적용합니다. 정책이 의도한 대로 작동하고 있습니다.</translation>
 <translation id="2191980191135734720">다음 단계에서는 일반적으로 지문을 사용하여 화면을 잠금 해제합니다. <ph name="LINK_TEXT" />도 가능합니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
+<translation id="2195729137168608510">이메일 보호</translation>
 <translation id="2198183835992354675">KTN(Known Traveler Number)</translation>
 <translation id="2198215508485017216">예상치 못한 문제가 발생했습니다. <ph name="BEGIN_LINK" />Drive 업로드에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">싫어요 버튼, 양식을 열어 이 추천이 마음에 들지 않는 이유에 관한 자세한 의견을 제출하려면 Enter 키를 누르세요.</translation>
@@ -1416,6 +1424,7 @@
 <translation id="3220264767789936523">정장</translation>
 <translation id="3223287115535306850">앱 실행용 트로버</translation>
 <translation id="3223425961342298674">위치가 허용되지 않음</translation>
+<translation id="3225319735946384299">코드 서명</translation>
 <translation id="3225919329040284222">서버가 내장된 기대치와 일치하지 않는 인증서를 전달했습니다. 이러한 기대치는 사용자를 보호하기 위해 보안이 엄격한 특정 웹사이트에 포함됩니다.</translation>
 <translation id="3226128629678568754">페이지 로드에 필요한 데이터를 다시 제출하려면 새로고침 버튼을 누릅니다.</translation>
 <translation id="3226387218769101247">미리보기 이미지</translation>
@@ -1529,6 +1538,7 @@
 <translation id="3414952576877147120">크기:</translation>
 <translation id="341513675006332771">Chrome 공룡 게임 플레이 버튼, Chrome에서 공룡 게임을 플레이하려면 활성화하세요.</translation>
 <translation id="3415471717466570460">검색어, 최적 일치 항목, 페이지 콘텐츠가 Google로 전송되며 이 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다. 실험용 기능이므로 정확하지 않을 수 있습니다.</translation>
+<translation id="3421387094817716717">타원 곡선 공개 키</translation>
 <translation id="3422248202833853650">다른 프로그램을 종료하여 메모리를 확보하세요.</translation>
 <translation id="3422472998109090673">현재 <ph name="HOST_NAME" />에 연결할 수 없습니다.</translation>
 <translation id="3422794267539320056">플레이하려면 공룡을 탭하거나 스페이스바를 누르세요</translation>
@@ -1606,6 +1616,7 @@
 <translation id="3541016556608204104">Chrome Enterprise 커넥터 자세히 알아보기</translation>
 <translation id="3542628208405253498">카드 이미지</translation>
 <translation id="3542768452570884558">새 창에서 링크 열기</translation>
+<translation id="3543597750097719865">SHA-512를 포함한 X9.62 ECDSA 서명</translation>
 <translation id="3543935938072367282">자동 완성으로 더 빠르게 결제하기</translation>
 <translation id="3547442767634383572">직장 프로필 개요</translation>
 <translation id="3547746132308051926">20x24인치</translation>
@@ -1801,6 +1812,7 @@
 <translation id="3815434930383843058">8x12인치</translation>
 <translation id="3816482573645936981">값(대체됨)</translation>
 <translation id="3817524650114746564">컴퓨터 프록시 설정 열기</translation>
+<translation id="3820749202859700794">SECG 타원 곡선 secp521r1(또는 NIST P-521)</translation>
 <translation id="382115839591654906"><ph name="CARD_NAME" />의 CVC</translation>
 <translation id="3822492359574576064">마우스 잠금 및 사용</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2091,6 +2103,7 @@
 <translation id="4265635050210404830">내 포인트 카드</translation>
 <translation id="4265872034478892965">관리자가 허용함</translation>
 <translation id="4267590181863312380">다른 기기에서 방문 기록을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 사용 중인 모든 기기에서 비밀번호 등을 사용 가능합니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
+<translation id="4268025649754414643">키 암호화</translation>
 <translation id="4269029136757623689">가정용 선풍기</translation>
 <translation id="4269264543938335308">수영복</translation>
 <translation id="4269599248168651462">서버 인증서가 고유하지 않은 이름으로 발급됩니다.</translation>
@@ -2148,6 +2161,7 @@
 <translation id="4332872603299969513">아동 문학</translation>
 <translation id="4333295216031073611">쇼핑 목록</translation>
 <translation id="4333561522337981382">모든 디스플레이의 창 관리</translation>
+<translation id="4333854382783149454">PKCS #1 SHA-1(RSA 암호화 사용)</translation>
 <translation id="4336913590841287350">이 정책은 iOS에서 아직 사용자 정책으로 지원되지 않습니다.</translation>
 <translation id="4340575312453649552">이 광고는 기기에서 너무 많은 리소스를 사용했기 때문에 Chrome에서 삭제했습니다.</translation>
 <translation id="4340810192899866471">JSON에서 가져오기</translation>
@@ -2191,6 +2205,7 @@
 <translation id="4414515549596849729">쿠키 및 사이트 데이터</translation>
 <translation id="4415156962929755728">플라스틱(고광택)</translation>
 <translation id="4415426530740016218">픽업 주소</translation>
+<translation id="4415748029120993980">SECG 타원 곡선 secp384r1(또는 NIST P-384)</translation>
 <translation id="4419287616181386201">관리 설정에서 비밀번호를 삭제할 수 있습니다.</translation>
 <translation id="4424024547088906515">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 Chrome에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="4425750422187370446">운동복</translation>
@@ -2588,6 +2603,7 @@
 <translation id="5087286274860437796">서버의 인증서가 현재 유효하지 않습니다.</translation>
 <translation id="5087580092889165836">카드 추가</translation>
 <translation id="5088142053160410913">운영자에게 보내는 메시지</translation>
+<translation id="5088534251099454936">PKCS #1 SHA-512(RSA 암호화 사용)</translation>
 <translation id="5089810972385038852">시/도</translation>
 <translation id="5093232627742069661">Z 폴드</translation>
 <translation id="5093417502834168387">로그인하는 데 문제가 있나요? 다른 방법 시도</translation>
@@ -2760,6 +2776,7 @@
 <translation id="5348330584842140856">파일이 더 이상 존재하지 않으므로 이동되지 않았습니다.</translation>
 <translation id="5349543692327946794">라벨(잉크젯)</translation>
 <translation id="5351548097010183514">건축 자재 및 용품</translation>
+<translation id="5352033265844765294">시간 기록</translation>
 <translation id="5354143049423063163">헤지 펀드</translation>
 <translation id="5355557959165512791">인증서가 취소되었기 때문에 현재 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대부분 일시적이므로 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
 <translation id="5359752295193133096">더 빠르고 맞춤설정된 대답을 얻기 위해 기본적으로 관련된 열린 탭을 공유합니다.</translation>
@@ -2813,6 +2830,7 @@
 <translation id="5426179911063097041"><ph name="SITE" />에서 알림을 보내려고 합니다.</translation>
 <translation id="5431318178759467895">컬러</translation>
 <translation id="5433756542371550806">명령줄 변형</translation>
+<translation id="5434065355175441495">PKCS #1 RSA 암호화</translation>
 <translation id="5434798570900738152">Chromium에 <ph name="BEGIN_EMPHASIS" />저장되지 않는 항목<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />방문 기록
@@ -2862,6 +2880,7 @@
 <translation id="5499229993630251170">이 대화목록을 계속하시겠습니까?</translation>
 <translation id="550365051221576010">모두 입력</translation>
 <translation id="5506286895894263601">목록에 유효한 바로가기가 없습니다.</translation>
+<translation id="5507756662695126555">부인 방지</translation>
 <translation id="5508443345185481044">카메라 및 캠코더</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">관리 북마크</translation>
@@ -2944,6 +2963,7 @@
 <translation id="5611398002774823980">계정에 저장</translation>
 <translation id="561165882404867731">Google 번역으로 이 페이지를 번역하세요.</translation>
 <translation id="5612720917913232150"><ph name="URL" />에서 내 컴퓨터의 위치에 액세스하려고 합니다</translation>
+<translation id="5614190747811328134">사용자 알림</translation>
 <translation id="5614520971155863709">카드 게임</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" />에서 리디렉션한 횟수가 너무 많습니다.</translation>
 <translation id="5619721953841297650">미리 설정</translation>
@@ -2959,6 +2979,7 @@
 <translation id="5640474731385449758">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 <ph name="HANDLER_HOSTNAME" />을(를) 통해 <ph name="ORIGIN" />의 <ph name="PROTOCOL" /> 링크를 열려고 합니다.</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">스테레오 시스템 및 컴포넌트</translation>
+<translation id="5642508497713047">CRL 서명자</translation>
 <translation id="5644090287519800334">첫 번째 면 이미지 X 시프트</translation>
 <translation id="5644128326840674462">프로모션 배너</translation>
 <translation id="5645132789250840550">플라스틱(반광택)</translation>
@@ -3041,6 +3062,7 @@
 <translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> 링크는 48시간 후에 만료됩니다.</translation>
 <translation id="5784606427469807560">카드 확인 중에 문제가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.</translation>
 <translation id="5785756445106461925">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 모양을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
+<translation id="5787146423283493983">키 계약</translation>
 <translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
 <translation id="5794065675298686371">가격 추적 알림 사용 설정</translation>
 <translation id="5800727402210090597">휴대전화 수리 및 서비스</translation>
@@ -3121,6 +3143,7 @@
 <translation id="5924510104057992926">열기 전에 검토 필요</translation>
 <translation id="5924782825030413055">마지막 동의 업데이트 소스:</translation>
 <translation id="5925040402342933574">광디스크(반광택)</translation>
+<translation id="5925147183566400388">인증 업무 준칙 URI</translation>
 <translation id="5926982310317673627">체육관 및 헬스장</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">작성 지원 기능을 사용하려면 이 설정을 사용 설정하세요</translation>
@@ -3209,6 +3232,7 @@
 <translation id="605237284704429106">IBAN 입력</translation>
 <translation id="6053584886670442526">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. Google 계정(<ph name="ACCOUNT" />)에 저장된 주소입니다.</translation>
 <translation id="6053735090575989697">개인정보처리방침에서 Google이 내 데이터를 보호하는 방법을 자세히 알아보세요.</translation>
+<translation id="6055392876709372977">PKCS #1 SHA-256(RSA 암호화 사용)</translation>
 <translation id="6055888660316801977">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보</translation>
 <translation id="6055982527635883756">봉투(보관용)</translation>
 <translation id="6057177372083677067">온라인 동영상</translation>
@@ -3264,6 +3288,7 @@
 <translation id="6131824478727057281">위치</translation>
 <translation id="6133320744616005677">계속 허용</translation>
 <translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
+<translation id="6138680304137685902">SHA-384를 포함한 X9.62 ECDSA 서명</translation>
 <translation id="6139975341602920272">17x22인치</translation>
 <translation id="6143097244789397208">증강 현실 및 가상 현실</translation>
 <translation id="614327212146763975">움직임 감지 센서 및 조도 센서가 허용되었습니다</translation>
@@ -3377,6 +3402,7 @@
 <translation id="6326947323444967009">iOS 설정에서 Chrome을 시스템 기본 브라우저로 설정합니다.</translation>
 <translation id="6327065120806001832">로컬 네트워크 액세스</translation>
 <translation id="6328639280570009161">네트워크 예측을 사용 중지해 보세요.</translation>
+<translation id="6329742260390895689">정보를 자동 완성하려면 월렛 설정에서 'Google 서비스 전반에 패스 사용'을 사용 설정하세요</translation>
 <translation id="6329815962353376655">&lt;질문 입력&gt;</translation>
 <translation id="6331597954316706229">가장 맞춤설정된 대답을 받으려면 모든 대화목록에서 관련된 열린 탭을 참조하도록 허용하세요.</translation>
 <translation id="633348045801643466">결제 시 <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />나중에 결제<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> 옵션 표시</translation>
@@ -3395,6 +3421,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
 <translation id="6351658970066645919">인터넷 사용 기록 삭제</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{없음}=1{비밀번호 1개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}=2{비밀번호 2개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}other{비밀번호 #개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}}</translation>
+<translation id="6354918092619878358">SECG 타원 곡선 secp256r1(또는 ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355392890578844978">이 브라우저는 회사 또는 다른 조직에서 관리하지 않습니다. 이 기기의 활동은 Chromium 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" 및 "<ph name="GROUP_TITLE_2" />" 탭 그룹을 더 이상 사용할 수 없음</translation>
 <translation id="6358088212770985041">결제 수단을 수정합니다.</translation>
@@ -3464,6 +3491,7 @@
 <translation id="6436994298828707228">공개 페이지에서 로컬 네트워크에 있는 기기나 서버에 연결하려 했기 때문에 연결이 차단되었습니다.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">드레스</translation>
+<translation id="6440450906295708112">변형 소스</translation>
 <translation id="6440503408713884761">무시됨</translation>
 <translation id="6443406338865242315">내가 설치한 확장 프로그램 및 플러그인</translation>
 <translation id="6444329331928531170">은퇴 및 연금</translation>
@@ -3506,6 +3534,7 @@
 <translation id="6502510275417601303">새 결제 설정에 대한 알림 닫힘</translation>
 <translation id="6502991525169604759">변경사항 제외</translation>
 <translation id="6505072878288254563">번역 중</translation>
+<translation id="6506374932220792071">SHA-256을 포함한 X9.62 ECDSA 서명</translation>
 <translation id="6506936645890046535">쿠키 액세스를 요청할 수 있음</translation>
 <translation id="6506959208958864820">봉투</translation>
 <translation id="6507117483253822672">웹 어디에서나 더욱 자신 있게 작성하세요</translation>
@@ -3816,6 +3845,7 @@
 <translation id="7003278537452757231">깔개 및 카펫</translation>
 <translation id="7003322000677139268">차량 부품 및 액세서리</translation>
 <translation id="7004499039102548441">최근 탭</translation>
+<translation id="7004562620237466965">해독 전용</translation>
 <translation id="700483187606163535">정보는 <ph name="ACCOUNT" />의 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에 저장됩니다. 사용자는 Google 제품 전반에서 이 정보를 사용하여 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="7006930604109697472">무시하고 보내기</translation>
 <translation id="7009364359744329733">현재 이 카드를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
@@ -3858,6 +3888,7 @@
 <translation id="7070144569727915108">시스템 설정</translation>
 <translation id="70705239631109039">연결의 보안이 완벽하지 않음</translation>
 <translation id="7075452647191940183">요청이 너무 큼</translation>
+<translation id="7075513071073410194">PKCS #1 MD5(RSA 암호화 사용)</translation>
 <translation id="7075896597860500885">이 사이트에서 복사 기능은 사용하지 않는 것이 좋습니다.</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4384,6 +4415,7 @@
 <translation id="7862306158978555061">민감한 정보 표시</translation>
 <translation id="7865448901209910068">최고 속도</translation>
 <translation id="7865482168955081228">선구매 후지불 오류 화면이 닫혔습니다.</translation>
+<translation id="7869655448736341731">모두</translation>
 <translation id="7870207318911766769">이러한 옵션을 제공하기 위해 결제 페이지의 페이지 콘텐츠가 Google과 공유됩니다.</translation>
 <translation id="7870281855125116701">할인 제품 찾음</translation>
 <translation id="7871445724586827387">Google 계정 비밀번호 변경</translation>
@@ -4452,6 +4484,7 @@
 <translation id="7967636097426665267">통신장비</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" 값은 유효하지 않은 16진수 색상입니다.</translation>
 <translation id="7968982339740310781">세부정보 보기</translation>
+<translation id="7972714317346275248">PKCS #1 SHA-384(RSA 암호화 사용)</translation>
 <translation id="7976053965094442846">할부 결제를 지원하는 선구매 후지불 발급기관 목록입니다. 키보드가 숨겨졌습니다.</translation>
 <translation id="7976214039405368314">요청 횟수가 너무 많음</translation>
 <translation id="7977538094055660992">출력 기기</translation>

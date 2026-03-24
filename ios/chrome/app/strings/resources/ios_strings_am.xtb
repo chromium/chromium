@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">ለመጫን ሁለቴ ነካ ያድርጉ።</translation>
 <translation id="1740650426894359238">ወደ ሌላ መገለጫ ይቀይሩ</translation>
 <translation id="1741219894094057085">ዘመናዊ ሰዓት</translation>
+<translation id="1742773766788162541">ካርድን ቃኝ እና በራስ-ሙላ</translation>
 <translation id="1743244221910283364">ለውጦችን አስወግድ</translation>
 <translation id="1748975028205587434">ፋይልዎን ይምረጡ</translation>
 <translation id="1749733017156547309">የይለፍ ቃል ያስፈልጋል</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2360196772093551345">የሞባይል ጣቢያ ጠይቅ</translation>
 <translation id="2362083820973145409">እንደ <ph name="USER_NAME" /> ገብተዋል። <ph name="USER_EMAIL" />። ቅንብሮችን ይከፍታል።</translation>
+<translation id="2367025302166767427">መረጃዎን መሙላት ላይ ችግር ገጥሟል</translation>
 <translation id="2371084566192454134">ትሮች እና ቡድኖች</translation>
 <translation id="2371303771137626249">አዲስ</translation>
 <translation id="2381405137052800939">መሠረታዊ ነገሮች</translation>
@@ -491,6 +493,7 @@
 <translation id="2721190673959776287">በቀን ውስጥ በርካታ ጊዜ መታየት ያለበት ለአውድ ፓነል የሚሆን በናሙና የበለፀገ የውስጠ-ምርት እገዛ።</translation>
 <translation id="2739887572830526131">በኋላ ላይ ትሮችን ለማከል ይህን ቡድን ያቆዩት ወይም ከእንግዲህ የማያስፈልግዎ ከሆነ ይሰርዙት።</translation>
 <translation id="2747003861858887689">ቀዳሚ መስክ</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> ወደ ቦታ <ph name="POSITION" /> ተወስዷል</translation>
 <translation id="2755485474385016903">የተደረጉ ለውጦች በቡድኑ ውስጥ ባሉ ሁሉም ሰዎች ይታያሉ</translation>
 <translation id="2755595981383829244">አሁን የይዘት ማሳወቂያዎችን ይቀበላሉ</translation>
 <translation id="2761788987260570878">ፍለጋዎን ፎቶ ያንሱ</translation>
@@ -709,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />፣ በድርጅትዎ የሚተዳደር።</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> ይዘምን?</translation>
 <translation id="3581564640715911333">በሌሎች ቋንቋዎች ለመተርጎም ሐሳብ አቅርብ</translation>
+<translation id="3583726884554296148">ለዚህ ግዢ እና Chrome ላይ ለሚደረጉ የወደፊት ግዢዎች በራስ-ሰር ለመሙላት ካርድዎን በGoogle መለያዎ ውስጥ ያስቀምጡ</translation>
 <translation id="3587482841069643663">ሁሉም</translation>
 <translation id="3587885837929752825">ድርጅትዎ በGoogle መለያዎ ውስጥ ማስቀመጥ የሚችሉትን ነገር ይገድባል።</translation>
 <translation id="3588820906588687999">ምስሉን በአዲስ ትር ውስጥ ክፈት</translation>
@@ -1345,6 +1349,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5819208479324046259">በ<ph name="MANAGER" /> የሚተዳደር ነው። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">በማስመር ላይ…</translation>
+<translation id="583281660410589416">ያልታወቀ </translation>
 <translation id="5838430324585198889">በGoogle መተግበሪያ ለእርስዎ iPad ተጨማሪ ባህሪያትን ይክፈቱ</translation>
 <translation id="583923961930319521">በሁሉም መሣሪያዎችዎ ላይ የይለፍ ቃላትን ይጠቀሙ</translation>
 <translation id="5843013299019689749">ጥቁር የዳራ ቀለም</translation>
@@ -1555,6 +1560,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6532106788206463496">ለውጦችን አስቀምጥ</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> ይክፈቱ፣ የ<ph name="NUMBER_OF_TABS" /> ቡድን፣ <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">በመላው መሣሪያዎችዎ ላይ በራስ-ሙላ በፍጥነት ግዢ ያጠናቅቁ</translation>
 <translation id="6550675742724504774">አማራጮች</translation>
 <translation id="6550891580932862748">ለእርስዎ አደገኛ ከሆኑ የድር ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ አያደርግልዎትም። በሌሎች Google ምርቶች ውስጥ ያሉ የእርስዎ አስተማማኝ የአሳሽ ቅንብሮች ተጽዕኖ አያድርባቸውም።</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2028,6 +2034,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8209237163365258530">የGemini <ph name="VERSION_NUMBER" /> ሞዴሎች</translation>
 <translation id="8211030355252954494">ለ<ph name="WEBSITE" /> የይለፍ ቃሎች ደርሰዎታል</translation>
 <translation id="8211406090763984747">ግንኙነት ደኅንነቱ የተጠበቀ ነው</translation>
+<translation id="8213190397436801658">መነሻ</translation>
 <translation id="8214293972734702249">ተሰክቷል፣ <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">ከመስመር ውጭ ሥሪትን በአዲስ ትር ውስጥ አሳይ</translation>
 <translation id="8221665793629393739">እንደገና ለመጎብኘት የእርስዎ አስታዋሽ</translation>

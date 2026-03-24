@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2360196772093551345">Solicită site mobil</translation>
 <translation id="2362083820973145409">Conectat(ă) ca <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Deschide setările.</translation>
+<translation id="2367025302166767427">Eroare la completarea informațiilor</translation>
 <translation id="2371084566192454134">File și grupuri de file</translation>
 <translation id="2371303771137626249">Nou</translation>
 <translation id="2381405137052800939">Setări de bază</translation>
@@ -1320,7 +1321,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5738385766833540397">Gestionează modul în care primești alertele de scădere de preț pentru produsele pe care le urmărești</translation>
 <translation id="5738887413654608789">Astfel, poți descoperi pagini web relevante în funcție de lucrurile din jurul tău.</translation>
 <translation id="573974402615125334">Pentru a permite accesul, a te alătura și a colabora la grupuri de file, sincronizează istoricul și filele</translation>
-<translation id="5740123193752401435">Caută în file…</translation>
+<translation id="5740123193752401435">Caută file…</translation>
 <translation id="5744274077973758795">Notificările pentru <ph name="FEATURE_NAME" /> sunt activate</translation>
 <translation id="5745598824054949526">Nu s-a găsit text</translation>
 <translation id="5745916533876677730">Accesează fila anterioară</translation>
@@ -1345,6 +1346,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5819208479324046259">Gestionat de <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Se sincronizează…</translation>
+<translation id="583281660410589416">Necunoscut</translation>
 <translation id="5838430324585198889">Beneficiază de mai multe funcții pentru iPad cu aplicațiile Google</translation>
 <translation id="583923961930319521">Folosește parole pe toate dispozitivele</translation>
 <translation id="5843013299019689749">Culoarea de fundal negru</translation>
@@ -2318,7 +2320,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="9205189991633470489">Blocare incognito</translation>
 <translation id="9206887540681440657">Viteză</translation>
 <translation id="9219103736887031265">Imagini</translation>
-<translation id="9219154867334666734">Caută în file…</translation>
+<translation id="9219154867334666734">Caută file…</translation>
 <translation id="9223358826628549784">Raportul de blocare a fost trimis.</translation>
 <translation id="926455622548529175">Comută și șterge</translation>
 <translation id="929748059769569925">Text evidențiat</translation>

@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1652197001188145583">Ha be van kapcsolva, a webhelyek kérhetik NFC-eszközök használatát. Ha ki van kapcsolva, a webhelyek nem használhatnak NFC-eszközöket.</translation>
 <translation id="1660204651932907780">A webhelyek lejátszhatnak hangokat (ajánlott)</translation>
+<translation id="1676590040242013349">A „Mindig használjon biztonságos kapcsolatokat” beállítás be van kapcsolva.</translation>
 <translation id="1677097821151855053">A cookie-k és az egyéb webhelyadatok arra szolgálnak, hogy a webhelyek emlékezzenek Önre, és így például bejelentkeztetik, vagy személyre szabják a hirdetéseket. A <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" /> kezelheti a webhelyek cookie-jait.</translation>
 <translation id="1679305402657584804">A webhelyek kérhetik NFC-eszközök használatát</translation>
 <translation id="1686785653877010442">A webhelyek általában akkor küldenek értesítéseket, ha rendkívüli hírekről vagy csevegőüzenetekről szeretnék tájékoztatni Önt.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">A vágólapon található szövegek és képek megtekintésének letiltása a webhelyek számára</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6950072572526089586">A felkeresett webhelyek információkat menthetnek az Ön által végzett műveletekről annak érdekében, hogy a várt módon működjenek (például hogy bejelentkezve maradhasson az adott webhelyen, illetve a bevásárlókosárban lévő tételek mentéséhez). A webhelyek gyakran ideiglenesen mentik ezeket az adatokat az eszközére.</translation>
+<translation id="6964291282260073066">A „WebGPU” le van tiltva.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Rózsaszín téma</translation>
 <translation id="6980861169612950611">Törli a webhelyadatokat? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a virtuálisvalóság-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak virtuálisvalóság-eszközöket.</translation>
 <translation id="7282197670900591579">Citromsárga téma</translation>
 <translation id="728412880473384942">A webhelyek gyorsabbak, de kevésbé biztonságosak</translation>
+<translation id="7352902948037373520">Az <ph name="BEGIN_LINK1" />Android-beállításokban<ph name="END_LINK1" /> kezelheti.
+
+A Speciális védelem a következő Chrome-beállításokat vezérli:</translation>
 <translation id="7366415735885268578">Webhely hozzáadása</translation>
 <translation id="7368695150573390554">Minden offline adat törlődik</translation>
 <translation id="7369678931043226462">Az Új lap oldal személyre szabásának alsó lapja félmagasságban van megnyitva</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">A webhelyek általában bizonyos funkciók (például dokumentumok nyomtatásának vagy tárolóeszközön való mentésének) végrehajtása érdekében csatlakoznak USB-eszközökhöz</translation>
 <translation id="8473055640493819707">A(z) „<ph name="APP_NAME" />” elavult. Telepítse újra az alkalmazást.</translation>
 <translation id="847433688444405067">Böngészés több eszközön</translation>
+<translation id="8484556725636319115">A „JavaScript-optimalizáló” ki van kapcsolva. <ph name="BEGIN_LINK2" />Webhelykivételek kezelése<ph name="END_LINK2" />.</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>
 <translation id="848952951823693243">Mindig a mobilwebhely kérése</translation>
 <translation id="8492822722330266509">A webhelyek megjeleníthetnek előugró ablakokat, és használhatnak átirányításokat</translation>

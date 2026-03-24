@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1652197001188145583">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos NFC. Quando está desativada, os sites não podem usar dispositivos NFC.</translation>
 <translation id="1660204651932907780">Permitir o áudio dos sites (recomendado)</translation>
+<translation id="1676590040242013349">A opção "Sempre usar conexões seguras" está ativada.</translation>
 <translation id="1677097821151855053">Os cookies e outros dados do site são usados para lembrar de você, por exemplo, para conectar sua conta ou personalizar anúncios. Para gerenciar os cookies de todos os sites, acesse <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Os sites podem pedir para usar dispositivos NFC</translation>
 <translation id="1686785653877010442">Sites costumam enviar notificações para avisar sobre as últimas notícias ou mensagens de chat.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Impedir que sites leiam textos e imagens da área de transferência</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6950072572526089586">Um site que você visita pode salvar informações sobre o que você está fazendo para funcionar conforme o esperado. Por exemplo, para manter sua conta conectada em um site ou salvar itens no seu carrinho de compras. Geralmente, os sites salvam essas informações temporariamente no dispositivo.</translation>
+<translation id="6964291282260073066">O "WebGPU" está desativado.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6980861169612950611">Excluir dados do site? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos de realidade virtual. Quando está desativada, os sites não podem usar dispositivos de realidade virtual.</translation>
 <translation id="7282197670900591579">Tema limão</translation>
 <translation id="728412880473384942">Os sites ficam mais rápidos, mas menos seguros</translation>
+<translation id="7352902948037373520">Gerenciar nas <ph name="BEGIN_LINK1" />configurações do Android<ph name="END_LINK1" />
+
+A Proteção Avançada controla estas configurações do Chrome:</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7368695150573390554">Todos os dados off-line serão excluídos</translation>
 <translation id="7369678931043226462">A página inferior "Personalizar 'Nova guia'" está aberta na metade da altura</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Os sites geralmente se conectam a dispositivos USB para recursos como imprimir um documento ou salvar em um dispositivo de armazenamento</translation>
 <translation id="8473055640493819707">O app <ph name="APP_NAME" /> está desatualizado e precisa ser reinstalado.</translation>
 <translation id="847433688444405067">Navegue em vários dispositivos</translation>
+<translation id="8484556725636319115">O "otimizador de JavaScript" está desativado. <ph name="BEGIN_LINK2" />Gerencie as exceções do site<ph name="END_LINK2" />.</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="848952951823693243">Sempre ver a versão para dispositivos móveis</translation>
 <translation id="8492822722330266509">Os sites podem exibir pop-ups e usar redirecionamentos</translation>

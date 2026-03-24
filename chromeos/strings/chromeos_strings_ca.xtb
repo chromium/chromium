@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Introdueix una indicació</translation>
 <translation id="115705039208660697">pinyes</translation>
 <translation id="1164939766849482256">Estalvi de pantalla De l'alba a la foscor</translation>
-<translation id="1167755866710282443">Obre el menú per personalitzar les claus. Arrossega el menú per moure'l.</translation>
 <translation id="1171349345463658120">llacuna de sorra</translation>
 <translation id="1174073918202301297">La drecera s'ha afegit</translation>
 <translation id="11743817593307477">Utilitza les tecles de fletxa per moure aquest control a l'acció del joc que vulguis. Utilitza la tecla Retorn per col·locar el control. Utilitza la tecla Esc per cancel·lar.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Creu direccional del mapatge de teclat</translation>
 <translation id="3217462202230355157">Comprova que el micròfon estigui connectat o prova de reiniciar el <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
-<translation id="3226657629376379887">Menú d'accions de disseny</translation>
 <translation id="3227186760713762082">Divideix el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">art digital</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
-<translation id="7184043045742675738">Fes clic en qualsevol tecla per personalitzar el teu botó. Canvia la posició de la tecla amb el ratolí o les tecles de fletxa.</translation>
 <translation id="7187669805838282391">dimecres</translation>
 <translation id="7205318498545665455">Tria el micròfon</translation>
 <translation id="7210635925306941239">cian</translation>
@@ -1497,7 +1494,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7590883480672980941">Configuració d'introducció de text</translation>
 <translation id="7595982850646262331">Temps restant: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">L'administrador de <ph name="MANAGER" /> ha definit quan es pot utilitzar aquest <ph name="DEVICE_TYPE" />.</translation>
-<translation id="7613724632293948900">Canvia la posició amb el ratolí o les tecles de fletxa.</translation>
 <translation id="7618216277886673749">Selecciona <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>

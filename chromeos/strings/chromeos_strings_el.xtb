@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Εισαγάγετε μια προτροπή</translation>
 <translation id="115705039208660697">ανανάδες</translation>
 <translation id="1164939766849482256">Προφύλαξη οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
-<translation id="1167755866710282443">Ανοίξτε το μενού για να προσαρμόσετε τα πλήκτρα. Σύρετε το μενού για μετακίνηση.</translation>
 <translation id="1171349345463658120">αμμώδης λιμνοθάλασσα</translation>
 <translation id="1174073918202301297">Η συντόμευση προστέθηκε</translation>
 <translation id="11743817593307477">Χρησιμοποιήστε τα πλήκτρα βέλους για να μετακινήσετε αυτό το στοιχείο ελέγχου στην ενέργεια παιχνιδιού που θέλετε. Χρησιμοποιήστε το πλήκτρο enter για να τοποθετήσετε το στοιχείο ελέγχου. Χρησιμοποιήστε το πλήκτρο escape για ακύρωση.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">D-pad αντιστοίχισης πλήκτρων</translation>
 <translation id="3217462202230355157">Βεβαιωθείτε ότι το μικρόφωνό σας είναι συνδεδεμένο ή δοκιμάστε να επανεκκινήσετε τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
-<translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3227186760713762082">Διαιρέστε την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">ψηφιακή τέχνη</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7180865173735832675">Προσαρμογή</translation>
-<translation id="7184043045742675738">Κάντε κλικ σε οποιοδήποτε πλήκτρο για να προσαρμόσετε το κουμπί. Επανατοποθετήστε το πλήκτρο χρησιμοποιώντας το ποντίκι ή τα πλήκτρα βέλους.</translation>
 <translation id="7187669805838282391">την Τετάρτη</translation>
 <translation id="7205318498545665455">Επιλέξτε το μικρόφωνό σας</translation>
 <translation id="7210635925306941239">κυανό</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Ο διαχειριστής <ph name="MANAGER" /> έχει ορίσει πότε μπορεί να χρησιμοποιηθεί η συσκευή <ph name="DEVICE_TYPE" />.</translation>
-<translation id="7613724632293948900">Επανατοποθετήστε χρησιμοποιώντας το ποντίκι ή τα πλήκτρα βέλους.</translation>
 <translation id="7618216277886673749">Επιλέξτε <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Ουδέτερο</translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
@@ -1631,6 +1627,7 @@
 <translation id="819278132617411009">Χρησιμοποιήστε το Google AI για να γίνετε πιο παραγωγικοί</translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8206859287963243715">Κινητό</translation>
+<translation id="8208043093301544621">Αρχική οθόνη</translation>
 <translation id="8208861521865154048">Προνόμια</translation>
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
 <translation id="8227119283605456246">Επισύναψη αρχείου</translation>

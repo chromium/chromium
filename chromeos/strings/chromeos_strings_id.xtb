@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Masukkan perintah</translation>
 <translation id="115705039208660697">nanas</translation>
 <translation id="1164939766849482256">Screensaver Fajar ke petang</translation>
-<translation id="1167755866710282443">Buka menu untuk menyesuaikan tombol. Tarik menu untuk memindahkan.</translation>
 <translation id="1171349345463658120">laguna berpasir</translation>
 <translation id="1174073918202301297">Pintasan ditambahkan</translation>
 <translation id="11743817593307477">Gunakan tombol panah untuk memindahkan kontrol ini ke tindakan game yang Anda inginkan. Gunakan tombol enter untuk menempatkan kontrol. Gunakan tombol escape untuk membatalkan.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">D-pad konfigurasi tombol</translation>
 <translation id="3217462202230355157">Pastikan mikrofon terhubung atau coba mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Mencari pemindai</translation>
-<translation id="3226657629376379887">Menu tindakan tata letak</translation>
 <translation id="3227186760713762082">Bagi nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">seni digital</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7180611975245234373">Perbarui</translation>
 <translation id="7180865173735832675">Sesuaikan</translation>
-<translation id="7184043045742675738">Klik sembarang tombol untuk menyesuaikan tombol Anda. Ubah posisi tombol dengan mouse atau tombol panah.</translation>
 <translation id="7187669805838282391">pada hari Rabu</translation>
 <translation id="7205318498545665455">Pilih mikrofon Anda</translation>
 <translation id="7210635925306941239">sian</translation>
@@ -1497,7 +1494,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7590883480672980941">Setelan masukan</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7600430297804876776">Administrator <ph name="MANAGER" /> telah menetapkan waktu untuk <ph name="DEVICE_TYPE" /> ini dapat digunakan.</translation>
-<translation id="7613724632293948900">Ubah posisi dengan tombol mouse atau panah.</translation>
 <translation id="7618216277886673749">Pilih <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Netral</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>

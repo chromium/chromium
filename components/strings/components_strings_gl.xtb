@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036436692654972538">A información gárdase no teu dispositivo</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
+<translation id="1038168778161626396">Só cifrar</translation>
 <translation id="1038842779957582377">nome descoñecido</translation>
 <translation id="1041998700806130099">Mensaxe da folla do traballo</translation>
 <translation id="1044897699341250361">Que significa</translation>
@@ -44,6 +45,7 @@
 <translation id="1068672505746868501">Non traducir nunca páxinas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Metal (brillo)</translation>
 <translation id="1070901266639972381">Noite</translation>
+<translation id="1071917609930274619">Codificación de datos</translation>
 <translation id="1073690811593784042">Cristal (de cores)</translation>
 <translation id="1074287282535157335">Paga en catro prazos ou mensualmente (opción suxeita ao cumprimento de requisitos)</translation>
 <translation id="1074497978438210769">Non seguro</translation>
@@ -85,6 +87,7 @@
 <translation id="1138458427267715730">Recibe alertas cando baixe o prezo en calquera sitio da Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142965388643537393">Información de viaxes</translation>
+<translation id="1143142264369994168">Titular do certificado</translation>
 <translation id="1144136880160289237">Aínda non tes ningún tema activo</translation>
 <translation id="1149617035358809955">verificar a túa identidade para poder completar a túa información de pago</translation>
 <translation id="1150565364351027703">Lentes de sol</translation>
@@ -137,6 +140,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1215738931000958575">Usa a información gardada na túa Conta de Google para autocompletar contrasinais, claves de acceso, enderezos e métodos de pago, entre outros datos</translation>
 <translation id="1219129156119358924">Seguranza do sistema</translation>
 <translation id="1219134100826635117">A persoa administradora bloqueou esta acción</translation>
+<translation id="1221024147024329929">PKCS #1 MD2 con cifrado RSA</translation>
 <translation id="1222060260947439312">Bandexa dereita</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Número da tarxeta:</translation>
@@ -411,8 +415,10 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1640180200866533862">Políticas de usuario</translation>
 <translation id="1640244768702815859">Proba a <ph name="BEGIN_LINK" />visitar a páxina de inicio do sitio<ph name="END_LINK" />.</translation>
+<translation id="1640283014264083726">PKCS #1 MD4 con cifrado RSA</translation>
 <translation id="1641962500621836664">Gardando ficheiro da cámara</translation>
 <translation id="1641976391427233992">Atrasar saída ata</translation>
+<translation id="1643072738649235303">Sinatura X9.62 ECDSA con SHA-1</translation>
 <translation id="1643651787397909318">Botón Vai á comprobación de seguranza de Chrome: actívao para visitar a páxina de comprobación de seguranza de Chrome na configuración</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1645004815457365098">Fonte descoñecida</translation>
@@ -695,6 +701,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2108755909498034140">Reinicia o ordenador</translation>
 <translation id="2109845311767915560">Grupo de pestanas compartido</translation>
 <translation id="2111166930115883695">Pulsa Espazo para xogar</translation>
+<translation id="2113921862428609753">Acceso a información de autoridades</translation>
 <translation id="2113977810652731515">Tarxeta</translation>
 <translation id="2114841414352855701">Ignorouse porque a anulou <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Sobre C5</translation>
@@ -757,6 +764,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2190094353033916816">Esta política aplicou valores diferentes aos niveis de usuario e de máquina. Aínda así, funciona segundo o previsto.</translation>
 <translation id="2191980191135734720">Desbloquea a pantalla no seguinte paso, normalmente coa túa impresión dixital. Tamén podes <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
+<translation id="2195729137168608510">Protección de correo electrónico</translation>
 <translation id="2198183835992354675">Número de viaxeiro coñecido</translation>
 <translation id="2198215508485017216">Produciuse un erro inesperado. <ph name="BEGIN_LINK" />Máis información sobre as cargas de Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Botón Non me gusta. Preme Introducir para abrir un formulario e enviar comentarios detallados sobre o motivo polo que non che gusta esta suxestión</translation>
@@ -1416,6 +1424,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3220264767789936523">Roupa formal</translation>
 <translation id="3223287115535306850">Icona animada de inicio de aplicación</translation>
 <translation id="3223425961342298674">O acceso á localización non está permitido</translation>
+<translation id="3225319735946384299">Sinatura de código</translation>
 <translation id="3225919329040284222">O servidor presentou un certificado que non coincide coas expectativas integradas. Estas expectativas inclúense para determinados sitios web de alta seguranza co fin de protexerte.</translation>
 <translation id="3226128629678568754">Preme o botón Volver cargar para volver enviar os datos necesarios para cargar a páxina.</translation>
 <translation id="3226387218769101247">Miniaturas</translation>
@@ -1529,6 +1538,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="341513675006332771">Botón para xogar ao xogo do dinosauro de Chrome. Actívao para xogar a Dino Run en Chrome</translation>
 <translation id="3415471717466570460">As túas buscas, o mellores resultados e o contido das páxinas envíanse a Google. Os membros do equipo de revisión poden ver esa información para mellorar esta función, que é experimental, polo que non sempre acerta.</translation>
+<translation id="3421387094817716717">Clave pública de Elliptic Curve</translation>
 <translation id="3422248202833853650">Proba a saír doutros programas para liberar memoria.</translation>
 <translation id="3422472998109090673">Actualmente non se pode acceder a <ph name="HOST_NAME" />.</translation>
 <translation id="3422794267539320056">Toca o dinosauro ou preme Espazo para xogar</translation>
@@ -1606,6 +1616,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3541016556608204104">Máis información sobre Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Imaxe da tarxeta</translation>
 <translation id="3542768452570884558">Abrir ligazón nunha ventá nova</translation>
+<translation id="3543597750097719865">Sinatura X9.62 ECDSA con SHA-512</translation>
 <translation id="3543935938072367282">Paga de xeito máis rápido coa función de autocompletar</translation>
 <translation id="3547442767634383572">A vista xeral do perfil de traballo</translation>
 <translation id="3547746132308051926">20 x 24 polgadas</translation>
@@ -1801,6 +1812,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3815434930383843058">8 x 12 polgadas</translation>
 <translation id="3816482573645936981">Valor (substituído)</translation>
 <translation id="3817524650114746564">Abrir configuración de proxy do teu ordenador</translation>
+<translation id="3820749202859700794">SECG Elliptic Curve secp521r1 (tamén se denomina NIST P-521)</translation>
 <translation id="382115839591654906">CVC de <ph name="CARD_NAME" /></translation>
 <translation id="3822492359574576064">bloqueo e uso do rato</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2091,6 +2103,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4265635050210404830">As túas tarxetas de fidelidade</translation>
 <translation id="4265872034478892965">Permitido polo administrador</translation>
 <translation id="4267590181863312380">Para acceder ao teu historial doutros dispositivos, inicia sesión e sincronízao. Tamén poderás desfrutar dos teus contrasinais e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
+<translation id="4268025649754414643">Cifrado de clave</translation>
 <translation id="4269029136757623689">Ventiladores domésticos</translation>
 <translation id="4269264543938335308">Roupa de baño</translation>
 <translation id="4269599248168651462">O certificado do servidor emítese para un nome que non é exclusivo.</translation>
@@ -2148,6 +2161,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4332872603299969513">Literatura infantil</translation>
 <translation id="4333295216031073611">Lista da compra</translation>
 <translation id="4333561522337981382">Xestionar ventás en todas as pantallas</translation>
+<translation id="4333854382783149454">PKCS n.º 1 SHA-1 con cifrado RSA</translation>
 <translation id="4336913590841287350">Esta política aínda non se admite como política de usuario en iOS.</translation>
 <translation id="4340575312453649552">Dado que este anuncio utilizaba demasiados recursos para o teu dispositivo, Chrome quitouno.</translation>
 <translation id="4340810192899866471">Importar desde JSON</translation>
@@ -2191,6 +2205,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4414515549596849729">cookies e datos dos sitios</translation>
 <translation id="4415156962929755728">Plástico (brillo intenso)</translation>
 <translation id="4415426530740016218">Enderezo de recollida</translation>
+<translation id="4415748029120993980">SECG Elliptic Curve secp384r1 (tamén se denomina NIST P-384)</translation>
 <translation id="4419287616181386201">Os contrasinais poden eliminarse na configuración de xestión correspondente</translation>
 <translation id="4424024547088906515">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque Chrome non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="4425750422187370446">Roupa deportiva</translation>
@@ -2588,6 +2603,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5087286274860437796">O certificado do servidor non é válido neste momento.</translation>
 <translation id="5087580092889165836">Engadir tarxeta</translation>
 <translation id="5088142053160410913">Mensaxe para o operador</translation>
+<translation id="5088534251099454936">PKCS n.º 1 SHA-512 con cifrado RSA</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5093232627742069661">Dobrez en Z</translation>
 <translation id="5093417502834168387">Tes problemas para iniciar sesión? Proba con outro método</translation>
@@ -2760,6 +2776,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5348330584842140856">Este ficheiro non se moveu porque xa non existe</translation>
 <translation id="5349543692327946794">Etiquetas (inxección de tinta)</translation>
 <translation id="5351548097010183514">Materiais de construción e subministracións</translation>
+<translation id="5352033265844765294">Marca de tempo</translation>
 <translation id="5354143049423063163">Fondos de cobertura</translation>
 <translation id="5355557959165512791">Non podes visitar <ph name="SITE" /> neste momento porque se revogou o seu certificado. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="5359752295193133096">Comparte de forma predeterminada as pestanas abertas relevantes para obter respostas máis rápidas e personalizadas.</translation>
@@ -2813,6 +2830,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5426179911063097041"><ph name="SITE" /> quere enviarche notificacións</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433756542371550806">Variacións da liña de comandos</translation>
+<translation id="5434065355175441495">Cifrado PKCS n.º 1 RSA</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />non gardará<ph name="END_EMPHASIS" /> a seguinte información:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />O teu historial de navegación
@@ -2862,6 +2880,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5499229993630251170">Queres continuar este fío de mensaxes?</translation>
 <translation id="550365051221576010">Cubrir todo</translation>
 <translation id="5506286895894263601">A lista non contén ningún atallo válido.</translation>
+<translation id="5507756662695126555">Sen rexeitamento</translation>
 <translation id="5508443345185481044">Cámaras e videocámaras</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores xestionados</translation>
@@ -2944,6 +2963,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5611398002774823980">Gardar na conta</translation>
 <translation id="561165882404867731">Traducir esta páxina co Tradutor de Google</translation>
 <translation id="5612720917913232150">O URL <ph name="URL" /> quere utilizar a localización do teu ordenador</translation>
+<translation id="5614190747811328134">Aviso do usuario</translation>
 <translation id="5614520971155863709">Xogos de cartas</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> redireccionoute demasiadas veces.</translation>
 <translation id="5619721953841297650">Opción de configuración predeterminada</translation>
@@ -2959,6 +2979,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5640474731385449758">A extensión <ph name="EXTENSION_NAME" /> quere abrir ligazóns de <ph name="PROTOCOL" /> en <ph name="ORIGIN" /> a través de <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Compoñentes e equipos de música</translation>
+<translation id="5642508497713047">Asinante de CRL</translation>
 <translation id="5644090287519800334">Desprazamento do lado 1 da imaxe no eixe X</translation>
 <translation id="5644128326840674462">Báner de promoción</translation>
 <translation id="5645132789250840550">Plástico (semibrillo)</translation>
@@ -3041,6 +3062,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5783922175933467571">A ligazón a "<ph name="TAB_GROUP_DISPLAY_NAME" />" caduca ás 48 horas</translation>
 <translation id="5784606427469807560">Produciuse un problema ao confirmar a túa tarxeta. Comproba a túa conexión a Internet e téntao de novo.</translation>
 <translation id="5785756445106461925">Ademais, esta páxina inclúe outros recursos que non son seguros. Outros usuarios poden ver estes recursos mentres se desprazan e un atacante pode cambiar o aspecto da páxina.</translation>
+<translation id="5787146423283493983">Acordo de claves</translation>
 <translation id="5793317771769868848">Este método de pago eliminarase do dispositivo</translation>
 <translation id="5794065675298686371">Activar as notificacións de seguimento de prezos</translation>
 <translation id="5800727402210090597">Servizos de reparación de teléfonos móbiles</translation>
@@ -3121,6 +3143,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5924510104057992926">Cómpre revisar os ficheiros antes de abrilos</translation>
 <translation id="5924782825030413055">Fonte da última actualización do consentimento:</translation>
 <translation id="5925040402342933574">Disco óptico (semibrillo)</translation>
+<translation id="5925147183566400388">Identificador de declaración de prácticas de certificación</translation>
 <translation id="5926982310317673627">Ximnasios e centros deportivos</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Activa esta opción de configuración para poder usar Axúdame a escribir</translation>
@@ -3209,6 +3232,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="605237284704429106">Completando IBAN</translation>
 <translation id="6053584886670442526">Podes usar os enderezos gardados nos produtos de Google. Este enderezo está gardado na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="6053735090575989697">Para obter máis información sobre como protexe Google os teus datos, consulta a nosa Política de privacidade.</translation>
+<translation id="6055392876709372977">PKCS n.º 1 SHA-256 con cifrado RSA</translation>
 <translation id="6055888660316801977">Folla da credencial de pagos seguros correspondente ás credenciais non coincidentes</translation>
 <translation id="6055982527635883756">Sobre (arquivo)</translation>
 <translation id="6057177372083677067">Vídeo en liña</translation>
@@ -3264,6 +3288,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6131824478727057281">localización</translation>
 <translation id="6133320744616005677">Continuar permitindo</translation>
 <translation id="6133984428121856852">A extensión de ficheiro está baleira ou ten un formato incorrecto.</translation>
+<translation id="6138680304137685902">Sinatura X9.62 ECDSA con SHA-384</translation>
 <translation id="6139975341602920272">17 × 22 in</translation>
 <translation id="6143097244789397208">Realidade virtual e aumentada</translation>
 <translation id="614327212146763975">Permiso concedido para usar os sensores de movemento e de luz</translation>
@@ -3377,6 +3402,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6326947323444967009">Establecer Chrome como navegador predeterminado do sistema na configuración de iOS</translation>
 <translation id="6327065120806001832">acceso á rede local</translation>
 <translation id="6328639280570009161">Proba a desactivar a predición da rede</translation>
+<translation id="6329742260390895689">Para autocompletar a túa información, na configuración de Wallet activa Usar pases en Google</translation>
 <translation id="6329815962353376655">&lt;Escribe unha pregunta&gt;</translation>
 <translation id="6331597954316706229">Para obter as respostas máis personalizadas, permite que todos os fíos de mensaxes fagan referencia ás pestanas abertas que sexan relevantes.</translation>
 <translation id="633348045801643466">Mostra as <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />opcións de pago aprazado<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> ao tramitar a compra</translation>
@@ -3395,6 +3421,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6349101878882523185">Instalar a aplicación <ph name="APP_NAME" /></translation>
 <translation id="6351658970066645919">Eliminar datos navegación</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ningún}=1{1 contrasinal (para <ph name="DOMAIN_LIST" />, sincronizado)}=2{2 contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}other{# contrasinais (para <ph name="DOMAIN_LIST" />, sincronizados)}}</translation>
+<translation id="6354918092619878358">SECG Elliptic Curve secp256r1 (tamén se denomina ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355392890578844978">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">Os grupos de pestanas "<ph name="GROUP_TITLE_1" />" e "<ph name="GROUP_TITLE_2" />" xa non están dispoñibles</translation>
 <translation id="6358088212770985041">editar os métodos de pago</translation>
@@ -3464,6 +3491,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6436994298828707228">Bloqueouse a conexión porque a iniciou unha páxina pública para conectarse a dispositivos ou servidores da túa rede local.</translation>
 <translation id="6437647869369934905">Debuxos de Google</translation>
 <translation id="643917412048333145">Vestidos</translation>
+<translation id="6440450906295708112">Fonte das variacións</translation>
 <translation id="6440503408713884761">Política ignorada</translation>
 <translation id="6443406338865242315">As extensións e os complementos que teñas instalados</translation>
 <translation id="6444329331928531170">Xubilación e pensións</translation>
@@ -3506,6 +3534,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6502510275417601303">Pechouse a alerta sobre unha nova configuración de pago</translation>
 <translation id="6502991525169604759">Sen os teus cambios</translation>
 <translation id="6505072878288254563">Traducindo</translation>
+<translation id="6506374932220792071">Sinatura X9.62 ECDSA con SHA-256</translation>
 <translation id="6506936645890046535">Pode solicitar permiso para acceder ás cookies</translation>
 <translation id="6506959208958864820">Sobre</translation>
 <translation id="6507117483253822672">Escribe con máis confianza en calquera lugar da Web</translation>
@@ -3816,6 +3845,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7003278537452757231">Alfombras</translation>
 <translation id="7003322000677139268">Pezas e accesorios para vehículos</translation>
 <translation id="7004499039102548441">Pestanas recentes</translation>
+<translation id="7004562620237466965">Só descifrar</translation>
 <translation id="700483187606163535">A túa información está gardada en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />). Podes usala nos produtos de Google para completar formularios máis rápido.</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
 <translation id="7009364359744329733">A tarxeta non está dispoñible nestes intres. Téntao de novo máis tarde.</translation>
@@ -3858,6 +3888,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7070144569727915108">configuración do sistema</translation>
 <translation id="70705239631109039">A túa conexión non é completamente segura</translation>
 <translation id="7075452647191940183">A solicitude é demasiado grande</translation>
+<translation id="7075513071073410194">PKCS #1 MD5 con cifrado RSA</translation>
 <translation id="7075896597860500885">Non se recomenda copiar contido deste sitio</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4384,6 +4415,7 @@ Detalles adicionais:
 <translation id="7862306158978555061">mostrar información confidencial</translation>
 <translation id="7865448901209910068">A mellor velocidade</translation>
 <translation id="7865482168955081228">A pantalla de erro de pago aprazado está pechada.</translation>
+<translation id="7869655448736341731">Calquera</translation>
 <translation id="7870207318911766769">O contido da páxina de tramitación da compra compártese con Google para poder ofrecer estas opcións.</translation>
 <translation id="7870281855125116701">Desconto atopado</translation>
 <translation id="7871445724586827387">Cambiar o contrasinal da Conta de Google</translation>
@@ -4452,6 +4484,7 @@ Detalles adicionais:
 <translation id="7967636097426665267">Equipos de comunicación</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é unha cor hexadecimal non válida.</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
+<translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
 <translation id="7976053965094442846">Emisores de pago aprazado dispoñibles para pagar a prazos. Teclado oculto.</translation>
 <translation id="7976214039405368314">Hai demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>

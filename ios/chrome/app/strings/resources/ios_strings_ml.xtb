@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1740650426894359238">മറ്റൊരു പ്രൊഫൈലിലേക്ക് മാറുക</translation>
 <translation id="1741219894094057085">സ്‌മാർട്ട് വാച്ച്</translation>
+<translation id="1742773766788162541">കാർഡ് സ്കാൻ ചെയ്ത് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="1743244221910283364">മാറ്റങ്ങൾ റദ്ദാക്കുക</translation>
 <translation id="1748975028205587434">നിങ്ങളുടെ ഫയൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1749733017156547309">പാസ്‌വേഡ് ആവശ്യമാണ്</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">ഓരോ ദിവസവും ഒന്നിലധികം തവണ ദൃശ്യമാകുന്ന "സന്ദർഭ പാനലിനായുള്ള" ഉൽപ്പന്നത്തിനുള്ളിലെ വിപുലമായ സഹായത്തിന്റെ സാമ്പിൾ.</translation>
 <translation id="2739887572830526131">പിന്നീട് ടാബുകൾ ചേർക്കാൻ ഈ ഗ്രൂപ്പ് നിലനിർത്തുക, അല്ലെങ്കിൽ നിങ്ങൾക്ക് ഇനി ഗ്രൂപ്പ് ആവശ്യമില്ലെങ്കിൽ അത് ഇല്ലാതാക്കുക.</translation>
 <translation id="2747003861858887689">മുൻ ഫീൽഡ്</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" />, <ph name="POSITION" />-ാം സ്ഥാനത്തേക്ക് നീക്കി</translation>
 <translation id="2755485474385016903">വരുത്തിയ മാറ്റങ്ങൾ ഗ്രൂപ്പിലുള്ള എല്ലാവരും കണ്ടു</translation>
 <translation id="2755595981383829244">നിങ്ങൾക്ക് ഇപ്പോൾ ഉള്ളടക്ക അറിയിപ്പുകൾ ലഭിക്കും</translation>
 <translation id="2761788987260570878">നിങ്ങളുടെ തിരയലിന്റെ ഒരു ഫോട്ടോ എടുക്കുക</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="3581564640715911333">പേജുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
+<translation id="3583726884554296148">ഈ വാങ്ങലിനും Chrome-ൽ നടത്തുന്ന ഭാവിയിലെ വാങ്ങലുകൾക്കുമായി നിങ്ങളുടെ കാർഡ് സ്വയമേവ പൂരിപ്പിക്കാൻ Google Account-ൽ അത് സംരക്ഷിക്കുക</translation>
 <translation id="3587482841069643663">എല്ലാം</translation>
 <translation id="3587885837929752825">നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കാനാകുന്ന കാര്യങ്ങൾ നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തിയിരിക്കുന്നു.</translation>
 <translation id="3588820906588687999">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
@@ -1346,6 +1349,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">സമന്വയിപ്പിക്കുന്നു…</translation>
+<translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5838430324585198889">Google ആപ്പുകൾ ഉപയോഗിച്ച് നിങ്ങളുടെ iPad-ൽ കൂടുതൽ ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യൂ</translation>
 <translation id="583923961930319521">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും പാസ്‌വേഡുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="5843013299019689749">പശ്ചാത്തല നിറം കറുപ്പ്</translation>
@@ -1556,6 +1560,7 @@
 <translation id="6532106788206463496">മാറ്റങ്ങൾ സംരക്ഷിക്കുക</translation>
 <translation id="6536759809440150308"><ph name="NUMBER_OF_TABS" /> ടാബുകളുടെ ഗ്രൂപ്പായ <ph name="GROUP_TITLE" /> തുറക്കുക, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">നിങ്ങളുടെ ഉപകരണങ്ങളിലുടനീളം സ്വയമേവ പൂരിപ്പിക്കൽ ഉപയോഗിച്ച് വേഗത്തിൽ ചെക്ക് ഔട്ട് ചെയ്യുക</translation>
 <translation id="6550675742724504774">ഓപ്ഷനുകൾ</translation>
 <translation id="6550891580932862748">അപകടകരമായ വെബ്‌സൈറ്റുകൾ ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് നിങ്ങളെ പരിരക്ഷിക്കില്ല. മറ്റ് Google ഉൽപ്പന്നങ്ങളിലെ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗ് ക്രമീകരണത്തെ ബാധിക്കില്ല.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2029,6 +2034,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> മോഡലുകൾ</translation>
 <translation id="8211030355252954494"><ph name="WEBSITE" /> എന്നതിന്റെ പാസ്‍വേഡുകൾ നിങ്ങൾക്ക് ലഭിച്ചു</translation>
 <translation id="8211406090763984747">കണക്ഷൻ സുരക്ഷിതമാണ്</translation>
+<translation id="8213190397436801658">ഹോം</translation>
 <translation id="8214293972734702249">പിൻ ചെയ്‌തത്, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">പുതിയ ടാബിൽ ഓഫ്‌ലൈൻ പതിപ്പ് കാണുക</translation>
 <translation id="8221665793629393739">വീണ്ടും സന്ദർശിക്കുന്നതിനുള്ള നിങ്ങളുടെ റിമൈൻഡർ</translation>

@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">输入提示</translation>
 <translation id="115705039208660697">菠萝</translation>
 <translation id="1164939766849482256">“黎明到黄昏”屏保</translation>
-<translation id="1167755866710282443">打开菜单即可自定义键。拖动菜单即可移动它。</translation>
 <translation id="1171349345463658120">沙湖</translation>
 <translation id="1174073918202301297">快捷方式已添加</translation>
 <translation id="11743817593307477">使用箭头键可将此控件移至您要执行的游戏操作。使用 Enter 键可放置控件。使用 Esc 键可取消。</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">按键映射方向键</translation>
 <translation id="3217462202230355157">请确保麦克风已连接，或尝试重启 <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
-<translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">数字艺术</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7180865173735832675">自定义</translation>
-<translation id="7184043045742675738">点击任意键自定义您的按钮。使用鼠标或箭头键调整键的位置。</translation>
 <translation id="7187669805838282391">在周三</translation>
 <translation id="7205318498545665455">选择麦克风</translation>
 <translation id="7210635925306941239">青色</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">输入设置</translation>
 <translation id="7595982850646262331">电池续航时间还剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> 管理员已设置此 <ph name="DEVICE_TYPE" /> 可供使用的时间。</translation>
-<translation id="7613724632293948900">使用鼠标或箭头键调整位置。</translation>
 <translation id="7618216277886673749">选择<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">中性</translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>

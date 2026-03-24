@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Dukart palieskite, kad įdiegtumėte.</translation>
 <translation id="1740650426894359238">Perjungimas į kitą profilį</translation>
 <translation id="1741219894094057085">Išmanusis laikrodis</translation>
+<translation id="1742773766788162541">Nuskaityti kortelę ir automatiškai užpildyti</translation>
 <translation id="1743244221910283364">Atmesti pakeitimus</translation>
 <translation id="1748975028205587434">Pasirinkti failą</translation>
 <translation id="1749733017156547309">Būtina nurodyti slaptažodį</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2360196772093551345">Pateikti užklausą dėl svetainės mobiliesiems</translation>
 <translation id="2362083820973145409">Prisijungta kaip <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Atidaromi nustatymai.</translation>
+<translation id="2367025302166767427">Kilo problemų pildant informaciją</translation>
 <translation id="2371084566192454134">Skirtukai ir skirtukų grupės</translation>
 <translation id="2371303771137626249">Naujas</translation>
 <translation id="2381405137052800939">Pagrindiniai</translation>
@@ -709,6 +711,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, valdo jūsų organizacija.</translation>
 <translation id="3580448612293054698">Atnaujinti <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Siūlyti versti puslapius į kitas kalbas</translation>
+<translation id="3583726884554296148">Išsaugokite kortelę „Google“ paskyroje, kad galėtumėte automatiškai ją užpildyti šiam ir būsimiems pirkiniams, atliekamiems naršyklėje „Chrome“</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3587885837929752825">Jūsų organizacija riboja, ką galite išsaugoti savo „Google“ paskyroje.</translation>
 <translation id="3588820906588687999">Atidaryti vaizdą naujo skirtuko lape</translation>
@@ -1345,6 +1348,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5819208479324046259">Valdo „<ph name="MANAGER" />“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">„Safari“</translation>
 <translation id="5829649908290113115">Sinchronizuojama…</translation>
+<translation id="583281660410589416">Nežinoma</translation>
 <translation id="5838430324585198889">Išplėskite „iPad“ funkcionalumą naudodami „Google“ programas</translation>
 <translation id="583923961930319521">Slaptažodžių naudojimas visuose įrenginiuose</translation>
 <translation id="5843013299019689749">Juoda fono spalva</translation>
@@ -1555,6 +1559,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6532106788206463496">Išsaugoti pakeitimus</translation>
 <translation id="6536759809440150308">Atidaryti „<ph name="GROUP_TITLE" />“, <ph name="NUMBER_OF_TABS" /> grupę, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Atsiskaitykite greičiau naudodami automatinį pildymą įvairiuose įrenginiuose</translation>
 <translation id="6550675742724504774">Parinktys</translation>
 <translation id="6550891580932862748">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Tai neturės įtakos Saugaus naršymo nustatymams kituose „Google“ produktuose.</translation>
 <translation id="6556501700899673703">Lexend</translation>

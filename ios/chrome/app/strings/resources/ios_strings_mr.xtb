@@ -493,6 +493,7 @@
 <translation id="2721190673959776287">संदर्भ पॅनल यासाठी नमुना रिच उत्पादनामधील मदत, जी दिवसातून अनेक वेळा दिसायला हवी.</translation>
 <translation id="2739887572830526131">नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याची आवश्यकता नसल्यास, तो हटवा.</translation>
 <translation id="2747003861858887689">मागील फील्ड</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> ला <ph name="POSITION" /> स्थानावर हलवले आहे</translation>
 <translation id="2755485474385016903">केलेले बदल गटामधील सर्वांना दिसतात</translation>
 <translation id="2755595981383829244">तुम्हाला आता आशयाशी संबंधित सूचना मिळतील</translation>
 <translation id="2761788987260570878">तुमच्या शोधाचा फोटो घ्या</translation>
@@ -1348,6 +1349,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> ने व्यवस्थापित केलेले. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">सिंक करत आहे…</translation>
+<translation id="583281660410589416">अज्ञात</translation>
 <translation id="5838430324585198889">Google अ‍ॅप्स वापरून तुमच्या iPad साठी आणखी वैशिष्ट्ये अनलॉक करा</translation>
 <translation id="583923961930319521">तुमच्या सर्व डिव्हाइसवर पासवर्ड वापरा</translation>
 <translation id="5843013299019689749">बॅकग्राउंडचा काळा रंग</translation>
@@ -2033,6 +2035,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> मॉडेल</translation>
 <translation id="8211030355252954494">तुम्हाला <ph name="WEBSITE" /> साठी पासवर्ड मिळाले आहेत</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित आहे</translation>
+<translation id="8213190397436801658">होम</translation>
 <translation id="8214293972734702249">पिन केलेला, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">नवीन टॅबमध्ये ऑफलाइन आवृत्ती पहा</translation>
 <translation id="8221665793629393739">पुन्हा भेट देण्यासाठीचा तुमचा रिमाइंडर</translation>

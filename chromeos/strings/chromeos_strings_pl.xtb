@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Wpisz prompt</translation>
 <translation id="115705039208660697">ananasy</translation>
 <translation id="1164939766849482256">Wygaszacz ekranu Od świtu do zmierzchu</translation>
-<translation id="1167755866710282443">Otwórz menu, aby dostosować klawisze. Menu możesz przeciągnąć w inne miejsce.</translation>
 <translation id="1171349345463658120">piaszczysta laguna</translation>
 <translation id="1174073918202301297">Skrót został dodany</translation>
 <translation id="11743817593307477">Użyj klawiszy strzałek, aby przenieść ten element sterujący do wybranego działania w grze. Aby umieścić element sterujący, naciśnij klawisz Enter. Aby anulować, naciśnij klawisz Escape.</translation>
@@ -506,7 +505,6 @@
 <translation id="3211671540163313381">Mapowanie pada kierunkowego</translation>
 <translation id="3217462202230355157">Sprawdź, czy mikrofon jest podłączony, lub uruchom ponownie urządzenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Szukam skanerów</translation>
-<translation id="3226657629376379887">Menu działań dotyczących układu</translation>
 <translation id="3227186760713762082">Podziel wartość <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">sztuka cyfrowa</translation>
 <translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
@@ -1406,7 +1404,6 @@
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7180865173735832675">Dostosuj</translation>
-<translation id="7184043045742675738">Aby dostosować przycisk, kliknij dowolny klawisz. Zmień położenie klawisza przy użyciu myszy lub klawiszy strzałek.</translation>
 <translation id="7187669805838282391">w środę</translation>
 <translation id="7205318498545665455">Wybierz mikrofon</translation>
 <translation id="7210635925306941239">błękitny</translation>
@@ -1495,7 +1492,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7590883480672980941">Ustawienia wprowadzania</translation>
 <translation id="7595982850646262331">Pozostało: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administrator witryny <ph name="MANAGER" /> określił, kiedy można używać tego urządzenia <ph name="DEVICE_TYPE" />.</translation>
-<translation id="7613724632293948900">Zmień położenie przy użyciu myszy lub klawiszy strzałek.</translation>
 <translation id="7618216277886673749">Wybierz: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutralny</translation>
 <translation id="7620771111601174153">Dowiedz się więcej w Centrum pomocy</translation>
@@ -1629,6 +1625,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="819278132617411009">Wykorzystaj sztuczną inteligencję Google, aby zwiększyć swoją produktywność</translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8206859287963243715">Komórka</translation>
+<translation id="8208043093301544621">Strona główna</translation>
 <translation id="8208861521865154048">Korzyści</translation>
 <translation id="8226628635270268143">Wybierz ulubione zdjęcia i albumy</translation>
 <translation id="8227119283605456246">Załącz plik</translation>

@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Saisissez un prompt</translation>
 <translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Économiseur d'écran De l'aube au crépuscule</translation>
-<translation id="1167755866710282443">Ouvrez le menu pour personnaliser les touches. Faites-le glisser pour le déplacer.</translation>
 <translation id="1171349345463658120">lagon de sable</translation>
 <translation id="1174073918202301297">Raccourci ajouté</translation>
 <translation id="11743817593307477">À l'aide des touches fléchées, déplacez cette commande vers l'action souhaitée dans le jeu. Utilisez la touche Entrée pour la positionner ou la touche Échap pour annuler.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Pavé directionnel du mappage des touches</translation>
 <translation id="3217462202230355157">Vérifiez que votre micro est bien connecté ou essayez de redémarrer votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Recherche de scanners…</translation>
-<translation id="3226657629376379887">Menu d'actions de la mise en page</translation>
 <translation id="3227186760713762082">Diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">art numérique</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront supprimées</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent le configurer à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
-<translation id="7184043045742675738">Cliquez sur n'importe quelle touche pour personnaliser votre bouton. Repositionnez la touche à l'aide de la souris ou des flèches.</translation>
 <translation id="7187669805838282391">mercredi</translation>
 <translation id="7205318498545665455">Sélectionnez un micro</translation>
 <translation id="7210635925306941239">cyan</translation>
@@ -1497,7 +1494,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7590883480672980941">Paramètres de saisie</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">L'administrateur de <ph name="MANAGER" /> a défini quand cet <ph name="DEVICE_TYPE" /> peut être utilisé.</translation>
-<translation id="7613724632293948900">Repositionnez la touche à l'aide de la souris ou des flèches.</translation>
 <translation id="7618216277886673749">Sélectionner <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">En savoir plus sur le centre d'aide</translation>

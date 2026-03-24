@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ongelezen melding}other{# ongelezen meldingen}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Zet de volgende extensie aan in de incognitomodus:}other{Zet de volgende extensies aan in de incognitomodus:}}</translation>
+<translation id="4230098358142093034">Home</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 maand geleden}other{# maanden geleden}}</translation>
 <translation id="4277033906326892359">Kolom <ph name="COLUMN_NAME" /> in oplopende volgorde gesorteerd</translation>
 <translation id="4289300219472526559">Inspreken starten</translation>

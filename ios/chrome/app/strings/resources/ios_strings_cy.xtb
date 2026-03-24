@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Tapiwch ddwywaith i'w osod.</translation>
 <translation id="1740650426894359238">Newid i broffil arall</translation>
 <translation id="1741219894094057085">Oriawr Glyfar</translation>
+<translation id="1742773766788162541">Sganio Cerdyn ac Awtolenwi</translation>
 <translation id="1743244221910283364">Cael gwared ar newidiadau</translation>
 <translation id="1748975028205587434">Dewis eich ffeil</translation>
 <translation id="1749733017156547309">Mae angen cyfrinair</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2360196772093551345">Gofyn am Wefan Symudol</translation>
 <translation id="2362083820973145409">Wedi mewngofnodi fel <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Yn agor gosodiadau.</translation>
+<translation id="2367025302166767427">Trafferth wrth lenwi'ch gwybodaeth</translation>
 <translation id="2371084566192454134">Tabiau a grwpiau tabiau</translation>
 <translation id="2371303771137626249">Newydd</translation>
 <translation id="2381405137052800939">Hanfodion</translation>
@@ -708,6 +710,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />. rheolir gan eich sefydliad.</translation>
 <translation id="3580448612293054698">Diweddaru <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Cynnig cyfieithu tudalennau mewn ieithoedd eraill</translation>
+<translation id="3583726884554296148">Cadwch eich cerdyn yn eich Cyfrif Google i'w awtolenwi ar gyfer y pryniant hwn a phryniannau yn y dyfodol a wneir ar Chrome</translation>
 <translation id="3587482841069643663">Pob eitem</translation>
 <translation id="3587885837929752825">Mae eich sefydliad yn cyfyngu ar yr hyn y gallwch ei gadw yn eich Cyfrif Google.</translation>
 <translation id="3588820906588687999">Agor y Llun Mewn Tab Newydd</translation>
@@ -1344,6 +1347,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5819208479324046259">Rheolir gan <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Wrthi'n cysoni…</translation>
+<translation id="583281660410589416">Anhysbys</translation>
 <translation id="5838430324585198889">Datgloi mwy o nodweddion ar gyfer eich iPad gydag apiau Google</translation>
 <translation id="583923961930319521">Defnyddio cyfrineiriau ar eich holl ddyfeisiadau</translation>
 <translation id="5843013299019689749">Lliw cefndir du</translation>
@@ -1554,6 +1558,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6532106788206463496">Cadw'r newidiadau</translation>
 <translation id="6536759809440150308">Agor <ph name="GROUP_TITLE" />, grŵp o <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">enghraifft.com</translation>
+<translation id="6543899060872618437">Talwch yn gyflymach gydag awtolenwi ar draws eich dyfeisiau</translation>
 <translation id="6550675742724504774">Dewisiadau</translation>
 <translation id="6550891580932862748">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Ni fydd eich gosodiadau Pori'n Ddiogel mewn cynhyrchion Google eraill yn cael eu heffeithio.</translation>
 <translation id="6556501700899673703">Lexend</translation>

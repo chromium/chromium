@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">Bendrinama su jumis</translation>
 <translation id="1060847216467038176">„<ph name="ITEM_LABEL" />“ su pašalinimo mygtuku</translation>
 <translation id="1062407476771304334">Pakeisti</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Sukurkite atsarginę kopiją „Google“ diske. Lengvai atkurkite duomenis arba perjunkite įrenginį bet kuriuo metu. Į atsarginę kopiją įtraukiami programų duomenys.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Atsarginės kopijos įkeliamos į sistemą „Google“ ir šifruojamos naudojant „Google“ paskyros slaptažodį.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Programos duomenys gali būti bet kokie programos išsaugoti duomenys (atsižvelgiant į kūrėjo nustatymus), įskaitant kontaktus, pranešimus ir nuotraukas.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Atsarginių kopijų duomenys nebus įtraukti skaičiuojant Disko saugyklos kvotą.<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />Šią paslaugą galite išjungti skiltyje „Nustatymai“.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">Pakeiskite arba įkraukite akumuliatorių</translation>
 <translation id="1081015718268701546">„Linux“ programos šiuo metu nepalaikomos. Kitos programos bus išsaugotos.</translation>
 <translation id="108486256082349153">Mobilusis: <ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3470502288861289375">Kopijuojama...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /> <ph name="MODIFIER_TWO" /> <ph name="KEY_ONE" />, tada <ph name="KEY_TWO" /> arba <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">„Control“ + „Shift“ + „Space“</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />Kai įjungtas Vietovės nustatymo tikslumas, informacija apie belaidžius signalus, pvz., „Wi-Fi“ prieigos taškus ir mobiliojo ryšio tinklo bokštus, taip pat įrenginio jutiklių duomenys, pvz., akcelerometro bei giroskopo, naudojami tikslesnei įrenginio vietovei nustatyti, kurią „Android“ programos ir paslaugos naudoja, kad galėtų teikti vietove pagrįstas funkcijas. Kad galėtų tai daryti, „Google“ periodiškai renka informaciją apie įrenginio jutiklius ir belaidžius signalus šalia jūsų, kad galėtų prisidėti prie belaidžio signalo vietovių duomenų kaupimo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />„Google“ naudoja šią informaciją neidentifikuodama jūsų vietovės nustatymo tikslumui bei paslaugoms pagal vietovę tobulinti ir bendrai „Google“ paslaugoms tobulinti, teikti bei prižiūrėti. Šią informaciją apdorojame atsižvelgdami į teisėtus „Google“ ir trečiųjų šalių interesus, kad patenkintume naudotojų poreikius.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Galite bet kada išjungti vietovės nustatymo tikslumo funkciją įrenginio vietovės nustatymų skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės“ &gt; „Išplėstiniai vietovės nustatymai“. Jei vietovės nustatymo tikslumo funkcija išjungta, nebus renkami jokie vietovės nustatymo tikslumo duomenys. „Android“ programose ir paslaugose, siekiant nustatyti įrenginio vietovę, naudojamas tik IP adresas (jei jis pasiekiamas), o tai gali turėti įtakos „Android“ programų ir paslaugų, pvz., „Google“ žemėlapių, vietovių pasiekiamumui ir tikslumui.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Sužinokite daugiau apie Vietovės nustatymo tikslumą<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Lentyna automatiškai slepiama</translation>
 <translation id="3496797737329654668">Pradėkite žaisti</translation>
@@ -877,6 +886,9 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
 <translation id="3743775386021959186">„Focus“ įjungtas, liko <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Slėpti orų prognozės pasiūlymą</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Programos duomenys gali būti bet kokie programos išsaugoti duomenys (atsižvelgiant į kūrėjo nustatymus), įskaitant kontaktus, pranešimus ir nuotraukas.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Atsarginės kopijos duomenys nebus įtraukti skaičiuojant vaiko Disko saugyklos kvotą.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Šią paslaugą galite išjungti skiltyje „Nustatymai“.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">Perduodamas ekranas</translation>
 <translation id="3765841382945324995">Spartusis klavišas „<ph name="SIX_PACK_KEY_NAME" />“ atnaujintas į <ph name="NEW_SHORTCUT" /> iš <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Redaguota šiandien</translation>
@@ -1343,6 +1355,10 @@ Taip pat galite naudoti spartųjį klavišą. Pirmiausia paryškinkite tekstą, 
 <translation id="5147567197700016471">Atrakinta</translation>
 <translation id="5150070631291639005">Privatumo nustatymai</translation>
 <translation id="5155897006997040331">Skaitymo sparta</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Tai yra bendra informacija apie jūsų įrenginį ir jo naudojimą (pvz., akumuliatoriaus įkrovos lygį, sistemos ir programų veiklą bei klaidas). Duomenys bus naudojami siekiant patobulinti „Android“, o tam tikra apibendrinamoji informacija taip pat padės „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams, pagerinti savo programas ir produktus.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Išjungus šią funkciją vis tiek galima siųsti įrenginio informaciją, reikalingą pagrindinėms paslaugoms, pvz., sistemos naujiniams ir saugai.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Savininkas gali valdyti šią funkciją skiltyje „Nustatymai“ &gt; „Išplėstiniai“ &gt; „Automatiškai siųsti diagnostikos ir naudojimo duomenis „Google“.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Jei papildomos žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje. Adresu account.google.com galite peržiūrėti savo duomenis, juos ištrinti ir keisti paskyros nustatymus.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">Akumuliatoriaus būsena: <ph name="BATTERY_HEALTH_PERCENTAGE" /> proc. | Ciklų skaičius: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Išsaugoti darbalaukį kaip šabloną</translation>
 <translation id="5168181903108465623">Pasiekiami perdavimo įrenginiai</translation>
@@ -1601,6 +1617,10 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5916646100036936191">Naujas pranešimas, iš viso <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5920710855273935292">Mikrofonas nutildytas.</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />Kai įjungtas Vietovės nustatymo tikslumas, informacija apie belaidžius signalus, pvz., „Wi-Fi“ prieigos taškus ir mobiliojo ryšio tinklo bokštus, taip pat įrenginio jutiklių duomenys, pvz., akcelerometro bei giroskopo, naudojami tikslesnei įrenginio vietovei nustatyti, kurią „Android“ programos ir paslaugos naudoja, kad galėtų teikti vietove pagrįstas funkcijas. Kad galėtų tai daryti, „Google“ periodiškai renka informaciją apie įrenginio jutiklius ir belaidžius signalus šalia šio įrenginio, kad galėtų prisidėti prie belaidžio signalo vietovių duomenų kaupimo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />„Google“ naudoja šią informaciją, surinktą iš šio įrenginio, vietovės nustatymo tikslumui bei paslaugoms pagal vietovę tobulinti ir bendrai „Google“ paslaugoms tobulinti, teikti bei prižiūrėti. Šią informaciją apdorojame atsižvelgdami į teisėtus „Google“ ir trečiųjų šalių interesus, kad patenkintume naudotojų poreikius. Ši informacija nenaudojama jokiam asmeniui identifikuoti.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Galite bet kada išjungti vietovės nustatymo tikslumo funkciją šio įrenginio vietovės nustatymų skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės“ &gt; „Išplėstiniai vietovės nustatymai“. Jei vietovės nustatymo tikslumo funkcija išjungta, nebus renkami jokie vietovės nustatymo tikslumo duomenys. „Android“ programose ir paslaugose, siekiant nustatyti šio įrenginio vietovę, naudojamas tik IP adresas (jei jis pasiekiamas), o tai gali turėti įtakos „Android“ programų ir paslaugų, pvz., „Google“ žemėlapių, vietovių pasiekiamumui ir tikslumui.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Sužinokite daugiau apie Vietovės nustatymo tikslumą<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">Atnaujinti reikalauja <ph name="MANAGER" /></translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ įjungta.</translation>
@@ -1647,6 +1667,10 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6045629311476491587">Naudoja <ph name="APP_COUNT" /> progr.</translation>
 <translation id="6045998054441862242">Įjungti didelio kontrasto režimą</translation>
 <translation id="6047696787498798094">Perjungus naudotoją ekrano bendrinimas bus nutrauktas. Ar norite tęsti?</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />Tai yra bendra informacija apie šį įrenginį ir jo naudojimą (pvz., akumuliatoriaus įkrovos lygį, sistemos ir programų veiklą bei klaidas). Duomenys bus naudojami siekiant patobulinti „Android“, o tam tikra apibendrinamoji informacija taip pat padės „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams, pagerinti savo programas ir produktus.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Išjungus šią funkciją vis tiek galima siųsti šio įrenginio informaciją, reikalingą pagrindinėms paslaugoms, pvz., sistemos naujiniams ir saugai.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Savininkas gali valdyti šią funkciją skiltyje „Nustatymai“ &gt; „Išplėstiniai“ &gt; „Automatiškai siųsti diagnostikos ir naudojimo duomenis „Google“.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Jei papildomos žiniatinklio ir programų veiklos nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje. Sužinokite daugiau apie šiuos nustatymus ir jų koregavimą adresu families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">Dešiniuoju klavišu spustelėti nuorodą</translation>
 <translation id="6054305421211936131">Prisijungti naudojant išmaniąją kortelę</translation>
 <translation id="6059276912018042191">Pastarieji „Chrome“ skirtukai</translation>
@@ -1755,6 +1779,8 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="639644700271529076">DIDŽIŲJŲ RAIDŽIŲ RAŠYMAS išjungtas</translation>
 <translation id="6406458002328242616">Redaguoti laikmatį. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />„Google“ vietovės paslauga naudoja įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti įrenginio vietovę.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Galite išjungti vietovės nustatymą išjungdami pagrindinį vietovės nustatymą savo įrenginyje. Vietovės nustatymuose taip pat galite išjungti „Wi‑Fi“, mobiliojo ryšio tinklų ir jutiklių naudojimą vietovei nustatyti.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">Pasirinkite, kurią „<ph name="VM_NAME" />“ versiją norite įdiegti.</translation>
 <translation id="641469293210305670">Naujinių ir programų diegimas</translation>
 <translation id="6417265370957905582">„Google“ padėjėjas</translation>
@@ -2420,6 +2446,8 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8481187309597259238">USB leidimo patvirtinimas</translation>
 <translation id="8487660088084188539">Kai įjungiate šias funkcijas, įvesties tekstas, dokumento turinys ir tinklalapio URL gali būti siunčiami į „Google“ serverius. Ši informacija naudojama rašymo pasiūlymams, suvestinėms generuoti, atsakyti į klausimus ir produktui tobulinti, vadovaujantis <ph name="LINK_TO_SERVICE_TERMS" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.</translation>
 <translation id="8487699605742506766">Viešosios interneto prieigos taškas</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />„Google“ vietovės paslauga naudoja įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti šio įrenginio vietovę.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Galite išjungti vietovės nustatymą išjungdami pagrindinį vietovės nustatymą šiame įrenginyje. Vietovės nustatymuose taip pat galite išjungti „Wi‑Fi“, mobiliojo ryšio tinklų ir jutiklių naudojimą vietovei nustatyti.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">Buvo atnaujintos šios viešojo terminalo programos: <ph name="UPDATED_APPS" />. Paleiskite įrenginį iš naujo, kad užbaigtumėte atnaujinimo procesą.</translation>
 <translation id="8491237443345908933">Atidaryti nuorodą naujame skirtuke</translation>
 <translation id="8492573885090281069">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" />. Skyra buvo pakeista į <ph name="FALLBACK_RESOLUTION" />. Spustelėkite „Patvirtinti“ ir išsaugokite pakeitimus. Ankstesni nustatymai bus atkurti už <ph name="TIMEOUT_SECONDS" />.</translation>

@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2360196772093551345">Αίτημα ιστοτόπου για κινητά</translation>
 <translation id="2362083820973145409">Συνδεθήκατε ως <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ανοίγει τις ρυθμίσεις.</translation>
+<translation id="2367025302166767427">Πρόβλημα κατά τη συμπλήρωση των πληροφοριών σας</translation>
 <translation id="2371084566192454134">Καρτέλες και ομάδες καρτελών</translation>
 <translation id="2371303771137626249">Νέα</translation>
 <translation id="2381405137052800939">Βασικές πληροφορίες</translation>
@@ -491,6 +492,7 @@
 <translation id="2721190673959776287">Πλούσιο δείγμα βοήθειας εντός προϊόντος για το Συμφραστικό πλαίσιο που θα εμφανίζεται πολλές φορές την ημέρα.</translation>
 <translation id="2739887572830526131">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή διαγράψτε την, αν δεν τη χρειάζεστε πλέον.</translation>
 <translation id="2747003861858887689">Προηγούμενο πεδίο</translation>
+<translation id="2750583038402718064">Ο ιστότοπος <ph name="WEBSITE_TITLE" /> μετακινήθηκε στη θέση <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Οι αλλαγές που πραγματοποιούνται είναι ορατές σε όλους στην ομάδα</translation>
 <translation id="2755595981383829244">Στο εξής θα λαμβάνετε ειδοποιήσεις περιεχομένου</translation>
 <translation id="2761788987260570878">Τραβήξτε μια φωτογραφία της αναζήτησής σας</translation>
@@ -1345,6 +1347,7 @@
 <translation id="5819208479324046259">Διαχείριση από <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Συγχρονισμός…</translation>
+<translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5838430324585198889">Ξεκλειδώστε περισσότερες λειτουργίες για iPad με τις εφαρμογές Google</translation>
 <translation id="583923961930319521">Χρήση κωδικών πρόσβασης σε όλες τις συσκευές</translation>
 <translation id="5843013299019689749">Μαύρο χρώμα φόντου</translation>
@@ -2029,6 +2032,7 @@
 <translation id="8209237163365258530">Μοντέλα Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Λάβατε κωδικούς πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Η σύνδεση είναι ασφαλής</translation>
+<translation id="8213190397436801658">Σπίτι</translation>
 <translation id="8214293972734702249">Καρφιτσωμένη, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Προβολή έκδοσης εκτός σύνδεσης σε νέα καρτέλα</translation>
 <translation id="8221665793629393739">Η υπενθύμισή σας για επανεξέταση</translation>

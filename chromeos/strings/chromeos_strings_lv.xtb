@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Ievadiet uzvedni</translation>
 <translation id="115705039208660697">ananasi</translation>
 <translation id="1164939766849482256">Ekrānsaudzētājs No ausmas līdz tumsai</translation>
-<translation id="1167755866710282443">Atveriet izvēlni, lai pielāgotu taustiņus. Velciet izvēlni, lai pārvietotu.</translation>
 <translation id="1171349345463658120">smilšu lagūna</translation>
 <translation id="1174073918202301297">Saīsne pievienota</translation>
 <translation id="11743817593307477">Izmantojiet bultiņas, lai pārvietotu šo vadīklu uz vēlamo spēles darbību. Lai novietotu vadīklu, izmantojiet taustiņu Enter. Lai atceltu, izmantojiet atsoļa taustiņu.</translation>
@@ -501,7 +500,6 @@
 <translation id="3211671540163313381">Taustiņu saistīšanas virzienu slēdzis</translation>
 <translation id="3217462202230355157">Pārbaudiet, vai mikrofons ir pievienots, vai restartējiet savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3226405216343213872">Notiek skeneru meklēšana…</translation>
-<translation id="3226657629376379887">Izkārtojuma darbību izvēlne</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">digitālā māksla</translation>
 <translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
@@ -1396,7 +1394,6 @@
 <translation id="7177485034254901881">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />. Administratori var attālināti konfigurēt ierīci.</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7180865173735832675">Pielāgot</translation>
-<translation id="7184043045742675738">Lai pielāgotu pogu, nospiediet jebkuru taustiņu. Mainiet izvietojumu, izmantojot peli vai bultiņas.</translation>
 <translation id="7187669805838282391">trešdien</translation>
 <translation id="7205318498545665455">Izvēlieties mikrofonu</translation>
 <translation id="7210635925306941239">ciāna</translation>
@@ -1485,7 +1482,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7590883480672980941">Ievades iestatījumi</translation>
 <translation id="7595982850646262331">Atlikušais laiks: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Vietnes <ph name="MANAGER" /> administrators iestatīja šīs <ph name="DEVICE_TYPE" /> ierīces izmantošanas ierobežojumu.</translation>
-<translation id="7613724632293948900">Mainiet izvietojumu, izmantojot peli vai bultiņas.</translation>
 <translation id="7618216277886673749">Atlasiet <ph name="LANGUAGE_NAME" /> valodu</translation>
 <translation id="7618774594543487847">Neitrāls</translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>

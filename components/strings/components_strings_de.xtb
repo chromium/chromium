@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1036436692654972538">Wird auf deinem Gerät gespeichert</translation>
 <translation id="1036881361735705143">Umschlag C4</translation>
+<translation id="1038168778161626396">Nur verschlüsseln</translation>
 <translation id="1038842779957582377">Unbekannter Name</translation>
 <translation id="1041998700806130099">Auftragsblattnachricht</translation>
 <translation id="1044897699341250361">Was das bedeutet</translation>
@@ -44,6 +45,7 @@
 <translation id="1068672505746868501">Seiten auf <ph name="SOURCE_LANGUAGE" /> nie übersetzen</translation>
 <translation id="1070333806075222467">Metall (glänzend)</translation>
 <translation id="1070901266639972381">Nacht</translation>
+<translation id="1071917609930274619">Datenverschlüsselung</translation>
 <translation id="1073690811593784042">Glas (farbig)</translation>
 <translation id="1074287282535157335">In 4 Monatsraten bezahlen (es gelten bestimmte Voraussetzungen)</translation>
 <translation id="1074497978438210769">Nicht sicher</translation>
@@ -85,6 +87,7 @@
 <translation id="1138458427267715730">Du kannst dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
 <translation id="1142713751288681188">Papiertyp</translation>
 <translation id="1142965388643537393">Reiseinformationen</translation>
+<translation id="1143142264369994168">Signaturgeber des Zertifikats</translation>
 <translation id="1144136880160289237">Du hast noch keine aktiven Themen</translation>
 <translation id="1149617035358809955">deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst</translation>
 <translation id="1150565364351027703">Sonnenbrille</translation>
@@ -137,6 +140,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1215738931000958575">In deinem Google-Konto gespeicherte Informationen verwenden, um Passwörter, Passkeys, Adressen, Zahlungsmethoden und andere Daten automatisch einfügen zu lassen</translation>
 <translation id="1219129156119358924">Systemsicherheit</translation>
 <translation id="1219134100826635117">Dein Administrator hat diese Aktion blockiert</translation>
+<translation id="1221024147024329929">PKCS #1 MD2 mit RSA-Verschlüsselung</translation>
 <translation id="1222060260947439312">Rechtes Fach</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Kartennummer:</translation>
@@ -411,8 +415,10 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1640180200866533862">Nutzerrichtlinien</translation>
 <translation id="1640244768702815859">Versuche, <ph name="BEGIN_LINK" />die Startseite aufzurufen<ph name="END_LINK" />.</translation>
+<translation id="1640283014264083726">PKCS #1 MD4 mit RSA-Verschlüsselung</translation>
 <translation id="1641962500621836664">Kameradatei wird gespeichert</translation>
 <translation id="1641976391427233992">Ausgabe verzögern bis</translation>
+<translation id="1643072738649235303">X9.62-ECDSA-Signatur mit SHA-1</translation>
 <translation id="1643651787397909318">Button „Chrome-Sicherheitscheck aufrufen“ – aktivieren, um in den Einstellungen die Seite für den Chrome-Sicherheitscheck aufzurufen</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1645004815457365098">Unbekannte Quelle</translation>
@@ -695,6 +701,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2108755909498034140">Computer neu starten</translation>
 <translation id="2109845311767915560">Geteilte Tabgruppe</translation>
 <translation id="2111166930115883695">Drücke die Leertaste, um das Spiel zu starten</translation>
+<translation id="2113921862428609753">Zugriff auf Zertifizierungsstelleninformationen</translation>
 <translation id="2113977810652731515">Karte</translation>
 <translation id="2114841414352855701">Wird ignoriert, da sie von <ph name="POLICY_NAME" /> außer Kraft gesetzt wurde.</translation>
 <translation id="2118132148597630479">Umschlag C5</translation>
@@ -757,6 +764,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2190094353033916816">Für diese Richtlinie sind auf Computer- und Nutzerebene unterschiedliche Werte festgelegt. Die Richtlinie funktioniert wie vorgesehen.</translation>
 <translation id="2191980191135734720">Du kannst dein Display im nächsten Schritt auf gewohnte Weise per Fingerabdruck entsperren. Du kannst auch <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Wichtige Punkte</translation>
+<translation id="2195729137168608510">E-Mail-Schutz</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
 <translation id="2198215508485017216">Ein unerwarteter Fehler ist aufgetreten. <ph name="BEGIN_LINK" />Weitere Informationen zu Drive-Uploads<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Button „Mag ich nicht“ – Eingabetaste drücken, um ein Formular zu öffnen, über das du detailliertes Feedback dazu geben kannst, warum dir dieser Vorschlag nicht gefällt</translation>
@@ -1416,6 +1424,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3220264767789936523">Abendgarderobe</translation>
 <translation id="3223287115535306850">Ladesymbol beim Starten der App</translation>
 <translation id="3223425961342298674">Standortermittlung nicht zulässig</translation>
+<translation id="3225319735946384299">Codesignatur</translation>
 <translation id="3225919329040284222">Der Server hat ein Zertifikat übermittelt, das nicht mit den integrierten Erwartungen übereinstimmt. Diese Erwartungen sind zu deinem Schutz in bestimmten Websites mit hohen Sicherheitsstandards enthalten.</translation>
 <translation id="3226128629678568754">Klicke auf den Button zum erneuten Laden, um die für das Laden der Seite erforderlichen Daten noch einmal zu senden.</translation>
 <translation id="3226387218769101247">Miniaturansichten</translation>
@@ -1529,6 +1538,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3414952576877147120">Größe:</translation>
 <translation id="341513675006332771">Button „Chrome Dino spielen“ – aktivieren, um Chrome Dino zu spielen</translation>
 <translation id="3415471717466570460">Deine Suchanfragen, die besten Ergebnisse und die zugehörigen Seiteninhalte werden an Google gesendet und möglicherweise von Prüfern gelesen, um diese Funktion zu verbessern. Dies ist eine experimentelle Funktion, die manchmal fehlerhaft sein kann.</translation>
+<translation id="3421387094817716717">Öffentlicher Schlüssel für elliptische Kurven</translation>
 <translation id="3422248202833853650">Versuche, andere Programme zu beenden, um Speicher freizugeben.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> ist momentan nicht erreichbar.</translation>
 <translation id="3422794267539320056">Tippe auf den Dino oder drücke die Leertaste, um das Spiel zu starten</translation>
@@ -1605,6 +1615,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3541016556608204104">Weitere Informationen zu Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Bild der Karte</translation>
 <translation id="3542768452570884558">Link in neuem Fenster öffnen</translation>
+<translation id="3543597750097719865">X9.62-ECDSA-Signatur mit SHA-512</translation>
 <translation id="3543935938072367282">Mit Autofill schneller bezahlen</translation>
 <translation id="3547442767634383572">Übersicht des Arbeitsprofils</translation>
 <translation id="3547746132308051926">20 × 24 Zoll</translation>
@@ -1799,6 +1810,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3815434930383843058">8 × 12 Zoll</translation>
 <translation id="3816482573645936981">Wert (ersetzt)</translation>
 <translation id="3817524650114746564">Proxy-Einstellungen des Computers öffnen</translation>
+<translation id="3820749202859700794">Elliptische SECG-Kurve secp521r1 (NIST P-521)</translation>
 <translation id="382115839591654906">CVC für <ph name="CARD_NAME" /></translation>
 <translation id="3822492359574576064">Maussperre und ‑nutzung</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2089,6 +2101,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4265635050210404830">Meine Kundenkarten</translation>
 <translation id="4265872034478892965">Von deinem Administrator zugelassen</translation>
 <translation id="4267590181863312380">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
+<translation id="4268025649754414643">Schlüsselverschlüsselung</translation>
 <translation id="4269029136757623689">Ventilatoren für den Haushalt</translation>
 <translation id="4269264543938335308">Schwimmbekleidung</translation>
 <translation id="4269599248168651462">Das Serverzertifikat wird für einen nicht eindeutigen Namen ausgestellt.</translation>
@@ -2146,6 +2159,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4332872603299969513">Kinderliteratur</translation>
 <translation id="4333295216031073611">Einkaufsliste</translation>
 <translation id="4333561522337981382">Fenster auf allen Bildschirmen verwalten</translation>
+<translation id="4333854382783149454">PKCS #1 SHA-1 mit RSA-Verschlüsselung</translation>
 <translation id="4336913590841287350">Diese Richtlinie wird unter iOS noch nicht als Nutzerrichtlinie unterstützt.</translation>
 <translation id="4340575312453649552">Diese Werbeanzeige erfordert auf deinem Gerät zu viele Ressourcen. Darum hat Chrome sie entfernt.</translation>
 <translation id="4340810192899866471">Aus JSON importieren</translation>
@@ -2189,6 +2203,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4414515549596849729">Cookies und Websitedaten</translation>
 <translation id="4415156962929755728">Kunststoff (hochglanz)</translation>
 <translation id="4415426530740016218">Abholadresse</translation>
+<translation id="4415748029120993980">Elliptische SECG-Kurve secp384r1 (NIST P-384)</translation>
 <translation id="4419287616181386201">Passwörter können in den jeweiligen Verwaltungseinstellungen gelöscht werden</translation>
 <translation id="4424024547088906515">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chrome als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="4425750422187370446">Sportbekleidung</translation>
@@ -2586,6 +2601,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5087286274860437796">Das Serverzertifikat ist zurzeit ungültig.</translation>
 <translation id="5087580092889165836">Karte hinzufügen</translation>
 <translation id="5088142053160410913">Nachricht an den Bediener</translation>
+<translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5093232627742069661">Z-Faltung</translation>
 <translation id="5093417502834168387">Anmeldeprobleme? Andere Option wählen</translation>
@@ -2758,6 +2774,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5348330584842140856">Diese Datei wurde nicht verschoben, weil sie nicht mehr vorhanden ist</translation>
 <translation id="5349543692327946794">Etiketten (Tintenstrahl)</translation>
 <translation id="5351548097010183514">Produkte und Materialien für den Bau</translation>
+<translation id="5352033265844765294">Zeitstempeldienst</translation>
 <translation id="5354143049423063163">Hedgefonds</translation>
 <translation id="5355557959165512791">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, da das Zertifikat widerrufen wurde. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
 <translation id="5359752295193133096">Teile relevante geöffnete Tabs standardmäßig, um schnellere und besser auf dich zugeschnittene Antworten zu erhalten.</translation>
@@ -2811,6 +2828,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5426179911063097041"><ph name="SITE" /> möchte dir Benachrichtigungen senden</translation>
 <translation id="5431318178759467895">Farbe</translation>
 <translation id="5433756542371550806">Befehlszeilen-Varianten</translation>
+<translation id="5434065355175441495">PKCS #1 RSA-Verschlüsselung</translation>
 <translation id="5434798570900738152">Chromium speichert folgende Daten <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Den Browserverlauf
@@ -2860,6 +2878,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5499229993630251170">Diese Unterhaltung fortsetzen?</translation>
 <translation id="550365051221576010">Alles ausfüllen</translation>
 <translation id="5506286895894263601">Die Liste enthält keine gültigen Verknüpfungen.</translation>
+<translation id="5507756662695126555">Zugelassen</translation>
 <translation id="5508443345185481044">Kameras und Camcorder</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Verwaltete Lesezeichen</translation>
@@ -2942,6 +2961,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5611398002774823980">Im Konto speichern</translation>
 <translation id="561165882404867731">Diese Seite mit Google Übersetzer übersetzen</translation>
 <translation id="5612720917913232150"><ph name="URL" /> möchte den Standort deines Computers nutzen</translation>
+<translation id="5614190747811328134">Nutzerhinweis</translation>
 <translation id="5614520971155863709">Kartenspiele</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> hat dich zu oft weitergeleitet.</translation>
 <translation id="5619721953841297650">Voreinstellung</translation>
@@ -2957,6 +2977,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5640474731385449758">Die Erweiterung „<ph name="EXTENSION_NAME" />“ möchte Links vom Typ „<ph name="PROTOCOL" />“ auf <ph name="ORIGIN" /> über <ph name="HANDLER_HOSTNAME" /> öffnen</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereoanlagen und ‑komponenten</translation>
+<translation id="5642508497713047">CRL-Signaturgeber</translation>
 <translation id="5644090287519800334">Seite 1 – X-Verschiebung des Bilds</translation>
 <translation id="5644128326840674462">Werbebanner</translation>
 <translation id="5645132789250840550">Kunststoff (halbglanz)</translation>
@@ -3039,6 +3060,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5783922175933467571">Link zu „<ph name="TAB_GROUP_DISPLAY_NAME" />“ ist 48 Stunden gültig</translation>
 <translation id="5784606427469807560">Beim Bestätigen deiner Karte ist ein Problem aufgetreten. Überprüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="5785756445106461925">Außerdem enthält diese Seite andere, nicht sichere Ressourcen. Diese Ressourcen können während der Übertragung von anderen Nutzern angezeigt und von Angreifern bearbeitet werden, die das Layout der Seite verändern.</translation>
+<translation id="5787146423283493983">Schlüsselvereinbarung</translation>
 <translation id="5793317771769868848">Diese Zahlungsmethode wird von diesem Gerät gelöscht</translation>
 <translation id="5794065675298686371">Benachrichtigungen zum Preis-Tracking aktivieren</translation>
 <translation id="5800727402210090597">Reparatur- und Dienstleistungen für Smartphones</translation>
@@ -3119,6 +3141,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5924510104057992926">Vor dem Öffnen ist eine Überprüfung erforderlich</translation>
 <translation id="5924782825030413055">Quelle der letzten Aktualisierung der Einwilligung:</translation>
 <translation id="5925040402342933574">Optische Disk (halbglanz)</translation>
+<translation id="5925147183566400388">Verweis auf Certification Practice Statement</translation>
 <translation id="5926982310317673627">Fitnessstudios</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Aktiviere diese Einstellung, um „Formuliere für mich“ zu verwenden</translation>
@@ -3207,6 +3230,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="605237284704429106">IBAN wird ausgefüllt</translation>
 <translation id="6053584886670442526">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse ist in deinem Google-Konto <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="6053735090575989697">Weitere Informationen dazu, wie Google zum Schutz deiner Daten beiträgt, findest du in unserer Datenschutzerklärung.</translation>
+<translation id="6055392876709372977">PKCS #1 SHA-256 mit RSA-Verschlüsselung</translation>
 <translation id="6055888660316801977">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten</translation>
 <translation id="6055982527635883756">Umschlag (Archiv)</translation>
 <translation id="6057177372083677067">Onlinevideos</translation>
@@ -3262,6 +3286,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6131824478727057281">Standort</translation>
 <translation id="6133320744616005677">Weiter gewähren</translation>
 <translation id="6133984428121856852">Die Dateiendung ist leer oder fehlerhaft.</translation>
+<translation id="6138680304137685902">X9.62-ECDSA-Signatur mit SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 Zoll</translation>
 <translation id="6143097244789397208">Augmented Reality und Virtual Reality</translation>
 <translation id="614327212146763975">Zugriff auf Bewegungs- und Lichtsensoren erlaubt</translation>
@@ -3375,6 +3400,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6326947323444967009">Chrome in den iOS-Einstellungen als Standardbrowser für das System festlegen</translation>
 <translation id="6327065120806001832">Zugriff auf lokales Netzwerk</translation>
 <translation id="6328639280570009161">Deaktiviere die Netzwerkvorhersage.</translation>
+<translation id="6329742260390895689">Wenn du deine Informationen automatisch ausfüllen lassen möchtest, aktiviere in den Wallet-Einstellungen die Option „Karten/Tickets auf Google verwenden“</translation>
 <translation id="6329815962353376655">&lt;Frage eingeben&gt;</translation>
 <translation id="6331597954316706229">Wenn du die Personalisierung für deine Antworten optimal nutzen möchtest, erlaube allen Threads, deine relevanten geöffneten Tabs als Referenz zu verwenden.</translation>
 <translation id="633348045801643466">Optionen für <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />Später bezahlen<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> an der Kasse anzeigen</translation>
@@ -3393,6 +3419,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
 <translation id="6351658970066645919">Browserdaten löschen</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Keins}=1{1 Passwort (für <ph name="DOMAIN_LIST" />, synchronisiert)}=2{2 Passwörter (für <ph name="DOMAIN_LIST" />, synchronisiert)}other{# Passwörter (für <ph name="DOMAIN_LIST" />, synchronisiert)}}</translation>
+<translation id="6354918092619878358">Elliptische SECG-Kurve secp256r1 (ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355392890578844978">Dieser Browser wird nicht von einem Unternehmen oder einer anderen Organisation verwaltet. Aktivitäten auf diesem Gerät können außerhalb von Chromium verwaltet werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">Die Tabgruppen „<ph name="GROUP_TITLE_1" />“ und „<ph name="GROUP_TITLE_2" />“ sind nicht mehr verfügbar</translation>
 <translation id="6358088212770985041">Zahlungsmethoden zu bearbeiten</translation>
@@ -3462,6 +3489,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6436994298828707228">Die Verbindung wird blockiert, weil sie von einer öffentlichen Seite initiiert wurde, um eine Verbindung zu Geräten oder Servern in deinem lokalen Netzwerk herzustellen.</translation>
 <translation id="6437647869369934905">Google Zeichnungen</translation>
 <translation id="643917412048333145">Kleider</translation>
+<translation id="6440450906295708112">Quelle der Varianten</translation>
 <translation id="6440503408713884761">Ignoriert</translation>
 <translation id="6443406338865242315">Welche Erweiterungen und Plug-ins du installiert hast</translation>
 <translation id="6444329331928531170">Ruhestand und Rente</translation>
@@ -3504,6 +3532,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6502510275417601303">Benachrichtigung über neue Zahlungseinstellung ist geschlossen</translation>
 <translation id="6502991525169604759">Ohne meine Änderungen</translation>
 <translation id="6505072878288254563">Wird übersetzt</translation>
+<translation id="6506374932220792071">X9.62-ECDSA-Signatur mit SHA-256</translation>
 <translation id="6506936645890046535">Darf um Zugriff auf Cookies bitten</translation>
 <translation id="6506959208958864820">Umschlag</translation>
 <translation id="6507117483253822672">Mit mehr Selbstvertrauen im Web schreiben</translation>
@@ -3814,6 +3843,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7003278537452757231">Vorleger und Teppiche</translation>
 <translation id="7003322000677139268">Ersatz- und Zubehörteile für Kraftfahrzeuge</translation>
 <translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
+<translation id="7004562620237466965">Nur entschlüsseln</translation>
 <translation id="700483187606163535">Deine Informationen für <ph name="ACCOUNT" /> werden in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gespeichert. Du kannst sie in allen Google-Produkten verwenden, um Formulare schneller auszufüllen.</translation>
 <translation id="7006930604109697472">Trotzdem senden</translation>
 <translation id="7009364359744329733">Diese Karte ist momentan nicht verfügbar. Bitte versuche es später noch einmal.</translation>
@@ -3856,6 +3886,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7070144569727915108">Systemeinstellungen</translation>
 <translation id="70705239631109039">Deine Verbindung ist nicht uneingeschränkt sicher</translation>
 <translation id="7075452647191940183">Die Anfrage ist zu groß</translation>
+<translation id="7075513071073410194">PKCS #1 MD5 mit RSA-Verschlüsselung</translation>
 <translation id="7075896597860500885">Das Kopieren von dieser Website wird nicht empfohlen</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4383,6 +4414,7 @@ Weitere Details:
 <translation id="7862306158978555061">vertrauliche Daten anzuzeigen</translation>
 <translation id="7865448901209910068">Beste Geschwindigkeit</translation>
 <translation id="7865482168955081228">Der Fehlerbildschirm für „Jetzt kaufen, später bezahlen“ ist geschlossen.</translation>
+<translation id="7869655448736341731">Alle</translation>
 <translation id="7870207318911766769">Inhalte von der Zahlungsseite werden an Google weitergegeben, um diese Optionen anzubieten.</translation>
 <translation id="7870281855125116701">Rabatt gefunden</translation>
 <translation id="7871445724586827387">Passwort des Google-Kontos ändern</translation>
@@ -4451,6 +4483,7 @@ Weitere Details:
 <translation id="7967636097426665267">Kommunikationsgeräte</translation>
 <translation id="79682505114836835">Der Wert „<ph name="VALUE" />“ ist kein gültiger Hex-Farbcode.</translation>
 <translation id="7968982339740310781">Details ansehen</translation>
+<translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
 <translation id="7976053965094442846">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“, die für Ratenzahlung verfügbar sind. Tastatur ausgeblendet.</translation>
 <translation id="7976214039405368314">Zu viele Anfragen</translation>
 <translation id="7977538094055660992">Ausgabegerät</translation>

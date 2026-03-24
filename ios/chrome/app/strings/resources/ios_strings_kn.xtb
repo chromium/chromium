@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="1740650426894359238">ಮತ್ತೊಂದು ಪ್ರೊಫೈಲ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="1741219894094057085">ಸ್ಮಾರ್ಟ್‌ ವಾಚ್</translation>
+<translation id="1742773766788162541">ಕಾರ್ಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಮತ್ತು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="1743244221910283364">ಬದಲಾವಣೆಗಳನ್ನು ತ್ಯಜಿಸಿ</translation>
 <translation id="1748975028205587434">ನಿಮ್ಮ ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="1749733017156547309">ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
@@ -710,6 +711,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="3581564640715911333">ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಅನುವಾದಿಸಲು ಅವಕಾಶ ನೀಡಿ</translation>
+<translation id="3583726884554296148">ಈ ಖರೀದಿ ಮತ್ತು Chrome ನಲ್ಲಿ ಮಾಡಿದ ಭವಿಷ್ಯದ ಖರೀದಿಗಳಿಗಾಗಿ ಅದನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
 <translation id="3587885837929752825">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನೀವು ಏನನ್ನು ಸಂಗ್ರಹಿಸಬಹುದು ಎಂಬುದನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ಬಂಧಿಸುತ್ತದೆ.</translation>
 <translation id="3588820906588687999">ಚಿತ್ರವನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -1346,6 +1348,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">ಸಿಂಕ್ ಆಗುತ್ತಿದೆ…</translation>
+<translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5838430324585198889">Google ಆ್ಯಪ್‌ಗಳೊಂದಿಗೆ ನಿಮ್ಮ iPad ಗಾಗಿ ಹೆಚ್ಚಿನ ಫೀಚರ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="583923961930319521">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="5843013299019689749">ಕಪ್ಪು ಹಿನ್ನೆಲೆ ಬಣ್ಣ</translation>
@@ -1556,6 +1559,7 @@
 <translation id="6532106788206463496">ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> ಅನ್ನು ತೆರೆಯಿರಿ, <ph name="NUMBER_OF_TABS" /> ಗುಂಪು, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">ನಿಮ್ಮ ಸಾಧನಗಳಾದ್ಯಂತ ಆಟೋಫಿಲ್ ಮೂಲಕ ವೇಗವಾಗಿ ಚೆಕ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="6550675742724504774">ಆಯ್ಕೆಗಳು</translation>
 <translation id="6550891580932862748">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಸಂಬಂಧಿಸಿದಂತೆ ನಿಮಗೆ ರಕ್ಷಣೆ ನೀಡುವುದಿಲ್ಲ. ಇತರ Google ಉತ್ಪನ್ನಗಳಲ್ಲಿನ ನಿಮ್ಮ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಪರಿಣಾಮ ಬೀರುವುದಿಲ್ಲ.</translation>
 <translation id="6556501700899673703">Lexend</translation>

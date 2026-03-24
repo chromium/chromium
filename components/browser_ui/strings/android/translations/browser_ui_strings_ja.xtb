@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1652197001188145583">オンにすると、サイトは NFC デバイスの使用を要求できます。オフにすると、サイトは NFC デバイスを使用できません。</translation>
 <translation id="1660204651932907780">音声の再生をサイトに許可する（推奨）</translation>
+<translation id="1676590040242013349">[常に安全な接続を使用する] がオンになります。</translation>
 <translation id="1677097821151855053">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1679305402657584804">サイトが NFC デバイスの使用を要求できるようにする</translation>
 <translation id="1686785653877010442">多くのサイトは、最新情報やチャット メッセージなどを知らせる目的で通知を送信します。</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6950072572526089586">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
+<translation id="6964291282260073066">[WebGPU] がオフになります。</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">ローズのテーマ</translation>
 <translation id="6980861169612950611">次のサイトデータを削除しますか？<ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">オンにすると、サイトはバーチャル リアリティ デバイスの使用を要求できます。オフにすると、サイトはバーチャル リアリティ デバイスを使用できません。</translation>
 <translation id="7282197670900591579">シトロンのテーマ</translation>
 <translation id="728412880473384942">サイトは速くなりますが、安全性は低下します</translation>
+<translation id="7352902948037373520"><ph name="BEGIN_LINK1" />Android の設定<ph name="END_LINK1" />で管理します
+
+高度な保護機能では、次の Chrome の設定を制御します。</translation>
 <translation id="7366415735885268578">サイトの追加</translation>
 <translation id="7368695150573390554">オフライン データがすべて削除されます</translation>
 <translation id="7369678931043226462">[新しいタブページをカスタマイズ] のボトムシートが画面の下半分に表示されています</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">ドキュメントの印刷やストレージ デバイスへの保存のため、サイトが USB デバイスに接続する場合があります。</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」は最新ではありません。アプリを再インストールしてください。</translation>
 <translation id="847433688444405067">複数のデバイスでブラウジング</translation>
+<translation id="8484556725636319115">[JavaScript オプティマイザー] がオフになります。<ph name="BEGIN_LINK2" />サイトの例外を管理する<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="848952951823693243">常にモバイル版サイトを表示する</translation>
 <translation id="8492822722330266509">サイトがポップアップを送信したりリダイレクトを使用したりできるようにする</translation>

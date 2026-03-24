@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">પ્રૉમ્પ્ટ દાખલ કરો</translation>
 <translation id="115705039208660697">અનાનસ</translation>
 <translation id="1164939766849482256">ડૉન ટુ ડાર્ક સ્ક્રીન સેવર</translation>
-<translation id="1167755866710282443">કી કસ્ટમાઇઝ કરવા માટે મેનૂ ખોલો. ખસેડવા માટે મેનૂ ખેંચો.</translation>
 <translation id="1171349345463658120">રેતી જેવો લગૂન</translation>
 <translation id="1174073918202301297">શૉર્ટકટ ઉમેર્યો</translation>
 <translation id="11743817593307477">તમે ઇચ્છતા હો તે ગેમ ઍક્શન પર આ કન્ટ્રોલ ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો. આ કન્ટ્રોલ મૂકવા માટે Enter કીનો ઉપયોગ કરો. રદ કરવા માટે Escape કીનો ઉપયોગ કરો.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">કીમૅપિંગ ડી-પૅડ</translation>
 <translation id="3217462202230355157">તમારું માઇક કનેક્ટેડ હોય તેની ખાતરી કરો અથવા તમારું <ph name="DEVICE_TYPE" /> ફરી શરૂ કરી જુઓ</translation>
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
-<translation id="3226657629376379887">લેઆઉટ ક્રિયા મેનૂ</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" />થી <ph name="CATEGORY_TEXT" /> મૂલ્યનો ભાગાકાર કરો</translation>
 <translation id="3242622575335502454">ડિજિટલ આર્ટ</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
-<translation id="7184043045742675738">તમારા બટનને કસ્ટમાઇઝ કરવા માટે કોઈપણ કી પર ક્લિક કરો. માઉસ અથવા ઍરો કી વડે કીના સ્થાનમાં ફેરફાર કરો.</translation>
 <translation id="7187669805838282391">બુધવારે</translation>
 <translation id="7205318498545665455">તમારું માઇક પસંદ કરો</translation>
 <translation id="7210635925306941239">સ્યાન</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">ઇનપુટ સેટિંગ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> બાકી</translation>
 <translation id="7600430297804876776">આ <ph name="DEVICE_TYPE" />નો ઉપયોગ ક્યારે કરી શકાય છે, એ <ph name="MANAGER" />ના ઍડમિનિસ્ટ્રેટર દ્વારા સેટ કરવામાં આવ્યું છે.</translation>
-<translation id="7613724632293948900">માઉસ અથવા ઍરો કી વડે સ્થાનમાં ફેરફાર કરો.</translation>
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> પસંદ કરો</translation>
 <translation id="7618774594543487847">ન્યૂટ્રલ</translation>
 <translation id="7620771111601174153">સહાયતા કેન્દ્રમાં વધુ જાણો</translation>
@@ -1631,6 +1627,7 @@
 <translation id="819278132617411009">વધુ પ્રોડક્ટિવ બનવા માટે Google AIનો ઉપયોગ કરો</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
+<translation id="8208043093301544621">હોમ</translation>
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>
 <translation id="8227119283605456246">ફાઇલ જોડો</translation>

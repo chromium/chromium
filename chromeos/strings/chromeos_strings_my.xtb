@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">တိုက်တွန်းချက် ထည့်ရန်</translation>
 <translation id="115705039208660697">နာနတ်သီး</translation>
 <translation id="1164939766849482256">မိုးသောက်ချိန်မှ မှောင်မိုက်ချိန်အထိ စခရင်နားချိန်ပုံ</translation>
-<translation id="1167755866710282443">ကီးများ စိတ်ကြိုက်လုပ်ရန် မီနူးဖွင့်ပါ။ ရွှေ့ရန် မီနူးကို ဖိဆွဲပါ။</translation>
 <translation id="1171349345463658120">သဲထူသောထုံးအိုင်</translation>
 <translation id="1174073918202301297">ဖြတ်လမ်းလင့်ခ် ထည့်ပြီးပါပြီ</translation>
 <translation id="11743817593307477">လိုချင်သော ဂိမ်းလုပ်ဆောင်ချက်အထိ ဤထိန်းချုပ်မှုကို ရွှေ့ရန် မြားကီးများ သုံးပါ။ ထိန်းချုပ်မှုကို နေရာချရန် Enter ကီး သုံးပါ။ ပယ်ဖျက်ရန် Escape ကီး သုံးပါ။</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">ကီးနေရာချသည့် D-pad</translation>
 <translation id="3217462202230355157">မိုက် ချိတ်ဆက်ထားကြောင်း သေချာအောင်လုပ်ပါ (သို့) သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စကြည့်ပါ</translation>
 <translation id="3226405216343213872">စကင်ဖတ်စက်များ ရှာနေသည်</translation>
-<translation id="3226657629376379887">အပြင်အဆင် လုပ်ဆောင်ချက် မီနူး</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ကို <ph name="CONVERSION_RATE" /> နှင့်စားပါ</translation>
 <translation id="3242622575335502454">ဒစ်ဂျစ်တယ်အနုပညာ</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည်။ စီမံခန့်ခွဲသူများက စက်ပစ္စည်းကို အဝေးမှ စီစဉ်သတ်မှတ်နိုင်သည်။</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7180865173735832675">ပြုပြင်ရန်</translation>
-<translation id="7184043045742675738">သင့်ခလုတ်ကို စိတ်ကြိုက်လုပ်ရန် ကီးတစ်ခုခုနှိပ်ပါ။ မောက်စ် (သို့) မြားကီးများဖြင့် ကီးကို နေရာပြန်ချပါ။</translation>
 <translation id="7187669805838282391">ဗုဒ္ဓဟူးနေ့တွင်</translation>
 <translation id="7205318498545665455">မိုက် ရွေးပါ</translation>
 <translation id="7210635925306941239">စိမ်းပြာရောင်</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">ထည့်သွင်းမှု ဆက်တင်များ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ကျန်သည်</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> စီမံခန့်ခွဲသူက ဤ <ph name="DEVICE_TYPE" /> ကို သုံးနိုင်သည့်အချိန် သတ်မှတ်ထားသည်။</translation>
-<translation id="7613724632293948900">မောက်စ် (သို့) မြားကီးများဖြင့် နေရာပြန်ချပါ။</translation>
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> ကို ရွေးရန်</translation>
 <translation id="7618774594543487847">ပုံမှန်</translation>
 <translation id="7620771111601174153">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>

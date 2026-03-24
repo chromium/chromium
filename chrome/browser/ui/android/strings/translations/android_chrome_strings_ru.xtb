@@ -699,6 +699,7 @@
 <translation id="3985215325736559418">Скачать файл <ph name="FILE_NAME" /> ещё раз?</translation>
 <translation id="3987993985790029246">Скопировать ссылку</translation>
 <translation id="3994236846568425219">Использовать тёмную тему, если она включена на устройстве</translation>
+<translation id="399788104667917863">Закрепить на панели инструментов</translation>
 <translation id="4000212216660919741">Офлайн</translation>
 <translation id="4000670338830950598">Настраивайте Google Chrome и управляйте им, выделяя объекты на экране</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{В аккаунте Google один раскрытый пароль}one{В аккаунте Google # раскрытый пароль}few{В аккаунте Google # раскрытых пароля}many{В аккаунте Google # раскрытых паролей}other{В аккаунте Google # раскрытого пароля}}</translation>
@@ -766,7 +767,7 @@
 <translation id="4270730597186910506">Начать или перестать отслеживать цены на товар.</translation>
 <translation id="4277529130885813215">Использовать другое устройство</translation>
 <translation id="427987768447457592">Новая группа вкладок</translation>
-<translation id="4282440837784183472">Аккаунтом, в который вы входите, и использованием Chrome управляет ваша организация (<ph name="MANAGED_DOMAIN" />). Администратор может настраивать определенные функции и ограничивать доступ к ним.</translation>
+<translation id="4282440837784183472">Вы входите в аккаунт, которым управляет ваша организация, <ph name="MANAGED_DOMAIN" />; она также контролирует работу Chrome. Ваш администратор может настраивать доступные функции или ограничивать их использование.</translation>
 <translation id="4283234489712362947">Вкладка инкогнито "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="4285498937028063278">Открепить</translation>
 <translation id="4285846616383034558">Файлы cookie, кеш и другие данные сайтов</translation>
@@ -839,7 +840,7 @@
 <translation id="4543131175509360848">Пустой список ключей доступа</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладка инкогнито}few{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}many{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладок инкогнито}other{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}}</translation>
 <translation id="4558311620361989323">Работа с веб-страницами</translation>
-<translation id="4572422548854449519">Войдите в управляемый аккаунт</translation>
+<translation id="4572422548854449519">Вход в управляемый аккаунт</translation>
 <translation id="4577115723294378384">По алфавиту (от А до Я)</translation>
 <translation id="4578289292431526768">Начать</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минуту назад}one{# минуту назад}few{# минуты назад}many{# минут назад}other{# минуты назад}}</translation>

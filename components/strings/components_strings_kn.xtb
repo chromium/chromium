@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1036436692654972538">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="1036881361735705143">ಎನ್ವಲಪ್ C4</translation>
+<translation id="1038168778161626396">ಸಂಕೇತಲಿಪಿ ಮಾತ್ರ</translation>
 <translation id="1038842779957582377">ಆಜ್ಞಾತ ಹೆಸರು</translation>
 <translation id="1041998700806130099">ಜಾಬ್ ಶೀಟ್ ಸಂದೇಶ</translation>
 <translation id="1044897699341250361">ಇದರ ಅರ್ಥವೇನು</translation>
@@ -44,6 +45,7 @@
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಎಂದಿಗೂ ಅನುವಾದ ಮಾಡಬೇಡಿ</translation>
 <translation id="1070333806075222467">ಲೋಹ (ಹೊಳಪು)</translation>
 <translation id="1070901266639972381">ರಾತ್ರಿ</translation>
+<translation id="1071917609930274619">ಡೇಟಾ ಎನ್ಸಿಫರ್ಮೆಂಟ್</translation>
 <translation id="1073690811593784042">ಗ್ಲಾಸ್ (ಬಣ್ಣದ)</translation>
 <translation id="1074287282535157335">4 ಕಂತು ಅಥವಾ ಮಾಸಿಕವಾಗಿ ಪಾವತಿಸಿ (ಅರ್ಹತೆಗೆ ಒಳಪಟ್ಟಿರುತ್ತದೆ)</translation>
 <translation id="1074497978438210769">ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
@@ -85,6 +87,7 @@
 <translation id="1138458427267715730">ವೆಬ್‌ನಾದ್ಯಂತ ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದಾಗ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1142713751288681188">ಕಾಗದದ ಪ್ರಕಾರ</translation>
 <translation id="1142965388643537393">ಪ್ರಯಾಣದ ಮಾಹಿತಿ</translation>
+<translation id="1143142264369994168">ಪ್ರಮಾಣಪತ್ರ ಸಹಿ ಮಾಡುವವರು</translation>
 <translation id="1144136880160289237">ನೀವು ಇನ್ನೂ ಯಾವುದೇ ಸಕ್ರಿಯ ವಿಷಯಗಳನ್ನು ಹೊಂದಿಲ್ಲ</translation>
 <translation id="1149617035358809955">ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ, ಇದರಿಂದ ಅದು ನಿಮ್ಮ ಪಾವತಿಯ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿಮಾಡಬಹುದು.</translation>
 <translation id="1150565364351027703">ಸನ್‌ಗ್ಲಾಸ್‌ಗಳು</translation>
@@ -137,6 +140,7 @@
 <translation id="1215738931000958575">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾಸ್‌ಕೀಗಳು, ವಿಳಾಸಗಳು, ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ಇತರ ಮಾಹಿತಿಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಿ</translation>
 <translation id="1219129156119358924">ಸಿಸ್ಟಂ ಭದ್ರತೆ</translation>
 <translation id="1219134100826635117">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
+<translation id="1221024147024329929">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 MD2</translation>
 <translation id="1222060260947439312">ಬಲಭಾಗದ ಟ್ರೇ</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ:</translation>
@@ -410,8 +414,10 @@
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1640180200866533862">ಬಳಕೆದಾರನ ನೀತಿಗಳು</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />ಸೈಟ್‌ನ ಮುಖಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಲು<ph name="END_LINK" /> ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="1640283014264083726">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 MD4</translation>
 <translation id="1641962500621836664">ಕ್ಯಾಮರಾ ಫೈಲ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1641976391427233992">ಇಷ್ಟು ಸಮಯದವರೆಗೆ ಫಲಿತಾಂಶವನ್ನು ವಿಳಂಬಗೊಳಿಸಿ</translation>
+<translation id="1643072738649235303">SHA-1 ಮೂಲಕ X9.62 ECDSA ಸಹಿ</translation>
 <translation id="1643651787397909318">Chrome ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ಬಟನ್‌ಗೆ ಹೋಗಿ, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಭದ್ರತಾ ಪರಿಶೀಲನೆ ಪುಟವನ್ನು ತೆರೆಯಲು ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
 <translation id="1645004815457365098">ಅಜ್ಞಾತ ಮೂಲ</translation>
@@ -694,6 +700,7 @@
 <translation id="2108755909498034140">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2109845311767915560">ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವ ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="2111166930115883695">ಆಡಲು, ಸ್ಪೇಸ್ ಒತ್ತಿ</translation>
+<translation id="2113921862428609753">ಅಧಿಕಾರ ಮಾಹಿತಿ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="2113977810652731515">ಕಾರ್ಡ್</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> ರಿಂದ ಅತಿಕ್ರಮಿಸಲಾಗಿರುವ ಕಾರಣ ಇದನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ.</translation>
 <translation id="2118132148597630479">ಎನ್ವಲಪ್ C5</translation>
@@ -756,6 +763,7 @@
 <translation id="2190094353033916816">ಈ ನೀತಿಯು ಮಷಿನ್‌ ಮತ್ತು ಬಳಕೆದಾರರ ಹಂತಗಳಲ್ಲಿ ಅನ್ವಯಿಸಲಾದ ವಿಭಿನ್ನ ಮೌಲ್ಯಗಳನ್ನು ಹೊಂದಿದೆ. ನೀತಿಯು ಉದ್ದೇಶಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ.</translation>
 <translation id="2191980191135734720">ಮುಂದಿನ ಹಂತದಲ್ಲಿ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ, ಸಾಮಾನ್ಯವಾಗಿ ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಬಳಸಬೇಕಾಗುತ್ತದೆ. ನೀವು <ph name="LINK_TEXT" /> ಸಹ ಮಾಡಬಹುದು.</translation>
 <translation id="2194856509914051091">ಪರಿಗಣಿಸಬೇಕಾದ ಸಂಗತಿಗಳು</translation>
+<translation id="2195729137168608510">ಇಮೇಲ್ ಭದ್ರತೆ</translation>
 <translation id="2198183835992354675">ಪರಿಚಿತ ಪ್ರಯಾಣಿಕರ ಸಂಖ್ಯೆ</translation>
 <translation id="2198215508485017216">ಅನಿರೀಕ್ಷಿತ ದೋಷ ಸಂಭವಿಸಿದೆ. <ph name="BEGIN_LINK" />Drive ಅಪ್‌ಲೋಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">ಥಂಬ್ಸ್ ಡೌನ್ ಬಟನ್, ನೀವು ಈ ಸಲಹೆಯನ್ನು ಏಕೆ ಇಷ್ಟಪಡುವುದಿಲ್ಲ ಎಂಬುದರ ಕುರಿತು ವಿವರವಾದ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಸಲ್ಲಿಸುವುದಕ್ಕೆ ಫಾರ್ಮ್ ಅನ್ನು ತೆರೆಯಲು Enter ಬಟನ್‌ ಅನ್ನು ಒತ್ತಿರಿ</translation>
@@ -1414,6 +1422,7 @@
 <translation id="3220264767789936523">ಸಾಂಪ್ರದಾಯಿಕ ಉಡುಗೆ</translation>
 <translation id="3223287115535306850">ಆ್ಯಪ್ ಬಿಡುಗಡೆ ಥ್ರೋಬರ್</translation>
 <translation id="3223425961342298674">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
+<translation id="3225319735946384299">ಕೋಡ್ ಸೈನ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="3225919329040284222">ಆಂತರಿಕ ಮಾನದಂಡಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸರ್ವರ್ ಹಾಜರಿಪಡಿಸಿದೆ. ನಿಮ್ಮ ಸುರಕ್ಷತೆಯ ಸಲುವಾಗಿ ಕೆಲವು ಹೆಚ್ಚು ಸುರಕ್ಷಿತ ವೆಬ್ ಸೈಟ್‌ಗಳಲ್ಲಿ ಈ ಮಾನದಂಡಗಳನ್ನು ಸೇರ್ಪಡೆಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="3226128629678568754">ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡುವುದಕ್ಕೆ ಅಗತ್ಯವಿರುವ ಡೇಟಾವನ್ನು ಮರುಸಲ್ಲಿಸಲು ಮರುಲೋಡ್ ಬಟನ್ ಒತ್ತಿರಿ.</translation>
 <translation id="3226387218769101247">ಥಂಬ್‌ನೇಲ್‌ಗಳು</translation>
@@ -1527,6 +1536,7 @@
 <translation id="3414952576877147120">ಗಾತ್ರ:</translation>
 <translation id="341513675006332771">Chrome Dino ಗೇಮ್ ಆಡಿ ಬಟನ್, Chrome ನಲ್ಲಿ Dino Run ಗೇಮ್ ಅನ್ನು ಆಡಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3415471717466570460">ನಿಮ್ಮ ಹುಡುಕಾಟಗಳು, ಉತ್ತಮ ಹೊಂದಾಣಿಕೆಗಳು ಮತ್ತು ಅವುಗಳ ಪುಟದ ಕಂಟೆಂಟ್‌ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು ಮಾನವ ರಿವ್ಯೂವರ್‌ಗಳು ಅವುಗಳನ್ನು ನೋಡಬಹುದು. ಇದೊಂದು ಪ್ರಾಯೋಗಿಕ ಫೀಚರ್ ಆಗಿದೆ ಮತ್ತು ಇದು ಯಾವಾಗಲೂ ಸರಿಯಾದ ಕ್ರಿಯೆಗಳನ್ನೇ ಮಾಡುವುದಿಲ್ಲ.</translation>
+<translation id="3421387094817716717">ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ ಸಾರ್ವಜನಿಕ ಕೀಲಿ</translation>
 <translation id="3422248202833853650">ಮೆಮೊರಿ ಮುಕ್ತಗೊಳಿಸಲು ಇತರ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ನಿರ್ಗಮಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> ಅನ್ನು ಪ್ರಸ್ತುತ ತಲುಪಲಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="3422794267539320056">ಆಡಲು dino ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಅಥವಾ ಸ್ಪೇಸ್ ಒತ್ತಿರಿ</translation>
@@ -1604,6 +1614,7 @@
 <translation id="3541016556608204104">Chrome Enterprise ಕನೆಕ್ಟರ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ಮಾಹಿತಿ</translation>
 <translation id="3542628208405253498">ಕಾರ್ಡ್ ಚಿತ್ರ</translation>
 <translation id="3542768452570884558">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
+<translation id="3543597750097719865">SHA-512 ಜೊತೆಗೆ X9.62 ECDSA ಸಹಿ</translation>
 <translation id="3543935938072367282">ಆಟೋಫಿಲ್‌ನೊಂದಿಗೆ ವೇಗವಾಗಿ ಚೆಕ್‌ ಔಟ್‌ ಮಾಡಿ</translation>
 <translation id="3547442767634383572">ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಓವರ್‌ವ್ಯೂ</translation>
 <translation id="3547746132308051926">20 x 24 ಇಂಚು</translation>
@@ -1798,6 +1809,7 @@
 <translation id="3815434930383843058">8 x 12 ಇಂಚು</translation>
 <translation id="3816482573645936981">ಮೌಲ್ಯ (ರದ್ದುಗೊಳಿಸಿರುವುದು)</translation>
 <translation id="3817524650114746564">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="3820749202859700794">SECG ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ secp521r1 (aka NIST P-521)</translation>
 <translation id="382115839591654906"><ph name="CARD_NAME" /> ಕಾರ್ಡ್‌ನ CVC</translation>
 <translation id="3822492359574576064">ಮೌಸ್ ಲಾಕ್ ಮತ್ತು ಬಳಕೆ</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2088,6 +2100,7 @@
 <translation id="4265635050210404830">ನಿಮ್ಮ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳು</translation>
 <translation id="4265872034478892965">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4267590181863312380">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಪಡೆಯಲು, ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ. ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನೀವು ಪಡೆಯುತ್ತೀರಿ. ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು.</translation>
+<translation id="4268025649754414643">ಕೀ ಎನ್ಸಿಫರ್ಮೆಂಟ್</translation>
 <translation id="4269029136757623689">ಮನೆಯ ಫ್ಯಾನ್‌ಗಳು</translation>
 <translation id="4269264543938335308">ಈಜುಡುಗೆ</translation>
 <translation id="4269599248168651462">ವಿಶಿಷ್ಟವಲ್ಲದ ಹೆಸರಿಗೆ ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೀಡಲಾಗುತ್ತದೆ.</translation>
@@ -2145,6 +2158,7 @@
 <translation id="4332872603299969513">ಮಕ್ಕಳ ಸಾಹಿತ್ಯ</translation>
 <translation id="4333295216031073611">ಶಾಪಿಂಗ್ ಪಟ್ಟಿ</translation>
 <translation id="4333561522337981382">ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್ಪ್ಲೇಗಳಲ್ಲಿ ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="4333854382783149454">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-1</translation>
 <translation id="4336913590841287350">ಈ ನೀತಿಯು iOS ನಲ್ಲಿ ಬಳಕೆದಾರರ ನೀತಿಯಾಗಿ ಇನ್ನೂ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ.</translation>
 <translation id="4340575312453649552">ಈ ಜಾಹೀರಾತು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ತೀರಾ ಹೆಚ್ಚು ಸಂಪನ್ಮೂಲಗಳನ್ನು ಬಳಸಿದೆ. ಆದ್ದರಿಂದ, Chrome ಇದನ್ನು ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="4340810192899866471">JSON ನಿಂದ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಿ</translation>
@@ -2188,6 +2202,7 @@
 <translation id="4414515549596849729">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="4415156962929755728">ಪ್ಲಾಸ್ಟಿಕ್ (ಹೆಚ್ಚಿನ ಹೊಳಪು)</translation>
 <translation id="4415426530740016218">ಪಿಕಪ್ ವಿಳಾಸ</translation>
+<translation id="4415748029120993980">SECG ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ secp384r1 (aka NIST P-384)</translation>
 <translation id="4419287616181386201">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಅವುಗಳ ನಿರ್ವಹಣಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅಳಿಸಬಹುದು</translation>
 <translation id="4424024547088906515">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು Chrome ಪಾಲಿಗೆ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="4425750422187370446">ಅಥ್ಲೆಟಿಕ್ ಉಡುಪು</translation>
@@ -2585,6 +2600,7 @@
 <translation id="5087286274860437796">ಈ ಸಮಯದಲ್ಲಿ ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರ ಮಾನ್ಯವಾಗಿಲ್ಲ.</translation>
 <translation id="5087580092889165836">ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="5088142053160410913">ಆಪರೇಟರ್‌ಗೆ ಸಂದೇಶ</translation>
+<translation id="5088534251099454936">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-512</translation>
 <translation id="5089810972385038852">ರಾಜ್ಯ</translation>
 <translation id="5093232627742069661">ಝೆಡ್ ಮಾದರಿಯಲ್ಲಿ ಮಡಿಸಿ</translation>
 <translation id="5093417502834168387">ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಎದುರಾಗಿದೆಯೇ? ಮತ್ತೊಂದು ವಿಧಾನ ಬಳಸಿ</translation>
@@ -2757,6 +2773,7 @@
 <translation id="5348330584842140856">ಈ ಫೈಲ್ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲದ ಕಾರಣ ಅದನ್ನು ಸರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="5349543692327946794">ಲೇಬಲ್‌ಗಳು (ಇಂಕ್‌ಜೆಟ್‌)</translation>
 <translation id="5351548097010183514">ಕಟ್ಟಡ ಸಾಮಗ್ರಿಗಳು ಮತ್ತು ಪೂರೈಕೆಗಳು</translation>
+<translation id="5352033265844765294">ಸಮಯ ಸ್ಟ್ಯಾಂಪಿಂಗ್</translation>
 <translation id="5354143049423063163">ಹೆಡ್ಜ್ ನಿಧಿಗಳು</translation>
 <translation id="5355557959165512791">ಸದ್ಯಕ್ಕೆ ನೀವು <ph name="SITE" /> ಗೆ ಭೇಟಿ ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏಕೆಂದರೆ ಇದರ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಹಿಂಪಡೆದುಕೊಳ್ಳಲಾಗಿದೆ. ನೆಟ್‌ವರ್ಕ್ ದೋಷಗಳು ಮತ್ತು ಆಕ್ರಮಣಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿರುತ್ತವೆ, ಹೀಗಾಗಿ ಈ ಪುಟವು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಕಾರ್ಯನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="5359752295193133096">ವೇಗವಾದ, ಹೆಚ್ಚು ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಪ್ರತಿಕ್ರಿಯೆಗಳಿಗಾಗಿ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೂಕ್ತವಾದ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ.</translation>
@@ -2810,6 +2827,7 @@
 <translation id="5426179911063097041">ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು <ph name="SITE" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="5431318178759467895">ಬಣ್ಣ</translation>
 <translation id="5433756542371550806">ಕಮಾಂಡ್‌-ಲೈನ್‌ ವೇರಿಯೇಶನ್‌</translation>
+<translation id="5434065355175441495">PKCS #1 RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="5434798570900738152">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chromium <ph name="BEGIN_EMPHASIS" />ಸೇವ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ
@@ -2859,6 +2877,7 @@
 <translation id="5499229993630251170">ಈ ಥ್ರೆಡ್ ಅನ್ನು ಮುಂದುವರಿಸಬೇಕೇ?</translation>
 <translation id="550365051221576010">ಪ್ರತಿಯೊಂದನ್ನು ಭರ್ತಿ ಮಾಡಿ</translation>
 <translation id="5506286895894263601">ಪಟ್ಟಿಯಲ್ಲಿ ಯಾವುದೇ ಮಾನ್ಯ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳಿಲ್ಲ.</translation>
+<translation id="5507756662695126555">ನಿರಾಕರಣ-ರಹಿತ</translation>
 <translation id="5508443345185481044">ಕ್ಯಾಮರಾಗಳು ಮತ್ತು ಕ್ಯಾಮ್‌ಕಾರ್ಡರ್‌ಗಳು</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ನಿರ್ವಹಿಸಿದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
@@ -2941,6 +2960,7 @@
 <translation id="5611398002774823980">ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="561165882404867731">Google Translate ಮೂಲಕ ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ಸ್ಥಳವನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
+<translation id="5614190747811328134">ಬಳಕೆದಾರ ಸೂಚನೆ</translation>
 <translation id="5614520971155863709">ಕಾರ್ಡ್ ಗೇಮ್‌ಗಳು</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ನಿಮ್ಮನ್ನು ತೀರಾ ಹೆಚ್ಚು ಬಾರಿ ಮರುನಿರ್ದೇಶಿಸಿದೆ.</translation>
 <translation id="5619721953841297650">ಪ್ರಿಸೆಟ್‌</translation>
@@ -2956,6 +2976,7 @@
 <translation id="5640474731385449758">"<ph name="EXTENSION_NAME" />" ಎಕ್ಸ್‌ಟೆನ್ಶನ್ <ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು <ph name="HANDLER_HOSTNAME" /> ಮೂಲಕ <ph name="ORIGIN" /> ನಲ್ಲಿ ತೆರೆಯಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">ಸ್ಟಿರಿಯೋ ಸಿಸ್ಟಮ್‌ಗಳು ಮತ್ತು ಭಾಗಗಳು</translation>
+<translation id="5642508497713047">CRL ಸೈನರ್</translation>
 <translation id="5644090287519800334">ಅಂಚು 1 ಚಿತ್ರ X ಶಿಫ್ಟ್</translation>
 <translation id="5644128326840674462">ಪ್ರಚಾರದ ಬ್ಯಾನರ್</translation>
 <translation id="5645132789250840550">ಪ್ಲಾಸ್ಟಿಕ್ (ಅರೆ ಹೊಳಪು)</translation>
@@ -3038,6 +3059,7 @@
 <translation id="5783922175933467571"><ph name="TAB_GROUP_DISPLAY_NAME" /> ಲಿಂಕ್‌ನ ಅವಧಿ 48 ಗಂಟೆಗಳಲ್ಲಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="5784606427469807560">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸುವಲ್ಲಿ ಸಮಸ್ಯೆ ಇದೆ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5785756445106461925">ಅಲ್ಲದೇ, ಸುರಕ್ಷಿತವಲ್ಲದ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಈ ಪುಟ ಒಳಗೊಂಡಿದೆ. ಪ್ರಯಾಣದ ಸಂದರ್ಭದಲ್ಲಿ ಈ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಇತರರೂ ವೀಕ್ಷಿಸಬಹುದಾಗಿದೆ ಮತ್ತು ಪುಟದ ನೋಟವೇ ಬದಲಾಗುವಂತೆ ಆಕ್ರಮಣಕಾರರು ಅದನ್ನು ತಿದ್ದಬಹುದಾಗಿದೆ.</translation>
+<translation id="5787146423283493983">ಪ್ರಮುಖ ಒಪ್ಪಂದ</translation>
 <translation id="5793317771769868848">ಈ ಪಾವತಿ ವಿಧಾನವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5794065675298686371">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="5800727402210090597">ಮೊಬೈಲ್ ಫೋನ್ ದುರಸ್ತಿ ಮತ್ತು ಸೇವೆಗಳು</translation>
@@ -3118,6 +3140,7 @@
 <translation id="5924510104057992926">ತೆರೆಯುವ ಮೊದಲು ಪರಿಶೀಲನೆಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5924782825030413055">ಕೊನೆಯ ಸಮ್ಮತಿಯ ಅಪ್‌ಡೇಟ್‌ನ ಮೂಲ:</translation>
 <translation id="5925040402342933574">ಆಪ್ಟಿಕಲ್ ಡಿಸ್ಕ್ (ಅರೆ ಹೊಳಪು)</translation>
+<translation id="5925147183566400388">ದೃಢೀಕರಣ ಅಭ್ಯಾಸ ಹೇಳಿಕೆಯ ಸೂಚಕ</translation>
 <translation id="5926982310317673627">ಜಿಮ್‌ಗಳು ಮತ್ತು ಆರೋಗ್ಯ ಕ್ಲಬ್‌ಗಳು</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">'ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ' ಬಳಸಲು ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -3206,6 +3229,7 @@
 <translation id="605237284704429106">IBAN ಅನ್ನು ಭರ್ತಿಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6053584886670442526">ಸೇವ್ ಮಾಡಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="ACCOUNT" /> ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="6053735090575989697">ನಮ್ಮ ಗೌಪ್ಯತೆ ನೀತಿಯಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು Google ಹೇಗೆ ರಕ್ಷಿಸುತ್ತದೆ ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
+<translation id="6055392876709372977">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-256</translation>
 <translation id="6055888660316801977">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತಿಗೆ ಯಾವುದೇ ರುಜುವಾತು ಶೀಟ್ ಹೊಂದಾಣಿಕೆಯಾಗಿಲ್ಲ</translation>
 <translation id="6055982527635883756">ಎನ್ವಲಪ್ (ಆರ್ಕೈವಲ್)</translation>
 <translation id="6057177372083677067">ಆನ್‌ಲೈನ್ ವೀಡಿಯೊ</translation>
@@ -3261,6 +3285,7 @@
 <translation id="6131824478727057281">ಸ್ಥಳ</translation>
 <translation id="6133320744616005677">ಅನುಮತಿಯನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="6133984428121856852">ಫೈಲ್ ವಿಸ್ತರಣೆಯು ಖಾಲಿಯಾಗಿದೆ ಅಥವಾ ಸರಿಯಾಗಿ ರೂಪಿಸಲಾಗಿಲ್ಲ.</translation>
+<translation id="6138680304137685902">SHA-384 ಜೊತೆಗೆ X9.62 ECDSA ಸಹಿ</translation>
 <translation id="6139975341602920272">17 x 22 ಇಂಚು</translation>
 <translation id="6143097244789397208">ಆಗ್‌ಮೆಂಟೆಡ್ ಮತ್ತು ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ</translation>
 <translation id="614327212146763975">ಮೋಷನ್ ಮತ್ತು ಲೈಟ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -3392,6 +3417,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="6351658970066645919">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ಒಂದೂ ಇಲ್ಲ}=1{1 ಪಾಸ್‌ವರ್ಡ್ (<ph name="DOMAIN_LIST" /> ಗೆ ಸಂಬಂಧಿಸಿದ್ದು, ಅದನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ)}=2{2 ಪಾಸ್‌ವರ್ಡ್‌ಗಳು (<ph name="DOMAIN_LIST" /> ಗೆ ಸಂಬಂಧಿಸಿದ್ದು, ಅವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ)}one{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು (<ph name="DOMAIN_LIST" /> ಗೆ ಸಂಬಂಧಿಸಿದ್ದು, ಅವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ)}other{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು (<ph name="DOMAIN_LIST" /> ಗೆ ಸಂಬಂಧಿಸಿದ್ದು, ಅವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ)}}</translation>
+<translation id="6354918092619878358">SECG ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355392890578844978">ಈ ಬ್ರೌಸರ್ ಅನ್ನು ಕಂಪನಿ ಅಥವಾ ಇತರ ಸಂಸ್ಥೆಯು ನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chromium ನಿಂದ ಹೊರಗೆ ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" ಮತ್ತು "<ph name="GROUP_TITLE_2" />" ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="6358088212770985041">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -3504,6 +3530,7 @@
 <translation id="6502510275417601303">ಹೊಸ ಪಾವತಿ ಸೆಟ್ಟಿಂಗ್ ಕುರಿತಾದ ಅಲರ್ಟ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="6502991525169604759">ನಿಮ್ಮ ಬದಲಾವಣೆಗಳಿಲ್ಲದೆಯೇ</translation>
 <translation id="6505072878288254563">ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="6506374932220792071">SHA-256 ಜೊತೆಗೆ X9.62 ECDSA ಸಹಿ</translation>
 <translation id="6506936645890046535">ಕುಕೀಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="6506959208958864820">ಎನ್ವಲಪ್</translation>
 <translation id="6507117483253822672">ವೆಬ್‌ನಲ್ಲಿ ಎಲ್ಲಿಯಾದರೂ ಹೆಚ್ಚು ವಿಶ್ವಾಸದಿಂದ ಬರೆಯಿರಿ</translation>
@@ -3815,6 +3842,7 @@
 <translation id="7003278537452757231">ಕಂಬಳಿಗಳು ಮತ್ತು ರತ್ನಗಂಬಳಿಗಳು</translation>
 <translation id="7003322000677139268">ವಾಹನದ ಬಿಡಿಭಾಗಗಳು ಮತ್ತು ಆ್ಯಕ್ಸೆಸ್ಸರಿಗಳು</translation>
 <translation id="7004499039102548441">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
+<translation id="7004562620237466965">ರಹಸ್ಯಲಿಪಿ ಮಾತ್ರ</translation>
 <translation id="700483187606163535">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು <ph name="ACCOUNT" /> ಗಾಗಿ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಫಾರ್ಮ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ಭರ್ತಿ ಮಾಡಲು ನೀವು ಅದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು.</translation>
 <translation id="7006930604109697472">ಹೇಗಾದರೂ ಕಳುಹಿಸಿ</translation>
 <translation id="7009364359744329733">ಈ ಕಾರ್ಡ್ ಈಗ ಲಭ್ಯವಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -3857,6 +3885,7 @@
 <translation id="7070144569727915108">ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="70705239631109039">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಪೂರ್ಣ ಸುರಕ್ಷತೆಯನ್ನು ಹೊಂದಿಲ್ಲ</translation>
 <translation id="7075452647191940183">ವಿನಂತಿಯು ತೀರಾ ದೊಡ್ಡದಾಗಿದೆ</translation>
+<translation id="7075513071073410194">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 MD5</translation>
 <translation id="7075896597860500885">ಈ ಸೈಟ್‌ನಿಂದ ಕಾಪಿ ಮಾಡುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4383,6 +4412,7 @@
 <translation id="7862306158978555061">ಸೂಕ್ಷ್ಮವಾದ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7865448901209910068">ಉತ್ತಮ ವೇಗ</translation>
 <translation id="7865482168955081228">ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ ದೋಷದ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
+<translation id="7869655448736341731">ಯಾವುದೇ</translation>
 <translation id="7870207318911766769">ಈ ಆಯ್ಕೆಗಳನ್ನು ನೀಡಲು ಚೆಕ್‌ಔಟ್ ಪುಟದಿಂದ ಕಂಟೆಂಟ್‌ ಅನ್ನು Google ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="7870281855125116701">ರಿಯಾಯಿತಿ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="7871445724586827387">ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -4451,6 +4481,7 @@
 <translation id="7967636097426665267">ಸಂವಹನಗಳಉಪಕರಣ</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" ಮೌಲ್ಯವು ಅಮಾನ್ಯವಾದ ಹೆಕ್ಸ್ ಬಣ್ಣವಾಗಿದೆ.</translation>
 <translation id="7968982339740310781">ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="7972714317346275248">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸಲು 'ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ' ವಿತರಕರ ಪಟ್ಟಿ ಲಭ್ಯವಿದೆ. ಕೀಬೋರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="7976214039405368314">ಅತೀ ಹೆಚ್ಚು ವಿನಂತಿಗಳು</translation>
 <translation id="7977538094055660992">ಔಟ್‌ಪುಟ್ ಸಾಧನ</translation>

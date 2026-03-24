@@ -2834,7 +2834,6 @@ Esta política solo se puede establecer como política de usuarios basada en la 
 <translation id="2901969573658712576">Dar prioridad a los algoritmos de cifrado que cumplan los requisitos de CNSA 1.0 y 2.0</translation>
 <translation id="2905984450136807296">Duración de la caché de datos de autenticación</translation>
 <translation id="2906874737073861391">Lista de extensiones AppPack</translation>
-<translation id="2908277604670530363">Número máximo de conexiones simultáneas con el servidor proxy</translation>
 <translation id="2912366658685903301">Configurar el color del tema del navegador</translation>
 <translation id="2914283793640833265">Impedir que se habilite la continuación de tareas de Mi teléfono</translation>
 <translation id="2915787312243722351">Esta política controla la opción "Usar el menú de aplicaciones/la tecla de búsqueda para cambiar el comportamiento de las teclas de función". Esta opción permite que los usuarios mantengan pulsada la tecla del menú de aplicaciones para cambiar entre las teclas de función y las teclas del sistema de la fila superior.

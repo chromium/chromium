@@ -699,6 +699,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3985215325736559418">Vols tornar a baixar <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copia l'enllaç</translation>
 <translation id="3994236846568425219">Activa el tema fosc quan el teu dispositiu el tingui activat</translation>
+<translation id="399788104667917863">Fixa a la barra d'eines</translation>
 <translation id="4000212216660919741">Pàgina d'inici sense connexió</translation>
 <translation id="4000670338830950598">Personalitza i controla Google Chrome amb un element marcat</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 contrasenya en perill al teu Compte de Google}other{# contrasenyes en perill al teu Compte de Google}}</translation>

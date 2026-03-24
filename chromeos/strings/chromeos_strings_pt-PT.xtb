@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Introduza um comando</translation>
 <translation id="115705039208660697">ananases</translation>
 <translation id="1164939766849482256">Proteção de ecrã Do amanhecer ao anoitecer</translation>
-<translation id="1167755866710282443">Abra o menu para personalizar as teclas. Arraste o menu para o mover.</translation>
 <translation id="1171349345463658120">lagoa arenosa</translation>
 <translation id="1174073918202301297">Atalho adicionado</translation>
 <translation id="11743817593307477">Use as teclas de seta para mover este controlo para a ação do jogo pretendida. Use a tecla Enter para posicionar o controlo. Use a tecla Esc para cancelar.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Teclado direcional do mapeamento de teclas</translation>
 <translation id="3217462202230355157">Certifique-se de que o microfone está ligado ou experimente reiniciar o <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">A procurar leitores…</translation>
-<translation id="3226657629376379887">Menu de ações do esquema</translation>
 <translation id="3227186760713762082">Divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">arte digital</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
-<translation id="7184043045742675738">Clique numa tecla para personalizar o botão. Reposicione a tecla com o rato ou as teclas de seta.</translation>
 <translation id="7187669805838282391">na quarta-feira</translation>
 <translation id="7205318498545665455">Escolha o seu microfone</translation>
 <translation id="7210635925306941239">ciano</translation>
@@ -1497,7 +1494,6 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7590883480672980941">Definições de introdução</translation>
 <translation id="7595982850646262331">Falta(m) <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">O administrador de <ph name="MANAGER" /> definiu quando é possível usar este dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="7613724632293948900">Reposicione com o rato ou as teclas de seta.</translation>
 <translation id="7618216277886673749">Selecionar <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7620771111601174153">Saber mais no Centro de Ajuda</translation>

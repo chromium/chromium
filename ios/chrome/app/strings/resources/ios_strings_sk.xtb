@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2360196772093551345">Vyžiadať stránky pre mobil</translation>
 <translation id="2362083820973145409">Prihlásili ste sa ako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvorí nastavenia.</translation>
+<translation id="2367025302166767427">Vaše údaje sa nepodarilo vyplniť</translation>
 <translation id="2371084566192454134">Karty a skupiny kariet</translation>
 <translation id="2371303771137626249">Nová</translation>
 <translation id="2381405137052800939">Základy</translation>
@@ -1345,6 +1346,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5819208479324046259">Spravuje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synchronizuje sa…</translation>
+<translation id="583281660410589416">Neznáme</translation>
 <translation id="5838430324585198889">Získajte v iPade ďalšie funkcie pomocou aplikácií Google</translation>
 <translation id="583923961930319521">Používajte heslá vo všetkých svojich zariadeniach</translation>
 <translation id="5843013299019689749">Farba čierneho pozadia</translation>

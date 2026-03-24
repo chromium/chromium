@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{एक न वाचलेली सूचना}other{# न वाचलेल्या सूचना}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{गुप्त मोडमध्ये पुढील एक्स्टेंशन सुरू करा:}other{गुप्त मोडमध्ये पुढील एक्स्टेंशन सुरू करा:}}</translation>
+<translation id="4230098358142093034">होम</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 महिन्यापूर्वी}other{# महिन्यांपूर्वी}}</translation>
 <translation id="4277033906326892359"><ph name="COLUMN_NAME" /> हा स्तंभ चढत्या क्रमाने लावला आहे</translation>
 <translation id="4289300219472526559">बोलणे सुरू करा</translation>

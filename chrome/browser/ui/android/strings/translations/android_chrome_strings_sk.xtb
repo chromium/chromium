@@ -699,6 +699,7 @@
 <translation id="3985215325736559418">Chcete znova stiahnuť súbor <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopírovať odkaz</translation>
 <translation id="3994236846568425219">Zapnúť tmavý motív, keď je v zariadení zapnutý tmavý motív</translation>
+<translation id="399788104667917863">Pripnúť na panel s nástrojmi</translation>
 <translation id="4000212216660919741">Offline domov</translation>
 <translation id="4000670338830950598">Prispôsobenie a ovládanie prehliadača Google Chrome so zvýraznenou položkou</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 odhalené heslo vo vašom účte Google}few{# odhalené heslá vo vašom účte Google}many{# compromised passwords in your Google Account}other{# odhalených hesiel vo vašom účte Google}}</translation>

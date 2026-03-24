@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1740650426894359238">Usar outro perfil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
+<translation id="1742773766788162541">Digitalizar cartão e preencher automaticamente</translation>
 <translation id="1743244221910283364">Descartar mudanças</translation>
 <translation id="1748975028205587434">Selecionar o arquivo</translation>
 <translation id="1749733017156547309">É obrigatório informar uma senha</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar um site móvel</translation>
 <translation id="2362083820973145409">Login feito como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre as configurações.</translation>
+<translation id="2367025302166767427">Erro ao preencher suas informações</translation>
 <translation id="2371084566192454134">Guias e grupos de guias</translation>
 <translation id="2371303771137626249">Novo</translation>
 <translation id="2381405137052800939">Conceitos básicos</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gerenciado pela sua organização.</translation>
 <translation id="3580448612293054698">Atualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
+<translation id="3583726884554296148">Salve seu cartão na sua Conta do Google para que ele seja preenchido automaticamente nesta e em compras futuras feitas no Chrome</translation>
 <translation id="3587482841069643663">Todas</translation>
 <translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
 <translation id="3588820906588687999">Abrir em uma nova guia</translation>
@@ -1346,6 +1349,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
+<translation id="583281660410589416">Desconhecido</translation>
 <translation id="5838430324585198889">Aproveite mais recursos no seu iPad com os apps do Google</translation>
 <translation id="583923961930319521">Usar senhas em todos seus dispositivos</translation>
 <translation id="5843013299019689749">Cor de fundo preta</translation>
@@ -1556,6 +1560,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6532106788206463496">Salvar alterações</translation>
 <translation id="6536759809440150308">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Finalize compras mais rápido com o preenchimento automático em todos os seus dispositivos</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="6550891580932862748">Não protege você contra sites, downloads e extensões perigosos. Suas configurações da Navegação Segura em outros produtos do Google não serão afetadas.</translation>
 <translation id="6556501700899673703">Lexend</translation>

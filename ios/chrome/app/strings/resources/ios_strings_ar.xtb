@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2360196772093551345">طلب موقع إلكتروني متوافق مع الأجهزة الجوَّالة</translation>
 <translation id="2362083820973145409">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني للمستخدم هو <ph name="USER_EMAIL" />. يفتح هذا الزر صفحة الإعدادات.</translation>
+<translation id="2367025302166767427">حدثت مشكلة أثناء ملء معلوماتك</translation>
 <translation id="2371084566192454134">علامات التبويب ومجموعات علامات التبويب</translation>
 <translation id="2371303771137626249">جديد</translation>
 <translation id="2381405137052800939">الإعدادات الأساسية</translation>
@@ -1343,6 +1344,7 @@
 <translation id="5819208479324046259">تتم إدارة المتصفِّح من خلال <ph name="MANAGER" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">جارٍ المزامنة…</translation>
+<translation id="583281660410589416">غير معروف</translation>
 <translation id="5838430324585198889">‏ميزات إضافية على جهاز iPad تتيحها لك تطبيقات Google</translation>
 <translation id="583923961930319521">استخدام كلمات المرور على جميع أجهزتك</translation>
 <translation id="5843013299019689749">لون خلفية أسود</translation>

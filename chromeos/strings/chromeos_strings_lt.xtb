@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Įveskite užklausą</translation>
 <translation id="115705039208660697">ananasai</translation>
 <translation id="1164939766849482256">Nuo aušros iki sutemų ekrano užsklanda</translation>
-<translation id="1167755866710282443">Atidarykite meniu, kad galėtumėte tinkinti raktus. Vilkite meniu, jei norite perkelti.</translation>
 <translation id="1171349345463658120">smėlio lagūna</translation>
 <translation id="1174073918202301297">Spartusis klavišas pridėtas</translation>
 <translation id="11743817593307477">Rodyklių klavišais perkelkite šį valdiklį į norimą žaidimo veiksmą. Norėdami padėti valdiklį, naudokite klavišą „Enter“. Jei norite atšaukti, naudokite klavišą „Escape“.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Klavišų schemų valdymo pultas</translation>
 <translation id="3217462202230355157">Įsitikinkite, kad mikrofonas prijungtas, arba bandykite iš naujo paleisti „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
-<translation id="3226657629376379887">Išdėstymo veiksmų meniu</translation>
 <translation id="3227186760713762082">Reikia padalyti kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">skaitmeninis menas</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7180865173735832675">Tinkinti</translation>
-<translation id="7184043045742675738">Spustelėkite bet kurį klavišą, jei norite tinkinti mygtuką. Pakeiskite klavišo padėtį naudodami pelės arba rodyklių klavišus.</translation>
 <translation id="7187669805838282391">trečiadienį</translation>
 <translation id="7205318498545665455">Pasirinkite mikrofoną</translation>
 <translation id="7210635925306941239">žydros spalvos</translation>
@@ -1497,7 +1494,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7590883480672980941">Įvesties nustatymai</translation>
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> administratorius apribojo šio „<ph name="DEVICE_TYPE" />“ naudojimo laiką.</translation>
-<translation id="7613724632293948900">Pakeiskite padėtį naudodami pelės arba rodyklių klavišus.</translation>
 <translation id="7618216277886673749">Pasirinkite <ph name="LANGUAGE_NAME" /> k.</translation>
 <translation id="7618774594543487847">Neutrali</translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>

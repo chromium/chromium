@@ -2828,7 +2828,6 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="2901969573658712576">Chiffren bevorzugen, die die Anforderungen von CNSA 1.0 und 2.0 erfüllen</translation>
 <translation id="2905984450136807296">Cachelebensdauer für Authentifizierungsdaten</translation>
 <translation id="2906874737073861391">Liste der AppPack-Erweiterungen</translation>
-<translation id="2908277604670530363">Maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver</translation>
 <translation id="2912366658685903301">Farbe des Browserdesigns ändern</translation>
 <translation id="2914283793640833265">Aktivieren der Aufgabenfortsetzung für den Phone Hub nicht zulassen</translation>
 <translation id="2915787312243722351">Mit dieser Richtlinie wird die Einstellung „Mit der Launcher-Taste/Suchtaste kannst du das Verhalten der Funktionstasten ändern“ gesteuert. Die Einstellung ermöglicht Nutzern, zwischen Funktionstasten und Tasten der obersten Reihe zu wechseln, indem sie die Launcher-Taste gedrückt halten.
@@ -4083,7 +4082,7 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 <translation id="3760148113224469113">Bei Aufforderungen externer Protokolle immer eine Bestätigung des Nutzers erfordern</translation>
 <translation id="3760231600118073732">Aktuelle Sitzung sperren.</translation>
 <translation id="3761222804122755011">WebRTC verwendet nur die Schnittstelle, die mit dem öffentlichen Internet verbunden ist, kann aber über private IP-Adressen eine Verbindung herstellen.</translation>
-<translation id="3762520180381586267">Wenn die Richtlinie aktiviert ist, löst <ph name="PRODUCT_OS_NAME" /> einen Neustart aus, wenn der Nutzer das Gerät herunterfährt. <ph name="PRODUCT_OS_NAME" /> ersetzt alle Schaltflächen zum Herunterfahren in der Benutzeroberfläche durch Schaltflächen zum Neustarten. Wenn der Nutzer das Gerät über die Ein-/Aus-Taste herunterfährt, wird es nicht automatisch neu gestartet, auch wenn die Richtlinie aktiviert ist.
+<translation id="3762520180381586267">Wenn die Richtlinie aktiviert ist, löst <ph name="PRODUCT_OS_NAME" /> einen Neustart aus, wenn der Nutzer das Gerät herunterfährt. <ph name="PRODUCT_OS_NAME" /> ersetzt alle Buttons zum Herunterfahren in der Benutzeroberfläche durch Buttons zum Neustarten. Wenn der Nutzer das Gerät über die Ein-/Aus-Taste herunterfährt, wird es nicht automatisch neu gestartet, auch wenn die Richtlinie aktiviert ist.
 
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> dem Nutzer, das Gerät herunterzufahren.</translation>
 <translation id="376375951585423504">Persistentes Kontingent deaktivieren.</translation>

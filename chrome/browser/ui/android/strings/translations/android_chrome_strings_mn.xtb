@@ -699,6 +699,7 @@
 <translation id="3985215325736559418">Та <ph name="FILE_NAME" />-г дахиж татах уу?</translation>
 <translation id="3987993985790029246">Холбоосыг хуулах</translation>
 <translation id="3994236846568425219">Таны төхөөрөмжийн бараан загвар асаалттай үед бараан загварыг асаах</translation>
+<translation id="399788104667917863">Самбарт бэхлэх</translation>
 <translation id="4000212216660919741">Офлайн нүүр</translation>
 <translation id="4000670338830950598">Тодруулсан зүйлээр Google Chrome-г тусгайлан өөрчилж, хянана уу</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Таны Google Бүртгэлээс 1 нууц үг алдагдсан байна}other{Таны Google Бүртгэлээс # нууц үг алдагдсан байна}}</translation>

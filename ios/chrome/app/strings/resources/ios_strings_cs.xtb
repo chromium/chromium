@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2360196772093551345">Vyžádat web pro mobily</translation>
 <translation id="2362083820973145409">Jste přihlášeni jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" /> Otevře nastavení.</translation>
+<translation id="2367025302166767427">Při vyplňování údajů došlo k potížím</translation>
 <translation id="2371084566192454134">Karty a skupiny karet</translation>
 <translation id="2371303771137626249">Nové</translation>
 <translation id="2381405137052800939">Základní nastavení</translation>
@@ -1345,6 +1346,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5819208479324046259">Spravováno společností <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Probíhá synchronizace…</translation>
+<translation id="583281660410589416">Neznámé</translation>
 <translation id="5838430324585198889">Využívejte na iPadu další skvělé funkce aplikací Google</translation>
 <translation id="583923961930319521">Používejte hesla na všech svých zařízeních</translation>
 <translation id="5843013299019689749">Černá barva pozadí</translation>

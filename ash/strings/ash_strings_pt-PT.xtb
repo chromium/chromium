@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">Partilhados consigo</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> com botão Remover</translation>
 <translation id="1062407476771304334">Substituir</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Faça uma cópia de segurança para o Google Drive. Restaure facilmente os seus dados ou troque de dispositivo em qualquer altura. A cópia de segurança inclui os dados de apps.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Os dados de apps podem ser quaisquer dados que uma app guardou (com base nas definições do programador), incluindo dados como contactos, mensagens e fotos.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Os dados da cópia de segurança não são contabilizados para a sua quota do armazenamento do Drive.<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />Pode desativar este serviço nas Definições.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">Substitua ou recarregue a bateria</translation>
 <translation id="1081015718268701546">De momento, as apps para Linux não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="108486256082349153">Telemóvel: <ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3470502288861289375">A copiar...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e, em seguida, <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Espaço</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão da localização está ativada, são usadas informações sobre sinais sem fios, como pontos de acesso Wi‑Fi e torres de redes móveis, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para calcular uma localização do dispositivo mais precisa, que os serviços e as apps Android usam para oferecer funcionalidades baseadas na localização. Para isso, a Google recolhe periodicamente informações sobre os sensores do dispositivo e os sinais sem fios próximos de si para contribuir para a localização colaborativa de sinais sem fios.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações sem identificar o utilizador para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Pode desativar a Precisão da localização em qualquer altura nas definições de localização do seu dispositivo, em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização &gt; Definições de localização avançadas. Se a Precisão da localização estiver desativada, não são recolhidos dados da Precisão da localização. Para serviços e apps Android, só é usado o endereço IP, se disponível, para determinar a localização do seu dispositivo, o que pode afetar a disponibilidade e a precisão das localizações de serviços e apps Android, como o Google Maps.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saiba mais sobre a Precisão da localização<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Ocultação automática da prateleira</translation>
 <translation id="3496797737329654668">Vamos jogar</translation>
@@ -877,6 +886,9 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
 <translation id="3743775386021959186">O Modo sem distrações está ativado, falta(m) <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Ocultar sugestão de meteorologia</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Os dados de apps podem ser quaisquer dados que uma app guardou (com base nas definições do programador), incluindo dados como contactos, mensagens e fotos.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Os dados da cópia de segurança não são contabilizados para a quota do armazenamento do Drive da criança.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Pode desativar este serviço nas Definições.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">A transmitir o ecrã</translation>
 <translation id="3765841382945324995">O atalho para <ph name="SIX_PACK_KEY_NAME" /> foi atualizado de <ph name="NEW_SHORTCUT" /> para <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Editado hoje</translation>
@@ -1343,6 +1355,10 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Definições de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Estas são informações gerais sobre o seu dispositivo e da forma como é usado (por exemplo, o nível da bateria, a atividade do sistema e de apps, e os erros). Os dados são usados para melhorar o Android e algumas informações agregadas também ajudam as apps e os parceiros Google, como os programadores Android, a melhorar os respetivos produtos e apps.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />O proprietário pode controlar esta funcionalidade em Definições &gt; Avançadas &gt; Enviar automaticamente dados de diagnóstico e de utilização para a Google.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. Pode ver os seus dados, eliminá-los e alterar as definições da conta em account.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">Estado da bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Número de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Guardar espaço de trabalho como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
@@ -1601,6 +1617,10 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5916646100036936191">Nova notificação, <ph name="NOTIFICATION_COUNT" /> no total</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5920710855273935292">O som do microfone está desativado.</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão da localização está ativada, são usadas informações sobre sinais sem fios, como pontos de acesso Wi‑Fi e torres de redes móveis, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para calcular uma localização do dispositivo mais precisa, que os serviços e as apps Android usam para oferecer funcionalidades baseadas na localização. Para isso, a Google recolhe periodicamente informações sobre os sensores do dispositivo e os sinais sem fios próximos deste dispositivo para contribuir para a localização colaborativa de sinais sem fios.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações recolhidas deste dispositivo para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores. Estas informações não são usadas para identificar nenhum indivíduo.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Pode desativar a Precisão da localização em qualquer altura nas definições de localização deste dispositivo, em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização &gt; Definições de localização avançadas. Se a Precisão da localização estiver desativada, não são recolhidos dados da Precisão da localização. Para serviços e apps Android, só é usado o endereço IP, se disponível, para determinar a localização deste dispositivo, o que pode afetar a disponibilidade e a precisão das localizações de serviços e apps Android, como o Google Maps.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saiba mais sobre a Precisão da localização<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">Atualização exigida por <ph name="MANAGER" /></translation>
 <translation id="5939518447894949180">Repor</translation>
 <translation id="5946788582095584774">A funcionalidade <ph name="FEATURE_NAME" /> está ativada.</translation>
@@ -1647,6 +1667,10 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6045629311476491587">Usado por <ph name="APP_COUNT" /> apps</translation>
 <translation id="6045998054441862242">Ativar o modo de alto contraste</translation>
 <translation id="6047696787498798094">A partilha do ecrã será interrompida quando mudar para outro utilizador. Quer continuar?</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />Estas são informações gerais acerca deste dispositivo e da forma como o usa (por exemplo, o nível da bateria, a atividade do sistema e de apps e erros). Os dados são usados para melhorar o Android e algumas informações agregadas também ajudam as apps e os parceiros Google, como os programadores Android, a melhorar os respetivos produtos e apps.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />O proprietário pode controlar esta funcionalidade em Definições &gt; Avançadas &gt; Enviar automaticamente dados de diagnóstico e de utilização para a Google.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. Saiba mais acerca destas definições e como as pode ajustar em families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">Clicar com o botão direito num link</translation>
 <translation id="6054305421211936131">Iniciar sessão com cartão inteligente</translation>
 <translation id="6059276912018042191">Separadores do Chrome recentes</translation>
@@ -1755,6 +1779,8 @@ Nenhum dispositivo ligado.</translation>
 <translation id="639644700271529076">CAPS LOCK está desativado</translation>
 <translation id="6406458002328242616">Edite o temporizador. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />O serviço de localização da Google usa fontes como redes Wi-Fi, redes móveis e sensores para ajudar a ter uma estimativa da localização do dispositivo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pode desativar a Localização desativando a definição de localização principal no seu dispositivo. Também pode desativar a utilização das redes Wi-Fi, das redes móveis e dos sensores para fins de localização nas definições de localização.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">Selecione a versão de <ph name="VM_NAME" /> a instalar.</translation>
 <translation id="641469293210305670">Instale atualizações e apps</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
@@ -2420,6 +2446,8 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8481187309597259238">Confirmar autorização USB</translation>
 <translation id="8487660088084188539">Quando ativa estas funcionalidades, o texto introduzido, o conteúdo do documento e o URL da página Web podem ser enviados para os servidores da Google. Estas informações são usadas para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="8487699605742506766">Zona Wi-Fi</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />O serviço de localização da Google usa fontes como redes Wi-Fi, redes móveis e sensores para ajudar a ter uma estimativa da localização do dispositivo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Pode desativar a Localização desativando a definição de localização principal neste dispositivo. Também pode desativar a utilização das redes Wi-Fi, das redes móveis e dos sensores para fins de localização nas definições de localização.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">As seguintes aplicações de quiosque "<ph name="UPDATED_APPS" />" foram atualizadas. Reinicie o dispositivo para concluir o processo de atualização.</translation>
 <translation id="8491237443345908933">Abrir o link num novo separador</translation>
 <translation id="8492573885090281069">O <ph name="DISPLAY_NAME" /> não suporta a resolução <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>

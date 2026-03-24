@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">כאן מקלידים הנחיה</translation>
 <translation id="115705039208660697">אננסים</translation>
 <translation id="1164939766849482256">שומר המסך: מעלות השחר עד לרדת החושך</translation>
-<translation id="1167755866710282443">פתיחת התפריט להתאמה אישית של המפתחות. יש לגרור את התפריט כדי להזיז אותו.</translation>
 <translation id="1171349345463658120">לגונה חולית</translation>
 <translation id="1174073918202301297">קיצור הדרך התווסף</translation>
 <translation id="11743817593307477">‏אפשר להשתמש במקשי החיצים כדי להעביר את הרכיב האינטראקטיבי הזה לפעולת המשחק הרצויה. מציבים את הרכיב באמצעות מקש Enter. כדי לבטל, אפשר להשתמש במקש Escape.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">‏כפתורי החיצים (D-pad) למיפוי מקשים</translation>
 <translation id="3217462202230355157">צריך לוודא שהמיקרופון מחובר או להפעיל מחדש את <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">מתבצע חיפוש של סורקים</translation>
-<translation id="3226657629376379887">תפריט הפעולות בפריסה</translation>
 <translation id="3227186760713762082">צריך לחלק את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">אומנות דיגיטלית</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7180865173735832675">התאמה אישית</translation>
-<translation id="7184043045742675738">כדי להתאים אישית את הכפתור, לוחצים על מקש כלשהו. משנים את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7187669805838282391">ביום רביעי</translation>
 <translation id="7205318498545665455">בחירת המיקרופון</translation>
 <translation id="7210635925306941239">ציאן</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה.</translation>
-<translation id="7613724632293948900">שינוי המיקום באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7618216277886673749">בחירת <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ניטרלי</translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>

@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Enter a prompt</translation>
 <translation id="115705039208660697">pineapples</translation>
 <translation id="1164939766849482256">Dawn to dark screen saver</translation>
-<translation id="1167755866710282443">Open menu to customise keys. Drag menu to move.</translation>
 <translation id="1171349345463658120">sandy lagoon</translation>
 <translation id="1174073918202301297">Shortcut added</translation>
 <translation id="11743817593307477">Use arrow keys to move this control to the game action that you want. Use the enter key to place the control. Use the escape key to cancel.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Keymapping D-pad</translation>
 <translation id="3217462202230355157">Make sure that your mic is connected or try restarting your <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Looking for scanners</translation>
-<translation id="3226657629376379887">Layout actions menu</translation>
 <translation id="3227186760713762082">Divide the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">digital art</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7180865173735832675">Customise</translation>
-<translation id="7184043045742675738">Click on any key to customise your button. Reposition key with mouse or arrow keys.</translation>
 <translation id="7187669805838282391">on Wednesday</translation>
 <translation id="7205318498545665455">Choose your mic</translation>
 <translation id="7210635925306941239">cyan</translation>
@@ -1497,7 +1494,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> left</translation>
 <translation id="7600430297804876776">The <ph name="MANAGER" /> administrator has set when this <ph name="DEVICE_TYPE" /> can be used.</translation>
-<translation id="7613724632293948900">Reposition with mouse or arrow keys.</translation>
 <translation id="7618216277886673749">Select <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Find out more in the Help Centre</translation>

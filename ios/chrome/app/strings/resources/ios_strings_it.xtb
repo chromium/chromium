@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360196772093551345">Richiedi sito per dispositivi mobili</translation>
 <translation id="2362083820973145409">Accesso eseguito come <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Consente di aprire le impostazioni.</translation>
+<translation id="2367025302166767427">Si è verificato un problema durante l'inserimento delle informazioni</translation>
 <translation id="2371084566192454134">Schede e gruppi di schede</translation>
 <translation id="2371303771137626249">Nuovo</translation>
 <translation id="2381405137052800939">Opzioni di base</translation>
@@ -1345,6 +1346,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5819208479324046259">Gestito da <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizzazione in corso…</translation>
+<translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5838430324585198889">Sblocca più funzionalità per il tuo iPad con le app Google</translation>
 <translation id="583923961930319521">Usa le password su tutti i tuoi dispositivi</translation>
 <translation id="5843013299019689749">Colore sfondo nero</translation>

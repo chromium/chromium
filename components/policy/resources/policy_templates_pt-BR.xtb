@@ -1101,20 +1101,6 @@ política foi a 121. O suporte foi removido na versão 122.</translation>
 <translation id="1736032188431871940">Bloquear o acesso a uma lista de URLs no modo de navegação anônima.</translation>
 <translation id="1736269219679256369">Permitir a continuação na página de aviso SSL</translation>
 <translation id="1736990730683753958">Uma página do histórico do Chrome organizada em grupos não ficará visível em chrome://history/grouped.</translation>
-<translation id="1737524389648824113">Se a política for definida, o número máximo de conexões simultâneas ao servidor proxy será especificado.
-
-Se a política não for definida, será usado o valor padrão de 32.
-
-Alguns apps da web são conhecidos por consumir muitas conexões com GETs irresponsivos, então definir um valor inferior a 32 pode gerar interrupções na rede do navegador caso haja muitos apps da web com conexões pendentes abertas.
-Alguns servidores proxy não podem administrar um grande número de conexões simultâneas por cliente, isso pode ser resolvido definindo um número menor para esta política.
-
-O valor deve ser igual ou maior que 6.
-Se você definir um número abaixo desse limite, o valor 6 será usado.
-A definição de valores abaixo do padrão (32) fica por sua conta e risco.
-
-O valor deve ser igual ou inferior a 256 (99 no <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
-Se você definir um valor acima desse limite, será usado 256 (99 no <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
-Aumentar acima do padrão (32) fica por sua conta e risco.</translation>
 <translation id="1740724790865999129">Se a política for definida como uma lista de tipos de dispositivos, os dados de depuração de baixo nível dos tipos mencionados poderão ser incluídos no feedback do usuário.
 
       A entrada especial "todos" inclui todos os tipos de dispositivos, inclusive os que serão adicionados no futuro.
@@ -2956,7 +2942,6 @@ Esta política só pode ser definida como uma política do usuário em nuvem.</t
 <translation id="2901969573658712576">Preferir criptografias que atendam aos requisitos do CNSA 1.0 e 2.0</translation>
 <translation id="2905984450136807296">Ciclo de vida do cache de dados de autenticação</translation>
 <translation id="2906874737073861391">Lista de extensões AppPack</translation>
-<translation id="2908277604670530363">Número máximo de conexões simultâneas ao servidor proxy</translation>
 <translation id="2912366658685903301">Configurar a cor do tema do navegador</translation>
 <translation id="2914283793640833265">Não permitir que a continuação de tarefas do recurso "Seu smartphone" seja ativada</translation>
 <translation id="2915787312243722351">Esta política controla a configuração "Usar a tecla de acesso rápido/pesquisa para mudar o comportamento das teclas de função". Essa configuração permite que os usuários usem a tecla de acesso rápido para alternar entre as teclas de função e as da linha de cima do sistema.

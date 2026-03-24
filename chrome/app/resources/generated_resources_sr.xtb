@@ -60,7 +60,6 @@
 <translation id="1035875743511577452">Кликните на Промени тему да бисте истражили теме инспирисане извођачима, природом и друго</translation>
 <translation id="1036348656032585052">Искључи</translation>
 <translation id="1036511912703768636">Приступ било ком од ових USB уређаја</translation>
-<translation id="1038168778161626396">Само шифруј</translation>
 <translation id="1038462104119736705">За Linux се препоручује најмање <ph name="INSTALL_SIZE" /> простора. Да бисте ослободили простор, избришите датотеке са уређаја.</translation>
 <translation id="1038643060055067718">Линије:</translation>
 <translation id="1039337018183941703">Неважећа или оштећена датотека</translation>
@@ -116,7 +115,6 @@
 <translation id="1070357312245925724">Пречица за навигацију</translation>
 <translation id="1070705170564860382">Отвара се у алтернативном прегледачу за <ph name="COUNTDOWN_SECONDS" /> сек</translation>
 <translation id="1071661533099313342">Раздвоји приказе</translation>
-<translation id="1071917609930274619">Шифровање података</translation>
 <translation id="1072700771426194907">Откривен је USB уређај</translation>
 <translation id="107278043869924952">Користите PIN поред лозинке</translation>
 <translation id="1075920807995555452">Покрећите алатке, уређиваче и IDE-ове у окружењу којим управља ваше предузеће на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -219,12 +217,12 @@
 <translation id="114036956334641753">Звук и титл</translation>
 <translation id="1142002900084379065">Недавне слике</translation>
 <translation id="1142713751288681188">Тип папира</translation>
-<translation id="1143142264369994168">Потписник сертификата</translation>
 <translation id="1145593918056169051">Штампач је престао да ради</translation>
 <translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Додаци}=1{Додаци ({SELECTED_ITEMS})}one{Додаци ({SELECTED_ITEMS})}few{Додаци ({SELECTED_ITEMS})}other{Додаци ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Показивач главе</translation>
 <translation id="114721135501989771">Паметне Google функције</translation>
 <translation id="1147322039136785890">Сада је на реду <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="1147867844630510586">Пријавите се на <ph name="IDP_NAME" /></translation>
 <translation id="1148464196693569530">Дозволи корисничке скрипте</translation>
 <translation id="1148624853678088576">Спремни сте!</translation>
 <translation id="1148669835763563782">Добијате најновије ажурирање софтвера ради побољшане безбедности и најновијих функција Chromebook-а. Ово ажурирање обухвата побољшани доживљај подешавања и помаже вам да неометано започнете коришћење Chromebook-а.</translation>
@@ -340,7 +338,6 @@
 <translation id="1218015446623563536">Избришите Linux</translation>
 <translation id="1219219114431716687">Воћни тарт</translation>
 <translation id="122082903575839559">Алгоритам потписа сертификата</translation>
-<translation id="1221024147024329929">PKCS #1 MD2 са RSA шифровањем</translation>
 <translation id="1221266967850882682">Резиме добродошлице</translation>
 <translation id="1221825588892235038">Само изабрани садржај</translation>
 <translation id="1222835797152767346">Подесите PIN да бисте олакшали пријављивање</translation>
@@ -946,14 +943,12 @@
 <translation id="1637765355341780467">Дошло је до проблема при отварању профила. Неке функције ће можда бити недоступне.</translation>
 <translation id="1639239467298939599">Учитава се</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> још увек не ради у Linux апликацијама</translation>
-<translation id="1640283014264083726">PKCS #1 MD4 са RSA шифровањем</translation>
 <translation id="1641113438599504367">Безбедно прегледање</translation>
 <translation id="1641496881756082050">Још радњи за <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Није увезена још 1 лозинка јер је неправилно форматирана}one{Није увезена још {NUM_PASSWORDS} лозинка јер је неправилно форматирана}few{Нису увезене још {NUM_PASSWORDS} лозинке јер су неправилно форматиране}other{Није увезено још {NUM_PASSWORDS} лозинки јер су неправилно форматиране}}</translation>
 <translation id="1642299742557467312">Овај фајл може да нашкоди уређају</translation>
 <translation id="1642492862748815878">Повезани сте са уређајем <ph name="DEVICE" /> и још <ph name="NUMBER_OF_DEVICES" /> Bluetooth уређаја</translation>
 <translation id="1642494467033190216">Да бисте омогућили друге функције за отклањање грешака, морате да уклоните rootfs заштиту и да рестартујете уређај.</translation>
-<translation id="1643072738649235303">Потпис X9.62 ECDSA путем SHA-1</translation>
 <translation id="1643921258693943800">Да бисте користили Дељење у близини, укључите Bluetooth и WiFi</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1644852018355792105">Унесите Bluetooth шифру за уређај <ph name="DEVICE" /></translation>
@@ -1003,6 +998,7 @@
 <translation id="1674073353928166410">Отвори све (<ph name="URL_COUNT" />) у прозору без архивирања</translation>
 <translation id="1674142805528405174">Google менаџер лозинки може да ажурира налог јаком лозинком која је сачувана за вас на налогу <ph name="EMAIL" />.</translation>
 <translation id="1674945585974615438">Аутоматски онемогући оптимизаторе JavaScript-а на непознатим сајтовима</translation>
+<translation id="1675964862374196038">Региструјте се на <ph name="IDP_NAME" /></translation>
 <translation id="1677306805708094828">Нисмо успели да додамо: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> је преостало</translation>
 <translation id="1678849866171627536">Скенирање није успело. Овај фајл је можда вирус или малвер.</translation>
@@ -1114,7 +1110,6 @@
 <translation id="1755601632425835748">Величина текста</translation>
 <translation id="1756963401828337401">Одаберите екран за снимање</translation>
 <translation id="1757132445735080748">Да бисте завршили подешавање Linux-а, ажурирајте Chrome OS Flex и пробајте поново.</translation>
-<translation id="1757301747492736405">Чека се деинсталирање</translation>
 <translation id="175772926354468439">Омогући тему</translation>
 <translation id="1757786065507923842">Захтев за дозволу родитеља није успео.</translation>
 <translation id="17584710573359123">Прикажи у Chrome веб-продавници</translation>
@@ -1359,7 +1354,6 @@
 <translation id="1922496389170590548">Школски налог детета</translation>
 <translation id="1923468477587371721">Google сајтови попут Gmail-а, Диска и YouTube-а користе језик Google налога ако нисте мењали језике за појединачне производе</translation>
 <translation id="1923539912171292317">Аутоматски кликови</translation>
-<translation id="1924637506777872526">Аутоматски прави групе картица на основу отворених картица</translation>
 <translation id="192494336144674234">Отвори помоћу</translation>
 <translation id="1925017091976104802">Притисните <ph name="MODIFIER_KEY_DESCRIPTION" /> да бисте налепили</translation>
 <translation id="1925021887439448749">Унесите прилагођену веб-адресу</translation>
@@ -1634,7 +1628,6 @@
 <translation id="2112554630428445878">Добро дошли, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Закачи картицу</translation>
 <translation id="2113479184312716848">Open &amp;File... (Отвори датотеку)</translation>
-<translation id="2113921862428609753">Приступ информацијама о ауторитету</translation>
 <translation id="2114326799768592691">Поново учитај &amp;оквир</translation>
 <translation id="2114995631896158695">Није уметнута SIM картица</translation>
 <translation id="2115808389282428160">Не дозвољавај сајтовима да приступају другим апликацијама ни услугама на овом уређају</translation>
@@ -1756,7 +1749,6 @@
 <translation id="2193567467390483943">Родитељ није одобрио овај додатак</translation>
 <translation id="2194856509914051091">Шта треба имати у виду</translation>
 <translation id="2195331105963583686">После тог периода и даље ћете моћи да користите <ph name="DEVICE_TYPE" />, али уређај неће више добијати аутоматска ажурирања софтвера и безбедносна ажурирања</translation>
-<translation id="2195729137168608510">Заштита е-поште</translation>
 <translation id="2198625180564913276">Додаје се профил. То може да потраје неколико минута.</translation>
 <translation id="2198712775285959645">Измени</translation>
 <translation id="2199298570273670671">Грешка</translation>
@@ -2440,7 +2432,6 @@
 <translation id="2660779039299703961">Догађај</translation>
 <translation id="266079277508604648">Повезивање са штампачем није успело. Проверите да ли је штампач укључен и повезан са Chromebook-ом помоћу WiFi-а или USB-а.</translation>
 <translation id="2661315027005813059">Цела кеширана страница: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
-<translation id="2661714428027871023">Прегледајте брже и користите мање података помоћу Lite режима. Кликните да бисте сазнали више.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Додаје се eSIM профил. Ово може да потраје пар минута.</translation>
 <translation id="2663302507110284145">Језик</translation>
@@ -3234,14 +3225,12 @@
 <translation id="321367297115597343">Додајте обележивач у овај фолдер</translation>
 <translation id="3213681682237645841">Преузимају се гласови на језику <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Желите ли да направите пречицу?</translation>
-<translation id="321834671654278338">Linux програм за деинсталирање</translation>
 <translation id="3220943972464248773">Да бисте синхронизовали лозинке, потврдите свој идентитет</translation>
 <translation id="3222066309010235055">Претприказивање: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Повежите се са <ph name="USB_VM_NAME" /></translation>
 <translation id="3223109931751684474">Уклоните приступ приступним кључевима на овом уређају</translation>
 <translation id="3223531857777746191">Дугме Ресетуј</translation>
 <translation id="3225084153129302039">Подразумевани љубичасти аватар</translation>
-<translation id="3225319735946384299">Потписивање кода</translation>
 <translation id="3226487301970807183">Укључите/искључите бочну таблу са леве стране</translation>
 <translation id="322708765617468434">Увек можете да додате другу особу на уређај после подешавања. Свака особа може да персонализује доживљај и чува приватност података.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -3365,7 +3354,6 @@
 <translation id="3310379801837527592">Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /> и још <ph name="NUM_OTHER_MEMBERS" /> особом</translation>
 <translation id="331080746368555063">Приватни сајтови могу да обухватају ствари као што је интранет предузећа</translation>
 <translation id="3311007761540106761">Подразумевано за систем</translation>
-<translation id="3311445899360743395">Подаци повезани са овом апликацијом ће се можда уклонити са овог уређаја.</translation>
 <translation id="3312300514034250578">Побољшано безбедно прегледање</translation>
 <translation id="3312470654018965389">Конфигурише се Linux контејнер</translation>
 <translation id="3312883087018430408">Да бисте претраживали одређени сајт или део Chrome-а, унесите његову пречицу у траку за адресу и своју жељену тастерску пречицу. На пример, да бисте претраживали само обележиваче, унесите „@bookmarks“, па притисните Tab или тастер за размак.</translation>
@@ -3508,7 +3496,6 @@
 <translation id="3417835166382867856">Претражите картице</translation>
 <translation id="3417836307470882032">24-часовно време</translation>
 <translation id="3418798368381485936">Не можете да се пријавите помоћу овог налога</translation>
-<translation id="3421387094817716717">Јавни кључ елиптичне криве</translation>
 <translation id="3422989558057853751">Изабрали сте последњу ставку. Поништавањем избора ћете изаћи из режима избора</translation>
 <translation id="3423111258700187173">Резултати су пронађени у фолдеру <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423275441470187644">Поузданост</translation>
@@ -3693,7 +3680,6 @@
 <translation id="3543296862747913985">Шта ради</translation>
 <translation id="3543298914473315872">Процес програма за ажурирање</translation>
 <translation id="3543393733900874979">Ажурирање није успело (грешка: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="3543597750097719865">Потпис X9.62 ECDSA путем SHA-512</translation>
 <translation id="3544058026430919413">Предузеће може да дефинише групу сајтова који могу да користе колачиће да би делили активности у групи. Ово је искључено у режиму без архивирања.</translation>
 <translation id="3544879808695557954">Корисничко име (опционално)</translation>
 <translation id="3547954654003013442">Подешавања проксија</translation>
@@ -4136,7 +4122,6 @@
 <translation id="3819261658055281761">Систем није успео да сачува ознаку дугорочног приступа API-ју за овај уређај.</translation>
 <translation id="3819800052061700452">&amp;Пун екран</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Прикажи}one{Прикажи све}few{Прикажи све}other{Прикажи све}}</translation>
-<translation id="3820749202859700794">Елиптична крива SECG secp521r1 (такође позната као NIST P-521)</translation>
 <translation id="3821074617718452587">Обавештења Phone Hub-а</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Додатак је одобрен}one{# додатак је одобрен}few{# додатка су одобрена}other{# додатака је одобрено}}</translation>
 <translation id="3822426549715448461">ДД</translation>
@@ -4197,7 +4182,6 @@
 <translation id="3858860766373142691">Назив</translation>
 <translation id="385939467708172187">Користите јаку лозинку</translation>
 <translation id="3859869403161297890">Овде пошаљите повратне информације о дељеним групама картица</translation>
-<translation id="3859987779882450877">Аутоматски предлаже и прави групе од отворених картица</translation>
 <translation id="386009056910366930">Управљајте групом картица <ph name="GROUP_NAME" /></translation>
 <translation id="3861638017150647085">Корисничко име <ph name="USERNAME" /> није доступно</translation>
 <translation id="3861852898230054539">Тренутно користите лозинку за Google налог Можете да подесите лозинку за <ph name="DEVICE_TYPE" /> да бисте олакшали пријављивање.</translation>
@@ -4754,7 +4738,6 @@
 <translation id="4267792239557443927">{COUNT,plural, =0{Није пронађена ниједна лозинка}=1{Пронађен је 1 резултат}one{Пронађен је {COUNT} резултат}few{Пронађена су {COUNT} резултата}other{Пронађено је {COUNT} резултата}}</translation>
 <translation id="4267924571297947682">Замоли родитеља за дозволу</translation>
 <translation id="4267953847983678297">Аутоматски се повезуј са мобилном мрежом</translation>
-<translation id="4268025649754414643">Шифровање кључа</translation>
 <translation id="4268168858499812335">Доступне пречице за сајтове</translation>
 <translation id="4268516942564021145">Ово подешавање није доступно за налог.</translation>
 <translation id="4270393598798225102">Верзија <ph name="NUMBER" /></translation>
@@ -4841,7 +4824,6 @@
 <translation id="432160826079505197">Прикажи фајл <ph name="FILE_NAME" /> у Finder-у</translation>
 <translation id="4322394346347055525">Затвори друге картице</translation>
 <translation id="4324577459193912240">Датотека је непотпуна</translation>
-<translation id="4325237902968425115">Деинсталира се <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">Меморијски простор и напајање</translation>
 <translation id="4325515113816851466">Изабране опције родитеља неће важити када се одјавиш</translation>
 <translation id="4326146840124313313">Најјача Chrome заштита вам пружа додатну заштиту од опасних веб-сајтова, преузимања и додатака</translation>
@@ -4849,7 +4831,6 @@
 <translation id="4330191372652740264">Вода са ледом</translation>
 <translation id="4330387663455830245">Никад не преводи <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Подесите родитељски надзор</translation>
-<translation id="4333854382783149454">PKCS #1 SHA-1 са RSA шифровањем</translation>
 <translation id="4334768748331667190">Неће вам се више приказивати модул <ph name="MODULE_NAME" /></translation>
 <translation id="4335835283689002019">Безбедно прегледање је искључено</translation>
 <translation id="4336967529148557673">Морате да се пријавите да би Chromium довршио овај задатак</translation>
@@ -4979,7 +4960,6 @@
 <translation id="4414232939543644979">Нови &amp;прозор без архивирања</translation>
 <translation id="4415213869328311284">Можете да почнете са коришћењем уређаја <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4415276339145661267">Управљајте Google налогом</translation>
-<translation id="4415748029120993980">Елиптична крива SECG secp384r1 (такође позната као NIST P-384)</translation>
 <translation id="4415815425191869676">Нека ови сајтови увек буду активни</translation>
 <translation id="4416582610654027550">Унесите важећи URL</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Паузирај ову картицу}one{Паузирај ове картице}few{Паузирај ове картице}other{Паузирај ове картице}}</translation>
@@ -5916,7 +5896,6 @@
 <translation id="5087864757604726239">назад</translation>
 <translation id="5088347662971855383">Закачи Gemini</translation>
 <translation id="5088427648965532275">Добављач Passpoint-а</translation>
-<translation id="5088534251099454936">PKCS #1 SHA-512 са RSA шифровањем</translation>
 <translation id="5090637338841444533">Није им дозвољено да прате положај камере</translation>
 <translation id="5091636240353511739">Прикажи PIN</translation>
 <translation id="5093447877601682598">Пошаљи повратне информације о траци са картицама</translation>
@@ -6035,7 +6014,6 @@
 <translation id="5173668317844998239">Додајте и бришите отиске прстију сачуване на безбедносном кључу</translation>
 <translation id="5174169235862638850">Лозинка је копирана у привремену меморију</translation>
 <translation id="5177479852722101802">Настави да блокираш приступ камери и микрофону</translation>
-<translation id="5177549709747445269">Користите податке на мрежи оператера</translation>
 <translation id="5178667623289523808">Пронађи претходно</translation>
 <translation id="5180276433875360121">Прикажите листу <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Преузимање</translation>
@@ -6275,7 +6253,6 @@
 <translation id="5345916423802287046">Покрени апликацију када се пријавим</translation>
 <translation id="5350116201946341974">Шаљиво</translation>
 <translation id="535123479159372765">Текст је копиран са неког другог уређаја</translation>
-<translation id="5352033265844765294">Означавање времена</translation>
 <translation id="5352257124367865087">Управљајте дозволама за сајт</translation>
 <translation id="5352535894553509810">Додај картицу у нову табелу за поређење</translation>
 <translation id="5353769147530541973">Уклоните сајт <ph name="SITE_NAME" /> са листе картица да бисте га деактивирали</translation>
@@ -6394,7 +6371,6 @@
 <translation id="5432872710261597882">Опција Свиђа ми се шаље повратне информације да вам се ово свиђа.</translation>
 <translation id="543338862236136125">Измените лозинку</translation>
 <translation id="5433865420958136693">Користи убрзање графике када је доступно</translation>
-<translation id="5434065355175441495">PKCS #1 RSA шифровање</translation>
 <translation id="5435274640623994081">Омогући евидентирање аудио икона</translation>
 <translation id="5435779377906857208">Увек дозволи да <ph name="HOST" /> приступа микрофону</translation>
 <translation id="5436211819997237281">Актуелни додатак који управља страницом нове картице</translation>
@@ -6511,7 +6487,6 @@
 <translation id="5503910407200952415">{NUM_PROFILES,plural, =1{&amp;Затвори овај профил}one{&amp;Затвори овај профил (# прозор)}few{&amp;Затвори овај профил (# прозора)}other{&amp;Затвори овај профил (# прозора)}}</translation>
 <translation id="5503982651688210506">Наставите да дозвољавате сајту <ph name="HOST" /> да користи и помера камеру и користи микрофон</translation>
 <translation id="5505307013568720083">Нема мастила</translation>
-<translation id="5507756662695126555">Немогућност порицања</translation>
 <translation id="5509693895992845810">Сачувај &amp;као...</translation>
 <translation id="5509914365760201064">Издавалац: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Преузимај описе слика са Google-а</translation>
@@ -6644,7 +6619,6 @@
 <translation id="5611398002774823980">Сачувај на налогу</translation>
 <translation id="5611474372949142946">Затвори картице у наставку</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5614190747811328134">Обавештење о кориснику</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">Листа недавних сајтова које сте посетили и који могу да предлажу огласе за друге сајтове док настављате да прегледате</translation>
@@ -6699,7 +6673,6 @@
 <translation id="5641608986289282154">Почните да користите <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Уређивач за снимке екрана</translation>
 <translation id="5641715878999557094">Додатак <ph name="EXTENSION_NAME" /> је променио страницу која се приказује када кликнете на дугме Почетна.</translation>
-<translation id="5642508497713047">CRL потписник</translation>
 <translation id="5643191124441701136">Безбедносни кôд се налази на предњој страни картице</translation>
 <translation id="5643321261065707929">Мрежа са ограничењем</translation>
 <translation id="5646376287012673985">Локација</translation>
@@ -6868,7 +6841,6 @@
 <translation id="57838592816432529">Искључи звук</translation>
 <translation id="5784291589716625675">Променитe језик апликације</translation>
 <translation id="5785583009707899920">Chrome услужни програми за датотеке</translation>
-<translation id="5787146423283493983">Слагање кључа</translation>
 <translation id="5787420647064736989">Назив уређаја</translation>
 <translation id="5787582109651427233">Посетите Google новчаник да бисте додали <ph name="BEGIN_LINK_LOYALTY_CARDS" />картице лојалности<ph name="END_LINK_LOYALTY_CARDS" /> или Google Pay <ph name="BEGIN_LINK_PAYMENT_METHODS" />начине плаћања<ph name="END_LINK_PAYMENT_METHODS" /> или управљали њима</translation>
 <translation id="5788367137662787332">Жао нам је, најмање једну партицију на уређају <ph name="DEVICE_LABEL" /> није било могуће укључити.</translation>
@@ -7042,7 +7014,6 @@
 <translation id="5895335062901455404">Сачувана подешавања и активности ће бити спремни на било ком Chrome OS Flex уређају када се пријавите помоћу Google налога. Можете да одаберете шта ћете синхронизовати у подешавањима.</translation>
 <translation id="5895338131909306775">Хемијска лабораторија</translation>
 <translation id="589541317545606110">Претражи страницу помоћу услуге <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="5895549920267917925">Помаже вам да се усредсредите на оно што радите</translation>
 <translation id="5895758411979561724"><ph name="APP_ORIGIN" /> снима ваш екран</translation>
 <translation id="5896436821193322561">Не дозволи</translation>
 <translation id="5899860758576822363">Репродукуј при мањој јачини звука док ChromeVox говори</translation>
@@ -7088,7 +7059,6 @@
 <translation id="5924527146239595929">Снимите нову слику или одаберите постојећу слику или икону.
     <ph name="LINE_BREAK" />
     Tа слика ће се приказивати на Chromebook екрану за пријављивање и закључаном екрану.</translation>
-<translation id="5925147183566400388">Показивач изјаве о пракси издавања сертификата</translation>
 <translation id="5926936390113611560">Отвори све профиле</translation>
 <translation id="5927132638760172455">Пребацује се на непознати пријемник</translation>
 <translation id="592880897588170157">Преузмите PDF датотеке да се не би аутоматски отварале у Chrome-у</translation>
@@ -7265,7 +7235,6 @@
 <translation id="6054284857788651331">Недавно затворена група картица</translation>
 <translation id="6054819000749443354">Отвори подешавања система</translation>
 <translation id="6054961935262556546">Промени видљивост</translation>
-<translation id="6055392876709372977">PKCS #1 SHA-256 са RSA шифровањем</translation>
 <translation id="6055544610007596637">Инсталирајте апликације за <ph name="DEVICE_TYPE" /> из Google Play продавнице</translation>
 <translation id="6056710589053485679">Поново учитај нормално</translation>
 <translation id="6057312498756061228">Ова датотека је превелика за безбедносну проверу. Можете да отворите датотеке величине до 50 MB.</translation>
@@ -7384,7 +7353,6 @@
 <translation id="6136285399872347291">тастер за брисање уназад</translation>
 <translation id="6136287496450963112">Безбедносни кључ није заштићен PIN-ом. Да бисте управљали отисцима прстију, прво направите PIN.</translation>
 <translation id="6136637346277431354">Додајте картице и друго</translation>
-<translation id="6138680304137685902">Потпис X9.62 ECDSA путем SHA-384</translation>
 <translation id="6140948187512243695">Прикажи детаље</translation>
 <translation id="6141988275892716286">Потврдите преузимање</translation>
 <translation id="6143186082490678276">Затражите помоћ</translation>
@@ -7687,7 +7655,6 @@
 <translation id="6350821834561350243">Јасно опишите проблем и кораке за његово репродуковање (ако је могуће)</translation>
 <translation id="6351178441572658285">Језици апликација</translation>
 <translation id="6352992678231622317">Картица је премештена надоле</translation>
-<translation id="6354918092619878358">Елиптична крива SECG secp256r1 (такође позната као ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355632359041940003">Преузми задатак</translation>
 <translation id="635609604405270300">Не искључујте уређај</translation>
 <translation id="6356537493253478650">Спокојно</translation>
@@ -7892,7 +7859,6 @@
 <translation id="650457560773015827">Лево дугме</translation>
 <translation id="6504601948739128893">Немају дозволу да користе фонтове инсталиране на уређају</translation>
 <translation id="6504611359718185067">Повежите се на интернет да бисте додали штампач</translation>
-<translation id="6506374932220792071">Потпис X9.62 ECDSA путем SHA-256</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> жели да инсталира следећу апликацију на овом уређају:}one{<ph name="APP_NAME" /> жели да инсталира следеће апликације на овом уређају:}few{<ph name="APP_NAME" /> жели да инсталира следеће апликације на овом уређају:}other{<ph name="APP_NAME" /> жели да инсталира следеће апликације на овом уређају:}}</translation>
 <translation id="6508248480704296122">Сродно са ставком <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Апл.: <ph name="APP_NAME" /></translation>
@@ -8511,7 +8477,6 @@
 <translation id="6921104647315081813">Обришите активности</translation>
 <translation id="692114467174262153">Отварање прегледача <ph name="ALTERNATIVE_BROWSER_NAME" /> није успело</translation>
 <translation id="692135145298539227">избриши</translation>
-<translation id="6922128026973287222">Уштедите на подацима и прегледајте брже помоћу Google уштеде података. Кликните да бисте сазнали више.</translation>
 <translation id="6922745772873733498">Унесите PIN да бисте штампали</translation>
 <translation id="6922763095098248079">Овим уређајем управља организација. Администратори могу да приступају подацима свих профила на овом уређају.</translation>
 <translation id="6923633482430812883">Грешка при учитавању дељене датотеке. Проверите да ли сервер датотека са којим се повезујете подржава SMBv2 или новију верзију.</translation>
@@ -8634,7 +8599,6 @@
 <translation id="7003844668372540529">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сајт може да користи MIDI</translation>
 <translation id="7004499039102548441">Недавне картице</translation>
-<translation id="7004562620237466965">Само дешифровање</translation>
 <translation id="7004969808832734860">До <ph name="DISCOUNT_UP_TO_AMOUNT" /> попуста</translation>
 <translation id="7005496624875927304">Додатне дозволе</translation>
 <translation id="7005812687360380971">Грешка</translation>
@@ -8730,7 +8694,6 @@
 <translation id="7072078320324181561">Апликације и веб-сајтови са дозволом за локацију, као и системске услуге, могу да користе локацију <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Доступне пречице за функције и додатке</translation>
 <translation id="7074703793383805632">Група <ph name="GROUP_NAME" /> <ph name="SHARED_STATE" /> – <ph name="OPENED_STATE" /></translation>
-<translation id="7075513071073410194">PKCS #1 MD5 са RSA шифровањем</translation>
 <translation id="7075625805486468288">Управљање HTTPS/SSL сертификатима и подешавањима</translation>
 <translation id="707772989579681711">Ваш претходни избор</translation>
 <translation id="7077751457066325012">Прегледајте и прилагодите тастерске пречице</translation>
@@ -9866,7 +9829,6 @@
 <translation id="7864825798076155402">Желите да сачувате на Google налогу?</translation>
 <translation id="7865127013871431856">Опције превода</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – Упарен је</translation>
-<translation id="7869655448736341731">Све</translation>
 <translation id="7870005751202275328">Кликните на траку за адресу.</translation>
 <translation id="787069710204604994">На пример, ако посетите сајт који продаје патике за трчање на дуге раздаљине, тај сајт може да одлучи да вас занима трчање маратона. Касније, ако посетите неки други сајт, тај сајт може да вам прикаже оглас за патике за трчање које је предложио први сајт.</translation>
 <translation id="7870730066603611552">Прегледа опције синхронизације после подешавања</translation>
@@ -10023,7 +9985,6 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="7969144945436590933">Сазнајте више</translation>
 <translation id="7970673414865679092">Детаљи о етернету</translation>
-<translation id="7972714317346275248">PKCS #1 SHA-384 са RSA шифровањем</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">Опција Не свиђа ми се шаље повратне информације да вам се ово не свиђа.</translation>
 <translation id="7973776233567882054">Шта од наведеног најбоље описује вашу мрежу?</translation>
@@ -10079,7 +10040,6 @@
 <translation id="8006630792898017994">Тастер за размак или Tab</translation>
 <translation id="8006906484704059308">И даље не дозвољавај да овај сајт контролише и репрограмира MIDI уређаје</translation>
 <translation id="8008704580256716350">Сумњив фајл је блокиран</translation>
-<translation id="8009196983040865987">Када користите организовање картица, наслови и URL-ови отворених картица шаљу се Google-у да би генерисао предложене групе картица</translation>
 <translation id="8009225694047762179">Управљај лозинкама</translation>
 <translation id="8010312870936510509">Подаци су шифровани помоћу приступне фразе за синхронизацију <ph name="TIME" />. То не обухвата начине плаћања и адресе из Google Pay-а.</translation>
 <translation id="8011372169388649948">Обележивач <ph name="BOOKMARK_TITLE" /> је премештен.</translation>
@@ -10495,7 +10455,6 @@
 <translation id="8293206222192510085">Додавање обележивача</translation>
 <translation id="8293957715257389063">Детаљно претражите на картици</translation>
 <translation id="8294431847097064396">Извор</translation>
-<translation id="8294476140219241086">Организатор картица</translation>
 <translation id="8295449579927246485">Превод уживо</translation>
 <translation id="8295450130892483256">Инсталирајте Microsoft 365</translation>
 <translation id="8297292446125062288">Подешавања HID-а</translation>
@@ -10551,7 +10510,6 @@
 <translation id="8327676037044516220">Подешавања дозвола и садржаја</translation>
 <translation id="8328228852664998535">Ако наставите, лозинке, приступни кључеви и други подаци ће бити трајно избрисани са уређаја <ph name="BRAND" />. Налози које сте отворили за сајтове или апликације неће бити избрисани.</translation>
 <translation id="8328777765163860529">Затвори све</translation>
-<translation id="8328826250763337630">Сазнајте више о организатору картица</translation>
 <translation id="8330617762701840933">Листа веб-сајтова који преусмеравају у алтернативни прегледач.</translation>
 <translation id="8330689128072902965">Контакти у близини могу да деле садржај са вама. Кликните да бисте променили.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Подржан тип фајла: <ph name="FILE_TYPE1" />}=2{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и још {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и још {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и још {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
@@ -10583,7 +10541,6 @@
 <translation id="8351316842353540018">Увек приказуј опције приступачности</translation>
 <translation id="8351419472474436977">Овај додатак је преузео контролу над подешавањима проксија, што значи да може да мења, прекида или шпијунира све што радите онлајн. Ако нисте сигурни зашто је дошло до ове промене, вероватно вам није потребна.</translation>
 <translation id="8352287103893778223">Наслов групе картица</translation>
-<translation id="835238322900896202">Дошло је до грешке током деинсталације. Деинсталирајте преко Terminal-а.</translation>
 <translation id="8353420862507374944">Пребацуј, чувај и дели</translation>
 <translation id="8353683614194668312">Може да:</translation>
 <translation id="8354034204605718473">PIN детета је додат</translation>
@@ -11378,7 +11335,6 @@
 <translation id="8892168913673237979">Спремни сте!</translation>
 <translation id="8892246501904593980">Прегледајте све обележиваче у обележивачима и листама</translation>
 <translation id="8893779047492837414">Тренутно имате <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> и друго. Ваша организација, <ph name="ACCOUNT_MANAGER" />, моћи ће да види ове податке и управља њима.</translation>
-<translation id="8893801527741465188">Деинсталирање је завршено</translation>
 <translation id="8893928184421379330">Жао нам је, није било могуће препознати уређај <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Заштита приступа подацима за периферне уређаје</translation>
 <translation id="8895454554629927345">Листа обележивача</translation>

@@ -2828,7 +2828,6 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2901969573658712576">Voorkeur geven aan versleutelingen die voldoen aan de vereisten van CNSA 1.0 en 2.0</translation>
 <translation id="2905984450136807296">Levensduur van verificatiegegevens in cachegeheugen</translation>
 <translation id="2906874737073861391">Lijst met app-pakketextensies</translation>
-<translation id="2908277604670530363">Maximaal aantal gelijktijdige verbindingen met de proxyserver</translation>
 <translation id="2912366658685903301">Een kleur instellen voor het thema van de browser</translation>
 <translation id="2914283793640833265">Niet toestaan dat Telefoonhub-taakvoortzetting wordt aangezet</translation>
 <translation id="2915787312243722351">Dit beleid beheert de instelling De Launcher-/zoektoets gebruiken om het gedrag van functietoetsen te wijzigen. Met deze instelling kunnen gebruikers de Launcher-toets ingedrukt houden om te schakelen tussen functietoetsen en systeemtoetsen op de bovenste rij.
@@ -2962,6 +2961,13 @@ Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</tra
 <translation id="2969568582351417848">Op bestandsextensies gebaseerde downloadwaarschuwingen uitzetten voor gespecificeerde bestandstypen in domeinen</translation>
 <translation id="2971096666394658693">Het contextmenu bevat een menu-item waarmee je afbeeldingen kunt delen met <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Als je het beleid toepast, kunnen web-apps van derden <ph name="DESK_API_NAME" /> gebruiken om <ph name="PRODUCT_OS_NAME" />-bureaus op te slaan en te delen. Als je het beleid niet toepast, kan de gebruiker geen bureaugegevens opslaan en delen via de <ph name="DESK_API_NAME" />. Als je het beleid niet instelt, is het gedrag hetzelfde als wanneer het uitstaat. Het beleid geldt alleen voor ingeschreven apparaten.</translation>
+<translation id="2974326457745806202">SharedWorkers kunnen een uitgebreide levensduur hebben als de optie extendedLifetime is ingesteld op waar in de SharedWorker-constructor.
+
+Als je dit beleid toepast of niet instelt, kunnen SharedWorkers een uitgebreide levensduur hebben.
+
+Als je dit beleid niet toepast, kunnen SharedWorkers geen uitgebreide levensduur hebben, zelfs niet als je de optie instelt op Waar.
+
+Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
 <translation id="2976033779241323433">Virtueel aanraaktoetsenbord aanzetten op basis van de standaard systeemheuristiek</translation>
 <translation id="2976429807269247880">Instellingen voor gedrag van verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Oude implementatie afdwingen</translation>
@@ -9505,6 +9511,7 @@ Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_
 <translation id="7216442368414164495">Hiermee kunnen gebruikers zich aanmelden voor uitgebreide rapportage van Safe Browsing</translation>
 <translation id="7218238054592349618">JavaScript-optimalisaties toestaan op deze sites</translation>
 <translation id="721970071627370558">Rapportage van aan/uit-status van apparaat uitzetten</translation>
+<translation id="7220960206733388609">SharedWorkers kunnen een uitgebreide levensduur hebben.</translation>
 <translation id="7221574724100909818">Hangsloticoon gebruiken voor beveiligde verbindingen</translation>
 <translation id="7227348936232766462">Toestaan dat gebruikers foutopsporingsgegevens op laag niveau van alle hieronder genoemde beschikbare apparaattypen opnemen in gebruikersfeedback</translation>
 <translation id="7229365071755865554">Opslag van wachtwoorden met de Wachtwoordmanager aanzetten</translation>
@@ -10154,6 +10161,7 @@ Als je dit beleid toepast, gebruikt de pdf-viewer het Skia-weergaveprogramma.
 Als je dit beleid niet toepast, gebruikt de pdf-viewer het huidige AGG-weergaveprogramma.
 
 Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de browser.</translation>
+<translation id="7704244074621846004">Uitgebreide levensduur voor SharedWorkers aanzetten</translation>
 <translation id="7707869387893611318">De functie voor oplaadgeluiden aanzetten.
 
           Deze functie is verantwoordelijk voor het afspelen van de oplaadgeluiden.
@@ -10171,6 +10179,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 
       Servers kunnen het beste worden gemigreerd naar ECDHE cipher suites. Als deze niet beschikbaar zijn, zorg je dat er een cipher suite aanstaat die gebruikmaakt van RSA-sleuteluitwisseling.</translation>
 <translation id="7709470712369261710">Google-services niet gebruiken om automatische beschrijvingen van afbeeldingen te leveren</translation>
+<translation id="7711003696883532277">SharedWorkers kunnen geen uitgebreide levensduur hebben.</translation>
 <translation id="7712109699186360774">Altijd goedkeuring vragen wanneer een site toegang wil hebben tot de camera en/of microfoon</translation>
 <translation id="7712245244073542805">Platformgebaseerd afdrukken vanuit een browserproces.</translation>
 <translation id="7713608076604149344">Downloadbeperkingen</translation>

@@ -699,6 +699,7 @@
 <translation id="3985215325736559418">你要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3994236846568425219">裝置開啟深色主題時使用深色主題</translation>
+<translation id="399788104667917863">在工具列中固定</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4000670338830950598">自訂及管理 Google Chrome 選單中有醒目顯示項目</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{你的 Google 帳戶有 1 組密碼外洩}other{你的 Google 帳戶有 # 組密碼外洩}}</translation>

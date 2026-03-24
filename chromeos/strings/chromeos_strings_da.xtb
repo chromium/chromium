@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Indtast en prompt</translation>
 <translation id="115705039208660697">ananasser</translation>
 <translation id="1164939766849482256">Pauseskærmen Daggry til mørkets frembrud</translation>
-<translation id="1167755866710282443">Åbn menuen for at tilpasse nøgler. Træk i menuen for at flytte den.</translation>
 <translation id="1171349345463658120">sandet lagune</translation>
 <translation id="1174073918202301297">Genvejen blev tilføjet</translation>
 <translation id="11743817593307477">Brug piletasterne til at flytte dette styringselement til den ønskede spilhandling. Brug Enter-tasten til at placere styringselementet. Brug Escape-tasten for at annullere.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Tastaturtilknytning for D-pad</translation>
 <translation id="3217462202230355157">Sørg for, at din mikrofon er tilknyttet, eller prøv at genstarte din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Søger efter scannere</translation>
-<translation id="3226657629376379887">Handlingsmenu for layout</translation>
 <translation id="3227186760713762082">Divider værdien for <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">digital kunst</translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7180865173735832675">Tilpas</translation>
-<translation id="7184043045742675738">Klik på en tast for at tilpasse din knap. Juster tasten med musen eller piletasterne.</translation>
 <translation id="7187669805838282391">på onsdag</translation>
 <translation id="7205318498545665455">Vælg din mikrofon</translation>
 <translation id="7210635925306941239">cyanblå</translation>
@@ -1497,7 +1494,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7590883480672980941">Indstillinger for indtastning</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> tilbage</translation>
 <translation id="7600430297804876776">Administratoren af <ph name="MANAGER" /> har angivet, hvornår denne <ph name="DEVICE_TYPE" /> kan bruges.</translation>
-<translation id="7613724632293948900">Juster med musen eller piletasterne.</translation>
 <translation id="7618216277886673749">Vælg <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Få flere oplysninger i Hjælp</translation>

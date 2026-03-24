@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Суулгахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1740650426894359238">Өөр профайл руу сэлгэх</translation>
 <translation id="1741219894094057085">Ухаалаг цаг</translation>
+<translation id="1742773766788162541">Карт скан хийж, автоматаар бөглөх</translation>
 <translation id="1743244221910283364">Өөрчлөлтийг болих</translation>
 <translation id="1748975028205587434">Файлаа сонгох</translation>
 <translation id="1749733017156547309">Нууц үг шаардлагатай</translation>
@@ -710,6 +711,7 @@
 <translation id="3578866308944526475">Танай байгууллагаас тохиргоо хийсэн <ph name="EMAIL" />.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" />-г шинэчлэх үү?</translation>
 <translation id="3581564640715911333">Хуудсыг бусад хэлээр орчуулахыг санал болгох</translation>
+<translation id="3583726884554296148">Энэ худалдан авалт болон Chrome дээр хийх ирээдүйн худалдан авалтуудад зориулж картаа автоматаар бөглөхийн тулд Google Бүртгэлдээ хадгална уу</translation>
 <translation id="3587482841069643663">Бүгд</translation>
 <translation id="3587885837929752825">Танай байгууллага Google Бүртгэлдээ юу хадгалж болохыг тань хязгаарлана.</translation>
 <translation id="3588820906588687999">Зургийг шинэ цонхонд нээ</translation>
@@ -1346,6 +1348,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5819208479324046259"><ph name="MANAGER" /> удирддаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синк хийж байна…</translation>
+<translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5838430324585198889">Google аппаар өөрийн iPad-д зориулж илүү олон онцлогийн түгжээг тайлаарай</translation>
 <translation id="583923961930319521">Бүх төхөөрөмж дээрээ нууц үгээ ашиглах</translation>
 <translation id="5843013299019689749">Хар дэвсгэр өнгө</translation>
@@ -1556,6 +1559,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6532106788206463496">Өөрчлөлтийг хадгалах</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" />-г нээх, <ph name="NUMBER_OF_TABS" />-ын бүлэг, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Төхөөрөмжүүд дээрээ автоматаар бөглөх хэсгийг ашиглан илүү хурдан тооцоо хийгээрэй</translation>
 <translation id="6550675742724504774">Сонголтууд</translation>
 <translation id="6550891580932862748">Таныг аюултай вебсайт, татаж авсан файл болон өргөтгөлүүдээс хамгаалахгүй. Google-н бусад бүтээгдэхүүн дэх таны Аюулгүй хөтчийн тохиргоонд нөлөөлөхгүй.</translation>
 <translation id="6556501700899673703">Lexend</translation>

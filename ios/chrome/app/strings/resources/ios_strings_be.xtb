@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Каб усталяваць, націсніце двойчы.</translation>
 <translation id="1740650426894359238">Пераключыцца на іншы профіль</translation>
 <translation id="1741219894094057085">Разумны гадзіннік</translation>
+<translation id="1742773766788162541">Сканіраваць картку і запоўніць даныя аўтаматычна</translation>
 <translation id="1743244221910283364">Адхіліць змены</translation>
 <translation id="1748975028205587434">Выбраць файл</translation>
 <translation id="1749733017156547309">Неабходна ўказаць пароль</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2360196772093551345">Запытаць мабільную версію сайта</translation>
 <translation id="2362083820973145409">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Кнопка адкрывае налады.</translation>
+<translation id="2367025302166767427">Не ўдаецца запоўніць інфармацыю</translation>
 <translation id="2371084566192454134">Укладкі і групы ўкладак</translation>
 <translation id="2371303771137626249">Новая</translation>
 <translation id="2381405137052800939">Асновы</translation>
@@ -708,6 +710,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, пад кіраваннем вашай арганізацыі.</translation>
 <translation id="3580448612293054698">Абнавіць элемент "<ph name="ENTITY_TYPE" />"?</translation>
 <translation id="3581564640715911333">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
+<translation id="3583726884554296148">Захавайце картку ва Уліковым запісе Google, каб яе рэквізіты запаўняліся аўтаматычна пры гэтай і наступных куплях у Chrome</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3587885837929752825">Што іменна вы можаце захоўваць ва Уліковы запіс Google, вызначае ваша арганізацыя.</translation>
 <translation id="3588820906588687999">Адкрыць відарыс у новай укладцы</translation>
@@ -1344,6 +1347,7 @@
 <translation id="5819208479324046259">Браўзерам кіруе <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Сінхранізацыя…</translation>
+<translation id="583281660410589416">Невядома</translation>
 <translation id="5838430324585198889">Атрымайце доступ да большай колькасці функцый iPad з дапамогай праграм Google</translation>
 <translation id="583923961930319521">Выкарыстоўвайце паролі на ўсіх сваіх прыладах</translation>
 <translation id="5843013299019689749">Чорны колер фону</translation>
@@ -1554,6 +1558,7 @@
 <translation id="6532106788206463496">Захаваць змены</translation>
 <translation id="6536759809440150308">Адкрыць групу "<ph name="GROUP_TITLE" />", групу з колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Аплачвайце куплі хутчэй дзякуючы аўтазапаўненню на ўсіх прыладах</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="6550891580932862748">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Гэты рэжым не паўплывае на налады Бяспечнага прагляду ў іншых прадуктах Google.</translation>
 <translation id="6556501700899673703">Lexend</translation>

@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">A telepítéshez koppintson duplán.</translation>
 <translation id="1740650426894359238">Váltás másik profilra</translation>
 <translation id="1741219894094057085">Okosóra</translation>
+<translation id="1742773766788162541">Kártya beolvasása és automatikus kitöltés</translation>
 <translation id="1743244221910283364">Módosítások elvetése</translation>
 <translation id="1748975028205587434">Fájl kiválasztása</translation>
 <translation id="1749733017156547309">A jelszó megadása kötelező</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2360196772093551345">Mobilwebhely kérése</translation>
 <translation id="2362083820973145409">Bejelentkezve a következőként: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
+<translation id="2367025302166767427">Probléma adódott az adatok kitöltésekor</translation>
 <translation id="2371084566192454134">Lapok és lapcsoportok</translation>
 <translation id="2371303771137626249">Új</translation>
 <translation id="2381405137052800939">Alapok</translation>
@@ -709,6 +711,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, az Ön szervezete kezeli.</translation>
 <translation id="3580448612293054698">Frissíti ezt: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Más nyelvű oldalak fordításának felajánlása</translation>
+<translation id="3583726884554296148">Mentse el kártyát a Google-fiókjába, hogy automatikusan kitölthesse a jelenlegi és a Chrome-ban végzett jövőbeli vásárlások során.</translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3587885837929752825">Szervezete korlátozza, hogy Ön mit menthet Google-fiókjába.</translation>
 <translation id="3588820906588687999">Kép megnyitása új lapon</translation>
@@ -1345,6 +1348,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5819208479324046259">Kezelő: <ph name="MANAGER" />. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Szinkronizálás…</translation>
+<translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5838430324585198889">Még több funkcióhoz férhet hozzá iPadjén a Google-alkalmazásokkal</translation>
 <translation id="583923961930319521">A jelszavak használata az összes eszközén</translation>
 <translation id="5843013299019689749">Fekete háttérszín</translation>
@@ -1555,6 +1559,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6532106788206463496">Módosítások mentése</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> megnyitása, <ph name="NUMBER_OF_TABS" /> tartalmú csoport, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Gyorsabb fizetés az automatikus kitöltéssel az összes eszközén</translation>
 <translation id="6550675742724504774">Beállítások</translation>
 <translation id="6550891580932862748">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. A Biztonságos Böngészés beállításait más Google-termékekben nem érinti a módosítás.</translation>
 <translation id="6556501700899673703">Lexend</translation>

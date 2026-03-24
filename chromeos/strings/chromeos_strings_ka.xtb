@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">შეიყვანეთ მოთხოვნა</translation>
 <translation id="115705039208660697">ანანასები</translation>
 <translation id="1164939766849482256">ეკრანმზოგი განთიადიდან შებინდებამდე</translation>
-<translation id="1167755866710282443">კლავიშების მოსარგებად გახსენით მენიუ. გადასაადგილებლად ჩავლებით გადაიტანეთ მენიუ.</translation>
 <translation id="1171349345463658120">ქვიშიანი ლაგუნა</translation>
 <translation id="1174073918202301297">მალსახმობი დამატებულია</translation>
 <translation id="11743817593307477">გამოიყენეთ ისრიანი კლავიშები, მართვის ეს საშუალება თამაშის სასურველ მოქმედებაზე რომ გადაიტანოთ. მართვის საშუალების დასაფიქსირებლად დააჭირეთ კლავიშს „enter“. გასაუქმებლად გამოიყენეთ კლავიში „escape“.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">კლავიშთა დანიშვნის D-pad</translation>
 <translation id="3217462202230355157">დარწმუნდით, რომ თქვენი მიკროფონი დაკავშირებულია და ცადეთ <ph name="DEVICE_TYPE" />-ის გადატვირთვა</translation>
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
-<translation id="3226657629376379887">განლაგებასთან დაკავშირებული მოქმედებების მენიუ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-ის მნიშვნელობის გაყოფა <ph name="CONVERSION_RATE" />-ზე</translation>
 <translation id="3242622575335502454">ციფრული ხელოვნება</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7180865173735832675">მორგება</translation>
-<translation id="7184043045742675738">ღილაკის მოსარგებად დააწკაპუნეთ ნებისმიერ კლავიშზე. კლავიშის გადაადგილება შეგიძლიათ მაუსის ან ისრიანი კლავიშების მეშვეობით.</translation>
 <translation id="7187669805838282391">ოთხშაბათს</translation>
 <translation id="7205318498545665455">აირჩიეთ თქვენი მიკროფონი</translation>
 <translation id="7210635925306941239">ციანი</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
 <translation id="7595982850646262331">დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" />-ის ადმინისტრატორმა დააყენა, როდის შეიძლება ამ <ph name="DEVICE_TYPE" />-ის გამოყენება</translation>
-<translation id="7613724632293948900">გადაადგილება შეგიძლიათ მაუსის ან ისრიანი კლავიშების მეშვეობით.</translation>
 <translation id="7618216277886673749">აირჩიეთ <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ნეიტრალური</translation>
 <translation id="7620771111601174153">შეიტყვეთ მეტი დახმარების ცენტრში</translation>
@@ -1631,6 +1627,7 @@
 <translation id="819278132617411009">გამოიყენეთ Google-ის ხელოვნური ინტელექტი პროდუქტიულობის გაზრდაში</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
+<translation id="8208043093301544621">სახლი</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
 <translation id="8226628635270268143">აირჩიეთ თქვენი რჩეული ფოტოები და ალბომები</translation>
 <translation id="8227119283605456246">ფაილის მიმაგრება</translation>

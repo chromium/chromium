@@ -2830,7 +2830,6 @@ Cette règle ne peut être configurée que comme règle relative aux utilisateur
 <translation id="2901969573658712576">Privilégier les algorithmes de chiffrement répondant aux exigences de la suite CNSA 1.0 et 2.0</translation>
 <translation id="2905984450136807296">Durée de mise en cache des données d'authentification</translation>
 <translation id="2906874737073861391">Liste des extensions AppPack</translation>
-<translation id="2908277604670530363">Nombre maximal de connexions simultanées au serveur proxy</translation>
 <translation id="2912366658685903301">Configurer la couleur du thème du navigateur</translation>
 <translation id="2914283793640833265">Ne pas autoriser l'activation de la poursuite des tâches via Phone Hub</translation>
 <translation id="2915787312243722351">Cette règle contrôle le paramètre "Utiliser la touche du Lanceur d'applications/de recherche pour modifier le comportement des touches de fonction". Ce paramètre permet aux utilisateurs de maintenir la touche du Lanceur d'applications enfoncée pour passer des touches de fonction aux touches supérieures du système et vice-versa.

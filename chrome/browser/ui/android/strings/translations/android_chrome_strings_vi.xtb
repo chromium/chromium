@@ -699,6 +699,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3985215325736559418">Bạn có muốn tải lại <ph name="FILE_NAME" /> xuống không?</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
 <translation id="3994236846568425219">Bật giao diện tối khi giao diện tối trên thiết bị đang bật</translation>
+<translation id="399788104667917863">Ghim vào thanh công cụ</translation>
 <translation id="4000212216660919741">Nhà ở chế độ không kết nối Internet</translation>
 <translation id="4000670338830950598">Tuỳ chỉnh và kiểm soát Google Chrome với mục được làm nổi bật</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ trong Tài khoản Google của bạn}other{# mật khẩu bị lộ trong Tài khoản Google của bạn}}</translation>

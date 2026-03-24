@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1652197001188145583">Aktiv ediləndə saytlar NFC cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar NFC cihazlarından istifadə edə bilməz.</translation>
 <translation id="1660204651932907780">Saytlara səs oxutmaq icazəsi verin (məsləhətli)</translation>
+<translation id="1676590040242013349">"Həmişə güvənli bağlantılardan istifadə edin" seçimi aktivdir.</translation>
 <translation id="1677097821151855053">Kukilər və digər sayt datası sizin yadda saxlamaq üçün istifadə edilir, məsələn, daxil olmanıza və ya reklamları fərdiləşdirməyə imkan yaradır. Bütün saytlar üçün kukiləri idarə etmək üçün <ph name="BEGIN_LINK" />Ayarlara<ph name="END_LINK" /> baxın.</translation>
 <translation id="1679305402657584804">Saytlar NFC cihazlarından istifadə etmək istəyə bilər</translation>
 <translation id="1686785653877010442">Saytlar adətən təcili xəbərlər və ya söhbət mesajları barədə bildirmək üçün bildirişlər göndərir.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Saytların buferdəki mətn və şəkillərə girişini blok edin</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6950072572526089586">Daxil olduğunuz sayt düzgün işləmək üçün gördüyünüz iş haqqında məlumatı yadda saxlaya bilər. Bu məlumat sizi sayta daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətindəki məhsulları yadda saxlamaq üçündür. Adətən, saytlar bu məlumatı cihazda müvəqqəti yadda saxlayır.</translation>
+<translation id="6964291282260073066">"WebGPU" deaktiv edilib.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Qırmızımtıl tema</translation>
 <translation id="6980861169612950611">Sayt datası silinsin? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Aktiv ediləndə saytlar virtual reallıq cihazlarından istifadə icazəsi istəyə bilər. Deaktiv ediləndə saytlar virtual reallıq cihazlarından istifadə edə bilməz.</translation>
 <translation id="7282197670900591579">Sitron tema</translation>
 <translation id="728412880473384942">Saytlar daha sürətli, lakin daha az güvənlidir</translation>
+<translation id="7352902948037373520"><ph name="BEGIN_LINK1" />Android ayarlarında<ph name="END_LINK1" /> idarə edin
+
+Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="7366415735885268578">Sayt əlavə edin</translation>
 <translation id="7368695150573390554">Oflayn data silinəcək</translation>
 <translation id="7369678931043226462">Yeni tab səhifəsinin yarım hündürlükdə açılmış aşağıdakı vərəqini fərdiləşdirin</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Saytlar adətən sənəd çap etmək və ya yaddaş cihazında saxlamaq kimi xüsusiyyətlər üçün USB cihazlarına qoşulur</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" köhnəlib. Tətbiqi yenidən quraşdırın.</translation>
 <translation id="847433688444405067">Cihazlarda axtarın</translation>
+<translation id="8484556725636319115">"JavaScript optimizatoru" deaktivdir. <ph name="BEGIN_LINK2" />Sayt istisnalarına nəzarət edin<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="848952951823693243">Həmişə mobil sayt tələb edin</translation>
 <translation id="8492822722330266509">Saytlar ani bildirişlər göndərə və yönləndirmələrdən istifadə edə bilər</translation>

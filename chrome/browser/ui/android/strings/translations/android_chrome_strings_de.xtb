@@ -699,6 +699,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3985215325736559418">Soll <ph name="FILE_NAME" /> erneut heruntergeladen werden?</translation>
 <translation id="3987993985790029246">Link kopieren</translation>
 <translation id="3994236846568425219">Dunkles Design verwenden, wenn das dunkle Design des Geräts aktiviert ist</translation>
+<translation id="399788104667917863">An Symbolleiste anpinnen</translation>
 <translation id="4000212216660919741">Offline-Startseite</translation>
 <translation id="4000670338830950598">Du kannst Google Chrome mit einem hervorgehobenen Element anpassen und verwalten</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kompromittiertes Passwort in deinem Google-Konto}other{# kompromittierte Passwörter in deinem Google-Konto}}</translation>
@@ -1780,7 +1781,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8151185429379586178">Entwicklertools</translation>
 <translation id="8152331954420209374">Zu Lens</translation>
 <translation id="8153206878708357851">Tastaturnavigation ein-/ausschalten</translation>
-<translation id="8154784523622173959">Personalisiere den Hintergrund dieser Seite</translation>
+<translation id="8154784523622173959">Optionen zum Personalisieren des Seitenhintergrunds</translation>
 <translation id="8163820386638255770">Bestätige deine Identität, um Passwörter in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{(1) inaktives Element}other{(#) inaktive Elemente}}</translation>
 <translation id="8186512483418048923">Noch <ph name="FILES" /> Dateien</translation>

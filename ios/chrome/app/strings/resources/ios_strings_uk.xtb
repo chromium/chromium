@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2360196772093551345">Мобільний сайт</translation>
 <translation id="2362083820973145409">Ви ввійшли як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ця опція відкриває налаштування.</translation>
+<translation id="2367025302166767427">Не вдалося заповнити інформацію</translation>
 <translation id="2371084566192454134">Вкладки й групи вкладок</translation>
 <translation id="2371303771137626249">Додати</translation>
 <translation id="2381405137052800939">Основні</translation>
@@ -1345,6 +1346,7 @@
 <translation id="5819208479324046259">Веб-переглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронізація…</translation>
+<translation id="583281660410589416">Невідомий</translation>
 <translation id="5838430324585198889">Спробуйте більше функцій iPad завдяки додаткам Google</translation>
 <translation id="583923961930319521">Використовуйте паролі на всіх пристроях</translation>
 <translation id="5843013299019689749">Чорний колір фону</translation>

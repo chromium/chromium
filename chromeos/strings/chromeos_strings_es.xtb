@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Introduce una petición</translation>
 <translation id="115705039208660697">piñas</translation>
 <translation id="1164939766849482256">Salvapantallas Del amanecer al anochecer</translation>
-<translation id="1167755866710282443">Abre el menú para personalizar las claves. Arrastra el menú para moverlo.</translation>
 <translation id="1171349345463658120">laguna con arena</translation>
 <translation id="1174073918202301297">Se ha añadido el acceso directo</translation>
 <translation id="11743817593307477">Usa las teclas de flecha para mover este control hasta la acción del juego que quieras. Usa la tecla Intro para colocar el control. Pulsa la tecla Esc para cancelar.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Cruceta de asignación de teclas</translation>
 <translation id="3217462202230355157">Comprueba que el micrófono esté conectado o prueba a reiniciar tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
-<translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3227186760713762082">Divide el valor de <ph name="CATEGORY_TEXT" /> entre <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">arte digital</translation>
 <translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
-<translation id="7184043045742675738">Haz clic en cualquier tecla para personalizar tu botón. Cambia la posición de la tecla con el ratón o las teclas de flecha.</translation>
 <translation id="7187669805838282391">el miércoles</translation>
 <translation id="7205318498545665455">Elige tu micrófono</translation>
 <translation id="7210635925306941239">cian</translation>
@@ -1497,7 +1494,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7590883480672980941">Configuración de introducción de texto</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">El administrador de <ph name="MANAGER" /> ha definido cuándo se puede usar este <ph name="DEVICE_TYPE" />.</translation>
-<translation id="7613724632293948900">Cambia la posición con el ratón o las teclas de flecha.</translation>
 <translation id="7618216277886673749">Seleccionar <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7620771111601174153">Más información en el Centro de Ayuda</translation>

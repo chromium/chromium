@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{未読のお知らせ 1 件}other{未読のお知らせ # 件}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{シークレット モードで次の拡張機能をオンにしてください。}other{シークレット モードで次の拡張機能をオンにしてください。}}</translation>
+<translation id="4230098358142093034">ホーム</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 か月前}other{# か月前}}</translation>
 <translation id="4277033906326892359">「<ph name="COLUMN_NAME" />」列を昇順で並べ替えました</translation>
 <translation id="4289300219472526559">読み上げを開始</translation>

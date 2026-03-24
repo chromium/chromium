@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="115705039208660697">పైనాపిల్స్</translation>
 <translation id="1164939766849482256">'ఉదయం నుండి సాయంత్రం' స్క్రీన్ సేవర్</translation>
-<translation id="1167755866710282443">కీలను అనుకూలీకరించడానికి మెనూను తెరవండి. తరలించడానికి మెనూను లాగండి.</translation>
 <translation id="1171349345463658120">ఇసుక లాగూన్</translation>
 <translation id="1174073918202301297">షార్ట్‌కట్ జోడించబడింది</translation>
 <translation id="11743817593307477">మీకు కావలసిన గేమ్ చర్యకు ఈ కంట్రోల్‌ను తరలించడానికి బాణం కీలను ఉపయోగించండి. కంట్రోల్‌ను కావలసిన స్థానానికి తరలించడానికి Enter కీని ఉపయోగించండి. దీన్ని రద్దు చేయడానికి, Escape కీని ఉపయోగించండి.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">కీ మ్యాపింగ్ డి-ప్యాడ్</translation>
 <translation id="3217462202230355157">మీ మైక్ కనెక్ట్ అయి ఉందని నిర్ధారించుకోండి లేదా మీ <ph name="DEVICE_TYPE" />‌ను రీస్టార్ట్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
-<translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో భాగించండి</translation>
 <translation id="3242622575335502454">డిజిటల్ ఆర్ట్</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు డివైజ్‌ను రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7180865173735832675">అనుకూలంగా మార్చండి</translation>
-<translation id="7184043045742675738">మీ బటన్‌ను అనుకూలంగా మార్చడానికి ఏదైనా కీపై క్లిక్ చేయండి. మౌస్ లేదా బాణం కీలతో కీ స్థానాన్ని మార్చండి.</translation>
 <translation id="7187669805838282391">బుధవారం నాడు</translation>
 <translation id="7205318498545665455">మీ మైక్‌ను ఎంచుకోండి</translation>
 <translation id="7210635925306941239">నీలి ఆకుపచ్చ రంగు</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">ఇన్‌పుట్ సెట్టింగ్‌లు</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> మిగిలి ఉంది</translation>
 <translation id="7600430297804876776">ఈ <ph name="DEVICE_TYPE" />‌ను ఎప్పుడు ఉపయోగించవచ్చో <ph name="MANAGER" /> అడ్మినిస్ట్రేటర్ సెట్ చేశారు.</translation>
-<translation id="7613724632293948900">మౌస్ లేదా బాణం కీలతో స్థానాన్ని మార్చండి.</translation>
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" />‌ను ఎంచుకోండి</translation>
 <translation id="7618774594543487847">తటస్థం</translation>
 <translation id="7620771111601174153">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
@@ -1631,6 +1627,7 @@
 <translation id="819278132617411009">ప్రొడక్టివిటీని మరింత పెంచుకోవడానికి Googleకు చెందిన AI టెక్నాలజీలను ఉపయోగించండి</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
+<translation id="8208043093301544621">వర్చువల్ హోమ్</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
 <translation id="8226628635270268143">మీకు ఇష్టమైన ఫోటోలు, ఆల్బమ్‌లను ఎంచుకోండి</translation>
 <translation id="8227119283605456246">ఫైల్‌ను జోడించండి</translation>

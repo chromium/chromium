@@ -493,6 +493,7 @@
 <translation id="2721190673959776287">சூழல்சார்ந்த பேனலுக்கான தயாரிப்பு-சார்ந்த உதவித் தகவலின் மாதிரி. இது ஒரு நாளில் பலமுறை காட்டப்படும்.</translation>
 <translation id="2739887572830526131">பக்கங்களைப் பின்னர் சேர்ப்பதற்காக இந்தக் குழுவை வைத்திருக்கலாம், இனி தேவையில்லை என்றால் நீக்கிவிடலாம்.</translation>
 <translation id="2747003861858887689">முந்தைய புலம்</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> <ph name="POSITION" />வது இடத்திற்கு நகர்த்தப்பட்டது</translation>
 <translation id="2755485474385016903">செய்யப்பட்ட மாற்றங்கள் குழுவில் உள்ள எல்லோருக்கும் காட்டப்படும்</translation>
 <translation id="2755595981383829244">உள்ளடக்க அறிவிப்புகளை இப்போது பெறுவீர்கள்</translation>
 <translation id="2761788987260570878">நீங்கள் தேடுவதைப் படமெடுக்கவும்</translation>
@@ -1348,6 +1349,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> நிர்வகிக்கிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">ஒத்திசைக்கிறது…</translation>
+<translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5838430324585198889">Google ஆப்ஸ் மூலம் iPadக்கான கூடுதல் அம்சங்களை அன்லாக் செய்யுங்கள்</translation>
 <translation id="583923961930319521">உங்களின் எல்லாச் சாதனங்களிலும் கடவுச்சொற்களைப் பயன்படுத்துங்கள்</translation>
 <translation id="5843013299019689749">பின்புல வண்ணம் கருப்பு</translation>
@@ -2032,6 +2034,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> மாடல்கள்</translation>
 <translation id="8211030355252954494"><ph name="WEBSITE" /> தளத்திற்கான கடவுச்சொற்களைப் பெற்றுள்ளீர்கள்</translation>
 <translation id="8211406090763984747">இணைப்பு பாதுகாப்பானது</translation>
+<translation id="8213190397436801658">முகப்பு</translation>
 <translation id="8214293972734702249">பின் செய்யப்பட்டது, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">ஆஃப்லைன் பதிப்பைப் புதிய பக்கத்தில் காட்டு</translation>
 <translation id="8221665793629393739">நீங்கள் திரும்பச் செல்வதற்கான நினைவூட்டல்</translation>

@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">Önnel megosztva</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> eltávolítási gombbal</translation>
 <translation id="1062407476771304334">Csere</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Biztonsági mentés a Google Drive-ra. Bármikor könnyedén visszaállíthatja adatait vagy lecserélheti eszközét. A biztonsági mentés tartalmazza az alkalmazásadatokat.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A biztonsági mentéseket a Google szervereire tölti fel a rendszer, és az Ön Google-fiókjához használt jelszóval titkosítja.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Alkalmazásadat lehet az alkalmazás által mentett bármilyen adat (a fejlesztő által megadott beállításoktól függően) – például névjegy, üzenet vagy fotó is.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />A biztonsági mentés adatait a rendszer nem számítja bele a Google Drive tárhelykvótájába.<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />Ezt a szolgáltatást bármikor kikapcsolhatja a Beállításokban.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">Cserélje ki vagy töltse fel az akkumulátort</translation>
 <translation id="1081015718268701546">A Linux-alkalmazások jelenleg nem támogatottak. Az egyéb alkalmazásokat elmenti a rendszer.</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="3470502288861289375">Másolás...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, majd <ph name="KEY_TWO" /> vagy <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control+Shift+szóköz</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />Ha a Helymeghatározás pontossága beállítás be van kapcsolva, a Google a vezeték nélküli jelekkel kapcsolatos információkat (például a Wi-Fi-hozzáférési pontokat és a mobilhálózat adótornyait), valamint az eszköz szenzoradatait (például a gyorsulásmérő és a giroszkóp adatait) használja arra, hogy pontosabban határozza meg az eszköz helyét, amelyet az Android-alkalmazások és -szolgáltatások arra használnak, hogy helyalapú funkciókat biztosítsanak. Ebből a célból a Google rendszeresen gyűjti az eszköz érzékelőitől és a közeli vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A Google ezeket az információkat – anélkül, hogy ezzel Önt azonosítaná – arra használja, hogy javítsa a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint általánosan javítsa, biztosítsa és fenntartsa a Google-szolgáltatásokat. Ezeket az információkat a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján dolgozzuk fel.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />A Helymeghatározás pontossága beállítást bármikor kikapcsolhatja az eszköz helybeállításaiban a Beállítások &gt; Adatvédelem és biztonság &gt; Adatvédelmi beállítások &gt; Helyhozzáférés &gt; Speciális helybeállítások menüpontban. Ha a Helymeghatározás pontossága beállítás ki van kapcsolva, akkor a helymeghatározás pontosságával kapcsolatos adatok gyűjtésére nem kerül sor. Az Android-alkalmazások és -szolgáltatások esetében a rendszer csak IP-címet használ (ha rendelkezésre áll) az eszköz helyének meghatározásához, ami hatással lehet az Android-alkalmazások és -szolgáltatások (például a Google Térkép) helymeghatározási képességére és pontosságára.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />További információ a Helymeghatározás pontossága beállításról<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">A polc automatikusan elrejti magát</translation>
 <translation id="3496797737329654668">Játékra fel!</translation>
@@ -877,6 +886,9 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
 <translation id="3743775386021959186">Összpontosítási üzemmód bekapcsolva, <ph name="REMAINING_TIME" /> van hátra</translation>
 <translation id="3750403286520637847">Időjárási javaslat elrejtése</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Alkalmazásadat lehet az alkalmazás által mentett bármilyen adat (a fejlesztő által megadott beállításoktól függően) – például névjegy, üzenet vagy fotó is.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A biztonsági mentés adatmennyisége nem számít bele gyermeke Drive-tárhelykvótájába.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Ezt a szolgáltatást bármikor kikapcsolhatja a Beállításokban.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">Képernyőtartalom átküldése</translation>
 <translation id="3765841382945324995">A(z) <ph name="SIX_PACK_KEY_NAME" /> billentyűparancsa a(z) <ph name="NEW_SHORTCUT" /> billentyűparancsra módosult a következőről: <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="3765841986579723851">Ma szerkesztette</translation>
@@ -1344,6 +1356,10 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5147567197700016471">Feloldva</translation>
 <translation id="5150070631291639005">Adatvédelmi beállítások</translation>
 <translation id="5155897006997040331">Olvasás sebessége</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Ez általános információ az eszközről és használatáról (például az akkumulátor töltöttségi szintjéről, a rendszer- és alkalmazástevékenységekről, valamint a hibákról). Az adatokat arra használjuk fel, hogy továbbfejlesszük az Androidot, bizonyos összesített adatok pedig a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek segítenek alkalmazásaik és termékeik fejlesztésében.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A funkció kikapcsolása nem korlátozza az eszközt abban, hogy elküldje az alapvető fontosságú szolgáltatásokkal (pl. a rendszerfrissítésekkel és -biztonsággal) kapcsolatos információkat.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />A tulajdonos ezt a funkciót a Beállítások &gt; Speciális &gt; Diagnosztikai és használati adatok automatikus elküldése a Google-nak menüpontban vezérelheti.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Ha a további Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat a Google-fiókjába is mentheti. Megtekintheti az adatokat, törölheti őket, továbbá megváltoztathatja a fiókbeállításokat az account.google.com oldalon.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">Akkumulátor állapota: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Ciklusok száma: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Asztal mentése sablonként</translation>
 <translation id="5168181903108465623">Cast-eszközök állnak rendelkezésre</translation>
@@ -1602,6 +1618,10 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5916646100036936191">Új értesítés, <ph name="NOTIFICATION_COUNT" /> összesen</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5920710855273935292">A mikrofon le van némítva.</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />Ha a Helymeghatározás pontossága beállítás be van kapcsolva, a Google a vezeték nélküli jelekkel kapcsolatos információkat (például a Wi-Fi-hozzáférési pontokat és a mobilhálózat adótornyait), valamint az eszköz szenzoradatait (például a gyorsulásmérő és a giroszkóp adatait) használja arra, hogy pontosabban határozza meg az eszköz helyét, amelyet az Android-alkalmazások és -szolgáltatások arra használnak, hogy helyalapú funkciókat biztosítsanak. Ebből a célból a Google rendszeresen gyűjti az eszköz érzékelőitől és a közeli vezeték nélküli jelekből kapott információkat, hogy hozzájáruljon a vezeték nélküli jelek alapján történő közösségi helymeghatározáshoz.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A Google az eszközről gyűjtött adatokat arra használja, hogy javítsa a helymeghatározás pontosságát és a helyalapú szolgáltatásokat, valamint általánosan javítsa, biztosítsa és fenntartsa a Google-szolgáltatásokat. Ezeket az információkat a Google-nak és harmadik feleknek a felhasználói igények kiszolgálására vonatkozó jogos érdekei alapján dolgozzuk fel. Ezeket az információkat nem használjuk fel személyek azonosítására.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />A Helymeghatározás pontossága beállítás bármikor kikapcsolható az eszköz helybeállításaiban, a Beállítások &gt; Adatvédelem és biztonság &gt; Adatvédelmi beállítások &gt; Helyhozzáférés &gt; Speciális helybeállítások menüpontban. Ha a Helymeghatározás pontossága beállítás ki van kapcsolva, akkor a helymeghatározás pontosságával kapcsolatos adatok gyűjtésére nem kerül sor. Az Android-alkalmazások és -szolgáltatások esetében a rendszer csak IP-címet használ (ha rendelkezésre áll) az eszköz helyének meghatározásához, ami hatással lehet az Android-alkalmazások és -szolgáltatások (például a Google Térkép) helymeghatározási képességére és pontosságára.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />További információ a Helymeghatározás pontossága beállításról<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">A(z) <ph name="MANAGER" /> használatához frissítés szükséges</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> bekapcsolva.</translation>
@@ -1648,6 +1668,10 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> alkalmazás használja</translation>
 <translation id="6045998054441862242">Kontrasztos mód bekapcsolása</translation>
 <translation id="6047696787498798094">A képernyőmegosztás leáll, amikor másik felhasználóra vált. Folytatja?</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />Ez általános információ az eszközről és használatáról (például az akkumulátor töltöttségi szintjéről, a rendszer- és alkalmazástevékenységekről, valamint a hibákról). Az adatokat arra használjuk fel, hogy továbbfejlesszük az Androidot, bizonyos összesített adatok pedig a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek segítenek alkalmazásaik és termékeik fejlesztésében.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A funkció kikapcsolása nem korlátozza ezt az eszközt abban, hogy elküldje az alapvető fontosságú szolgáltatásokkal (pl. a rendszerfrissítésekkel és -biztonsággal) kapcsolatos információkat.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />A tulajdonos ezt a funkciót a Beállítások &gt; Speciális &gt; Diagnosztikai és használati adatok automatikus elküldése a Google-nak menüpontban vezérelheti.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Ha a további Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti az ő Google-fiókjába. Ezekről a funkciókról és beállításuk módjáról a families.google.com oldalon találhat további információt.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">Jobb kattintás egy linkre</translation>
 <translation id="6054305421211936131">Bejelentkezés intelligens kártyával</translation>
 <translation id="6059276912018042191">Nemrég megnyitott Chrome-lapok</translation>
@@ -1756,6 +1780,8 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="639644700271529076">A CAPS LOCK ki van kapcsolva</translation>
 <translation id="6406458002328242616">Időzítés módosítása. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />A Google helyszolgáltatásai olyan forrásokat használnak eszköze helyének becsléséhez, mint a Wi-Fi- vagy mobilhálózatok és az érzékelők.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A helyszolgáltatás kikapcsolható az eszközön a fő Hely beállítás kikapcsolásával. Ezenkívül a helybeállításokban le lehet tiltani a Wi-Fi- és mobilhálózatoknak, valamint az érzékelőknek a hely meghatározására való felhasználását is.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">Válassza ki a(z) <ph name="VM_NAME" /> telepíteni kívánt verzióját.</translation>
 <translation id="641469293210305670">Frissítések és alkalmazások telepítése</translation>
 <translation id="6417265370957905582">Google Segéd</translation>
@@ -2421,6 +2447,8 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8481187309597259238">USB-engedély megerősítése</translation>
 <translation id="8487660088084188539">Ha bekapcsolja ezeket a funkciókat, a rendszer elküldheti a bevitt szöveget, a dokumentum tartalmát és a weboldal URL-jét a Google szervereinek. Ezeket az információkat írási javaslatok és összefoglalók generálásához, kérdések megválaszolásához, valamint a termék fejlesztéséhez használjuk fel a <ph name="LINK_TO_SERVICE_TERMS" /> értelmében. Ne adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />A Google helyszolgáltatásai olyan forrásokat használnak az eszköz helyének becsléséhez, mint a Wi-Fi- vagy mobilhálózatok és az érzékelők.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />A helyszolgáltatás kikapcsolható az eszközön a fő Hely beállítás kikapcsolásával. Ezenkívül a helybeállításokban le lehet tiltani a Wi-Fi- és mobilhálózatoknak, valamint az érzékelőknek a hely meghatározására való felhasználását is.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">A(z) „<ph name="UPDATED_APPS" />” kioszkalkalmazás frissítve lett. Kérjük, indítsa újra az eszközt a frissítési folyamat befejezéséhez.</translation>
 <translation id="8491237443345908933">Link megnyitása új lapon</translation>
 <translation id="8492573885090281069">A(z) <ph name="DISPLAY_NAME" /> nem támogatja a következő felbontást: <ph name="SPECIFIED_RESOLUTION" />. A felbontás erre módosult: <ph name="FALLBACK_RESOLUTION" />. A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>

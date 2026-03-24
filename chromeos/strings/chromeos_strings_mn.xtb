@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Заавар оруулна уу</translation>
 <translation id="115705039208660697">ханборгоцойнууд</translation>
 <translation id="1164939766849482256">Үүр цайхаас шөнө хүртэлх байдлыг харуулсан дэлгэц амраагч</translation>
-<translation id="1167755866710282443">Товчнуудыг өөрчлөхийн тулд цэсийг нээнэ үү. Цэсийг чирч зөөнө үү.</translation>
 <translation id="1171349345463658120">элсэн цүлхэн</translation>
 <translation id="1174073918202301297">Товчлол нэмсэн</translation>
 <translation id="11743817593307477">Энэ удирдлагыг хүссэн тоглоомын үйлдэл рүүгээ шилжүүлэх бол суман товчийг ашиглана уу. Удирдлагыг тавих бол enter товчийг ашиглана уу. Цуцлах бол escape товчийг ашиглана уу.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">Товч харгалзуулалтын D-pad</translation>
 <translation id="3217462202230355157">Микрофоноо холбогдсон эсэхийг нягтлах эсвэл өөрийн <ph name="DEVICE_TYPE" />-г дахин эхлүүлж үзнэ үү</translation>
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
-<translation id="3226657629376379887">Бүдүүвчийн үйлдлийн цэс</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-д хуваана уу</translation>
 <translation id="3242622575335502454">дижитал урлаг</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг. Администраторууд төхөөрөмжийг алсаас тохируулж магадгүй.</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7180865173735832675">Хүссэнээр өөрчлөх</translation>
-<translation id="7184043045742675738">Товчоо өөрчлөхийн тулд дурын товчийг товшино уу. Хулгана эсвэл суман товчоор товчийг дахин байрлуулна уу.</translation>
 <translation id="7187669805838282391">Лхагва гарагт</translation>
 <translation id="7205318498545665455">Микрофоноо сонгоно уу</translation>
 <translation id="7210635925306941239">шар хөх</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
 <translation id="7600430297804876776">Энэ <ph name="DEVICE_TYPE" />-г хэзээ ашиглаж болохыг <ph name="MANAGER" />-н администратор тохируулсан байна.</translation>
-<translation id="7613724632293948900">Хулгана эсвэл суман товчоор дахин байрлуулна уу.</translation>
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" />-г сонгох</translation>
 <translation id="7618774594543487847">Завсрын</translation>
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>

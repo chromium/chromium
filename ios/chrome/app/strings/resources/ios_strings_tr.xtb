@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2360196772093551345">Mobil Site İste</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> olarak oturum açtınız. <ph name="USER_EMAIL" />. Ayarları açar.</translation>
+<translation id="2367025302166767427">Bilgileriniz girilemedi</translation>
 <translation id="2371084566192454134">Sekmeler ve sekme grupları</translation>
 <translation id="2371303771137626249">Yeni</translation>
 <translation id="2381405137052800939">Temel ayarlar</translation>
@@ -940,7 +941,7 @@
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Ayarlar<ph name="END_BOLD" />'ı açın</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> için diğer seçenekler</translation>
 <translation id="4455710003856931944">Geri veya ileri gitmek için kenarı kaydırabilirsiniz.</translation>
-<translation id="4460014764210899310">Grubu Çöz</translation>
+<translation id="4460014764210899310">Grubu çöz</translation>
 <translation id="446314443268698477">Gördüklerinizi satın almak, çevirmek ve tanımlamak için kameranızı veya fotoğraf galerinizi kullanın.</translation>
 <translation id="4469324811108161144">En fazla <ph name="CHARACTER_LIMIT" /> karakterden oluşan notlar kaydedilebilir.</translation>
 <translation id="4471472356135655769">Şifreler dışa aktarılamıyor</translation>
@@ -1345,6 +1346,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5819208479324046259"><ph name="MANAGER" /> tarafından yönetiliyor. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Senkronize ediliyor…</translation>
+<translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5838430324585198889">Google uygulamalarıyla iPad'inizde daha fazla özellikten yararlanın</translation>
 <translation id="583923961930319521">Şifreleri tüm cihazlarınızda kullanın</translation>
 <translation id="5843013299019689749">Siyah arka plan rengi</translation>

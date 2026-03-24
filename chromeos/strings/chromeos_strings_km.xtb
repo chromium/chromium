@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">បញ្ចូល​សារតម្រុយ</translation>
 <translation id="115705039208660697">ម្នាស់</translation>
 <translation id="1164939766849482256">ធាតុរក្សាអេក្រង់ដែលបង្ហាញពេលព្រលឹម​ដល់​ព្រលប់</translation>
-<translation id="1167755866710282443">បើក​ម៉ឺនុយ​ ដើម្បី​ប្ដូរ​គ្រាប់ចុច​តាមបំណង។ អូស​ម៉ឺនុយ ដើម្បី​ផ្លាស់ទី។</translation>
 <translation id="1171349345463658120">បឹងជាប់មាត់សមុទ្រដែលពោរពេញដោយខ្សាច់</translation>
 <translation id="1174073918202301297">បាន​បញ្ចូល​ផ្លូវកាត់</translation>
 <translation id="11743817593307477">ប្រើគ្រាប់ចុច​ព្រួញ ដើម្បីផ្លាស់ទីប៊ូតុងបញ្ជានេះទៅសកម្មភាពហ្គេមដែលអ្នកចង់បាន។ ប្រើគ្រាប់ចុច enter ដើម្បីដាក់ប៊ូតុងបញ្ជា។ ប្រើគ្រាប់ចុច escape ដើម្បីបោះបង់។</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">ឌីផេត​សម្រាប់ការរៀបចំ​គ្រាប់ចុច</translation>
 <translation id="3217462202230355157">ត្រូវប្រាកដថា​បានភ្ជាប់​មីក្រូហ្វូន​របស់អ្នក ឬ​សាកល្បង​ចាប់ផ្ដើម <ph name="DEVICE_TYPE" /> របស់អ្នក​ឡើងវិញ</translation>
 <translation id="3226405216343213872">កំពុងរកមើលម៉ាស៊ីនស្កេន</translation>
-<translation id="3226657629376379887">ម៉ឺនុយសកម្មភាព​ប្លង់​</translation>
 <translation id="3227186760713762082">ចែក​តម្លៃ<ph name="CATEGORY_TEXT" />នឹង <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">សិល្បៈ​ឌីជីថល</translation>
 <translation id="3246869037381808805">កិច្ចការបោះពុម្ពដែលចាស់ជាង 1 ថ្ងៃនឹងត្រូវលុបចេញ</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
 <translation id="7180865173735832675">កែសម្រួល</translation>
-<translation id="7184043045742675738">ចុច​លើ​គ្រាប់ចុច​ណា​មួយ ដើម្បី​ប្ដូរ​ប៊ូតុង​របស់​អ្នក​តាមបំណង។ ប្ដូរទីតាំងគ្រាប់ចុច ដោយ​ប្រើ​កណ្ដុរ ឬ​គ្រាប់ចុច​ព្រួញ។</translation>
 <translation id="7187669805838282391">នៅថ្ងៃពុធ</translation>
 <translation id="7205318498545665455">ជ្រើសរើសមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="7210635925306941239">ស៊ីលៀប</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">ការកំណត់ការបញ្ចូល</translation>
 <translation id="7595982850646262331">នៅសល់ <ph name="TIME_VALUE" /> ទៀត</translation>
 <translation id="7600430297804876776">អ្នកគ្រប់គ្រង <ph name="MANAGER" /> បាន​កំណត់​ពេលដែលអាចប្រើ <ph name="DEVICE_TYPE" /> នេះបាន។</translation>
-<translation id="7613724632293948900">ប្ដូរ​ទីតាំង​ដោយ​ប្រើកណ្ដុរ ឬ​គ្រាប់ចុច​ព្រួញ។</translation>
 <translation id="7618216277886673749">ជ្រើសរើសភាសា<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ស្រាល</translation>
 <translation id="7620771111601174153">ស្វែងយល់បន្ថែម​នៅក្នុងមជ្ឈមណ្ឌលជំនួយ</translation>
@@ -1631,6 +1627,7 @@
 <translation id="819278132617411009">ប្រើ Google AI ដើម្បី​ឱ្យកាន់តែមាន​ផលិតភាព</translation>
 <translation id="8200772114523450471">បន្ត</translation>
 <translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>
+<translation id="8208043093301544621">ទំព័រដើម</translation>
 <translation id="8208861521865154048">អត្ថប្រយោជន៍</translation>
 <translation id="8226628635270268143">ជ្រើសរើស​រូបថត និងអាល់ប៊ុមដែលអ្នកចូលចិត្ត</translation>
 <translation id="8227119283605456246">ភ្ជាប់ឯកសារ</translation>

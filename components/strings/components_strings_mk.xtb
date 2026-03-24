@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1036436692654972538">Зачувано на уредот</translation>
 <translation id="1036881361735705143">Плик C4</translation>
+<translation id="1038168778161626396">Само шифрирање</translation>
 <translation id="1038842779957582377">непознато име</translation>
 <translation id="1041998700806130099">Порака на работниот лист</translation>
 <translation id="1044897699341250361">Што значи ова</translation>
@@ -44,6 +45,7 @@
 <translation id="1068672505746868501">Никогаш не преведувај страници на <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Метал (сјајен)</translation>
 <translation id="1070901266639972381">Вечер</translation>
+<translation id="1071917609930274619">Шифрирање податоци</translation>
 <translation id="1073690811593784042">Стакло (во боја)</translation>
 <translation id="1074287282535157335">Платете на 4 рати или на месечно ниво (подлежи на подобност)</translation>
 <translation id="1074497978438210769">Не е безбедно</translation>
@@ -85,6 +87,7 @@
 <translation id="1138458427267715730">Добивајте известувања кога ќе се намали цената на кој било сајт на интернет</translation>
 <translation id="1142713751288681188">Тип хартија</translation>
 <translation id="1142965388643537393">Информации за патувањето</translation>
+<translation id="1143142264369994168">Потписник на сертификат</translation>
 <translation id="1144136880160289237">Сѐ уште немате активни теми</translation>
 <translation id="1149617035358809955">да го потврди вашиот идентитет за да може да ги пополни вашите податоци за плаќање</translation>
 <translation id="1150565364351027703">Очила за сонце</translation>
@@ -137,6 +140,7 @@
 <translation id="1215738931000958575">Користете ги податоците зачувани во вашата сметка на Google за да ги пополнувате автоматски лозинките, криптографските клучеви, адресите, начините на плаќање и други податоци</translation>
 <translation id="1219129156119358924">Безбедност на системот</translation>
 <translation id="1219134100826635117">Вашиот администратор го блокирал дејствово</translation>
+<translation id="1221024147024329929">PKCS #1 MD2 со RSA шифрирање</translation>
 <translation id="1222060260947439312">Десна фиока</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Број на картичка:</translation>
@@ -411,8 +415,10 @@
 <translation id="1639239467298939599">Се вчитува</translation>
 <translation id="1640180200866533862">Правила за корисникот</translation>
 <translation id="1640244768702815859">Обидете се да ја <ph name="BEGIN_LINK" />посетите почетната страница на сајтов<ph name="END_LINK" />.</translation>
+<translation id="1640283014264083726">PKCS #1 MD4 Со шифрирање РСА</translation>
 <translation id="1641962500621836664">Датотеката од камерата се зачувува</translation>
 <translation id="1641976391427233992">Одложи го печатењето до</translation>
+<translation id="1643072738649235303">X9.62 ECDSA потпис со SHA-1</translation>
 <translation id="1643651787397909318">Копчето „Одете на „Безбедносна проверка“ на Chrome“ го активира отворањето на страницата за „Безбедносна проверка“ на Chrome во поставките</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1645004815457365098">Непознат извор</translation>
@@ -695,6 +701,7 @@
 <translation id="2108755909498034140">Рестартирајте го компјутерот</translation>
 <translation id="2109845311767915560">споделената група картички</translation>
 <translation id="2111166930115883695">Притиснете го копчето за празно место за да пуштите</translation>
+<translation id="2113921862428609753">Пристап до информации на орган</translation>
 <translation id="2113977810652731515">Картичка</translation>
 <translation id="2114841414352855701">Игнорирано бидејќи е отфрлено од <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Плик C5</translation>
@@ -757,6 +764,7 @@
 <translation id="2190094353033916816">Ова правило има различни вредности применети на ниво на машина и на корисник. Правилото функционира како што е предвидено.</translation>
 <translation id="2191980191135734720">Отклучете го екранот на следниот чекор, обично со отпечатокот. Може <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
+<translation id="2195729137168608510">Заштита на е-пошта</translation>
 <translation id="2198183835992354675">Број на познат патник</translation>
 <translation id="2198215508485017216">Се случи нешто неочекувано. <ph name="BEGIN_LINK" />Дознајте повеќе за прикачувањата на Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Копче „Не ми се допаѓа“, притиснете Enter за да се отвори формулар за испраќање детални повратни информации за тоа зошто не ви се допаѓа предлогов</translation>
@@ -1416,6 +1424,7 @@
 <translation id="3220264767789936523">Облека за официјални настани</translation>
 <translation id="3223287115535306850">Анимирана икона за стартување апликација</translation>
 <translation id="3223425961342298674">Локацијата не е дозволена</translation>
+<translation id="3225319735946384299">Потпишување шифра</translation>
 <translation id="3225919329040284222">Серверот претстави сертификат што не се совпаѓа со вградените очекувања. Овие очекувања се вклучени за сигурни веб-локации со голема сигурност за да бидете заштитени.</translation>
 <translation id="3226128629678568754">Притиснете го копчето за повторно вчитување за повторно да се испратат потребните податоци за вчитување на страницата.</translation>
 <translation id="3226387218769101247">Сликички</translation>
@@ -1529,6 +1538,7 @@
 <translation id="3414952576877147120">Големина:</translation>
 <translation id="341513675006332771">Копче за играње на играта „Диносаурус на Chrome“, активирајте го за да ја играте играта „Трчање на диносаурусот“ во Chrome</translation>
 <translation id="3415471717466570460">За да се подобри функцијава, пребарувањата, најдобрите совпаѓања и содржините на нивните страници се испраќаат до Google, а може да ги гледаат и прегледувачи. Ова е експериментална функција, па нема секогаш да прикажува точни информации.</translation>
+<translation id="3421387094817716717">Јавен клуч на елиптична крива</translation>
 <translation id="3422248202833853650">Обидете се да излезете од другите програми за да ослободите меморија.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> е моментално недостапен.</translation>
 <translation id="3422794267539320056">Допрете го диносаурусот или притиснете Space за да играте</translation>
@@ -1606,6 +1616,7 @@
 <translation id="3541016556608204104">Повеќе за Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Слика на картичка</translation>
 <translation id="3542768452570884558">Отвори го линкот во нов прозорец</translation>
+<translation id="3543597750097719865">X9.62 ECDSA потпис со SHA-512</translation>
 <translation id="3543935938072367282">Плаќајте побрзо со автоматското пополнување</translation>
 <translation id="3547442767634383572">преглед на работниот профил</translation>
 <translation id="3547746132308051926">20 x 24 инчи</translation>
@@ -1801,6 +1812,7 @@
 <translation id="3815434930383843058">8 x 12 инчи</translation>
 <translation id="3816482573645936981">Вредност (заменета)</translation>
 <translation id="3817524650114746564">Отворете ги поставките за прокси на компјутерот</translation>
+<translation id="3820749202859700794">SECG елиптична крива secp521r1 (наречена NIST P-521)</translation>
 <translation id="382115839591654906">CVC за <ph name="CARD_NAME" /></translation>
 <translation id="3822492359574576064">заклучување и користење на глувчето</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2091,6 +2103,7 @@
 <translation id="4265635050210404830">Вашите картички за лојалност</translation>
 <translation id="4265872034478892965">Дозволено од администраторот</translation>
 <translation id="4267590181863312380">За да ја добиете историјата од другите ваши уреди, најавете се и синхронизирајте ја историјата. Ќе ги добиете и вашите лозинки и друго на сите ваши уреди. Може да ја сопрете синхронизацијата кога сакате во поставките. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
+<translation id="4268025649754414643">Шифрирање на клучот</translation>
 <translation id="4269029136757623689">Вентилатори</translation>
 <translation id="4269264543938335308">Костими за капење</translation>
 <translation id="4269599248168651462">Сертификатот за серверот е издаден на неуникатно име.</translation>
@@ -2148,6 +2161,7 @@
 <translation id="4332872603299969513">Детска литература</translation>
 <translation id="4333295216031073611">Список за купување</translation>
 <translation id="4333561522337981382">да управува со прозорците на сите ваши екрани</translation>
+<translation id="4333854382783149454">PKCS #1 SHA-1 со RSA енкрипција</translation>
 <translation id="4336913590841287350">Политикава сѐ уште не е поддржана како политика за корисници на iOS.</translation>
 <translation id="4340575312453649552">Рекламава користеше премногу ресурси на вашиот уред, па Chrome ја отстрани.</translation>
 <translation id="4340810192899866471">Увезете од JSON</translation>
@@ -2191,6 +2205,7 @@
 <translation id="4414515549596849729">колачиња и податоци за сајтот</translation>
 <translation id="4415156962929755728">Пластика (висок сјај)</translation>
 <translation id="4415426530740016218">Адреса за подигнување</translation>
+<translation id="4415748029120993980">SECG елиптична крива secp384r1 (наречена NIST P-384)</translation>
 <translation id="4419287616181386201">Лозинките може да се избришат во нивните поставки за управување</translation>
 <translation id="4424024547088906515">Серверот не може да докаже дека е <ph name="DOMAIN" />; Chrome не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="4425750422187370446">Атлетска облека</translation>
@@ -2588,6 +2603,7 @@
 <translation id="5087286274860437796">Сертификатот на серверот не е важечки во моментов.</translation>
 <translation id="5087580092889165836">Додајте картичка</translation>
 <translation id="5088142053160410913">Порака до операторот</translation>
+<translation id="5088534251099454936">PKCS #1 SHA-512 со RSA шифрирање</translation>
 <translation id="5089810972385038852">Држава</translation>
 <translation id="5093232627742069661">Z-превиткување</translation>
 <translation id="5093417502834168387">Се соочувате со проблем при најавувањето? Обидете се на друг начин</translation>
@@ -2760,6 +2776,7 @@
 <translation id="5348330584842140856">Датотекава не се премести бидејќи веќе не постои</translation>
 <translation id="5349543692327946794">Етикети (за мастилен печатач)</translation>
 <translation id="5351548097010183514">Градежни материјали и производи</translation>
+<translation id="5352033265844765294">Временско означување</translation>
 <translation id="5354143049423063163">Хеџ фондови</translation>
 <translation id="5355557959165512791">Не може да го посетите <ph name="SITE" /> во моментов затоа што неговиот сертификат е повлечен. Грешките на мрежата и нападите обично се привремени, така што страницава веројатно ќе работи подоцна.</translation>
 <translation id="5359752295193133096">Стандардно споделувајте ги релевантните отворени картички за побрзи и поприспособени одговори.</translation>
@@ -2813,6 +2830,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> сака да ви испраќа известувања</translation>
 <translation id="5431318178759467895">Боја</translation>
 <translation id="5433756542371550806">Варијации на линијата за наредби</translation>
+<translation id="5434065355175441495">PKCS #1 RSA шифрирање</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />нема да ги зачувува следниве работи<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />вашата историја на прелистувањето
@@ -2862,6 +2880,7 @@
 <translation id="5499229993630251170">Да се продолжи низава?</translation>
 <translation id="550365051221576010">Пополнување сѐ</translation>
 <translation id="5506286895894263601">Списокот не содржи важечки кратенки.</translation>
+<translation id="5507756662695126555">Неотповикливост</translation>
 <translation id="5508443345185481044">Фотоапарати и видеокамери</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Управувани обележувачи</translation>
@@ -2944,6 +2963,7 @@
 <translation id="5611398002774823980">Зачувај на сметката</translation>
 <translation id="561165882404867731">Преведете ја страницава со „Преведи на Google“</translation>
 <translation id="5612720917913232150"><ph name="URL" /> сака да ја користи локацијата на вашиот компјутер</translation>
+<translation id="5614190747811328134">Известување за корисникот</translation>
 <translation id="5614520971155863709">Игри со карти</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ве пренасочи премногу пати.</translation>
 <translation id="5619721953841297650">Зададена вредност</translation>
@@ -2959,6 +2979,7 @@
 <translation id="5640474731385449758">Екстензијата „<ph name="EXTENSION_NAME" />“ сака да отвора линкови на <ph name="PROTOCOL" /> во <ph name="ORIGIN" /> преку <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео системи и компоненти</translation>
+<translation id="5642508497713047">CRL-пријавувач</translation>
 <translation id="5644090287519800334">Промена на страната 1 на сликата X</translation>
 <translation id="5644128326840674462">Промотивен банер</translation>
 <translation id="5645132789250840550">Пластика (полусјајна)</translation>
@@ -3041,6 +3062,7 @@
 <translation id="5783922175933467571">Линкот за <ph name="TAB_GROUP_DISPLAY_NAME" /> истекува по 48 часа</translation>
 <translation id="5784606427469807560">Се појави проблем при потврдувањето на картичката. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="5785756445106461925">Понатаму, страницава опфаќа други ресурси што не се безбедни. Нив може да ги гледаат други лица при преносот и може да ги менува напаѓач за да го смени изгледот на страницата.</translation>
+<translation id="5787146423283493983">Клучен договор</translation>
 <translation id="5793317771769868848">Начинов на плаќање ќе се избрише од уредов</translation>
 <translation id="5794065675298686371">Вклучете известувања за следење цена</translation>
 <translation id="5800727402210090597">Поправка и сервисирање на мобилни телефони</translation>
@@ -3121,6 +3143,7 @@
 <translation id="5924510104057992926">Потребен е преглед пред отворањето</translation>
 <translation id="5924782825030413055">Извор на последно ажурирање на согласноста:</translation>
 <translation id="5925040402342933574">Оптички диск (полусјаен)</translation>
+<translation id="5925147183566400388">Покажувач на Изјава за практикување сертификација</translation>
 <translation id="5926982310317673627">Спортски сали и здравствени клубови</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Вклучете ја поставкава за да користите „Помогни ми да напишам“</translation>
@@ -3209,6 +3232,7 @@
 <translation id="605237284704429106">Се пополнува полето за IBAN</translation>
 <translation id="6053584886670442526">Може да ги користите зачуваните адреси на производите на Google. Адресава е зачувана во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Дознајте повеќе за тоа како Google ги штити вашите податоци во нашата „Политика за приватност“.</translation>
+<translation id="6055392876709372977">PKCS #1 SHA-256 со RSA шифрирање</translation>
 <translation id="6055888660316801977">Лист што означува дека нема акредитив што се совпаѓа за акредитивот за безбедно плаќање</translation>
 <translation id="6055982527635883756">Коверт (архивски)</translation>
 <translation id="6057177372083677067">Онлајн видео</translation>
@@ -3264,6 +3288,7 @@
 <translation id="6131824478727057281">локација</translation>
 <translation id="6133320744616005677">Продолжи да дозволуваш</translation>
 <translation id="6133984428121856852">Наставката на датотека е празна или неправилно формирана.</translation>
+<translation id="6138680304137685902">X9.62 ECDSA потпис со SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 инчи</translation>
 <translation id="6143097244789397208">Проширена и виртуелна реалност</translation>
 <translation id="614327212146763975">Сензорите за движење и светлина се дозволени</translation>
@@ -3377,6 +3402,7 @@
 <translation id="6326947323444967009">Поставете го Chrome како стандарден прелистувач на системот во поставките за iOS</translation>
 <translation id="6327065120806001832">пристап на локалната мрежа</translation>
 <translation id="6328639280570009161">Обидете се да го оневозможите мрежното предвидување</translation>
+<translation id="6329742260390895689">За автоматско пополнување на податоците, вклучете „Користете пропусници на Google“ во поставките за Wallet</translation>
 <translation id="6329815962353376655">&lt;Внесете прашање&gt;</translation>
 <translation id="6331597954316706229">За најперсонализирани одговори, дозволете сите низи да се повикуваат на вашите релевантни отворени картички.</translation>
 <translation id="633348045801643466">Прикажувај ги опциите за <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />плаќање подоцна<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> при плаќањето</translation>
@@ -3395,6 +3421,7 @@
 <translation id="6349101878882523185">Инсталирај <ph name="APP_NAME" /></translation>
 <translation id="6351658970066645919">Избришете ги податоците од прелистување</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ниедна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />, синхронизирана)}=2{2 лозинка (за <ph name="DOMAIN_LIST" />, синхронизирани)}one{# лозинка (за <ph name="DOMAIN_LIST" />, синхронизирани)}other{# лозинки (за <ph name="DOMAIN_LIST" />, синхронизирани)}}</translation>
+<translation id="6354918092619878358">SECG елиптична крива secp256r1 (наречена ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355392890578844978">Прелистувачов не е управуван од компанија или друга организација. Со активноста на уредов може да се управува надвор од Chromium. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">Групите картички „<ph name="GROUP_TITLE_1" />“ и „<ph name="GROUP_TITLE_2" />“ веќе не се достапни</translation>
 <translation id="6358088212770985041">да ги измени начините на плаќање</translation>
@@ -3464,6 +3491,7 @@
 <translation id="6436994298828707228">Поврзувањето е блокирано бидејќи го започна јавна страница за да се поврзе со уредите или серверите во вашата локална мрежа.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">Фустани</translation>
+<translation id="6440450906295708112">Извор на варијации</translation>
 <translation id="6440503408713884761">Игнориран</translation>
 <translation id="6443406338865242315">кои екстензии и приклучоци ги имате инсталирано</translation>
 <translation id="6444329331928531170">Пензионирање и пензија</translation>
@@ -3506,6 +3534,7 @@
 <translation id="6502510275417601303">Известувањето за нова поставка за плаќање е затворено</translation>
 <translation id="6502991525169604759">Без промените</translation>
 <translation id="6505072878288254563">Се преведува</translation>
+<translation id="6506374932220792071">X9.62 ECDSA потпис со SHA-256</translation>
 <translation id="6506936645890046535">Може да бара пристап до колачиња</translation>
 <translation id="6506959208958864820">Коверт</translation>
 <translation id="6507117483253822672">Пишувајте посамоуверено каде било на интернет</translation>
@@ -3816,6 +3845,7 @@
 <translation id="7003278537452757231">Килими и теписи</translation>
 <translation id="7003322000677139268">Делови и додатоци за возила</translation>
 <translation id="7004499039102548441">Неодамнешни картички</translation>
+<translation id="7004562620237466965">Само дешифрира</translation>
 <translation id="700483187606163535">Вашите податоци за <ph name="ACCOUNT" /> ќе се зачуваат во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />. Може да ги користите во производите на Google за побрзо да пополнувате формулари.</translation>
 <translation id="7006930604109697472">Сепак испрати</translation>
 <translation id="7009364359744329733">Картичкава не е достапна во моментов. Обидете се повторно подоцна.</translation>
@@ -3858,6 +3888,7 @@
 <translation id="7070144569727915108">Системски поставки</translation>
 <translation id="70705239631109039">Вашата врска не е потполно безбедна</translation>
 <translation id="7075452647191940183">Барањето е предолго</translation>
+<translation id="7075513071073410194">PKCS #1 MD5 Со шифрирање РСА</translation>
 <translation id="7075896597860500885">Не се препорачува копирање од сајтов</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">–</translation>
@@ -4384,6 +4415,7 @@
 <translation id="7862306158978555061">да прикаже чувствителни податоци</translation>
 <translation id="7865448901209910068">Најдобра брзина</translation>
 <translation id="7865482168955081228">Екранот со грешка на „Купете сега, платете подоцна“ е затворен.</translation>
+<translation id="7869655448736341731">Сите</translation>
 <translation id="7870207318911766769">Содржините од страницата за наплата се споделуваат со Google за да се понудат опцииве.</translation>
 <translation id="7870281855125116701">Најден е попуст</translation>
 <translation id="7871445724586827387">Променете ја лозинката за сметката на Google</translation>
@@ -4452,6 +4484,7 @@
 <translation id="7967636097426665267">Комуникациска опрема</translation>
 <translation id="79682505114836835">Вредноста „<ph name="VALUE" />“ е неважечка хексадецимална боја.</translation>
 <translation id="7968982339740310781">Погледнете детали</translation>
+<translation id="7972714317346275248">PKCS #1 SHA-384 со шифрирање RSA</translation>
 <translation id="7976053965094442846">Достапни се издавачи на „Купете сега, платете подоцна“ за плаќање на рати. Тастатурата е скриена.</translation>
 <translation id="7976214039405368314">Премногу барања</translation>
 <translation id="7977538094055660992">Излезен уред</translation>

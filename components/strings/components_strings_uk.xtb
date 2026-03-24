@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1036436692654972538">Зберігається на вашому пристрої</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
+<translation id="1038168778161626396">Тільки шифрувати</translation>
 <translation id="1038842779957582377">Невідоме ім’я</translation>
 <translation id="1041998700806130099">Повідомлення на аркуші вихідних даних</translation>
 <translation id="1044897699341250361">Що це означає</translation>
@@ -44,6 +45,7 @@
 <translation id="1068672505746868501">Ніколи не перекладати сторінки такою мовою: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070333806075222467">Метал (глянцевий)</translation>
 <translation id="1070901266639972381">Ніч</translation>
+<translation id="1071917609930274619">Шифрування даних</translation>
 <translation id="1073690811593784042">Скло (кольорове)</translation>
 <translation id="1074287282535157335">Виберіть варіант погашення: щомісяця або 4 платежі на виплат (за умови відповідності вимогам)</translation>
 <translation id="1074497978438210769">Не захищено</translation>
@@ -85,6 +87,7 @@
 <translation id="1138458427267715730">Отримуйте сповіщення про зниження ціни на будь-якому вебсайті</translation>
 <translation id="1142713751288681188">Тип паперу</translation>
 <translation id="1142965388643537393">Інформація про подорожі</translation>
+<translation id="1143142264369994168">Підписувач сертифіката</translation>
 <translation id="1144136880160289237">У вас іще немає активних тем</translation>
 <translation id="1149617035358809955">підтвердити вашу особу, щоб автоматично заповнити платіжну інформацію</translation>
 <translation id="1150565364351027703">Сонцезахисні окуляри</translation>
@@ -137,6 +140,7 @@
 <translation id="1215738931000958575">Використовуйте інформацію, збережену в обліковому записі Google, щоб автоматично заповнювати паролі, ключі доступу, адреси, способи оплати тощо</translation>
 <translation id="1219129156119358924">Безпека системи</translation>
 <translation id="1219134100826635117">Ваш адміністратор заблокував цю дію</translation>
+<translation id="1221024147024329929">PKCS #1 MD2 із шифруванням RSA</translation>
 <translation id="1222060260947439312">Правий лоток</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">Номер картки:</translation>
@@ -411,8 +415,10 @@
 <translation id="1639239467298939599">Завантаження</translation>
 <translation id="1640180200866533862">Правила користувача</translation>
 <translation id="1640244768702815859">Спробуйте <ph name="BEGIN_LINK" />відкрити головну сторінку цього сайту<ph name="END_LINK" />.</translation>
+<translation id="1640283014264083726">PKCS #1 MD4 із шифруванням RSA</translation>
 <translation id="1641962500621836664">Зберігання файлу з камери</translation>
 <translation id="1641976391427233992">Відкласти виведення до</translation>
+<translation id="1643072738649235303">Алгоритм ECDSA X9.62 з підписом SHA-1</translation>
 <translation id="1643651787397909318">Перейдіть до кнопки "Перевірка безпеки Chrome" і натисніть її, щоб перейти на сторінку "Перевірка безпеки Chrome" у налаштуваннях</translation>
 <translation id="1644574205037202324">Історія</translation>
 <translation id="1645004815457365098">Невідоме джерело</translation>
@@ -695,6 +701,7 @@
 <translation id="2108755909498034140">Перезавантажте комп’ютер</translation>
 <translation id="2109845311767915560">Спільна група вкладок</translation>
 <translation id="2111166930115883695">Щоб почати гру, натисніть пробіл</translation>
+<translation id="2113921862428609753">Доступ до відомостей про центри сертифікації</translation>
 <translation id="2113977810652731515">Картка</translation>
 <translation id="2114841414352855701">Правило ігнорується, оскільки його замінено правилом <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Конверт C5</translation>
@@ -757,6 +764,7 @@
 <translation id="2190094353033916816">Для цього правила застосовуються різні значення на рівні пристрою і користувача. Правило працює належним чином.</translation>
 <translation id="2191980191135734720">На наступному кроці розблокуйте екран. Зазвичай це можна зробити за допомогою відбитка пальця. Ви також можете <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Що варто врахувати</translation>
+<translation id="2195729137168608510">Захист електронної пошти</translation>
 <translation id="2198183835992354675">Номер надійного мандрівника</translation>
 <translation id="2198215508485017216">Сталася неочікувана помилка. <ph name="BEGIN_LINK" />Докладніше про завантаження на Диск.<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Кнопка "Не подобається": натисніть клавішу Enter, щоб відкрити форму й залишити докладний відгук про те, чому вам не подобається ця пропозиція</translation>
@@ -1416,6 +1424,7 @@
 <translation id="3220264767789936523">Офіційний одяг</translation>
 <translation id="3223287115535306850">Тробер запуску додатка</translation>
 <translation id="3223425961342298674">Доступ до геоданих заборонено</translation>
+<translation id="3225319735946384299">Підписування коду</translation>
 <translation id="3225919329040284222">Сервер надав сертифікат, який не відповідає очікуваним вбудованим параметрам. Ці очікувані параметри встановлено для певних веб-сайтів із високим рівнем безпеки, щоб захистити вас.</translation>
 <translation id="3226128629678568754">Натисніть кнопку перезавантаження, щоб повторно надіслати дані, потрібні для завантаження сторінки.</translation>
 <translation id="3226387218769101247">Ескізи</translation>
@@ -1529,6 +1538,7 @@
 <translation id="3414952576877147120">Розмір:</translation>
 <translation id="341513675006332771">Кнопка "Грати в гру Chrome Dino"; активуйте, щоб грати в гру Dino Run у Chrome</translation>
 <translation id="3415471717466570460">Щоб покращити цю функцію, ваші пошукові запити, найкращі результати й вміст сторінок надсилаються в Google, і наші спеціалісти можуть переглядати їх. Це експериментальна функція, тому вона не завжди працює правильно.</translation>
+<translation id="3421387094817716717">Відкритий ключ еліптичних кривих</translation>
 <translation id="3422248202833853650">Щоб звільнити пам’ять, закрийте інші програми.</translation>
 <translation id="3422472998109090673">Хост <ph name="HOST_NAME" /> зараз недоступний.</translation>
 <translation id="3422794267539320056">Щоб грати, торкніться динозавра або натисніть пробіл</translation>
@@ -1606,6 +1616,7 @@
 <translation id="3541016556608204104">Докладніше про Chrome Enterprise Connectors</translation>
 <translation id="3542628208405253498">Зображення картки</translation>
 <translation id="3542768452570884558">Відкрити посилання в новому вікні</translation>
+<translation id="3543597750097719865">Алгоритм ECDSA X9.62 з підписом SHA-512</translation>
 <translation id="3543935938072367282">Оплачуйте покупки швидше за допомогою автозаповнення</translation>
 <translation id="3547442767634383572">дані робочого профілю;</translation>
 <translation id="3547746132308051926">20 x 24 дюйм.</translation>
@@ -1801,6 +1812,7 @@
 <translation id="3815434930383843058">8 x 12 дюйм.</translation>
 <translation id="3816482573645936981">Значення (замінено)</translation>
 <translation id="3817524650114746564">Відкрити налаштування проксі-сервера комп'ютера</translation>
+<translation id="3820749202859700794">Еліптична крива SECG secp521r1 (також відома як NIST P-521)</translation>
 <translation id="382115839591654906">Код CVC для картки <ph name="CARD_NAME" /></translation>
 <translation id="3822492359574576064">блокування й використання миші</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2091,6 +2103,7 @@
 <translation id="4265635050210404830">Ваші картки постійного покупця</translation>
 <translation id="4265872034478892965">Дозволено адміністратором</translation>
 <translation id="4267590181863312380">Щоб мати доступ до історії з інших пристроїв, синхронізуйте її, увійшовши в обліковий запис. Крім того, ви отримаєте доступ до паролів і інших даних на всіх своїх пристроях. Синхронізацію можна будь-коли вимкнути в налаштуваннях. Google може персоналізувати Пошук і інші сервіси на основі вашої історії.</translation>
+<translation id="4268025649754414643">Шифрування ключа</translation>
 <translation id="4269029136757623689">Побутові вентилятори</translation>
 <translation id="4269264543938335308">Одяг для плавання</translation>
 <translation id="4269599248168651462">Сертифікат сервера видається на неунікальне ім’я.</translation>
@@ -2148,6 +2161,7 @@
 <translation id="4332872603299969513">Дитяча література</translation>
 <translation id="4333295216031073611">Список покупок</translation>
 <translation id="4333561522337981382">керувати вікнами на всіх ваших екранах</translation>
+<translation id="4333854382783149454">PKCS #1 SHA-1 із шифруванням RSA</translation>
 <translation id="4336913590841287350">Це правило ще не підтримується як правило для користувачів в iOS.</translation>
 <translation id="4340575312453649552">Це оголошення використовувало забагато ресурсів пристрою, тож веб-переглядач Chrome видалив його.</translation>
 <translation id="4340810192899866471">Імпортувати з JSON</translation>
@@ -2191,6 +2205,7 @@
 <translation id="4414515549596849729">файли cookie та дані із сайтів</translation>
 <translation id="4415156962929755728">Пластик (високоглянцевий)</translation>
 <translation id="4415426530740016218">Адреса отримання</translation>
+<translation id="4415748029120993980">Еліптична крива SECG secp384r1 (також відома як NIST P-384)</translation>
 <translation id="4419287616181386201">Ви можете видаляти паролі у відповідному розділі налаштувань</translation>
 <translation id="4424024547088906515">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Chrome не вважає його сертифікат безпеки надійним. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="4425750422187370446">Спортивний одяг</translation>
@@ -2588,6 +2603,7 @@
 <translation id="5087286274860437796">Сертифікат сервера зараз недійсний.</translation>
 <translation id="5087580092889165836">Додати картку</translation>
 <translation id="5088142053160410913">Повідомлення оператору</translation>
+<translation id="5088534251099454936">PKCS #1 SHA-512 із шифруванням RSA</translation>
 <translation id="5089810972385038852">Штат/провінція</translation>
 <translation id="5093232627742069661">Зігнути гармошкою</translation>
 <translation id="5093417502834168387">Не можете ввійти в обліковий запис? Спробуйте інший спосіб.</translation>
@@ -2760,6 +2776,7 @@
 <translation id="5348330584842140856">Не вдалося перемістити файл, оскільки його більше немає</translation>
 <translation id="5349543692327946794">Етикетки (струменевий друк)</translation>
 <translation id="5351548097010183514">Будівельні матеріали й обладнання</translation>
+<translation id="5352033265844765294">Встановлення позначки часу</translation>
 <translation id="5354143049423063163">Хедж-фонди</translation>
 <translation id="5355557959165512791">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки цей сертифікат відкликано. Помилки мережі й атаки зазвичай тимчасові, тому ця сторінка, скоріш за все, запрацює пізніше.</translation>
 <translation id="5359752295193133096">Щоб швидше отримувати персоналізовані відповіді, надайте доступ до доречних відкритих вкладок за умовчанням.</translation>
@@ -2813,6 +2830,7 @@
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
 <translation id="5431318178759467895">Колір</translation>
 <translation id="5433756542371550806">Варіанти командного рядка</translation>
+<translation id="5434065355175441495">PKCS #1 шифрування RSA</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />історію веб-перегляду;
@@ -2862,6 +2880,7 @@
 <translation id="5499229993630251170">Продовжити цей ланцюжок?</translation>
 <translation id="550365051221576010">Заповнити все</translation>
 <translation id="5506286895894263601">У списку немає дійсних ярликів.</translation>
+<translation id="5507756662695126555">Неспростовність</translation>
 <translation id="5508443345185481044">Фотоапарати й відеокамери</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Закладки, якими керує адміністратор</translation>
@@ -2944,6 +2963,7 @@
 <translation id="5611398002774823980">Зберегти в обліковому записі</translation>
 <translation id="561165882404867731">Перекласти цю сторінку за допомогою Google Перекладача</translation>
 <translation id="5612720917913232150">Сайт <ph name="URL" /> хоче отримати доступ до геоданих вашого комп’ютера</translation>
+<translation id="5614190747811328134">Примітка для користувача</translation>
 <translation id="5614520971155863709">Картярські ігри</translation>
 <translation id="5617949217645503996">Хост <ph name="HOST_NAME" /> переспрямував вас забагато разів.</translation>
 <translation id="5619721953841297650">Набір налаштувань</translation>
@@ -2959,6 +2979,7 @@
 <translation id="5640474731385449758">Розширення "<ph name="EXTENSION_NAME" />" хоче відкривати посилання (<ph name="PROTOCOL" />) на сайті <ph name="ORIGIN" /> через <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стереосистеми і їх компоненти</translation>
+<translation id="5642508497713047">Сторона, що підписала CRL</translation>
 <translation id="5644090287519800334">Горизонтальний зсув сторони 1 зображення</translation>
 <translation id="5644128326840674462">Рекламний банер</translation>
 <translation id="5645132789250840550">Пластик (напівглянцевий)</translation>
@@ -3041,6 +3062,7 @@
 <translation id="5783922175933467571">Посилання на групу вкладок "<ph name="TAB_GROUP_DISPLAY_NAME" />" діє 48 годин</translation>
 <translation id="5784606427469807560">Не вдалося підтвердити дані картки. Перевірте з’єднання з Інтернетом і повторіть спробу.</translation>
 <translation id="5785756445106461925">Окрім цього, сторінка містить незахищені ресурси. Інші особи можуть переглядати їх під час передавання даних, а зловмисники можуть змінювати вигляд сторінки.</translation>
+<translation id="5787146423283493983">Угода щодо ключів</translation>
 <translation id="5793317771769868848">Цей спосіб оплати буде видалено з поточного пристрою</translation>
 <translation id="5794065675298686371">Увімкніть сповіщення про відстеження цін</translation>
 <translation id="5800727402210090597">Ремонт і обслуговування мобільних телефонів</translation>
@@ -3121,6 +3143,7 @@
 <translation id="5924510104057992926">Перевірте файли, перш ніж відкривати їх</translation>
 <translation id="5924782825030413055">Джерело останнього оновлення згоди:</translation>
 <translation id="5925040402342933574">Оптичний диск (напівглянцевий)</translation>
+<translation id="5925147183566400388">Вказівник на заяву про порядок сертифікації</translation>
 <translation id="5926982310317673627">Спортзали й оздоровчі клуби</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">Увімкніть це налаштування, щоб скористатися функцією "Допомога з текстом"</translation>
@@ -3209,6 +3232,7 @@
 <translation id="605237284704429106">Заповнення номера IBAN</translation>
 <translation id="6053584886670442526">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу збережено у вашому обліковому записі Google (<ph name="ACCOUNT" />).</translation>
 <translation id="6053735090575989697">Докладну інформацію про те, як Google захищає ваші дані, можна знайти в Політиці конфіденційності.</translation>
+<translation id="6055392876709372977">PKCS #1 SHA-256 із шифруванням RSA</translation>
 <translation id="6055888660316801977">Нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="6055982527635883756">Конверт (архівний)</translation>
 <translation id="6057177372083677067">Відео в Інтернеті</translation>
@@ -3264,6 +3288,7 @@
 <translation id="6131824478727057281">місце</translation>
 <translation id="6133320744616005677">Продовжити дозвіл</translation>
 <translation id="6133984428121856852">Розширення файлу порожнє або має неправильний формат.</translation>
+<translation id="6138680304137685902">Алгоритм ECDSA X9.62 з підписом SHA-384</translation>
 <translation id="6139975341602920272">17 x 22 дюйм.</translation>
 <translation id="6143097244789397208">Віртуальна й доповнена реальність</translation>
 <translation id="614327212146763975">Використання датчиків руху й освітлення дозволено</translation>
@@ -3377,6 +3402,7 @@
 <translation id="6326947323444967009">Зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS</translation>
 <translation id="6327065120806001832">доступ до локальної мережі</translation>
 <translation id="6328639280570009161">Спробуйте вимкнути прогнозування мережі.</translation>
+<translation id="6329742260390895689">Щоб автоматично заповнювати інформацію, увімкніть опцію "Використовувати картки й квитки в сервісах Google" у налаштуваннях Гаманця</translation>
 <translation id="6329815962353376655">&lt;Введіть запитання&gt;</translation>
 <translation id="6331597954316706229">Щоб отримувати найбільш персоналізовані відповіді, дозвольте всім ланцюжкам посилатися на ваші відкриті вкладки.</translation>
 <translation id="633348045801643466">Показувати варіанти <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />пізнішої оплати<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> під час оформлення замовлення</translation>
@@ -3395,6 +3421,7 @@
 <translation id="6349101878882523185">Установіть додаток <ph name="APP_NAME" /></translation>
 <translation id="6351658970066645919">Видалити дані вебперегляду</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}=2{2 паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}few{# паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}many{# паролів (для <ph name="DOMAIN_LIST" />, синхронізовано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронізовано)}}</translation>
+<translation id="6354918092619878358">Еліптична крива SECG secp256r1 (також відома як ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355392890578844978">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">Групи вкладок "<ph name="GROUP_TITLE_1" />" і "<ph name="GROUP_TITLE_2" />" більше не доступні</translation>
 <translation id="6358088212770985041">змінити способи оплати</translation>
@@ -3464,6 +3491,7 @@
 <translation id="6436994298828707228">З’єднання заблоковано, оскільки його ініціювала загальнодоступна сторінка для підключення до пристроїв або серверів у вашій приватній мережі.</translation>
 <translation id="6437647869369934905">Google Малюнки</translation>
 <translation id="643917412048333145">Сукні</translation>
+<translation id="6440450906295708112">Джерело модифікацій</translation>
 <translation id="6440503408713884761">Ігнорується</translation>
 <translation id="6443406338865242315">встановлені розширення та плагіни;</translation>
 <translation id="6444329331928531170">Пенсія</translation>
@@ -3506,6 +3534,7 @@
 <translation id="6502510275417601303">Сповіщення про нове налаштування платежів закрито</translation>
 <translation id="6502991525169604759">Без змін</translation>
 <translation id="6505072878288254563">Перекладається</translation>
+<translation id="6506374932220792071">Алгоритм ECDSA X9.62 з підписом SHA-256</translation>
 <translation id="6506936645890046535">Може просити доступ до файлів cookie</translation>
 <translation id="6506959208958864820">Конверт</translation>
 <translation id="6507117483253822672">Пишіть впевнено в Інтернеті</translation>
@@ -3816,6 +3845,7 @@
 <translation id="7003278537452757231">Килими й килимові покриття</translation>
 <translation id="7003322000677139268">Запасні частини й аксесуари для транспортних засобів</translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
+<translation id="7004562620237466965">Лише розкодувати</translation>
 <translation id="700483187606163535">Вашу інформацію збережено в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" />. Ви можете використовувати її в продуктах Google, щоб швидше заповнювати форми.</translation>
 <translation id="7006930604109697472">Усе одно надіслати</translation>
 <translation id="7009364359744329733">Ця картка зараз недоступна. Повторіть спробу пізніше.</translation>
@@ -3858,6 +3888,7 @@
 <translation id="7070144569727915108">налаштуваннях системи</translation>
 <translation id="70705239631109039">З'єднання не повністю захищене</translation>
 <translation id="7075452647191940183">Запит завеликий</translation>
+<translation id="7075513071073410194">PKCS #1 MD5 із шифруванням RSA</translation>
 <translation id="7075896597860500885">Копіювати контент із цього сайту не рекомендується</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4385,6 +4416,7 @@
 <translation id="7862306158978555061">показати чутливу інформацію</translation>
 <translation id="7865448901209910068">Оптимальна швидкість</translation>
 <translation id="7865482168955081228">Екран помилки придбання з оплатою пізніше закрито.</translation>
+<translation id="7869655448736341731">Будь-яка ціль</translation>
 <translation id="7870207318911766769">Щоб пропонувати ці варіанти, у Google надсилається вміст сторінки оформлення замовлення.</translation>
 <translation id="7870281855125116701">Знайдено знижку</translation>
 <translation id="7871445724586827387">Змініть пароль облікового запису Google</translation>
@@ -4453,6 +4485,7 @@
 <translation id="7967636097426665267">Засоби зв’язку</translation>
 <translation id="79682505114836835">Значення "<ph name="VALUE" />" – недійсний колір у форматі hex.</translation>
 <translation id="7968982339740310781">Переглянути деталі</translation>
+<translation id="7972714317346275248">PKCS #1 SHA-384 із шифруванням RSA</translation>
 <translation id="7976053965094442846">Список емітентів, які пропонують придбання з оплатою пізніше. Клавіатуру сховано.</translation>
 <translation id="7976214039405368314">Забагато запитів</translation>
 <translation id="7977538094055660992">Пристрій виведення</translation>

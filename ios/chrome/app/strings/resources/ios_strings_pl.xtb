@@ -493,6 +493,7 @@
 <translation id="2721190673959776287">Przykładowa rozbudowana pomoc w usłudze dotycząca panelu kontekstowego, która powinna pojawiać się kilka razy dziennie.</translation>
 <translation id="2739887572830526131">Zachowaj tę grupę, aby później dodać karty, lub usuń ją, jeśli nie będzie Ci już potrzebna.</translation>
 <translation id="2747003861858887689">Poprzednie pole</translation>
+<translation id="2750583038402718064">Przeniesiono <ph name="WEBSITE_TITLE" /> na pozycję <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Wszyscy członkowie grupy widzą wprowadzone zmiany</translation>
 <translation id="2755595981383829244">Będziesz teraz otrzymywać powiadomienia o treściach</translation>
 <translation id="2761788987260570878">Zrób zdjęcie wyników wyszukiwania</translation>
@@ -1348,6 +1349,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5819208479324046259">Przeglądarką zarządza <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synchronizuję…</translation>
+<translation id="583281660410589416">Nieznany</translation>
 <translation id="5838430324585198889">Odkryj nowe funkcje swojego iPada dzięki aplikacjom Google</translation>
 <translation id="583923961930319521">Używaj haseł na wszystkich swoich urządzeniach</translation>
 <translation id="5843013299019689749">Kolor tła: czarny</translation>
@@ -2032,6 +2034,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8209237163365258530">Modele Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Ktoś przesłał Ci hasła do strony <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
+<translation id="8213190397436801658">Domowy</translation>
 <translation id="8214293972734702249">Przypięta: <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Wyświetl wersję offline w nowej karcie</translation>
 <translation id="8221665793629393739">Przypomnienie, aby ponownie wejść na stronę</translation>

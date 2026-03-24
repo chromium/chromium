@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1740650426894359238">Сменить профиль</translation>
 <translation id="1741219894094057085">Умные часы</translation>
+<translation id="1742773766788162541">Сканировать карту и заполнить данные автоматически</translation>
 <translation id="1743244221910283364">Отменить изменения</translation>
 <translation id="1748975028205587434">Выбрать файл</translation>
 <translation id="1749733017156547309">Необходимо указать пароль.</translation>
@@ -393,6 +394,7 @@
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2360196772093551345">Мобильная версия</translation>
 <translation id="2362083820973145409">Вы вошли как <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Открывает настройки.</translation>
+<translation id="2367025302166767427">Не удалось заполнить информацию</translation>
 <translation id="2371084566192454134">Вкладки и группы вкладок</translation>
 <translation id="2371303771137626249">Новая</translation>
 <translation id="2381405137052800939">Основные</translation>
@@ -709,6 +711,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, управляется вашей организацией.</translation>
 <translation id="3580448612293054698">Обновить данные типа "<ph name="ENTITY_TYPE" />"?</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках</translation>
+<translation id="3583726884554296148">Сохраните карту в аккаунте Google, и ее реквизиты автоматически заполнятся при этой и будущих покупках в Chrome.</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3587885837929752825">Ваша организация ограничила данные, которые можно сохранять в аккаунте Google.</translation>
 <translation id="3588820906588687999">Открыть в новой вкладке</translation>
@@ -1345,6 +1348,7 @@
 <translation id="5819208479324046259">Устройством управляет <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронизация…</translation>
+<translation id="583281660410589416">Неизвестно</translation>
 <translation id="5838430324585198889">Пользуйтесь приложениями Google на iPad</translation>
 <translation id="583923961930319521">Использовать пароли на всех устройствах</translation>
 <translation id="5843013299019689749">Черный фон</translation>
@@ -1555,6 +1559,7 @@
 <translation id="6532106788206463496">Сохранить</translation>
 <translation id="6536759809440150308">Открыть группу "<ph name="GROUP_TITLE" />", <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Оплачивайте покупки быстрее благодаря автозаполнению на всех устройствах</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="6550891580932862748">Не защищает вас от опасных сайтов, расширений и скачиваемых файлов. Этот вариант не повлияет на настройки Безопасного просмотра в других продуктах Google.</translation>
 <translation id="6556501700899673703">Lexend</translation>

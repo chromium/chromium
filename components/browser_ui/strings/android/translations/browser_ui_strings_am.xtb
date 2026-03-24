@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">ታሪክ</translation>
 <translation id="1652197001188145583">ሲበራ፣ ጣቢያዎች የNFC መሳሪያዎችን ለመጠቀም መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የNFC መሳሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="1660204651932907780">ጣቢያዎች ድምጽን እንዲያጫውቱ ፍቀድ (የሚመከር)</translation>
+<translation id="1676590040242013349">«ሁልጊዜ የተመሰጠሩ ግንኙነቶችን ተጠቀም» በርቷል።</translation>
 <translation id="1677097821151855053">ኩኪዎች እና ሌላ የጣቢያ ውሂብ እርስዎን ለማስታወስ ያገለግላሉ፣ ለምሳሌ እርስዎን ለማስገባት ወይም ማስታወቂያዎችን ግላዊ ለማድረግ። ለሁሉም ጣቢያዎች ኩኪዎችን ለማቀናበር፣ <ph name="BEGIN_LINK" />ቅንብሮችን<ph name="END_LINK" /> ይመልከቱ።</translation>
 <translation id="1679305402657584804">ጣቢያዎች ኤንኤፍሲ መሣሪያዎች ለመጠቀም መጠየቅ ይችላሉ</translation>
 <translation id="1686785653877010442">ጣቢያዎች አብዛኛውን ጊዜ ስለ ሰበር ዜና ወይም ስለ ውይይት መልዕክቶች እርስዎን ለማሳወቅ ማሳወቂያዎችን ይልካሉ።</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">ጣቢያዎች ከቅንጥብ ሰሌዳ ጽሑፍን እና ምስሎችን እንዳያነብቡ አግድ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6950072572526089586">እርስዎ የሚጎበኙት ጣቢያ እንደሚጠበቀው ለመስራት እርስዎ ስለሚያደርጉት ነገር መረጃ ሊያስቀምጥ ይችላል — ለምሳሌ፣ ወደ አንድ ጣቢያ ገብተው እንዲቆዩ ለማድረግ ወይም በእርስዎ የሸመታ ተሳቢ ውስጥ ንጥሎችን ለማስቀመጥ። ብዙ ጊዜ ጣቢያዎች ይህን መረጃ በመሣሪያዎ ላይ በጊዜያዊነት ያስቀመጣሉ።</translation>
+<translation id="6964291282260073066">«WebGPU» ተሰናክሏል።</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6980507581230208647">ጽጌሬዳ ገጽታ</translation>
 <translation id="6980861169612950611">የጣቢያ ውሂብ ይሰረዝ? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">ሲበራ፣ ጣቢያዎች የምናባዊ እውነታ መሳሪያዎችን ለመጠቀም መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የምናባዊ እውነታ መሳሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="7282197670900591579">ፈዛዛ ቢጫ ገጽታ</translation>
 <translation id="728412880473384942">ጣቢያዎች ይበልጥ ፈጣን ነገር ግን ያነሰ ደህንነት ያላቸው ናቸው</translation>
+<translation id="7352902948037373520"><ph name="BEGIN_LINK1" />በAndroid ቅንብሮች<ph name="END_LINK1" /> ውስጥ ያስተዳድሩ
+
+የላቀ ጥበቃ እነዚህን የChrome ቅንብሮች ይቆጣጠራል፦</translation>
 <translation id="7366415735885268578">አንድ ጣቢያ ያክሉ</translation>
 <translation id="7368695150573390554">ማንኛውም ከመስመር ውጭ ውሂብ ይሰረዛል</translation>
 <translation id="7369678931043226462">በግማሽ ቁመት የተከፈተውን የአዲስ ትር ገጽ የግርጌ ሉህ ያብጁ</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">ጣቢያዎች እንደ ሰነድ ማተም ወይም ወደ የማከማቻ መሣሪያ ማስቀመጥ ያሉ ባህሪያትን ለማግኘት አብዛኛው ጊዜ ከዩኤስቢ መሣሪያዎች ጋር ይገናኛሉ</translation>
 <translation id="8473055640493819707">«<ph name="APP_NAME" />» ጊዜው ያለፈበት ነው። እባክዎ መተግበሪያውን እንደገና ይጫኑት።</translation>
 <translation id="847433688444405067">በመላው መሣሪያዎች ላይ ያስሱ</translation>
+<translation id="8484556725636319115">«ጃቫስክሪፕት አመቻቺ» ጠፍቷል። <ph name="BEGIN_LINK2" />የጣቢያ ለየት ያሉ ነገሮችን ያስተዳድሩ<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">ከመስመር ውጭ ይገኛል</translation>
 <translation id="848952951823693243">ሁልጊዜ የሞባይል ጣቢያን ጠይቅ</translation>
 <translation id="8492822722330266509">ጣቢያዎች ብቅ-ባዮችን መላክ እና ማዞሪያዎችን መጠቀም ይችላሉ</translation>

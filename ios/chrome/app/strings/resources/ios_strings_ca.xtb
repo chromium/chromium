@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360196772093551345">Sol·licita el lloc web per a mòbils</translation>
 <translation id="2362083820973145409">Has iniciat la sessió com a <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Obre la configuració.</translation>
+<translation id="2367025302166767427">Hi ha hagut un problema en emplenar la teva informació</translation>
 <translation id="2371084566192454134">Pestanyes i grups de pestanyes</translation>
 <translation id="2371303771137626249">Nou</translation>
 <translation id="2381405137052800939">Configuració bàsica</translation>
@@ -1345,6 +1346,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5819208479324046259">Gestionat per <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">S'està sincronitzant…</translation>
+<translation id="583281660410589416">Desconegut</translation>
 <translation id="5838430324585198889">Desbloqueja més funcions per al teu iPad amb les aplicacions de Google</translation>
 <translation id="583923961930319521">Utilitza contrasenyes en tots els teus dispositius</translation>
 <translation id="5843013299019689749">Color de fons negre</translation>

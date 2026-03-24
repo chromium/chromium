@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1740650426894359238">Mudar para outro perfil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
+<translation id="1742773766788162541">Ler cartão e preencher automaticamente</translation>
 <translation id="1743244221910283364">Rejeitar alterações</translation>
 <translation id="1748975028205587434">Selecionar ficheiro</translation>
 <translation id="1749733017156547309">É necessária uma palavra-passe</translation>
@@ -710,6 +711,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gerida pela sua organização.</translation>
 <translation id="3580448612293054698">Atualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
+<translation id="3583726884554296148">Guarde o seu cartão na sua Conta Google para o preencher automaticamente nesta compra e em compras futuras feitas no Chrome</translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3587885837929752825">A sua organização limita o que pode guardar na sua Conta Google.</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
@@ -1346,6 +1348,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5819208479324046259">Gerido por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">A sincronizar…</translation>
+<translation id="583281660410589416">Desconhecido</translation>
 <translation id="5838430324585198889">Desbloqueie mais funcionalidades para o seu iPad com as apps Google</translation>
 <translation id="583923961930319521">Use palavras-passe em todos os dispositivos</translation>
 <translation id="5843013299019689749">Cor de fundo preta</translation>
@@ -1556,6 +1559,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6532106788206463496">Guardar alterações</translation>
 <translation id="6536759809440150308">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">exemplo.pt</translation>
+<translation id="6543899060872618437">Pague mais rapidamente com o preenchimento automático em todos os seus dispositivos</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="6550891580932862748">Não protege contra transferências, extensões ou Websites perigosos. As suas definições da Navegação segura noutros produtos Google não são afetadas.</translation>
 <translation id="6556501700899673703">Lexend</translation>

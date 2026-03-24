@@ -699,6 +699,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3985215325736559418">Czy chcesz ponownie pobrać plik <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Skopiuj link</translation>
 <translation id="3994236846568425219">Włącz ciemny motyw, gdy jest on włączony na urządzeniu</translation>
+<translation id="399788104667917863">Przypnij do paska narzędzi</translation>
 <translation id="4000212216660919741">Ekran główny offline</translation>
 <translation id="4000670338830950598">Dostosowywanie i kontrolowanie Google Chrome za pomocą wyróżnionego elementu</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 przejęte hasło na Twoim koncie Google}few{# przejęte hasła na Twoim koncie Google}many{# przejętych haseł na Twoim koncie Google}other{# przejętego hasła na Twoim koncie Google}}</translation>

@@ -493,6 +493,7 @@
 <translation id="2721190673959776287">સાંદર્ભિક પૅનલ માટે નમૂનાથી સમૃદ્ધ પ્રોડક્ટમાંથી સહાય, જે દિવસમાં એકથી વધુ વખત દેખાવી જોઈએ.</translation>
 <translation id="2739887572830526131">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેની જરૂર ન હોય, તો તેને ડિલીટ કરો.</translation>
 <translation id="2747003861858887689">પાછલી ફીલ્ડ</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" />ને <ph name="POSITION" /> સ્થિતિ પર ખસેડ્યું</translation>
 <translation id="2755485474385016903">કરવામાં આવેલા ફેરફારો ગ્રૂપના પ્રત્યેક સભ્યને દેખાય છે</translation>
 <translation id="2755595981383829244">હવે તમે કન્ટેન્ટ માટેના નોટિફિકેશન મેળવશો</translation>
 <translation id="2761788987260570878">તમારી શોધનો ફોટો લો</translation>
@@ -1348,6 +1349,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવેલું બ્રાઉઝર. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">સિંક થાય છે…</translation>
+<translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5838430324585198889">Google ઍપ વડે તમારા iPad માટે વધુ સુવિધાઓ અનલૉક કરો</translation>
 <translation id="583923961930319521">તમારા બધા ડિવાઇસ પર પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="5843013299019689749">બૅકગ્રાઉન્ડનો કાળો રંગ</translation>
@@ -2032,6 +2034,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> મૉડલ</translation>
 <translation id="8211030355252954494">તમે <ph name="WEBSITE" /> માટે પાસવર્ડ પ્રાપ્ત કર્યો છે</translation>
 <translation id="8211406090763984747">કનેક્શન સુરક્ષિત છે</translation>
+<translation id="8213190397436801658">હોમ</translation>
 <translation id="8214293972734702249">પિન કરેલા, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">ઑફલાઇન વર્ઝન નવા ટૅબમાં જુઓ</translation>
 <translation id="8221665793629393739">ફરી મુલાકાત લેવા માટેનું તમારું રિમાઇન્ડર</translation>

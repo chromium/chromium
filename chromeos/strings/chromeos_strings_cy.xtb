@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Rhowch neges annog</translation>
 <translation id="115705039208660697">pîn-afalau</translation>
 <translation id="1164939766849482256">Arbedwr sgrîn o wawr i dywyll</translation>
-<translation id="1167755866710282443">Agorwch y ddewislen i bersonoleiddio allweddi. Llusgwch y ddewislen i'w symud.</translation>
 <translation id="1171349345463658120">lagŵn tywod</translation>
 <translation id="1174073918202301297">Ychwanegwyd llwybr byr</translation>
 <translation id="11743817593307477">Defnyddiwch y bysellau saeth i symud y rheolydd hwn i'r weithred gêm rydych ei eisiau. Defnyddiwch y fysell Enter i osod y rheolydd. Defnyddiwch y fysell Escape i ganslo.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">D-pad mapio allweddi</translation>
 <translation id="3217462202230355157">Sicrhewch fod eich meic wedi'i gysylltu neu rhowch gynnig ar ailgychwyn eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Wrthi'n chwilio am sganwyr</translation>
-<translation id="3226657629376379887">Dewislen gweithredoedd cynllun</translation>
 <translation id="3227186760713762082">Rhannu'r gwerth <ph name="CATEGORY_TEXT" /> â <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">celf digidol</translation>
 <translation id="3246869037381808805">Bydd tasgau argraffu sy'n hŷn nag 1 diwrnod yn cael eu dileu</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881">Rheolir y <ph name="DEVICE_TYPE" /> hwn gan <ph name="MANAGER" />. Gall gweinyddwyr ffurfweddu'r ddyfais o bell.</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
 <translation id="7180865173735832675">Personoleiddio</translation>
-<translation id="7184043045742675738">Cliciwch unrhyw allwedd i addasu eich botwm. Ail-leoli allwedd gyda'r llygoden neu'r bysellau saeth.</translation>
 <translation id="7187669805838282391">ar ddydd Mercher</translation>
 <translation id="7205318498545665455">Dewiswch eich meic</translation>
 <translation id="7210635925306941239">gwyrddlas</translation>
@@ -1497,7 +1494,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7590883480672980941">Gosodiadau mewnbynnu</translation>
 <translation id="7595982850646262331">Mae <ph name="TIME_VALUE" /> ar ôl</translation>
 <translation id="7600430297804876776">Mae'r gweinyddwr <ph name="MANAGER" /> wedi pennu pryd y gellir defnyddio'r <ph name="DEVICE_TYPE" /> hwn.</translation>
-<translation id="7613724632293948900">Ail-leoli gyda'r llygoden neu'r bysellau saeth.</translation>
 <translation id="7618216277886673749">Dewis <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Niwtral</translation>
 <translation id="7620771111601174153">Dysgu rhagor yn y Ganolfan Gymorth</translation>

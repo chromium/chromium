@@ -492,6 +492,7 @@
 <translation id="2721190673959776287">Voorbeeld van uitgebreide in-product hulp voor het contextuele deelvenster, die als het goed is meerdere keren per dag wordt getoond.</translation>
 <translation id="2739887572830526131">Behoud deze groep om later tabbladen toe te voegen of verwijder de groep als je deze niet meer nodig hebt.</translation>
 <translation id="2747003861858887689">Vorig veld</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> verplaatst naar positie <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Aangebrachte wijzigingen zijn zichtbaar voor iedereen in de groep</translation>
 <translation id="2755595981383829244">Je krijgt nu meldingen over content</translation>
 <translation id="2761788987260570878">Maak een foto van wat je zoekt</translation>
@@ -1346,6 +1347,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5819208479324046259">Beheerd door <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synchroniseren…</translation>
+<translation id="583281660410589416">Onbekend</translation>
 <translation id="5838430324585198889">Krijg toegang tot meer functies voor je iPad met Google-apps</translation>
 <translation id="583923961930319521">Wachtwoorden gebruiken op al je apparaten</translation>
 <translation id="5843013299019689749">Zwarte achtergrondkleur</translation>
@@ -2029,6 +2031,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" />-modellen</translation>
 <translation id="8211030355252954494">Je hebt wachtwoorden gekregen voor <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Verbinding is beveiligd</translation>
+<translation id="8213190397436801658">Home</translation>
 <translation id="8214293972734702249">Vastgezet, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Offline versie bekijken op nieuw tabblad</translation>
 <translation id="8221665793629393739">Je herinnering om terug te gaan</translation>

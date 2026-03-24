@@ -394,6 +394,7 @@
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2360196772093551345">Be om mobilversjonen av nettstedet</translation>
 <translation id="2362083820973145409">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
+<translation id="2367025302166767427">Kunne ikke fylle ut informasjonen din</translation>
 <translation id="2371084566192454134">Faner og fanegrupper</translation>
 <translation id="2371303771137626249">Ny</translation>
 <translation id="2381405137052800939">Grunninnstillinger</translation>
@@ -1347,6 +1348,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5819208479324046259">Administreres av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Synkroniserer …</translation>
+<translation id="583281660410589416">Ukjent</translation>
 <translation id="5838430324585198889">Få tilgang til flere funksjoner på iPad med Google-apper</translation>
 <translation id="583923961930319521">Bruk passord på alle enhetene dine</translation>
 <translation id="5843013299019689749">Svart bakgrunnsfarge</translation>

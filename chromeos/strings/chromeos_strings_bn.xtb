@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">প্রম্পট লিখুন</translation>
 <translation id="115705039208660697">আনারস</translation>
 <translation id="1164939766849482256">ডন টু ডার্ক স্ক্রিন সেভার</translation>
-<translation id="1167755866710282443">কী কাস্টমাইজ করার জন্য মেনু খুলুন। সরানোর জন্য মেনু টেনে আনুন।</translation>
 <translation id="1171349345463658120">বালুকাময় উপহ্রদ</translation>
 <translation id="1174073918202301297">শর্টকাট যোগ করা হয়েছে</translation>
 <translation id="11743817593307477">তীরচিহ্ন বোতামে প্রেস করে এই নিয়ন্ত্রণ আপনার পছন্দের গেম অ্যাকশনে সরান। নিয়ন্ত্রণটি পছন্দসই লোকেশনে নিয়ে যেতে Enter বোতামে প্রেস করুন। এটি বাতিল করতে, Escape বোতামে প্রেস করুন।</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">কীম্যাপ করার ডি-প্যাড</translation>
 <translation id="3217462202230355157">আপনার মাইক কানেক্ট করা আছে কিনা ভালোভাবে দেখে নিন অথবা আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করে দেখুন</translation>
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
-<translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> মান দ্বারা <ph name="CATEGORY_TEXT" /> ভাগ করুন</translation>
 <translation id="3242622575335502454">ডিজিটাল আর্ট</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />-এর মাধ্যমে এই <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়। অ্যাডমিনিস্ট্রেটর অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7180865173735832675">কাস্টমাইজ করুন</translation>
-<translation id="7184043045742675738">আপনার বোতামটি কাস্টমাইজ করতে, যেকোনও 'কী'-এর উপরে ক্লিক করুন। মাউস বা তীরচিহ্নযুক্ত 'কী'-এর সাহায্যে 'কী' অন্য জায়গায় সরান।</translation>
 <translation id="7187669805838282391">বুধবারে</translation>
 <translation id="7205318498545665455">আপনার মাইক্রোফোন বেছে নিন</translation>
 <translation id="7210635925306941239">সায়ান</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">ইনপুট সেটিংস</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকি আছে</translation>
 <translation id="7600430297804876776">এই <ph name="DEVICE_TYPE" /> ডিভাইস কখন ব্যবহার করা যাবে তা <ph name="MANAGER" /> অ্যাডমিনিস্ট্রেটর সেট করে দিয়েছেন।</translation>
-<translation id="7613724632293948900">মাউস বা তীরচিহ্নযুক্ত 'কী'-এর সাহায্যে অন্য জায়গায় সরান।</translation>
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> বেছে নিন</translation>
 <translation id="7618774594543487847">নিউট্রাল</translation>
 <translation id="7620771111601174153">সহায়তা কেন্দ্র বিভাগে গিয়ে আরও জানুন</translation>

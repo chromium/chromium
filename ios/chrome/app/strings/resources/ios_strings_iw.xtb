@@ -393,6 +393,7 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2360196772093551345">בקשת אתר לנייד</translation>
 <translation id="2362083820973145409">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
+<translation id="2367025302166767427">הייתה בעיה במילוי הפרטים</translation>
 <translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
 <translation id="2371303771137626249">חדש</translation>
 <translation id="2381405137052800939">הגדרות בסיסיות</translation>
@@ -1345,6 +1346,7 @@
 <translation id="5819208479324046259">מנוהל על ידי <ph name="MANAGER" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">הסנכרון מתבצע…</translation>
+<translation id="583281660410589416">לא ידוע</translation>
 <translation id="5838430324585198889">‏עם האפליקציות של Google, האייפד שלך יכול לעשות יותר</translation>
 <translation id="583923961930319521">שימוש בסיסמאות בכל המכשירים</translation>
 <translation id="5843013299019689749">צבע רקע שחור</translation>

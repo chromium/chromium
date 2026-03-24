@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">Podijeljeno je s vama</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> s dugmetom za uklanjanje</translation>
 <translation id="1062407476771304334">Zamijeni</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Napravite sigurnosnu kopiju na Google Disku. Jednostavno u bilo kojem trenutku vratite podatke ili se prebacite na drugi uređaj. Vaša sigurnosna kopija uključuje podatke o aplikacijama.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Sigurnosne kopije se otpremaju na Google i šifriraju pomoću lozinke za Google račun.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Podaci aplikacija mogu biti bilo koji podaci koje je aplikacija sačuvala (na osnovu postavki programera), uključujući podatke kao što su kontakti, poruke i fotografije.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Podaci iz sigurnosne kopije se neće računati u vašu kvotu pohrane na Disku.<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />Ovu uslugu možete isključiti u Postavkama.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">Zamijenite ili napunite bateriju</translation>
 <translation id="1081015718268701546">Linux aplikacije trenutno nisu podržane. Druge aplikacije će se sačuvati.</translation>
 <translation id="108486256082349153">Mobilna mreža: <ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="3470502288861289375">Kopiranje...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, a zatim <ph name="KEY_TWO" /> ili <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl + Shift + razmak</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />Kada je preciznost lokacije uključena, informacije o bežičnim signalima, kao što su WiFi pristupne tačke i tornjevi mobilnih mreža, uz podatke senzora uređaja, kao što su mjerač ubrzanja i žiroskop, koriste se za precizniju procjenu lokacije uređaja, koju Android aplikacije i usluge koriste za pružanje funkcija zasnovanih na lokaciji. Google u tu svrhu periodično obrađuje informacije o senzorima uređaja i bežičnim signalima u vašoj blizini radi doprinosa lokacijama bežičnih signala pruženih uz podršku internet javnosti.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google koristi ove informacije bez vaše identifikacije radi poboljšanja preciznosti lokacije i usluga zasnovanih na lokaciji te poboljšanja, pružanja i održavanja Googleovih usluga. Ove informacije obrađujemo na osnovu legitimnih interesa Googlea i trećih strana da ispunjavaju potrebe korisnika.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />U postavkama lokacije uređaja uvijek možete isključiti preciznost lokacije odlaskom u Postavke &gt; Privatnost i sigurnost &gt; Kontrole privatnosti &gt; Pristup lokaciji &gt; Napredne postavke lokacije. Ako je preciznost lokacije isključena, neće se prikupljati podaci o preciznosti lokacije. Za Android aplikacije i usluge se za utvrđivanje lokacije uređaja koristi samo IP adresa, ako je dostupna, a to može uticati na dostupnost i preciznost lokacija za Android aplikacije i usluge kao što su Google Mape.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saznajte više o preciznosti lokacije<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Automatsko skrivanje police</translation>
 <translation id="3496797737329654668">Započnimo igru</translation>
@@ -877,6 +886,9 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3743775386021959186">Fokusiranje je uključeno. Još <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Sakrij prijedlog vremena</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Podaci aplikacija mogu biti bilo koji podaci koje je aplikacija sačuvala (na osnovu postavki programera), uključujući podatke kao što su kontakti, poruke i fotografije.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Podaci sigurnosne kopije se neće računati u kvotu pohrane na Disku vašeg djeteta.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Ovu uslugu možete isključiti u Postavkama.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">Emitiranje ekrana</translation>
 <translation id="3765841382945324995">Prečica za radnju <ph name="SIX_PACK_KEY_NAME" /> je ažurirana iz <ph name="NEW_SHORTCUT" /> u <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Uređeno danas</translation>
@@ -1343,6 +1355,10 @@ Također možete upotrijebiti prečicu na tastaturi. Prvo istaknite tekst, a zat
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Postavke privatnosti</translation>
 <translation id="5155897006997040331">Brzina čitanja</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Ovo su opće informacije o vašem uređaju i načinu korištenja (kao što su nivo napunjenosti baterije, aktivnosti sistema i aplikacija te greške). Ovi podaci će se koristiti za poboljšanje Androida, a neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri, da poboljšaju svoje aplikacije i proizvode.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Isključivanjem ove funkcije uređaj će i dalje moći slati informacije potrebne za ključne usluge kao što su ažuriranja sistema i sigurnost.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Vlasnik može upravljati ovom funkcijom iz menija Postavke &gt; Napredno &gt; Automatsko slanje dijagnostičkih podataka i podataka o korištenju Googleu.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Ako vam je uključena postavka dodatne Aktivnosti na webu i u aplikacijama, ti podaci će se možda sačuvati na vašem Google računu. Na stranici account.google.com možete vidjeti i izbrisati svoje podatke te izmijeniti svoje postavke računa.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">Stanje baterije <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Broj ciklusa <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Sačuvaj radnu površinu kao šablon</translation>
 <translation id="5168181903108465623">Dostupni su "cast" uređaji</translation>
@@ -1601,6 +1617,10 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5916646100036936191">Novo obavještenje, ukupno <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />Kada je preciznost lokacije uključena, informacije o bežičnim signalima, kao što su WiFi pristupne tačke i tornjevi mobilnih mreža, uz podatke senzora uređaja, kao što su mjerač ubrzanja i žiroskop, koriste se za precizniju procjenu lokacije uređaja, koju Android aplikacije i usluge koriste za pružanje funkcija zasnovanih na lokaciji. Google u tu svrhu periodično prikuplja informacije o senzorima uređaja i bežičnim signalima u blizini uređaja radi doprinosa lokacijama bežičnih signala pruženih uz podršku internet javnosti.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google koristi informacije prikupljene s ovog uređaja radi poboljšanja preciznosti lokacije i usluga zasnovanih na lokaciji, kao i općenito radi poboljšanja, pružanja i održavanja Googleovih usluga. Ove informacije obrađujemo na osnovu legitimnih interesa Googlea i trećih strana da ispunjavaju potrebe korisnika. Ove informacije se ne koriste za identifikaciju osoba.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />U postavkama lokacije uređaja uvijek možete isključiti preciznost lokacije odlaskom u Postavke &gt; Privatnost i sigurnost &gt; Kontrole privatnosti &gt; Pristup lokaciji &gt; Napredne postavke lokacije. Ako je preciznost lokacije isključena, neće se prikupljati podaci o preciznosti lokacije. Za Android aplikacije i usluge se za utvrđivanje lokacije uređaja koristi samo IP adresa, ako je dostupna, a to može uticati na dostupnost i preciznost lokacija za Android aplikacije i usluge kao što su Google Mape.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saznajte više o preciznosti lokacije<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">Ažuriranje zahtijeva upravitelj <ph name="MANAGER" /></translation>
 <translation id="5939518447894949180">Vrati na zadano</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
@@ -1647,6 +1667,10 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6045629311476491587">Koriste aplikacije, njih <ph name="APP_COUNT" /></translation>
 <translation id="6045998054441862242">Uključivanje načina rada visokog kontrasta</translation>
 <translation id="6047696787498798094">Dijeljenje ekrana će se zaustaviti kada se prebacite na drugog korisnika. Želite li nastaviti?</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />Ovo su opće informacije o ovom uređaju i načinu na koji se koristi (kao što je nivo napunjenosti baterije, aktivnosti sistema i aplikacija te greške). Ovi podaci će se koristiti za poboljšanje Androida, a neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri, da poboljšaju svoje aplikacije i proizvode.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Isključivanjem ove funkcije uređaj će i dalje moći slati informacije potrebne za ključne usluge kao što su ažuriranja sistema i sigurnost.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Vlasnik može upravljati ovom funkcijom iz menija Postavke &gt; Napredno &gt; Automatsko slanje dijagnostičkih podataka i podataka o korištenju Googleu.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Ako je za vaše dijete uključena postavka dodatne Aktivnosti na webu i u aplikacijama, ti podaci se mogu sačuvati na njegovom Google računu. Saznajte više o ovim postavkama i kako ih prilagoditi na stranici families.google.com<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">Desni klik na link</translation>
 <translation id="6054305421211936131">Prijava pomoću pametne kartice</translation>
 <translation id="6059276912018042191">Nedavne kartice Chromea</translation>
@@ -1755,6 +1779,8 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK je isključena</translation>
 <translation id="6406458002328242616">Uređivanje tajmera. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />Googleova usluga lokacije koristi izvore poput WiFi mreže, mobilnih mreža i senzora radi lakše procjene lokacije vašeg uređaja.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lokaciju možete isključiti ako na uređaju isključite glavnu postavku lokacije. U postavkama lokacije možete isključiti i korištenje WiFi-ja, mobilnih mreža i senzora za lokaciju.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">Odaberite verziju aplikacije <ph name="VM_NAME" /> koju ćete instalirati.</translation>
 <translation id="641469293210305670">Instaliranje ažuriranja i aplikacija</translation>
 <translation id="6417265370957905582">Google Asistent</translation>
@@ -2420,6 +2446,8 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8481187309597259238">Potvrdite odobrenje za USB</translation>
 <translation id="8487660088084188539">Kada uključite ove funkcije, tekst unosa, sadržaj dokumenta i URL web stranice će se možda poslati na Googleove servere. Ove informacije se koriste za generiranje prijedloga za pisanje i sažetaka, odgovaranje na pitanja i poboljšanje proizvoda podložno dokumentu <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte uključivati ništa što je lične, osjetljive ili povjerljive prirode.</translation>
 <translation id="8487699605742506766">Pristupna tačka</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Googleova usluga lokacije koristi izvore poput WiFi-ja, mobilnih mreža i senzora radi lakše procjene lokacije ovog uređaja.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Lokaciju možete isključiti ako na uređaju isključite glavnu postavku lokacije. U postavkama lokacije možete isključiti i korištenje WiFi-ja, mobilnih mreža i senzora za lokaciju.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">Ažurirane su sljedeće aplikacije za kiosk: "<ph name="UPDATED_APPS" />". Ponovo pokrenite uređaj da dovršite postupak ažuriranja.</translation>
 <translation id="8491237443345908933">Otvaranje linka u novoj kartici</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promijenjena na <ph name="FALLBACK_RESOLUTION" />. Kliknite Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>

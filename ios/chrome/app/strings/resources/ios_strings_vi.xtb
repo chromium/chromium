@@ -492,6 +492,7 @@
 <translation id="2721190673959776287">Ví dụ về thông tin trợ giúp chi tiết trong sản phẩm cho Bảng theo ngữ cảnh. Thông tin này sẽ xuất hiện nhiều lần trong ngày.</translation>
 <translation id="2739887572830526131">Giữ lại nhóm này để thêm thẻ sau hoặc xoá nhóm này nếu bạn không cần nữa.</translation>
 <translation id="2747003861858887689">Trường trước</translation>
+<translation id="2750583038402718064">Đã di chuyển <ph name="WEBSITE_TITLE" /> sang vị trí <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Mọi người trong nhóm đều thấy các thay đổi đã thực hiện</translation>
 <translation id="2755595981383829244">Từ giờ, bạn sẽ nhận được thông báo về nội dung</translation>
 <translation id="2761788987260570878">Chụp ảnh nội dung bạn muốn tìm kiếm</translation>
@@ -1346,6 +1347,7 @@
 <translation id="5819208479324046259">Do <ph name="MANAGER" /> quản lý. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Đang đồng bộ hoá…</translation>
+<translation id="583281660410589416">Không xác định</translation>
 <translation id="5838430324585198889">Trải nghiệm thêm nhiều tính năng trên iPad khi có các ứng dụng của Google</translation>
 <translation id="583923961930319521">Sử dụng mật khẩu trên tất cả thiết bị của bạn</translation>
 <translation id="5843013299019689749">Màu nền đen</translation>
@@ -2029,6 +2031,7 @@
 <translation id="8209237163365258530">Mô hình Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Bạn đã nhận được mật khẩu cho <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Kết nối này an toàn</translation>
+<translation id="8213190397436801658">Nhà riêng</translation>
 <translation id="8214293972734702249">Đã ghim, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Xem phiên bản ngoại tuyến trong thẻ mới</translation>
 <translation id="8221665793629393739">Lời nhắc bạn truy cập lại</translation>

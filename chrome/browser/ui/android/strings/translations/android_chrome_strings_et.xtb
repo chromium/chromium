@@ -699,6 +699,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3985215325736559418">Kas soovite faili <ph name="FILE_NAME" /> uuesti alla laadida?</translation>
 <translation id="3987993985790029246">Kop. link</translation>
 <translation id="3994236846568425219">Tume teema aktiveeritakse, kui teie seadme tume teema on sisse lülitatud.</translation>
+<translation id="399788104667917863">Kinnita tööriistaribale</translation>
 <translation id="4000212216660919741">Võrguühenduseta avaleht</translation>
 <translation id="4000670338830950598">Kohandage ja juhtige Google Chrome'i esiletõstetud üksuse abil</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Teie Google'i kontol on 1 ohustatud parooli}other{Teie Google'i kontol on # ohustatud parooli}}</translation>

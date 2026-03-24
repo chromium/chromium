@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">แตะ 2 ครั้งเพื่อติดตั้ง</translation>
 <translation id="1740650426894359238">เปลี่ยนไปใช้โปรไฟล์อื่น</translation>
 <translation id="1741219894094057085">สมาร์ทวอทช์</translation>
+<translation id="1742773766788162541">สแกนบัตรและป้อนข้อความอัตโนมัติ</translation>
 <translation id="1743244221910283364">ทิ้งการเปลี่ยนแปลง</translation>
 <translation id="1748975028205587434">เลือกไฟล์</translation>
 <translation id="1749733017156547309">ต้องระบุรหัสผ่าน</translation>
@@ -710,6 +711,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="3580448612293054698">อัปเดต <ph name="ENTITY_TYPE" /> ไหม</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
+<translation id="3583726884554296148">บันทึกบัตรไว้ในบัญชี Google เพื่อป้อนข้อความอัตโนมัติสำหรับการซื้อใน Chrome ครั้งนี้และในอนาคต</translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
@@ -1346,6 +1348,7 @@
 <translation id="5819208479324046259">จัดการโดย <ph name="MANAGER" /> <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">กำลังซิงค์…</translation>
+<translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5838430324585198889">ปลดล็อกฟีเจอร์เพิ่มเติมสำหรับ iPad ด้วยแอป Google</translation>
 <translation id="583923961930319521">ใช้รหัสผ่านในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5843013299019689749">สีพื้นหลังสีดำ</translation>
@@ -1556,6 +1559,7 @@
 <translation id="6532106788206463496">บันทึกการเปลี่ยนแปลง</translation>
 <translation id="6536759809440150308">เปิด <ph name="GROUP_TITLE" />, กลุ่มของ <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">ชำระเงินได้เร็วขึ้นด้วยการป้อนข้อความอัตโนมัติในอุปกรณ์ต่างๆ</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="6550891580932862748">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย การตั้งค่า Google Safe Browsing ในผลิตภัณฑ์อื่นๆ ของ Google จะไม่ได้รับผลกระทบ</translation>
 <translation id="6556501700899673703">Lexend</translation>

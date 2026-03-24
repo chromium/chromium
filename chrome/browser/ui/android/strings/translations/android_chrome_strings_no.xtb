@@ -699,6 +699,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3985215325736559418">Vil du laste ned <ph name="FILE_NAME" /> igjen?</translation>
 <translation id="3987993985790029246">Kopier link</translation>
 <translation id="3994236846568425219">Slå på mørkt tema når mørkt tema er påslått på enheten</translation>
+<translation id="399788104667917863">Fest til verktøyraden</translation>
 <translation id="4000212216660919741">Hjem uten nett</translation>
 <translation id="4000670338830950598">Tilpass og kontroller Google Chrome med et element som er uthevet</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kompromittert passord i Google-kontoen din}other{# kompromitterte passord i Google-kontoen din}}</translation>

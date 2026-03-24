@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Historija</translation>
 <translation id="1652197001188145583">Kada je postavka uključena, web lokacije mogu zatražiti da koriste NFC uređaje. Kada je postavka isključena, web lokacije ne mogu koristiti NFC uređaje.</translation>
 <translation id="1660204651932907780">Dozvolite web lokacijama da reproduciraju zvuk (preporučeno)</translation>
+<translation id="1676590040242013349">Uključen je prekidač "Uvijek koristi sigurne veze".</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci web lokacije se koriste da vas web lokacija zapamti, naprimjer radi vaše prijave ili personaliziranja oglasa. Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Web lokacije mogu zatražiti da koriste NFC uređaje</translation>
 <translation id="1686785653877010442">Web lokacije obično šalju obavještenja o najnovijim vijestima ili porukama chata.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Blokirajte web lokacijama čitanje teksta i pregled slika u međumemoriji</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6950072572526089586">Web lokacija koju posjetite može sačuvati informacije o tome šta radite kako bi funkcionirala prema očekivanjima – naprimjer, da ostanete prijavljeni na web lokaciju ili sačuvate artikle u kolica za kupovinu. Web lokacije često privremeno pohranjuju te informacije na vaš uređaj.</translation>
+<translation id="6964291282260073066">"WebGPU" je onemogućen.</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6980507581230208647">Ružičasta tema</translation>
 <translation id="6980861169612950611">Izbrisati podatke web lokacije? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Kada je postavka uključena, web lokacije mogu zatražiti da koriste uređaje virtuelne realnosti. Kada je postavka isključena, web lokacije ne mogu koristiti uređaje virtuelne realnosti.</translation>
 <translation id="7282197670900591579">Tema u boji limuna</translation>
 <translation id="728412880473384942">Web lokacije su brže, ali su manje sigurne</translation>
+<translation id="7352902948037373520">Upravljajte u <ph name="BEGIN_LINK1" />postavkama Androida<ph name="END_LINK1" />
+
+Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="7366415735885268578">Dodajte web lokaciju</translation>
 <translation id="7368695150573390554">Svi offline podaci će se izbrisati</translation>
 <translation id="7369678931043226462">Donja tabela prilagođavanja stranice Nova kartica je otvorena na pola visine</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Web lokacije se obično povezuju s USB uređajima radi funkcija kao što je štampanje dokumenta ili pohranjivanje na uređaj za pohranu</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarjela. Ponovo instalirajte aplikaciju.</translation>
 <translation id="847433688444405067">Pregledajte na uređajima</translation>
+<translation id="8484556725636319115">Isključen je "Optimizator JavaScripta". <ph name="BEGIN_LINK2" />Upravljajte izuzecima web lokacija<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvijek zatraži verziju web lokacije za mobilni uređaj</translation>
 <translation id="8492822722330266509">Web lokacije mogu slati skočne prozore i koristiti preusmjeravanja</translation>

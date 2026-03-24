@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">ఇన్‌స్టాల్ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1740650426894359238">మరొక ప్రొఫైల్‌కు మారండి</translation>
 <translation id="1741219894094057085">స్మార్ట్ వాచ్</translation>
+<translation id="1742773766788162541">కార్డ్‌ను స్కాన్ చేసి, ఆటోఫిల్ చేయండి</translation>
 <translation id="1743244221910283364">మార్పులను విస్మరించండి</translation>
 <translation id="1748975028205587434">మీ ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="1749733017156547309">పాస్‌వర్డ్‌ను తప్పక అందించాలి</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">ప్రోడక్ట్‌లోని శాంపిల్ రిచ్ సందర్భోచిత ప్యానెల్‌కు సహాయపడుతుంది, ఇది రోజులో చాలా సార్లు కనిపిస్తుంది.</translation>
 <translation id="2739887572830526131">ట్యాబ్‌లను తర్వాత జోడించడానికి ఈ గ్రూప్‌ను కొనసాగించండి, లేదా మీకు ఇది అవసరం లేకపోతే, దాన్ని తొలగించండి.</translation>
 <translation id="2747003861858887689">మునుపటి ఫీల్డ్</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /><ph name="POSITION" />వ స్థానానికి తరలించబడింది</translation>
 <translation id="2755485474385016903">చేసిన మార్పులు గ్రూప్‌లోని అందరికీ కనిపిస్తాయి</translation>
 <translation id="2755595981383829244">మీరు ఇప్పుడు కంటెంట్ నోటిఫికేషన్‌లను అందుకుంటారు</translation>
 <translation id="2761788987260570878">మీ సెర్చ్‌ను ఫోటో తీయండి</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" />‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="3581564640715911333">ఇతర భాషలలో ఉన్న పేజీలను అనువదించడాన్ని ఆఫర్ చేస్తుంది</translation>
+<translation id="3583726884554296148">ఈ కొనుగోలు కోసమే కాకుండా Chromeలో భవిష్యత్తులో చేసే కొనుగోళ్ల కోసం కూడా మీ కార్డ్‌ను ఆటోఫిల్ చేయడానికి మీ Google ఖాతాలో దాన్ని సేవ్ చేయండి</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
 <translation id="3587885837929752825">మీ Google ఖాతాలో మీరు సేవ్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది.</translation>
 <translation id="3588820906588687999">ఇమేజ్‌ను కొత్త ట్యాబ్‌లో తెరవండి</translation>
@@ -1346,6 +1349,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">సింకింగ్…</translation>
+<translation id="583281660410589416">తెలియని</translation>
 <translation id="5838430324585198889">Google యాప్‌లతో మీ iPad కోసం మరిన్ని ఫీచర్‌లను అన్‌లాక్ చేయండి</translation>
 <translation id="583923961930319521">మీ పరికరాలన్నింటిలో పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>
 <translation id="5843013299019689749">నలుపు బ్యాక్‌గ్రౌండ్ రంగు</translation>
@@ -1556,6 +1560,7 @@
 <translation id="6532106788206463496">మార్పులను సేవ్ చేయండి</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" />‌ను తెరవండి, <ph name="NUMBER_OF_TABS" />‌లో గ్రూప్, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">మీ డివైజ్‌లలో ఆటోఫిల్ సదుపాయంతో మరింత వేగంగా చెక్ అవుట్ చేయండి</translation>
 <translation id="6550675742724504774">ఎంపికలు</translation>
 <translation id="6550891580932862748">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు లేదా ఎక్స్‌టెన్షన్‌ల నుండి మిమ్మల్ని రక్షించదు. ఇతర Google ప్రోడక్ట్‌లలో మీ సురక్షిత బ్రౌజింగ్ సెట్టింగ్‌లు ప్రభావితం కావు.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2029,6 +2034,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> మోడల్స్</translation>
 <translation id="8211030355252954494"><ph name="WEBSITE" />‌కు సంబంధించి మీరు పాస్‌వర్డ్‌లను అందుకున్నారు</translation>
 <translation id="8211406090763984747">కనెక్షన్ సురక్షితంగా ఉంది</translation>
+<translation id="8213190397436801658">వర్చువల్ హోమ్</translation>
 <translation id="8214293972734702249"><ph name="TAB_TITLE" />, పిన్ చేయబడింది</translation>
 <translation id="8219424187226230983">కొత్త ట్యాబ్‌లో ఆఫ్‌లైన్ వెర్ష‌న్‌ను చూడండి</translation>
 <translation id="8221665793629393739">వెబ్ పేజీని మళ్లీ చూడటం కోసం మీ రిమైండర్</translation>

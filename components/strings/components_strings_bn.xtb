@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1036436692654972538">আপনার ডিভাইসে সেভ করে</translation>
 <translation id="1036881361735705143">এনভেলপ C4</translation>
+<translation id="1038168778161626396">কেবলমাত্র চিহ্ন প্রদান</translation>
 <translation id="1038842779957582377">অজানা নাম</translation>
 <translation id="1041998700806130099">জব শিট মেসেজ</translation>
 <translation id="1044897699341250361">এর মানে কি</translation>
@@ -44,6 +45,7 @@
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ কখনও দেখতে চাই না</translation>
 <translation id="1070333806075222467">মেটাল (গ্লসি)</translation>
 <translation id="1070901266639972381">রাত</translation>
+<translation id="1071917609930274619">ডেটা চিহ্নকরণ</translation>
 <translation id="1073690811593784042">গ্লাস (রঙিন)</translation>
 <translation id="1074287282535157335">৪টি কিস্তিতে বা মাসে মাসে (যোগ্যতার উপর নির্ভর করে) পরিশোধ করুন</translation>
 <translation id="1074497978438210769">সুরক্ষিত নয়</translation>
@@ -85,6 +87,7 @@
 <translation id="1138458427267715730">ওয়েব জুড়ে কোনও সাইটের দাম কমে গেলে সতর্কতা পান</translation>
 <translation id="1142713751288681188">পেপারের ধরন</translation>
 <translation id="1142965388643537393">ভ্রমণের তথ্য</translation>
+<translation id="1143142264369994168">সার্টিফিকেট স্বাক্ষরকারী</translation>
 <translation id="1144136880160289237">এখনও আপনার কোনও অ্যাক্টিভ বিষয় নেই</translation>
 <translation id="1149617035358809955">আপনার পরিচয় যাচাই করুন যাতে এটি আপনার পেমেন্ট সংক্রান্ত তথ্য পূরণ করতে পারে</translation>
 <translation id="1150565364351027703">সানগ্লাস</translation>
@@ -137,6 +140,7 @@
 <translation id="1215738931000958575">পাসওয়ার্ড, পাসকী, ঠিকানা, পেমেন্ট পদ্ধতি ও অন্যান্য তথ্য অটোফিল করতে, আপনার Google অ্যাকাউন্টে সেভ করা তথ্য ব্যবহার করা হয়</translation>
 <translation id="1219129156119358924">সিস্টেম নিরাপত্তা</translation>
 <translation id="1219134100826635117">আপনার অ্যাডমিনিস্ট্রেটর এই অ্যাকশন ব্লক করে দিয়েছে</translation>
+<translation id="1221024147024329929">RSA এনক্রিপশানের সাথে PKCS #1 MD2</translation>
 <translation id="1222060260947439312">ডানদিকের ট্রে</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">কার্ডের নম্বর:</translation>
@@ -411,8 +415,10 @@
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1640180200866533862">ব্যবহারকারীর নীতিসমূহ</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />এই সাইটের হোমপেজটি ঘুরে দেখুন<ph name="END_LINK" />।</translation>
+<translation id="1640283014264083726">RSA এনক্রিপশানের সাথে PKCS #1 MD4</translation>
 <translation id="1641962500621836664">ক্যামেরা ফাইল সেভ করা হচ্ছে</translation>
 <translation id="1641976391427233992">ডিলে আউটপুট</translation>
+<translation id="1643072738649235303">SHA-1 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="1643651787397909318">Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা পেজে ভিজিট করতে, সেটিংসের মধ্যে Chrome 'নিরাপত্তা সংক্রান্ত পরীক্ষা' বোতামে গিয়ে সেটি চালু করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1645004815457365098">অজানা সোর্স</translation>
@@ -696,6 +702,7 @@
 <translation id="2108755909498034140">আপনার কম্পিউটার পুনরায় চালু করুন</translation>
 <translation id="2109845311767915560">ট্যাব গ্রুপ শেয়ার করা হয়েছে</translation>
 <translation id="2111166930115883695">গেম খেলতে, স্পেসবার প্রেস করুন</translation>
+<translation id="2113921862428609753">কর্তৃপক্ষ তথ্য অ্যাক্সেস</translation>
 <translation id="2113977810652731515">কার্ড</translation>
 <translation id="2114841414352855701">এড়িয়ে যাওয়া হয়েছে কারণ এটি <ph name="POLICY_NAME" />-দ্বারা ওভাররাইড করা হয়েছিল৷</translation>
 <translation id="2118132148597630479">এনভেলপ C5</translation>
@@ -758,6 +765,7 @@
 <translation id="2190094353033916816">এই নীতিতে মেশিন ও ব্যবহারকারীর লেভেলে আলাদা আলাদা ভ্যালু প্রয়োগ করা হয়েছে। নীতিটি সঠিকভাবে কাজ করছে।</translation>
 <translation id="2191980191135734720">পরবর্তী ধাপে আপনার স্ক্রিন আনলক করুন, সাধারণত ফিঙ্গারপ্রিন্ট ব্যবহার করে করা হয়। আপনি এভাবেও করতে পারেন <ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
+<translation id="2195729137168608510">ইমেল আইডির সুরক্ষা</translation>
 <translation id="2198183835992354675">পরিচিত পর্যটকের নম্বর</translation>
 <translation id="2198215508485017216">অপ্রত্যাশিত কিছু ঘটেছে। <ph name="BEGIN_LINK" />Drive-এ আপলোড সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">অপছন্দ বোতাম, আপনি কেন এই সাজেশন অপছন্দ করলেন, সেই সম্পর্কে বিস্তারিত মতামত জমা দেওয়ার জন্য কোনও ফর্ম খুলতে Enter প্রেস করুন</translation>
@@ -1417,6 +1425,7 @@
 <translation id="3220264767789936523">ফর্মাল পোশাক</translation>
 <translation id="3223287115535306850">অ্যাপ লঞ্চ হচ্ছে</translation>
 <translation id="3223425961342298674">লোকেশন ব্যবহারের অনুমতি নেই</translation>
+<translation id="3225319735946384299">Code Signing</translation>
 <translation id="3225919329040284222">সার্ভারটি এমন একটি সার্টিফিকেট উপস্থাপনা করেছে যা বিল্ট-ইন প্রত্যাশাগুলির সাথে মেলে না৷ এই প্রত্যাশাগুলি আপনাকে সুরক্ষিত করতে কিছু নিশ্চিত, উচ্চ সুরক্ষার ওয়েবসাইটের জন্য অন্তর্ভুক্ত৷</translation>
 <translation id="3226128629678568754">পৃষ্ঠা লোড করার জন্য প্রয়োজনীয় ডেটা আবার জমা দিতে রিলোড বোতামটি টিপুন৷</translation>
 <translation id="3226387218769101247">থাম্বনেল দেখুন</translation>
@@ -1530,6 +1539,7 @@
 <translation id="3414952576877147120">মাপ:</translation>
 <translation id="341513675006332771">'Chrome ডাইনো গেম খেলুন' বোতাম, Chrome-এ Dino Run গেম খেলতে এটি চালু করুন</translation>
 <translation id="3415471717466570460">আপনার সার্চ, মিলে যাওয়া সেরা ফলাফল ও সেই পৃষ্ঠাগুলির কন্টেন্ট Google-এ পাঠানো হয়েছে এবং তা হিউম্যান রিভিউয়াররা দেখতে পারেন, যাতে এই ফিচারের উন্নতি করা যায়। এটি হল পরীক্ষামূলক ফিচার এবং সব সময় সঠিক তথ্য দেবে না।</translation>
+<translation id="3421387094817716717">এলিপ্টিক কার্ভ সর্বজনীন কী</translation>
 <translation id="3422248202833853650">মেমরি ফাঁকা করতে অন্যান্য প্রোগ্রাম থেকে বেরিয়ে যাওয়ার চেষ্টা করুন।</translation>
 <translation id="3422472998109090673">বর্তমানে <ph name="HOST_NAME" /> পাওয়া যাচ্ছে না।</translation>
 <translation id="3422794267539320056">ডাইনো গেম খেলতে, ট্যাপ করুন অথবা স্পেস প্রেস করুন</translation>
@@ -1607,6 +1617,7 @@
 <translation id="3541016556608204104">Chrome Enterprise Connectors সম্পর্কে আরও তথ্য</translation>
 <translation id="3542628208405253498">কার্ডের ছবি</translation>
 <translation id="3542768452570884558">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
+<translation id="3543597750097719865">SHA-512 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="3543935938072367282">'অটোফিল' ফিচার ব্যবহার করে ঝটপট চেক আউট করুন</translation>
 <translation id="3547442767634383572">এক নজরে অফিস প্রোফাইল</translation>
 <translation id="3547746132308051926">২০ x ২৪ ইঞ্চি</translation>
@@ -1802,6 +1813,7 @@
 <translation id="3815434930383843058">৮ x ১২ ইঞ্চি</translation>
 <translation id="3816482573645936981">মান (পুরনো মানের জায়গাতে নতুন মান প্রয়োগ করা হয়েছে)</translation>
 <translation id="3817524650114746564">আপনার কম্পিউটারের প্রক্সি সেটিংস খুলুন</translation>
+<translation id="3820749202859700794">SECG এলিপ্টিক কার্ভ secp521r1 (ওরফে NIST P-521)</translation>
 <translation id="382115839591654906"><ph name="CARD_NAME" />-এর জন্য CVC</translation>
 <translation id="3822492359574576064">মাউস লক ও ব্যবহার</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2092,6 +2104,7 @@
 <translation id="4265635050210404830">আপনার লয়ালটি কার্ড</translation>
 <translation id="4265872034478892965">আপনার প্রশাসক অনুমতি দিয়েছে</translation>
 <translation id="4267590181863312380">আপনার অন্যান্য ডিভাইস থেকে ইতিহাস পেতে, সাইন-ইন করে ইতিহাস সিঙ্ক করুন। আপনার সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পাবেন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
+<translation id="4268025649754414643">কী চিহ্নকরণ</translation>
 <translation id="4269029136757623689">বাড়ির ফ্যান</translation>
 <translation id="4269264543938335308">সাঁতারের পোশাক</translation>
 <translation id="4269599248168651462">সার্ভার শংসাপত্র এমন ডোমেনের নামে নেওয়া হয়েছে যা অনন্য নয়।</translation>
@@ -2149,6 +2162,7 @@
 <translation id="4332872603299969513">শিশু সাহিত্য</translation>
 <translation id="4333295216031073611">শপিং লিস্ট</translation>
 <translation id="4333561522337981382">আপনার সব ডিসপ্লেতে উইন্ডো ম্যানেজ করুন</translation>
+<translation id="4333854382783149454">RSA এনক্রিপশানের সাথে PKCS #1 SHA-1</translation>
 <translation id="4336913590841287350">এই নীতি এখনও iOS-এ ব্যবহারকারীর নীতি হিসেবে কাজ করে না।</translation>
 <translation id="4340575312453649552">এই বিজ্ঞাপন আপনার ডিভাইসের অনেক রিসোর্স ব্যবহার করেছে, তাই Chrome সেটি মুছে দিয়েছে।</translation>
 <translation id="4340810192899866471">JSON থেকে ইমপোর্ট করুন</translation>
@@ -2192,6 +2206,7 @@
 <translation id="4414515549596849729">কুকি ও সাইট ডেটা</translation>
 <translation id="4415156962929755728">প্লাস্টিক (হাই গ্লস)</translation>
 <translation id="4415426530740016218">পিক-আপের ঠিকানা</translation>
+<translation id="4415748029120993980">SECG এলিপ্টিক কার্ভ secp384r1 (ওরফে NIST P-384)</translation>
 <translation id="4419287616181386201">পাসওয়ার্ড তাদের ম্যানেজমেন্ট সেটিংস থেকে মুছে যেতে পারে</translation>
 <translation id="4424024547088906515">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট Chrome এর নিকট বিশ্বাসযোগ্য নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="4425750422187370446">অ্যাথলিট পোশাক</translation>
@@ -2589,6 +2604,7 @@
 <translation id="5087286274860437796">সার্ভারের সার্টিফিকেট এই সময়ে বৈধ নয়৷</translation>
 <translation id="5087580092889165836">কার্ড জুড়ুন</translation>
 <translation id="5088142053160410913">অপারেটরকে মেসেজ করুন</translation>
+<translation id="5088534251099454936">RSA এনক্রিপশানের সাথে PKCS #1 SHA-512</translation>
 <translation id="5089810972385038852">রাজ্য</translation>
 <translation id="5093232627742069661">জেড ফোল্ড</translation>
 <translation id="5093417502834168387">সাইন-ইন করতে সমস্যা হচ্ছে? অন্যভাবে চেষ্টা করে দেখুন</translation>
@@ -2761,6 +2777,7 @@
 <translation id="5348330584842140856">এই ফাইলটি আর নেই বলে এটি সরানো যায়নি</translation>
 <translation id="5349543692327946794">লেবেল (ইঙ্কজেট)</translation>
 <translation id="5351548097010183514">বাড়ির তৈরির উপকরণ ও যোগান</translation>
+<translation id="5352033265844765294">Time Stamping</translation>
 <translation id="5354143049423063163">হেজ ফান্ড</translation>
 <translation id="5355557959165512791">ওয়েবসাইটটির সার্টিফিকেট তুলে নেওয়ার কারণে আপনি এখন <ph name="SITE" /> এ যেতে পারবেন না। নেটওয়ার্ক সমস্যা এবং আক্রমণ সাধারণত সাময়িকভাবে হয়, তাই এই পৃষ্ঠাটি সম্ভবত পরে কাজ করবে।</translation>
 <translation id="5359752295193133096">আরও দ্রুত, আরও বেশি কাস্টমাইজ করা উত্তরের জন্য, ডিফল্ট হিসেবে প্রাসঙ্গিক খোলা ট্যাব শেয়ার করুন।</translation>
@@ -2814,6 +2831,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
 <translation id="5431318178759467895">রঙ</translation>
 <translation id="5433756542371550806">কমান্ড-লাইন ভেরিয়েশন</translation>
+<translation id="5434065355175441495">PKCS #1 RSA এনক্রিপশান</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />সেভ করবে না<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />আপনার ব্রাউজিং ইতিহাস
@@ -2863,6 +2881,7 @@
 <translation id="5499229993630251170">এই থ্রেড চালিয়ে যেতে চান?</translation>
 <translation id="550365051221576010">ঠিকানার সবকটি ফিল্ডে তথ্য লিখুন</translation>
 <translation id="5506286895894263601">তালিকায় কোনও সঠিক শর্টকাট নেই।</translation>
+<translation id="5507756662695126555">অ-অস্বীকৃতি</translation>
 <translation id="5508443345185481044">ক্যামেরা ও ক্যামকোডার</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">পরিচালিত বুকমার্কগুলি</translation>
@@ -2945,6 +2964,7 @@
 <translation id="5611398002774823980">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="561165882404867731">Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করুন</translation>
 <translation id="5612720917913232150"><ph name="URL" /> আপনার কম্পিউটারের লোকেশন ব্যবহার করতে চায়</translation>
+<translation id="5614190747811328134">ব্যবহারকারী বিজ্ঞপ্তি</translation>
 <translation id="5614520971155863709">কার্ড গেম</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> আপনাকে অনেক বেশিবার পুনঃনির্দেশিত করেছে।</translation>
 <translation id="5619721953841297650">প্রিসেট</translation>
@@ -2960,6 +2980,7 @@
 <translation id="5640474731385449758">"<ph name="EXTENSION_NAME" />" এক্সটেনশন <ph name="HANDLER_HOSTNAME" />-এর মাধ্যমে <ph name="ORIGIN" />-এ <ph name="PROTOCOL" /> লিঙ্ক খুলতে চায়</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">স্টিরিও সিস্টেম ও কম্পোনেন্ট</translation>
+<translation id="5642508497713047">CRL স্বাক্ষরকারী</translation>
 <translation id="5644090287519800334">সাইড 1 ছবি X শিফ্ট</translation>
 <translation id="5644128326840674462">প্রচারের ব্যানার</translation>
 <translation id="5645132789250840550">প্লাস্টিক (সেমি-গ্লস)</translation>
@@ -3042,6 +3063,7 @@
 <translation id="5783922175933467571">৪৮ ঘণ্টার মধ্যে <ph name="TAB_GROUP_DISPLAY_NAME" /> লিঙ্কের মেয়াদ শেষ হয়ে যাবে</translation>
 <translation id="5784606427469807560">আপনার কার্ডটি নিশ্চিত করতে একটি সমস্যা হয়েছিল৷ আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন৷</translation>
 <translation id="5785756445106461925">উপরন্তু, এই পৃষ্ঠাতে অন্যান্য সংস্থান অন্তর্ভুক্ত রয়েছে যা নিরাপদ নয়৷ এই সংস্থানগুলি ট্রানজিটের সময় অন্যরা দেখতে পাবে এবং পৃষ্ঠাটির চেহারাটি পরিবর্তন করতে কোনও আক্রমণকারী এর পরিবর্তন করতে পারেন৷</translation>
+<translation id="5787146423283493983">কী চুক্তি</translation>
 <translation id="5793317771769868848">এই ডিভাইস থেকে এই পেমেন্ট পদ্ধতি মুছে ফেলা হবে</translation>
 <translation id="5794065675298686371">প্রাইস ট্র্যাকিং বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="5800727402210090597">মোবাইল ফোন মেরামত ও পরিষেবা</translation>
@@ -3122,6 +3144,7 @@
 <translation id="5924510104057992926">খোলার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="5924782825030413055">শেষ সম্মতি আপডেটের সোর্স:</translation>
 <translation id="5925040402342933574">অপটিকাল ডিস্ক (সেমি-গ্লস)</translation>
+<translation id="5925147183566400388">সার্টিফিকেশান প্র্যাকটিস স্টেটমেন্ট পয়েন্টার</translation>
 <translation id="5926982310317673627">জিম ও হেলথ ক্লাব</translation>
 <translation id="5927279462592128805">Microsoft Word</translation>
 <translation id="5930147475897662863">'আমাকে লিখতে সাহায্য করো' ফিচার ব্যবহার করতে এই সেটিং চালু করুন</translation>
@@ -3210,6 +3233,7 @@
 <translation id="605237284704429106">IBAN পূরণ করা হচ্ছে</translation>
 <translation id="6053584886670442526">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। এই ঠিকানাটি আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT" />-এ সেভ করা আছে।</translation>
 <translation id="6053735090575989697">Google কীভাবে আপনার ডেটা সুরক্ষিত রাখে সেই সম্পর্কে আমাদের গোপনীয়তা নীতি থেকে আরও জানুন।</translation>
+<translation id="6055392876709372977">RSA এনক্রিপশানের সাথে PKCS #1 SHA-256</translation>
 <translation id="6055888660316801977">ক্রেডেনশিয়াল শিটে উল্লেখ করা কোনও ক্রেডেনশিয়ালের সাথে সুরক্ষিত পেমেন্ট ক্রেডেনশিয়াল মিলছে না</translation>
 <translation id="6055982527635883756">এনভেলপ (আর্কাইভাল)</translation>
 <translation id="6057177372083677067">অনলাইন ভিডিও</translation>
@@ -3265,6 +3289,7 @@
 <translation id="6131824478727057281">লোকেশন</translation>
 <translation id="6133320744616005677">অনুমতি দেওয়া চালিয়ে যান</translation>
 <translation id="6133984428121856852">ফাইল এক্সটেনশনটি খালি বা ভুল ফর্ম্যাটে ছিল।</translation>
+<translation id="6138680304137685902">SHA-384 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="6139975341602920272">১৭ x ২২ ইঞ্চি</translation>
 <translation id="6143097244789397208">অগমেন্টেড ও ভার্চুয়াল রিয়েলিটি</translation>
 <translation id="614327212146763975">মোশন ও লাইট সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
@@ -3396,6 +3421,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ইনস্টল করুন</translation>
 <translation id="6351658970066645919">ব্রাউজ করা ডেটা মুছে দিন</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{একটিও নয়}=1{১টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}=2{২টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}one{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}other{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}}</translation>
+<translation id="6354918092619878358">SECG এলিপ্টিক কার্ভ secp256r1 (ওরফে ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355392890578844978">কোনও কোম্পানি বা অন্য কোনও সংস্থা এই ব্রাউজার ম্যানেজ করে না। এই ডিভাইসের অ্যাক্টিভিটি Chromium-এর বাইরে থেকে ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" ও "<ph name="GROUP_TITLE_2" />" ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="6358088212770985041">পেমেন্ট পদ্ধতি এডিট করুন</translation>
@@ -3508,6 +3534,7 @@
 <translation id="6502510275417601303">নতুন পেমেন্টের সেটিংস সম্পর্কিত সতর্কতা বন্ধ করা আছে</translation>
 <translation id="6502991525169604759">আপনার করা এডিট ছাড়া</translation>
 <translation id="6505072878288254563">অনুবাদ করা হচ্ছে</translation>
+<translation id="6506374932220792071">SHA-256 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="6506936645890046535">কুকি অ্যাক্সেস করার অনুমতি চাইতে পারবে</translation>
 <translation id="6506959208958864820">খাম</translation>
 <translation id="6507117483253822672">ওয়েবে যেকোনও জায়গায় আরও আত্মবিশ্বাসের সাথে লিখুন</translation>
@@ -3818,6 +3845,7 @@
 <translation id="7003278537452757231">কম্বল ও কার্পেট</translation>
 <translation id="7003322000677139268">যানবাহনের যন্ত্রাংশ ও অ্যাক্সেসরি</translation>
 <translation id="7004499039102548441">সাম্প্রতিক ট্যাবগুলি</translation>
+<translation id="7004562620237466965">শুধুমাত্র পাঠোদ্ধার</translation>
 <translation id="700483187606163535"><ph name="ACCOUNT" />-এর জন্য <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-এ আপনার তথ্য সেভ করা আছে। Google পরিষেবা জুড়ে আরও দ্রুত ফর্ম পূরণ করার জন্য আপনি এটি ব্যবহার করতে পারবেন।</translation>
 <translation id="7006930604109697472">নিরাপদ না হলেও পাঠান</translation>
 <translation id="7009364359744329733">এখন এই কার্ড উপলভ্য নেই, পরে আবার চেষ্টা করুন।</translation>
@@ -3860,6 +3888,7 @@
 <translation id="7070144569727915108">সিস্টেম সেটিংস</translation>
 <translation id="70705239631109039">এই কানেকশন সম্পূর্ণরূপে নিরাপদ নয়</translation>
 <translation id="7075452647191940183">অনুরোধ অত্যন্ত বড়</translation>
+<translation id="7075513071073410194">RSA এনক্রিপশান সহ PKCS #1 MD5</translation>
 <translation id="7075896597860500885">এই সাইট থেকে কপি করার সাজেশন দেওয়া হয় না</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4387,6 +4416,7 @@
 <translation id="7862306158978555061">সংবেদনশীল তথ্য দেখুন</translation>
 <translation id="7865448901209910068">সর্বোচ্চ গতি</translation>
 <translation id="7865482168955081228">'এখন কিনুন, পরে পেমেন্ট করুন' পেমেন্ট পদ্ধতি সম্পর্কিত সমস্যা দেখানো স্ক্রিন বন্ধ আছে।</translation>
+<translation id="7869655448736341731">যেকোনও</translation>
 <translation id="7870207318911766769">এইসব বিকল্প অফার করতে, চেক-আউট করার পৃষ্ঠা থেকে কন্টেন্ট Google-এর সাথে শেয়ার করা হয়।</translation>
 <translation id="7870281855125116701">প্রোডাক্টে ছাড় খুঁজে পাওয়া গেছে</translation>
 <translation id="7871445724586827387">আপনার Google অ্যাকাউন্টের পাসওয়ার্ড পরিবর্তন করুন</translation>
@@ -4455,6 +4485,7 @@
 <translation id="7967636097426665267">যোগাযোগের সরঞ্জাম</translation>
 <translation id="79682505114836835"><ph name="VALUE" /> মান ভুল হেক্স কালার কোড।</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
+<translation id="7972714317346275248">RSA এনক্রিপশানের সাথে PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">কিস্তিতে পেমেন্ট করার সুবিধার ক্ষেত্রে 'এখন কিনুন, পরে পেমেন্ট করুন' ইস্যুকারী উপলভ্য আছে। কীবোর্ড লুকানো রয়েছে।</translation>
 <translation id="7976214039405368314">অত্যধিক অনুরোধ</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইস</translation>

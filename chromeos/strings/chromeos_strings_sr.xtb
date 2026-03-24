@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">Унесите упит</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Чувар екрана који приказује цео дан од свитања до мрака</translation>
-<translation id="1167755866710282443">Отворите мени да бисте прилагодили тастере. Превуците мени да бисте га преместили.</translation>
 <translation id="1171349345463658120">пешчана лагуна</translation>
 <translation id="1174073918202301297">Пречица је додата</translation>
 <translation id="11743817593307477">Користите тастере са стрелицама да бисте преместили ову контролу на радњу у игри коју желите. Користите тастер Enter да бисте поставили контролу. Користите тастер Escape да бисте отказали.</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">D-pad за мапирање тастера</translation>
 <translation id="3217462202230355157">Уверите се да је микрофон повезан или пробајте да рестартујете <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Траже се скенери</translation>
-<translation id="3226657629376379887">Мени са радњама за распоред</translation>
 <translation id="3227186760713762082">Вредност (<ph name="CATEGORY_TEXT" />) дели се бројем <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">дигитална уметност</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7180865173735832675">Прилагоди</translation>
-<translation id="7184043045742675738">Кликните на било који тастер да бисте прилагодили дугме. Промените положај тастера помоћу тастера миша или тастера са стрелицама.</translation>
 <translation id="7187669805838282391">у среду</translation>
 <translation id="7205318498545665455">Одаберите микрофон</translation>
 <translation id="7210635925306941239">цијан</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">Подешавања уноса</translation>
 <translation id="7595982850646262331">Још <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Администратор за <ph name="MANAGER" /> је подесио када овај <ph name="DEVICE_TYPE" /> може да се користи</translation>
-<translation id="7613724632293948900">Промените положај помоћу тастера миша или тастера са стрелицама.</translation>
 <translation id="7618216277886673749">Изаберите <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Неутрално</translation>
 <translation id="7620771111601174153">Сазнајте више у Центру за помоћ</translation>

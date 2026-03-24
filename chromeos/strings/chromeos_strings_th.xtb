@@ -44,7 +44,6 @@
 <translation id="1155154308031262006">ป้อนพรอมต์</translation>
 <translation id="115705039208660697">สับปะรด</translation>
 <translation id="1164939766849482256">ภาพพักหน้าจอรุ่งเช้าจนถึงกลางคืน</translation>
-<translation id="1167755866710282443">เปิดเมนูเพื่อปรับแต่งคีย์ ลากเมนูเพื่อย้าย</translation>
 <translation id="1171349345463658120">ทะเลสาบที่เต็มไปด้วยทราย</translation>
 <translation id="1174073918202301297">เพิ่มทางลัดแล้ว</translation>
 <translation id="11743817593307477">ใช้ปุ่มลูกศรเพื่อย้ายตัวควบคุมนี้ไปยังการดำเนินการในเกมที่ต้องการ ใช้ปุ่ม Enter เพื่อวางตัวควบคุม ใช้ปุ่ม Escape เพื่อยกเลิก</translation>
@@ -507,7 +506,6 @@
 <translation id="3211671540163313381">D-pad การแมปคีย์</translation>
 <translation id="3217462202230355157">ตรวจสอบว่าไมค์เชื่อมต่ออยู่หรือลองรีสตาร์ท <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
-<translation id="3226657629376379887">เมนูการทำงานสำหรับเลย์เอาต์</translation>
 <translation id="3227186760713762082">นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
 <translation id="3242622575335502454">ศิลปะดิจิทัล</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
@@ -1408,7 +1406,6 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7180865173735832675">กำหนดค่า</translation>
-<translation id="7184043045742675738">คลิกแป้นใดก็ได้เพื่อปรับแต่งปุ่ม เปลี่ยนตำแหน่งแป้นด้วยเมาส์หรือแป้นลูกศร</translation>
 <translation id="7187669805838282391">ในวันพุธ</translation>
 <translation id="7205318498545665455">เลือกไมค์</translation>
 <translation id="7210635925306941239">ฟ้าอมเขียว</translation>
@@ -1497,7 +1494,6 @@
 <translation id="7590883480672980941">การตั้งค่าการป้อนข้อมูล</translation>
 <translation id="7595982850646262331">เหลือ <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">ผู้ดูแลระบบ <ph name="MANAGER" /> ได้กำหนดเวลาที่จะใช้ <ph name="DEVICE_TYPE" /> เครื่องนี้ได้</translation>
-<translation id="7613724632293948900">เปลี่ยนตำแหน่งด้วยเมาส์หรือแป้นลูกศร</translation>
 <translation id="7618216277886673749">เลือก <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
