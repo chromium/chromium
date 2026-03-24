@@ -493,12 +493,14 @@
 // - external/xnnpack+/src/f32-vrsqrt/gen/f32-vrsqrt-scalar-sqrt.c
 // - external/xnnpack+/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-rsqrt.c
 // - external/xnnpack+/src/f32-vrsqrt/gen/f32-vrsqrt-sse2-sqrt.c
+// - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx-rr2-p5-div-u16.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx-rr2-p5-nr2-u16.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx2-rr1-p5-div-u16.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx512f-rr2-lut32-p2-perm2-scalef-div-u64.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-scalar-rr2-lut64-p2-div-u2.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-sse2-rr2-lut64-p2-div-u8.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-sse41-rr2-lut64-p2-div-u8.c
+// - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-sse41-rr2-p5-div-u8.c
 // - external/xnnpack+/src/f32-vsin/gen/f32-vsin-avx-rational-5-4-div.c
 // - external/xnnpack+/src/f32-vsin/gen/f32-vsin-avx512f-rational-5-4-div.c
 // - external/xnnpack+/src/f32-vsin/gen/f32-vsin-fma3-rational-5-4-div.c
@@ -1026,10 +1028,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-    6,  53, 126, 138, 122, 139, 119,   3,
-    0, 196, 172,  66,  65, 192, 110, 104,
-  207, 161, 243, 248,  31,  90,  21, 143,
-  121, 143, 234, 162,  90, 140,  46, 236
+  141, 132, 219, 205, 253, 156, 132, 206,
+  162, 250,  49, 186, 203, 178,  43, 149,
+  144, 213, 189, 116,  47, 201, 167, 150,
+   62, 130, 234,  32,  54, 163, 117,  26
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
