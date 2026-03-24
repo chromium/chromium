@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/url_formatter/url_fixer.h"
 
 #include <stddef.h>
@@ -16,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -693,6 +693,42 @@ TEST(URLFixerTest, FixupRelativeFile) {
   base::FilePath empty_path;
   base::FilePath http_url_path(FILE_PATH_LITERAL("http://../"));
   EXPECT_TRUE(FixupRelativeFile(empty_path, http_url_path).SchemeIs("http"));
+}
+
+// Declare FixupHost here so that we can test it in this file.
+void FixupHost(std::string domain,
+               const std::string& desired_tld,
+               std::string* url);
+
+TEST(URLFixerTest, FixupHost) {
+  struct {
+    const std::string domain;
+    const std::string desired_tld;
+    const std::string expected_output;
+  } cases[] = {
+      // No TLD.
+      {"www.example.com", "", "www.example.com"},
+      {"..www.example.com", "", "www.example.com"},
+      {"www.example.com..", "", "www.example.com."},
+      {".www.example.com.", "", "www.example.com."},
+      {"...", "", "..."},
+
+      // Add TLD.
+      {"example", "com", "www.example.com"},
+      {"example.", "com", "www.example.com"},
+      {"example..", "com", "www.example.com"},
+      {".example", "com", "www.example.com"},
+      {"www.example", "com", "www.example.com"},
+      {"example.com", "com", "example.com"},
+  };
+
+  for (const auto& value : cases) {
+    std::string prefix = base::StrCat({"test case '", value.domain, "': "});
+    std::string output = prefix;
+    FixupHost(value.domain, value.desired_tld, &output);
+    EXPECT_EQ(prefix + value.expected_output, output)
+        << "input: " << value.domain;
+  }
 }
 
 }  // namespace url_formatter

@@ -273,37 +273,6 @@ inline void FixupPassword(const std::string& text,
   url->append(text, part.begin, part.len);
 }
 
-void FixupHost(const std::string& text,
-               const url::Component& part,
-               bool has_scheme,
-               const std::string& desired_tld,
-               std::string* url) {
-  if (!part.is_valid()) {
-    return;
-  }
-
-  // Make domain valid.
-  // Strip all leading dots and all but one trailing dot, unless the user only
-  // typed dots, in which case their input is totally invalid and we should just
-  // leave it unchanged.
-  std::string domain(text, part.begin, part.len);
-  const size_t first_nondot(domain.find_first_not_of('.'));
-  if (first_nondot != std::string::npos) {
-    domain.erase(0, first_nondot);
-    size_t last_nondot(domain.find_last_not_of('.'));
-    DCHECK(last_nondot != std::string::npos);
-    last_nondot += 2;  // Point at second period in ending string
-    if (last_nondot < domain.length()) {
-      domain.erase(last_nondot);
-    }
-  }
-
-  // Add any user-specified TLD, if applicable.
-  AddDesiredTLD(desired_tld, &domain);
-
-  url->append(domain);
-}
-
 void FixupPort(const std::string& text,
                const url::Component& part,
                std::string* url) {
@@ -553,6 +522,30 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
 
 }  // namespace
 
+void FixupHost(std::string domain,
+               const std::string& desired_tld,
+               std::string* url) {
+  // Make domain valid.
+  // Strip all leading dots and all but one trailing dot, unless the user only
+  // typed dots, in which case their input is totally invalid and we should just
+  // leave it unchanged.
+  const size_t first_nondot(domain.find_first_not_of('.'));
+  if (first_nondot != std::string::npos) {
+    domain.erase(0, first_nondot);
+    size_t last_nondot(domain.find_last_not_of('.'));
+    DCHECK(last_nondot != std::string::npos);
+    last_nondot += 2;  // Point at second period in ending string
+    if (last_nondot < domain.length()) {
+      domain.erase(last_nondot);
+    }
+  }
+
+  // Add any user-specified TLD, if applicable.
+  AddDesiredTLD(desired_tld, &domain);
+
+  url->append(domain);
+}
+
 std::string SegmentURL(std::string_view text, url::Parsed* parts) {
   std::string mutable_text(text);
   return SegmentURLInternal(&mutable_text, parts);
@@ -637,7 +630,10 @@ GURL FixupURLInternal(const std::string& text,
       url.append("@");
     }
 
-    FixupHost(trimmed, parts.host, parts.scheme.is_valid(), desired_tld, &url);
+    if (parts.host.is_valid()) {
+      FixupHost(trimmed.substr(parts.host.begin, parts.host.len),
+                 desired_tld, &url);
+    }
     if (chrome_url && !parts.host.is_valid()) {
       url.append(kChromeUIDefaultHost);
     }
