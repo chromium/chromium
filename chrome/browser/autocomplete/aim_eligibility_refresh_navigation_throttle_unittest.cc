@@ -117,10 +117,47 @@ TEST_F(AimEligibilityRefreshNavigationThrottleTest, NoFetchForNonHTTPUrl) {
   EXPECT_EQ(content::NavigationThrottle::PROCEED, RunThrottleForUrl(url));
 }
 
-TEST_F(AimEligibilityRefreshNavigationThrottleTest, NoFetchForNonSearchUrl) {
+TEST_F(AimEligibilityRefreshNavigationThrottleTest,
+       NoFetchForNonGoogleSearchUrl) {
   const GURL url("https://example.com/");
 
   EXPECT_CALL(*aim_eligibility_service_, FetchEligibility(testing::_)).Times(0);
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED, RunThrottleForUrl(url));
+}
+
+TEST_F(AimEligibilityRefreshNavigationThrottleTest,
+       NoFetchForNonGoogleSearchUrlWithSearchQuery) {
+  const GURL url("https://example.com/search?udm=50");
+
+  EXPECT_CALL(*aim_eligibility_service_, FetchEligibility(testing::_)).Times(0);
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED, RunThrottleForUrl(url));
+}
+
+TEST_F(AimEligibilityRefreshNavigationThrottleTest,
+       FetchForGoogleSearchUrlNoQuery) {
+  const GURL url("https://www.google.com/search?udm=50");
+
+  EXPECT_CALL(*aim_eligibility_service_, FetchEligibility(testing::_)).Times(1);
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED, RunThrottleForUrl(url));
+}
+
+TEST_F(AimEligibilityRefreshNavigationThrottleTest,
+       FetchForGoogleSearchUrlEmptyQuery) {
+  const GURL url("https://www.google.com/search?udm=50&q=");
+
+  EXPECT_CALL(*aim_eligibility_service_, FetchEligibility(testing::_)).Times(1);
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED, RunThrottleForUrl(url));
+}
+
+TEST_F(AimEligibilityRefreshNavigationThrottleTest,
+       FetchForGoogleSearchUrlNoQueryInternational) {
+  const GURL url("https://www.google.co.uk/search?udm=50");
+
+  EXPECT_CALL(*aim_eligibility_service_, FetchEligibility(testing::_)).Times(1);
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED, RunThrottleForUrl(url));
 }
