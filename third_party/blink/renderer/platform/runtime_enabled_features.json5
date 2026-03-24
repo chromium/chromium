@@ -4154,14 +4154,9 @@
       status: "stable",
     },
     {
-      // Fix for https://crbug.com/40716515.
-      // Killswitch M141.
-      name: "PaintOffsetTranslationForBackdropFilterWithInlineElement",
-      status: "stable",
-    },
-    {
-      // Killswitch M142. Overrides the above to enable PaintOffsetTranslation
-      // for all composited LayoutObjects.
+      // Enable PaintOffsetTranslation for all composited LayoutObjects.
+      // TODO(crbug.com/495746269): Enable this flag after fixing the
+      // regression.
       name: "PaintOffsetTranslationForComposited",
       status: "test",
     },

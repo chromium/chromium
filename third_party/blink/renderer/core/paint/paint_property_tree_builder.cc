@@ -653,25 +653,17 @@ static bool NeedsPaintOffsetTranslation(
     // Don't let paint offset cross composited layer boundaries when possible,
     // to avoid unnecessary full layer paint/raster invalidation when paint
     // offset in ancestor transform node changes which should not affect the
-    // descendants of the composited layer. When
-    // PaintOffsetTranslationForBackdropFilterWithInlineElement is enabled,
-    // inline elements with backdrop-filter are also included to fix paint
-    // offset issue (see crbug.com/40716515). For now because of
-    // crbug.com/40547515, this is limited to LayoutBlocks and LayoutReplaceds
-    // that won't be escaped by floating objects and column spans when finding
-    // their containing blocks. TODO(crbug.com/40547515): This can be avoided if
-    // we have fully correct paint property tree states for floating objects
-    // and column spans.
+    // descendants of the composited layer.
+    // TODO(crbug.com/455884493): Enable paint offset translation for all
+    // composited objects.
     if (RuntimeEnabledFeatures::PaintOffsetTranslationForCompositedEnabled()) {
       return true;
     }
-    bool include_inline_for_backdrop_filter =
-        RuntimeEnabledFeatures::
-            PaintOffsetTranslationForBackdropFilterWithInlineElementEnabled() &&
-        !object.StyleRef().BackdropFilter().IsEmpty() &&
-        object.IsLayoutInline();
     if (box_model.IsLayoutBlock() || object.IsLayoutReplaced() ||
-        include_inline_for_backdrop_filter ||
+        // Inline elements with backdrop-filter are also included to fix paint
+        // offset issue (see crbug.com/40716515).
+        (!object.StyleRef().BackdropFilter().IsEmpty() &&
+         object.IsLayoutInline()) ||
         (direct_compositing_reasons &
          CompositingReason::kViewTransitionElement) ||
         (direct_compositing_reasons & CompositingReason::kElementCapture)) {
