@@ -22,11 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.tabs.TabLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,6 +36,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class InstanceSwitcherCoordinatorUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private View mDialogView;
     @Mock private TabLayout mTabHeaderRow;
     @Mock private FrameLayout mInstanceListContainer;
@@ -48,7 +51,6 @@ public class InstanceSwitcherCoordinatorUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.openMocks(this);
         when(mDialogView.getPaddingTop()).thenReturn(16);
         when(mTabHeaderRow.getMeasuredHeight()).thenReturn(50);
         when(mInstanceListContainer.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));

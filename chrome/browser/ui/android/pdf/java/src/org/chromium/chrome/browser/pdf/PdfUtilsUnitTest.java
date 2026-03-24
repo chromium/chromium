@@ -18,10 +18,12 @@ import android.text.TextUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -32,11 +34,11 @@ import org.chromium.ui.base.MimeTypeUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class PdfUtilsUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private LoadUrlParams mLoadUrlParams;
     @Mock private NativePage mNativePage;
     @Mock private Context mContext;
     @Mock private ContentResolver mContentResolver;
-    private AutoCloseable mCloseableMocks;
     private String mPdfPageUrl;
     private String mPdfPageBlobUrl;
 
@@ -57,7 +59,6 @@ public class PdfUtilsUnitTest {
 
     @Before
     public void setUp() {
-        mCloseableMocks = MockitoAnnotations.openMocks(this);
         PdfUtils.setShouldOpenPdfInlineForTesting(true);
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
@@ -68,7 +69,6 @@ public class PdfUtilsUnitTest {
     @After
     public void tearDown() throws Exception {
         PdfUtils.setShouldOpenPdfInlineForTesting(false);
-        mCloseableMocks.close();
         ChromeFileProvider.setGeneratedUriForTesting(null);
     }
 

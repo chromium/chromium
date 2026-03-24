@@ -20,7 +20,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 
 import org.chromium.base.Callback;
@@ -56,6 +57,8 @@ import java.util.List;
 
 /** Common test fixtures for AccountSelection Robolectric JUnit tests. */
 public class AccountSelectionJUnitTestBase {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Parameter(0)
     public @RpMode.EnumType int mRpMode;
 
@@ -181,7 +184,6 @@ public class AccountSelectionJUnitTestBase {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = ApplicationProvider.getApplicationContext();
 
         // Note that these are not actual ETLD+1 values, but this is irrelevant for the purposes of

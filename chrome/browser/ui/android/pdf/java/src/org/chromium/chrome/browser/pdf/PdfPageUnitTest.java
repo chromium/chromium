@@ -22,7 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,6 +40,8 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
 public class PdfPageUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -47,7 +50,6 @@ public class PdfPageUnitTest {
     @Mock private Profile mMockProfile;
     @Mock private Destroyable mMarginSupplier;
     private Activity mActivity;
-    private AutoCloseable mCloseableMocks;
     private PdfInfo mPdfInfo;
     private String mPdfPageUrl;
     private String mPdfPageBlobUrl;
@@ -64,7 +66,6 @@ public class PdfPageUnitTest {
 
     @Before
     public void setUp() {
-        mCloseableMocks = MockitoAnnotations.openMocks(this);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -82,7 +83,6 @@ public class PdfPageUnitTest {
 
     @After
     public void tearDown() throws Exception {
-        mCloseableMocks.close();
         ChromeFileProvider.setGeneratedUriForTesting(null);
         PdfCoordinator.skipLoadPdfForTesting(false);
     }

@@ -21,7 +21,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +36,8 @@ import org.chromium.ui.insets.InsetsRectProvider;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = VERSION_CODES.R)
 public class BasicAppHeaderStateProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -48,7 +51,6 @@ public class BasicAppHeaderStateProviderTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.openMocks(this);
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         doNothing().when(mCaptionBarInsetsRectProvider).setConsumer(mConsumerCaptor.capture());
         mProvider = new BasicAppHeaderStateProvider(mActivity, mCaptionBarInsetsRectProvider);

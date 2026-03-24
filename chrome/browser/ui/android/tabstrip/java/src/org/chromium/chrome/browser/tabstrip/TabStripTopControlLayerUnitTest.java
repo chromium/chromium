@@ -17,10 +17,12 @@ import static org.mockito.Mockito.verify;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -34,6 +36,7 @@ import org.chromium.ui.util.TokenHolder;
 /** Unit tests for {@link TabStripTopControlLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabStripTopControlLayerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private ControlContainer mControlContainer;
@@ -48,7 +51,6 @@ public class TabStripTopControlLayerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         doReturn(true).when(mTopControlsStacker).isLayerAtTop(TopControlType.TABSTRIP);
         doReturn(mControlContainerView).when(mControlContainer).getView();
         mTokenHolder = new TokenHolder(mOnTokenUpdateCallback::notifyCalled);

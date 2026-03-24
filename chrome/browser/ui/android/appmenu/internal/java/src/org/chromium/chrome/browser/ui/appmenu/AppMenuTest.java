@@ -39,7 +39,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.ThreadUtils;
@@ -90,6 +91,8 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
 @Batch(Batch.PER_CLASS)
 public class AppMenuTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -128,7 +131,6 @@ public class AppMenuTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> sActivity.setContentView(R.layout.test_app_menu_activity_layout));
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);

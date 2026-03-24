@@ -13,7 +13,6 @@ import android.net.Uri;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,7 +20,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -36,6 +36,8 @@ import org.chromium.url.Origin;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class PdfCoordinatorUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -45,7 +47,6 @@ public class PdfCoordinatorUnitTest {
 
     private FragmentActivity mActivity;
     private PdfCoordinator mPdfCoordinator;
-    private AutoCloseable mCloseableMocks;
     private static final String PDF_URL =
             "chrome-native://pdf/link?url=https%3A%2F%2Fwww.irs.gov%2Fpub%2Firs-pdf%2Ffw4.pdf";
     private static final String LINK_URL = "https://www.bar.com";
@@ -55,14 +56,8 @@ public class PdfCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mCloseableMocks = MockitoAnnotations.openMocks(this);
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         PdfCoordinator.skipLoadPdfForTesting(true);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        mCloseableMocks.close();
     }
 
     private void createPdfCoordinator(boolean isIncognito) {

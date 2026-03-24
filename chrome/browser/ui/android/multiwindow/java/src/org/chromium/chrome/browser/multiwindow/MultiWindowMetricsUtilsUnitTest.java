@@ -15,7 +15,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
@@ -31,6 +32,7 @@ import java.util.Collections;
 /** Unit tests for {@link MultiWindowMetricsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MultiWindowMetricsUtilsUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private SharedPreferencesManager mSharedPreferencesManager;
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
@@ -39,7 +41,6 @@ public class MultiWindowMetricsUtilsUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.openMocks(this);
         mSharedPreferencesManager = MultiInstanceSharedPreferences.getInstance();
     }
 

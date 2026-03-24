@@ -15,7 +15,8 @@ import android.graphics.Color;
 import org.junit.Before;
 import org.junit.Rule;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -41,6 +42,7 @@ import java.util.List;
 
 /** Common test fixtures for AccountSelectionIntegration Android Javatests. */
 public class AccountSelectionIntegrationTestBase {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     protected static final String EXAMPLE_ETLD_PLUS_ONE = "example.com";
     protected static final String TEST_ETLD_PLUS_ONE_2 = "two.com";
     protected static final GURL TEST_URL = JUnitTestGURLs.URL_1;
@@ -99,7 +101,6 @@ public class AccountSelectionIntegrationTestBase {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mPage = mActivityTestRule.startOnBlankPage();
 
         mTestUrlTermsOfService =
