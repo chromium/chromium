@@ -56,8 +56,8 @@
                                               delegate:self];
 
   web::WebState::CreateParams params(self.browser->GetProfile());
-  CobrowseContext* context =
-      CobrowseBrowserAgent::FromBrowser(self.browser)->GetCobrowseContext();
+  CobrowseBrowserAgent* agent = CobrowseBrowserAgent::FromBrowser(self.browser);
+  CobrowseContext* context = agent ? agent->GetCobrowseContext() : nil;
   if (!context) {
     context = [CobrowseContext defaultContext];
   }
