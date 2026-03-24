@@ -55,6 +55,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "query_classifier_unittest.cc",
+    "query_intent_type_util_unittest.cc",
     "sync_bridge_data_provider_unittest.cc",
   ]
 

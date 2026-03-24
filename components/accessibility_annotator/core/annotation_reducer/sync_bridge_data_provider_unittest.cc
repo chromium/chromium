@@ -4,6 +4,7 @@
 
 #include "components/accessibility_annotator/core/annotation_reducer/sync_bridge_data_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,9 +30,19 @@ namespace accessibility_annotator {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
+
+testing::Matcher<MemorySearchResult> MatchesMemorySearchResult(
+    QueryIntentType expected_type,
+    std::u16string_view expected_value) {
+  return AllOf(Field(&MemorySearchResult::type, expected_type),
+               Field(&MemorySearchResult::value, expected_value));
+}
 
 sync_pb::AccessibilityAnnotationSpecifics CreateSpecifics(const std::string& id,
                                                           EntityType type) {
@@ -39,7 +50,10 @@ sync_pb::AccessibilityAnnotationSpecifics CreateSpecifics(const std::string& id,
   specifics.set_id(id);
   switch (type) {
     case EntityType::kOrder:
-      specifics.mutable_order()->set_order_id("order_123");
+      specifics.mutable_order()->set_order_id("order_" + id);
+      break;
+    case EntityType::kFlightReservation:
+      specifics.mutable_flight_reservation()->set_flight_number("flight_" + id);
       break;
     default:
       break;
@@ -93,13 +107,34 @@ class SyncBridgeDataProviderTest : public ::testing::Test {
   std::unique_ptr<SyncBridgeDataProvider> provider_;
 };
 
-TEST_F(SyncBridgeDataProviderTest, RetrieveAll) {
-  AddSpecificsToBridge({CreateSpecifics("order_1", EntityType::kOrder)});
+TEST_F(SyncBridgeDataProviderTest, RetrieveAll_SingleEntry) {
+  AddSpecificsToBridge({CreateSpecifics("1", EntityType::kOrder)});
 
   std::vector<MemorySearchResult> results =
       provider()->RetrieveAll(QueryIntentType::kOrderId);
 
-  // TODO(crbug.com/493849593): Add tests for entries.
+  EXPECT_THAT(results, UnorderedElementsAre(MatchesMemorySearchResult(
+                           QueryIntentType::kOrderId, u"order_1")));
+}
+
+TEST_F(SyncBridgeDataProviderTest, RetrieveAll_MultipleEntriesAndFiltering) {
+  AddSpecificsToBridge({CreateSpecifics("1", EntityType::kOrder),
+                        CreateSpecifics("2", EntityType::kFlightReservation),
+                        CreateSpecifics("3", EntityType::kOrder)});
+
+  std::vector<MemorySearchResult> results =
+      provider()->RetrieveAll(QueryIntentType::kOrderId);
+
+  EXPECT_THAT(
+      results,
+      UnorderedElementsAre(
+          MatchesMemorySearchResult(QueryIntentType::kOrderId, u"order_1"),
+          MatchesMemorySearchResult(QueryIntentType::kOrderId, u"order_3")));
+}
+
+TEST_F(SyncBridgeDataProviderTest, RetrieveAll_EmptyBackend) {
+  std::vector<MemorySearchResult> results =
+      provider()->RetrieveAll(QueryIntentType::kOrderId);
   EXPECT_THAT(results, IsEmpty());
 }
 
