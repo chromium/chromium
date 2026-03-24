@@ -1883,7 +1883,7 @@ class WaitingHandshakeClient : public network::mojom::WebSocketHandshakeClient {
 class NetworkContextConfigurationProxySettingsBrowserTest
     : public NetworkContextConfigurationHttpPacBrowserTest {
  public:
-  const size_t kDefaultMaxConnectionsPerProxy = 64;
+  const size_t kDefaultMaxConnectionsPerProxy = 32;
 
   NetworkContextConfigurationProxySettingsBrowserTest() {
     // This is disabled as backup jobs cause extra connections without opening
@@ -2074,7 +2074,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
 class NetworkContextConfigurationManagedProxySettingsBrowserTest
     : public NetworkContextConfigurationProxySettingsBrowserTest {
  public:
-  const size_t kTestMaxConnectionsPerProxy = 16;
+  const size_t kTestMaxConnectionsPerProxy = 37;
 
   NetworkContextConfigurationManagedProxySettingsBrowserTest() = default;
 

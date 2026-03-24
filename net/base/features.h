@@ -818,13 +818,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableErrorCodePropagationForPreconnect);
 // See crbug.com/481934003 to track efforts to disable this by default.
 NET_EXPORT BASE_DECLARE_FEATURE(kPermitTcpSocketPoolConnectBackupJobs);
 
-// Whether or not this client is participating in the TCP connection pool proxy
-// limit and, if so, what the limit should be.
-// See crbug.com/467278609 to track efforts to raise defaults.
-NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketPoolProxyLimit);
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpSocketPoolProxyLimitNormal);
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpSocketPoolProxyLimitWebSocket);
-
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

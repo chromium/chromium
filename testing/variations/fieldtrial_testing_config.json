@@ -17427,6 +17427,7 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "ios",
                 "linux",
@@ -21954,50 +21955,6 @@
                     "name": "Enabled_20260216",
                     "enable_features": [
                         "TaiyakiAllSurfaces"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TcpSocketPoolProxyLimit": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_64",
-                    "params": {
-                        "TcpSocketPoolProxyLimitNormal": "64",
-                        "TcpSocketPoolProxyLimitWebSocket": "64"
-                    },
-                    "enable_features": [
-                        "TcpSocketPoolProxyLimit"
-                    ]
-                },
-                {
-                    "name": "Enabled_128",
-                    "params": {
-                        "TcpSocketPoolProxyLimitNormal": "128",
-                        "TcpSocketPoolProxyLimitWebSocket": "128"
-                    },
-                    "enable_features": [
-                        "TcpSocketPoolProxyLimit"
-                    ]
-                },
-                {
-                    "name": "Enabled_256",
-                    "params": {
-                        "TcpSocketPoolProxyLimitNormal": "256",
-                        "TcpSocketPoolProxyLimitWebSocket": "256"
-                    },
-                    "enable_features": [
-                        "TcpSocketPoolProxyLimit"
                     ]
                 }
             ]
