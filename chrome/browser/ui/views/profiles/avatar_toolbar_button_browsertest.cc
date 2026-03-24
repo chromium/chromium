@@ -473,8 +473,7 @@ class AvatarToolbarButtonBaseBrowserTest {
     // promo is disabled. When `syncer::kReplaceSyncPromosWithSignInPromos` is
     // enabled, there is no promo after signing in.
     if (switches::IsAvatarSyncPromoFeatureEnabled() &&
-        !base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+        !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       CHECK(!avatar->GetText().empty());
       avatar->ClearActiveStateForTesting();
     }

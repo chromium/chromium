@@ -168,8 +168,7 @@ void HistorySyncOptinService::OnHistorySyncOptinHelperFlowFinished() {
 
 void HistorySyncOptinService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return;
   }
 

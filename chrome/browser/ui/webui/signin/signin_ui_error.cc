@@ -39,7 +39,7 @@ SigninUIError SigninUIError::UsernameNotAllowedByPatternFromPrefs(
     const std::string& email) {
   return SigninUIError(
       Type::kUsernameNotAllowedByPatternFromPrefs, email,
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? l10n_util::GetStringUTF16(IDS_SIGN_IN_LOGIN_NAME_PROHIBITED)
           : l10n_util::GetStringUTF16(IDS_SYNC_LOGIN_NAME_PROHIBITED));
 }
@@ -219,8 +219,7 @@ ForceSigninUIError::UiTexts ForceSigninUIError::GetErrorTexts() const {
       CHECK(!email_.empty());
       return {l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE,
                                          base::UTF8ToUTF16(email_)),
-              base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos)
+              syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
                   ? l10n_util::GetStringUTF16(IDS_SIGN_IN_LOGIN_NAME_PROHIBITED)
                   : l10n_util::GetStringUTF16(IDS_SYNC_LOGIN_NAME_PROHIBITED)};
     case Type::kReauthNotSupportedByGlicFlow:

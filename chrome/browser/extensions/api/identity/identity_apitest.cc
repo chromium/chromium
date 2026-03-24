@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -830,8 +829,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
   // The account is only returned if extensions are syncing. Whether or not
   // extensions sync upon sign-in depends on
   // `kReplaceSyncPromosWithSignInPromos`.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     EXPECT_EQ("test@example.com", info->email);
     EXPECT_EQ("gaia_id_for_test_example.com", info->id);
   } else {
@@ -957,8 +955,7 @@ IN_PROC_BROWSER_TEST_P(
     // accountStatus is SYNC or unspecified. In this case, the account is only
     // returned if extensions are syncing. Whether or not extensions sync upon
     // sign-in depends on `syncer::kReplaceSyncPromosWithSignInPromos`.
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       EXPECT_EQ("test@example.com", info->email);
       EXPECT_EQ("gaia_id_for_test_example.com", info->id);
     } else {

@@ -263,8 +263,7 @@ ProfileMenuAvatarButtonPromoInfo
 ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
     Profile* profile,
     std::map<syncer::DataType, syncer::LocalDataDescription> local_map_result) {
-  CHECK(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -849,8 +848,7 @@ void ComputeProfileMenuAvatarButtonPromoInfo(
     Profile& profile,
     base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>
         result_callback) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     BatchUploadService* batch_upload =
         BatchUploadServiceFactory::GetForProfile(&profile);
     if (!batch_upload) {

@@ -119,8 +119,7 @@ void SignInFunctions::SignInFromSettingsWithSyncChoice(
   observer.WaitForAccountChanges(previously_signed_in_accounts + 1,
                                  PrimaryAccountWait::kWaitForAdded);
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     history_sync_observer->Wait();
     switch (sync_choice) {
       case SyncChoice::kAcceptAllOptionalDataTypesSync:
@@ -167,8 +166,7 @@ void SignInFunctions::SignInFromCurrentPage(
 void SignInFunctions::TurnOnSync(
     const TestAccountSigninCredentials& test_account,
     int previously_signed_in_accounts) {
-  CHECK(!base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos));
+  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   SignInFromSettings(test_account, previously_signed_in_accounts);
 
   SignInTestObserver observer(identity_manager(browser_.Run()),
@@ -190,8 +188,7 @@ void SignInFunctions::SignOutFromWeb() {
 }
 
 void SignInFunctions::TurnOffSync() {
-  CHECK(!base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos));
+  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   GURL settings_url("chrome://settings");
   ASSERT_TRUE(add_tab_function_.Run(0, settings_url,
                                     ui::PageTransition::PAGE_TRANSITION_TYPED));

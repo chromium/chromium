@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -188,8 +187,7 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION_WITH_EMAIL,
               button_string_id,
-              base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos)
+              syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
                   ? IDS_SETTINGS_PEOPLE_SIGN_OUT
                   : IDS_SETTINGS_SIGN_OUT,
               SyncStatusActionType::kEnterPassphrase};

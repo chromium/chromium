@@ -207,8 +207,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
       controller()->GetPasswordSyncState(),
       ManagePasswordsBubbleController::SyncState::kActiveWithAccountPasswords);
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     sync_service()->SetIsUsingExplicitPassphrase(true);
     EXPECT_EQ(controller()->GetPasswordSyncState(),
               ManagePasswordsBubbleController::SyncState::

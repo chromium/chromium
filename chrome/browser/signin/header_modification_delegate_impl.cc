@@ -192,8 +192,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 
   ConsentLevel consent_level = ConsentLevel::kSignin;
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     consent_level = ConsentLevel::kSync;
   }
 #endif

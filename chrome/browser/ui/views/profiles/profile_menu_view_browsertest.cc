@@ -894,8 +894,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
   const signin_metrics::AccessPoint expected_access_point =
       signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     EXPECT_CALL(
         mock_signin_ui_delegate,
         ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id,
@@ -2969,8 +2968,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered",
                                       default_access_point,
                                       /*expected_bucket_count=*/0);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // `Signin.SyncOptIn.Offered` should be not recorded if
     // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled. Instead,
     // `Signin.HistorySyncOptIn.Offered` should be.
@@ -3028,8 +3026,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
                                       history_sync_avatar_promo_access_point,
                                       /*expected_bucket_count=*/0);
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // `Signin.SyncOptIn.Offered` should be not recorded if
     // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled. Instead,
     // `Signin.HistorySyncOptIn.Offered` should be.

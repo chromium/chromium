@@ -100,8 +100,7 @@ SigninInterceptFirstRunExperienceDialog::
         InterceptHistorySyncOptinHelperDelegate(
             base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog)
     : dialog_(std::move(dialog)) {
-  CHECK(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
 }
 
@@ -275,8 +274,7 @@ SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
     InterceptTurnSyncOnHelperDelegate(
         base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog)
     : dialog_(std::move(dialog)), browser_(dialog_->browser_->AsWeakPtr()) {
-  CHECK(!base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos));
+  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 }
 
 SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
@@ -422,8 +420,7 @@ SigninInterceptFirstRunExperienceDialog::
       browser_(browser),
       account_id_(account_id),
       is_forced_intercept_(is_forced_intercept) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // This is a brand new profile. There should be enterprise confirmation
     // screens offering the option to create another profile. This class handles
     // management.
@@ -459,8 +456,7 @@ SigninInterceptFirstRunExperienceDialog::
 void SigninInterceptFirstRunExperienceDialog::Show() {
   RecordDialogEvent(DialogEvent::kStart);
   Step next_step =
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
               base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)
           ? Step::kStartHistorySyncOptin
           : Step::kTurnOnSync;
@@ -509,8 +505,7 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
     case Step::kStart:
       NOTREACHED();
     case Step::kTurnOnSync:
-      if (base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
+      if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
         // TODO(crbug.com/418143300): Until we implement the proper flow
         // (flag `kUnoPhase2FollowUp`) for the History Sync optin screen,
         // skip entirely the replaced steps
@@ -521,8 +516,7 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
       DoTurnOnSync();
       return;
     case Step::kSyncConfirmation:
-      if (base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
+      if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
         // TODO(crbug.com/418143300): Until we implement the proper flow for the
         // History Sync optin screen, skip entirely the replaced steps
         // Step::kTurnOnSync and Step::kSyncConfirmation.
@@ -532,8 +526,7 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
       return;
     case Step::kStartHistorySyncOptin:
       CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
-      CHECK(base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos));
+      CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
       DoStartHistorySync();
       return;
     case Step::kShowHistorySyncScreen:
@@ -579,8 +572,7 @@ void SigninInterceptFirstRunExperienceDialog::DoSyncConfirmation() {
 }
 
 void SigninInterceptFirstRunExperienceDialog::DoStartHistorySync() {
-  CHECK(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->profile());
   CHECK(identity_manager);

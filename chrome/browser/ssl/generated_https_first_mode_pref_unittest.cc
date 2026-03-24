@@ -48,10 +48,9 @@ class GeneratedHttpsFirstModePrefTest : public testing::Test {
         identity_test_env()->MakeAccountAvailable(kEmail);
     account_info.is_under_advanced_protection = is_under_advanced_protection;
     identity_test_env()->SetPrimaryAccount(
-        account_info.email,
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync);
+        account_info.email, syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+                                ? signin::ConsentLevel::kSignin
+                                : signin::ConsentLevel::kSync);
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
   }
 

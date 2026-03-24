@@ -217,7 +217,7 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS)
       false;
 #else
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
 #endif
 
   html_source->AddLocalizedString(

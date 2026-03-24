@@ -454,14 +454,12 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
                               testing_profile->GetPrefs());
         break;
       case SigninState::kSyncing:
-        CHECK(!base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos));
+        CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
         SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
                          test_sync_service, testing_profile->GetPrefs());
         break;
       case SigninState::kSyncPaused:
-        CHECK(!base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos));
+        CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
         SetSyncPausedState(identity_test_env, test_sync_service,
                            testing_profile->GetPrefs());
         break;
@@ -498,8 +496,7 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
        "From 1 site (you'll stay signed in to your Google Account)"},
   };
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     test_cases.push_back(
         {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"});
     test_cases.push_back(
@@ -531,8 +528,7 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult_RevampEnabled) {
        "target=\"_blank\" id=\"signOutLink\">sign out of Chrome</a>."},
   };
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     test_cases.push_back(
         {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"});
     test_cases.push_back(

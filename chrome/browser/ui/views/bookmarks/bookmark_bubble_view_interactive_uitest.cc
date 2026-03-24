@@ -101,7 +101,7 @@ class BookmarkBubbleViewIPHInteractiveTest
 
   bookmarks::BookmarkModel* CreateBookmarkModel() {
     signin::ConsentLevel consent_level =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
     signin::MakePrimaryAccountAvailable(

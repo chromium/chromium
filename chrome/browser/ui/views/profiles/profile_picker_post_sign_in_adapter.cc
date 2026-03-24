@@ -135,8 +135,7 @@ void ProfilePickerPostSignInAdapter::Init(
                   &ProfilePickerPostSignInAdapter::FinishAndOpenBrowser,
                   weak_ptr_factory_.GetWeakPtr(), PostHostClearedCallback())));
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     history_sync_optin_helper_ = HistorySyncOptinHelper::Create(
         identity_manager, profile_, account_info, /*delegate=*/this,
         HistorySyncOptinHelper::LaunchContext::kInProfilePicker,

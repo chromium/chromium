@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -145,8 +144,7 @@ TEST_F(BatchUploadServiceTest, SignedPending) {
 }
 
 TEST_F(BatchUploadServiceTest, Syncing) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GTEST_SKIP() << "Sync is deprecated";
   }
   SigninWithFullInfo();

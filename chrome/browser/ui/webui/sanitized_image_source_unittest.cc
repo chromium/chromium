@@ -220,10 +220,9 @@ TEST_P(SanitizedImageSourceSigninPromoTest, GooglePhotosImage) {
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakePrimaryAccountAvailable(
-      "test@gmail.com",
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync);
+      "test@gmail.com", syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+                            ? signin::ConsentLevel::kSignin
+                            : signin::ConsentLevel::kSync);
   sanitized_image_source_->set_identity_manager_for_test(
       identity_test_env.identity_manager());
 

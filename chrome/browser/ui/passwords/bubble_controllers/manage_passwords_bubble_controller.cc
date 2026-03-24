@@ -165,8 +165,7 @@ ManagePasswordsBubbleController::GetPasswordSyncState() const {
       return SyncState::kNotActive;
     case password_manager::sync_util::SyncState::kActiveWithNormalEncryption:
     case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
-      if (base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
+      if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
         return SyncState::kActiveWithAccountPasswords;
       }
       return sync_service->IsSyncFeatureEnabled()

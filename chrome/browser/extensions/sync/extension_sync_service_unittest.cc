@@ -1633,8 +1633,7 @@ TEST_F(ExtensionSyncServiceTest, AccountExtensionTypeChangesWithSync) {
   identity_test_env_profile_adaptor->identity_test_env()
       ->MakePrimaryAccountAvailable(
           "testy@mctestface.com",
-          base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)
+          syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
               ? signin::ConsentLevel::kSignin
               : signin::ConsentLevel::kSync);
 

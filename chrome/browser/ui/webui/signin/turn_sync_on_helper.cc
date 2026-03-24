@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -183,9 +182,8 @@ TurnSyncOnHelper::TurnSyncOnHelper(
 
   // This class should be unreachable if `kReplaceSyncPromosWithSignInPromos` is
   // enabled.
-  CHECK(
-      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos),
-      base::NotFatalUntil::M144);
+  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled(),
+        base::NotFatalUntil::M144);
 
   // Cancel any existing helper.
   AttachToProfile();

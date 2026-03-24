@@ -58,8 +58,7 @@ constexpr signin_metrics::AccessPoint kCredentialsProviderAccessPointWin =
     signin_metrics::AccessPoint::kMachineLogon;
 
 signin::ConsentLevel GetConsentLevel() {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
+  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
              ? signin::ConsentLevel::kSignin
              : signin::ConsentLevel::kSync;
 }
@@ -190,8 +189,8 @@ void ImportCredentialsFromProvider(Profile* profile,
         account_id, signin::ConsentLevel::kSignin,
         kCredentialsProviderAccessPointWin);
 
-    const bool kReplaceSyncPromos = base::FeatureList::IsEnabled(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    const bool kReplaceSyncPromos =
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
     const bool kUnoPhase2FollowUp =
         base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp);
 

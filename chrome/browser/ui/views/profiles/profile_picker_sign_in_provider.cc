@@ -384,8 +384,7 @@ void ProfilePickerSignInProvider::ShowSigninError(
     Profile* profile,
     content::WebContents* contents,
     const SigninUIError& error) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return;
   }
   delegate_->ShowSigninError(profile, error);

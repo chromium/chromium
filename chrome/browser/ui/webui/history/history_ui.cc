@@ -77,9 +77,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIHistoryHost);
 
-  source->AddBoolean(
-      "replaceSyncPromosWithSignInPromos",
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  source->AddBoolean("replaceSyncPromosWithSignInPromos",
+                     syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 
 #if !BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("unoPhase2FollowUp",

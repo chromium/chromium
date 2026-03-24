@@ -443,8 +443,7 @@ SyncServiceStartupStateObserver::
         base::OnceClosure callback) {
   if (base::FeatureList::IsEnabled(
           kEnableAwaitSyncServiceStartupOnHistorySync) &&
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return SyncServiceStartupStateObserverImpl::
         MaybeCreateSyncServiceStateObserverForAccountWithClouldPolicies(
             sync_service, profile, account_info, startup_delay,
@@ -538,8 +537,7 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
               &HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow,
               base::Unretained(this)))),
       access_point_(access_point) {
-  CHECK(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   CHECK(delegate);
 }
 

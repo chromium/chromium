@@ -83,7 +83,7 @@ void SafeBrowsingPrefChangeHandler::
       SyncServiceFactory::GetForProfile(profile_);
   if (sync_service) {
     const bool is_sync_enabled =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
             ? sync_service->GetUserSettings()->GetSelectedTypes().Has(
                   syncer::UserSelectableType::kPreferences)
             : sync_service->IsSyncFeatureEnabled();

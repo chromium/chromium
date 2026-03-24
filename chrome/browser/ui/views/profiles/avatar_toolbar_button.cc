@@ -583,8 +583,7 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
 }
 
 void AvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) ||
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
       !base::FeatureList::IsEnabled(
           feature_engagement::kIPHSignInBenefitsFeature)) {
     return;

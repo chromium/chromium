@@ -1289,8 +1289,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
 #if BUILDFLAG(IS_ANDROID)
   // On Android, `kReplaceSyncPromosWithSignInPromos` has been enabled by
   // default for a long time, so it is not expected to be exercised in tests.
-  CHECK(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Only some types will run by default in transport mode (i.e. without their
@@ -1335,8 +1334,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   if (syncer::IsReadingListAccountStorageEnabled()) {
     allowed_types.Put(syncer::READING_LIST);
   }
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
     allowed_types.Put(syncer::HISTORY);

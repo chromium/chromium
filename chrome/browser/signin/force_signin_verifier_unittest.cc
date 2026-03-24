@@ -172,8 +172,7 @@ void SpinCurrentSequenceTaskRunner() {
 }
 
 signin::ConsentLevel GetConsentLevel() {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
+  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
              ? signin::ConsentLevel::kSignin
              : signin::ConsentLevel::kSync;
 }

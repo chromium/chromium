@@ -400,8 +400,7 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
   // need to match the policy filter.
 
   // Reauth attempt.
-  if ((base::FeatureList::IsEnabled(
-           syncer::kReplaceSyncPromosWithSignInPromos) &&
+  if ((syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
        entry.GetSigninState() != SigninState::kNotSignedIn) ||
       entry.CanBeManaged()) {
     // Glic version cannot run the reauth steps, show a dialog instead that

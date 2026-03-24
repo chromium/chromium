@@ -95,8 +95,7 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
                                 content::WebContents* web_contents,
                                 const CoreAccountInfo& account_info,
                                 signin_metrics::AccessPoint access_point) {
-    CHECK(base::FeatureList::IsEnabled(
-        syncer::kReplaceSyncPromosWithSignInPromos));
+    CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
     CHECK(profile);
 
     BrowserWindowInterface* browser =

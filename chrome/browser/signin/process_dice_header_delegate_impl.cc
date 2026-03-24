@@ -188,8 +188,7 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
 }
 
 bool ProcessDiceHeaderDelegateImpl::ShouldEnableHistorySync() {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return false;
   }
   if (!is_sync_signin_tab_) {
@@ -218,8 +217,7 @@ bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
   const SigninUIError error = CanOfferSignin(
       &profile_.get(), account_info.gaia, account_info.email,
       /*allow_account_from_other_profile=*/allow_account_from_other_profile);
-  if (error.IsOk() || !base::FeatureList::IsEnabled(
-                          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (error.IsOk() || !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(&profile_.get());
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
@@ -338,8 +336,7 @@ void ProcessDiceHeaderDelegateImpl::CompleteChromeSignInAfterGaiaSignin(
     tab_helper->OnSyncSigninFlowComplete();
   }
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     if (!ShouldEnableHistorySync()) {
       return;
     }

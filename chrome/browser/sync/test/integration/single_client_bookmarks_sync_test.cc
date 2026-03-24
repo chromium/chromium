@@ -3823,8 +3823,7 @@ class SingleClientBookmarksExplicitSigninTransitionTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
                        PRE_PRE_ExplicitSigninForBookmarksOffToOn) {
-  ASSERT_FALSE(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_FALSE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
 
   // If `kReplaceSyncPromosWithSignInPromos` is disabled, syncing bookmarks is
@@ -3835,8 +3834,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
                        PRE_ExplicitSigninForBookmarksOffToOn) {
-  ASSERT_TRUE(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_TRUE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   ASSERT_FALSE(syncer::kExplicitSigninForBookmarks.Get());
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -3850,8 +3848,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
                        ExplicitSigninForBookmarksOffToOn) {
-  ASSERT_TRUE(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_TRUE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   ASSERT_TRUE(syncer::kExplicitSigninForBookmarks.Get());
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());

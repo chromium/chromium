@@ -649,8 +649,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTest, SignInError) {
   // The error dialog is shown to the user.
   RunTestSequence(
       InAnyContext(WaitForShow(SigninViewController::kSigninErrorViewId)));
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     histogram_tester().ExpectUniqueSample(
         "ProfilePicker.FREFlow.SignInError",
         SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs, 1);
@@ -751,8 +750,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTestWithSyncService, MAYBE_SignIn) {
   // Pulled out of the test sequence because it waits using `RunLoop`s.
   SimulateSignIn(kTestEmail, kTestGivenName);
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GURL history_page_url = GetHistorySyncOptinURL();
     RunTestSequenceInContext(
         views::ElementTrackerViews::GetContextForView(view()),
@@ -1003,8 +1001,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 #endif
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GTEST_SKIP() << "History optin screen does not have a settings button";
   }
 
@@ -1262,8 +1259,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       "Signin.SignIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
   histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed", signin_metrics::AccessPoint::kForYouFre, 1);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     histogram_tester().ExpectUniqueSample(
         "Signin.HistorySyncOptIn.Started",
         signin_metrics::AccessPoint::kForYouFre, 0);
@@ -1372,8 +1368,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
   const DeepQuery first_search_engine = {"search-engine-choice-app",
                                          "cr-radio-button"};
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GURL history_page_url = GetHistorySyncOptinURL();
     RunTestSequenceInContext(
         views::ElementTrackerViews::GetContextForView(view()),
@@ -1419,8 +1414,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
 
   WaitForPickerClosed();
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     histogram_tester().ExpectUniqueSample(
         "Signin.HistorySyncOptIn.Completed",
         signin_metrics::AccessPoint::kForYouFre, 1);
@@ -1453,8 +1447,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
       "Signin.SignIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
   histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed", signin_metrics::AccessPoint::kForYouFre, 1);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     histogram_tester().ExpectUniqueSample(
         "Signin.HistorySyncOptIn.Started",
         signin_metrics::AccessPoint::kForYouFre, 1);
@@ -1538,8 +1531,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
   // Pulled out of the test sequence because it waits using `RunLoop`s.
   SimulateSignIn(kTestEmail, kTestGivenName);
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GURL history_page_url = GetHistorySyncOptinURL();
     RunTestSequenceInContext(
         views::ElementTrackerViews::GetContextForView(view()),
@@ -1586,8 +1578,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
       "Signin.SignIn.Started", signin_metrics::AccessPoint::kForYouFre, 1);
   histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed", signin_metrics::AccessPoint::kForYouFre, 1);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     histogram_tester().ExpectUniqueSample(
         "Signin.HistorySyncOptIn.Started",
         signin_metrics::AccessPoint::kForYouFre, 1);
@@ -1642,8 +1633,7 @@ class FirstRunWithHatsInteractiveUiTest : public FirstRunInteractiveUiTest {
   }
 
   InteractiveTestApi::MultiStep DeclineHistorySync() {
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       return Steps(
           WaitForWebContentsNavigation(kWebContentsId,
                                        GetHistorySyncOptinURL()),

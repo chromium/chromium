@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -188,8 +187,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
 };
 
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GTEST_SKIP() << "Sync is deprecated";
   }
 
@@ -227,8 +225,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GTEST_SKIP() << "RevokeSyncConsent() is no-op as Sync is deprecated";
   }
 
@@ -471,8 +468,7 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     EXPECT_FALSE(
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   }

@@ -702,8 +702,7 @@ bool ProfileSubMenuModel::BuildSyncSection() {
                                      IDS_PROFILE_ROW_SYNC_IS_ON,
                                      vector_icons::kSyncChromeRefreshIcon);
   } else {
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SIGNIN,
                                          IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON,

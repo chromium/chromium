@@ -51,8 +51,7 @@ std::string ComputeBatchUploadSubtitle(syncer::DataType first_type,
   // later.
   // This section should be remoevd when cleaning up
   // `syncer::kReplaceSyncPromosWithSignInPromos`.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // Check for the "hero" type availability.
     if (first_type == syncer::DataType::PASSWORDS) {
       if (number_of_types > 1) {

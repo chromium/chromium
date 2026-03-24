@@ -658,8 +658,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
       const signin::PrimaryAccountChangeEvent& event) override {
     if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
             signin::PrimaryAccountChangeEvent::Type::kSet ||
-        base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       return;
     }
     OnUserIdentityChanged();
@@ -691,8 +690,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
       return;
     }
 
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       // Prevents from showing the greetings if the user has signed in before
       // the browser is created (on sign-in state should be shown instead).
       const SigninDetectionService* signin_detection_service =
@@ -996,8 +994,7 @@ class PromoStateProviderCoordinator
             // cannot double record. Also
             // `syncer::kReplaceSyncPromosWithSignInPromos` should be enabled,
             // which does not allow turning on Sync.
-            CHECK(base::FeatureList::IsEnabled(
-                syncer::kReplaceSyncPromosWithSignInPromos));
+            CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
             // We need to use `last_gaia_id_promo_used_` here because since the
             // user is now signed in, we can no longer differentiate whether the
             // user was signed out or web signed in at the time of using the
@@ -2122,8 +2119,7 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
   }
 
   if (profile->IsRegularProfile()) {
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       state_manager_observers_.emplace_back(
           OnSigninCoordinator::GetForProfile(*profile));
       states_[ButtonState::kOnSignin] =
@@ -2161,8 +2157,7 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
             /*state_observer=*/this);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos) ||
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
         switches::IsAvatarSyncPromoFeatureEnabled()) {
       auto promo_state_provider =
           std::make_unique<PromoStateProvider>(browser,

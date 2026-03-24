@@ -51,7 +51,7 @@ bool ProfileReportGeneratorDelegateBase::Init(const base::FilePath& path) {
 void ProfileReportGeneratorDelegateBase::GetSigninUserInfo(
     em::ChromeUserProfileInfo* report) {
   signin::ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
   auto account_info =

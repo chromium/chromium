@@ -235,8 +235,7 @@ void MaybeUpdateRepromptInfoAfterDecline(SigninPrefs& signin_prefs,
 // Returns whether we can offer sign-in for the given account. Returns false
 // error if the account does not match the signin pattern policy.
 bool IsUsernameAllowedForInterceptionByPattern(const std::string& email) {
-  return !base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos) ||
+  return !syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
          signin::IsUsernameAllowedByPatternFromPrefs(
              g_browser_process->local_state(), email);
 }

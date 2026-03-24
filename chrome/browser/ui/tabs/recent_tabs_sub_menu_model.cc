@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -435,8 +434,7 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
 
 void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(browser_->profile());
     if (!sync_service) {
@@ -482,8 +480,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
     if (open_tabs) {
       AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,
                           IDS_RECENT_TABS_NO_DEVICE_TABS);
-    } else if (base::FeatureList::IsEnabled(
-                   syncer::kReplaceSyncPromosWithSignInPromos)) {
+    } else if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       AddItemWithStringIdAndIcon(IDC_RECENT_TABS_SEE_DEVICE_TABS,
                                  IDS_RECENT_TABS_SEE_DEVICE_TABS,
                                  ui::ImageModel::FromVectorIcon(

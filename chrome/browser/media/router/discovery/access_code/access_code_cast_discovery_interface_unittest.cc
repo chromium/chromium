@@ -5,7 +5,6 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -203,7 +202,7 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
     // TODO(crbug.com/417950948): ConsentLevel::kSync is deprecated and should
     // be removed. See ConsentLevel::kSync documentation for details.
     signin::ConsentLevel consent_level =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
 
@@ -269,7 +268,7 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
 
   void SignIn() {
     signin::ConsentLevel consent_level =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
     SetProfileConsent(consent_level);
@@ -346,8 +345,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerError) {
 #if !BUILDFLAG(IS_CHROMEOS)
 // Revoking Sync consent is not possible on ChromeOS.
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, SyncError) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GTEST_SKIP() << "RevokeSyncConsent() is no-op as Sync is deprecated";
   }
 

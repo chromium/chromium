@@ -239,13 +239,13 @@ void AddStrings(content::WebUIDataSource* html_source,
 
   html_source->AddLocalizedString(
       "profileTypeChoiceSubtitle",
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO_BOOKMARKS
           : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO);
 
   html_source->AddLocalizedString(
       "removeWarningSignedInProfile",
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_SIGN_IN_AS
           : IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE);
 

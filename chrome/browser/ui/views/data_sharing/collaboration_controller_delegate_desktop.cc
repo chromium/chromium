@@ -97,8 +97,7 @@ DialogText GetPromptDialogTextFromStatus(
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
       status.signin_status != collaboration::SigninStatus::kSigninDisabled) {
     title_id = IDS_SYNC_HISTORY_TITLE;
     ok_button_text_id = IDS_SYNC_HISTORY_BUTTON;
@@ -555,8 +554,7 @@ void CollaborationControllerDelegateDesktop::
               .SetEnabled(true));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     dialog_builder.SetFootnote(ui::DialogModelLabel(dialog_text.footnote));
 
     // Record metrics about signin and history sync opt in being offered.
@@ -584,8 +582,7 @@ void CollaborationControllerDelegateDesktop::
 
   // Don't show the account card when the user is signed in, since the email is
   // already mentioned in the body.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) ||
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
       status.signin_status != collaboration::SigninStatus::kSignedIn) {
     dialog_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
@@ -606,8 +603,7 @@ void CollaborationControllerDelegateDesktop::OnPromptDialogOk() {
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     MaybeShowSignInUiForHistorySyncOptin();
     return;
   }

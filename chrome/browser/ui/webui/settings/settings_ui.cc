@@ -660,9 +660,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForHomeAndWork));
 
-  html_source->AddBoolean(
-      "replaceSyncPromosWithSignInPromos",
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  html_source->AddBoolean("replaceSyncPromosWithSignInPromos",
+                          syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
   // On Device AI setting.

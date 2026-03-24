@@ -435,8 +435,7 @@ class SingleClientExtensionsExplicitSigninTransitionTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
                        PRE_PRE_ExplicitSigninForExtensionsOffToOn) {
-  ASSERT_FALSE(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_FALSE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
 
   // If `kReplaceSyncPromosWithSignInPromos` is disabled, syncing extensions is
@@ -447,8 +446,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
                        PRE_ExplicitSigninForExtensionsOffToOn) {
-  ASSERT_TRUE(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_TRUE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   ASSERT_FALSE(syncer::kExplicitSigninForExtensions.Get());
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -462,8 +460,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
                        ExplicitSigninForExtensionsOffToOn) {
-  ASSERT_TRUE(
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_TRUE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   ASSERT_TRUE(syncer::kExplicitSigninForExtensions.Get());
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());

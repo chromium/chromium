@@ -40,7 +40,7 @@ class ShoppingUiHandlerDelegateBrowserTest : public InProcessBrowserTest {
 
     profile_ = Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     signin::ConsentLevel consent_level =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
     signin::MakePrimaryAccountAvailable(
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   NavigateToURL(url);
 
   const bookmarks::BookmarkNode* parent =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? bookmark_model_->account_other_node()
           : bookmark_model_->other_node();
   auto* existing_node = bookmark_model_->AddNewURL(
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   NavigateToURL(url);
 
   const bookmarks::BookmarkNode* parent =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? bookmark_model_->account_other_node()
           : bookmark_model_->other_node();
   size_t bookmark_count = parent->children().size();

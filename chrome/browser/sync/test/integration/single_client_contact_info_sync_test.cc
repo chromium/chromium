@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, AuthErrorState) {
   // The toggle is not available when kReplaceSyncPromosWithSignInPromos is
   // enabled, and is instead available in the account settings page.
   const bool is_autofill_sync_toggle_available =
-      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
   EXPECT_EQ(GetPersonalDataManager()
                 ->address_data_manager()
                 .IsAutofillSyncToggleAvailable(),
@@ -486,8 +486,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // The toggle is not available when
     // kReplaceSyncPromosWithSignInPromos is enabled, and is instead
     // available in the account settings page.

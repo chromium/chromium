@@ -20,7 +20,7 @@ WebPasswordManagerPromo::WebPasswordManagerPromo(
     : password_manager::PasswordPromoCardBase(kWebPasswordManagerPromoId,
                                               prefs) {
   sync_enabled_ =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? password_manager::sync_util::GetPasswordSyncState(sync_service) !=
                 password_manager::sync_util::SyncState::kNotActive
           : password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(

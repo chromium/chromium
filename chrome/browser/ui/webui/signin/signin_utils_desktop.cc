@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,8 +58,7 @@ SigninUIError CanOfferSignin(Profile* profile,
     std::string current_email =
         identity_manager
             ->GetPrimaryAccountInfo(
-                base::FeatureList::IsEnabled(
-                    syncer::kReplaceSyncPromosWithSignInPromos)
+                syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
                     ? signin::ConsentLevel::kSignin
                     : signin::ConsentLevel::kSync)
             .email;
@@ -105,8 +103,7 @@ SigninUIError CanOfferSignin(Profile* profile,
           }
           // If the feature is disabled, the below check on GaiaId equality is
           // equivalent to checking if the user is signed in.
-          if (!base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos)) {
+          if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
             if (!entry->IsAuthenticated() && !entry->CanBeManaged()) {
               continue;
             }

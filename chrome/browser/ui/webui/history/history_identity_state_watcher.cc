@@ -76,8 +76,7 @@ void HistoryIdentityStateWatcher::OnSyncShutdown(syncer::SyncService* sync) {
 
 HistoryIdentityState::SignIn
 HistoryIdentityStateWatcher::GetHistorySignInState() const {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     switch (signin_util::GetSignedInState(identity_manager_)) {
       case signin_util::SignedInState::kSignedOut:
         return HistoryIdentityState::SignIn::kSignedOut;
@@ -106,8 +105,7 @@ HistoryIdentityStateWatcher::GetHistorySignInState() const {
 HistoryIdentityState::SyncState
 HistoryIdentityStateWatcher::GetSyncStateForType(
     syncer::UserSelectableType type) const {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // Note: This intentionally does not check whether the history data type is
     // actually enabled (for historical reasons, mostly).
     return identity_manager_ && identity_manager_->HasPrimaryAccount(

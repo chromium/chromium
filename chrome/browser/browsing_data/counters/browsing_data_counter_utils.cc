@@ -80,7 +80,7 @@ bool ShouldShowCookieException(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
     signin::ConsentLevel consent_level =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
     return identity_manager->HasPrimaryAccount(consent_level);

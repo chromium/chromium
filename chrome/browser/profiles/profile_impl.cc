@@ -1566,7 +1566,7 @@ bool ProfileImpl::IsSignedIn() {
       IdentityManagerFactory::GetForProfile(this);
   // TODO(crbug.com/348368545): Switch to ConsentLevel::kSignin on ChromeOS.
   signin::ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
   return identity_manager && identity_manager->HasPrimaryAccount(consent_level);

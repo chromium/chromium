@@ -62,8 +62,7 @@ history_sync_optin::mojom::LaunchContext HistorySyncOptinLaunchContextToMojom(
 
 bool HistorySyncOptinUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
 }
 
 // static

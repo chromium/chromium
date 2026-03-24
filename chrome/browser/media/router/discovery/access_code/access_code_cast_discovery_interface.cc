@@ -248,7 +248,7 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
   // TODO(crbug.com/417950948): ConsentLevel::kSync is deprecated and should be
   // removed. See ConsentLevel::kSync documentation for details.
   const signin::ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
 

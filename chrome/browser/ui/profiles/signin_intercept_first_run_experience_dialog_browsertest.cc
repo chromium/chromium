@@ -276,8 +276,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
   CoreAccountId account_id() { return account_id_; }
 
   bool InUnoPhase2ModelWithFastFollows() {
-    return base::FeatureList::IsEnabled(
-               syncer::kReplaceSyncPromosWithSignInPromos) &&
+    return syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
            base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp);
   }
 
@@ -1010,8 +1009,7 @@ class
   }
 
   bool InUnoPhase2ModelNoFastFollows() {
-    return base::FeatureList::IsEnabled(
-               syncer::kReplaceSyncPromosWithSignInPromos) &&
+    return syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
            !base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp);
   }
 

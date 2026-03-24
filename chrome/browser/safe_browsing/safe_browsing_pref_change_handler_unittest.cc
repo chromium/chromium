@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
 
-#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -92,7 +91,7 @@ class SafeBrowsingPrefChangeHandlerTest : public BrowserWithTestWindowTest {
 
   void SetSignedIn() {
     signin::ConsentLevel consent_level =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
     sync_service()->SetSignedIn(consent_level);

@@ -193,8 +193,7 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
   }
 
   if (signin_util::IsForceSigninEnabled()) {
-    if ((!base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos) ||
+    if ((!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
          GetSigninState() == SigninState::kNotSignedIn) &&
         !CanBeManaged()) {
       SetBool(kForceSigninProfileLockedKey, true);

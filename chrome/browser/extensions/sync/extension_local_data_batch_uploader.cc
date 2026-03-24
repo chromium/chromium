@@ -73,8 +73,7 @@ ExtensionLocalDataBatchUploader::~ExtensionLocalDataBatchUploader() = default;
 void ExtensionLocalDataBatchUploader::GetLocalDataDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> callback) {
   if (!sync_util::IsSyncingExtensionsInTransportMode(profile_) ||
-      !base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     std::move(callback).Run(syncer::LocalDataDescription());
     return;
   }
@@ -135,8 +134,7 @@ void ExtensionLocalDataBatchUploader::TriggerLocalDataMigrationForItemsInternal(
   CHECK(!account_info.IsEmpty());
 
   if (!sync_util::IsSyncingExtensionsInTransportMode(profile_) ||
-      !base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     return;
   }
 

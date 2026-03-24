@@ -283,12 +283,10 @@ TEST_F(ProcessDiceHeaderDelegateImplTest,
 
   // Check expectations.
   delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
-  EXPECT_NE(
-      enable_sync_called_,
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
-  EXPECT_EQ(
-      history_sync_optin_started_,
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  EXPECT_NE(enable_sync_called_,
+            syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
+  EXPECT_EQ(history_sync_optin_started_,
+            syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   EXPECT_FALSE(show_error_called_);
 }
 
@@ -334,12 +332,10 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
       CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
   delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
-  EXPECT_NE(
-      enable_sync_called_,
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
-  EXPECT_EQ(
-      history_sync_optin_started_,
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  EXPECT_NE(enable_sync_called_,
+            syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
+  EXPECT_EQ(history_sync_optin_started_,
+            syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 
   // There was no redirect.
   EXPECT_EQ(signin_url_, web_contents()->GetVisibleURL());
@@ -359,12 +355,10 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
       CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
   delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
-  EXPECT_NE(
-      enable_sync_called_,
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
-  EXPECT_EQ(
-      history_sync_optin_started_,
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  EXPECT_NE(enable_sync_called_,
+            syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
+  EXPECT_EQ(history_sync_optin_started_,
+            syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   EXPECT_FALSE(show_error_called_);
 
   // Receive another Dice header in the same tab.

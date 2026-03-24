@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -189,8 +188,7 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
       LoginUIServiceFactory::GetForProfile(profile_)));
   scoped_login_ui_service_observation_.Reset();
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     // If the user declines enabling sync while browser sign-in is forced,
     // prevent them from going further by cancelling the creation of this
     // profile. It does not apply to managed accounts.

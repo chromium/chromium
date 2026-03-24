@@ -1224,8 +1224,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignInAfterToken) {
   // when `syncer::kReplaceSyncPromosWithSignInPromos` is disabled, because
   // otherwise it is a sign-in flow without involving the Sync confirmation
   // dialog.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
   }
 
@@ -1308,8 +1307,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
   // when `syncer::kReplaceSyncPromosWithSignInPromos` is disabled, because
   // otherwise it is a sign-in flow without involving the Sync confirmation
   // dialog.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     EXPECT_EQ(signin::ConsentLevel::kSignin,
               signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
   } else {
