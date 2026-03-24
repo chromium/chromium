@@ -9,10 +9,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -71,21 +74,23 @@ class CommandBufferHelperTest : public testing::Test {
   // expected call on the API mock.
   void AddCommandWithExpect(error::Error _return,
                             unsigned int command,
-                            int arg_count,
-                            CommandBufferEntry *args) {
+                            base::span<CommandBufferEntry> args) {
     CommandHeader header;
+    uint32_t arg_count = args.size();
     header.size = arg_count + 1;
     header.command = command;
-    CommandBufferEntry* cmds =
+    CommandBufferEntry* cmds_ptr =
         static_cast<CommandBufferEntry*>(helper_->GetSpace(arg_count + 1));
-    CommandBufferOffset put = 0;
-    UNSAFE_TODO(cmds[put++]).value_header = header;
-    for (int ii = 0; ii < arg_count; ++ii) {
-      UNSAFE_TODO(cmds[put++]) = UNSAFE_TODO(args[ii]);
-    }
+    // SAFETY: `cmds_ptr` is allocated with `arg_count + 1` elements by
+    // `helper_->GetSpace()` right above.
+    base::span<CommandBufferEntry> cmds = UNSAFE_BUFFERS(
+        base::span(cmds_ptr, base::checked_cast<size_t>(arg_count + 1)));
+    cmds[0].value_header = header;
+    cmds.subspan(1u).copy_from(args);
 
-    EXPECT_CALL(*api_mock_, DoCommand(command, arg_count,
-        Truly(AsyncAPIMock::IsArgs(arg_count, args))))
+    EXPECT_CALL(*api_mock_,
+                DoCommand(command, arg_count,
+                          Truly(AsyncAPIMock::IsArgs(arg_count, args.data()))))
         .InSequence(sequence_)
         .WillOnce(Return(_return));
   }
@@ -96,16 +101,15 @@ class CommandBufferHelperTest : public testing::Test {
     int arg_count = cmd_size - 1;
 
     // Allocate array for args.
-    auto args_ptr =
-        std::make_unique<CommandBufferEntry[]>(arg_count ? arg_count : 1);
+    auto args_ptr = base::HeapArray<CommandBufferEntry>::WithSize(
+        arg_count ? arg_count : 0);
 
     for (int32_t ii = 0; ii < arg_count; ++ii) {
-      UNSAFE_TODO(args_ptr[ii]).value_uint32 = 0xF00DF00D + ii;
+      args_ptr[ii].value_uint32 = 0xF00DF00D + ii;
     }
 
     // Add command and save args in test_command_args_ until the test completes.
-    AddCommandWithExpect(
-        _return, test_command_next_id_++, arg_count, args_ptr.get());
+    AddCommandWithExpect(_return, test_command_next_id_++, args_ptr);
     test_command_args_.push_back(std::move(args_ptr));
   }
 
@@ -120,8 +124,7 @@ class CommandBufferHelperTest : public testing::Test {
 
     // Initially insert commands up to start_commands and Finish().
     for (int32_t ii = 0; ii < start_commands; ++ii) {
-      AddCommandWithExpect(
-          error::kNoError, ii + kUnusedCommandId, num_args, &args[0]);
+      AddCommandWithExpect(error::kNoError, ii + kUnusedCommandId, args);
     }
     helper_->Finish();
 
@@ -136,9 +139,7 @@ class CommandBufferHelperTest : public testing::Test {
     // Add enough commands to over fill the buffer.
     for (int32_t ii = 0; ii < kTotalNumCommandEntries / cmd_size + 2; ++ii) {
       AddCommandWithExpect(error::kNoError,
-                           start_commands + ii + kUnusedCommandId,
-                           num_args,
-                           &args[0]);
+                           start_commands + ii + kUnusedCommandId, args);
     }
 
     // Flush all commands.
@@ -200,7 +201,7 @@ class CommandBufferHelperTest : public testing::Test {
   std::unique_ptr<CommandBufferDirectLocked> command_buffer_;
   std::unique_ptr<AsyncAPIMock> api_mock_;
   std::unique_ptr<CommandBufferHelper> helper_;
-  std::vector<std::unique_ptr<CommandBufferEntry[]>> test_command_args_;
+  std::vector<base::HeapArray<CommandBufferEntry>> test_command_args_;
   unsigned int test_command_next_id_;
   Sequence sequence_;
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -400,17 +401,17 @@ TEST_F(CommandBufferHelperTest, TestCommandProcessing) {
   EXPECT_EQ(0, GetGetOffset());
 
   // Add 3 commands through the helper
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId, 0, nullptr);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId, {});
 
   CommandBufferEntry args1[2];
   args1[0].value_uint32 = 3;
   args1[1].value_float = 4.f;
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId, 2, args1);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId, args1);
 
   CommandBufferEntry args2[2];
   args2[0].value_uint32 = 5;
   args2[1].value_float = 6.f;
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId, 2, args2);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId, args2);
 
   // Wait until it's done.
   helper_->Finish();
@@ -437,7 +438,7 @@ TEST_F(CommandBufferHelperTest, TestCommandWrapping) {
   args1[1].value_float = 4.f;
 
   for (int i = 0; i < kNumCommands; ++i) {
-    AddCommandWithExpect(error::kNoError, kUnusedCommandId + i, 2, args1);
+    AddCommandWithExpect(error::kNoError, kUnusedCommandId + i, args1);
   }
 
   helper_->Finish();
@@ -455,14 +456,13 @@ TEST_F(CommandBufferHelperTest, TestCommandWrappingExactMultiple) {
   const size_t kNumArgs = kCommandSize - 1;
   static_assert(kTotalNumCommandEntries % kCommandSize == 0,
                 "kTotalNumCommandEntries should be a multiple of kCommandSize");
-  CommandBufferEntry args1[kNumArgs];
+  std::array<CommandBufferEntry, kNumArgs> args1;
   for (size_t ii = 0; ii < kNumArgs; ++ii) {
-    UNSAFE_TODO(args1[ii]).value_uint32 = ii + 1;
+    args1[ii].value_uint32 = ii + 1;
   }
 
   for (unsigned int i = 0; i < 5; ++i) {
-    AddCommandWithExpect(
-        error::kNoError, i + kUnusedCommandId, kNumArgs, args1);
+    AddCommandWithExpect(error::kNoError, i + kUnusedCommandId, args1);
   }
 
   helper_->Finish();
@@ -497,10 +497,10 @@ TEST_F(CommandBufferHelperTest, TestAvailableEntries) {
   args[1].value_float = 4.f;
 
   // Add 2 commands through the helper - 8 entries
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 1, 0, nullptr);
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 2, 0, nullptr);
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 3, 2, args);
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 4, 2, args);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 1, {});
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 2, {});
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 3, args);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 4, args);
 
   // Ask for 5 entries.
   helper_->WaitForAvailableEntries(5);
@@ -509,7 +509,7 @@ TEST_F(CommandBufferHelperTest, TestAvailableEntries) {
   CheckFreeSpace(put, 5);
 
   // Add more commands.
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 5, 2, args);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 5, args);
 
   // Wait until everything is done done.
   helper_->Finish();
@@ -528,7 +528,7 @@ TEST_F(CommandBufferHelperTest, TestToken) {
   args[1].value_float = 4.f;
 
   // Add a first command.
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 3, 2, args);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 3, args);
   // keep track of the buffer position.
   CommandBufferOffset command1_put = get_helper_put();
   int32_t token = helper_->InsertToken();
@@ -537,7 +537,7 @@ TEST_F(CommandBufferHelperTest, TestToken) {
       .WillOnce(DoAll(Invoke(api_mock_.get(), &AsyncAPIMock::SetToken),
                       Return(error::kNoError)));
   // Add another command.
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 4, 2, args);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 4, args);
   helper_->WaitForToken(token);
   // check that the get pointer is beyond the first command.
   EXPECT_LE(command1_put, GetGetOffset());
@@ -557,7 +557,7 @@ TEST_F(CommandBufferHelperTest, TestWaitForTokenFlush) {
   args[1].value_float = 4.f;
 
   // Add a first command.
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 3, 2, args);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 3, args);
   int32_t token = helper_->InsertToken();
 
   EXPECT_CALL(*api_mock_.get(), DoCommand(cmd::kSetToken, 1, _))
@@ -575,7 +575,7 @@ TEST_F(CommandBufferHelperTest, TestWaitForTokenFlush) {
   EXPECT_EQ(command_buffer_->FlushCount(), flush_count + 1);
 
   // Add another command.
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 4, 2, args);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId + 4, args);
 
   // Test that we don't Flush repeatedly even if commands are pending.
   helper_->WaitForToken(token);
@@ -608,7 +608,7 @@ TEST_F(CommandBufferHelperTest, FreeRingBuffer) {
   EXPECT_FALSE(helper_->HaveRingBuffer());
 
   // Test that WaitForAvailableEntries allocates a new one
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId, 0, nullptr);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId, {});
   EXPECT_TRUE(helper_->HaveRingBuffer());
   helper_->Finish();
   helper_->FreeRingBuffer();
@@ -618,7 +618,7 @@ TEST_F(CommandBufferHelperTest, FreeRingBuffer) {
   Mock::VerifyAndClearExpectations(api_mock_.get());
 
   // Test that FreeRingBuffer doesn't force a finish
-  AddCommandWithExpect(error::kNoError, kUnusedCommandId, 0, nullptr);
+  AddCommandWithExpect(error::kNoError, kUnusedCommandId, {});
   EXPECT_TRUE(helper_->HaveRingBuffer());
   int32_t old_get_offset = command_buffer_->GetLastState().get_offset;
   EXPECT_NE(helper_->GetPutOffsetForTest(), old_get_offset);
