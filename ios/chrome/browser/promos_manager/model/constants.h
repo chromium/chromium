@@ -24,7 +24,7 @@ extern const char kImpressionFeatureEngagementMigrationCompletedKey[];
 
 // When a new promo is added, if it's a standard promo, consider adding it to
 // `PromosManagerFeatureEngagementTest`.
-// LINT.IfChange
+// LINT.IfChange(Promo)
 enum class Promo {
   Test = 0,            // Test promo used for testing purposes (e.g. unit tests)
   DefaultBrowser = 1,  // Fullscreen Default Browser Promo
@@ -54,10 +54,11 @@ enum class Promo {
   HomeBackgroundCustomization = 22,  // Home (NTP) background customization.
   kMaxValue = HomeBackgroundCustomization,
 };
-// LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.cc)
-// Also update IOSPromosManagerPromo in
-// (/tools/metrics/histograms/metadata/ios/enums.xml) and PromosManagerPromo in
-// (/tools/metrics/histograms/metadata/ios/histograms.xml).
+// LINT.ThenChange(
+//   /ios/chrome/browser/promos_manager/model/constants.cc,
+//   /tools/metrics/histograms/metadata/ios/histograms.xml:PromosManagerPromo,
+//   /tools/metrics/histograms/metadata/ios/enums.xml:IOSPromosManagerPromo,
+// )
 
 // Enum for IOS.PromosManager.Promo.Type histogram.
 // Entries should not be renumbered and numeric values should never be reused.
