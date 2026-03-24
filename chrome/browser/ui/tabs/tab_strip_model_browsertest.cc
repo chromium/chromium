@@ -178,10 +178,6 @@ IN_PROC_BROWSER_TEST_F(
 class TabStripModelBrowserTest : public InProcessBrowserTest,
                                  public TabStripModelObserver {
  public:
-  TabStripModelBrowserTest() {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
-  }
-
   void TearDownOnMainThread() override { observer_.Reset(); }
 
   MOCK_METHOD(void,
@@ -246,13 +242,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, OnTabGroupWillBeRemoved) {
 
   observer_.Observe(browser()->tab_strip_model());
   browser()->tab_strip_model()->CloseAllTabsInGroup(group_id);
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
-  base::HistogramTester histogram_tester;
-
-  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
-  EXPECT_EQ(1, tab_strip_model->count());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,

@@ -11,29 +11,6 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "url/mojom/url.mojom";
 
-// These values are persisted and must not be renumbered or reordered.
-[Stable, Extensible]
-enum TabOrganizationFeature {
-  [Default] kNone = 0,
-  kSelector = 1,  // Deprecated
-  kAutoTabGroups = 2,  // Deprecated
-  kDeclutter = 3,  // Deprecated
-};
-
-enum TabOrganizationModelStrategy {
-  kTopic,
-  kTask,
-  kDomain,
-};
-
-// These values are persisted and must not be renumbered or reordered.
-[Stable, Extensible]
-enum TabSearchSection {
-  [Default] kNone = 0,
-  kSearch = 1,
-  kOrganize = 2,  // Deprecated
-};
-
 // Collection of tab searching details associated with a profile.
 struct ProfileData {
   array<Window> windows;
@@ -234,9 +211,6 @@ interface PageHandler {
 
   // Force trigger the tab group tutorial.
   StartTabGroupTutorial();
-
-  // Initiate the sign in flow.
-  TriggerSignIn();
 
   // Notify the backend that the UI is ready to be shown.
   MaybeShowUI();

@@ -1392,17 +1392,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "sync yet, after the sync-to-signin migration.")));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  // kIPHTabOrganizationSuccessFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHTabOrganizationSuccessFeature,
-          kTabGroupHeaderElementId, IDS_TAB_ORGANIZATION_SUCCESS_IPH,
-          IDS_TAB_ORGANIZATION_SUCCESS_IPH_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-          .SetMetadata(121, "dpenning@chromium.org",
-                       "Triggered when tab organization is accepted.")));
-
   // kIPHTabSearchToolbarButtonFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

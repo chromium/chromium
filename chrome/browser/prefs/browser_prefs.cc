@@ -1008,6 +1008,9 @@ constexpr char kPrivacySandboxActivityTypeRecord2[] =
 // Deprecated 03/2026.
 constexpr char kTabOrganizationNudgeBackoffCount[] =
     "tab_organization.nudge_backoff_count";
+constexpr char kTabOrganizationShowFRE[] = "tab_organization.show_fre_2";
+constexpr char kTabOrganizationModelStrategy[] =
+    "tab_organization.model_strategy";
 
 // Deprecated 03/2026.
 constexpr char kNtpContextMenuClickCount[] = "ntp.context_menu_click_count";
@@ -1410,6 +1413,8 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2026.
   registry->RegisterIntegerPref(kTabOrganizationNudgeBackoffCount, 0);
+  registry->RegisterBooleanPref(kTabOrganizationShowFRE, true);
+  registry->RegisterIntegerPref(kTabOrganizationModelStrategy, 0);
 
   // Deprecated 03/2026.
   registry->RegisterIntegerPref(kNtpContextMenuClickCount, 0);
@@ -2730,6 +2735,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 03/2026.
   profile_prefs->ClearPref(kTabOrganizationNudgeBackoffCount);
+  profile_prefs->ClearPref(kTabOrganizationShowFRE);
+  profile_prefs->ClearPref(kTabOrganizationModelStrategy);
 
   // Added 03/2026.
   profile_prefs->ClearPref(kNtpContextMenuClickCount);

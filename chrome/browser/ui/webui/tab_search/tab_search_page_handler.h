@@ -71,7 +71,6 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void ReplaceActiveSplitTab(int32_t replacement_tab_id) override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void StartTabGroupTutorial() override;
-  void TriggerSignIn() override;
   void MaybeShowUI() override;
 
   // TabStripModelObserver:

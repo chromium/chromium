@@ -19,10 +19,6 @@ extern const char kTabSearchRecentlyClosedSectionExpanded[];
 
 extern const char kTabSearchUsed[];
 
-extern const char kTabOrganizationShowFRE[];
-
-extern const char kTabOrganizationModelStrategy[];
-
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace tab_search_prefs

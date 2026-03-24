@@ -360,22 +360,6 @@ void TabSearchPageHandler::StartTabGroupTutorial() {
   tutorial_service->StartTutorial(tutorial_id, context);
 }
 
-void TabSearchPageHandler::TriggerSignIn() {
-  Profile* profile = Profile::FromWebUI(web_ui_);
-  const signin::IdentityManager* const identity_manager(
-      IdentityManagerFactory::GetInstance()->GetForProfile(profile));
-  CoreAccountId primary_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_id)) {
-    signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-        profile, signin_metrics::AccessPoint::kTabOrganization);
-  } else {
-    signin_ui_util::ShowSigninPromptFromPromo(
-        profile, signin_metrics::AccessPoint::kTabOrganization);
-  }
-}
-
 void TabSearchPageHandler::MaybeShowUI() {
   auto embedder = webui_controller_->embedder();
   if (embedder) {

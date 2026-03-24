@@ -218,13 +218,6 @@ inline constexpr char kTabHoverCardAdditionalMaxWidthDelay[] =
 // If enabled, use desktop widget to show tab modal dialogs.
 BASE_DECLARE_FEATURE(kTabModalUsesDesktopWidget);
 
-BASE_DECLARE_FEATURE(kTabOrganization);
-bool IsTabOrganization();
-
-BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);
-
-BASE_DECLARE_FEATURE(kTabOrganizationUserInstruction);
-
 BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 
 #if !BUILDFLAG(IS_ANDROID)
