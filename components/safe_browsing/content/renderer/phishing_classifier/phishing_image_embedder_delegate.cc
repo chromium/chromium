@@ -76,6 +76,8 @@ void PhishingImageEmbedderDelegate::StartImageEmbedding(
     std::move(image_embedding_callback_)
         .Run(mojom::PhishingImageEmbeddingResult::kCancelled, std::nullopt,
              std::nullopt);
+    CancelPendingImageEmbedding(
+        CancelImageEmbeddingReason::kNewRequestFromBrowser);
   }
   is_image_embedding_running_ = true;
   last_url_received_from_browser_ = StripRef(url);

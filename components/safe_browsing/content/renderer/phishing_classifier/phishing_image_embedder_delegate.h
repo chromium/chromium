@@ -80,15 +80,22 @@ class PhishingImageEmbedderDelegate
 
   explicit PhishingImageEmbedderDelegate(content::RenderFrame* render_frame);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(CancelImageEmbeddingReason)
   enum CancelImageEmbeddingReason {
-    kNavigateAway,
-    kNavigateWithinPage,
-    kPageRecaptured,
-    kShutdown,
-    kNewPhishingScorer,
-    kScorerCleared,
-    kMaxValue = kScorerCleared,
+    kNavigateAway = 0,
+    kNavigateWithinPage = 1,
+    kPageRecaptured = 2,
+    kShutdown = 3,
+    kNewPhishingScorer = 4,
+    kScorerCleared = 5,
+    kNewRequestFromBrowser = 6,
+
+    kMaxValue = kNewRequestFromBrowser,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientPhishingCancelImageEmbeddingReason)
 
   void PhishingImageEmbedderReceiver(
       mojo::PendingAssociatedReceiver<mojom::PhishingImageEmbedderDetector>
