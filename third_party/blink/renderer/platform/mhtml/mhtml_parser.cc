@@ -174,7 +174,10 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
       // This is not a key value pair, ignore.
       continue;
     }
-    key = line.substr(0, semi_colon_index).DeprecatedLower().StripWhiteSpace();
+    key = line.subview(0, semi_colon_index)
+              .StripWhiteSpace()
+              .ToString()
+              .ToAsciiLower();
     value.Append(line.subview(semi_colon_index + 1));
   }
   // Store the last property if there is one.
