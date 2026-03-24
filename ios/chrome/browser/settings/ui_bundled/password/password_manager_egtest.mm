@@ -1193,8 +1193,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Checks that deleting a password from password details can be cancelled.
-// TODO(crbug.com/468309777): This test is flaky.
-- (void)FLAKY_testCancelDeletionInDetailView {
+- (void)testCancelDeletionInDetailView {
   // Save form to be deleted later.
   SavePasswordFormToProfileStore();
 
@@ -1203,6 +1202,10 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
 
+  // Wait for the edit button to be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:NavigationBarEditButton()];
+
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
@@ -1210,13 +1213,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                           kDefaultUsername, kDefaultSite)]
       performAction:grey_tap()];
 
-  // Close the dialog by tapping on Password Details screen cancel button.
-  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+  // Close the dialog by tapping on Password Details screen done button.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // Check that the current view is still the detail view.
   [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify that the deletion did not happen.
   GREYAssertEqual(
@@ -1225,7 +1228,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Go back to the list view and verify that the password is still in the
   // list.
-  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
