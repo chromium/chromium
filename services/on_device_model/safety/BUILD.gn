@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
-if (!is_fuchsia && build_with_tflite_lib) {
+if (!is_fuchsia) {
   source_set("bert_safety_op_resolver") {
     sources = [
       "bert_safety_op_resolver.cc",

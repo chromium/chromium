@@ -67,7 +67,6 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     deps = [
       "//components/crash/core/common:crash_key",
       "//components/language_detection/core",
-      "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//components/optimization_guide/core:features",
       "//components/translate/core/language_detection",
       "//services/on_device_model:backend_interfaces",
@@ -85,7 +84,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     if (use_blink) {
       deps += [ "//gpu/config" ]
     }
-    if (!is_fuchsia && build_with_tflite_lib) {
+    if (!is_fuchsia) {
       deps += [ "//services/on_device_model/safety:bert_safety_model" ]
     }
     public_deps = [
