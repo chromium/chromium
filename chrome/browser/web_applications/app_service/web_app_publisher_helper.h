@@ -307,6 +307,10 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   void OnWebAppUninstalled(
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
+  // Dynamically update the AppService on an app being migrated from being the
+  // `source_app` to being the `destination_app`.
+  void OnWebAppMigrated(const webapps::AppId& source_app_id,
+                        const webapps::AppId& target_app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // WebAppRegistrarObserver:

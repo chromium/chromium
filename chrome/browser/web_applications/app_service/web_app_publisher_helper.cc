@@ -71,6 +71,7 @@
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1491,6 +1492,24 @@ void WebAppPublisherHelper::OnWebAppUninstalled(
 #endif
 
   delegate_->PublishWebApp(ConvertUninstalledWebApp(app_id, uninstall_source));
+}
+
+void WebAppPublisherHelper::OnWebAppMigrated(
+    const webapps::AppId& source_app_id,
+    const webapps::AppId& target_app_id) {
+  if (IsShuttingDown()) {
+    return;
+  }
+
+  OnWebAppUninstalled(source_app_id,
+                      webapps::WebappUninstallSource::kAppMigration);
+  const WebApp* target_app = registrar().GetAppById(
+      target_app_id, web_app::WebAppFilter::IsAppSurfaceableToUser());
+  if (target_app) {
+    auto app = CreateWebApp(target_app);
+    app->icon_key->update_version = true;
+    delegate_->PublishWebApp(std::move(app));
+  }
 }
 
 void WebAppPublisherHelper::OnWebAppInstallManagerDestroyed() {
