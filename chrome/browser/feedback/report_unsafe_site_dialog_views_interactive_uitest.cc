@@ -64,7 +64,7 @@ class ReportUnsafeSiteDialogInteractiveUiTest : public InteractiveBrowserTest {
   auto CloseDialog() {
     return InAnyContext(
         ClickElement(kDialogWebviewId,
-                     {"report-unsafe-site-app", ".cancel-button"},
+                     {"report-unsafe-site-app", "#cancel-button"},
                      ui_controls::LEFT, ui_controls::kNoAccelerator,
                      ExecuteJsMode::kFireAndForget),
         WaitForHide(
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest, UrlInDialog) {
       ExecuteReportUnsafeSiteCommand(), WaitForDialog(),
       WaitForJsResultAt(
           kDialogWebviewId,
-          {"report-unsafe-site-app", ".url-input-container", "input"},
+          {"report-unsafe-site-app", ".url-input-container", "cr-input"},
           "(el) => el.value", ::testing::Eq(formatted_origin)),
       CloseDialog());
 }

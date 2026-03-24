@@ -16,7 +16,8 @@ a {
 }
 
 .dialog-title {
-  font-size: var(--cr-dialog-title-font-size);
+  font-size: var(--cr-dialog-title-font-size, calc(15 / 13 * 100%));
+  margin-bottom: 8px;
 }
 
 .url-input-container {
@@ -24,64 +25,75 @@ a {
   padding-top: 16px;
 }
 
-.url-input-container input {
+.url-input-container cr-input {
+  --cr-input-error-display: none;
+  box-sizing: border-box;
   display: block;
+  padding-top: 8px;
   width: 100%;
 }
 
 .two-cols {
   align-items: center;
   display: flex;
+  margin-top: 24px;
 }
 
-.header {
-  margin-inline-start: 20px;
-  margin-inline-end: 20px;
+#screenshot-placeholder,
+#screenshot-image {
+  align-items: center;
+  border: 1px solid var(--google-grey-700);
+  border-radius: var(--cr-card-border-radius);
+  flex-shrink: 0;
+  margin-inline-end: 24px;
+  width: 120px;
+  height: 90px;
 }
 
 #screenshot-placeholder {
-  align-items: center;
-  background: var(--google-grey-200);
-  border-radius: var(--cr-card-border-radius);
+  background: var(--google-grey-300);
   display: flex;
   justify-content: center;
-  margin-inline-end: 25px;
-  margin-top: 4px;
-  width: 200px;
-  height: 200px;
 }
 
 #screenshot-image {
-  margin-inline-end: 25px;
-  margin-top: 4px;
-  min-width: 100px;
-  min-height: 100px;
-  max-width: 300px;
-  max-height: 300px;
+  object-fit: cover;
+  object-position: center center;
 }
 
 .main-content {
-  margin-inline-start: 20px;
-  margin-inline-end: 20px;
+  margin: 20px 20px 0;
+  width: 448px;
 }
 
 .button-container {
   display: flex;
   justify-content: flex-end;
-  padding: 16px;
+  padding: 16px 0 20px;
+}
+
+#cancel-button {
+  margin-inline-end: 8px;
 }
 
 .footer {
-  border-top: 1px solid var(--google-grey-200);
-  padding: 16px 20px;
+  background-color: var(--google-grey-100);
+  border-top: 1px solid var(--google-grey-400);
+  padding: 16px 20px 20px;
 }
 
 @media (prefers-color-scheme: dark) {
-  .hidden-screenshot-image {
+  #screenshot-image,
+  #screenshot-placeholder {
+    border: 1px solid var(--google-grey-600);
+  }
+
+  #screenshot-placeholder {
     background: var(--google-grey-800);
   }
 
   .footer {
-    border-color: var(--google-grey-800);
+    background: var(--google-grey-800);
+    border-color: var(--google-grey-600);
   }
 }
