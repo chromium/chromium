@@ -1903,6 +1903,29 @@
             ]
         }
     ],
+    "AsyncBeforeUnload": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AsyncBeforeUnloadTimeout": "500ms"
+                    },
+                    "enable_features": [
+                        "AsyncBeforeUnload"
+                    ]
+                }
+            ]
+        }
+    ],
     "AsyncDnsLinux": [
         {
             "platforms": [
