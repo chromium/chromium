@@ -489,6 +489,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/policy:onc",
+      "//chrome/browser/push_notification",
       "//chrome/browser/smart_card",
     ]
   }

@@ -4879,8 +4879,6 @@ static_library("browser") {
       "policy/status_provider/device_local_account_policy_status_provider.h",
       "policy/status_provider/user_cloud_policy_status_provider_chromeos.cc",
       "policy/status_provider/user_cloud_policy_status_provider_chromeos.h",
-      "push_notification/push_notification_service_factory.cc",
-      "push_notification/push_notification_service_factory.h",
       "renderer_context_menu/read_write_card_observer.cc",
       "renderer_context_menu/read_write_card_observer.h",
       "screen_ai/screen_ai_downloader_chromeos.cc",
