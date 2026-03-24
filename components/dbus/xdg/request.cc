@@ -72,7 +72,6 @@ void Request::Initialize(dbus::ObjectProxy* object_proxy,
 Request::Request(scoped_refptr<dbus::Bus> bus, ResponseCallback callback)
     : bus_(std::move(bus)), callback_(std::move(callback)) {
   CHECK(bus_);
-  CHECK(callback_);
 }
 
 Request::~Request() {
@@ -93,6 +92,11 @@ Request::~Request() {
           },
           std::move(bus_), std::move(request_object_path_),
           std::move(portal_service_name_)));
+}
+
+void Request::SetCallback(ResponseCallback callback) {
+  CHECK(!callback_);
+  callback_ = std::move(callback);
 }
 
 void Request::Release() {

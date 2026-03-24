@@ -64,6 +64,25 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
                std::string());
   }
 
+  // A version of the constructor that doesn't take a callback. The callback
+  // must be set with SetCallback() before the request finishes.
+  template <typename... Args>
+  Request(scoped_refptr<dbus::Bus> bus,
+          dbus::ObjectProxy* object_proxy,
+          const std::string& interface_name,
+          const std::string& method_name,
+          Dictionary&& options,
+          const Args&... arguments)
+    requires(dbus_utils::IsSupportedDBusType<Args> && ...)
+      : Request(std::move(bus), ResponseCallback()) {
+    dbus::MethodCall method_call(interface_name, method_name);
+    dbus::MessageWriter writer(&method_call);
+    (dbus_utils::WriteValue(writer, arguments), ...);
+
+    Initialize(object_proxy, &method_call, &writer, std::move(options),
+               std::string());
+  }
+
   // The same as the constructor, except `portal_service_name` may be provided
   // to override in tests.
   template <typename... Args>
@@ -96,6 +115,8 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   // If the request has not finished, the destructor will call the "Close"
   // method on the request object, and the callback will not be run.
   ~Request();
+
+  void SetCallback(ResponseCallback callback);
 
   // Don't run "Close" on destruction. Use this to allow the D-Bus request to
   // outlive this Request object.
