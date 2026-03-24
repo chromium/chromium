@@ -217,6 +217,9 @@ enum class TabGridTransitionType {
   } else {
     browserLayout.view.frame = tabGrid.view.bounds;
     [tabGrid.view addSubview:browserLayout.view];
+    if (IsFullscreenRefactoringEnabled()) {
+      AddSameConstraints(browserLayout.view, tabGrid.view);
+    }
   }
 
   // Take the toolbar snapshots before adding the `_browserLayoutViewController`
