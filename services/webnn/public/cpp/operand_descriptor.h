@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_PUBLIC_CPP_OPERAND_DESCRIPTOR_H_
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <numeric>
 #include <type_traits>
@@ -66,9 +67,9 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
           "int32_t.");
     }
 
-    base::CheckedNumeric<size_t> checked_number_of_elements =
+    base::CheckedNumeric<int32_t> checked_number_of_elements =
         std::accumulate(shape.begin(), shape.end(),
-                        base::CheckedNumeric<size_t>(1), std::multiplies());
+                        base::CheckedNumeric<int32_t>(1), std::multiplies());
     if (!checked_number_of_elements.IsValid()) {
       return base::unexpected(
           "Invalid descriptor: The number of elements is too large.");
