@@ -56,6 +56,9 @@ void TestEventRouterObserver::OnDidDispatchEventToProcess(const Event& event,
   CHECK(!event.event_name.empty());
   dispatched_events_[event.event_name] = event.DeepCopy();
   all_dispatched_events_.push_back(event.DeepCopy());
+  if (run_loop_) {
+    run_loop_->Quit();
+  }
 }
 
 }  // namespace extensions
