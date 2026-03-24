@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
@@ -205,15 +206,13 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
 
   // Place the tabs separator if visible.
   if (should_show_separator) {
-    int separator_width =
-        size_bounds.width().value() - 2 * region_horizontal_padding;
-    int separator_x = region_horizontal_padding;
-    if (is_collapsed_) {
-      const int collapsed_separator_width = GetLayoutConstant(
-          LayoutConstant::kVerticalTabStripCollapsedSeparatorWidth);
-      separator_width = collapsed_separator_width;
-      separator_x = (size_bounds.width().value() - separator_width) / 2;
-    }
+    const int separator_padding =
+        is_collapsed_
+            ? GetLayoutConstant(
+                  LayoutConstant::kVerticalTabStripCollapsedSeparatorPadding)
+            : region_horizontal_padding;
+    int separator_width = size_bounds.width().value() - 2 * separator_padding;
+    int separator_x = separator_padding;
     gfx::Rect tabs_separator_bounds(
         separator_x, y, separator_width,
         tabs_separator_->GetPreferredSize().height());
