@@ -7565,11 +7565,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TipsMagicStack.Module.DisplayedType" enum="TipIdentifier"
-    expires_after="2026-05-03">
+    expires_after="2026-08-03">
   <owner>bmcclure@google.com</owner>
   <owner>bwwilliams@google.com</owner>
   <summary>
-    Logged when Tips (Magic Stack) is disaplyed for a user. The enumeration
+    Logged when Tips (Magic Stack) is displayed for a user. The enumeration
     indicates which tip was displayed.
   </summary>
 </histogram>
