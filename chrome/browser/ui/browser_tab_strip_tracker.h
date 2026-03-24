@@ -68,7 +68,10 @@ class BrowserTabStripTracker : public BrowserCollectionObserver {
   raw_ptr<TabStripModelObserver> const tab_strip_model_observer_;
   raw_ptr<BrowserTabStripTrackerDelegate> const delegate_;
   bool is_processing_initial_browsers_;
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+  // TODO(crbug.com/495697669): remove when the BrowserTabStripTracker is no
+  // longer outliving the GlobalBrowserCollection it observes.
+  base::ScopedObservation<GlobalBrowserCollection,
+                          BrowserCollectionObserver>::LeakedDanglingUntriaged
       browser_collection_observation_{this};
 };
 
