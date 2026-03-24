@@ -86,7 +86,7 @@ export interface PrivacyPageBrowserProxy {
 export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
   // <if expr="_google_chrome and not is_chromeos">
   getMetricsReporting() {
-    return sendWithPromise('getMetricsReporting');
+    return sendWithPromise<MetricsReporting>('getMetricsReporting');
   }
 
   setMetricsReportingEnabled(enabled: boolean) {
@@ -96,19 +96,19 @@ export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
   // </if>
 
   getSecureDnsResolverList() {
-    return sendWithPromise('getSecureDnsResolverList');
+    return sendWithPromise<ResolverOption[]>('getSecureDnsResolverList');
   }
 
   getSecureDnsSetting() {
-    return sendWithPromise('getSecureDnsSetting');
+    return sendWithPromise<SecureDnsSetting>('getSecureDnsSetting');
   }
 
   isValidConfig(entry: string): Promise<boolean> {
-    return sendWithPromise('isValidConfig', entry);
+    return sendWithPromise<boolean>('isValidConfig', entry);
   }
 
   probeConfig(entry: string): Promise<boolean> {
-    return sendWithPromise('probeConfig', entry);
+    return sendWithPromise<boolean>('probeConfig', entry);
   }
 
   static getInstance(): PrivacyPageBrowserProxy {

@@ -297,7 +297,7 @@ export class EnterpriseEnrollmentElement extends
     };
 
     this.authenticator.addEventListener('getDeviceId', () => {
-      sendWithPromise('getDeviceIdForEnrollment').then(deviceId => {
+      sendWithPromise<string>('getDeviceIdForEnrollment').then(deviceId => {
         assert(this.authenticator);
         this.authenticator.getDeviceIdResponse(deviceId);
       });

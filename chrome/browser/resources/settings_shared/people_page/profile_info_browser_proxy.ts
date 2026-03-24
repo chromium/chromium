@@ -29,7 +29,7 @@ export interface ProfileInfoBrowserProxy {
 
 export class ProfileInfoBrowserProxyImpl implements ProfileInfoBrowserProxy {
   getProfileInfo() {
-    return sendWithPromise('getProfileInfo');
+    return sendWithPromise<ProfileInfo>('getProfileInfo');
   }
 
   getProfileStatsCount() {

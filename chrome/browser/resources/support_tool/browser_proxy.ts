@@ -66,20 +66,21 @@ export interface BrowserProxy {
 
 export class BrowserProxyImpl implements BrowserProxy {
   getEmailAddresses() {
-    return sendWithPromise('getEmailAddresses');
+    return sendWithPromise<string[]>('getEmailAddresses');
   }
 
   getDataCollectors() {
-    return sendWithPromise('getDataCollectors');
+    return sendWithPromise<DataCollectorItem[]>('getDataCollectors');
   }
 
   getAllDataCollectors() {
-    return sendWithPromise('getAllDataCollectors');
+    return sendWithPromise<DataCollectorItem[]>('getAllDataCollectors');
   }
 
   startDataCollection(
       issueDetails: IssueDetails, dataCollectors: DataCollectorItem[]) {
-    return sendWithPromise('startDataCollection', issueDetails, dataCollectors);
+    return sendWithPromise<StartDataCollectionResult>(
+        'startDataCollection', issueDetails, dataCollectors);
   }
 
   cancelDataCollection() {
@@ -95,11 +96,13 @@ export class BrowserProxyImpl implements BrowserProxy {
   }
 
   generateCustomizedUrl(caseId: string, dataCollectors: DataCollectorItem[]) {
-    return sendWithPromise('generateCustomizedUrl', caseId, dataCollectors);
+    return sendWithPromise<SupportTokenGenerationResult>(
+        'generateCustomizedUrl', caseId, dataCollectors);
   }
 
   generateSupportToken(dataCollectors: DataCollectorItem[]) {
-    return sendWithPromise('generateSupportToken', dataCollectors);
+    return sendWithPromise<SupportTokenGenerationResult>(
+        'generateSupportToken', dataCollectors);
   }
 
   static getInstance(): BrowserProxy {

@@ -69,23 +69,23 @@ export interface BrowserSwitchInternalsProxy {
 export class BrowserSwitchInternalsProxyImpl implements
     BrowserSwitchInternalsProxy {
   isBrowserSwitcherEnabled() {
-    return sendWithPromise('isBrowserSwitcherEnabled');
+    return sendWithPromise<boolean>('isBrowserSwitcherEnabled');
   }
 
   getDecision(url: string) {
-    return sendWithPromise('getDecision', url);
+    return sendWithPromise<Decision>('getDecision', url);
   }
 
   getAllRulesets(): Promise<RuleSetList> {
-    return sendWithPromise('getAllRulesets');
+    return sendWithPromise<RuleSetList>('getAllRulesets');
   }
 
   getTimestamps(): Promise<TimestampPair> {
-    return sendWithPromise('getTimestamps');
+    return sendWithPromise<TimestampPair>('getTimestamps');
   }
 
   getRulesetSources(): Promise<RulesetSources> {
-    return sendWithPromise('getRulesetSources');
+    return sendWithPromise<RulesetSources>('getRulesetSources');
   }
 
   refreshXml() {
@@ -93,7 +93,7 @@ export class BrowserSwitchInternalsProxyImpl implements
   }
 
   getBrowserSwitchInternalsJson() {
-    return sendWithPromise('getBrowserSwitchInternalsJson');
+    return sendWithPromise<string>('getBrowserSwitchInternalsJson');
   }
 
   static getInstance(): BrowserSwitchInternalsProxy {

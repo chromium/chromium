@@ -401,7 +401,7 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   }
 
   setSyncDatatype(pref: UserSelectableType, value: boolean) {
-    return sendWithPromise('SetDatatype', pref, value);
+    return sendWithPromise<PageStatus>('SetDatatype', pref, value);
   }
 
   recordSigninPendingOffered() {
@@ -436,15 +436,15 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   }
 
   getSyncStatus() {
-    return sendWithPromise('SyncSetupGetSyncStatus');
+    return sendWithPromise<SyncStatus>('SyncSetupGetSyncStatus');
   }
 
   getStoredAccounts() {
-    return sendWithPromise('SyncSetupGetStoredAccounts');
+    return sendWithPromise<StoredAccount[]>('SyncSetupGetStoredAccounts');
   }
 
   getProfileAvatar() {
-    return sendWithPromise('SyncSetupGetProfileAvatar');
+    return sendWithPromise<string>('SyncSetupGetProfileAvatar');
   }
 
   didNavigateToSyncPage() {
@@ -456,15 +456,18 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   }
 
   setSyncDatatypes(syncPrefs: SyncPrefs) {
-    return sendWithPromise('SyncSetupSetDatatypes', JSON.stringify(syncPrefs));
+    return sendWithPromise<PageStatus>(
+        'SyncSetupSetDatatypes', JSON.stringify(syncPrefs));
   }
 
   setEncryptionPassphrase(passphrase: string) {
-    return sendWithPromise('SyncSetupSetEncryptionPassphrase', passphrase);
+    return sendWithPromise<boolean>(
+        'SyncSetupSetEncryptionPassphrase', passphrase);
   }
 
   setDecryptionPassphrase(passphrase: string) {
-    return sendWithPromise('SyncSetupSetDecryptionPassphrase', passphrase);
+    return sendWithPromise<boolean>(
+        'SyncSetupSetDecryptionPassphrase', passphrase);
   }
 
   startSyncingWithEmail(email: string, isDefaultPromoAccount: boolean) {
@@ -491,7 +494,8 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   }
 
   getChromeSigninUserChoiceInfo(): Promise<ChromeSigninUserChoiceInfo> {
-    return sendWithPromise('GetChromeSigninUserChoiceInfo');
+    return sendWithPromise<ChromeSigninUserChoiceInfo>(
+        'GetChromeSigninUserChoiceInfo');
   }
 
   static getInstance(): SyncBrowserProxy {

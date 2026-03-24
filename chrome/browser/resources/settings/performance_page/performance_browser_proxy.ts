@@ -20,11 +20,11 @@ export interface PerformanceBrowserProxy {
 
 export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
   getCurrentOpenSites() {
-    return sendWithPromise('getCurrentOpenSites');
+    return sendWithPromise<string[]>('getCurrentOpenSites');
   }
 
   getDeviceHasBattery() {
-    return sendWithPromise('getDeviceHasBattery');
+    return sendWithPromise<boolean>('getDeviceHasBattery');
   }
 
   openFeedbackDialog(categoryTag: PerformanceFeedbackCategory) {
@@ -32,7 +32,7 @@ export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
   }
 
   validateTabDiscardExceptionRule(rule: string) {
-    return sendWithPromise('validateTabDiscardExceptionRule', rule);
+    return sendWithPromise<boolean>('validateTabDiscardExceptionRule', rule);
   }
 
   static getInstance(): PerformanceBrowserProxy {

@@ -123,7 +123,7 @@ export function getAllNodes(callback: (p: SyncNodeMap) => void) {
     callback(nodesForTest);
     return;
   }
-  sendWithPromise('getAllNodes').then(callback);
+  sendWithPromise<SyncNodeMap>('getAllNodes').then(callback);
 }
 
 export function setAllNodesForTest(nodes: SyncNodeMap) {

@@ -28,7 +28,8 @@ interface OriginData {
  * Requests the database from the backend.
  */
 function requestResourcePrefetchPredictorDb() {
-  sendWithPromise('requestResourcePrefetchPredictorDb')
+  sendWithPromise<ResourcePrefetchPredictorDb>(
+      'requestResourcePrefetchPredictorDb')
       .then(updateResourcePrefetchPredictorDb);
 }
 

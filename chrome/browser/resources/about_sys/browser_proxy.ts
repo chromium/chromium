@@ -15,7 +15,7 @@ export interface BrowserProxy {
 
 export class BrowserProxyImpl implements BrowserProxy {
   requestSystemInfo() {
-    return sendWithPromise('requestSystemInfo');
+    return sendWithPromise<SystemLog[]>('requestSystemInfo');
   }
 
   static getInstance(): BrowserProxy {

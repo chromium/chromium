@@ -103,7 +103,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
       this.updateDataRetentionDuration();
     });
 
-    sendWithPromise('getHealthdInternalsFeatureFlag')
+    sendWithPromise<HealthdInternalsFeatureFlagResult>(
+        'getHealthdInternalsFeatureFlag')
         .then((data: HealthdInternalsFeatureFlagResult) => {
           if (!data.tabsDisplayed) {
             this.currentPath = PagePath.NONE;

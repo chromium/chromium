@@ -314,7 +314,7 @@ async function onButtonClick(cmdArgs: Record<string, any>, e: Event) {
   const command = (e.target as HTMLElement).dataset['command'];
   assert(command);
   assert(COMMANDS.includes(command));
-  await sendWithPromise(command, cmdArgs);
+  await sendWithPromise<void>(command, cmdArgs);
   update();
 }
 
@@ -471,7 +471,7 @@ function initialize() {
 
 
 function update() {
-  sendWithPromise('GetOptions').then(onOptions);
+  sendWithPromise<Options>('GetOptions').then(onOptions);
   chrome.send('getAllRegistrations');
 }
 

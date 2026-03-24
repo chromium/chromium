@@ -29,15 +29,15 @@ export interface BrowserProxy {
 
 export class BrowserProxyImpl implements BrowserProxy {
   getIncognitoAvailability() {
-    return sendWithPromise('getIncognitoAvailability');
+    return sendWithPromise<IncognitoAvailability>('getIncognitoAvailability');
   }
 
   getCanEditBookmarks() {
-    return sendWithPromise('getCanEditBookmarks');
+    return sendWithPromise<boolean>('getCanEditBookmarks');
   }
 
   getCanUploadBookmarkToAccountStorage(id: string) {
-    return sendWithPromise('getCanUploadBookmarkToAccountStorage', id);
+    return sendWithPromise<boolean>('getCanUploadBookmarkToAccountStorage', id);
   }
 
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {
@@ -50,7 +50,7 @@ export class BrowserProxyImpl implements BrowserProxy {
   }
 
   getBatchUploadPromoInfo() {
-    return sendWithPromise('getBatchUploadPromoInfo');
+    return sendWithPromise<BatchUploadPromoData>('getBatchUploadPromoInfo');
   }
 
   onBatchUploadPromoClicked(): void {

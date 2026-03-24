@@ -54,11 +54,11 @@ export interface SavedInfoHandlerProxy {
 
 export class SavedInfoHandlerImpl implements SavedInfoHandlerProxy {
   getPasswordCount() {
-    return sendWithPromise('getPasswordCount');
+    return sendWithPromise<PasswordCount>('getPasswordCount');
   }
 
   getLoyaltyCardsCount() {
-    return sendWithPromise('getLoyaltyCardsCount');
+    return sendWithPromise<number|undefined>('getLoyaltyCardsCount');
   }
 
   requestDataManagementSurvey(

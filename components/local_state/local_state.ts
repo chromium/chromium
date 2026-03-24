@@ -20,7 +20,7 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 // When the page loads, request the JSON local state data from C++.
 document.addEventListener('DOMContentLoaded', function() {
-  sendWithPromise('requestJson').then((localState: string) => {
+  sendWithPromise<string>('requestJson').then((localState: string) => {
     getRequiredElement('content').textContent = localState;
   });
 });

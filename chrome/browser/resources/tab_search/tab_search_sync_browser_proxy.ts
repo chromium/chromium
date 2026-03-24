@@ -14,7 +14,7 @@ export interface TabSearchSyncBrowserProxy {
 export class TabSearchSyncBrowserProxyImpl implements
     TabSearchSyncBrowserProxy {
   getSignInState() {
-    return sendWithPromise('GetSignInState');
+    return sendWithPromise<boolean>('GetSignInState');
   }
 
   static getInstance(): TabSearchSyncBrowserProxy {

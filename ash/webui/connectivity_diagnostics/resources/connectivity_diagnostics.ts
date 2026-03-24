@@ -80,7 +80,7 @@ export class ConnectivityDiagnosticsElement extends
   }
 
   private getShowFeedbackBtn_(): void {
-    sendWithPromise('getShowFeedbackButton').then(result => {
+    sendWithPromise<boolean[]>('getShowFeedbackButton').then(result => {
       this.showFeedbackBtn_ = result[0];
     });
   }

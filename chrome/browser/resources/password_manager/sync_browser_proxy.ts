@@ -63,19 +63,20 @@ export interface SyncBrowserProxy {
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
   getTrustedVaultBannerState() {
-    return sendWithPromise('GetSyncTrustedVaultBannerState');
+    return sendWithPromise<TrustedVaultBannerState>(
+        'GetSyncTrustedVaultBannerState');
   }
 
   getSyncInfo() {
-    return sendWithPromise('GetSyncInfo');
+    return sendWithPromise<SyncInfo>('GetSyncInfo');
   }
 
   getAccountInfo() {
-    return sendWithPromise('GetAccountInfo');
+    return sendWithPromise<AccountInfo>('GetAccountInfo');
   }
 
   getLocalPasswordCount() {
-    return sendWithPromise('GetLocalPasswordCount');
+    return sendWithPromise<number>('GetLocalPasswordCount');
   }
 
   openBatchUpload(entryPoint: BatchUploadPasswordsEntryPoint): void {

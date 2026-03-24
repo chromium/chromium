@@ -41,11 +41,11 @@ export interface ProfileCustomizationBrowserProxy {
 export class ProfileCustomizationBrowserProxyImpl implements
     ProfileCustomizationBrowserProxy {
   initialized() {
-    return sendWithPromise('initialized');
+    return sendWithPromise<ProfileInfo>('initialized');
   }
 
   getAvailableIcons() {
-    return sendWithPromise('getAvailableIcons');
+    return sendWithPromise<AvatarIcon[]>('getAvailableIcons');
   }
 
   done(profileName: string) {

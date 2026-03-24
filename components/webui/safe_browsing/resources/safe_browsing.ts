@@ -39,6 +39,11 @@ interface DeepScanResult {
   response_status: string;
 }
 
+interface TailoredVerdictResponse {
+  status: number;
+  override_value: object;
+}
+
 const deepScanData: Map<string, DeepScanResult> = new Map();
 
 /**
@@ -48,24 +53,24 @@ const deepScanData: Map<string, DeepScanResult> = new Map();
  * addPreferences() (below).
  */
 function initialize() {
-  sendWithPromise('getExperiments', [])
+  sendWithPromise<string[]>('getExperiments', [])
       .then((experiments: string[]) => addExperiments(experiments));
-  sendWithPromise('getPrefs', []).then((prefs: string[]) => addPrefs(prefs));
-  sendWithPromise('getPolicies', [])
+  sendWithPromise<string[]>('getPrefs', [])
+      .then((prefs: string[]) => addPrefs(prefs));
+  sendWithPromise<Array<string|boolean>>('getPolicies', [])
       .then((policies: Array<string|boolean>) => addPolicies(policies));
-  sendWithPromise('getCookie', []).then((cookie: [
-                                          string, number
-                                        ]) => addCookie(cookie));
-  sendWithPromise('getSavedPasswords', [])
+  sendWithPromise<[string, number]>('getCookie', [])
+      .then((cookie: [string, number]) => addCookie(cookie));
+  sendWithPromise<Array<string|boolean>>('getSavedPasswords', [])
       .then((passwords: Array<string|boolean>) => addSavedPasswords(passwords));
-  sendWithPromise('getDatabaseManagerInfo', [])
+  sendWithPromise<Array<string|number|string[]>>('getDatabaseManagerInfo', [])
       .then(function(databaseState: Array<string|number|string[]>) {
         const fullHashCacheState = databaseState.splice(-1, 1) as string[];
         addDatabaseManagerInfo(databaseState);
         addFullHashCacheInfo(fullHashCacheState);
       });
 
-  sendWithPromise('getDownloadUrlsChecked', [])
+  sendWithPromise<string[]>('getDownloadUrlsChecked', [])
       .then((urlsChecked: string[]) => {
         urlsChecked.forEach(function(urlAndResult) {
           addDownloadUrlChecked(urlAndResult);
@@ -76,7 +81,7 @@ function initialize() {
         addDownloadUrlChecked(urlAndResult);
       });
 
-  sendWithPromise('getSentClientDownloadRequests', [])
+  sendWithPromise<string[]>('getSentClientDownloadRequests', [])
       .then((sentClientDownloadRequests: string[]) => {
         sentClientDownloadRequests.forEach(function(cdr) {
           addSentClientDownloadRequestsInfo(cdr);
@@ -87,7 +92,7 @@ function initialize() {
         addSentClientDownloadRequestsInfo(result);
       });
 
-  sendWithPromise('getReceivedClientDownloadResponses', [])
+  sendWithPromise<string[]>('getReceivedClientDownloadResponses', [])
       .then((receivedClientDownloadResponses: string[]) => {
         receivedClientDownloadResponses.forEach(function(cdr) {
           addReceivedClientDownloadResponseInfo(cdr);
@@ -98,7 +103,7 @@ function initialize() {
         addReceivedClientDownloadResponseInfo(result);
       });
 
-  sendWithPromise('getSentClientPhishingRequests', [])
+  sendWithPromise<string[]>('getSentClientPhishingRequests', [])
       .then((sentClientPhishingRequests: string[]) => {
         sentClientPhishingRequests.forEach(function(cpr: string) {
           addSentClientPhishingRequestsInfo(cpr);
@@ -109,7 +114,7 @@ function initialize() {
         addSentClientPhishingRequestsInfo(result);
       });
 
-  sendWithPromise('getReceivedClientPhishingResponses', [])
+  sendWithPromise<string[]>('getReceivedClientPhishingResponses', [])
       .then((receivedClientPhishingResponses: string[]) => {
         receivedClientPhishingResponses.forEach(function(cpr) {
           addReceivedClientPhishingResponseInfo(cpr);
@@ -120,7 +125,8 @@ function initialize() {
         addReceivedClientPhishingResponseInfo(result);
       });
 
-  sendWithPromise('getSentCSBRRs', []).then((sentCSBRRs: string[]) => {
+  sendWithPromise<string[]>('getSentCSBRRs', [
+  ]).then((sentCSBRRs: string[]) => {
     sentCSBRRs.forEach(function(csbrr) {
       addSentCSBRRsInfo(csbrr);
     });
@@ -129,7 +135,8 @@ function initialize() {
     addSentCSBRRsInfo(result);
   });
 
-  sendWithPromise('getPGEvents', []).then((pgEvents: ReportingResult[]) => {
+  sendWithPromise<ReportingResult[]>('getPGEvents', [
+  ]).then((pgEvents: ReportingResult[]) => {
     pgEvents.forEach(function(pgEvent) {
       addPGEvent(pgEvent);
     });
@@ -138,7 +145,7 @@ function initialize() {
     addPGEvent(result);
   });
 
-  sendWithPromise('getSecurityEvents', [])
+  sendWithPromise<ReportingResult[]>('getSecurityEvents', [])
       .then((securityEvents: ReportingResult[]) => {
         securityEvents.forEach(function(securityEvent) {
           addSecurityEvent(securityEvent);
@@ -148,7 +155,7 @@ function initialize() {
     addSecurityEvent(result);
   });
 
-  sendWithPromise('getPGPings', []).then((pgPings: string[][]) => {
+  sendWithPromise<string[][]>('getPGPings', []).then((pgPings: string[][]) => {
     pgPings.forEach(function(pgPing) {
       addPGPing(pgPing);
     });
@@ -157,7 +164,8 @@ function initialize() {
     addPGPing(result);
   });
 
-  sendWithPromise('getPGResponses', []).then((pgResponses: string[][]) => {
+  sendWithPromise<string[][]>('getPGResponses', [
+  ]).then((pgResponses: string[][]) => {
     pgResponses.forEach(function(pgResponse) {
       addPGResponse(pgResponse);
     });
@@ -166,7 +174,7 @@ function initialize() {
     addPGResponse(result);
   });
 
-  sendWithPromise('getURTLookupPings', [])
+  sendWithPromise<string[][]>('getURTLookupPings', [])
       .then((urtLookupPings: string[][]) => {
         urtLookupPings.forEach(function(urtLookupPing) {
           addURTLookupPing(urtLookupPing);
@@ -176,7 +184,7 @@ function initialize() {
     addURTLookupPing(result);
   });
 
-  sendWithPromise('getURTLookupResponses', [])
+  sendWithPromise<string[][]>('getURTLookupResponses', [])
       .then((urtLookupResponses: string[][]) => {
         urtLookupResponses.forEach(function(urtLookupResponse) {
           addURTLookupResponse(urtLookupResponse);
@@ -186,7 +194,7 @@ function initialize() {
     addURTLookupResponse(result);
   });
 
-  sendWithPromise('getHPRTLookupPings', [])
+  sendWithPromise<string[][]>('getHPRTLookupPings', [])
       .then((hprtLookupPings: string[][]) => {
         hprtLookupPings.forEach(function(hprtLookupPing: string[]) {
           addHPRTLookupPing(hprtLookupPing);
@@ -196,7 +204,7 @@ function initialize() {
     addHPRTLookupPing(result);
   });
 
-  sendWithPromise('getHPRTLookupResponses', [])
+  sendWithPromise<string[][]>('getHPRTLookupResponses', [])
       .then((hprtLookupResponses: string[][]) => {
         hprtLookupResponses.forEach(function(hprtLookupResponse) {
           addHPRTLookupResponse(hprtLookupResponse);
@@ -206,7 +214,7 @@ function initialize() {
     addHPRTLookupResponse(result);
   });
 
-  sendWithPromise('getLogMessages', [])
+  sendWithPromise<ReportingResult[]>('getLogMessages', [])
       .then((logMessages: ReportingResult[]) => {
         logMessages.forEach(function(message) {
           addLogMessage(message);
@@ -216,7 +224,7 @@ function initialize() {
     addLogMessage(message);
   });
 
-  sendWithPromise('getReportingEvents', [])
+  sendWithPromise<RealtimeReportingResult[]>('getReportingEvents', [])
       .then((reportingEvents: RealtimeReportingResult[]) => {
         reportingEvents.forEach(function(reportingEvent) {
           addReportingEvent(reportingEvent);
@@ -228,7 +236,8 @@ function initialize() {
         addReportingEvent(reportingEvent);
       });
 
-  sendWithPromise('getDeepScans', []).then((requests: DeepScanResult[]) => {
+  sendWithPromise<DeepScanResult[]>('getDeepScans', [
+  ]).then((requests: DeepScanResult[]) => {
     requests.forEach(function(request) {
       addDeepScan(request);
     });
@@ -241,9 +250,8 @@ function initialize() {
   const deepScanExportButton = $('deep-scan-export-btn');
   assert(deepScanExportButton);
   deepScanExportButton.addEventListener('click', exportDeepScanData);
-
   // <if expr="is_android">
-  sendWithPromise('getReferringAppInfo', []).then((info: string) => {
+  sendWithPromise<string>('getReferringAppInfo', []).then((info: string) => {
     addReferringAppInfo(info);
   });
   // </if>
@@ -252,7 +260,7 @@ function initialize() {
   assert(referrerChangeForm);
   referrerChangeForm.addEventListener('submit', addReferrerChain);
 
-  sendWithPromise('getTailoredVerdictOverride', [])
+  sendWithPromise<TailoredVerdictResponse>('getTailoredVerdictOverride', [])
       .then(displayTailoredVerdictOverride);
   addWebUiListener(
       'tailored-verdict-override-update', displayTailoredVerdictOverride);
@@ -664,7 +672,7 @@ function addReferrerChain(ev: Event) {
 
   const referrerChainURL = $<HTMLInputElement>('referrer-chain-url');
   assert(referrerChainURL);
-  sendWithPromise('getReferrerChain', referrerChainURL.value)
+  sendWithPromise<string>('getReferrerChain', referrerChainURL.value)
       .then((referrerChain: string) => {
         const referrerChainContent = $('referrer-chain-content');
         assert(referrerChainContent);
@@ -693,8 +701,7 @@ function addReferringAppInfo(info: string|null) {
 // </if>
 
 // Format the browser's response nicely.
-function displayTailoredVerdictOverride(
-    response: {status: number, override_value: object}) {
+function displayTailoredVerdictOverride(response: TailoredVerdictResponse) {
   let displayString = `Status: ${response.status}`;
   if (response.override_value) {
     displayString +=
@@ -724,7 +731,8 @@ function setTailoredVerdictOverride(e: Event) {
     tailored_verdict_type: inputs.tailored_verdict_type.value,
   };
 
-  sendWithPromise('setTailoredVerdictOverride', inputValue)
+  sendWithPromise<TailoredVerdictResponse>(
+      'setTailoredVerdictOverride', inputValue)
       .then(displayTailoredVerdictOverride);
 }
 
@@ -736,7 +744,7 @@ function clearTailoredVerdictOverride(e: Event) {
   assert(form);
   form.reset();
 
-  sendWithPromise('clearTailoredVerdictOverride')
+  sendWithPromise<TailoredVerdictResponse>('clearTailoredVerdictOverride')
       .then(displayTailoredVerdictOverride);
 }
 

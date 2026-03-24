@@ -4,6 +4,8 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+import type {NearbyShareStates, StatusCode} from './types.js';
+
 /**
  * JavaScript hooks into the native WebUI handler to pass information to the
  * UI Trigger tab.
@@ -23,7 +25,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @return {!Promise<!StatusCode>}
    */
   sendText(id: string) {
-    return sendWithPromise('sendText', id);
+    return sendWithPromise<StatusCode>('sendText', id);
   }
 
   /**
@@ -67,7 +69,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @return {!Promise<!StatusCode>}
    */
   registerSendSurfaceForeground() {
-    return sendWithPromise('registerSendSurfaceForeground');
+    return sendWithPromise<StatusCode>('registerSendSurfaceForeground');
   }
 
   /**
@@ -75,7 +77,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @return {!Promise<!StatusCode>}
    */
   registerSendSurfaceBackground() {
-    return sendWithPromise('registerSendSurfaceBackground');
+    return sendWithPromise<StatusCode>('registerSendSurfaceBackground');
   }
 
   /**
@@ -83,7 +85,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @return {!Promise<!StatusCode>}
    */
   unregisterSendSurface() {
-    return sendWithPromise('unregisterSendSurface');
+    return sendWithPromise<StatusCode>('unregisterSendSurface');
   }
 
   /**
@@ -91,7 +93,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @return {!Promise<!StatusCode>}
    */
   registerReceiveSurfaceForeground() {
-    return sendWithPromise('registerReceiveSurfaceForeground');
+    return sendWithPromise<StatusCode>('registerReceiveSurfaceForeground');
   }
 
   /**
@@ -99,7 +101,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @return {!Promise<!StatusCode>}
    */
   registerReceiveSurfaceBackground() {
-    return sendWithPromise('registerReceiveSurfaceBackground');
+    return sendWithPromise<StatusCode>('registerReceiveSurfaceBackground');
   }
 
   /**
@@ -107,7 +109,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @return {!Promise<!StatusCode>}
    */
   unregisterReceiveSurface() {
-    return sendWithPromise('unregisterReceiveSurface');
+    return sendWithPromise<StatusCode>('unregisterReceiveSurface');
   }
 
   /**
@@ -115,7 +117,7 @@ export class NearbyUiTriggerBrowserProxy {
    * @return {!Promise<!NearbyShareStates>}
    */
   getState() {
-    return sendWithPromise('getStates');
+    return sendWithPromise<NearbyShareStates>('getStates');
   }
 
   /**

@@ -14,21 +14,24 @@ interface EventLogEntry {
   [key: string]: number|string;
 }
 
+interface WebRtcLogsResult {
+  textLogs: EventLogEntry[];
+  eventLogs: EventLogEntry[];
+  version: string;
+}
+
 /**
  * Requests the list of WebRTC logs from the backend.
  */
 function requestWebRtcLogsList() {
-  sendWithPromise('requestWebRtcLogsList').then(updateWebRtcLogsList);
+  sendWithPromise<WebRtcLogsResult>('requestWebRtcLogsList')
+      .then(updateWebRtcLogsList);
 }
 
 /**
  * Callback from backend with the list of WebRTC logs. Builds the UI.
  */
-function updateWebRtcLogsList(results: {
-  textLogs: EventLogEntry[],
-  eventLogs: EventLogEntry[],
-  version: string,
-}) {
+function updateWebRtcLogsList(results: WebRtcLogsResult) {
   updateWebRtcTextLogsList(results.textLogs, results.version);
   updateWebRtcEventLogsList(results.eventLogs);
 }

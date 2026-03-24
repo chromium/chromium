@@ -74,7 +74,7 @@ export interface ManagedUserProfileNoticeBrowserProxy {
 export class ManagedUserProfileNoticeBrowserProxyImpl implements
   ManagedUserProfileNoticeBrowserProxy {
   initialized() {
-    return sendWithPromise('initialized');
+    return sendWithPromise<ManagedUserProfileInfo>('initialized');
   }
 
   initializedWithSize(height: number) {

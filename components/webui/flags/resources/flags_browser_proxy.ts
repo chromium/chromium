@@ -60,7 +60,8 @@ export class FlagsBrowserProxyImpl implements FlagsBrowserProxy {
   }
 
   requestDeprecatedFeatures() {
-    return sendWithPromise('requestDeprecatedFeatures');
+    return sendWithPromise<ExperimentalFeaturesData>(
+        'requestDeprecatedFeatures');
   }
   // </if>
 
@@ -69,7 +70,8 @@ export class FlagsBrowserProxyImpl implements FlagsBrowserProxy {
   }
 
   requestExperimentalFeatures() {
-    return sendWithPromise('requestExperimentalFeatures');
+    return sendWithPromise<ExperimentalFeaturesData>(
+        'requestExperimentalFeatures');
   }
 
   enableExperimentalFeature(internalName: string, enable: boolean) {

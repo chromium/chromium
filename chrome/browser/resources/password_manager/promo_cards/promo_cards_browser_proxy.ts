@@ -26,7 +26,7 @@ export interface PromoCardsProxy {
 
 export class PromoCardsProxyImpl implements PromoCardsProxy {
   getAvailablePromoCard() {
-    return sendWithPromise('getAvailablePromoCard');
+    return sendWithPromise<PromoCard|null>('getAvailablePromoCard');
   }
 
   recordPromoDismissed(id: string) {

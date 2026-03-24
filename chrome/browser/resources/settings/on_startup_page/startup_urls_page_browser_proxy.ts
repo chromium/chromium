@@ -46,15 +46,15 @@ export class StartupUrlsPageBrowserProxyImpl implements
   }
 
   validateStartupPage(url: string) {
-    return sendWithPromise('validateStartupPage', url);
+    return sendWithPromise<boolean>('validateStartupPage', url);
   }
 
   addStartupPage(url: string) {
-    return sendWithPromise('addStartupPage', url);
+    return sendWithPromise<boolean>('addStartupPage', url);
   }
 
   editStartupPage(modelIndex: number, url: string) {
-    return sendWithPromise('editStartupPage', modelIndex, url);
+    return sendWithPromise<boolean>('editStartupPage', modelIndex, url);
   }
 
   removeStartupPage(index: number) {

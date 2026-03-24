@@ -38,7 +38,8 @@ export class PrivacyGuideBrowserProxyImpl implements PrivacyGuideBrowserProxy {
   }
 
   privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
-    return sendWithPromise('privacySandboxPrivacyGuideShouldShowAdTopicsCard');
+    return sendWithPromise<boolean>(
+        'privacySandboxPrivacyGuideShouldShowAdTopicsCard');
   }
 
   static getInstance(): PrivacyGuideBrowserProxy {

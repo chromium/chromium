@@ -48,12 +48,12 @@ export class LifetimeBrowserProxyImpl implements LifetimeBrowserProxy {
 
   // <if expr="not is_chromeos">
   shouldShowRelaunchConfirmationDialog(alwaysShowDialog: boolean) {
-    return sendWithPromise(
+    return sendWithPromise<boolean>(
         'shouldShowRelaunchConfirmationDialog', alwaysShowDialog);
   }
 
   getRelaunchConfirmationDialogDescription(isVersionUpdate: boolean) {
-    return sendWithPromise(
+    return sendWithPromise<string|null>(
         'getRelaunchConfirmationDialogDescription', isVersionUpdate);
   }
   // </if>

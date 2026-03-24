@@ -20,7 +20,8 @@ interface AutocompleteActionPredictorDb {
  * Requests the database from the backend.
  */
 function requestAutocompleteActionPredictorDb() {
-  sendWithPromise('requestAutocompleteActionPredictorDb')
+  sendWithPromise<AutocompleteActionPredictorDb>(
+      'requestAutocompleteActionPredictorDb')
       .then(updateAutocompleteActionPredictorDb);
 }
 

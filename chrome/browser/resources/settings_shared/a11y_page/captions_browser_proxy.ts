@@ -51,11 +51,13 @@ export class CaptionsBrowserProxyImpl implements CaptionsBrowserProxy {
   }
 
   getInstalledLanguagePacks() {
-    return sendWithPromise('getInstalledLanguagePacks');
+    return sendWithPromise<LiveCaptionLanguageList>(
+        'getInstalledLanguagePacks');
   }
 
   getAvailableLanguagePacks() {
-    return sendWithPromise('getAvailableLanguagePacks');
+    return sendWithPromise<LiveCaptionLanguageList>(
+        'getAvailableLanguagePacks');
   }
 
   removeLanguagePack(languageCode: string) {

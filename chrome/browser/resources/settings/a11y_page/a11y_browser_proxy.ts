@@ -22,7 +22,7 @@ export class AccessibilityBrowserProxyImpl implements
   }
 
   getScreenReaderState() {
-    return sendWithPromise('getScreenReaderState');
+    return sendWithPromise<boolean>('getScreenReaderState');
   }
 
   static getInstance(): AccessibilityBrowserProxy {

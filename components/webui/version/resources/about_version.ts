@@ -181,9 +181,11 @@ function initialize() {
 
   chrome.send('requestVersionInfo');
   const includeVariationsCmd = location.search.includes('show-variations-cmd');
-  sendWithPromise('requestVariationInfo', includeVariationsCmd)
+  sendWithPromise<{variationsList: string[], variationsCmd: string}>(
+      'requestVariationInfo', includeVariationsCmd)
       .then(handleVariationInfo);
-  sendWithPromise('requestPathInfo').then(handlePathInfo);
+  sendWithPromise<{execPath: string, profilePath: string}>('requestPathInfo')
+      .then(handlePathInfo);
 
   if (getRequiredElement('variations-source').textContent !== '') {
     getRequiredElement('variations-source-section').hidden = false;

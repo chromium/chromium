@@ -80,11 +80,11 @@ export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
   // </if>
 
   validateStartupPage(url: string) {
-    return sendWithPromise('validateStartupPage', url);
+    return sendWithPromise<boolean>('validateStartupPage', url);
   }
 
   pinnedToolbarActionsAreDefault() {
-    return sendWithPromise('pinnedToolbarActionsAreDefault');
+    return sendWithPromise<boolean>('pinnedToolbarActionsAreDefault');
   }
 
   static getInstance(): AppearanceBrowserProxy {

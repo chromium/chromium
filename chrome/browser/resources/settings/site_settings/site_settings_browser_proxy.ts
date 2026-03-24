@@ -543,39 +543,43 @@ export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
   }
 
   getDefaultValueForContentType(contentType: ContentSettingsTypes) {
-    return sendWithPromise('getDefaultValueForContentType', contentType);
+    return sendWithPromise<DefaultContentSetting>(
+        'getDefaultValueForContentType', contentType);
   }
 
   getAllSites() {
-    return sendWithPromise('getAllSites');
+    return sendWithPromise<SiteGroup[]>('getAllSites');
   }
 
   getCategoryList(origin: string) {
-    return sendWithPromise('getCategoryList', origin);
+    return sendWithPromise<ContentSettingsTypes[]>('getCategoryList', origin);
   }
 
   getRecentSitePermissions(numSources: number) {
-    return sendWithPromise('getRecentSitePermissions', numSources);
+    return sendWithPromise<RecentSitePermissions[]>(
+        'getRecentSitePermissions', numSources);
   }
 
   getChooserExceptionList(chooserType: ChooserType) {
-    return sendWithPromise('getChooserExceptionList', chooserType);
+    return sendWithPromise<RawChooserException[]>(
+        'getChooserExceptionList', chooserType);
   }
 
   getFormattedBytes(numBytes: number) {
-    return sendWithPromise('getFormattedBytes', numBytes);
+    return sendWithPromise<string>('getFormattedBytes', numBytes);
   }
 
   getExceptionList(contentType: ContentSettingsTypes) {
-    return sendWithPromise('getExceptionList', contentType);
+    return sendWithPromise<RawSiteException[]>('getExceptionList', contentType);
   }
 
   getStorageAccessExceptionList(categorySubtype: ContentSetting) {
-    return sendWithPromise('getStorageAccessExceptionList', categorySubtype);
+    return sendWithPromise<StorageAccessSiteException[]>(
+        'getStorageAccessExceptionList', categorySubtype);
   }
 
   getFileSystemGrants() {
-    return sendWithPromise('getFileSystemGrants');
+    return sendWithPromise<OriginFileSystemGrants[]>('getFileSystemGrants');
   }
 
   revokeFileSystemGrant(origin: string, filePath: string) {
@@ -587,7 +591,8 @@ export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
   }
 
   getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {
-    return sendWithPromise('getOriginPermissions', origin, contentTypes);
+    return sendWithPromise<RawSiteException[]>(
+        'getOriginPermissions', origin, contentTypes);
   }
 
   setOriginPermissions(
@@ -619,11 +624,11 @@ export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
   }
 
   isOriginValid(origin: string) {
-    return sendWithPromise('isOriginValid', origin);
+    return sendWithPromise<boolean>('isOriginValid', origin);
   }
 
   isPatternValidForType(pattern: string, category: ContentSettingsTypes) {
-    return sendWithPromise('isPatternValidForType', pattern, category);
+    return sendWithPromise<IsValid>('isPatternValidForType', pattern, category);
   }
 
   initializeCaptureDevices(type: string) {
@@ -703,15 +708,17 @@ export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
   }
 
   getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string) {
-    return sendWithPromise('getRwsMembershipLabel', rwsNumMembers, rwsOwner);
+    return sendWithPromise<string>(
+        'getRwsMembershipLabel', rwsNumMembers, rwsOwner);
   }
 
   getNumCookiesString(numCookies: number) {
-    return sendWithPromise('getNumCookiesString', numCookies);
+    return sendWithPromise<string>('getNumCookiesString', numCookies);
   }
 
   getSystemDeniedPermissions() {
-    return sendWithPromise('getSystemDeniedPermissions');
+    return sendWithPromise<ContentSettingsTypes[]>(
+        'getSystemDeniedPermissions');
   }
 
   openSystemPermissionSettings(contentType: string) {
@@ -719,7 +726,8 @@ export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
   }
 
   getSubAppsPermissionExplanation(url: string) {
-    return sendWithPromise('getSubAppsPermissionExplanation', url);
+    return sendWithPromise<SubAppsPermissionExplanationInfo>(
+        'getSubAppsPermissionExplanation', url);
   }
 
   static getInstance(): SiteSettingsBrowserProxy {

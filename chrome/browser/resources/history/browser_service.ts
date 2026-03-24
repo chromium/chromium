@@ -151,7 +151,7 @@ export class BrowserServiceImpl implements BrowserService {
   }
 
   getInitialIdentityState(): Promise<HistoryIdentityState> {
-    return sendWithPromise('getInitialIdentityState');
+    return sendWithPromise<HistoryIdentityState>('getInitialIdentityState');
   }
 
   startTurnOnSyncFlow() {

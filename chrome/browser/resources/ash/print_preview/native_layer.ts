@@ -202,19 +202,20 @@ export interface NativeLayer {
 
 export class NativeLayerImpl implements NativeLayer {
   getInitialSettings() {
-    return sendWithPromise('getInitialSettings');
+    return sendWithPromise<NativeInitialSettings>('getInitialSettings');
   }
 
   getPrinters(type: PrinterType) {
-    return sendWithPromise('getPrinters', type);
+    return sendWithPromise<void>('getPrinters', type);
   }
 
   getPrinterCapabilities(destinationId: string, type: PrinterType) {
-    return sendWithPromise('getPrinterCapabilities', destinationId, type);
+    return sendWithPromise<CapabilitiesResponse>(
+        'getPrinterCapabilities', destinationId, type);
   }
 
   getPreview(printTicket: string) {
-    return sendWithPromise('getPreview', printTicket);
+    return sendWithPromise<number>('getPreview', printTicket);
   }
 
   managePrinters() {
@@ -222,7 +223,7 @@ export class NativeLayerImpl implements NativeLayer {
   }
 
   doPrint(printTicket: string) {
-    return sendWithPromise('doPrint', printTicket);
+    return sendWithPromise<string|undefined>('doPrint', printTicket);
   }
 
   cancelPendingPrintRequest() {

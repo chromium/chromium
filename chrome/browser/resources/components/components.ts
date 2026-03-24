@@ -47,7 +47,8 @@ function renderTemplate(componentsData: ComponentsData) {
  * components.
  */
 function requestComponentsData() {
-  sendWithPromise('requestComponentsData').then(returnComponentsData);
+  sendWithPromise<ComponentsData>('requestComponentsData')
+      .then(returnComponentsData);
 }
 
 /**

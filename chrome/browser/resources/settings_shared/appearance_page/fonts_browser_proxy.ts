@@ -16,7 +16,7 @@ export interface FontsBrowserProxy {
 
 export class FontsBrowserProxyImpl implements FontsBrowserProxy {
   fetchFontsData() {
-    return sendWithPromise('fetchFontsData');
+    return sendWithPromise<FontsData>('fetchFontsData');
   }
 
   static getInstance(): FontsBrowserProxy {

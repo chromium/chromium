@@ -79,7 +79,8 @@ export class BrowserBridge extends EventTarget {
     this.logMessages_ = [];
 
     // Request initial gpu info from the C++ backend.
-    sendWithPromise('getGpuInfo').then(this.onGpuInfoUpdate_.bind(this));
+    sendWithPromise<GpuInfo>('getGpuInfo')
+        .then(this.onGpuInfoUpdate_.bind(this));
 
     // Register a listener to receive future gpu info updates.
     addWebUiListener('gpu-info-updated', this.onGpuInfoUpdate_.bind(this));
@@ -123,7 +124,7 @@ export class BrowserBridge extends EventTarget {
    * as undefined, then we will issue the request again in 250ms.
    */
   private async updateClientInfo_() {
-    const data = await sendWithPromise('getClientInfo');
+    const data = await sendWithPromise<ClientInfo>('getClientInfo');
 
     if (data === undefined) {  // try again in 250 ms
       window.setTimeout(this.updateClientInfo_.bind(this), 250);
@@ -145,7 +146,7 @@ export class BrowserBridge extends EventTarget {
    * If any are found, a refresh is triggered.
    */
   private async updateLogMessages_() {
-    const messages = await sendWithPromise('getLogMessages');
+    const messages = await sendWithPromise<LogMessasge[]>('getLogMessages');
 
     if (messages.length !== this.logMessages_.length) {
       this.logMessages_ = messages;

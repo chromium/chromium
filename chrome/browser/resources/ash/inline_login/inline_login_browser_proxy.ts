@@ -86,11 +86,11 @@ export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
   }
 
   getAccounts() {
-    return sendWithPromise('getAccounts');
+    return sendWithPromise<string[]>('getAccounts');
   }
 
   getDeviceId() {
-    return sendWithPromise('getDeviceId');
+    return sendWithPromise<string>('getDeviceId');
   }
 
   dialogClose() {

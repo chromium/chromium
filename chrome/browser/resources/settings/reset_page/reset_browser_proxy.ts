@@ -51,7 +51,7 @@ export interface ResetBrowserProxy {
 
 export class ResetBrowserProxyImpl implements ResetBrowserProxy {
   performResetProfileSettings(sendSettings: boolean, requestOrigin: string) {
-    return sendWithPromise(
+    return sendWithPromise<void>(
         'performResetProfileSettings', sendSettings, requestOrigin);
   }
 
@@ -68,7 +68,7 @@ export class ResetBrowserProxyImpl implements ResetBrowserProxy {
   }
 
   showReportedSettings() {
-    sendWithPromise('getReportedSettings')
+    sendWithPromise<Array<{key: string, value: string}>>('getReportedSettings')
         .then(function(settings: Array<{key: string, value: string}>) {
           const output = settings.map(function(entry) {
             return entry.key + ': ' + entry.value.replace(/\n/g, ', ');
@@ -82,11 +82,11 @@ export class ResetBrowserProxyImpl implements ResetBrowserProxy {
   }
 
   getTriggeredResetToolName(): Promise<string> {
-    return sendWithPromise('getTriggeredResetToolName');
+    return sendWithPromise<string>('getTriggeredResetToolName');
   }
 
   getTamperedPreferencePaths(): Promise<string[]> {
-    return sendWithPromise('getTamperedPreferencePaths');
+    return sendWithPromise<string[]>('getTamperedPreferencePaths');
   }
 
   static getInstance(): ResetBrowserProxy {

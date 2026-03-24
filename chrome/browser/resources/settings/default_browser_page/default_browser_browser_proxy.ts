@@ -41,11 +41,11 @@ export interface DefaultBrowserBrowserProxy {
 export class DefaultBrowserBrowserProxyImpl implements
     DefaultBrowserBrowserProxy {
   requestDefaultBrowserState() {
-    return sendWithPromise('requestDefaultBrowserState');
+    return sendWithPromise<DefaultBrowserInfo>('requestDefaultBrowserState');
   }
 
   requestUserValueStringsFeatureState() {
-    return sendWithPromise('requestUserValueStringsFeatureState');
+    return sendWithPromise<boolean>('requestUserValueStringsFeatureState');
   }
 
   setAsDefaultBrowser(pin: boolean) {

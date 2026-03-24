@@ -63,7 +63,7 @@ export interface ManageProfileBrowserProxy {
 export class ManageProfileBrowserProxyImpl implements
     ManageProfileBrowserProxy {
   getAvailableIcons() {
-    return sendWithPromise('getAvailableIcons');
+    return sendWithPromise<AvatarIcon[]>('getAvailableIcons');
   }
 
   setProfileIconToGaiaAvatar() {
@@ -79,7 +79,8 @@ export class ManageProfileBrowserProxyImpl implements
   }
 
   getProfileShortcutStatus() {
-    return sendWithPromise('requestProfileShortcutStatus');
+    return sendWithPromise<ProfileShortcutStatus>(
+        'requestProfileShortcutStatus');
   }
 
   addProfileShortcut() {

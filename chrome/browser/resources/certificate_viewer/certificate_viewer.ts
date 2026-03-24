@@ -273,7 +273,7 @@ function showCertificateFields() {
   assert(hierarchy);
   const item = hierarchy.selectedItem;
   if (item && (item.detail as TreeItemDetail).payload.index !== undefined) {
-    sendWithPromise(
+    sendWithPromise<TreeInfo[]>(
         'requestCertificateFields',
         (item.detail as TreeItemDetail).payload.index)
         .then(onCertificateFields);

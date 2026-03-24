@@ -79,7 +79,7 @@ export class Page {
 
     const policyElement = getRequiredElement('policy-ui');
 
-    sendWithPromise('shouldShowPromotion').then((shouldShowPromo: boolean) => {
+    sendWithPromise<boolean>('shouldShowPromotion').then((shouldShowPromo: boolean) => {
       if (!shouldShowPromo) {
         return;
       }
@@ -134,7 +134,7 @@ export class Page {
     reloadPoliciesButton.onclick = () => {
       reloadPoliciesButton.disabled = true;
       this.createToast(loadTimeData.getString('reloadingPolicies'));
-      sendWithPromise('reloadPolicies');
+      sendWithPromise<void>('reloadPolicies');
     };
 
     this.setupMoreActionsMenuNavigation_();
@@ -146,7 +146,7 @@ export class Page {
       exportButton.style.display = 'none';
     } else {
       exportButton.onclick = () => {
-        sendWithPromise('exportPoliciesJSON');
+        sendWithPromise<void>('exportPoliciesJSON');
       };
     }
 
@@ -159,7 +159,7 @@ export class Page {
     uploadReportButton.onclick = () => {
       uploadReportButton.disabled = true;
       this.createToast(loadTimeData.getString('reportUploading'));
-      sendWithPromise('uploadReport').then(() => {
+      sendWithPromise<void>('uploadReport').then(() => {
         uploadReportButton.disabled = false;
         this.createToast(loadTimeData.getString('reportUploaded'));
       });
@@ -167,7 +167,7 @@ export class Page {
     // </if>
 
     getRequiredElement('copy-policies').onclick = () => {
-      sendWithPromise('copyPoliciesJSON');
+      sendWithPromise<void>('copyPoliciesJSON');
       this.createToast(loadTimeData.getString('copyPoliciesDone'));
     };
 
@@ -177,7 +177,7 @@ export class Page {
       }
     };
 
-    sendWithPromise('listenPoliciesUpdates');
+    sendWithPromise<void>('listenPoliciesUpdates');
     addWebUiListener(
         'status-updated', (status: Status) => this.setStatus(status));
     addWebUiListener(

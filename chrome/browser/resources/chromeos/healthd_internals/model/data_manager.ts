@@ -113,7 +113,7 @@ export class DataManager {
     }
 
     const fetchHealthdData = () => {
-      sendWithPromise('getHealthdTelemetryInfo')
+      sendWithPromise<HealthdApiTelemetryResult>('getHealthdTelemetryInfo')
           .then((data: HealthdApiTelemetryResult) => {
             this.handleHealthdTelemetryInfo(data);
           });
@@ -125,9 +125,10 @@ export class DataManager {
     // collecting data from SysFs or libchrome. The data should be collected in
     // `cros_healthd` and requested in the `getHealthdTelemetryInfo` API.
     const fetchSystemData = () => {
-      sendWithPromise('getCrosSystemInfo').then((data: CrosSystemResult) => {
-        this.handleSystemZramInfo(data);
-      });
+      sendWithPromise<CrosSystemResult>('getCrosSystemInfo')
+          .then((data: CrosSystemResult) => {
+            this.handleSystemZramInfo(data);
+          });
     };
     fetchSystemData();
     this.fetchDataInternalIds.push(setInterval(fetchSystemData, pollingCycle));

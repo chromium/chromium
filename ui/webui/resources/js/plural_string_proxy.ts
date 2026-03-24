@@ -51,13 +51,13 @@ export interface PluralStringProxy {
 
 export class PluralStringProxyImpl implements PluralStringProxy {
   getPluralString(messageName: string, itemCount: number) {
-    return sendWithPromise('getPluralString', messageName, itemCount);
+    return sendWithPromise<string>('getPluralString', messageName, itemCount);
   }
 
   getPluralStringTupleWithComma(
       messageName1: string, itemCount1: number, messageName2: string,
       itemCount2: number) {
-    return sendWithPromise(
+    return sendWithPromise<string>(
         'getPluralStringTupleWithComma', messageName1, itemCount1, messageName2,
         itemCount2);
   }
@@ -65,7 +65,7 @@ export class PluralStringProxyImpl implements PluralStringProxy {
   getPluralStringTupleWithPeriods(
       messageName1: string, itemCount1: number, messageName2: string,
       itemCount2: number) {
-    return sendWithPromise(
+    return sendWithPromise<string>(
         'getPluralStringTupleWithPeriods', messageName1, itemCount1,
         messageName2, itemCount2);
   }

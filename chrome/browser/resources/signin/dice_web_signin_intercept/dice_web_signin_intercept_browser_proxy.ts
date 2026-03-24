@@ -79,11 +79,12 @@ export class DiceWebSigninInterceptBrowserProxyImpl implements
   }
 
   pageLoaded() {
-    return sendWithPromise('pageLoaded');
+    return sendWithPromise<InterceptionParameters>('pageLoaded');
   }
 
   chromeSigninPageLoaded(): Promise<ChromeSigninInterceptionParameters> {
-    return sendWithPromise('chromeSigninPageLoaded');
+    return sendWithPromise<ChromeSigninInterceptionParameters>(
+        'chromeSigninPageLoaded');
   }
 
   initializedWithHeight(height: number) {

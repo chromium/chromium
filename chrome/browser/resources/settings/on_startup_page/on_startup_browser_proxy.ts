@@ -18,7 +18,7 @@ export interface OnStartupBrowserProxy {
 
 export class OnStartupBrowserProxyImpl implements OnStartupBrowserProxy {
   getNtpExtension() {
-    return sendWithPromise('getNtpExtension');
+    return sendWithPromise<NtpExtension|null>('getNtpExtension');
   }
 
   static getInstance(): OnStartupBrowserProxy {

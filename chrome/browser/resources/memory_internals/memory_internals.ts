@@ -13,7 +13,8 @@ interface ProcessList {
 }
 
 function requestProcessList() {
-  sendWithPromise('requestProcessList').then(onProcessListReceived);
+  sendWithPromise<ProcessList>('requestProcessList')
+      .then(onProcessListReceived);
 }
 
 function saveDump() {
@@ -22,7 +23,8 @@ function saveDump() {
 
 function startProfiling(pid: number) {
   // After profiling starts, the browser will send an updated process list.
-  sendWithPromise('startProfiling', pid).then(onProcessListReceived);
+  sendWithPromise<ProcessList>('startProfiling', pid)
+      .then(onProcessListReceived);
 }
 
 // celltype should either be "td" or "th". The contents of the |cols| will be

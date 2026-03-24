@@ -363,7 +363,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     this.authenticator.recordSamlProviderCallback =
         this.recordSamlProvider.bind(this);
     this.authenticator.addEventListener('getDeviceId', () => {
-      sendWithPromise('getDeviceIdForLogin')
+      sendWithPromise<string>('getDeviceIdForLogin')
           .then(deviceId => this.authenticator.getDeviceIdResponse(deviceId));
     });
 

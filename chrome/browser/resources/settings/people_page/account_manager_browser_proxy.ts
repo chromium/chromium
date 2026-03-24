@@ -37,7 +37,7 @@ export interface AccountManagerBrowserProxy {
 export class AccountManagerBrowserProxyImpl implements
     AccountManagerBrowserProxy {
   getAccounts() {
-    return sendWithPromise('getAccounts');
+    return sendWithPromise<Account[]>('getAccounts');
   }
 
   static getInstance(): AccountManagerBrowserProxy {

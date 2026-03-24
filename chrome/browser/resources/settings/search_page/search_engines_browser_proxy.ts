@@ -164,19 +164,21 @@ export class SearchEnginesBrowserProxyImpl implements
   }
 
   getCategorizedTemplateUrls() {
-    return sendWithPromise('getCategorizedTemplateUrls');
+    return sendWithPromise<CategorizedTemplateUrls>(
+        'getCategorizedTemplateUrls');
   }
 
   getSearchEnginesList() {
-    return sendWithPromise('getSearchEnginesList');
+    return sendWithPromise<SearchEnginesInfo>('getSearchEnginesList');
   }
 
   getSaveGuestChoice() {
-    return sendWithPromise('getSaveGuestChoice');
+    return sendWithPromise<boolean|null>('getSaveGuestChoice');
   }
 
   validateSearchEngineInput(fieldName: string, fieldValue: string) {
-    return sendWithPromise('validateSearchEngineInput', fieldName, fieldValue);
+    return sendWithPromise<boolean>(
+        'validateSearchEngineInput', fieldName, fieldValue);
   }
 
   recordSearchEnginesPageHistogram(interaction: SearchEnginesInteractions) {

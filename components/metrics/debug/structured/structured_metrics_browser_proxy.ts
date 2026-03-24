@@ -26,11 +26,13 @@ export interface StructuredMetricsBrowserProxy {
 export class StructuredMetricsBrowserProxyImpl implements
     StructuredMetricsBrowserProxy {
   fetchStructuredMetricsEvents() {
-    return sendWithPromise('fetchStructuredMetricsEvents');
+    return sendWithPromise<StructuredMetricEvent[]>(
+        'fetchStructuredMetricsEvents');
   }
 
   fetchStructuredMetricsSummary() {
-    return sendWithPromise('fetchStructuredMetricsSummary');
+    return sendWithPromise<StructuredMetricsSummary>(
+        'fetchStructuredMetricsSummary');
   }
 
   static getInstance() {

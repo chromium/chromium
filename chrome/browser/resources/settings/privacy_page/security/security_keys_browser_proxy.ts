@@ -297,11 +297,11 @@ export interface SecurityKeysBioEnrollProxy {
 export class SecurityKeysPinBrowserProxyImpl implements
     SecurityKeysPinBrowserProxy {
   startSetPin() {
-    return sendWithPromise('securityKeyStartSetPIN');
+    return sendWithPromise<SetPinResponse>('securityKeyStartSetPIN');
   }
 
   setPin(oldPIN: string, newPIN: string) {
-    return sendWithPromise('securityKeySetPIN', oldPIN, newPIN);
+    return sendWithPromise<SetPinResponse>('securityKeySetPIN', oldPIN, newPIN);
   }
 
   close() {
@@ -323,25 +323,29 @@ let pinBrowserProxyInstance: SecurityKeysPinBrowserProxy|null = null;
 export class SecurityKeysCredentialBrowserProxyImpl implements
     SecurityKeysCredentialBrowserProxy {
   startCredentialManagement() {
-    return sendWithPromise('securityKeyCredentialManagementStart');
+    return sendWithPromise<StartCredentialManagementResponse>(
+        'securityKeyCredentialManagementStart');
   }
 
   providePin(pin: string) {
-    return sendWithPromise('securityKeyCredentialManagementPIN', pin);
+    return sendWithPromise<number|null>(
+        'securityKeyCredentialManagementPIN', pin);
   }
 
   enumerateCredentials() {
-    return sendWithPromise('securityKeyCredentialManagementEnumerate');
+    return sendWithPromise<Credential[]>(
+        'securityKeyCredentialManagementEnumerate');
   }
 
   deleteCredentials(ids: string[]) {
-    return sendWithPromise('securityKeyCredentialManagementDelete', ids);
+    return sendWithPromise<CredentialManagementResponse>(
+        'securityKeyCredentialManagementDelete', ids);
   }
 
   updateUserInformation(
       credentialId: string, userHandle: string, newUsername: string,
       newDisplayname: string) {
-    return sendWithPromise(
+    return sendWithPromise<CredentialManagementResponse>(
         'securityKeyCredentialManagementUpdate', credentialId, userHandle,
         newUsername, newDisplayname);
   }
@@ -367,11 +371,11 @@ let credentialBrowserProxyInstance: SecurityKeysCredentialBrowserProxy|null =
 export class SecurityKeysResetBrowserProxyImpl implements
     SecurityKeysResetBrowserProxy {
   reset() {
-    return sendWithPromise('securityKeyReset');
+    return sendWithPromise<number>('securityKeyReset');
   }
 
   completeReset() {
-    return sendWithPromise('securityKeyCompleteReset');
+    return sendWithPromise<number>('securityKeyCompleteReset');
   }
 
   close() {
@@ -393,23 +397,24 @@ let resetBrowserProxyInstance: SecurityKeysResetBrowserProxy|null = null;
 export class SecurityKeysBioEnrollProxyImpl implements
     SecurityKeysBioEnrollProxy {
   startBioEnroll() {
-    return sendWithPromise('securityKeyBioEnrollStart');
+    return sendWithPromise<number[]>('securityKeyBioEnrollStart');
   }
 
   providePin(pin: string) {
-    return sendWithPromise('securityKeyBioEnrollProvidePIN', pin);
+    return sendWithPromise<number|null>('securityKeyBioEnrollProvidePIN', pin);
   }
 
   getSensorInfo() {
-    return sendWithPromise('securityKeyBioEnrollGetSensorInfo');
+    return sendWithPromise<SensorInfo>('securityKeyBioEnrollGetSensorInfo');
   }
 
   enumerateEnrollments() {
-    return sendWithPromise('securityKeyBioEnrollEnumerate');
+    return sendWithPromise<Enrollment[]>('securityKeyBioEnrollEnumerate');
   }
 
   startEnrolling() {
-    return sendWithPromise('securityKeyBioEnrollStartEnrolling');
+    return sendWithPromise<EnrollmentResponse>(
+        'securityKeyBioEnrollStartEnrolling');
   }
 
   cancelEnrollment() {
@@ -417,11 +422,12 @@ export class SecurityKeysBioEnrollProxyImpl implements
   }
 
   deleteEnrollment(id: string) {
-    return sendWithPromise('securityKeyBioEnrollDelete', id);
+    return sendWithPromise<Enrollment[]>('securityKeyBioEnrollDelete', id);
   }
 
   renameEnrollment(id: string, name: string) {
-    return sendWithPromise('securityKeyBioEnrollRename', id, name);
+    return sendWithPromise<Enrollment[]>(
+        'securityKeyBioEnrollRename', id, name);
   }
 
   close() {

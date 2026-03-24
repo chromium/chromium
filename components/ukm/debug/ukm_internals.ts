@@ -307,7 +307,7 @@ function addClearButton() {
   const clearButton = getRequiredElement('clear');
   clearButton.addEventListener('click', () => {
     // Note it won't be able to clear if UKM logs got cut during this call.
-    sendWithPromise('requestUkmData').then((/** @type {UkmSession} */ data) => {
+    sendWithPromise<UkmSession>('requestUkmData').then((data: UkmSession) => {
       updateUkmCache(data);
       for (const source of cachedSources.values()) {
         clearedSources.set(as64Bit(source.id), source.events.length);
@@ -394,7 +394,7 @@ function updateUkmCache(data: UkmSession) {
  * table.
  */
 function updateUkmData() {
-  sendWithPromise('requestUkmData').then((/** @type {UkmSession} */ data) => {
+  sendWithPromise<UkmSession>('requestUkmData').then((data: UkmSession) => {
     updateUkmCache(data);
     if (document.body.querySelector<HTMLInputElement>(
                          '#include_cache')!.checked) {
@@ -410,7 +410,7 @@ function updateUkmData() {
     getRequiredElement('clientid').innerText = '0x' + data.client_id;
     getRequiredElement('sessionid').innerText = data.session_id;
     getRequiredElement('is_sampling_enabled').innerText =
-        data.is_sampling_enabled;
+        data.is_sampling_enabled.toString();
 
     const sourcesTable = getRequiredElement('sources');
     removeChildren(sourcesTable);

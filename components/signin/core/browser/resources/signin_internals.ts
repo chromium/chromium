@@ -288,7 +288,7 @@ function onLoad() {
   addWebUiListener('signin-info-changed', refreshSigninInfo);
   addWebUiListener('update-cookie-accounts', updateCookieAccounts);
 
-  sendWithPromise('getSigninInfo').then(refreshSigninInfo);
+  sendWithPromise<SigninInfo>('getSigninInfo').then(refreshSigninInfo);
 }
 
 document.addEventListener('DOMContentLoaded', onLoad);

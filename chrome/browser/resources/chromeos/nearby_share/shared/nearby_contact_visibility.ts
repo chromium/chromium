@@ -581,7 +581,7 @@ export class NearbyContactVisibilityElement extends
 
     // Template: "# contacts are not available." with correct plural of
     // "contact".
-    sendWithPromise(
+    sendWithPromise<string>(
         'getPluralString', 'nearbyShareContactVisibilityNumUnreachable',
         this.numUnreachable_)
         .then((labelTemplate) => {

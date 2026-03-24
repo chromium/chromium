@@ -156,18 +156,19 @@ document.addEventListener('DOMContentLoaded', function() {
   getRequiredElement('clear-session').addEventListener('click', clearSession);
 
   // Initial fetch
-  sendWithPromise('getState').then((status: object) => {
+  sendWithPromise<object>('getState').then((status: object) => {
     currentGeneralState = status;
     getRequiredElement('sink-status-div').textContent = formatJson(status);
   });
-  sendWithPromise('getProviderState', 'CAST').then((status: object) => {
+  sendWithPromise<object>('getProviderState', 'CAST').then((status: object) => {
     currentProviderStates['CAST'] = status;
     getRequiredElement('cast-status-div').textContent = formatJson(status);
   });
-  sendWithPromise('getLogs').then(displayLogsTable);
-  sendWithPromise('getMirroringStats').then((mirroringStats: object) => {
-    displayMirroringStats(mirroringStats);
-  });
+  sendWithPromise<MediaRouterLog[]>('getLogs').then(displayLogsTable);
+  sendWithPromise<object>('getMirroringStats')
+      .then((mirroringStats: object) => {
+        displayMirroringStats(mirroringStats);
+      });
   // The backend will fire 'on-mirroring-stats-update' when there are updates.
   addWebUiListener('on-mirroring-stats-update', displayMirroringStats);
   addWebUiListener('on-log-added', (log: MediaRouterLog) => {

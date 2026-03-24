@@ -376,7 +376,7 @@ export class GaiaDialog extends GaiaDialogBase {
           eventName, authenticatorEventListeners[eventName].bind(this));
     }
 
-    sendWithPromise('getIsSshConfigured')
+    sendWithPromise<boolean>('getIsSshConfigured')
         .then(this.updateSshWarningVisibility.bind(this));
   }
 

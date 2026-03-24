@@ -18,7 +18,7 @@ export interface BrowserSwitchProxy {
 
 export class BrowserSwitchProxyImpl implements BrowserSwitchProxy {
   launchAlternativeBrowserAndCloseTab(url: string) {
-    return sendWithPromise('launchAlternativeBrowserAndCloseTab', url);
+    return sendWithPromise<void>('launchAlternativeBrowserAndCloseTab', url);
   }
 
   gotoNewTabPage() {

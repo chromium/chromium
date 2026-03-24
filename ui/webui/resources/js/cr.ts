@@ -58,9 +58,9 @@ export function webUIResponse(id: string, isSuccess: boolean, response: any) {
  * @param args Variable number of arguments to be forwarded to the
  *     C++ call.
  */
-export function sendWithPromise(
-    methodName: string, ...args: any[]): Promise<any> {
-  const promiseResolver = new PromiseResolver();
+export function sendWithPromise<T = any>(
+    methodName: string, ...args: any[]): Promise<T> {
+  const promiseResolver = new PromiseResolver<T>();
   const id = methodName + '_' + createUid();
   chromeSendResolverMap[id] = promiseResolver;
   chrome.send(methodName, [id].concat(args));

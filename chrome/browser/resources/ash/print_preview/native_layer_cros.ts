@@ -87,20 +87,20 @@ export interface NativeLayerCros {
 
 export class NativeLayerCrosImpl implements NativeLayerCros {
   getEulaUrl(destinationId: string) {
-    return sendWithPromise('getEulaUrl', destinationId);
+    return sendWithPromise<string>('getEulaUrl', destinationId);
   }
 
   grantExtensionPrinterAccess(provisionalDestinationId: string) {
-    return sendWithPromise(
+    return sendWithPromise<ExtensionDestinationInfo>(
         'grantExtensionPrinterAccess', provisionalDestinationId);
   }
 
   setupPrinter(printerId: string) {
-    return sendWithPromise('setupPrinter', printerId);
+    return sendWithPromise<PrinterSetupResponse>('setupPrinter', printerId);
   }
 
   requestPrinterStatusUpdate(printerId: string) {
-    return sendWithPromise('requestPrinterStatus', printerId);
+    return sendWithPromise<PrinterStatus>('requestPrinterStatus', printerId);
   }
 
   choosePrintServers(printServerIds: string[]) {
@@ -108,7 +108,7 @@ export class NativeLayerCrosImpl implements NativeLayerCros {
   }
 
   getPrintServersConfig() {
-    return sendWithPromise('getPrintServersConfig');
+    return sendWithPromise<PrintServersConfig>('getPrintServersConfig');
   }
 
   recordPrintAttemptOutcome(printAttemptOutcome: PrintAttemptOutcome) {
@@ -116,11 +116,11 @@ export class NativeLayerCrosImpl implements NativeLayerCros {
   }
 
   getShowManagePrinters() {
-    return sendWithPromise('getShowManagePrinters');
+    return sendWithPromise<boolean>('getShowManagePrinters');
   }
 
   observeLocalPrinters() {
-    return sendWithPromise('observeLocalPrinters');
+    return sendWithPromise<LocalDestinationInfo[]>('observeLocalPrinters');
   }
 
   static getInstance(): NativeLayerCros {

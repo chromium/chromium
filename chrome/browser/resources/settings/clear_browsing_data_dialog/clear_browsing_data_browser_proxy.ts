@@ -109,15 +109,16 @@ export interface ClearBrowsingDataBrowserProxy {
 export class ClearBrowsingDataBrowserProxyImpl implements
     ClearBrowsingDataBrowserProxy {
   clearBrowsingData(dataTypes: string[], timePeriod: number) {
-    return sendWithPromise('clearBrowsingData', dataTypes, timePeriod);
+    return sendWithPromise<ClearBrowsingDataResult>(
+        'clearBrowsingData', dataTypes, timePeriod);
   }
 
   initialize() {
-    return sendWithPromise('initializeClearBrowsingData');
+    return sendWithPromise<void>('initializeClearBrowsingData');
   }
 
   getSyncState() {
-    return sendWithPromise('getSyncState');
+    return sendWithPromise<UpdateSyncStateEvent>('getSyncState');
   }
 
   restartCounters(isBasic: boolean, timePeriod: number) {

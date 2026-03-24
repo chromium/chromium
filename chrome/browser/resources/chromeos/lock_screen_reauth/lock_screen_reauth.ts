@@ -192,7 +192,7 @@ class LockReauthElement extends LockReauthElementBase {
       'loadAbort': (e: LoadAbortEvent) =>
           void this.onLoadAbortMessage(e.detail),
       'getDeviceId': (_: Event) => {
-        sendWithPromise('getDeviceId')
+        sendWithPromise<string>('getDeviceId')
             .then(deviceId => authenticator.getDeviceIdResponse(deviceId));
       },
       'authFlowChange': (e: AuthFlowChangeEvent) => {

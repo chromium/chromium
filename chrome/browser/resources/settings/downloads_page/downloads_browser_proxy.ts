@@ -38,7 +38,7 @@ export class DownloadsBrowserProxyImpl implements DownloadsBrowserProxy {
 
   // <if expr="is_chromeos">
   getDownloadLocationText(path: string) {
-    return sendWithPromise('getDownloadLocationText', path);
+    return sendWithPromise<string>('getDownloadLocationText', path);
   }
   // </if>
 

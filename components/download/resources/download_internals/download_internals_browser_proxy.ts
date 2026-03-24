@@ -102,15 +102,15 @@ export interface DownloadInternalsBrowserProxy {
 export class DownloadInternalsBrowserProxyImpl implements
     DownloadInternalsBrowserProxy {
   getServiceStatus() {
-    return sendWithPromise('getServiceStatus');
+    return sendWithPromise<ServiceStatus>('getServiceStatus');
   }
 
   getServiceDownloads() {
-    return sendWithPromise('getServiceDownloads');
+    return sendWithPromise<ServiceEntry[]>('getServiceDownloads');
   }
 
   startDownload(url: string) {
-    return sendWithPromise('startDownload', url);
+    return sendWithPromise<void>('startDownload', url);
   }
 
   static getInstance(): DownloadInternalsBrowserProxy {

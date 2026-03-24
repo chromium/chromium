@@ -152,61 +152,63 @@ export interface ManagementBrowserProxy {
 
 export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
   getExtensions() {
-    return sendWithPromise('getExtensions');
+    return sendWithPromise<Extension[]>('getExtensions');
   }
 
   getManagedWebsites() {
-    return sendWithPromise('getManagedWebsites');
+    return sendWithPromise<string[]>('getManagedWebsites');
   }
 
   getApplications() {
-    return sendWithPromise('getApplications');
+    return sendWithPromise<Application[]>('getApplications');
   }
 
   // <if expr="is_chromeos">
   getLocalTrustRootsInfo() {
-    return sendWithPromise('getLocalTrustRootsInfo');
+    return sendWithPromise<boolean>('getLocalTrustRootsInfo');
   }
 
   getFilesUploadToCloudInfo() {
-    return sendWithPromise('getFilesUploadToCloudInfo');
+    return sendWithPromise<string>('getFilesUploadToCloudInfo');
   }
 
   getDeviceReportingInfo() {
-    return sendWithPromise('getDeviceReportingInfo');
+    return sendWithPromise<DeviceReportingResponse[]>('getDeviceReportingInfo');
   }
 
   getPluginVmDataCollectionStatus() {
-    return sendWithPromise('getPluginVmDataCollectionStatus');
+    return sendWithPromise<boolean>('getPluginVmDataCollectionStatus');
   }
   // </if>
 
   getContextualManagedData() {
-    return sendWithPromise('getContextualManagedData');
+    return sendWithPromise<ManagedDataResponse>('getContextualManagedData');
   }
 
   getThreatProtectionInfo() {
-    return sendWithPromise('getThreatProtectionInfo');
+    return sendWithPromise<ThreatProtectionInfo>('getThreatProtectionInfo');
   }
 
   initBrowserReportingInfo() {
-    return sendWithPromise('initBrowserReportingInfo');
+    return sendWithPromise<BrowserReportingResponse[]>(
+        'initBrowserReportingInfo');
   }
 
   initProfileReportingInfo() {
-    return sendWithPromise('initProfileReportingInfo');
+    return sendWithPromise<BrowserReportingResponse[]>(
+        'initProfileReportingInfo');
   }
 
   shouldShowPromotion() {
-    return sendWithPromise('shouldShowPromotion');
+    return sendWithPromise<boolean>('shouldShowPromotion');
   }
 
   setBannerDismissed() {
-    return sendWithPromise('setBannerDismissed');
+    return sendWithPromise<void>('setBannerDismissed');
   }
 
   recordBannerRedirected() {
-    return sendWithPromise('recordBannerRedirected');
+    return sendWithPromise<void>('recordBannerRedirected');
   }
 
   static getInstance(): ManagementBrowserProxy {

@@ -20,7 +20,7 @@ export interface PasskeysBrowserProxy {
 
 export class PasskeysBrowserProxyImpl implements PasskeysBrowserProxy {
   hasPasskeys() {
-    return sendWithPromise('passkeysHasPasskeys');
+    return sendWithPromise<boolean>('passkeysHasPasskeys');
   }
 
   managePasskeys() {

@@ -197,7 +197,7 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
     // Process data is not used in line charts, so we only need to use the same
     // UI update frequency to fetch process data here and update process page.
     this.updateHelper = new UiUpdateHelper(() => {
-      sendWithPromise('getHealthdProcessInfo')
+      sendWithPromise<HealthdApiProcessResult>('getHealthdProcessInfo')
           .then((data: HealthdApiProcessResult) => {
             this.processData = data.processes;
             this.lastUpdateTime = new Date().toLocaleTimeString();
