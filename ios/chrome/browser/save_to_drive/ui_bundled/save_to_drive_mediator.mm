@@ -219,6 +219,10 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   [_accountPickerHandler hideAccountPickerAnimated:YES];
 }
 
+- (BOOL)selectedFileDestinationRequiresSignin {
+  return _fileDestination == FileDestination::kDrive && ![self isSignedIn];
+}
+
 #pragma mark - Properties getters/setters
 
 - (void)setAccountPickerConsumer:(id<AccountPickerConsumer>)consumer {
@@ -278,6 +282,12 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
 
 #pragma mark - Private
 
+// Returns true if the user is signed in to a primary account.
+- (bool)isSignedIn {
+  return _identityManager &&
+         _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
 // Updates consumers.
 - (void)updateConsumersAnimated:(BOOL)animated {
   if (_accountPickerConsumer && _destinationPickerConsumer && !_prefsLoaded) {
@@ -285,8 +295,11 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
     _prefsLoaded = YES;
   }
 
-  bool destinationIsFiles = _fileDestination == FileDestination::kFiles;
-  [self.accountPickerConsumer setIdentityButtonHidden:destinationIsFiles
+  bool signedIn = [self isSignedIn];
+  bool identityButtonHidden =
+      _fileDestination == FileDestination::kFiles ||
+      (base::FeatureList::IsEnabled(kIOSSaveToDriveSignedOut) && !signedIn);
+  [self.accountPickerConsumer setIdentityButtonHidden:identityButtonHidden
                                              animated:animated];
   [self.destinationPickerConsumer setSelectedDestination:_fileDestination];
 }

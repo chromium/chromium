@@ -67,6 +67,10 @@ class DownloadTask;
 // Called when the user taps "Cancel" in the account picker view.
 - (void)cancelSaveToDrive;
 
+// Returns true if the selected file destination requires the user to be signed
+// in and the user is not signed in.
+- (BOOL)selectedFileDestinationRequiresSignin;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_SAVE_TO_DRIVE_MEDIATOR_H_
