@@ -123,6 +123,15 @@ export function getHtml(this: GlicInternalsAppElement) {
                 @change="${this.onInvokeAutoSubmitChange_}">
             Auto Submit
           </label>
+          <label for="invokeFreOverrideSelect">FRE Override</label>
+          <select id="invokeFreOverrideSelect"
+              .value="${this.invokeFreOverride_}"
+              @change="${this.onInvokeFreOverrideChange_}">
+            <option value="0">Unspecified</option>
+            <option value="1">TrustFirstText</option>
+            <option value="2">TrustFirstClick</option>
+            <option value="3">TrustFirstInline</option>
+          </select>
           <cr-button @click="${this.onTriggerInvokeClick_}">
             Trigger Invoke
           </cr-button>

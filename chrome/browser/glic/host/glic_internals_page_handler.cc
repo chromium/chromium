@@ -177,6 +177,7 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   options.skill_id = std::move(mojo_options->skill_id);
   options.error_message = std::move(mojo_options->error_message);
   options.timeout = mojo_options->timeout;
+  options.fre_override = mojo_options->fre_override;
 
   switch (mojo_options->allowed_inflight_navigation) {
     case mojom::AllowedInflightNavigation::kSameDomain:

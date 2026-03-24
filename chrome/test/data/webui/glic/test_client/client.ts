@@ -200,6 +200,13 @@ class WebClient implements GlicWebClient {
     delete (panelOpeningData as Partial<PanelState>).kind;
     delete (panelOpeningData as Partial<PanelState>).windowId;
     logMessage(`notifyPanelWillOpen(${JSON.stringify(panelOpeningData)})`);
+
+    const entry = document.createElement('div');
+    entry.style.borderBottom = '1px solid #ccc';
+    entry.style.padding = '4px';
+    entry.textContent =
+        `notifyPanelWillOpen(${JSON.stringify(panelOpeningData, null, 2)})`;
+    $.invocationLog.prepend(entry);
     this.browser!.setContextAccessIndicator!($.contextAccessIndicator.checked);
 
     if (panelOpeningData.conversationId) {
@@ -270,7 +277,7 @@ class WebClient implements GlicWebClient {
     const entry = document.createElement('div');
     entry.style.borderBottom = '1px solid #ccc';
     entry.style.padding = '4px';
-    entry.textContent = JSON.stringify(options, null, 2);
+    entry.textContent = `invoke(${JSON.stringify(options, null, 2)})`;
     $.invocationLog.prepend(entry);
   }
 

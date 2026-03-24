@@ -267,6 +267,7 @@ struct TriggerInvokeFromInternalsOptions {
   mojo_base.mojom.TimeDelta? timeout;
   AllowedInflightNavigation allowed_inflight_navigation;
   bool auto_submit;
+  FreOverride fre_override = kUnspecified;
 };
 
 // Page handler for the glic WebUI.
