@@ -199,8 +199,20 @@ bool SafeBrowsingTabHelper::PolicyDecider::ShouldReloadOnCommit() {
 
 void SafeBrowsingTabHelper::PolicyDecider::SetCommittedRedirectChain() {
   committed_redirect_chain_.clear();
-  for (auto& query : to_be_committed_redirect_chain_) {
-    committed_redirect_chain_.push_back(std::move(query));
+  if (pending_main_frame_query_) {
+    // If a navigation finishes without ShouldAllowResponse being called
+    // (e.g., due to a DNS resolution error), `pending_main_frame_query_` is
+    // still present and `to_be_committed_redirect_chain_` is empty.
+    committed_redirect_chain_.push_back(std::move(*pending_main_frame_query_));
+    pending_main_frame_query_.reset();
+    for (auto& query : pending_main_frame_redirect_chain_) {
+      committed_redirect_chain_.push_back(std::move(query));
+    }
+    pending_main_frame_redirect_chain_.clear();
+  } else {
+    for (auto& query : to_be_committed_redirect_chain_) {
+      committed_redirect_chain_.push_back(std::move(query));
+    }
   }
   to_be_committed_redirect_chain_.clear();
 }
@@ -209,8 +221,27 @@ void SafeBrowsingTabHelper::PolicyDecider::ReloadPage() {
   web::NavigationManager* navigation_manager =
       web_state()->GetNavigationManager();
   navigation_manager->DiscardNonCommittedItems();
-  navigation_manager->Reload(web::ReloadType::NORMAL,
-                             /*check_for_repost=*/false);
+
+  web::NavigationItem* last_committed_item =
+      navigation_manager->GetLastCommittedItem();
+  if (last_committed_item) {
+    // A standard `navigation_manager->Reload()` call does nothing on iOS
+    // if the WKWebView is currently displaying a custom HTML string. Since
+    // this method is frequently called to swap out a local error page with
+    // a Safe Browsing interstitial, we must force a brand new navigation to
+    // the original URL instead of relying on the native reload command.
+    //
+    // The `last_committed_item` is used because the local error page actually
+    // commits to the navigation history using the malicious URL as its base.
+    web::NavigationManager::WebLoadParams params(last_committed_item->GetURL());
+    params.transition_type = ui::PAGE_TRANSITION_RELOAD;
+    navigation_manager->LoadURLWithParams(params);
+  } else {
+    // If there is no committed item, we cannot force a new load via URL.
+    // Fall back to the standard reload.
+    navigation_manager->Reload(web::ReloadType::NORMAL,
+                               /*check_for_repost=*/false);
+  }
 }
 
 web::WebStatePolicyDecider::PolicyDecision
@@ -305,6 +336,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
 
   // Allow navigations for URLs that cannot be checked by the service.
   GURL request_url = GetCanonicalizedUrl(net::GURLWithNSURL(request.URL));
+
   SafeBrowsingService* safe_browsing_service =
       client_->GetSafeBrowsingService();
   client_->GetSafeBrowsingService();
@@ -330,13 +362,8 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
   const security_interstitials::UnsafeResource* main_frame_resource =
       unsafe_resource_container->GetMainFrameUnsafeResource();
   if (main_frame_resource && main_frame_resource->url == request_url) {
-    // TODO(crbug.com/40681490): This should directly return the safe browsing
-    // error decision once error pages for cancelled requests are supported.
-    // For now, only cancelled response errors are displayed properly.
-    pending_main_frame_query_->decision =
-        CreateSafeBrowsingErrorDecision(*main_frame_resource);
     return std::move(callback).Run(
-        web::WebStatePolicyDecider::PolicyDecision::Allow());
+        CreateSafeBrowsingErrorDecision(*main_frame_resource));
   }
 
   // Start the URL check.
@@ -347,7 +374,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
       request_url, base::SysNSStringToUTF8([request HTTPMethod])));
 
   // Allow all requests to continue.  If a safe browsing error is detected, the
-  // navigation will be cancelled for using the response policy decision.
+  // navigation will be cancelled using the response policy decision.
   std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
@@ -365,6 +392,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
   SafeBrowsingService* safe_browsing_service =
       client_->GetSafeBrowsingService();
   GURL response_url = GetCanonicalizedUrl(net::GURLWithNSURL(response.URL));
+
   if (!safe_browsing_service->CanCheckUrl(response_url)) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
@@ -645,10 +673,23 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
     if (!response_callback.is_null() && decision.ShouldDisplayError()) {
       std::move(response_callback).Run(decision);
       pending_main_frame_redirect_chain_.clear();
+    } else if (response_callback.is_null() && decision.ShouldDisplayError()) {
+      reload_page_on_commit_ = true;
     }
 
     if (decision.ShouldCancelNavigation()) {
       client_->OnMainFrameUrlQueryCancellationDecided(web_state(), url);
+    }
+  } else if (decision.ShouldDisplayError()) {
+    // The query may be missing if it was clobbered by a subsequent navigation
+    // loop, such as the one used to load a local HTML error page after an early
+    // navigation failure.
+    // If the WebState is currently trying to display the malicious URL
+    // (meaning the user is looking at an error page for that site), we must
+    // force a fresh navigation so the Safe Browsing interstitial is displayed.
+    if (web_state()->GetVisibleURL() == url ||
+        web_state()->GetLastCommittedURL() == url) {
+      ReloadPage();
     }
   }
 }
