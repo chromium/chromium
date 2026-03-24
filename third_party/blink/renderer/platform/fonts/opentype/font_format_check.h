@@ -32,6 +32,7 @@ class PLATFORM_EXPORT FontFormatCheck {
   virtual bool IsSbixColorFont() const;
   virtual bool IsCff2OutlineFont() const;
   bool IsColorFont() const;
+  bool IsAvar2Font() const;
 
   // Still needed in FontCustomPlatformData.
   enum class VariableFontSubType {

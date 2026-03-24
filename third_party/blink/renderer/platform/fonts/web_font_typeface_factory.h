@@ -51,7 +51,8 @@ class PLATFORM_EXPORT WebFontTypefaceFactory {
     kSuccessSbixFont = 5,
     kSuccessColrCpalFont = 6,
     kSuccessColrV1Font = 7,
-    kMaxValue = kSuccessColrV1Font
+    kSuccessAvar2Font = 8,
+    kMaxValue = kSuccessAvar2Font,
   };
 
   static void ReportInstantiationResult(InstantiationResult);

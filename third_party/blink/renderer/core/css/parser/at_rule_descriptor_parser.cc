@@ -92,6 +92,8 @@ bool IsSupportedFontFormat(String font_format) {
 
 CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
   switch (valueID) {
+    case CSSValueID::kAvar2:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyAvar2;
     case CSSValueID::kFeaturesAat:
       return CSSFontFaceSrcValue::FontTechnology::kTechnologyFeaturesAAT;
     case CSSValueID::kFeaturesOpentype:

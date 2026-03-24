@@ -55,6 +55,8 @@ String TechnologyToString(CSSFontFaceSrcValue::FontTechnology font_technology) {
   // https://drafts.csswg.org/cssom/#serialize-a-css-component-value these all
   // need to be serialized as lowercase.
   switch (font_technology) {
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyAvar2:
+      return "avar2";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyVariations:
       return "variations";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyFeaturesAAT:

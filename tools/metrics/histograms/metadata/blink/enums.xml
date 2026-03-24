@@ -8920,6 +8920,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5" label="Success Sbix color font"/>
   <int value="6" label="Success COLR/CPAL color font"/>
   <int value="7" label="Success COLRv1 color font"/>
+  <int value="8" label="Success Avar2 font"/>
 </enum>
 
 <enum name="WebGLANGLEImplementation">

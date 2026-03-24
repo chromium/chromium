@@ -71,6 +71,7 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
    * font face source component values, hence remove SVG and incremental for
    * now, compare https://drafts.csswg.org/css-fonts-4/#font-face-src-parsing */
   enum class FontTechnology {
+    kTechnologyAvar2,
     kTechnologyFeaturesAAT,
     kTechnologyFeaturesOT,
     kTechnologyCOLRv0,

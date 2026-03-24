@@ -8,6 +8,7 @@
 #include "base/containers/span_rust.h"
 #include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/format_check.rs.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -48,6 +49,11 @@ bool FontFormatCheck::IsVariableColrV0Font() const {
 bool FontFormatCheck::IsColorFont() const {
   return IsSbixColorFont() || IsCbdtCblcColorFont() ||
          IsColrCpalColorFontV0() || IsColrCpalColorFontV1();
+}
+
+bool FontFormatCheck::IsAvar2Font() const {
+  return RuntimeEnabledFeatures::FontFormatAvar2Enabled() &&
+         font_format_check::is_avar2(*format_info_);
 }
 
 FontFormatCheck::VariableFontSubType FontFormatCheck::ProbeVariableFont(

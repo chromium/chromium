@@ -6596,6 +6596,8 @@ bool IsSupportedKeywordTech(CSSValueID keyword) {
     case CSSValueID::kVariations:
     case CSSValueID::kPalettes:
       return true;
+    case CSSValueID::kAvar2:
+      return RuntimeEnabledFeatures::FontFormatAvar2Enabled();
     case CSSValueID::kFeaturesGraphite:
     case CSSValueID::kColorSVG:
     case CSSValueID::kIncremental:

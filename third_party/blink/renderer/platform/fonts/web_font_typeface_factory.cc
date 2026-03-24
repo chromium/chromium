@@ -182,6 +182,8 @@ bool WebFontTypefaceFactory::CreateTypeface(
        InstantiationResult::kSuccessSbixFont, std::nullopt},
       {&FontFormatCheck::IsCff2OutlineFont, &MakeFontationsFallbackPreferred,
        InstantiationResult::kSuccessCff2Font, std::nullopt},
+      {&FontFormatCheck::IsAvar2Font, &MakeFontationsFallbackPreferred,
+       InstantiationResult::kSuccessAvar2Font, std::nullopt},
       // We need to special case variable COLRv0 for backend instantiation as
       // certain Mac and Windows versions supported COLRv0 only without
       // variations.

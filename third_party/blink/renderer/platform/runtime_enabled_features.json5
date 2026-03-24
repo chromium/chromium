@@ -2891,6 +2891,10 @@
       status: "stable",
     },
     {
+      name: "FontFormatAvar2",
+      status: "experimental",
+    },
+    {
       // crbug.com/41170551
       name: "FontLanguageOverride",
       status: "stable",
