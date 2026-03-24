@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
 import("//testing/test.gni")
 
 static_library("chinese_script_classifier") {
@@ -29,6 +28,7 @@ static_library("language_detection") {
     ":chinese_script_classifier",
     "//base",
     "//components/language/core/common",
+    "//components/language_detection/core",
     "//components/translate/core/common",
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/icu",
@@ -39,36 +39,27 @@ static_library("language_detection") {
     "//third_party/tflite_support",
     "//third_party/tflite_support:tflite_support_proto",
   ]
-  if (build_with_tflite_lib) {
-    deps += [ "//components/language_detection/core" ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "chinese_script_classifier_test.cc" ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "language_detection_model_unittest.cc",
-      "language_detection_util_unittest.cc",
-    ]
-  }
+  sources = [
+    "chinese_script_classifier_test.cc",
+    "language_detection_model_unittest.cc",
+    "language_detection_util_unittest.cc",
+  ]
 
   deps = [
     ":chinese_script_classifier",
     ":language_detection",
     "//base",
     "//base/test:test_support",
+    "//components/language_detection/core",
+    "//components/language_detection/testing",
     "//components/translate/core/common",
     "//testing/gtest",
     "//third_party/icu",
   ]
-  if (build_with_tflite_lib) {
-    deps += [
-      "//components/language_detection/core",
-      "//components/language_detection/testing",
-    ]
-  }
 }
 
 test("language_detection_util_fuzztest") {
