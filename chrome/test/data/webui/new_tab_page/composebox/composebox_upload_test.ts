@@ -18,8 +18,7 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
   const testProxy = testSupport.setupComposeboxTest();
 
   test('uploading/deleting pdf file queries zps', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowSubmit: true});
+    loadTimeData.overrideValues({composeboxShowZps: true});
     testSupport.createComposeboxElement(testProxy);
     await microtasksFinished();
 

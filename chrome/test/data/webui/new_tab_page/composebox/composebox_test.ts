@@ -78,7 +78,6 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('clear functionality', async () => {
-    loadTimeData.overrideValues({composeboxShowSubmit: true});
     createComposeboxElement(testProxy);
     testProxy.searchboxHandler.setPromiseResolveFor(
         ADD_FILE_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});

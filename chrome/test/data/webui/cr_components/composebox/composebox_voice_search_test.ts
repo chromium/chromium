@@ -94,8 +94,7 @@ suite('ComposeboxVoiceSearch', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      expandedComposeboxShowVoiceSearch: true,
-      steadyComposeboxShowVoiceSearch: true,
+      composeboxShowVoiceSearch: true,
       composeboxShowZps: true,
       composeboxShowTypedSuggest: true,
     });
@@ -159,8 +158,7 @@ suite('ComposeboxVoiceSearch', () => {
 
   test('voice search button does not show when disabled', async () => {
     loadTimeData.overrideValues({
-      steadyComposeboxShowVoiceSearch: false,
-      expandedComposeboxShowVoiceSearch: false,
+      composeboxShowVoiceSearch: false,
     });
     // Create element again with new loadTimeData values.
     composeboxElement = document.createElement('cr-composebox');
@@ -172,8 +170,7 @@ suite('ComposeboxVoiceSearch', () => {
 
     // Restore.
     loadTimeData.overrideValues({
-      steadyComposeboxShowVoiceSearch: true,
-      expandedComposeboxShowVoiceSearch: true,
+      composeboxShowVoiceSearch: true,
     });
   });
 

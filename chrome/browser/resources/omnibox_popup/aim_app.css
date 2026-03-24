@@ -116,11 +116,11 @@ cr-composebox[searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
   bottom: 11px;
 }
 
-cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])::part(submit) {
+cr-composebox[submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])::part(submit) {
   bottom: 6px;
 }
 
-cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
+cr-composebox[submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
   inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 6px);
   margin-inline-end: 6px;
 }

@@ -461,10 +461,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
 
   source->AddBoolean("composeboxContextDragAndDropEnabled",
                      session_allows_drag_and_drop);
-
-  // TODO(b/477969358): Consolidate voice search booleans.
-  source->AddBoolean("steadyComposeboxShowVoiceSearch", enable_voice_search);
-  source->AddBoolean("expandedComposeboxShowVoiceSearch", enable_voice_search);
+  source->AddBoolean("composeboxShowVoiceSearch", enable_voice_search);
 
   // TODO(b/481663895): Remove "ConfigParam" from Next studies.
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;

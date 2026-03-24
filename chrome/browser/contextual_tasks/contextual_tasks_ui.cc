@@ -410,9 +410,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 
   AddContextMenuItemEligibilityLoadTimeData(source, profile);
   source->AddBoolean("composeboxShowLensSearchChip", false);
-  // TODO(b/477969358): Remove `composeboxShowSubmit` boolean. This has the same
-  // value everywhere it is used.
-  source->AddBoolean("composeboxShowSubmit", true);
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
   source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);

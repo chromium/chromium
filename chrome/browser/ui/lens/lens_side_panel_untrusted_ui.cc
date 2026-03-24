@@ -193,8 +193,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   // Send event when escape is pressed.
   html_source->AddBoolean("composeboxCloseByEscape", true);
   html_source->AddBoolean("composeboxShowLensSearchChip", false);
-  // Enable submit button.
-  html_source->AddBoolean("composeboxShowSubmit", true);
   // Enables a fix that causes no flickering when transitioning between ZPS and
   // typed suggestions.
   html_source->AddBoolean("composeboxNoFlickerSuggestionsFix", true);

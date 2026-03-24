@@ -333,10 +333,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   protected accessor receivedSpeech_: boolean = false;
   protected accessor canSubmitFilesAndInput_: boolean = true;
   protected lastQueriedInput_: string = '';
-  protected showVoiceSearchInSteadyComposebox_: boolean =
-      loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
-  protected showVoiceSearchInExpandedComposebox_: boolean =
-      loadTimeData.getBoolean('expandedComposeboxShowVoiceSearch');
+  protected showVoiceSearch_: boolean =
+      loadTimeData.getBoolean('composeboxShowVoiceSearch');
   // TODO(crbug.com/493988206): Rename to usePecApi_ and update all references.
   protected accessor showModelPicker_: boolean =
       loadTimeData.valueExists('contextualMenuUsePecApi') ?
@@ -904,11 +902,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected shouldShowVoiceSearch_(): boolean {
-    const isExpanded = this.showDropdown_ || this.files.size > 0;
-    const isFeatureEnabled = isExpanded ?
-        this.showVoiceSearchInExpandedComposebox_ :
-        this.showVoiceSearchInSteadyComposebox_;
-    return isFeatureEnabled &&
+    return this.showVoiceSearch_ &&
         WindowProxy.getInstance().hasWebkitSpeechRecognition();
   }
 

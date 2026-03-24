@@ -1233,8 +1233,7 @@ suite('NewTabPageComposeboxAutocompleteVoiceSearchTest', () => {
     // Set loadTimeData so that voice search does not auto submit.
     loadTimeData.overrideValues({
       autoSubmitVoiceSearchQuery: false,
-      expandedComposeboxShowVoiceSearch: true,
-      steadyComposeboxShowVoiceSearch: true,
+      composeboxShowVoiceSearch: true,
       composeboxShowZps: true,  // For predictable queryAutocomplete count.
     });
     createComposeboxElement(testProxy);
@@ -1301,8 +1300,7 @@ suite('NewTabPageComposeboxAutocompleteVoiceSearchTest', () => {
         // Set loadTimeData so that voice search does auto submit.
         loadTimeData.overrideValues({
           autoSubmitVoiceSearchQuery: true,
-          expandedComposeboxShowVoiceSearch: true,
-          steadyComposeboxShowVoiceSearch: true,
+          composeboxShowVoiceSearch: true,
           composeboxShowZps: true,  // For predictable queryAutocomplete count.
         });
         createComposeboxElement(testProxy);
