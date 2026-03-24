@@ -4927,7 +4927,8 @@ class ReadAnythingAppControllerReadabilityTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingWithReadability,
-         features::kReadAnythingReadAloudTSTextSegmentation},
+         features::kReadAnythingReadAloudTSTextSegmentation,
+         features::kReadAnythingWithReadabilityAllowLinks},
         {});
 
     ChromeRenderViewTest::SetUp();
@@ -5097,4 +5098,74 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 
   // Distillation state check should be skipped for Screen2x.
   EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       AccessibilityUpdatesApplied_WhenReadabilityIsActive) {
+  // Set conditions to process the AX Tree
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  controller().SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  // Create AXTree updates
+  static constexpr ui::AXNodeID kTargetNodeId = 300;
+  ui::AXNodeData new_node = test::TextNode(kTargetNodeId, u"Child Node");
+  root.child_ids = {kTargetNodeId};
+  update.nodes = {std::move(root), std::move(new_node)};
+
+  // Validate that the new node doesn't exist before the update
+  ASSERT_EQ(model().GetAXNode(kTargetNodeId), nullptr);
+
+  // Validate that updates are applied
+  AccessibilityEventReceived({std::move(update)});
+  ui::AXNode* applied_node = model().GetAXNode(kTargetNodeId);
+  ASSERT_NE(applied_node, nullptr);
+  EXPECT_EQ(controller().GetTextContent(kTargetNodeId), u"Child Node");
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       AccessibilityUpdatesApplied_WhenReadabilityContentIsShown) {
+  // Set conditions to process the AX Tree
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root;
+  root.id = 1;
+
+  // Create AXTree updates
+  static constexpr ui::AXNodeID kTargetNodeId = 300;
+  ui::AXNodeData new_node = test::TextNode(kTargetNodeId, u"Child Node");
+  root.child_ids = {kTargetNodeId};
+  update.nodes = {std::move(root), std::move(new_node)};
+
+  // Validate that the new node doesn't exist before the update
+  ASSERT_EQ(model().GetAXNode(kTargetNodeId), nullptr);
+
+  // Validate that updates are applied
+  AccessibilityEventReceived({std::move(update)});
+  ui::AXNode* applied_node = model().GetAXNode(kTargetNodeId);
+  ASSERT_NE(applied_node, nullptr);
+  EXPECT_EQ(controller().GetTextContent(kTargetNodeId), u"Child Node");
 }
