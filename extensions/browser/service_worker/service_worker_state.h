@@ -103,8 +103,7 @@ class ServiceWorkerState
   // global JavaScript scope, and all its global event listeners have been
   // registered with the //extensions layer. It is considered the
   // "renderer-side" signal that the worker is ready.
-  // NOTE: this can be called before or after `DidStartWorkerForScope` and
-  // before or after `RendererDidInitializeServiceWorkerContext`.
+  // NOTE: this can be called before or after `DidStartWorkerForScope`.
   void RendererDidStartServiceWorkerContext(
       const SequencedContextId& context_id,
       const WorkerId& worker_id);
