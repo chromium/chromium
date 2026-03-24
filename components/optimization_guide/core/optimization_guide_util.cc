@@ -140,6 +140,9 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_ANNOTATION_REDUCER_QUERY_CLASSIFIER:
       return "AnnotationReducerQueryClassifier";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_CONTEXTUAL_CUEING:
+      return "ContextualCueing";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in
