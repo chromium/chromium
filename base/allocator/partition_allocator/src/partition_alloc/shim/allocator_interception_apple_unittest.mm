@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/shim/allocator_interception_apple.h"
 
 #include "partition_alloc/buildflags.h"
@@ -14,6 +9,7 @@
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <mach/mach.h>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +35,8 @@ void ResetAllMallocZones() {
     return;
   }
   for (unsigned int i = 0; i < count; ++i) {
-    ChromeMallocZone* zone = reinterpret_cast<ChromeMallocZone*>(zones[i]);
+    ChromeMallocZone* zone =
+        reinterpret_cast<ChromeMallocZone*>(PA_UNSAFE_TODO(zones[i]));
     ResetMallocZone(zone);
   }
 }
@@ -64,7 +61,7 @@ TEST_F(AllocatorInterceptionTest, ShimNewMallocZones) {
   // copy a member from this struct, not use it, which is why its pointer in
   // `new_zone` must be valid, but its content can be meaningless.
   malloc_introspection_t introspection;
-  memset(&new_zone, 1, sizeof(malloc_zone_t));
+  PA_UNSAFE_TODO(memset(&new_zone, 1, sizeof(malloc_zone_t)));
   new_zone.introspect = &introspection;
   malloc_zone_register(&new_zone);
   EXPECT_NE(new_zone.malloc, default_malloc_zone->malloc);

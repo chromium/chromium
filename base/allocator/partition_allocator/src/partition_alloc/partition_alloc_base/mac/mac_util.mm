@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/partition_alloc_base/mac/mac_util.h"
 
 #include <sys/sysctl.h>
@@ -17,6 +12,7 @@
 #include <cstring>
 
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 
 // This is a simplified version of base::mac. Because
@@ -49,23 +45,23 @@ int DarwinMajorVersion() {
     return 0;
   }
 
-  if (strcmp(uname_info.sysname, "Darwin") != 0) {
+  if (PA_UNSAFE_TODO(strcmp(uname_info.sysname, "Darwin")) != 0) {
     PA_DLOG(ERROR) << "unexpected uname sysname " << uname_info.sysname;
     return 0;
   }
 
-  const char* dot = strchr(uname_info.release, '.');
+  const char* dot = PA_UNSAFE_TODO(strchr(uname_info.release, '.'));
   if (!dot || uname_info.release == dot ||
       // Darwin version should be 1 or 2 digits, it's unlikely to be more than
       // 4 digits.
-      dot - uname_info.release > 4) {
+      PA_UNSAFE_TODO(dot - uname_info.release) > 4) {
     PA_DLOG(ERROR) << "could not parse uname release " << uname_info.release;
     return 0;
   }
 
   int darwin_major_version = 0;
   constexpr int base = 10;
-  for (const char* p = uname_info.release; p < dot; ++p) {
+  for (const char* p = uname_info.release; p < dot; PA_UNSAFE_TODO(++p)) {
     if (!('0' <= *p && *p < '0' + base)) {
       PA_DLOG(ERROR) << "could not parse uname release " << uname_info.release;
       return 0;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,10 +18,10 @@ TEST_F(MallocZoneFunctionsTest, TestDefaultZoneMallocFree) {
       reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
   StoreMallocZone(malloc_zone);
   int* test = reinterpret_cast<int*>(
-      g_malloc_zones[0].malloc(malloc_default_zone(), 33));
-  test[0] = 1;
-  test[1] = 2;
-  g_malloc_zones[0].free(malloc_default_zone(), test);
+      PA_UNSAFE_TODO(g_malloc_zones[0]).malloc(malloc_default_zone(), 33));
+  PA_UNSAFE_TODO(test[0]) = 1;
+  PA_UNSAFE_TODO(test[1]) = 2;
+  PA_UNSAFE_TODO(g_malloc_zones[0]).free(malloc_default_zone(), test);
 }
 
 TEST_F(MallocZoneFunctionsTest, IsZoneAlreadyStored) {
@@ -50,7 +45,8 @@ TEST_F(MallocZoneFunctionsTest, CannotStoreMoreThanMaxZones) {
   zones.resize(kMaxZoneCount * 2);
   for (int i = 0; i < kMaxZoneCount * 2; ++i) {
     ChromeMallocZone& zone = zones[i];
-    memcpy(&zone, malloc_default_zone(), sizeof(ChromeMallocZone));
+    PA_UNSAFE_TODO(
+        memcpy(&zone, malloc_default_zone(), sizeof(ChromeMallocZone)));
     StoreMallocZone(&zone);
   }
 

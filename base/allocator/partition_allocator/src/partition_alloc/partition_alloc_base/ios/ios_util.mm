@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "partition_alloc/partition_alloc_base/ios/ios_util.h"
 
 #include <array>
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/system/sys_info.h"
 
 namespace partition_alloc::internal::base::ios {
@@ -20,13 +16,16 @@ bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix) {
    public:
     OSVersion() {
       SysInfo::OperatingSystemVersionNumbers(
-          &current_version_[0], &current_version_[1], &current_version_[2]);
+          PA_UNSAFE_TODO(&current_version_[0]),
+          PA_UNSAFE_TODO(&current_version_[1]),
+          PA_UNSAFE_TODO(&current_version_[2]));
     }
 
     bool IsRunningOnOrLater(int32_t version[3]) const {
       for (size_t i = 0; i < std::size(current_version_); ++i) {
-        if (current_version_[i] != version[i]) {
-          return current_version_[i] > version[i];
+        if (PA_UNSAFE_TODO(current_version_[i]) != PA_UNSAFE_TODO(version[i])) {
+          return PA_UNSAFE_TODO(current_version_[i]) >
+                 PA_UNSAFE_TODO(version[i]);
         }
       }
       return true;

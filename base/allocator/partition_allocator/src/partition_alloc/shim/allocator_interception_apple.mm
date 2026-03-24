@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 // This file contains all the logic necessary to intercept allocations on
 // macOS. "malloc zones" are an abstraction that allows the process to intercept
@@ -385,7 +381,8 @@ void StoreFunctionsForAllZones() {
     return;
   }
   for (unsigned int i = 0; i < count; ++i) {
-    ChromeMallocZone* zone = reinterpret_cast<ChromeMallocZone*>(zones[i]);
+    ChromeMallocZone* zone =
+        reinterpret_cast<ChromeMallocZone*>(PA_UNSAFE_TODO(zones[i]));
     StoreMallocZone(zone);
   }
 }
@@ -406,7 +403,8 @@ void ReplaceFunctionsForStoredZones(const MallocZoneFunctions* functions) {
     return;
   }
   for (unsigned int i = 0; i < count; ++i) {
-    ChromeMallocZone* zone = reinterpret_cast<ChromeMallocZone*>(zones[i]);
+    ChromeMallocZone* zone =
+        reinterpret_cast<ChromeMallocZone*>(PA_UNSAFE_TODO(zones[i]));
     if (DoesMallocZoneNeedReplacing(zone, functions)) {
       ReplaceZoneFunctions(zone, functions);
     }
@@ -549,7 +547,7 @@ void UninterceptMallocZonesForTesting() {
   PA_CHECK(kr == KERN_SUCCESS);
   for (unsigned int i = 0; i < count; ++i) {
     UninterceptMallocZoneForTesting(  // IN-TEST
-        reinterpret_cast<struct _malloc_zone_t*>(zones[i]));
+        reinterpret_cast<struct _malloc_zone_t*>(PA_UNSAFE_TODO(zones[i])));
   }
 
   ClearAllMallocZonesForTesting();  // IN-TEST
