@@ -348,12 +348,9 @@ public abstract class ContentUriUtils {
                 }
                 return displayName;
             }
-        } catch (NullPointerException e) {
+        } catch (RuntimeException e) {
             // Some android models don't handle the provider call correctly.
             // see crbug.com/345393
-            return "";
-        } catch (UnsupportedOperationException e) {
-            // Fails for URIs such as a directory tree URI without a document ID.
             Log.w(TAG, "Cannot get display name for %s", uri, e);
             return "";
         }
