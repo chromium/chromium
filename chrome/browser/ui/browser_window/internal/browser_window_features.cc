@@ -39,6 +39,7 @@
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 #include "chrome/browser/ui/browser.h"
@@ -459,6 +460,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
         std::make_unique<ActorBorderViewController>(browser);
   }
 
+  browser_animation_controller_ =
+      GetUserDataFactory().CreateInstance<BrowserAnimationController>(*browser,
+                                                                      *browser);
+
   browser_select_file_dialog_controller_ =
       std::make_unique<BrowserSelectFileDialogController>(profile);
 
@@ -725,6 +730,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   }
 
   scrim_view_controller_ = std::make_unique<ScrimViewController>(browser_view);
+
+  // Set the window for the animation controller. Add animation providers here
+  // as well.
+  browser_animation_controller_->set_browser_view(browser_view);
 
   // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to
   // Init.
@@ -1048,6 +1057,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   skills_ui_window_controller_.reset();
 
   context_highlight_window_feature_.reset();
+
+  browser_animation_controller_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

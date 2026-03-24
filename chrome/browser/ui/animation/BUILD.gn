@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("animation") {
+  public = [
+    "browser_animation_controller.h",
+    "browser_animation_provider.h",
+    "browser_animation_types.h",
+  ]
+
+  sources = [
+    "browser_animation_controller.cc",
+    "browser_animation_provider.cc",
+    "browser_animation_provider_internal.cc",
+    "browser_animation_provider_internal.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/base/identifier",
+    "//ui/base/unowned_user_data",
+    "//ui/gfx/animation",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/browser_window",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "browser_animation_controller_unittest.cc" ]
+
+  deps = [
+    ":animation",
+    "//base/test:test_support",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/interaction:test_support",
+  ]
+}

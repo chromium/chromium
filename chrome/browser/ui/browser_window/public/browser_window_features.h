@@ -32,6 +32,7 @@ class BookmarksSidePanelCoordinator;
 class BreadcrumbManagerBrowserAgent;
 class Browser;
 class BrowserActions;
+class BrowserAnimationController;
 class BrowserContentSettingBubbleModelDelegate;
 class BrowserElements;
 class BrowserInstantController;
@@ -622,6 +623,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<ActorUiWindowController> actor_ui_window_controller_;
 
   std::unique_ptr<ActorBorderViewController> actor_border_view_controller_;
+
+  std::unique_ptr<BrowserAnimationController> browser_animation_controller_;
 
   std::unique_ptr<CallToActionLock> call_to_action_lock_;
 

@@ -8559,6 +8559,7 @@ test("unit_tests") {
       "//chrome/browser/tab_contents:unit_tests",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager/common",
+      "//chrome/browser/ui/animation:unit_tests",
       "//chrome/browser/ui/bookmarks:unit_tests",
       "//chrome/browser/ui/context_highlight:unit_tests",
       "//chrome/browser/ui/desktop_to_mobile_promos:unit_tests",
