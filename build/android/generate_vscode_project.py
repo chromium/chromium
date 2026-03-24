@@ -11,6 +11,7 @@ import argparse
 import logging
 import json
 import os
+import re
 import sys
 import xml.etree.ElementTree
 
@@ -19,6 +20,18 @@ from util import build_utils
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 import gn_helpers
+
+
+def _GetJavaReleaseVersion():
+  """Read the --release value from compile_java.py."""
+  compile_java_path = os.path.join(os.path.dirname(__file__), 'gyp',
+                                   'compile_java.py')
+  with open(compile_java_path) as f:
+    contents = f.read()
+  m = re.search(r"'--release',\s*'(\d+)'", contents)
+  if m:
+    return m.group(1)
+  return '17'
 
 
 def _WithoutSuffix(string, suffix):
@@ -67,11 +80,15 @@ def _ProcessBuildConfigFile(output_dir, build_config_path, source_dirs, libs,
 
   logging.info('Processing build config: %s', build_config_path)
 
+  # deps_configs (needed to walk the dependency tree) lives in
+  # .params.json rather than .build_config.json. Read both and merge.
   params_json = build_config_path.replace('.build_config.json', '.params.json')
   with open(os.path.join(output_dir, params_json)) as f:
     build_config = json.load(f)
-  with open(os.path.join(output_dir, build_config_path)) as f:
-    build_config.update(json.load(f))
+  build_config_file = os.path.join(output_dir, build_config_path)
+  if os.path.exists(build_config_file):
+    with open(build_config_file) as f:
+      build_config.update(json.load(f))
 
   target_sources_file = build_config.get('target_sources_file')
   if target_sources_file is not None:
@@ -81,7 +98,14 @@ def _ProcessBuildConfigFile(output_dir, build_config_path, source_dirs, libs,
     if unprocessed_jar_path is not None:
       lib_path = os.path.normpath(os.path.join(output_dir,
                                                unprocessed_jar_path))
-      logging.debug('Found lib `%s', lib_path)
+      logging.debug('Found lib `%s`', lib_path)
+      libs.add(lib_path)
+
+  # Add pre-built JARs that are compile-time dependencies (e.g., SDK JARs).
+  for jar_path in build_config.get('input_jars_paths', []):
+    lib_path = os.path.normpath(os.path.join(output_dir, jar_path))
+    if os.path.exists(lib_path):
+      logging.debug('Found input jar `%s`', lib_path)
       libs.add(lib_path)
 
   input_srcjars = os.path.join(output_dir,
@@ -90,42 +114,61 @@ def _ProcessBuildConfigFile(output_dir, build_config_path, source_dirs, libs,
   if os.path.exists(input_srcjars):
     source_dirs.add(input_srcjars)
 
-  android = build_config.get('android')
-  if android is not None:
-    # This works around an issue where the language server complains about
-    # `java.lang.invoke.LambdaMetafactory` not being found. The normal Android
-    # build process is fine with this class being missing because d8 removes
-    # references to LambdaMetafactory from the bytecode - see:
-    #   https://jakewharton.com/androids-java-8-support/#native-lambdas
-    # When JDT builds the code, d8 doesn't run, so the references are still
-    # there. Fortunately, the Android SDK provides a convenience JAR to fill
-    # that gap in:
-    #   //third_party/android_sdk/public/build-tools/*/core-lambda-stubs.jar
-    libs.add(
-        os.path.normpath(
-            os.path.join(
-                output_dir,
-                os.path.dirname(build_config['android']['sdk_jars'][0]),
-                os.pardir, os.pardir, 'build-tools',
-                android_sdk_build_tools_version, 'core-lambda-stubs.jar')))
+  # Add core-lambda-stubs.jar so that JDT can resolve LambdaMetafactory.
+  # d8 normally strips these refs, but JDT doesn't run d8. See:
+  #   https://jakewharton.com/androids-java-8-support/#native-lambdas
+  lambda_stubs_jar = os.path.join('third_party', 'android_sdk', 'public',
+                                  'build-tools',
+                                  android_sdk_build_tools_version,
+                                  'core-lambda-stubs.jar')
+  if os.path.exists(lambda_stubs_jar):
+    libs.add(os.path.normpath(lambda_stubs_jar))
 
   for dep_config in build_config.get('deps_configs', []):
     _ProcessBuildConfigFile(output_dir, dep_config, source_dirs, libs,
                             already_processed_build_config_files,
                             android_sdk_build_tools_version)
+  # Also walk public_deps_configs to pick up transitive dependencies
+  # exposed via public_deps (e.g., chrome_public_apk's full dep tree).
+  for dep_config in build_config.get('public_deps_configs', []):
+    _ProcessBuildConfigFile(output_dir, dep_config, source_dirs, libs,
+                            already_processed_build_config_files,
+                            android_sdk_build_tools_version)
 
 
-def _GenerateClasspathEntry(kind, path):
+def _GenerateClasspathEntry(kind, path, excluding=None):
   classpathentry = xml.etree.ElementTree.Element('classpathentry')
   classpathentry.set('kind', kind)
   classpathentry.set('path', path)
+  if excluding:
+    classpathentry.set('excluding', excluding)
   return classpathentry
 
 
 def _GenerateProject(source_dirs, libs, output_dir):
+  # Find source dirs that are ancestors of other source dirs. Eclipse JDT
+  # does not allow nesting, but supports exclusion patterns to carve out
+  # subdirectories that have their own source entries.
+  sorted_dirs = sorted(source_dirs)
+  # Map parent -> list of nested children (relative to parent)
+  nested_children = {}
+  for i, d in enumerate(sorted_dirs):
+    for other in sorted_dirs[i + 1:]:
+      if other.startswith(d + '/'):
+        nested_children.setdefault(d, []).append(other[len(d) + 1:] + '/')
+      elif not other.startswith(d):
+        break
+
   classpath = xml.etree.ElementTree.Element('classpath')
   for source_dir in sorted(source_dirs):
-    classpath.append(_GenerateClasspathEntry('src', source_dir))
+    children = nested_children.get(source_dir)
+    if children:
+      classpath.append(
+          _GenerateClasspathEntry('src',
+                                  source_dir,
+                                  excluding='|'.join(children)))
+    else:
+      classpath.append(_GenerateClasspathEntry('src', source_dir))
   for lib in sorted(libs):
     classpath.append(_GenerateClasspathEntry('lib', lib))
   classpath.append(
@@ -152,10 +195,16 @@ def _GenerateProject(source_dirs, libs, output_dir):
 
   # Tell the Eclipse compiler not to use java.lang.invoke.StringConcatFactory
   # in the generated bytecodes as the class is unavailable in Android.
+  # Set compiler compliance to match Chromium's javac --release value
+  # (read from compile_java.py).
+  java_release = _GetJavaReleaseVersion()
   os.makedirs('.settings', exist_ok=True)
   with open('.settings/org.eclipse.jdt.core.prefs', 'w') as f:
-    f.write("""eclipse.preferences.version=1
+    f.write(f"""eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.codegen.useStringConcatFactory=disabled
+org.eclipse.jdt.core.compiler.source={java_release}
+org.eclipse.jdt.core.compiler.compliance={java_release}
+org.eclipse.jdt.core.compiler.codegen.targetPlatform={java_release}
 """)
   print('Generated .settings', file=sys.stderr)
 
