@@ -113,7 +113,6 @@ AutocompleteDelegateFromDataService(autofill::AutofillWebDataService* service) {
       ->GetControllerDelegate();
 }
 
-#if !BUILDFLAG(IS_IOS)
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 AutofillValuableDelegateFromDataService(
     autofill::AutofillWebDataService* service) {
@@ -129,7 +128,6 @@ AutofillValuableMetadataDelegateFromDataService(
       ->change_processor()
       ->GetControllerDelegate();
 }
-#endif
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 AutofillProfileDelegateFromDataService(
@@ -544,7 +542,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     add_controller(CreateUserConsentsDataTypeController());
   }
 
-#if !BUILDFLAG(IS_IOS)
   if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE)) {
     add_controller(CreateAutofillValuableDataTypeController());
   }
@@ -556,7 +553,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   if (!disabled_types.Has(syncer::ACCOUNT_SETTING)) {
     add_controller(CreateAccountSettingDataTypeController());
   }
-#endif
 
   if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA)) {
     add_controller(CreateSharedTabGroupAccountDataTypeController(sync_service));
@@ -1028,9 +1024,13 @@ CommonControllerBuilder::CreateUserConsentsDataTypeController() {
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
 }
 
-#if !BUILDFLAG(IS_IOS)
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateAutofillValuableDataTypeController() {
+#if BUILDFLAG(IS_IOS)
+  if (!base::FeatureList::IsEnabled(syncer::kSyncAutofillValuable)) {
+    return nullptr;
+  }
+#endif
   if (!profile_autofill_web_data_service_.value()) {
     return nullptr;
   }
@@ -1081,7 +1081,6 @@ CommonControllerBuilder::CreateAccountSettingDataTypeController() {
       /*delegate_for_transport_mode=*/
       account_setting_service_.value()->GetSyncControllerDelegate());
 }
-#endif
 
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateSharedTabGroupAccountDataTypeController(

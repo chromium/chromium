@@ -24,6 +24,11 @@ inline constexpr base::FeatureParam<int>
 // Enables syncing of settings from the user's account.
 BASE_DECLARE_FEATURE(kSyncAccountSettings);
 
+// Enables syncing of valuables from the user's account.
+#if BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kSyncAutofillValuable);
+#endif
+
 // Enables syncing of usage metadata from Google Wallet passes.
 BASE_DECLARE_FEATURE(kSyncAutofillValuableMetadata);
 

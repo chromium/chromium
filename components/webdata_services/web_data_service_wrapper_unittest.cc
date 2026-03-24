@@ -10,11 +10,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/sync/base/features.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,3 +97,45 @@ TEST_F(WebDataServiceWrapperTest, ShutdownKeywordWebDataService) {
   EXPECT_EQ(test_keyword.short_name(), keyword_result.keywords[0].short_name());
   web_data_service_wrapper->Shutdown();
 }
+
+class WebDataServiceWrapperFeatureTest
+    : public WebDataServiceWrapperTest,
+      public testing::WithParamInterface<bool> {};
+
+// Verifies that CreateWebDataServiceWrapper works with kSyncAutofillValuable
+// enabled and disabled.
+#if BUILDFLAG(IS_IOS)
+TEST_P(WebDataServiceWrapperFeatureTest, SyncAutofillValuable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(syncer::kSyncAutofillValuable, GetParam());
+  auto web_data_service_wrapper = CreateWebDataServiceWrapper();
+  web_data_service_wrapper->Shutdown();
+  task_environment_.RunUntilIdle();
+}
+#endif
+
+// Verifies that CreateWebDataServiceWrapper works with
+// kSyncAutofillValuableMetadata enabled and disabled.
+TEST_P(WebDataServiceWrapperFeatureTest, SyncAutofillValuableMetadata) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(syncer::kSyncAutofillValuableMetadata,
+                                    GetParam());
+  auto web_data_service_wrapper = CreateWebDataServiceWrapper();
+  web_data_service_wrapper->Shutdown();
+  task_environment_.RunUntilIdle();
+}
+
+// Verifies that CreateWebDataServiceWrapper works with
+// kSyncAutofillWalletCredentialData enabled and disabled.
+TEST_P(WebDataServiceWrapperFeatureTest, SyncAutofillWalletCredentialData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(syncer::kSyncAutofillWalletCredentialData,
+                                    GetParam());
+  auto web_data_service_wrapper = CreateWebDataServiceWrapper();
+  web_data_service_wrapper->Shutdown();
+  task_environment_.RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebDataServiceWrapperFeatureTest,
+                         testing::Bool());

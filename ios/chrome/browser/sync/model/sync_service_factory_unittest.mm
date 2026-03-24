@@ -120,6 +120,15 @@ class SyncServiceFactoryTest : public PlatformTest {
     if (base::FeatureList::IsEnabled(syncer::kSyncAccessibilityAnnotation)) {
       datatypes.Put(syncer::ACCESSIBILITY_ANNOTATION);
     }
+    if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+      datatypes.Put(syncer::ACCOUNT_SETTING);
+    }
+    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuable)) {
+      datatypes.Put(syncer::AUTOFILL_VALUABLE);
+    }
+    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
+      datatypes.Put(syncer::AUTOFILL_VALUABLE_METADATA);
+    }
     return datatypes;
   }
 

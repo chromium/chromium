@@ -9,6 +9,7 @@ include_rules = [
   "+components/skills",
   "+components/trusted_vault",
   "+components/webauthn/core/browser",
+  "+ios/chrome/browser/account_settings/model",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/collaboration/model",
   "+ios/chrome/browser/complex_tasks/model",

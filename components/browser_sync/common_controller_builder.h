@@ -301,14 +301,12 @@ class CommonControllerBuilder {
   CreateSendTabToSelfDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
   CreateUserConsentsDataTypeController();
-#if !BUILDFLAG(IS_IOS)
   std::unique_ptr<syncer::DataTypeController>
   CreateAutofillValuableDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
   CreateAutofillValuableMetadataDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
   CreateAccountSettingDataTypeController();
-#endif
   std::unique_ptr<syncer::DataTypeController>
   CreateSharedTabGroupAccountDataTypeController(
       syncer::SyncService* sync_service);

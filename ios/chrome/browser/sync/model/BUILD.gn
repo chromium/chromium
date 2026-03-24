@@ -57,6 +57,7 @@ source_set("model") {
     "//components/version_info",
     "//components/webauthn/core/browser:passkey_model",
     "//google_apis",
+    "//ios/chrome/browser/account_settings/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/complex_tasks/model",

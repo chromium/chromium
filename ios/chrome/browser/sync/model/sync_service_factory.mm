@@ -31,6 +31,7 @@
 #import "components/sync/service/syncable_service_based_data_type_controller.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/variations/service/google_groups_manager.h"
+#import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
@@ -87,6 +88,8 @@ syncer::DataTypeController::TypeVector CreateControllers(
           profile, ServiceAccessType::IMPLICIT_ACCESS);
 
   browser_sync::CommonControllerBuilder builder;
+  builder.SetAccountSettingService(
+      IOSAccountSettingServiceFactory::GetForProfile(profile));
   builder.SetAutofillWebDataService(
       web::GetUIThreadTaskRunner({}), profile_web_data_service,
       ios::WebDataServiceFactory::GetAutofillWebDataForAccount(

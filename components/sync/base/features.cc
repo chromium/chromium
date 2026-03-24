@@ -21,6 +21,10 @@ BASE_FEATURE(kSyncAccountSettings,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
                                      : base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kSyncAutofillValuable, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kSyncAutofillValuableMetadata,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
                                      : base::FEATURE_DISABLED_BY_DEFAULT);
