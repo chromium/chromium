@@ -387,11 +387,22 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
                                       const LayoutBox& box) {
   if (!box.StyleRef().HasEffectiveAppearance())
     return kIndefiniteSize;
-  const SimpleFontData* font_data = box.StyleRef().GetFont()->PrimaryFont();
+  const ComputedStyle& style = box.StyleRef();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   DCHECK(font_data);
   const LayoutBox* inner_box = select.InnerElement().GetLayoutBox();
+  LayoutUnit inner_block_size;
+  if (inner_box) {
+    inner_block_size = inner_box->BorderAndPaddingBlockSize();
+  } else {
+    // content-visibility:hidden skips layout for the inner element, but the
+    // menulist intrinsic height still includes its themed block padding.
+    LayoutTheme& theme = LayoutTheme::GetTheme();
+    inner_block_size = LayoutUnit(theme.PopupInternalPaddingTop(style)) +
+                       LayoutUnit(theme.PopupInternalPaddingBottom(style));
+  }
   return (font_data ? font_data->GetFontMetrics().Height() : 0) +
-         (inner_box ? inner_box->BorderAndPaddingBlockSize() : LayoutUnit());
+         inner_block_size;
 }
 
 #if DCHECK_IS_ON()

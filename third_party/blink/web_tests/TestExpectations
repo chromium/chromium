@@ -776,9 +776,6 @@ crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2.html [ Failure ]
 crbug.com/357649027 external/wpt/css/css-sizing/range-percent-intrinsic-size-2a.html [ Failure ]
 
-##### This one passes only when it includes an iframe. Removing the iframe makes the test fail.
-crbug.com/327723279 external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-033.html [ Failure ]
-
 # This one fails a DCHECK on Chromium infra but passes on wpt.fyi
 
 crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-001.html [ Failure ]
