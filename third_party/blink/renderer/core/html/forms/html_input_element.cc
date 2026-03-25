@@ -2340,15 +2340,6 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
   }
 }
 
-bool HTMLInputElement::IsLastInputElementInForm() {
-  DCHECK(GetDocument().GetPage());
-  return !GetDocument()
-              .GetPage()
-              ->GetFocusController()
-              .NextFocusableElementForImeAndAutofill(
-                  this, mojom::blink::FocusType::kForward);
-}
-
 void HTMLInputElement::DispatchSimulatedEnter() {
   DCHECK(GetDocument().GetPage());
   GetDocument().GetPage()->GetFocusController().SetFocusedElement(

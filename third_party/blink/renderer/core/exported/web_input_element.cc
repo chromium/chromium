@@ -105,10 +105,6 @@ bool WebInputElement::ShouldRevealPassword() const {
   return ConstUnwrap<HTMLInputElement>()->ShouldRevealPassword();
 }
 
-bool WebInputElement::IsLastInputElementInForm() {
-  return Unwrap<HTMLInputElement>()->IsLastInputElementInForm();
-}
-
 void WebInputElement::DispatchSimulatedEnter() {
   Unwrap<HTMLInputElement>()->DispatchSimulatedEnter();
 }
