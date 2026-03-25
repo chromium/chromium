@@ -433,11 +433,13 @@ base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
 
 void HistoryService::AddObserver(HistoryServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
   observers_.AddObserver(observer);
 }
 
 void HistoryService::RemoveObserver(HistoryServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
   observers_.RemoveObserver(observer);
 }
 
