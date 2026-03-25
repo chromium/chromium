@@ -175,6 +175,8 @@ std::string_view GetStringNameForOptimizationTarget(
       return "WebRTCNeuralResidualEchoEstimator";
     case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_CLASSIFIER:
       return "ModelExecutionFeatureClassifier";
+    case proto::OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE:
+      return "ContextualTasksTabRelevance";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
