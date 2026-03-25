@@ -55,8 +55,6 @@ GetTransliteratorsMap() {
 
 std::unique_ptr<base::i18n::Transliterator> CreateTransliterator(
     TransliterationId id) {
-  std::unique_ptr<base::i18n::Transliterator> transliterator;
-
   // Apply a simplified version of the "::de-ASCII" transliteration, which
   // follows DIN 5007-2 ("ö" becomes "oe"). Here we map everything to lower case
   // because that happens with "::Lower" anyway.
@@ -80,28 +78,16 @@ std::unique_ptr<base::i18n::Transliterator> CreateTransliterator(
 
   switch (id) {
     case TransliterationId::kKatakanaToHiragana:
-      transliterator = base::i18n::CreateTransliterator("Katakana-Hiragana");
-      break;
+      return base::i18n::CreateTransliterator("Katakana-Hiragana");
     case TransliterationId::kHiraganaToKatakana:
-      transliterator = base::i18n::CreateTransliterator("Hiragana-Katakana");
-      break;
+      return base::i18n::CreateTransliterator("Hiragana-Katakana");
     case TransliterationId::kGerman:
-      transliterator = base::i18n::CreateTransliteratorFromRules(
+      return base::i18n::CreateTransliteratorFromRules(
           "DE_NormalizForAddress", base::StrCat({kGermanRules, kDefaultRules}));
-      break;
     case TransliterationId::kDefault:
-      transliterator = base::i18n::CreateTransliteratorFromRules(
+      return base::i18n::CreateTransliteratorFromRules(
           "NormalizeForAddress", kDefaultRules);
-      break;
   }
-
-  if (!transliterator) {
-    base::UmaHistogramBoolean("Autofill.TransliteratorInitStatus", false);
-    return nullptr;
-  }
-
-  base::UmaHistogramBoolean("Autofill.TransliteratorInitStatus", true);
-  return transliterator;
 }
 
 // May return nullptr if the transliterator cannot be initialized.
