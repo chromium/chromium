@@ -773,7 +773,32 @@ bool AddInteractionDisabledReasons(
   return is_disabled;
 }
 
-bool ShouldSkipSubtree(const LayoutObject& object) {
+bool ShouldSkipNonSalientNode(
+    const LayoutObject& object,
+    const mojom::blink::AIPageContentOptions& options) {
+  if (!options.non_salient_content_config) {
+    return false;
+  }
+
+  if (options.non_salient_content_config->exclude_ad_related) {
+    if (auto* element = DynamicTo<Element>(object.GetNode())) {
+      if (element->IsAdRelated()) {
+        return true;
+      }
+    }
+
+    if (auto* frame = object.GetDocument().GetFrame()) {
+      if (frame->IsAdFrame()) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+bool ShouldSkipSubtree(const LayoutObject& object,
+                       const mojom::blink::AIPageContentOptions& options) {
   auto* layout_embedded_content = DynamicTo<LayoutEmbeddedContent>(object);
   if (layout_embedded_content) {
     auto* layout_iframe = GetIFrame(object);
@@ -799,6 +824,10 @@ bool ShouldSkipSubtree(const LayoutObject& object) {
   // Skip empty text.
   auto* layout_text = DynamicTo<LayoutText>(object);
   if (layout_text && layout_text->IsAllCollapsibleWhitespace()) {
+    return true;
+  }
+
+  if (ShouldSkipNonSalientNode(object, options)) {
     return true;
   }
 
@@ -1701,6 +1730,10 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
 
+  if (ShouldSkipNonSalientNode(*layout_view, *options_)) {
+    return nullptr;
+  }
+
   // Add nodes which have a currently active user interaction (selection, focus
   // etc) before walking the tree to ensure we promote interactive DOM nodes to
   // ContentNodes.
@@ -1897,7 +1930,7 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
   bool has_visible_content = false;
   for (auto* child = object.SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (ShouldSkipSubtree(*child)) {
+    if (ShouldSkipSubtree(*child, *options_)) {
       continue;
     }
 
@@ -2644,6 +2677,10 @@ void AIPageContentAgent::ContentBuilder::MaybeAddPopupData(
   }
   LayoutView* web_popup_layout_view = popup_frame->ContentLayoutObject();
   if (!web_popup_layout_view) {
+    return;
+  }
+
+  if (ShouldSkipNonSalientNode(*web_popup_layout_view, *options_)) {
     return;
   }
 

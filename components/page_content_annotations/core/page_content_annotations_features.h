@@ -27,6 +27,16 @@ BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentExtraction);
 
+// When enabled, extractions initiated by the PageContentExtractionService will
+// apply non-salient content filtering based on the feature parameters.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kAnnotatedPageContentNonSalientFiltering);
+
+// Whether non-salient content filtering should exclude ad-related content.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<bool>
+    kAnnotatedPageContentExcludeAdRelatedParam;
+
 // Enables the PageContentCache to store AnnotatedPageContent.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentCache);
@@ -153,6 +163,11 @@ bool ShouldAnnotatedPageContentStudyIncludeInnerText();
 // The mode for extracting AnnotatedPageContent in the extraction service.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 std::string AnnotatedPageContentMode();
+
+// Returns whether AnnotatedPageContent extraction should exclude ad-related
+// content.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool ShouldAnnotatedPageContentExcludeAdRelated();
 
 // The triggering mode for page content extraction.
 enum class PageContentExtractionTriggeringMode {

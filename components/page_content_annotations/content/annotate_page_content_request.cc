@@ -69,6 +69,13 @@ AnnotatedPageContentRequest::Create(
   request->on_critical_path = page_content_annotations::features::
       IsAnnotatedPageContentOnCriticalPath();
 
+  if (page_content_annotations::features::
+          ShouldAnnotatedPageContentExcludeAdRelated()) {
+    request->non_salient_content_config =
+        blink::mojom::NonSalientContentConfig::New();
+    request->non_salient_content_config->exclude_ad_related = true;
+  }
+
   return std::make_unique<AnnotatedPageContentRequest>(
       web_contents, page_content_extraction_service, std::move(request),
       std::move(fetch_page_context_callback), std::move(get_tab_id_callback));

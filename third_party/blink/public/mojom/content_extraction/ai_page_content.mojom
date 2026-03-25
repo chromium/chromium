@@ -648,6 +648,12 @@ enum AIPageContentMode {
   kActionableElements,
 };
 
+// Configuration for filtering out content that is not salient.
+struct NonSalientContentConfig {
+  // Whether to skip nodes and subtrees identified as ads.
+  bool exclude_ad_related = false;
+};
+
 struct AIPageContentOptions {
   // Configures which content is included in the extracted APC.
   AIPageContentMode mode;
@@ -687,6 +693,10 @@ struct AIPageContentOptions {
   // For better overall Blink performance, request node ids only for attribute
   // types that require DOM round-trip behavior.
   array<AIPageContentAttributeType>? node_id_allowlist;
+
+  // Optional configuration to exclude non-salient content from the extracted
+  // representation.
+  NonSalientContentConfig? non_salient_content_config;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

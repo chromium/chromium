@@ -126,6 +126,12 @@ BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
 BASE_FEATURE(kAnnotatedPageContentExtraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAnnotatedPageContentNonSalientFiltering,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kAnnotatedPageContentExcludeAdRelatedParam{
+    &kAnnotatedPageContentNonSalientFiltering, "exclude_ad_related", false};
+
 BASE_FEATURE(kOnDeviceCategoryClassifier, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageContentCache, enabled_by_default_ios_only);
@@ -264,6 +270,12 @@ bool ShouldAnnotatedPageContentStudyIncludeInnerText() {
 
 std::string AnnotatedPageContentMode() {
   return kAnnotatedPageContentMode.Get();
+}
+
+bool ShouldAnnotatedPageContentExcludeAdRelated() {
+  return base::FeatureList::IsEnabled(
+             kAnnotatedPageContentNonSalientFiltering) &&
+         kAnnotatedPageContentExcludeAdRelatedParam.Get();
 }
 
 PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode() {

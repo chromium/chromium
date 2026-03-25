@@ -341,41 +341,42 @@ class AIPageContentAgentTest : public testing::Test {
 
   void GetAIPageContentWithActionableElements() {
     auto options = GetAIPageContentOptionsForTest();
-    options.mode = mojom::blink::AIPageContentMode::kActionableElements;
-    GetAIPageContent(options);
+    options->mode = mojom::blink::AIPageContentMode::kActionableElements;
+    GetAIPageContent(std::move(options));
   }
 
-  static mojom::blink::AIPageContentOptions GetAIPageContentOptionsForTest() {
-    mojom::blink::AIPageContentOptions options;
-    options.on_critical_path = true;
-    options.mode = mojom::blink::AIPageContentMode::kDefault;
+  static mojom::blink::AIPageContentOptionsPtr
+  GetAIPageContentOptionsForTest() {
+    auto options = mojom::blink::AIPageContentOptions::New();
+    options->on_critical_path = true;
+    options->mode = mojom::blink::AIPageContentMode::kDefault;
     return options;
   }
 
   static void SetNodeIdAllowlistForTest(
-      mojom::blink::AIPageContentOptions& options,
+      mojom::blink::AIPageContentOptionsPtr& options,
       std::initializer_list<mojom::blink::AIPageContentAttributeType>
           allowlisted_attribute_types) {
     // Centralize node-id options setup so test bodies focus on policy intent.
     // `emplace()` means the policy is explicitly requested for this test.
-    options.node_id_allowlist.emplace();
+    options->node_id_allowlist.emplace();
     for (const auto attribute_type : allowlisted_attribute_types) {
-      options.node_id_allowlist->push_back(attribute_type);
+      options->node_id_allowlist->push_back(attribute_type);
     }
   }
 
-  static mojom::blink::AIPageContentOptions CreateNodeIdPolicyOptionsForTest(
+  static mojom::blink::AIPageContentOptionsPtr CreateNodeIdPolicyOptionsForTest(
       std::initializer_list<mojom::blink::AIPageContentAttributeType>
           allowlisted_attribute_types = {},
       mojom::blink::AIPageContentMode mode =
           mojom::blink::AIPageContentMode::kDefault) {
     auto options = GetAIPageContentOptionsForTest();
-    options.mode = mode;
+    options->mode = mode;
     SetNodeIdAllowlistForTest(options, allowlisted_attribute_types);
     return options;
   }
 
-  static mojom::blink::AIPageContentOptions CreateNodeIdPolicyOptionsForTest(
+  static mojom::blink::AIPageContentOptionsPtr CreateNodeIdPolicyOptionsForTest(
       mojom::blink::AIPageContentMode mode) {
     return CreateNodeIdPolicyOptionsForTest(
         /*allowlisted_attribute_types=*/{}, mode);
@@ -392,14 +393,14 @@ class AIPageContentAgentTest : public testing::Test {
         url_test_helpers::ToKURL("http://foobar.com"));
   }
 
-  void GetAIPageContent(std::optional<mojom::blink::AIPageContentOptions>
-                            options = std::nullopt) {
+  void GetAIPageContent(
+      mojom::blink::AIPageContentOptionsPtr options = nullptr) {
     auto* agent = AIPageContentAgent::GetOrCreateForTesting(
         *helper_.LocalMainFrame()->GetFrame()->GetDocument());
     EXPECT_TRUE(agent);
 
-    last_options_ = options ? *options : default_options_;
-    auto content = agent->GetAIPageContentInternal(last_options_);
+    last_options_ = options ? std::move(options) : default_options_->Clone();
+    auto content = agent->GetAIPageContentInternal(*last_options_);
     CHECK(content);
     CHECK(content->root_node);
 
@@ -428,7 +429,7 @@ class AIPageContentAgentTest : public testing::Test {
     CHECK(last_content_);
 
     EXPECT_TRUE(last_content_->root_node);
-    if (last_options_.mode !=
+    if (last_options_->mode !=
         mojom::blink::AIPageContentMode::kActionableElements) {
       return *last_content_->root_node;
     }
@@ -518,7 +519,7 @@ class AIPageContentAgentTest : public testing::Test {
   const mojom::blink::AIPageContentPtr& Content() { return last_content_; }
 
  protected:
-  const mojom::blink::AIPageContentOptions default_options_ =
+  const mojom::blink::AIPageContentOptionsPtr default_options_ =
       GetAIPageContentOptionsForTest();
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
@@ -529,7 +530,7 @@ class AIPageContentAgentTest : public testing::Test {
   }
 
   mojom::blink::AIPageContentPtr last_content_;
-  mojom::blink::AIPageContentOptions last_options_;
+  mojom::blink::AIPageContentOptionsPtr last_options_;
 };
 
 TEST_F(AIPageContentAgentTest, Basic) {
@@ -835,12 +836,12 @@ TEST_F(AIPageContentAgentTest,
   // Extract APC using the HighDPI document. We intentionally don't use the
   // AIPageContentAgentTest fixture helpers here because those are wired to the
   // fixture's `helper_` WebView, not the HighDPI helper created above.
-  mojom::blink::AIPageContentOptions options =
+  mojom::blink::AIPageContentOptionsPtr options =
       AIPageContentAgentTest::GetAIPageContentOptionsForTest();
-  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
+  options->mode = mojom::blink::AIPageContentMode::kActionableElements;
   auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
   ASSERT_TRUE(agent);
-  auto content = agent->GetAIPageContentInternal(options);
+  auto content = agent->GetAIPageContentInternal(*options);
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -952,6 +953,28 @@ TEST_F(AIPageContentAgentTest, ImageIsAdRelated) {
 
   auto& image_node = *root.children_nodes[0];
   EXPECT_TRUE(image_node.content_attributes->is_ad_related);
+}
+
+TEST_F(AIPageContentAgentTest, ImageIsAdRelatedExcluded) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <img id='ads'></img>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  To<HTMLImageElement>(document.getElementById(AtomicString("ads")))
+      ->SetIsAdRelated(AdProvenance{});
+
+  auto options = GetAIPageContentOptionsForTest();
+  options->non_salient_content_config =
+      mojom::blink::NonSalientContentConfig::New();
+  options->non_salient_content_config->exclude_ad_related = true;
+  GetAIPageContent(std::move(options));
+
+  const auto& root = ContentRootNode();
+  EXPECT_EQ(root.children_nodes.size(), 0u);
 }
 
 TEST_F(AIPageContentAgentTest, ImageNoAltText) {
@@ -1191,6 +1214,78 @@ TEST_F(AIPageContentAgentTest, IFrameAds) {
   EXPECT_TRUE(iframe_attributes.is_ad_related);
 }
 
+TEST_F(AIPageContentAgentTest, IFrameAdsExcluded) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <iframe src='about:blank'></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* iframe_element =
+      To<HTMLIFrameElement>(helper_.LocalMainFrame()
+                                ->GetFrame()
+                                ->GetDocument()
+                                ->getElementsByTagName(AtomicString("iframe"))
+                                ->item(0));
+  ASSERT_TRUE(iframe_element);
+
+  // Mark iframe's ad evidence.
+  blink::FrameAdEvidence ad_evidence;
+  ad_evidence.set_created_by_ad_script(
+      blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+  ad_evidence.set_is_complete();
+  To<LocalFrame>(iframe_element->ContentFrame())->SetAdEvidence(ad_evidence);
+
+  auto options = GetAIPageContentOptionsForTest();
+  options->non_salient_content_config =
+      mojom::blink::NonSalientContentConfig::New();
+  options->non_salient_content_config->exclude_ad_related = true;
+  GetAIPageContent(std::move(options));
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 0u);
+}
+
+TEST_F(AIPageContentAgentTest, RootFrameAdExcluded) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <iframe src='about:blank'></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* iframe_element =
+      To<HTMLIFrameElement>(helper_.LocalMainFrame()
+                                ->GetFrame()
+                                ->GetDocument()
+                                ->getElementsByTagName(AtomicString("iframe"))
+                                ->item(0));
+  ASSERT_TRUE(iframe_element);
+
+  // Mark iframe's ad evidence.
+  blink::FrameAdEvidence ad_evidence;
+  ad_evidence.set_created_by_ad_script(
+      blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+  ad_evidence.set_is_complete();
+  auto* child_frame = To<LocalFrame>(iframe_element->ContentFrame());
+  child_frame->SetAdEvidence(ad_evidence);
+  ASSERT_TRUE(child_frame->IsAdFrame());
+
+  auto* agent =
+      AIPageContentAgent::GetOrCreateForTesting(*child_frame->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto options = GetAIPageContentOptionsForTest();
+  options->non_salient_content_config =
+      mojom::blink::NonSalientContentConfig::New();
+  options->non_salient_content_config->exclude_ad_related = true;
+  auto content = agent->GetAIPageContentInternal(*options);
+
+  // The entire content should be null because the frame is an ad.
+  ASSERT_FALSE(content);
+}
+
 TEST_F(AIPageContentAgentTest, CrossSiteIframeIncluded) {
   KURL main_url = url_test_helpers::ToKURL("http://example.com/main.html");
   KURL cross_origin_url =
@@ -1223,8 +1318,8 @@ TEST_F(AIPageContentAgentTest, CrossSiteIframeIncluded) {
 
   auto options = GetAIPageContentOptionsForTest();
 
-  options.include_same_site_only = false;
-  GetAIPageContent(options);
+  options->include_same_site_only = false;
+  GetAIPageContent(std::move(options));
 
   const auto& root = ContentRootNode();
   ASSERT_EQ(root.children_nodes.size(), 2u);
@@ -1285,8 +1380,8 @@ TEST_F(AIPageContentAgentTest, CrossSiteIframeExcluded) {
 
   auto options = GetAIPageContentOptionsForTest();
 
-  options.include_same_site_only = true;
-  GetAIPageContent(options);
+  options->include_same_site_only = true;
+  GetAIPageContent(std::move(options));
 
   const auto& root = ContentRootNode();
   ASSERT_EQ(root.children_nodes.size(), 2u);
@@ -3944,9 +4039,9 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
   document.getElementById(AtomicString("nullcontent"))
       ->setAttribute(html_names::kContentAttr, g_null_atom);
 
-  mojom::blink::AIPageContentOptions options;
-  options.max_meta_elements = 32;
-  GetAIPageContent(options);
+  auto options = mojom::blink::AIPageContentOptions::New();
+  options->max_meta_elements = 32;
+  GetAIPageContent(std::move(options));
 
   EXPECT_EQ(Content()->frame_data->meta_data.size(), 5u);
 
@@ -4005,9 +4100,9 @@ TEST_F(AIPageContentAgentTest, NestedIframesMetaTags) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  mojom::blink::AIPageContentOptions options;
-  options.max_meta_elements = 32;
-  GetAIPageContent(options);
+  auto options = mojom::blink::AIPageContentOptions::New();
+  options->max_meta_elements = 32;
+  GetAIPageContent(std::move(options));
 
   EXPECT_EQ(Content()->frame_data->meta_data.size(), 1u);
 
@@ -4057,9 +4152,8 @@ TEST_F(AIPageContentAgentTest, NodeIdAllowlist_DefaultModeTypePolicy) {
   // descendants.
   LoadNodeIdPolicyParagraphFixture();
 
-  auto options = CreateNodeIdPolicyOptionsForTest(
-      {mojom::blink::AIPageContentAttributeType::kParagraph});
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest(
+      {mojom::blink::AIPageContentAttributeType::kParagraph}));
 
   const auto& root = ContentRootNode();
   ASSERT_EQ(root.children_nodes.size(), 1u);
@@ -4081,8 +4175,7 @@ TEST_F(AIPageContentAgentTest,
   // If `node_id_allowlist` is unset, APC should preserve legacy broad emission.
   LoadNodeIdPolicyParagraphFixture();
 
-  auto options = GetAIPageContentOptionsForTest();
-  GetAIPageContent(options);
+  GetAIPageContent(GetAIPageContentOptionsForTest());
 
   const auto& root = ContentRootNode();
   ASSERT_EQ(root.children_nodes.size(), 1u);
@@ -4100,8 +4193,7 @@ TEST_F(AIPageContentAgentTest,
   // ids.
   LoadNodeIdPolicyParagraphFixture();
 
-  auto options = CreateNodeIdPolicyOptionsForTest();
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest());
 
   const auto& root = ContentRootNode();
   ASSERT_EQ(root.children_nodes.size(), 1u);
@@ -4135,8 +4227,7 @@ TEST_F(AIPageContentAgentTest,
   // text node.
   ASSERT_EQ(DOMNodeIds::ExistingIdForNode(text_node), kInvalidDOMNodeId);
 
-  auto options = CreateNodeIdPolicyOptionsForTest();
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest());
 
   // The text node is suppressed by policy, so APC must not generate its id.
   EXPECT_EQ(DOMNodeIds::ExistingIdForNode(text_node), kInvalidDOMNodeId);
@@ -4171,9 +4262,8 @@ TEST_F(
   document->body()->appendChild(paragraph);
   ASSERT_EQ(DOMNodeIds::ExistingIdForNode(text_node), kInvalidDOMNodeId);
 
-  auto options = CreateNodeIdPolicyOptionsForTest(
-      {mojom::blink::AIPageContentAttributeType::kParagraph});
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest(
+      {mojom::blink::AIPageContentAttributeType::kParagraph}));
 
   EXPECT_EQ(DOMNodeIds::ExistingIdForNode(text_node), kInvalidDOMNodeId);
 
@@ -4196,9 +4286,8 @@ TEST_F(AIPageContentAgentTest, NodeIdAllowlist_ActionableNodesAlwaysShowId) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto options = CreateNodeIdPolicyOptionsForTest(
-      mojom::blink::AIPageContentMode::kActionableElements);
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest(
+      mojom::blink::AIPageContentMode::kActionableElements));
 
   const auto& root = ContentRootNode();
   ASSERT_EQ(root.children_nodes.size(), 1u);
@@ -4222,8 +4311,7 @@ TEST_F(AIPageContentAgentTest, NodeIdAllowlist_FocusedNodeAlwaysShowsId) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto options = CreateNodeIdPolicyOptionsForTest();
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest());
 
   const auto& page_interaction_info = Content()->page_interaction_info;
   ASSERT_TRUE(page_interaction_info->focused_dom_node_id.has_value());
@@ -4252,9 +4340,8 @@ TEST_F(AIPageContentAgentTest, NodeIdAllowlist_LabelForTargetAlwaysShowsId) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto options = CreateNodeIdPolicyOptionsForTest(
-      mojom::blink::AIPageContentMode::kActionableElements);
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest(
+      mojom::blink::AIPageContentMode::kActionableElements));
 
   const auto* label_node = FindNodeBySelector("#name_label");
   ASSERT_TRUE(label_node);
@@ -4281,9 +4368,8 @@ TEST_F(AIPageContentAgentTest,
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto options = CreateNodeIdPolicyOptionsForTest(
-      mojom::blink::AIPageContentMode::kActionableElements);
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest(
+      mojom::blink::AIPageContentMode::kActionableElements));
 
   const auto* label_node = FindNodeBySelector("#name_label");
   ASSERT_TRUE(label_node);
@@ -4326,8 +4412,7 @@ TEST_F(AIPageContentAgentTest,
   action_data.action = ax::mojom::blink::Action::kSetAccessibilityFocus;
   button_ax_object->PerformAction(action_data);
 
-  auto options = CreateNodeIdPolicyOptionsForTest();
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest());
 
   const auto& page_interaction_info = Content()->page_interaction_info;
   ASSERT_TRUE(
@@ -4367,8 +4452,7 @@ TEST_F(AIPageContentAgentTest, NodeIdAllowlist_SelectionNodesAlwaysShowId) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto options = CreateNodeIdPolicyOptionsForTest();
-  GetAIPageContent(options);
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest());
 
   const auto& frame_interaction_info =
       Content()->frame_data->frame_interaction_info;
@@ -4401,10 +4485,9 @@ TEST_F(AIPageContentAgentTest,
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto options = CreateNodeIdPolicyOptionsForTest(
+  GetAIPageContent(CreateNodeIdPolicyOptionsForTest(
       {mojom::blink::AIPageContentAttributeType::kParagraph,
-       mojom::blink::AIPageContentAttributeType::kHeading});
-  GetAIPageContent(options);
+       mojom::blink::AIPageContentAttributeType::kHeading}));
 
   const auto* heading_node = FindNodeBySelector("#heading");
   ASSERT_TRUE(heading_node);
@@ -7810,9 +7893,9 @@ TEST_F(AIPageContentAgentTestTextEncoding, MetadataCorrected) {
       )"));
 
   auto options = GetAIPageContentOptionsForTest();
-  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
-  options.max_meta_elements = 1;
-  GetAIPageContent(options);
+  options->mode = mojom::blink::AIPageContentMode::kActionableElements;
+  options->max_meta_elements = 1;
+  GetAIPageContent(std::move(options));
 
   const mojom::blink::AIPageContentMetaPtr& meta =
       Content()->frame_data->meta_data[0];

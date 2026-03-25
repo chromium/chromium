@@ -5,6 +5,7 @@
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -82,22 +83,7 @@ class AnnotatePageContentRequestTest
     extraction_service_.emplace(os_crypt_async_.get(),
                                 browser_context()->GetPath());
 
-    request_ = AnnotatedPageContentRequest::Create(
-        web_contents(), extraction_service_.value(),
-        base::BindRepeating([](content::WebContents&,
-                               const FetchPageContextOptions&,
-                               std::unique_ptr<FetchPageProgressListener>,
-                               FetchPageContextResultCallback callback) {
-          auto page_content =
-              std::make_unique<optimization_guide::AIPageContentResult>();
-          auto result = std::make_unique<FetchPageContextResult>();
-          result->annotated_page_content_result =
-              PageContentResultWithEndTime(std::move(*page_content));
-          std::move(callback).Run(std::move(result));
-        }),
-        base::BindRepeating([](content::WebContents* web_contents) {
-          return std::make_optional(reinterpret_cast<int64_t>(web_contents));
-        }));
+    RecreateRequest();
   }
 
   void TearDown() override {
@@ -111,6 +97,29 @@ class AnnotatePageContentRequestTest
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kAnnotatedPageContentExtraction,
         {{"triggering_mode", mode}, {"capture_delay", "0s"}});
+  }
+
+  void RecreateRequest() {
+    request_ = AnnotatedPageContentRequest::Create(
+        web_contents(), extraction_service_.value(),
+        base::BindRepeating(
+            [](AnnotatePageContentRequestTest* test, content::WebContents&,
+               const FetchPageContextOptions& options,
+               std::unique_ptr<FetchPageProgressListener>,
+               FetchPageContextResultCallback callback) {
+              test->previous_options_ =
+                  options.annotated_page_content_options->Clone();
+              auto page_content =
+                  std::make_unique<optimization_guide::AIPageContentResult>();
+              auto result = std::make_unique<FetchPageContextResult>();
+              result->annotated_page_content_result =
+                  PageContentResultWithEndTime(std::move(*page_content));
+              std::move(callback).Run(std::move(result));
+            },
+            base::Unretained(this)),
+        base::BindRepeating([](content::WebContents* web_contents) {
+          return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+        }));
   }
 
   std::unique_ptr<content::MockNavigationHandle> CreateHandle(
@@ -145,11 +154,16 @@ class AnnotatePageContentRequestTest
     return extraction_service_.value();
   }
 
+  const blink::mojom::AIPageContentOptionsPtr& last_options() const {
+    return previous_options_;
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<TestPageContentExtractionService> extraction_service_;
   std::unique_ptr<AnnotatedPageContentRequest> request_;
+  blink::mojom::AIPageContentOptionsPtr previous_options_;
 };
 
 TEST_F(AnnotatePageContentRequestTest, OnLoadTrigger) {
@@ -269,6 +283,55 @@ TEST_F(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
   WaitForExtraction();
 
   EXPECT_EQ(extraction_service().extraction_count(), 2);
+}
+
+TEST_F(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_FeatureDisabled) {
+  SetTriggeringMode("on_load");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAnnotatedPageContentNonSalientFiltering);
+  RecreateRequest();
+
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  ASSERT_TRUE(last_options());
+  EXPECT_FALSE(last_options()->non_salient_content_config);
+}
+
+TEST_F(AnnotatePageContentRequestTest,
+       ExcludeAdRelatedFlag_FeatureParamDisabled) {
+  SetTriggeringMode("on_load");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAnnotatedPageContentNonSalientFiltering,
+      {{"exclude_ad_related", "false"}});
+  RecreateRequest();
+
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  ASSERT_TRUE(last_options());
+  EXPECT_FALSE(last_options()->non_salient_content_config);
+}
+
+TEST_F(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_Enabled) {
+  SetTriggeringMode("on_load");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAnnotatedPageContentNonSalientFiltering,
+      {{"exclude_ad_related", "true"}});
+  RecreateRequest();
+
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  ASSERT_TRUE(last_options());
+  ASSERT_TRUE(last_options()->non_salient_content_config);
+  EXPECT_TRUE(last_options()->non_salient_content_config->exclude_ad_related);
 }
 
 }  // namespace page_content_annotations

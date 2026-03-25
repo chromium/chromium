@@ -57,6 +57,8 @@ namespace optimization_guide {
 
 namespace {
 
+using ::testing::IsEmpty;
+
 // Allow 1px differences from rounding.
 #define EXPECT_ALMOST_EQ(a, b) EXPECT_LE(abs(a - b), 1);
 
@@ -897,6 +899,31 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.children_nodes().size(), 1);
 }
 
+// TODO(crbug.com/447642858): An end-to-end ad tagging test that uses the
+// subresource filter should be added.
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AIPageContentAdIframeExcluded) {
+  LoadPage(https_server()->GetURL("a.com", "/iframe_ad.html"));
+
+  // Mark the iframe as an ad frame.
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+                          const iframe = document.getElementById('iframe1');
+                          window.internals.setIsAdFrame(iframe.contentDocument);
+                        )"));
+
+  // Pre-check: Verify that without exclusion, the iframe content is included.
+  LoadData(GetAIPageContentOptions());
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1u);
+
+  auto options = GetAIPageContentOptions();
+  options->non_salient_content_config =
+      blink::mojom::NonSalientContentConfig::New();
+  options->non_salient_content_config->exclude_ad_related = true;
+
+  LoadData(std::move(options));
+  EXPECT_THAT(page_content().root_node().children_nodes(), IsEmpty());
+}
+
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentIframeDataURL) {
   LoadPage(https_server()->GetURL("a.com", "/paragraph_iframe_data_url.html"));
@@ -1299,6 +1326,43 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                    cross_site_frame_geometry.outer_bounding_box().y());
   EXPECT_NE(same_site_geometry.outer_bounding_box().x(),
             cross_site_frame_geometry.outer_bounding_box().x());
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       AIPageContentAdIframeExcluded) {
+  LoadPage(https_server()->GetURL(
+      "a.com",
+      "/paragraph_iframe_partially_offscreen.html?domain=/cross-site/b.com/"));
+
+  content::RenderFrameHost* child_rfh =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  // Mark the iframe as an ad frame from its own process.
+  ASSERT_TRUE(
+      content::ExecJs(child_rfh, "window.internals.setIsAdFrame(document);"));
+
+  // Pre-check: Verify that without exclusion, the iframe content is included.
+  LoadData(GetAIPageContentOptions());
+  ASSERT_EQ(page_content().root_node().children_nodes().size(), 1u);
+  EXPECT_EQ(
+      page_content().root_node().children_nodes()[0].children_nodes().size(),
+      1u);
+
+  auto options = GetAIPageContentOptions();
+  options->non_salient_content_config =
+      blink::mojom::NonSalientContentConfig::New();
+  options->non_salient_content_config->exclude_ad_related = true;
+
+  LoadData(std::move(options));
+
+  // The iframe element itself is in the main frame, and it's not marked as
+  // ad-related in the main frame's process. Thus it's included.
+  // However, its content (the sub-document) is in its own process and is marked
+  // as an ad frame. It should be skipped by AIPageContentAgent in that process.
+  ASSERT_EQ(page_content().root_node().children_nodes().size(), 1u);
+  // The iframe should have no children because its content was skipped.
+  EXPECT_THAT(page_content().root_node().children_nodes()[0].children_nodes(),
+              IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
