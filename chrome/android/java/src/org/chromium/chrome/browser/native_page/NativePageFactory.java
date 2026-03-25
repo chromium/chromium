@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -96,7 +95,6 @@ public class NativePageFactory {
     private final Supplier<Toolbar> mToolbarSupplier;
     private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
     private final ActivityResultTracker mActivityResultTracker;
-    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
@@ -124,7 +122,6 @@ public class NativePageFactory {
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ActivityResultTracker activityResultTracker,
-            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
@@ -146,7 +143,6 @@ public class NativePageFactory {
         mToolbarSupplier = toolbarSupplier;
         mHomeSurfaceTracker = homeSurfaceTracker;
         mActivityResultTracker = activityResultTracker;
-        mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
@@ -175,7 +171,6 @@ public class NativePageFactory {
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
                             mActivityResultTracker,
-                            mTabContentManagerSupplier,
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
@@ -212,7 +207,6 @@ public class NativePageFactory {
         private final Supplier<Toolbar> mToolbarSupplier;
         private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
         private final ActivityResultTracker mActivityResultTracker;
-        private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
         private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
         private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
         private final MonotonicObservableSupplier<EdgeToEdgeController>
@@ -238,7 +232,6 @@ public class NativePageFactory {
                 Supplier<Toolbar> toolbarSupplier,
                 @Nullable HomeSurfaceTracker homeSurfaceTracker,
                 ActivityResultTracker activityResultTracker,
-                MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
                 NonNullObservableSupplier<Integer> tabStripHeightSupplier,
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
                 MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
@@ -261,7 +254,6 @@ public class NativePageFactory {
             mToolbarSupplier = toolbarSupplier;
             mHomeSurfaceTracker = homeSurfaceTracker;
             mActivityResultTracker = activityResultTracker;
-            mTabContentManagerSupplier = tabContentManagerSupplier;
             mTabStripHeightSupplier = tabStripHeightSupplier;
             mModuleRegistrySupplier = moduleRegistrySupplier;
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
@@ -308,7 +300,6 @@ public class NativePageFactory {
                     mToolbarSupplier,
                     mHomeSurfaceTracker,
                     mActivityResultTracker,
-                    mTabContentManagerSupplier,
                     mTabStripHeightSupplier,
                     mModuleRegistrySupplier,
                     mEdgeToEdgeControllerSupplier,

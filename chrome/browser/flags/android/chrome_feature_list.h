@@ -209,7 +209,6 @@ BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kLockBackPressHandlerAtStart);
 BASE_DECLARE_FEATURE(kLockTopControlsOnLargeTablets);
 BASE_DECLARE_FEATURE(kLockTopControlsOnLargeTabletsV2);
-BASE_DECLARE_FEATURE(kMagicStackAndroid);
 BASE_DECLARE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition);
 BASE_DECLARE_FEATURE(kMediaIndicatorsAndroid);
 BASE_DECLARE_FEATURE(kMostVisitedTilesCustomization);

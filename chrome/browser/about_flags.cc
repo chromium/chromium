@@ -2547,13 +2547,6 @@ const FeatureEntry::FeatureVariation kStartSurfaceReturnTimeVariations[] = {
     {"60 minute", kStartSurfaceReturnTime_60Minute, nullptr},
 };
 
-const FeatureEntry::FeatureParam kMagicStackAndroid_show_all_modules[] = {
-    {"show_all_modules", "true"}};
-
-const FeatureEntry::FeatureVariation kMagicStackAndroidVariations[] = {
-    {"Show all modules", kMagicStackAndroid_show_all_modules, nullptr},
-};
-
 const FeatureEntry::FeatureParam kDefaultBrowserPromoShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kDefaultBrowserPromo},
@@ -7469,12 +7462,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNavigationCaptureRefactorAndroidDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(external_intents::kNavigationCaptureRefactorAndroid)},
-
-    {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
-     flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMagicStackAndroid,
-                                    kMagicStackAndroidVariations,
-                                    "MagicStackAndroid")},
 
     {"enable-educational-tip-default-browser-promo-card",
      flag_descriptions::kEducationalTipDefaultBrowserPromoCardName,

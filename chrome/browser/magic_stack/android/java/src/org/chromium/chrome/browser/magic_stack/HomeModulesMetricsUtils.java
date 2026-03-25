@@ -30,7 +30,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -403,11 +402,6 @@ public class HomeModulesMetricsUtils {
                         : HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE;
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_OS_PREFIX + umaName, moduleType, ModuleType.NUM_ENTRIES);
-    }
-
-    /** Returns whether a magic stack is enabled on Start surface. */
-    public static boolean useMagicStack() {
-        return ChromeFeatureList.sMagicStackAndroid.isEnabled();
     }
 
     /**

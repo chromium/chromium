@@ -567,7 +567,6 @@ public class HomeModulesMediatorUnitTest {
     @Test
     @SmallTest
     public void testGetFilteredEnabledModuleSet_AllModules() {
-        ChromeFeatureList.sMagicStackAndroidShowAllModules.setForTesting(true);
         Set<Integer> activeModules = HomeModulesMetricsUtils.getAllActiveModulesForTesting();
         when(mModuleRegistry.getEnabledModuleSet()).thenReturn(activeModules);
 

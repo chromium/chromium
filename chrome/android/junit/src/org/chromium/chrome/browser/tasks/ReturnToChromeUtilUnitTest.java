@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -395,10 +394,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID})
     public void testColdStartupWithOnlyLastActiveTabUrl_MagicStack() {
-        assertTrue(HomeModulesMetricsUtils.useMagicStack());
-
         when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         when(mNtpTab.isNativePage()).thenReturn(true);
         when(mNtpTab.getNativePage()).thenReturn(mNewTabPage);

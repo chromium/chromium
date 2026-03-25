@@ -173,7 +173,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
@@ -3253,8 +3252,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private void maybeRegisterHomeModules() {
-        if (!HomeModulesMetricsUtils.useMagicStack()) return;
-
         ModuleRegistry moduleRegistry =
                 new ModuleRegistry(
                         HomeModulesConfigManager.getInstance(), getLifecycleDispatcher());
@@ -3705,7 +3702,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getWindowAndroid(),
                             getToolbarManager()::getToolbar,
                             mHomeSurfaceTracker,
-                            getTabContentManagerSupplier(),
                             getToolbarManager().getTabStripHeightSupplier(),
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,

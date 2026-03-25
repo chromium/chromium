@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
-import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
@@ -78,7 +77,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ActivityResultTracker mActivityResultTracker;
-    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final BrowserControlsManager mBrowserControlsManager;
     private final Supplier<@Nullable Tab> mCurrentTabSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -118,7 +116,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             WindowAndroid windowAndroid,
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
-            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
@@ -149,7 +146,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mWindowAndroid = windowAndroid;
         mToolbarSupplier = toolbarSupplier;
         mHomeSurfaceTracker = homeSurfaceTracker;
-        mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
@@ -226,7 +222,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
                             mActivityResultTracker,
-                            mTabContentManagerSupplier,
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,

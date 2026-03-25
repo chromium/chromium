@@ -25,7 +25,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -140,10 +139,8 @@ public class SingleTabSwitcherOnNtpMediator {
     }
 
     private static Size getThumbnailSize(Context context) {
-        int resourceId =
-                HomeModulesMetricsUtils.useMagicStack()
-                        ? R.dimen.single_tab_module_tab_thumbnail_size_big
-                        : R.dimen.single_tab_module_tab_thumbnail_size;
+        int resourceId = R.dimen.single_tab_module_tab_thumbnail_size_big;
+
         int size = context.getResources().getDimensionPixelSize(resourceId);
         return new Size(size, size);
     }
@@ -287,12 +284,8 @@ public class SingleTabSwitcherOnNtpMediator {
     }
 
     private static String getDomainUrl(GURL url) {
-        if (HomeModulesMetricsUtils.useMagicStack()) {
-            String domainUrl = UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
-            return !TextUtils.isEmpty(domainUrl) ? domainUrl : url.getHost();
-        } else {
-            return url.getHost();
-        }
+        String domainUrl = UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
+        return !TextUtils.isEmpty(domainUrl) ? domainUrl : url.getHost();
     }
 
     @VisibleForTesting

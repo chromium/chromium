@@ -50,7 +50,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -168,10 +167,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(eq(mTabId), eq(thumbnailSize), any());
         assertEquals(mTitle, mPropertyModel.get(TITLE));
-        String expectedUrl =
-                HomeModulesMetricsUtils.useMagicStack()
-                        ? UrlUtilities.getDomainAndRegistry(mUrl.getSpec(), false)
-                        : mUrlHost;
+        String expectedUrl = UrlUtilities.getDomainAndRegistry(mUrl.getSpec(), false);
         assertEquals(expectedUrl, mPropertyModel.get(URL));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
         if (moduleDelegate != null) {

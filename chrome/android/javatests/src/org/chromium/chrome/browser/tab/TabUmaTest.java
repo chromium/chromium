@@ -92,7 +92,6 @@ public class TabUmaTest {
                 cta.getWindowAndroid(),
                 rootUiCoordinator.getToolbarManager()::getToolbar,
                 /* homeSurfaceTracker= */ null,
-                /* tabContentManagerSupplier= */ null,
                 rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier(),
                 new OneshotSupplierImpl<>(),
                 ObservableSuppliers.alwaysNull(),

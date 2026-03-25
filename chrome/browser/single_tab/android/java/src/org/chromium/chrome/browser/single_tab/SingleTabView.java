@@ -17,7 +17,6 @@ import android.widget.TextView;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 
 /** View of the tab on the single tab tab switcher. */
@@ -46,28 +45,25 @@ class SingleTabView extends LinearLayout {
         mUrl = findViewById(R.id.tab_url_view);
 
         if (mTabThumbnail != null) {
-            if (HomeModulesMetricsUtils.useMagicStack()) {
-                Resources resources = getResources();
-                MarginLayoutParams marginLayoutParams =
-                        (MarginLayoutParams) mTabThumbnail.getLayoutParams();
-                int size =
-                        resources.getDimensionPixelSize(
-                                R.dimen.single_tab_module_tab_thumbnail_size_big);
-                marginLayoutParams.width = size;
-                marginLayoutParams.height = size;
+            Resources resources = getResources();
+            MarginLayoutParams marginLayoutParams =
+                    (MarginLayoutParams) mTabThumbnail.getLayoutParams();
+            int size =
+                    resources.getDimensionPixelSize(
+                            R.dimen.single_tab_module_tab_thumbnail_size_big);
+            marginLayoutParams.width = size;
+            marginLayoutParams.height = size;
 
-                TextView tabSwitcherTitleDescription =
-                        findViewById(R.id.tab_switcher_title_description);
-                MarginLayoutParams titleDescriptionMarginLayoutParams =
-                        (MarginLayoutParams) tabSwitcherTitleDescription.getLayoutParams();
-                titleDescriptionMarginLayoutParams.bottomMargin =
-                        resources.getDimensionPixelSize(
-                                R.dimen.single_tab_module_title_margin_bottom);
-                tabSwitcherTitleDescription.setText(
-                        getContext().getString(R.string.home_modules_single_tab_title));
-            }
+            TextView tabSwitcherTitleDescription =
+                    findViewById(R.id.tab_switcher_title_description);
+            MarginLayoutParams titleDescriptionMarginLayoutParams =
+                    (MarginLayoutParams) tabSwitcherTitleDescription.getLayoutParams();
+            titleDescriptionMarginLayoutParams.bottomMargin =
+                    resources.getDimensionPixelSize(R.dimen.single_tab_module_title_margin_bottom);
+            tabSwitcherTitleDescription.setText(
+                    getContext().getString(R.string.home_modules_single_tab_title));
             mTabThumbnail.updateThumbnailPlaceholder(
-                    /* isIncognito= */ false, /* isSelected= */ false, /* colorId */ null);
+                    /* isIncognito= */ false, /* isSelected= */ false, /* colorId= */ null);
         }
     }
 

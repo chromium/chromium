@@ -26,7 +26,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -369,11 +368,7 @@ public final class ReturnToChromeUtil {
         // This cast is now guaranteed to succeed to a non-null value.
         NewTabPage newTabPage = (NewTabPage) nativePage;
         homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(ntpTab, lastActiveTab);
-        if (HomeModulesMetricsUtils.useMagicStack()) {
-            newTabPage.showMagicStack(lastActiveTab);
-        } else {
-            newTabPage.showHomeSurfaceUi(lastActiveTab);
-        }
+        newTabPage.showMagicStack(lastActiveTab);
     }
 
     // TODO(crbug.com/40270227): Removes this histogram once we understand the root cause of

@@ -210,7 +210,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, ChromeFeatureList.MAGIC_STACK_ANDROID})
+    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
     public void testSingleTabCardGoneAfterTabClosed_MagicStack() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
@@ -294,7 +294,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, ChromeFeatureList.MAGIC_STACK_ANDROID})
+    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
     public void testSingleTabModule_MagicStack() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
@@ -377,7 +377,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, ChromeFeatureList.MAGIC_STACK_ANDROID})
+    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
     public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         mActivityTestRule.startFromLauncherAtNtp();
