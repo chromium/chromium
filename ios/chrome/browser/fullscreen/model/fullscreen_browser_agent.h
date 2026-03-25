@@ -8,14 +8,18 @@
 #import <UIKit/UIKit.h>
 
 #import "base/observer_list.h"
+#import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
 class FullscreenBrowserAgentTest;
+class FullscreenMediatorPassKeyProvider;
 
 // A class that holds the fullscreen state for a browser.
 class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
  public:
+  using MediatorPassKey = base::PassKey<FullscreenMediatorPassKeyProvider>;
+
   ~FullscreenBrowserAgent() override;
 
   FullscreenBrowserAgent(const FullscreenBrowserAgent&) = delete;
@@ -34,6 +38,10 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // Accessors for the min and max insets.
   UIEdgeInsets min_insets() const { return min_insets_; }
   UIEdgeInsets max_insets() const { return max_insets_; }
+
+  // Instantly exits fullscreen, notifying observers of the update.
+  // Generally used to reset the UI from system events like backgrounding.
+  void ForceExitFullscreenWithoutAnimation(MediatorPassKey);
 
  private:
   friend class BrowserUserData<FullscreenBrowserAgent>;

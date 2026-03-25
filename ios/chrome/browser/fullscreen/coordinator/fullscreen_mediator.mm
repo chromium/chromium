@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ptr.h"
+#import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -16,6 +17,15 @@
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+
+// C++ proxy class that generates the PassKey required to mutate
+// the FullscreenBrowserAgent.
+class FullscreenMediatorPassKeyProvider {
+ public:
+  static base::PassKey<FullscreenMediatorPassKeyProvider> passkey() {
+    return base::PassKey<FullscreenMediatorPassKeyProvider>();
+  }
+};
 
 @interface FullscreenMediator () <CRWWebStateObserver,
                                   CRWWebViewScrollViewProxyObserver,
@@ -191,11 +201,13 @@
 }
 
 - (void)applicationDidEnterBackground {
-  // TODO(crbug.com/490126971): Force exit fullscreen.
+  _browserAgent->ForceExitFullscreenWithoutAnimation(
+      FullscreenMediatorPassKeyProvider::passkey());
 }
 
 - (void)applicationWillEnterForeground {
-  // TODO(crbug.com/490126971): Force exit fullscreen.
+  _browserAgent->ForceExitFullscreenWithoutAnimation(
+      FullscreenMediatorPassKeyProvider::passkey());
 }
 
 @end
