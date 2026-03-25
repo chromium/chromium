@@ -659,7 +659,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
       is_chrome_branded());
 
   EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
-                                      ? IDR_AUTOFILL_GOOGLE_WALLET
+                                      ? IDR_AUTOFILL_GOOGLE_WALLET_ICON
                                       : IDR_INFOBAR_AUTOFILL_CC);
   EXPECT_EQ(ui_info.title_text,
             l10n_util::GetStringUTF16(
@@ -758,7 +758,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
       is_chrome_branded());
 
   EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
-                                      ? IDR_AUTOFILL_GOOGLE_WALLET
+                                      ? IDR_AUTOFILL_GOOGLE_WALLET_ICON
                                       : IDR_INFOBAR_AUTOFILL_CC);
   EXPECT_EQ(ui_info.title_text,
             l10n_util::GetStringUTF16(
