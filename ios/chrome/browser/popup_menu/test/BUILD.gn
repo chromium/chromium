@@ -26,6 +26,7 @@ source_set("eg2_tests") {
     "//ios/web/common:user_agent",
     "//ios/web/public/test/http_server",
     "//net",
+    "//net:test_support",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

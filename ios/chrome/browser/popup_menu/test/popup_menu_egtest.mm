@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -12,24 +13,53 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
-const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
+const char kPDFPath[] = "/testpage.pdf";
+
+// Handles responses for the test server.
+std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
+  if (request.relative_url == "/page1") {
+    response->set_content("page1");
+  } else if (request.relative_url == "/page2") {
+    response->set_content("page2");
+  } else if (request.relative_url == "/page3") {
+    response->set_content("page3");
+  } else if (request.relative_url == "/page4") {
+    response->set_content("page4");
+  } else {
+    response->set_code(net::HTTP_NOT_FOUND);
+  }
+  return response;
+}
 }  // namespace
 
 // Tests for the popup menus.
-@interface PopupMenuTestCase : WebHttpServerChromeTestCase
+@interface PopupMenuTestCase : ChromeTestCase
 @end
 
 @implementation PopupMenuTestCase
+
+- (void)setUp {
+  [super setUp];
+  self.testServer->RegisterRequestHandler(base::BindRepeating(&HandleRequest));
+  GREYAssertTrue(self.testServer->Start(),
+                 @"EmbeddedTestServer failed to start.");
+}
 
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.
@@ -45,23 +75,15 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // for a series of navigations, and that tapping entries performs the
 // appropriate navigation.
 - (void)testTabHistoryMenu {
-  const GURL URL1 = web::test::HttpServer::MakeUrl("http://page1");
-  const GURL URL2 = web::test::HttpServer::MakeUrl("http://page2");
-  const GURL URL3 = web::test::HttpServer::MakeUrl("http://page3");
-  const GURL URL4 = web::test::HttpServer::MakeUrl("http://page4");
+  const GURL URL1 = self.testServer->GetURL("/page1");
+  const GURL URL2 = self.testServer->GetURL("/page2");
+  const GURL URL3 = self.testServer->GetURL("/page3");
+  const GURL URL4 = self.testServer->GetURL("/page4");
   NSString* entry0 = @"New Tab";
   NSString* entry1 = [ChromeEarlGrey displayTitleForURL:URL1];
   NSString* entry2 = [ChromeEarlGrey displayTitleForURL:URL2];
   NSString* entry3 = [ChromeEarlGrey displayTitleForURL:URL3];
   NSString* entry4 = [ChromeEarlGrey displayTitleForURL:URL4];
-
-  // Create map of canned responses and set up the test HTML server.
-  std::map<GURL, std::string> responses;
-  responses[URL1] = "page1";
-  responses[URL2] = "page2";
-  responses[URL3] = "page3";
-  responses[URL4] = "page4";
-  web::test::SetUpSimpleHttpServer(responses);
 
   // Load 4 pages.
   [ChromeEarlGrey loadURL:URL1];
@@ -153,7 +175,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
     return;
   }
-  const GURL URL = web::test::HttpServer::MakeUrl(kPDFURL);
+  const GURL URL = self.testServer->GetURL(kPDFPath);
 
   // Navigate to a mock pdf and verify that the find button is disabled.
   [ChromeEarlGrey loadURL:URL];
