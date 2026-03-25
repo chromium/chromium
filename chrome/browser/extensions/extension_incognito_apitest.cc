@@ -6,7 +6,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -22,6 +21,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -148,11 +148,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoSplitKeepListener) {
   EXPECT_TRUE(event_router->HasNonLazyEventListenerForTesting(kEvent));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that an extension which is enabled for incognito mode doesn't
 // accidentally create an incognito profile.
-// TODO(https://crbug.com/390226690): Enable on Android when chrome.windows
-// is supported.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, DontCreateIncognitoProfile) {
   ASSERT_FALSE(profile()->HasPrimaryOTRProfile());
   ASSERT_TRUE(RunExtensionTest("incognito/dont_create_profile", {},
@@ -161,13 +158,11 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, DontCreateIncognitoProfile) {
   ASSERT_FALSE(profile()->HasPrimaryOTRProfile());
 }
 
-// TODO(https://crbug.com/390226690): Enable on Android when chrome.windows
-// and chrome.tabs are supported.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, Incognito) {
   ResultCatcher catcher;
 
   // Open incognito window and navigate to test page.
-  OpenURLOffTheRecord(
+  PlatformOpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("/extensions/test_file.html"));
 
   ASSERT_TRUE(
@@ -179,8 +174,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, Incognito) {
 
 // Tests that the APIs in an incognito-enabled split-mode extension work
 // properly.
-// TODO(https://crbug.com/390226690): Enable on Android when chrome.windows
-// and chrome.tabs are supported.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoSplitMode) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
@@ -195,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoSplitMode) {
                                                   ReplyBehavior::kWillReply);
 
   // Open incognito window and navigate to test page.
-  OpenURLOffTheRecord(
+  PlatformOpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("/extensions/test_file.html"));
 
   ASSERT_TRUE(LoadExtension(
@@ -222,19 +215,20 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoDisabled) {
                                         ReplyBehavior::kWillReply);
 
   // Open incognito window and navigate to test page.
-  OpenURLOffTheRecord(
+  PlatformOpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("/extensions/test_file.html"));
 
   ASSERT_TRUE(LoadExtension(test_data_dir_
       .AppendASCII("incognito").AppendASCII("apis_disabled")));
 
   EXPECT_TRUE(listener.WaitUntilSatisfied());
-  OpenURLOffTheRecord(profile(), GURL("about:blank"));
+  PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
   listener.Reply("created");
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that opening a popup from an incognito browser window works properly.
 // http://crbug.com/40304461.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, DISABLED_IncognitoPopup) {

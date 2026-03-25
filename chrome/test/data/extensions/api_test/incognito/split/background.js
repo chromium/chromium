@@ -113,7 +113,18 @@ chrome.test.getConfig(function(config) {
     },
 
     // Tests that we can receive bookmarks events in both extension processes.
-    function bookmarkCreate() {
+    async function bookmarkCreate() {
+      const message = inIncognitoContext ? 'waiting_incognito' : 'waiting';
+      // TODO(crbug.com/414844449): Port to desktop Android, which has different
+      // concepts of parent IDs and default visibility.
+      const isAndroid =
+        (await chrome.runtime.getPlatformInfo()).os === 'android';
+      if (isAndroid) {
+        // Satisfy the C++ event listeners so other tests can proceed.
+        chrome.test.sendMessage(message);
+        chrome.test.succeed('skipped');
+        return;
+      }
       // Each process will create 1 bookmark, but expects to see updates from
       // the other process.
       const nodeNormal = {
@@ -140,8 +151,7 @@ chrome.test.getConfig(function(config) {
                   `Bookmarks created. Incognito=${inIncognitoContext}`);
               done();
             }
-          });
-      const message = inIncognitoContext ? 'waiting_incognito' : 'waiting';
+      });
       chrome.test.sendMessage(message, pass(function() {
         chrome.bookmarks.create(node, pass(function(results) {
           node.id = results.id;  // since we couldn't know this going in
