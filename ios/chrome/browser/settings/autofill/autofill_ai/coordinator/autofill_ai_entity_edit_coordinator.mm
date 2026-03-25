@@ -10,10 +10,13 @@
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_entity_instance_builder.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -48,7 +51,9 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
 
 }  // namespace
 
-@interface AutofillAIEntityEditCoordinator ()
+@interface AutofillAIEntityEditCoordinator () <
+    AutofillAIEntityEditTableViewControllerDelegate,
+    AutofillCountrySelectionTableViewControllerDelegate>
 
 @property(nonatomic, strong) AutofillAIEntityEditMediator* mediator;
 
@@ -66,6 +71,9 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
 
   // The view controller.
   AutofillAIEntityEditTableViewController* _viewController;
+
+  // The item being edited for country selection.
+  AutofillAIEntityCountryItem* _countryItemBeingEdited;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -103,6 +111,7 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
           self.browser->GetProfile());
   CHECK(entityDataManager);
 
+  bool isNewEntity = !_entityID.has_value();
   std::optional<autofill::EntityInstance> instance = GetOrCreateEntityInstance(
       std::move(_entityID), std::move(_entityType), entityDataManager);
   if (!instance.has_value()) {
@@ -116,6 +125,9 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
 
   _viewController = [[AutofillAIEntityEditTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  _viewController.delegate = self;
+  _viewController.mutator = _mediator;
+  _viewController.startInEditMode = isNewEntity;
 
   _mediator.consumer = _viewController;
 
@@ -127,11 +139,48 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
   _mediator = nil;
 
   if (_viewController) {
+    _viewController.delegate = nil;
     if (_viewController.navigationController) {
       [_baseNavigationController popViewControllerAnimated:YES];
     }
     _viewController = nil;
   }
+}
+
+#pragma mark - AutofillAIEntityEditTableViewControllerDelegate
+
+- (void)didTapCloseButton:
+    (AutofillAIEntityEditTableViewController*)viewController {
+  [self.delegate autofillAIEntityEditCoordinatorDidFinish:self];
+}
+
+- (void)didTapCountryItem:(AutofillAIEntityCountryItem*)item {
+  _countryItemBeingEdited = item;
+  NSString* countryValue = item.detailText;
+
+  AutofillCountrySelectionTableViewController* countrySelectionController =
+      [[AutofillCountrySelectionTableViewController alloc]
+                     initWithDelegate:self
+                      selectedCountry:countryValue
+                         allCountries:_mediator.allCountries
+                         settingsView:YES
+          previousViewControllerTitle:_viewController.title];
+
+  [_baseNavigationController pushViewController:countrySelectionController
+                                       animated:YES];
+}
+
+#pragma mark - AutofillCountrySelectionTableViewControllerDelegate
+
+- (void)didSelectCountry:(CountryItem*)selectedCountry {
+  [_baseNavigationController popViewControllerAnimated:YES];
+  [_mediator didSelectCountry:selectedCountry forItem:_countryItemBeingEdited];
+  _countryItemBeingEdited = nil;
+}
+
+- (void)dismissCountryViewController {
+  [_baseNavigationController popViewControllerAnimated:YES];
+  _countryItemBeingEdited = nil;
 }
 
 @end

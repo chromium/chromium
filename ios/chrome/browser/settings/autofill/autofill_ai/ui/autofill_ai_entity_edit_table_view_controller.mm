@@ -4,7 +4,14 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/public/autofill_ai_settings_constants.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_mutator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 namespace {
@@ -25,6 +32,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.tableView.accessibilityIdentifier = kAutofillAIEntityEditTableViewId;
+  self.shouldShowDeleteButtonInToolbar = YES;
+  self.tableView.allowsSelectionDuringEditing = YES;
+
+  if (self.startInEditMode) {
+    [self setEditing:YES animated:NO];
+  } else {
+    self.navigationItem.rightBarButtonItem = [self editButtonItem];
+  }
+
   [self loadModel];
 }
 
@@ -38,6 +55,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   for (TableViewItem* item in _editItems) {
     [model addItem:item toSectionWithIdentifier:SectionIdentifierAttributes];
+
+    if ([item isKindOfClass:[AutofillAIEntityEditItem class]]) {
+      AutofillAIEntityEditItem* editItem = (AutofillAIEntityEditItem*)item;
+      editItem.textFieldEnabled = self.tableView.editing;
+      editItem.hideIcon = !self.tableView.editing;
+      editItem.textFieldDelegate = self;
+    } else if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
+      AutofillAIEntityCountryItem* countryItem =
+          (AutofillAIEntityCountryItem*)item;
+      if (self.tableView.editing) {
+        countryItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        countryItem.selectionStyle = UITableViewCellSelectionStyleDefault;
+      } else {
+        countryItem.accessoryType = UITableViewCellAccessoryNone;
+        countryItem.selectionStyle = UITableViewCellSelectionStyleNone;
+      }
+    }
   }
 }
 
@@ -67,6 +101,104 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setEditingAllowed:(BOOL)editingAllowed {
   _editingAllowed = editingAllowed;
   [self updateUIForEditState];
+}
+
+- (void)updateItem:(TableViewItem*)item {
+  [self reconfigureCellsForItems:@[ item ]];
+}
+
+- (void)reloadData {
+  [self.tableView reloadData];
+}
+
+#pragma mark - Actions
+
+- (void)didTapCancel {
+  [self.delegate didTapCloseButton:self];
+}
+
+- (void)didTapEdit {
+  [self setEditing:!self.tableView.editing animated:YES];
+}
+
+- (void)didTapEditDone {
+  [self.mutator saveEntityInstance];
+  [self setEditing:NO animated:YES];
+}
+
+- (void)editButtonPressed {
+  BOOL wasEditing = self.tableView.editing;
+  [super editButtonPressed];
+
+  if (wasEditing && !self.tableView.editing) {
+    [self.mutator saveEntityInstance];
+  }
+}
+
+#pragma mark -
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+  [super setEditing:editing animated:animated];
+
+  if ([self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierAttributes]) {
+    [self.tableViewModel
+        removeSectionWithIdentifier:SectionIdentifierAttributes];
+  }
+  [self loadModel];
+  [self.tableView reloadData];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
+           editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
+  return UITableViewCellEditingStyleNone;
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
+  return NO;
+}
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (self.tableView.editing) {
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
+      AutofillAIEntityCountryItem* countryItem =
+          base::apple::ObjCCast<AutofillAIEntityCountryItem>(item);
+      [self.delegate didTapCountryItem:countryItem];
+      [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else if ([item isKindOfClass:[AutofillAIEntityEditItem class]]) {
+      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+      if ([cell isKindOfClass:[TableViewTextEditCell class]]) {
+        TableViewTextEditCell* textFieldCell =
+            base::apple::ObjCCast<TableViewTextEditCell>(cell);
+        [textFieldCell.textField becomeFirstResponder];
+      }
+    }
+  }
+}
+
+- (NSIndexPath*)tableView:(UITableView*)tableView
+    willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (self.tableView.editing) {
+    return indexPath;
+  }
+  return [super tableView:tableView willSelectRowAtIndexPath:indexPath];
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  return self.tableView.editing;
+}
+
+#pragma mark - AutofillEditTableViewController
+
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:cellPath];
+  return [item isKindOfClass:[AutofillAIEntityEditItem class]];
 }
 
 @end

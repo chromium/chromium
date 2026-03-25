@@ -124,7 +124,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
     // through settings.
     _ignoreErrorMessage = _addManualAddress;
 
-    [self loadCountries];
+    _allCountries = [AutofillProfileEditMediator loadCountries];
   }
 
   return self;
@@ -373,7 +373,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
 }
 
 // Loads the country codes and names and sets the default selected country code.
-- (void)loadCountries {
++ (NSArray<CountryItem*>*)loadCountries {
   autofill::CountryComboboxModel countryModel;
   const variations::VariationsService* variations_service =
       GetApplicationContext()->GetVariationsService();
@@ -402,7 +402,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
       [countryItems addObject:countryItem];
     }
   }
-  _allCountries = countryItems;
+  return countryItems;
 }
 
 // Fetches and computes the required fields based on `_selectedCountryCode`.

@@ -24,6 +24,9 @@ class PersonalDataManager;
     : NSObject <AutofillProfileEditTableViewHelperDelegate,
                 AutofillSettingsProfileEditTableViewControllerDelegate>
 
+// Loads the country codes and names.
++ (NSArray<CountryItem*>*)loadCountries;
+
 // Designated initializer. `AutofillProfileEditMediatorDelegate` and
 // `dataManager` should not be nil.
 - (instancetype)initWithDelegate:

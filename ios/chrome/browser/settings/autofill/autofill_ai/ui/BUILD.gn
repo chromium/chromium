@@ -7,8 +7,10 @@ source_set("ui") {
     "autofill_ai_add_entities_menu_builder.h",
     "autofill_ai_add_entities_menu_builder.mm",
     "autofill_ai_entity_edit_consumer.h",
+    "autofill_ai_entity_edit_mutator.h",
     "autofill_ai_entity_edit_table_view_controller.h",
     "autofill_ai_entity_edit_table_view_controller.mm",
+    "autofill_ai_entity_edit_table_view_controller_delegate.h",
     "autofill_ai_entity_item.h",
     "autofill_ai_entity_item.mm",
   ]
@@ -17,12 +19,16 @@ source_set("ui") {
     "//components/autofill/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/public",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
     "//ios/chrome/browser/settings/autofill/ui",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
   ]
 }
 
@@ -39,6 +45,7 @@ source_set("edit_items") {
     "autofill_ai_entity_field_item.h",
   ]
   deps = [
+    "//base",
     "//components/autofill/core/browser",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
@@ -51,12 +58,18 @@ source_set("edit_items") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "autofill_ai_add_entities_menu_builder_unittest.mm" ]
+  sources = [
+    "autofill_ai_add_entities_menu_builder_unittest.mm",
+    "autofill_ai_entity_edit_table_view_controller_unittest.mm",
+  ]
   deps = [
     ":edit_items",
     ":ui",
     "//components/autofill/core/browser:test_support",
     "//components/sync:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//third_party/ocmock",
   ]
 }

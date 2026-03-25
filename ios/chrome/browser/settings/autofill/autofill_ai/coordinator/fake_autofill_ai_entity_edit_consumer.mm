@@ -4,6 +4,12 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/fake_autofill_ai_entity_edit_consumer.h"
 
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
+
 @implementation FakeAutofillAIEntityEditConsumer
+
+- (void)updateItem:(TableViewItem*)item {
+  // Empty implementation to satisfy protocol.
+}
 
 @end

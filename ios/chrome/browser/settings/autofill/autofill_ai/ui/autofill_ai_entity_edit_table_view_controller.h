@@ -8,8 +8,21 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/ui/autofill_edit_table_view_controller.h"
 
+@protocol AutofillAIEntityEditTableViewControllerDelegate;
+@protocol AutofillAIEntityEditMutator;
+
 @interface AutofillAIEntityEditTableViewController
-    : AutofillEditTableViewController <AutofillAIEntityEditConsumer>
+    : AutofillEditTableViewController <AutofillAIEntityEditConsumer,
+                                       UITextFieldDelegate>
+
+@property(nonatomic, weak) id<AutofillAIEntityEditTableViewControllerDelegate>
+    delegate;
+
+// Mutator for this view controller.
+@property(nonatomic, weak) id<AutofillAIEntityEditMutator> mutator;
+
+// Whether to start in edit mode.
+@property(nonatomic, assign) BOOL startInEditMode;
 
 @end
 

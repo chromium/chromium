@@ -6,6 +6,9 @@
 #define IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_COORDINATOR_AUTOFILL_AI_ENTITY_EDIT_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_mutator.h"
 
 namespace autofill {
 class EntityDataManager;
@@ -14,10 +17,18 @@ class EntityInstance;
 
 @protocol AutofillAIEntityEditConsumer;
 
-@interface AutofillAIEntityEditMediator : NSObject
+@class CountryItem;
+@class TableViewItem;
+@class AutofillAIEntityCountryItem;
+@class AutofillAIEntityEditDateItem;
+
+@interface AutofillAIEntityEditMediator : NSObject <AutofillAIEntityEditMutator>
 
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AutofillAIEntityEditConsumer> consumer;
+
+// The fetched country list.
+@property(nonatomic, strong, readonly) NSArray<CountryItem*>* allCountries;
 
 - (instancetype)initWithEntityInstance:(autofill::EntityInstance)entityInstance
                      entityDataManager:
@@ -25,6 +36,10 @@ class EntityInstance;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Called when a country is selected.
+- (void)didSelectCountry:(CountryItem*)countryItem
+                 forItem:(AutofillAIEntityCountryItem*)item;
 
 @end
 

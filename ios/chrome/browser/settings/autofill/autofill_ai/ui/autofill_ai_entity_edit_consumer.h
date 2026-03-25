@@ -7,10 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-namespace autofill {
-class EntityInstance;
-}
-
 @class TableViewItem;
 
 // The consumer of the Autofill AI entity view and edit mediator.
@@ -24,6 +20,9 @@ class EntityInstance;
 
 // Sets whether editing is allowed.
 - (void)setEditingAllowed:(BOOL)editingAllowed;
+
+// Updates the given item.
+- (void)updateItem:(TableViewItem*)item;
 
 @end
 
