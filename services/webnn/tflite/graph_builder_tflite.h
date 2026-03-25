@@ -194,7 +194,7 @@ class GraphBuilderTflite final {
   // as input, for example the input data type has been overridden to float32 of
   // intermediate operands (Reshape), so the output tensor type should be
   // float32 with the argument.
-  TensorInfo SerializeOutputTensorInfo(
+  base::expected<TensorInfo, std::string> SerializeOutputTensorInfo(
       OperandId operand_id,
       QuantizateParametersOffset quantize_params = 0,
       bool operation_supports_float16 = false,
@@ -315,7 +315,8 @@ class GraphBuilderTflite final {
       const TensorInfo& indices_tensor_info,
       const TensorInfo& input_tensor_info,
       std::optional<uint32_t> gather_axis = std::nullopt);
-  TensorIndex CastGatherIndices(const TensorInfo& indices_tensor_info);
+  base::expected<TensorIndex, std::string> CastGatherIndices(
+      const TensorInfo& indices_tensor_info);
 
   // This function is called by `SerializeGatherND` to serialize WebNN
   // gatherND or gatherElements.
@@ -511,7 +512,7 @@ class GraphBuilderTflite final {
       float mul_alpha);
 
   // Serialize a sub graph (input * weight + bias) for gru cell.
-  TensorIndex SerializeSubGraphMatmulAdd(
+  base::expected<TensorIndex, std::string> SerializeSubGraphMatmulAdd(
       base::span<const int32_t> input_dimensions,
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
@@ -731,8 +732,9 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeIsInfinite(
       const TensorInfo& input_tensor_info,
       const TensorInfo& output_tensor_info);
-  OperatorOffset SerializeLogicalNot(const TensorInfo& input_tensor_info,
-                                     const TensorInfo& output_tensor_info);
+  base::expected<OperatorOffset, std::string> SerializeLogicalNot(
+      const TensorInfo& input_tensor_info,
+      const TensorInfo& output_tensor_info);
   base::expected<OperatorOffset, std::string> SerializeLstmCell(
       const mojom::LstmCell& lstm_cell);
   base::expected<OperatorOffset, std::string> SerializeMatmul(
@@ -781,8 +783,9 @@ class GraphBuilderTflite final {
       const mojom::Softsign& softsign);
   base::expected<OperatorOffset, std::string> SerializeSplit(
       const mojom::Split& split);
-  OperatorOffset SerializeTan(const TensorInfo& input_tensor_info,
-                              const TensorInfo& output_tensor_info);
+  base::expected<OperatorOffset, std::string> SerializeTan(
+      const TensorInfo& input_tensor_info,
+      const TensorInfo& output_tensor_info);
   base::expected<OperatorOffset, std::string> SerializeTanh(
       const mojom::Tanh& tanh);
   base::expected<OperatorOffset, std::string> SerializeTile(
@@ -813,50 +816,52 @@ class GraphBuilderTflite final {
   // minimum and maximum can be mapped to tflite::ActivationFunctionType, if so
   // we can remove the relu / clamp operation and fuse the
   // ActivationFunctionType.
-  std::optional<FusedActivationOutputInfo> CanFuseActivationAndGetOutput(
-      OperandId output_operand_id);
+  base::expected<std::optional<FusedActivationOutputInfo>, std::string>
+  CanFuseActivationAndGetOutput(OperandId output_operand_id);
 
   // Check if inputs and outputs are quantized tensors and matches
   // op specific fusion criteria required by TFLite, if so we can remove the
   // preceding `dequantizeLinear` and subsequent `quantizeLinear`.
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Clamp& clamp,
-      bool is_emulated);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Clamp& clamp, bool is_emulated);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(
       const mojom::Conv2d& conv2d,
       std::optional<OperandId> activation_output_operand_id);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Concat& concat);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::ElementWiseBinary& binary);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Elu& elu);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Gather& gather);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Gemm& gemm);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Pad& pad);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Pool2d& pool2d);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Reduce& reduce);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Resample2d& resample2d);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Reshape& reshape);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Slice& slice);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Softmax& softmax);
-  std::optional<base::FixedArray<TensorInfo>> CanFuseQuantizeAndGetOutput(
-      const mojom::Split& split);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Transpose& transpose);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Tanh& tanh);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::Sigmoid& sigmoid);
-  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-      const mojom::LeakyRelu& leaky_relu);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Concat& concat);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::ElementWiseBinary& binary);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Elu& elu);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Gather& gather);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Gemm& gemm);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Pad& pad);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Pool2d& pool2d);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Reduce& reduce);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Resample2d& resample2d);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Reshape& reshape);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Slice& slice);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Softmax& softmax);
+  base::expected<std::optional<base::FixedArray<TensorInfo>>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Split& split);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Transpose& transpose);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Tanh& tanh);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::Sigmoid& sigmoid);
+  base::expected<std::optional<TensorInfo>, std::string>
+  CanFuseQuantizeAndGetOutput(const mojom::LeakyRelu& leaky_relu);
   // Helper for activation operations to check if specific fusion criteria
   // required by TFLite are met and return next quantizeLinear operation
   // information if so.
@@ -888,7 +893,7 @@ class GraphBuilderTflite final {
       OperationId operation_index);
   // Serialize `quantize_linear`'s output with quantization params and
   // mark the `quantize_linear` to be skipped.
-  TensorInfo SerializeQuantizedOutput(
+  base::expected<TensorInfo, std::string> SerializeQuantizedOutput(
       std::pair<OperationId, QuantizateParametersOffset> quantize_op_info);
   // Get next operation id if it exists and is the only one with the output
   // operand id of current operation.
