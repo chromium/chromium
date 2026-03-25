@@ -42,3 +42,24 @@ promise_test(async t => {
   await promise_rejects_quotaexceedederror(
       t, session.append(promptString), usage, session.contextWindow);
 }, 'Test that append input exceeding the total context window rejects');
+
+promise_test(async t => {
+  await ensureLanguageModel();
+  const session = await createLanguageModel();
+  const result1 = session.append([
+    {role: 'user', content: 'foo'},
+    {role: 'system', content: 'bar'},
+  ]);
+  await promise_rejects_js(t, TypeError, result1);
+
+  const result2 = session.append([
+    {role: 'system', content: 'foo'},
+    {role: 'system', content: 'bar'},
+  ]);
+  await promise_rejects_js(t, TypeError, result2);
+
+  const result3 = session.append({role: 'system', content: 'foo'});
+  await promise_rejects_js(
+      t, TypeError, session.append([{role: 'system', content: 'bar'}]));
+  await result3;
+}, 'append() should reject system role messages after other messages');

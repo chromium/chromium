@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_tool_call.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
@@ -785,30 +786,39 @@ void LanguageModel::ExecuteMeasureInputUsage(
           WrapPersistent(resolver), WrapPersistent(signal)));
 }
 
-std::optional<on_device_model::mojom::blink::ResponseConstraintPtr>
-LanguageModel::ValidateAndProcessPromptInput(
-    ScriptState* script_state,
-    const V8LanguageModelPrompt* input,
-    const LanguageModelPromptOptions* options,
-    ExceptionState& exception_state) {
+bool LanguageModel::ValidateInput(ScriptState* script_state,
+                                  const V8LanguageModelPrompt* input,
+                                  AbortSignal* signal,
+                                  ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return std::nullopt;
+    return false;
   }
 
-  AbortSignal* signal = options->getSignalOr(nullptr);
   if (HandleAbortSignal(signal, script_state, exception_state)) {
-    return std::nullopt;
+    return false;
   }
 
-  on_device_model::mojom::blink::ResponseConstraintPtr constraint;
-  if (!ParseConstraint(script_state, options, exception_state, constraint)) {
-    // ParseConstraint will throw an exception when false is returned.
-    return std::nullopt;
+  if (!language_model_remote_) {
+    ThrowSessionDestroyedException(exception_state);
+    return false;
   }
+
+  CHECK(input);
+  if (input->IsLanguageModelMessageSequence()) {
+    const auto& messages = input->GetAsLanguageModelMessageSequence();
+    for (const auto& message : messages) {
+      if (message->role() == V8LanguageModelMessageRole::Enum::kSystem &&
+          (message != messages.front() || has_context_)) {
+        exception_state.ThrowTypeError(
+            kExceptionMessagePromptWithSystemRoleIsNotTheFirst);
+        return false;
+      }
+    }
+  }
+  has_context_ = true;
 
   // TODO(crbug.com/411470034): Aggregate other input type sizes for UMA.
-  CHECK(input);
   if (input->IsString()) {
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(
@@ -816,8 +826,23 @@ LanguageModel::ValidateAndProcessPromptInput(
         static_cast<int>(input->GetAsString().CharactersSizeInBytes()));
   }
 
-  if (!language_model_remote_) {
-    ThrowSessionDestroyedException(exception_state);
+  return true;
+}
+
+std::optional<on_device_model::mojom::blink::ResponseConstraintPtr>
+LanguageModel::ValidateAndProcessPromptInput(
+    ScriptState* script_state,
+    const V8LanguageModelPrompt* input,
+    const LanguageModelPromptOptions* options,
+    ExceptionState& exception_state) {
+  if (!ValidateInput(script_state, input, options->getSignalOr(nullptr),
+                     exception_state)) {
+    return std::nullopt;
+  }
+
+  on_device_model::mojom::blink::ResponseConstraintPtr constraint;
+  if (!ParseConstraint(script_state, options, exception_state, constraint)) {
+    // ParseConstraint will throw an exception when false is returned.
     return std::nullopt;
   }
 
@@ -829,18 +854,8 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
     const V8LanguageModelPrompt* input,
     const LanguageModelAppendOptions* options,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
-    return EmptyPromise();
-  }
-
-  if (!language_model_remote_) {
-    ThrowSessionDestroyedException(exception_state);
-    return EmptyPromise();
-  }
-
   AbortSignal* signal = options->getSignalOr(nullptr);
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
+  if (!ValidateInput(script_state, input, signal, exception_state)) {
     return EmptyPromise();
   }
 
@@ -855,8 +870,7 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
   }
 
   ConvertPromptInputsToMojo(
-      script_state, options->getSignalOr(nullptr), input, info_,
-      /*json_schema=*/"",
+      script_state, signal, input, info_, /*json_schema=*/"",
       blink::BindOnce(&AppendClient::Create, WrapPersistent(script_state),
                       WrapPersistent(this), WrapPersistent(resolver),
                       WrapPersistent(signal),

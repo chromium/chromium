@@ -70,8 +70,7 @@ const char kExceptionMessageUnableToCloneSession[] =
 const char kExceptionMessageUnableToCalculateUsage[] =
     "The usage cannot be calculated.";
 const char kExceptionMessagePromptWithSystemRoleIsNotTheFirst[] =
-    "The prompt with 'system' role must be placed at the first entry of "
-    "initialPrompts.";
+    "The 'system' role message must be the first message of a session.";
 const char kExceptionMessageUnsupportedLanguages[] =
     "The specified languages are not supported.";
 // TODO(crbug.com/488092645): Update the message once speed is supported.

@@ -144,7 +144,14 @@ class MODULES_EXPORT LanguageModel final : public EventTarget,
       AbortSignal* signal,
       Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
 
-  // Validates and processed prompt input and returns the processed constraints.
+  // Validates common prompt input and returns true on success.
+  // Returns false and throws exceptions on failure.
+  bool ValidateInput(ScriptState* script_state,
+                     const V8LanguageModelPrompt* input,
+                     AbortSignal* signal,
+                     ExceptionState& exception_state);
+
+  // Validates and processes prompt input and returns the processed constraints.
   // Returns std::nullopt on failure.
   std::optional<on_device_model::mojom::blink::ResponseConstraintPtr>
   ValidateAndProcessPromptInput(ScriptState* script_state,
@@ -158,6 +165,8 @@ class MODULES_EXPORT LanguageModel final : public EventTarget,
   blink::mojom::blink::AILanguageModelInstanceInfoPtr info_;
   // Tool calls from the current response, populated by HandleToolCalls.
   Vector<mojom::blink::ToolCallPtr> pending_tool_calls_;
+  // Whether the session has any context, including pending requests.
+  bool has_context_ = false;
 };
 
 }  // namespace blink
