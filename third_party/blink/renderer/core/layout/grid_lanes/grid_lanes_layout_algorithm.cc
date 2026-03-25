@@ -1400,17 +1400,14 @@ void GridLanesLayoutAlgorithm::InitializeTrackSizes(
                        /*opt_subgrid_data=*/kNoSubgriddedItemData);
 }
 
-// TODO(almaher): This should eventually take a GridSizingSubtree instead of
-// GridSizingTree and be done for each layer of subgrid.
 void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
+    const GridSizingSubtree& sizing_subtree,
     SizingConstraint sizing_constraint,
-    GridSizingTree* sizing_tree,
-    bool needs_intrinsic_track_size,
-    bool* /* opt_needs_additional_pass */) const {
+    bool needs_intrinsic_track_size) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   auto& track_collection =
-      sizing_tree->LayoutData().SizingCollection(grid_axis_direction);
+      sizing_subtree.LayoutData().SizingCollection(grid_axis_direction);
 
   if (track_collection.HasNonDefiniteTrack()) {
     const GridTrackSizingAlgorithm track_sizing_algorithm(
@@ -1426,7 +1423,7 @@ void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
           return ContributionSizeForVirtualItem(
               track_collection, contribution_type, virtual_item);
         },
-        &track_collection, &sizing_tree->GetVirtualItems(),
+        &track_collection, &sizing_subtree.GetVirtualItems(),
         needs_intrinsic_track_size);
 
     auto first_set_geometry = GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
@@ -1437,7 +1434,20 @@ void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
                                           first_set_geometry.gutter_size);
   }
 
-  // TODO(almaher): Do this for each subgrid (similar to grid).
+  CompleteTrackSizingAlgorithmForEachSubgrid(
+      sizing_subtree, *this, grid_axis_direction, sizing_constraint,
+      /*opt_needs_additional_pass=*/nullptr);
+}
+
+void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
+    SizingConstraint sizing_constraint,
+    GridSizingTree* sizing_tree,
+    bool needs_intrinsic_track_size) const {
+  // TODO(almaher): When baselines are updated to handle subgrids, do we need
+  // to call `ValidateMinMaxSizesCache()` and `ComputeBaselineAlignment()` here
+  // (similar to `GridLayoutAlgorithm::CompleteTrackSizingAlgorithm`)?
+  CompleteTrackSizingAlgorithm(GridSizingSubtree(sizing_tree),
+                               sizing_constraint, needs_intrinsic_track_size);
 }
 
 void GridLanesLayoutAlgorithm::CompleteFinalBaselineAlignment(

@@ -87,6 +87,13 @@ class CORE_EXPORT GridLayoutAlgorithm
       const SubgriddedItemData& opt_subgrid_data,
       const std::optional<GridTrackSizingDirection>& opt_track_direction) const;
 
+  // Computes and caches the used track sizes of a grid sizing subtree.
+  void CompleteTrackSizingAlgorithm(const GridSizingSubtree& sizing_subtree,
+                                    const SubgriddedItemData& opt_subgrid_data,
+                                    GridTrackSizingDirection track_direction,
+                                    SizingConstraint sizing_constraint,
+                                    bool* opt_needs_additional_pass) const;
+
  private:
   friend class GridLayoutAlgorithmTest;
 
@@ -135,13 +142,6 @@ class CORE_EXPORT GridLayoutAlgorithm
   void ComputeUsedTrackSizes(const GridSizingSubtree& sizing_subtree,
                              GridTrackSizingDirection track_direction,
                              SizingConstraint sizing_constraint) const;
-
-  // Computes and caches the used track sizes of a grid sizing subtree.
-  void CompleteTrackSizingAlgorithm(const GridSizingSubtree& sizing_subtree,
-                                    const SubgriddedItemData& opt_subgrid_data,
-                                    GridTrackSizingDirection track_direction,
-                                    SizingConstraint sizing_constraint,
-                                    bool* opt_needs_additional_pass) const;
 
   // Helper that calls the method above for the entire grid sizing tree.
   void CompleteTrackSizingAlgorithm(

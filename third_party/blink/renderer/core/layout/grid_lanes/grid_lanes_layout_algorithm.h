@@ -167,12 +167,16 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       bool& needs_intrinsic_track_size,
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
 
-  // Completes the track sizing algorithm for non-definite tracks.
-  void CompleteTrackSizingAlgorithm(
-      SizingConstraint sizing_constraint,
-      GridSizingTree* sizing_tree,
-      bool needs_intrinsic_track_size,
-      bool* opt_needs_additional_pass = nullptr) const;
+  // Completes the track sizing algorithm for non-definite tracks of a
+  // grid-lanes sizing subtree.
+  void CompleteTrackSizingAlgorithm(const GridSizingSubtree& sizing_subtree,
+                                    SizingConstraint sizing_constraint,
+                                    bool needs_intrinsic_track_size) const;
+
+  // Helper that calls the method above for the entire grid sizing tree.
+  void CompleteTrackSizingAlgorithm(SizingConstraint sizing_constraint,
+                                    GridSizingTree* sizing_tree,
+                                    bool needs_intrinsic_track_size) const;
 
   // Performs the final baseline alignment pass of a sizing subtree in the grid
   // axis.

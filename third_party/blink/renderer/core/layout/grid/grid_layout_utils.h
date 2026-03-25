@@ -339,6 +339,28 @@ void InitializeTrackSizesForEachSubgrid(
       /*should_compute_min_max_sizes=*/false);
 }
 
+// Iterates over subgrids in `sizing_subtree` and completes their track sizing
+// algorithm.
+template <typename LayoutAlgorithmType>
+void CompleteTrackSizingAlgorithmForEachSubgrid(
+    const GridSizingSubtree& sizing_subtree,
+    const LayoutAlgorithmType& algorithm,
+    GridTrackSizingDirection track_direction,
+    SizingConstraint sizing_constraint,
+    bool* opt_needs_additional_pass) {
+  // TODO(almaher): Support grid-lanes subgrids as well.
+  ForEachSubgrid(
+      sizing_subtree, algorithm,
+      [&](const GridLayoutAlgorithm& subgrid_algorithm,
+          const GridSizingSubtree& subgrid_subtree,
+          const SubgriddedItemData& subgrid_data) {
+        subgrid_algorithm.CompleteTrackSizingAlgorithm(
+            subgrid_subtree, subgrid_data,
+            subgrid_data->RelativeDirectionInSubgrid(track_direction),
+            sizing_constraint, opt_needs_additional_pass);
+      });
+}
+
 // Returns the synthesized logical baseline for a grid item. This is used when
 // computing min/max content contributions without a full layout result.
 LayoutUnit GetSynthesizedLogicalBaseline(
