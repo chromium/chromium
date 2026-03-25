@@ -27,9 +27,6 @@ _SHARD_MAP_DIR = os.path.join(os.path.dirname(__file__), 'shard_maps')
 
 _ALL_BENCHMARKS_BY_NAMES = dict(
     (b.Name(), b) for b in benchmark_finders.GetAllBenchmarks())
-
-_OFFICIAL_BENCHMARKS = frozenset(
-    b for b in benchmark_finders.GetOfficialBenchmarks() if b.IsScheduled())
 GTEST_STORY_NAME = '_gtest_'
 
 
@@ -289,18 +286,6 @@ def _TelemetryConfig(benchmark_name: str,
                      pageset_repeat: int | None = None):
   benchmark = _ALL_BENCHMARKS_BY_NAMES[benchmark_name]
   return TelemetryConfig(benchmark, abridged, pageset_repeat)
-
-
-_OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
-    [_TelemetryConfig(b.Name()) for b in _OFFICIAL_BENCHMARKS])
-_OFFICIAL_BENCHMARK_CONFIGS = _OFFICIAL_BENCHMARK_CONFIGS.Remove([
-    'blink_perf.svg',
-    'blink_perf.paint',
-])
-# TODO(crbug.com/40628256): Remove OFFICIAL_BENCHMARK_NAMES once sharding
-# scripts are no longer using it.
-OFFICIAL_BENCHMARK_NAMES = frozenset(
-    b.name for b in _OFFICIAL_BENCHMARK_CONFIGS.Frozenset())
 
 BenchmarkConfigFactory = Callable[..., BenchmarkConfig]
 _BENCHMARKS_CONFIG_FACTORIES: dict[str, BenchmarkConfigFactory] = {}

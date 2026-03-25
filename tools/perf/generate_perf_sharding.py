@@ -292,7 +292,6 @@ def _ParseBenchmarks(shard_map_path):
       all_benchmarks |= set(crossbench.keys())
   return frozenset(all_benchmarks)
 
-
 def _ValidateShardMaps(args):
   """Validate that the shard maps, csv files, etc. are consistent."""
   del args
@@ -323,43 +322,23 @@ def _ValidateShardMaps(args):
                   | platform.crossbench)
     }
     shard_map_benchmark_names = _ParseBenchmarks(platform.shards_map_file_path)
-    for benchmark in platform_benchmark_names - shard_map_benchmark_names:
+    new_benchmarks = platform_benchmark_names - shard_map_benchmark_names
+    for benchmark in new_benchmarks:
       errors.append(
-          'Benchmark {benchmark} is supposed to be scheduled on platform '
-          '{platform} according to '
-          'bot_platforms.py, but it is not yet scheduled. If this is a new '
-          'benchmark, please set {benchmark}.SCHEDULED = False, and then '
-          'contact '
-          'Telemetry and Chrome Client Infra team to schedule the benchmark. '
-          'You can email chrome-benchmarking-request@ to get started.'.format(
-              benchmark=benchmark, platform=platform.name))
-    for benchmark in shard_map_benchmark_names - platform_benchmark_names:
-      errors.append(
-          'Benchmark {benchmark} is scheduled on shard map {path}, but '
-          'bot_platforms.py '
-          'says that it should not be on that shard map. This could be because '
-          'the benchmark was deleted or {benchmark}.SCHEDULED is not True. '
-          'If that is the case, you can use '
-          '`generate_perf_sharding deschedule` to deschedule the benchmark '
-          'from the shard map.'.format(benchmark=benchmark,
-                                       path=platform.shards_map_file_path))
-
-  # Check that every official benchmark is scheduled on some shard map.
-  # TODO(crbug.com/40627632): Note that this check can be deleted if we
-  # find some way other than naming the benchmark with prefix "UNSCHEDULED_"
-  # to make it clear that a benchmark is not running.
-  scheduled_benchmarks = set()
-  for platform in bot_platforms.ALL_PLATFORMS:
-    if platform.pinpoint_only:
-      continue
-    scheduled_benchmarks = scheduled_benchmarks | _ParseBenchmarks(
-        platform.shards_map_file_path)
-  for benchmark in (
-      bot_platforms.OFFICIAL_BENCHMARK_NAMES - scheduled_benchmarks):
-    errors.append(
-        'Benchmark {benchmark} is an official benchmark, but it is not '
-        'scheduled to run anywhere. please set '
-        '{benchmark}.SCHEDULED = False'.format(benchmark=benchmark))
+          f'Benchmark {benchmark} is supposed to be scheduled on platform '
+          f'{platform.name} according to '
+          f'schedule/{benchmark}.csv, but it is not yet scheduled.'
+          f'Please regenerate the shard map {platform.shards_map_file_path}'
+          f'with `{__file__} update`')
+    stale_benchmarks = shard_map_benchmark_names - platform_benchmark_names
+    for benchmark in stale_benchmarks:
+      errors.append(f'Benchmark {benchmark} is scheduled on shard map '
+                    f'{platform.shards_map_file_path}, but '
+                    f'schedule/{benchmark}.csv, '
+                    'says that it should not be on that shard map. '
+                    'If that is the case, you can use '
+                    f'`{__file__} deschedule` to deschedule the benchmark '
+                    'from the shard map.')
 
   for error in errors:
     print('*', error, '\n', file=sys.stderr)
