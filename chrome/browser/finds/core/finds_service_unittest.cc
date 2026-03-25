@@ -11,6 +11,7 @@
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/testing_profile.h"
@@ -677,6 +678,25 @@ TEST_F(FindsServiceTest, NoNotificationIfAllOnCooldown) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(FindsServiceTest, ScheduleNotificationForInternalsPage) {
+  std::unique_ptr<notifications::NotificationParams> scheduled_params;
+  EXPECT_CALL(*notification_schedule_service_, Schedule(_))
+      .WillOnce([&](std::unique_ptr<notifications::NotificationParams> params) {
+        scheduled_params = std::move(params);
+      });
+
+  bool success = service_->ScheduleNotificationForInternalsPage();
+  EXPECT_TRUE(success);
+
+  ASSERT_NE(nullptr, scheduled_params);
+  EXPECT_EQ(u"Test Notification", scheduled_params->notification_data.title);
+  EXPECT_EQ(u"This is a test notification from the internals page.",
+            scheduled_params->notification_data.message);
+  EXPECT_EQ("https://www.google.com",
+            scheduled_params->notification_data
+                .custom_data[notifications::kChromeFindsNotificationsUrl]);
 }
 
 }  // namespace finds

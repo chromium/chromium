@@ -20,6 +20,9 @@ interface PageHandler {
   // FindsService.
   GetFindsServiceModelResponse();
 
+  // Triggers a test Finds notification on the device.
+  TriggerFindsTestNotification();
+
   // Returns a JSON string of the user's browsing history.
   GetHistoryJson(int32 history_count) => (string json);
 };

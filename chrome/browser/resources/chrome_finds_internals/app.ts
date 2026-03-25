@@ -82,6 +82,11 @@ export class ChromeFindsInternalsAppElement extends CrLitElement {
     this.handler_.getFindsServiceModelResponse();
   }
 
+  protected onTriggerFindsTestNotificationClick_() {
+    this.appendLog_('Triggering Finds Test Notification...');
+    this.handler_.triggerFindsTestNotification();
+  }
+
   protected onResetClick_() {
     this.prompt_ = DEFAULT_PROMPT;
     this.appendLog_('Prompt reset to default.');

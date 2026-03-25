@@ -793,10 +793,16 @@ const FeatureEntry::Choice kSafetyHubUnifiedPasswordsModuleChoices[] = {
      "SafetyHubLocalPasswordsModule, SafetyHubUnifiedPasswordsModule"},
 };
 
-const FeatureEntry::FeatureParam kChromeFindsAlwaysShowOptInPromo[] = {
+const FeatureEntry::FeatureParam kChromeFindsAlwaysShowOptIn[] = {
     {"always_show_opt_in_promo", "true"}};
+const FeatureEntry::FeatureParam kChromeFindsBypassCooldowns[] = {
+    {"theme_cooldown_duration_in_days", "0"},
+    {"finds_notification_schedule_start_time_minutes", "0"},
+    {"finds_notification_schedule_window_time_minutes", "1"}};
+
 const FeatureEntry::FeatureVariation kChromeFindsVariations[] = {
-    {" - Always Show Opt-in", kChromeFindsAlwaysShowOptInPromo, nullptr}};
+    {" - Always Show Opt-in", kChromeFindsAlwaysShowOptIn, nullptr},
+    {" - Bypass Cooldowns", kChromeFindsBypassCooldowns, nullptr}};
 
 const FeatureEntry::FeatureParam kPopularSitesRefreshUsParamArm1[] = {
     {"arm", "1"}};  // ntp_tiles::kPopularSitesRefreshUsArm.name

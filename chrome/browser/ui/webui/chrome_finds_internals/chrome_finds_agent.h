@@ -51,6 +51,9 @@ class ChromeFindsAgent : public KeyedService {
   // Sends a notification with the prompt via FindsService.
   void GetFindsServiceModelResponse();
 
+  // Triggers a test Finds notification on the device.
+  void TriggerFindsTestNotification();
+
   // Retrieves history and returns it as a JSON string via callback.
   void GetHistoryJson(int32_t history_count,
                       base::OnceCallback<void(const std::string&)> callback);

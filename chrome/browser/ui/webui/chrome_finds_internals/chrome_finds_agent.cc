@@ -80,6 +80,24 @@ void ChromeFindsAgent::GetFindsServiceModelResponse() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ChromeFindsAgent::TriggerFindsTestNotification() {
+  AddLogMessage("ChromeFindsAgent::TriggerFindsTestNotification() called.");
+
+  if (!finds_service_) {
+    AddLogMessage("Error: FindsService not available.");
+    return;
+  }
+
+  AddLogMessage("Triggering test notification via FindsService...");
+  bool success = finds_service_->ScheduleNotificationForInternalsPage();
+
+  AddLogMessage(success ? "Test notification scheduled successfully. If the "
+                          "notification is not showing up, ensure you have the "
+                          "finds notification channel enabled and the bypass "
+                          "cooldowns feature param on."
+                        : "Failed to schedule test notification.");
+}
+
 void ChromeFindsAgent::GetHistoryJson(
     int32_t history_count,
     base::OnceCallback<void(const std::string&)> callback) {

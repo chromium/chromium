@@ -248,6 +248,8 @@ public class DisplayAgent {
         switch (type) {
             case SchedulerClientType.TIPS:
                 return ChannelId.TIPS;
+            case SchedulerClientType.CHROME_FINDS:
+                return ChannelId.CHROME_FINDS;
             default:
                 return ChannelId.BROWSER;
         }

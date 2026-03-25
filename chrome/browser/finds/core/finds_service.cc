@@ -20,6 +20,7 @@
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/notifications/scheduler/public/schedule_params.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -173,6 +174,8 @@ notifications::NotificationData GetNotificationData(
   notifications::NotificationData data;
   data.title = base::UTF8ToUTF16(suggestion.title());
   data.message = base::UTF8ToUTF16(suggestion.description());
+  data.custom_data[notifications::kChromeFindsNotificationsUrl] =
+      suggestion.target_url();
   data.buttons.clear();
   // TODO(crbug.com/483104552): Add buttons and click behaviours when available.
   return data;
@@ -247,6 +250,22 @@ void FindsService::ExecuteModelAndScheduleNotification(
       base::BindOnce(&FindsService::OnHistoryQueryComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       &history_task_tracker_);
+}
+
+bool FindsService::ScheduleNotificationForInternalsPage() {
+  // Mock a suggestion model response and schedule notification.
+  optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme theme;
+  theme.set_theme_type(optimization_guide::proto::FindsSuggestionResponse::
+                           SuggestionTheme::SHOPPING);
+  theme.set_theme_title("Internals Test Theme");
+
+  auto* suggestion = theme.add_suggestions();
+  suggestion->set_title("Test Notification");
+  suggestion->set_description(
+      "This is a test notification from the internals page.");
+  suggestion->set_target_url("https://www.google.com");
+
+  return ScheduleNotificationWithModelResult(theme);
 }
 
 void FindsService::CheckModelCooldownCriteriaAndMaybeExecute() {

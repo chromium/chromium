@@ -50,6 +50,10 @@ class PageHandlerImpl : public mojom::PageHandler,
     agent_->GetFindsServiceModelResponse();
   }
 
+  void TriggerFindsTestNotification() override {
+    agent_->TriggerFindsTestNotification();
+  }
+
   void GetHistoryJson(int32_t history_count,
                       GetHistoryJsonCallback callback) override {
     agent_->GetHistoryJson(history_count, std::move(callback));

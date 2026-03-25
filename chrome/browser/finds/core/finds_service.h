@@ -77,6 +77,11 @@ class FindsService : public KeyedService, public base::SupportsUserData {
   void ExecuteModelAndScheduleNotification(
       base::OnceCallback<void(Result)> callback);
 
+  // Schedules a test notification using mocked data, bypassing model execution.
+  // This is intended for use by the chrome-finds-internals page only. Do not
+  // use in production code.
+  bool ScheduleNotificationForInternalsPage();
+
  private:
   void CheckModelCooldownCriteriaAndMaybeExecute();
   void OnHistoryQueryComplete(base::OnceCallback<void(Result)> callback,
