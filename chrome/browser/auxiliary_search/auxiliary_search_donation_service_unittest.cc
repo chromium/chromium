@@ -5,6 +5,7 @@
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/android/application_status_listener.h"
@@ -71,6 +72,17 @@ class AuxiliarySearchDonationServiceTest : public testing::Test {
 
     AuxiliarySearchDonationService::RegisterProfilePrefs(
         test_pref_service_.registry());
+
+    ON_CALL(mock_ranking_service_, RankURLVisitAggregates)
+        .WillByDefault(
+            [](const visited_url_ranking::Config& config,
+               std::vector<visited_url_ranking::URLVisitAggregate> visits,
+               visited_url_ranking::VisitedURLRankingService::
+                   RankURLVisitAggregatesCallback callback) {
+              std::move(callback).Run(
+                  visited_url_ranking::ResultStatus::kSuccess,
+                  std::move(visits));
+            });
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -174,9 +186,6 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchUsesLastTime) {
   AuxiliarySearchDonationService service(page_content_annotations_service(),
                                          mock_ranking_service(),
                                          test_pref_service());
-  EXPECT_CALL(*mock_ranking_service(), RankURLVisitAggregates(_, _, _))
-      .WillRepeatedly(
-          RunOnceCallback<2>(ResultStatus::kSuccess, CreateVisitAggregates()));
 
   // First fetch returns the fake visit time as metadata. The second fetch
   // should use the provided fake visit time (plus 1us to ensure that the same
@@ -202,9 +211,6 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotFetchTooFarBack) {
   AuxiliarySearchDonationService service(page_content_annotations_service(),
                                          mock_ranking_service(),
                                          test_pref_service());
-  EXPECT_CALL(*mock_ranking_service(), RankURLVisitAggregates(_, _, _))
-      .WillRepeatedly(
-          RunOnceCallback<2>(ResultStatus::kSuccess, CreateVisitAggregates()));
   // First fetch returns the fake visit time as metadata. The second fetch
   // should not use the provided fake visit time because it is too far back.
   const base::Time fake_visit_time = base::Time::Now() - base::Hours(1);
@@ -230,9 +236,6 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
   AuxiliarySearchDonationService service(page_content_annotations_service(),
                                          mock_ranking_service(),
                                          test_pref_service());
-  EXPECT_CALL(*mock_ranking_service(), RankURLVisitAggregates(_, _, _))
-      .WillRepeatedly(
-          RunOnceCallback<2>(ResultStatus::kSuccess, CreateVisitAggregates()));
 
   // First fetch returns the fake visit time as metadata. The second fetch
   // returns an error. The third fetch should still use the fake visit time
@@ -259,10 +262,6 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, LastFetchTimePersistsInPrefs) {
-  EXPECT_CALL(*mock_ranking_service(), RankURLVisitAggregates(_, _, _))
-      .WillRepeatedly(
-          RunOnceCallback<2>(ResultStatus::kSuccess, CreateVisitAggregates()));
-
   // First fetch returns the fake visit time as metadata. The second fetch
   // should use the provided fake visit time (plus 1us).
   const base::Time fake_visit_time = base::Time::Now() - base::Hours(1);
