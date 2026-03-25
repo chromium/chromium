@@ -25,6 +25,8 @@ CGFloat const kSpacingAfterImage = 4;
 // Height of the logo used as the title of the bottom sheet.
 CGFloat const kTitleLogoHeight = 32;
 
+constexpr CGFloat kCreditCardFinderActionImagePadding = 8;
+
 }  // namespace
 
 @interface PaymentsScanSaveAndFillOfferBottomSheetViewController () <
@@ -61,6 +63,12 @@ CGFloat const kTitleLogoHeight = 32;
   [self registerForTraitChanges:TraitCollectionSetForTraits(
                                     @[ UITraitUserInterfaceStyle.class ])
                      withAction:@selector(resizeLogoOnTraitChange)];
+
+  UIButtonConfiguration* config = self.primaryActionButton.configuration;
+  config.image = DefaultSymbolTemplateWithPointSize(
+      kCreditCardFinderActionSymbol, kSymbolActionPointSize);
+  config.imagePadding = kCreditCardFinderActionImagePadding;
+  self.primaryActionButton.configuration = config;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

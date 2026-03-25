@@ -310,6 +310,7 @@ extern NSString* const kSparklesSymbol;
 extern NSString* const kSparkles2Symbol;
 extern NSString* const kEnvelopeSymbol;
 extern NSString* const kSquareAndPencilSymbol;
+extern NSString* const kCreditCardFinderActionSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
