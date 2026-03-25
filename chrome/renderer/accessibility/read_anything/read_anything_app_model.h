@@ -273,7 +273,7 @@ class ReadAnythingAppModel {
            DistillationMethod::kReadability;
   }
   bool should_apply_accessibility_updates_for_readability() const {
-    if (!features::IsReadAnythingWithReadabilityEnabled() &&
+    if (!features::IsReadAnythingWithReadabilityEnabled() ||
         !features::IsReadAnythingWithReadabilityAllowLinksEnabled()) {
       return false;
     }
