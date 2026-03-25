@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.multiwindow;
 import android.content.Context;
 import android.util.AtomicFile;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
@@ -38,7 +40,6 @@ public class MultiInstancePersistentStore {
 
     protected static @Nullable MultiInstanceData sData;
     private static @Nullable AtomicFile sAtomicFile;
-    private static boolean sInitialized;
 
     static {
         ensureInitialized();
@@ -50,15 +51,31 @@ public class MultiInstancePersistentStore {
         return MultiInstanceSharedPreferences.getInstance();
     }
 
-    protected static synchronized void ensureInitialized() {
-        if (sInitialized) return;
-
+    @VisibleForTesting
+    static void ensureInitialized() {
         boolean isProtoEnabled = ChromeFeatureList.sMultiInstanceSharedPrefsMigration.isEnabled();
-        // TODO: Implement migration and downgrade path.
-        if (isProtoEnabled) {
-            sData = loadProtoFromFile();
+        boolean isMigrationCompleted =
+                getManager()
+                        .readBoolean(
+                                MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE,
+                                false);
+
+        // 1. When the feature is disabled, trigger a downgrade if a previous migration is detected.
+        if (!isProtoEnabled) {
+            if (isMigrationCompleted) {
+                MultiInstanceProtoMigrationController.getInstance().downgrade();
+            }
         }
-        sInitialized = true;
+        // 2. Migration enabled, execute migration if it hasn't been completed, otherwise read data
+        // from the file.
+        // TODO: Add retry logic and metrics.
+        else if (isMigrationCompleted) {
+            sData = loadProtoFromFile();
+        } else {
+            // Attempt migration. If it fails, sData remains null and the store continues to use
+            // SharedPreferences. If it succeeds, #initializeFromMigration handles the rest.
+            MultiInstanceProtoMigrationController.getInstance().migrate();
+        }
     }
 
     protected static void initializeFromMigration(MultiInstanceData data) {
@@ -448,7 +465,6 @@ public class MultiInstancePersistentStore {
     }
 
     public static void resetForTesting() {
-        sInitialized = false;
         sData = null;
 
         // Delete the physical file so the next 'enabled' run starts fresh.

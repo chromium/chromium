@@ -87,9 +87,52 @@ public final class MultiInstancePreferenceKeys {
     public static final KeyPrefix MULTI_WINDOW_MODE_DURATION_MS =
             new KeyPrefix("Chrome.MultiWindowMode.DurationMs3.*");
 
-    /**
-     * Returns The list of [keys in use] conforming to the format.
-     */
+    public static final String MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE =
+            "Chrome.MultiInstance.ProtoMigrationComplete";
+
+    /** Returns All global (non-prefixed) keys used for multi-instance. */
+    public static List<String> getAllGlobalKeys() {
+        return Arrays.asList(
+                MULTI_WINDOW_START_TIME,
+                MULTI_INSTANCE_START_TIME,
+                MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM,
+                MULTI_INSTANCE_MAX_INSTANCE_LIMIT,
+                MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
+                MULTI_INSTANCE_MAX_COUNT_TIME,
+                MULTI_INSTANCE_MAX_ACTIVE_INSTANCE_COUNT,
+                MULTI_INSTANCE_MAX_INSTANCE_COUNT,
+                MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO,
+                MULTI_WINDOW_MODE_CYCLE_START_TIME,
+                MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE);
+    }
+
+    /** Returns All prefixes used for per-instance data. */
+    public static List<KeyPrefix> getPerInstancePrefixes() {
+        return Arrays.asList(
+                MULTI_INSTANCE_URL,
+                MULTI_INSTANCE_TITLE,
+                MULTI_INSTANCE_CUSTOM_TITLE,
+                MULTI_INSTANCE_TASK_MAP,
+                MULTI_INSTANCE_TAB_COUNT,
+                MULTI_INSTANCE_INCOGNITO_TAB_COUNT,
+                MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH,
+                MULTI_INSTANCE_PROFILE_TYPE,
+                MULTI_INSTANCE_LATEST_PERSISTENT_STATE_ID,
+                MULTI_INSTANCE_IS_INCOGNITO_SELECTED,
+                MULTI_INSTANCE_LAST_ACCESSED_TIME,
+                MULTI_INSTANCE_CLOSURE_TIME,
+                MULTI_INSTANCE_MARKED_FOR_DELETION);
+    }
+
+    /** Returns All prefixes used for window mode data. */
+    public static List<KeyPrefix> getWindowModePrefixes() {
+        return Arrays.asList(
+                MULTI_WINDOW_MODE_START_TIME,
+                MULTI_WINDOW_MODE_DURATION_MS,
+                MULTI_WINDOW_MODE_ACTIVITIES);
+    }
+
+    /** Returns The list of [keys in use] conforming to the format. */
     @CheckDiscard("Validation is performed in tests and in debug builds.")
     static List<String> getKeysInUse() {
         return Arrays.asList(
@@ -118,7 +161,8 @@ public final class MultiInstancePreferenceKeys {
                 MULTI_WINDOW_MODE_CYCLE_START_TIME,
                 MULTI_WINDOW_MODE_START_TIME.pattern(),
                 MULTI_WINDOW_MODE_ACTIVITIES.pattern(),
-                MULTI_WINDOW_MODE_DURATION_MS.pattern());
+                MULTI_WINDOW_MODE_DURATION_MS.pattern(),
+                MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE);
     }
 
     private MultiInstancePreferenceKeys() {}
