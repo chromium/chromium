@@ -683,7 +683,7 @@ class DedicatedWorkerObserver : public DedicatedWorkerService::Observer {
     }
   }
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
-                       int worker_process_id,
+                       ChildProcessId worker_process_id,
                        const url::Origin& security_origin,
                        DedicatedWorkerCreator creator) override {
     is_created_ = true;

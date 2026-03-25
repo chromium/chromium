@@ -52,7 +52,7 @@ class PerProfileWorkerTaskTracker
 
   // content::DedicatedWorkerService::Observer:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
-                       int worker_process_id,
+                       content::ChildProcessId worker_process_id,
                        const url::Origin& security_origin,
                        content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(

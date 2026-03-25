@@ -74,7 +74,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   // content::DedicatedWorkerService::Observer:
   void OnWorkerCreated(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
-      int worker_process_id,
+      content::ChildProcessId worker_process_id,
       const url::Origin& security_origin,
       content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(

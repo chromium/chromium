@@ -261,7 +261,7 @@ class WCOCallbackLogger : public WebContentsObserver,
 
   // Start DedicatedWorkerService.Observer overrides:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
-                       int worker_process_id,
+                       ChildProcessId worker_process_id,
                        const url::Origin& security_origin,
                        DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(const blink::DedicatedWorkerToken& worker_token,
@@ -343,7 +343,7 @@ void WCOCallbackLogger::OnClientAdded(
 
 void WCOCallbackLogger::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     const url::Origin& security_origin,
     DedicatedWorkerCreator creator) {
   const GlobalRenderFrameHostId& render_frame_host_id =

@@ -9,6 +9,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
@@ -30,7 +31,7 @@ class CONTENT_EXPORT DedicatedWorkerService {
     // and evaluated.
     virtual void OnWorkerCreated(
         const blink::DedicatedWorkerToken& worker_token,
-        int worker_process_id,
+        ChildProcessId worker_process_id,
         const url::Origin& security_origin,
         DedicatedWorkerCreator creator) = 0;
     virtual void OnBeforeWorkerDestroyed(
