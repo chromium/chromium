@@ -788,6 +788,20 @@ set_defaults("skia_source_set") {
   configs = default_compiler_configs
 }
 
+config("skia_avx512_flags") {
+  if (is_win) {
+    cflags = [ "/arch:AVX512" ]
+  } else {
+    cflags = [
+      "-mavx512f",
+      "-mavx512dq",
+      "-mavx512cd",
+      "-mavx512bw",
+      "-mavx512vl",
+    ]
+  }
+}
+
 # Split out for targeted removal of the afdo_optimize_size config on Android.
 skia_source_set("skia_core_and_effects") {
   defines = []
@@ -845,6 +859,11 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     }
     visibility = [ ":skia_opts" ]
   }
+  skia_source_set("skia_opts_skx") {
+    sources = skia_opts.skx_sources
+    configs += [ ":skia_avx512_flags" ]
+    visibility = [ ":skia_opts" ]
+  }
 }
 
 if (current_cpu == "loong64") {
@@ -866,6 +885,9 @@ skia_source_set("skia_opts") {
 
   if (current_cpu == "x86" || current_cpu == "x64") {
     deps += [ ":skia_opts_hsw" ]
+    if (allow_avx512) {
+      deps += [ ":skia_opts_skx" ]
+    }
   } else if (current_cpu == "arm") {
     # The assembly uses the frame pointer register (r7 in Thumb/r11 in
     # ARM), the compiler doesn't like that.
@@ -951,18 +973,10 @@ if (current_cpu == "x64") {
   }
   skia_source_set("skcms_TransformSkx") {
     sources = skcms_TransformSkx
-    configs += [ ":skcms_library_config" ]
-    if (!is_win) {
-      cflags = [
-        "-mavx512f",
-        "-mavx512dq",
-        "-mavx512cd",
-        "-mavx512bw",
-        "-mavx512vl",
-      ]
-    } else {
-      cflags = [ "/arch:AVX512" ]
-    }
+    configs += [
+      ":skcms_library_config",
+      ":skia_avx512_flags",
+    ]
     visibility = [ ":skcms" ]
   }
 } else {
