@@ -193,48 +193,33 @@ FieldClassificationModelHandler::CreateMlPredictionLog(
   prediction_log->form_signature =
       base::NumberToString(*CalculateFormSignature(form));
   prediction_log->form_url = form.url();
-
-  std::vector<std::string> model_types;
-  for (int field_type_as_int : state_->metadata.output_type()) {
-    FieldType field_type =
-        ToSafeFieldType(field_type_as_int).value_or(NO_SERVER_DATA);
-    std::string field_type_name =
-        field_type ? FieldTypeToString(field_type) : "[INVALID]";
-    model_types.emplace_back(std::move(field_type_name));
-  }
-  prediction_log->model_output_types.assign(model_types.begin(),
-                                            model_types.end());
-
-  std::vector<autofill_ml_internals::mojom::MlFieldPredictionLogPtr>
-      field_predictions;
-  for (const auto& field : form.fields()) {
-    autofill_ml_internals::mojom::MlFieldPredictionLogPtr field_prediction =
-        autofill_ml_internals::mojom::MlFieldPredictionLog::New();
-    field_prediction->label = base::UTF16ToUTF8(field.label());
-    field_prediction->placeholder = base::UTF16ToUTF8(field.placeholder());
-    field_prediction->autocomplete = field.autocomplete_attribute();
-    field_prediction->name = base::UTF16ToUTF8(field.name_attribute());
-    field_prediction->id = base::UTF16ToUTF8(field.id_attribute());
-    field_prediction->form_control_type =
-        FormControlTypeToString(field.form_control_type());
-
-    std::vector<autofill_ml_internals::mojom::SelectOptionPtr> select_options;
-    for (const auto& option : field.options()) {
-      autofill_ml_internals::mojom::SelectOptionPtr logged_option =
-          autofill_ml_internals::mojom::SelectOption::New();
-      logged_option->value = base::UTF16ToUTF8(option.value);
-      logged_option->text = base::UTF16ToUTF8(option.text);
-    }
-    field_prediction->select_options.assign(
-        std::make_move_iterator(select_options.begin()),
-        std::make_move_iterator(select_options.end()));
-
-    field_predictions.emplace_back(std::move(field_prediction));
-  }
-  prediction_log->field_predictions.assign(
-      std::make_move_iterator(field_predictions.begin()),
-      std::make_move_iterator(field_predictions.end()));
-
+  prediction_log->model_output_types =
+      base::ToVector(state_->metadata.output_type(), [](int field_type_as_int) {
+        return ToSafeFieldType(field_type_as_int)
+            .transform([](FieldType ft) { return FieldTypeToString(ft); })
+            .value_or("[INVALID]");
+      });
+  prediction_log->field_predictions =
+      base::ToVector(form.fields(), [](const auto& field) {
+        autofill_ml_internals::mojom::MlFieldPredictionLogPtr field_prediction =
+            autofill_ml_internals::mojom::MlFieldPredictionLog::New();
+        field_prediction->label = base::UTF16ToUTF8(field.label());
+        field_prediction->placeholder = base::UTF16ToUTF8(field.placeholder());
+        field_prediction->autocomplete = field.autocomplete_attribute();
+        field_prediction->name = base::UTF16ToUTF8(field.name_attribute());
+        field_prediction->id = base::UTF16ToUTF8(field.id_attribute());
+        field_prediction->form_control_type =
+            FormControlTypeToString(field.form_control_type());
+        field_prediction->select_options =
+            base::ToVector(field.options(), [](const SelectOption& option) {
+              autofill_ml_internals::mojom::SelectOptionPtr logged_option =
+                  autofill_ml_internals::mojom::SelectOption::New();
+              logged_option->value = base::UTF16ToUTF8(option.value);
+              logged_option->text = base::UTF16ToUTF8(option.text);
+              return logged_option;
+            });
+        return field_prediction;
+      });
   prediction_log->start_time = base::Time::Now();
   return prediction_log;
 }
