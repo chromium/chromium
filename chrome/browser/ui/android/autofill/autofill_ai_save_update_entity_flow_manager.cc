@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/android/autofill_ai_save_update_entity_prompt_controller.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_prompt_view_android.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_prompt_view_android.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
+#include "chrome/browser/ui/autofill/autofill_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -83,6 +86,8 @@ AutofillAiSaveUpdateEntityFlowManager::AutofillAiSaveUpdateEntityFlowManager(
     std::string app_locale)
     : web_contents_(web_contents),
       autofill_message_controller_(CHECK_DEREF(autofill_message_controller)),
+      autofill_dialog_controller_(
+          std::make_unique<AutofillDialogControllerImpl>(web_contents_)),
       app_locale_(std::move(app_locale)) {}
 
 AutofillAiSaveUpdateEntityFlowManager::
@@ -98,6 +103,20 @@ void AutofillAiSaveUpdateEntityFlowManager::OfferSave(
   prompt_result_callback_ = std::move(prompt_result_callback);
   autofill_message_controller_->Show(
       CreateMessageModel(std::move(entity), std::move(old_entity)));
+}
+
+void AutofillAiSaveUpdateEntityFlowManager::ShowLocalSaveNotification() {
+  std::u16string google_wallet_text =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  autofill_dialog_controller_->Show(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_DESCRIPTION,
+          std::move(google_wallet_text)),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_CONFIRMATION_BUTTON_LABEL),
+      base::DoNothing());
 }
 
 std::unique_ptr<AutofillMessageModel>

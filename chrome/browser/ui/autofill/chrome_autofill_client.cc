@@ -1435,8 +1435,10 @@ void ChromeAutofillClient::ShowEntityImportBubble(
     bool save_is_synchronous,
     EntityImportPromptResultCallback prompt_result_callback) {
 #if BUILDFLAG(IS_ANDROID)
-  autofill_ai_save_update_entity_flow_manager_->OfferSave(
-      new_entity, std::move(old_entity), std::move(prompt_result_callback));
+  if (autofill_ai_save_update_entity_flow_manager_) {
+    autofill_ai_save_update_entity_flow_manager_->OfferSave(
+        new_entity, std::move(old_entity), std::move(prompt_result_callback));
+  }
 #else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
           web_contents(), GetAppLocale())) {
@@ -1457,12 +1459,16 @@ void ChromeAutofillClient::CloseEntityImportBubble() {
 }
 
 void ChromeAutofillClient::ShowAutofillAiLocalSaveNotification() {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (autofill_ai_save_update_entity_flow_manager_) {
+    autofill_ai_save_update_entity_flow_manager_->ShowLocalSaveNotification();
+  }
+#else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
           web_contents(), GetAppLocale())) {
     controller->ShowLocalSaveNotification();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutofillClient::ShowAutofillAiSaveToWalletFailureNotification() {

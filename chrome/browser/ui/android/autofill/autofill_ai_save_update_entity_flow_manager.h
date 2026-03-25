@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/autofill/autofill_dialog_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -52,6 +53,15 @@ class AutofillAiSaveUpdateEntityFlowManager {
       std::optional<EntityInstance> old_entity,
       AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
 
+  // Shows a modal dialog to notify the user that the entity was saved locally
+  // instead of uploading it to Google Wallet.
+  void ShowLocalSaveNotification();
+
+  void SetAutofillDialogControllerForTest(
+      std::unique_ptr<AutofillDialogController> autofill_dialog_controller) {
+    autofill_dialog_controller_ = std::move(autofill_dialog_controller);
+  }
+
  private:
   void OnMessagePrimaryAction(EntityInstance entity,
                               std::optional<EntityInstance> old_entity);
@@ -68,6 +78,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
   raw_ref<AutofillMessageController> autofill_message_controller_;
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptController>
       save_update_entity_prompt_controller_;
+  std::unique_ptr<AutofillDialogController> autofill_dialog_controller_;
 
   // Callback to notify the data provider about the user decision for the save
   // or update prompt.

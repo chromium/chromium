@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
 
 #include <optional>
+#include <string>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "chrome/browser/ui/autofill/autofill_message_model_test_api.h"
+#include "chrome/browser/ui/autofill/mock_autofill_dialog_controller.h"
 #include "chrome/browser/ui/autofill/mock_autofill_message_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,6 +28,7 @@
 namespace autofill {
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::SaveArgByMove;
 
 // TODO: crbug.com/460410690 - Cover different entity types.
@@ -39,9 +42,15 @@ class AutofillAiSaveUpdateEntityFlowManagerTest
             ChromeRenderViewHostTestHarness::profile());
     flow_manager_ = std::make_unique<AutofillAiSaveUpdateEntityFlowManager>(
         web_contents(), &autofill_message_controller_, "en-US");
+    auto autofill_dialog_controller =
+        std::make_unique<NiceMock<MockAutofillDialogController>>();
+    autofill_dialog_controller_ = autofill_dialog_controller.get();
+    flow_manager_->SetAutofillDialogControllerForTest(
+        std::move(autofill_dialog_controller));
   }
 
   void TearDown() override {
+    autofill_dialog_controller_ = nullptr;
     identity_test_env_adaptor_.reset();
     flow_manager_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -53,6 +62,10 @@ class AutofillAiSaveUpdateEntityFlowManagerTest
 
   AutofillAiSaveUpdateEntityFlowManager& flow_manager() {
     return *flow_manager_;
+  }
+
+  NiceMock<MockAutofillDialogController>& autofill_dialog_controller() {
+    return *autofill_dialog_controller_;
   }
 
   base::MockCallback<AutofillClient::EntityImportPromptResultCallback>&
@@ -87,6 +100,7 @@ class AutofillAiSaveUpdateEntityFlowManagerTest
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   MockAutofillMessageController autofill_message_controller_;
+  raw_ptr<NiceMock<MockAutofillDialogController>> autofill_dialog_controller_;
   base::MockCallback<AutofillClient::EntityImportPromptResultCallback>
       prompt_closed_callback_;
   std::unique_ptr<AutofillAiSaveUpdateEntityFlowManager> flow_manager_;
@@ -246,6 +260,22 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest,
                            prompt_closed_callback().Get());
   // Dismiss the message second time.
   message_model->OnDismissed(messages::DismissReason::GESTURE);
+}
+
+TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowLocalSaveNotification) {
+  const std::u16string title = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_TITLE);
+  const std::u16string google_wallet =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  const std::u16string description = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_DESCRIPTION,
+      google_wallet);
+  const std::u16string button = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_CONFIRMATION_BUTTON_LABEL);
+
+  EXPECT_CALL(autofill_dialog_controller(),
+              Show(title, description, button, _));
+  flow_manager().ShowLocalSaveNotification();
 }
 
 }  // namespace autofill
