@@ -2297,6 +2297,59 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
+// Tests that when attempting to fill a masked server entity and re-auth fails,
+// no failure notification is displayed.
+TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
+       AutofillAiFillMaskedServerEntityReauthFails) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAiReauthRequired};
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
+
+  EntityInstance masked_passport = MaskEntityInstance(GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
+  AddOrUpdateEntityInstance(masked_passport);
+
+  // Show suggestions for `masked_passport`.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload =
+      Suggestion::AutofillAiPayload(masked_passport.guid());
+  std::vector<Suggestion> suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(suggestions));
+
+  // Simulate a failed re-auth.
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(false));
+  EXPECT_CALL(autofill_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(authenticator)));
+
+  // Expect that the `wallet_manager()` is not called and that no unmask failure
+  // notification is shown.
+  EXPECT_CALL(wallet_manager(),
+              GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
+      .Times(0);
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillAiFetchFromWalletFailureNotification)
+      .Times(0);
+  EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+  EXPECT_CALL(
+      autofill_client(),
+      HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
+
+  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_IOS)
+
 class AutofillExternalDelegatePlusAddressTest
     : public AutofillExternalDelegateTest {
  public:

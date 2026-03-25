@@ -1407,22 +1407,17 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
     return;
   }
 
+  // Fills the given `entity` if it is non-nullopt and hides the popup.
+  // The `entity` can be nullopt if re-auth or fetching a server entity failed.
   base::OnceCallback<void(std::optional<EntityInstance>)> fill_and_hide =
       base::BindOnce(
           [](base::WeakPtr<BrowserAutofillManager> manager,
              const FormData& form, const FieldGlobalId& field_id,
              AutofillTriggerSource trigger_source,
              std::optional<EntityInstance> entity) {
-            if (!manager) {
-              return;
-            }
-            if (entity) {
+            if (manager && entity) {
               manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                                          field_id, &*entity, trigger_source);
-            } else if (base::FeatureList::IsEnabled(
-                           features::kAutofillAiWalletPrivatePasses)) {
-              manager->client()
-                  .ShowAutofillAiFetchFromWalletFailureNotification();
             }
           },
           manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,
@@ -1437,22 +1432,42 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
   const bool should_fetch_from_server =
       is_sensitive && entity->IsMaskedServerEntity() &&
       base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
+  // Add logic on top of `fill_and_hide` to incorporate the fetching of server
+  // entities.
   if (should_fetch_from_server) {
     fill_and_hide = base::BindOnce(
-        [](WalletPassAccessManager* wallet_pass_access_manager,
-           base::OnceCallback<void(std::optional<EntityInstance>)> callback,
+        [](base::WeakPtr<AutofillClient> client,
+           base::OnceCallback<void(std::optional<EntityInstance>)>
+               fill_and_hide,
            std::optional<EntityInstance> masked_entity) {
-          if (!masked_entity || !wallet_pass_access_manager) {
-            // Close the popup.
-            std::move(callback).Run(std::nullopt);
+          // `masked_entity` is nullopt if re-auth failed. Abort filling and
+          // close the popup by executing `fill_and_hide` with nullopt.
+          if (!masked_entity || !client ||
+              !client->GetWalletPassAccessManager()) {
+            std::move(fill_and_hide).Run(std::nullopt);
             return;
           }
-          wallet_pass_access_manager->GetUnmaskedWalletEntityInstance(
-              masked_entity->guid(), std::move(callback));
+          // Attempt fetching the `*masked_entity`. If fetching fails, show a
+          // failure notification.
+          // The `entity` is passed through to `fill_and_hide`, which will fit
+          // it, if it is non-nullopt (that is, if fetching succeeded).
+          auto maybe_notify_of_unmasking_error = base::BindOnce(
+              [](base::WeakPtr<AutofillClient> client,
+                 std::optional<EntityInstance> entity) {
+                if (client && !entity) {
+                  client->ShowAutofillAiFetchFromWalletFailureNotification();
+                }
+                return entity;
+              },
+              client);
+          client->GetWalletPassAccessManager()->GetUnmaskedWalletEntityInstance(
+              masked_entity->guid(), std::move(maybe_notify_of_unmasking_error)
+                                         .Then(std::move(fill_and_hide)));
         },
-        client.GetWalletPassAccessManager(), std::move(fill_and_hide));
+        client.GetWeakPtr(), std::move(fill_and_hide));
   }
 
+  // Before running `hide_and_fill`, potentially ask for a re-auth.
   const bool should_reauth =
       is_sensitive &&
       prefs::IsAutofillAiReauthBeforeFillingEnabled(client.GetPrefs());
@@ -1482,10 +1497,10 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
         // BUILDFLAG(IS_IOS)
   base::OnceCallback<std::optional<EntityInstance>(bool)>
       convert_auth_response = base::BindOnce(
-          [](const FieldTypeSet& ai_field_types, EntityInstance masked_entity,
+          [](const FieldTypeSet& ai_field_types, EntityInstance entity,
              bool auth_succeeded) {
             LogReauthToFillResultPerFieldType(ai_field_types, auth_succeeded);
-            return auth_succeeded ? std::move(masked_entity)
+            return auth_succeeded ? std::move(entity)
                                   : std::optional<EntityInstance>();
           },
           autofill_field->Type().GetAutofillAiTypes(), *entity);
