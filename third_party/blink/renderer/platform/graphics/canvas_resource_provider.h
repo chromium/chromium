@@ -433,10 +433,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // rate.
   bool IsSingleBuffered() const;
 
-  // Notifies before any unaccelerated drawing will be done on the resource used
-  // by this provider.
-  void WillDrawUnaccelerated();
-
   scoped_refptr<CanvasResource> ProduceCanvasResource() {
     return ProduceCanvasResource(FlushReason::kOther);
   }
@@ -613,6 +609,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   bool IsCanvas2D() const override { return true; }
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
+
+  // Notifies before any unaccelerated drawing will be done on the resource used
+  // by this provider.
+  void WillDrawUnaccelerated();
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage

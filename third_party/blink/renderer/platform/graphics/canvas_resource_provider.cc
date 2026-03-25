@@ -718,7 +718,7 @@ CanvasNon2DResourceProviderSharedImage::WillDrawInternal(bool is_overwrite) {
   return dst_access;
 }
 
-void CanvasResourceProviderSharedImage::WillDrawUnaccelerated() {
+void Canvas2DResourceProviderSharedImage::WillDrawUnaccelerated() {
   CHECK(!IsAccelerated());
 
   if (is_software_) {
@@ -1136,7 +1136,10 @@ void Canvas2DResourceProviderSharedImage::RasterRecord(
 void CanvasNon2DResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
-    WillDrawUnaccelerated();
+    if (!is_software_) {
+      cached_snapshot_.reset();
+      EnsureWriteAccess();
+    }
     UnacceleratedRasterRecord(std::move(last_recording));
     return;
   }
