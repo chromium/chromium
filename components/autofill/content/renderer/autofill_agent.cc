@@ -1961,7 +1961,7 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
   const bool is_focused =
       node.Focused() || ((contenteditable = node.RootEditableElement()) &&
                          contenteditable.Focused());
-#if defined(ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
     last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = is_focused;
