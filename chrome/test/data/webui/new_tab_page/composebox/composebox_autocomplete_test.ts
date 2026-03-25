@@ -13,7 +13,7 @@ import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_u
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, getSubmitContainer, mockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, getSubmitContainer, MockInputState, setupComposeboxTest} from './test_support.js';
 
 enum Attributes {
   SELECTED = 'selected',
@@ -987,7 +987,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
       'autocomplete not requeried if file removed and autochip remains',
       async () => {
         const testInputState = {
-          ...mockInputState,
+          ...new MockInputState(),
           maxInputsByType: {
             [InputType.kBrowserTab]: 1,
             [InputType.kLensImage]: 3,

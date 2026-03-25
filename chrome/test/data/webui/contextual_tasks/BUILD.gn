@@ -29,17 +29,22 @@ build_webui_tests("build") {
 
   static_files = [ "test.html" ]
 
-  ts_path_mappings =
-      [ "chrome://contextual-tasks/*|" +
+  ts_path_mappings = [
+    "chrome://contextual-tasks/*|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc/*",
-            target_gen_dir) ]
+            target_gen_dir),
+    "chrome://webui-test/cr_components/searchbox/*|" + rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/cr_components/searchbox/tsc/*",
+            target_gen_dir),
+  ]
 
   ts_tsconfig_base = "tsconfig_base.json"
 
   ts_deps = [
     "//chrome/browser/resources/contextual_tasks:build_ts",
     "//chrome/test/data/webui:build_ts",
+    "//chrome/test/data/webui/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_components/search:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",

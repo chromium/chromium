@@ -5,7 +5,11 @@
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+
+export {MockInputState};
+export type {InputState};
 
 const THOUSANDTHS = 0.001;
 
@@ -41,31 +45,8 @@ export function assertAlmostEquals(
        with diff ${diff}.`);
 }
 
-export function createInputState(overrides?: Partial<InputState>): InputState {
-  return Object.assign(
-      {
-        allowedTools: [],
-        disabledTools: [],
-        toolConfigs: [],
-        toolsSectionConfig: {header: ''},
-        allowedModels: [],
-        disabledModels: [],
-        activeModel: 0,
-        activeTool: 0,
-        hintText: '',
-        modelConfigs: [],
-        modelSectionConfig: {header: ''},
-        allowedInputTypes: [],
-        disabledInputTypes: [],
-        inputTypeConfigs: [],
-        maxInputsByType: {},
-        maxTotalInputs: 0,
-      },
-      overrides);
-}
-
 export function createValidInputState(): InputState {
-  return createInputState({
+  return new MockInputState({
     allowedModels: [ModelMode.kGeminiPro],
     allowedTools: [ToolMode.kDeepSearch],
     allowedInputTypes: [InputType.kBrowserTab],
@@ -81,6 +62,7 @@ export function createValidInputState(): InputState {
         aimUrlParams: [],
       },
     ],
+    toolsSectionConfig: {header: ''},
     modelConfigs: [
       {
         model: ModelMode.kGeminiPro,

@@ -14,12 +14,13 @@ import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrom
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {assertStyle, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
+import {assertStyle, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
 
 function pressEnter(element: HTMLElement) {
   element.dispatchEvent(new KeyboardEvent('keydown', {
@@ -40,7 +41,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
   async function setActiveTool(tool: ToolMode) {
     searchboxCallbackRouterRemote.onInputStateChanged({
-      ...mockInputState,
+      ...new MockInputState(),
       activeTool: tool,
     });
     await microtasksFinished();
@@ -133,7 +134,7 @@ suite('ContextualTasksComposeboxTest', () => {
         MockResizeObserver.instances.length >= 1,
         'There should be at least one ResizeObserver instance.');
 
-    searchboxCallbackRouterRemote.onInputStateChanged(mockInputState);
+    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
     await microtasksFinished();
   });
 
@@ -143,7 +144,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
   test('closes Lens overlay when image uploads are disabled', async () => {
     const disabledState = {
-      ...mockInputState,
+      ...new MockInputState(),
       disabledInputTypes: [InputType.kLensImage],
     };
 
@@ -165,7 +166,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
   test('lens button is disabled when image uploads are disabled', async () => {
     const disabledState = {
-      ...mockInputState,
+      ...new MockInputState(),
       disabledInputTypes: [InputType.kLensImage],
     };
 

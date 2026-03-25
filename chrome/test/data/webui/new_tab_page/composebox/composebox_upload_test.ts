@@ -470,7 +470,7 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
           'composeboxShowCreateImageButton': true,
         });
         const testInputState = {
-          ...testSupport.mockInputState,
+          ...new testSupport.MockInputState(),
           maxInputsByType: {
             [InputType.kBrowserTab]: 1,
             [InputType.kLensImage]: 1,
@@ -591,7 +591,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
   test('pasting too many files records metric and prevents paste', async () => {
     // Arrange.
     const testInputState = {
-      ...testSupport.mockInputState,
+      ...new testSupport.MockInputState(),
       maxInputsByType: {
         [InputType.kBrowserTab]: 1,
         [InputType.kLensImage]: 1,
@@ -713,7 +713,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
   test('pasting mixed files is processed correctly', async () => {
     // Arrange.
     const testInputState = {
-      ...testSupport.mockInputState,
+      ...new testSupport.MockInputState(),
       maxInstances: {
         [InputType.kBrowserTab]: 2,
         [InputType.kLensImage]: 2,
@@ -781,7 +781,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
       async () => {
         // Arrange.
         const testInputState = {
-          ...testSupport.mockInputState,
+          ...new testSupport.MockInputState(),
           maxTotalInputs: 5,
         };
         testSupport.createComposeboxElement(testProxy);
@@ -836,7 +836,7 @@ suite('NewTabPageComposeboxUploadPasteTest', () => {
       async () => {
         // Arrange.
         const testInputState = {
-          ...testSupport.mockInputState,
+          ...new testSupport.MockInputState(),
           maxInputsByType: {
             [InputType.kBrowserTab]: 1,
             [InputType.kLensImage]: 3,
@@ -1508,7 +1508,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       'files are cleared when their input type is no longer allowed',
       async () => {
         const testInputState = {
-          ...testSupport.mockInputState,
+          ...new testSupport.MockInputState(),
           allowedInputTypes: [
             InputType.kLensImage,
             InputType.kBrowserTab,
@@ -1534,7 +1534,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
 
         // Update InputState to disallow images and tabs.
         const newInputState = {
-          ...testSupport.mockInputState,
+          ...new testSupport.MockInputState(),
           allowedInputTypes: [InputType.kLensFile],
         };
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(

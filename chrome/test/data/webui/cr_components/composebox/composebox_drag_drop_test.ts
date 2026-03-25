@@ -21,8 +21,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from './composebox_test_utils.js';
-
+import {installMock, MockInputState} from './composebox_test_utils.js';
 
 const ADD_FILE_CONTEXT_FN = 'addFileContext';
 
@@ -218,28 +217,17 @@ suite('ComposeboxDragAndDrop', () => {
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
     searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
     searchboxHandler.setResultFor('getInputState', Promise.resolve({
-      state: {
-        allowedModels: [],
-        allowedTools: [],
-        allowedInputTypes: [],
-        activeModel: 0,
-        activeTool: 0,
-        disabledModels: [],
-        disabledTools: [],
-        disabledInputTypes: [],
-        inputTypeConfigs: [],
+      state: new MockInputState({
         toolConfigs: [],
-        modelConfigs: [],
-        toolsSectionConfig: null,
-        modelSectionConfig: null,
-        hintText: '',
+        toolsSectionConfig: {header: ''},
+        modelSectionConfig: {header: ''},
         maxInputsByType: {
           [InputType.kBrowserTab]: 1,
           [InputType.kLensImage]: 1,
           [InputType.kLensFile]: 1,
         },
         maxTotalInputs: 3,
-      },
+      }),
     }));
 
     windowProxy = installMock(WindowProxy);
