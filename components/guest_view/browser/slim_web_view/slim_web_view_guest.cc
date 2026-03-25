@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_util.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -111,6 +112,15 @@ ParseBeforeSendHeadersParams(const base::DictValue& create_params) {
       if (!value) {
         return base::unexpected(
             "addHeaders dictionary must contain a 'value' string.");
+      }
+      if (!net::HttpUtil::IsValidHeaderName(*name)) {
+        return base::unexpected("Invalid header name provided.");
+      }
+      if (!net::HttpUtil::IsValidHeaderValue(*value)) {
+        return base::unexpected("Invalid header value provided.");
+      }
+      if (!net::HttpUtil::IsSafeHeader(*name, *value)) {
+        return base::unexpected("Unsafe header provided.");
       }
       params->add_headers.SetHeader(*name, *value);
     }

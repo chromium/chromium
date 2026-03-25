@@ -249,4 +249,27 @@ suite('Headers', function() {
     assertTrue(!!fetchHeaders);
     assertEquals('test-value', fetchHeaders['X-Test-Header']);
   });
+
+  test('UnsecureHeadersFail', async function() {
+    const webview = document.createElement('webview');
+
+    webview.onBeforeSendHeadersParams = new OnBeforeSendHeadersParams(
+        ['main_frame'], false, [{name: 'Cookie', value: 'test-cookie'}]);
+
+    const failurePromise = new Promise<void>((resolve) => {
+      window.addEventListener('unhandledrejection', function listener(e) {
+        if (e.reason.message &&
+            e.reason.message.includes('Failed to create guest')) {
+          e.preventDefault();
+          window.removeEventListener('unhandledrejection', listener);
+          resolve();
+        }
+      });
+    });
+
+    document.body.appendChild(webview);
+    webview.src = getTestUrl('/simple.html');
+
+    await failurePromise;
+  });
 });

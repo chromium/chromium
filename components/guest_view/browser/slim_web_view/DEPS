@@ -1,5 +1,5 @@
 include_rules = [
-  "+net/http/http_request_headers.h",
+  "+net/http",
   "+services/network/public",
 ]
 
