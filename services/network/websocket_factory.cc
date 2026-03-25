@@ -4,10 +4,13 @@
 
 #include "services/network/websocket_factory.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/isolation_info.h"
 #include "net/base/url_util.h"
+#include "net/log/net_log.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
@@ -178,6 +181,27 @@ void WebSocketFactory::RemoveIfNonceMatches(
   std::erase_if(connections_, [&nonce](const auto& connection) {
     return connection->RevokeIfNonceMatches(nonce);
   });
+}
+
+void WebSocketFactory::CreateNetLogEntriesForActiveConnections(
+    net::NetLog::ThreadSafeObserver* observer) const {
+  // Collect all connections into a sortable vector.
+  std::vector<WebSocket*> connections;
+  for (const auto& connection : connections_) {
+    connections.push_back(connection.get());
+  }
+
+  // Sort chronologically (oldest first), with pending/throttled connections
+  // (no channel yet) at the end.
+  std::ranges::sort(connections, [](const WebSocket* a, const WebSocket* b) {
+    return WebSocket::CompareForNetlog(*a, *b);
+  });
+
+  // Create synthetic WEBSOCKET_ALIVE events. AddActiveEntryIfActive skips
+  // connections where the channel hasn't been created yet (pending/throttled).
+  for (WebSocket* websocket : connections) {
+    websocket->AddActiveEntryIfActive(observer);
+  }
 }
 
 }  // namespace network

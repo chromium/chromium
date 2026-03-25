@@ -36,6 +36,20 @@ EVENT_TYPE(FAILED)
 // Marks the creation/destruction of a request (net::URLRequest).
 EVENT_TYPE(REQUEST_ALIVE)
 
+// Marks the lifecycle of a WebSocket connection (net::WebSocketChannel).
+// Emitted as a BEGIN event in the constructor, an END event in the destructor,
+// and replayed as a synthetic BEGIN event when NetLog capture starts to surface
+// pre-existing connections that were opened before logging began.
+EVENT_TYPE(WEBSOCKET_ALIVE)
+
+// Marks a WebSocket channel state transition.
+// The event parameters include:
+//   {
+//     "old_state": <string>,
+//     "new_state": <string>,
+//   }
+EVENT_TYPE(WEBSOCKET_STATE_CHANGED)
+
 // ------------------------------------------------------------------------
 // HostResolverManager (previously known as HostResolverImpl)
 // ------------------------------------------------------------------------

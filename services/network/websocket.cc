@@ -34,6 +34,9 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "net/log/net_log_capture_mode.h"
+#include "net/log/net_log_entry.h"
+#include "net/log/net_log_event_type.h"
 #include "net/ssl/ssl_info.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/url_request_context.h"
@@ -198,6 +201,7 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
     net::URLRequest* url_request) {
   url_request->SetUserData(WebSocket::kUserDataKey,
                            std::make_unique<UnownedPointer>(impl_));
+  impl_->net_log_source_id_ = url_request->net_log().source().id;
   if (impl_->throttling_profile_id_) {
     impl_->frame_interceptor_ = std::make_unique<WebSocketInterceptor>(
         url_request->net_log().source().id, url_request->url(),
@@ -1054,6 +1058,41 @@ void WebSocket::Reset() {
 
   // deletes |this|.
   factory_->Remove(this);
+}
+
+void WebSocket::AddActiveEntryIfActive(
+    net::NetLog::ThreadSafeObserver* observer) const {
+  if (!channel_) {
+    return;
+  }
+  // Use kDefault capture mode because observer->GetCaptureMode() cannot be
+  // called before the observer starts observing (see net_log_util.cc for the
+  // same pattern). kDefault always redacts URL credentials, which is the safe
+  // default.
+  net::NetLogEntry entry(
+      net::NetLogEventType::WEBSOCKET_ALIVE, channel_->net_log().source(),
+      net::NetLogEventPhase::BEGIN, channel_->creation_time(),
+      channel_->GetStateAsValue(net::NetLogCaptureMode::kDefault));
+  observer->OnAddEntry(entry);
+}
+
+// static
+bool WebSocket::CompareForNetlog(const WebSocket& lhs, const WebSocket& rhs) {
+  // Put connections without channels (pending/throttled) at the end.
+  if (!lhs.channel_ && !rhs.channel_) {
+    return false;
+  }
+  if (!lhs.channel_) {
+    return false;
+  }
+  if (!rhs.channel_) {
+    return true;
+  }
+  if (lhs.channel_->creation_time() != rhs.channel_->creation_time()) {
+    return lhs.channel_->creation_time() < rhs.channel_->creation_time();
+  }
+  return lhs.channel_->net_log().source().id <
+         rhs.channel_->net_log().source().id;
 }
 
 }  // namespace network

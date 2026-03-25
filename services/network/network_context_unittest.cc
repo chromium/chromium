@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -135,6 +136,8 @@
 #include "net/http/mock_http_cache.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
+#include "net/log/net_log_source_type.h"
+#include "net/log/test_net_log.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -12769,6 +12772,36 @@ TEST_F(NetworkContextTest, ProvidedResponseBodyStream) {
   EXPECT_TRUE(mojo::BlockingCopyToString(std::move(consumer), &body));
   EXPECT_EQ("<!doctype html>\n<p>hello</p>\n", body);
 }
+
+// Tests for WebSocket NetLog tracking feature.
+// The core NetLog entry creation logic is tested in websocket_factory_unittest
+// and websocket_channel_test. These tests cover the NetworkContext delegation
+// layer.
+class NetworkContextWebSocketNetLogTest : public NetworkContextTest {};
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+TEST_F(NetworkContextWebSocketNetLogTest,
+       CreateNetLogEntriesWithNoWebSocketFactory) {
+  // Create a network context without any WebSocket factory
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  // Create a RecordingNetLogObserver to capture events
+  net::RecordingNetLogObserver observer(
+      network_context->url_request_context()->net_log(),
+      net::NetLogCaptureMode::kIncludeSensitive);
+
+  // Should not crash and should not create any entries
+  network_context->CreateNetLogEntriesForActiveWebSockets(&observer);
+
+  // No WEBSOCKET_ALIVE entries should be created
+  std::vector<net::NetLogEntry> entries =
+      observer.GetEntriesWithType(net::NetLogEventType::WEBSOCKET_ALIVE);
+  EXPECT_TRUE(entries.empty());
+}
+
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
 }  // namespace
 
 }  // namespace network

@@ -181,6 +181,7 @@
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
+#include "services/network/websocket.h"
 #include "services/network/websocket_factory.h"
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
@@ -902,6 +903,16 @@ NetworkContext::NetworkContext(
     InitializePrefetchURLLoaderFactory();
   }
 }
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+void NetworkContext::CreateNetLogEntriesForActiveWebSockets(
+    net::NetLog::ThreadSafeObserver* observer) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (websocket_factory_) {
+    websocket_factory_->CreateNetLogEntriesForActiveConnections(observer);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 NetworkContext::~NetworkContext() {
   is_destructing_ = true;

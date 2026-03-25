@@ -15,6 +15,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/base/isolation_info.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_entry.h"
+#include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -30,6 +33,25 @@
 namespace network {
 
 namespace {
+
+// Simple NetLog observer that collects entries for testing.
+// Unlike RecordingNetLogObserver, this does not auto-register with a NetLog
+// instance, so it can be used with CreateNetLogEntriesForActiveConnections()
+// which calls OnAddEntry() directly.
+class TestNetLogObserver : public net::NetLog::ThreadSafeObserver {
+ public:
+  TestNetLogObserver() = default;
+  ~TestNetLogObserver() override = default;
+
+  void OnAddEntry(const net::NetLogEntry& entry) override {
+    entries_.push_back(entry.Clone());
+  }
+
+  const std::vector<net::NetLogEntry>& entries() const { return entries_; }
+
+ private:
+  std::vector<net::NetLogEntry> entries_;
+};
 
 class StubWebSocketHandshakeClient : public mojom::WebSocketHandshakeClient {
  public:
@@ -77,8 +99,10 @@ class WebSocketFactoryTest : public testing::Test {
   void CreateWebSocket(const GURL& url,
                        const std::vector<std::string>& requested_protocols) {
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client;
-    stub_handshake_client_ = std::make_unique<StubWebSocketHandshakeClient>(
-        handshake_client.InitWithNewPipeAndPassReceiver());
+    // Keep all handshake clients alive to prevent WebSocket cleanup
+    stub_handshake_clients_.push_back(
+        std::make_unique<StubWebSocketHandshakeClient>(
+            handshake_client.InitWithNewPipeAndPassReceiver()));
 
     // WebSocket objects are owned by the factory and will be deleted
     // asynchronously.
@@ -99,7 +123,8 @@ class WebSocketFactoryTest : public testing::Test {
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
   std::unique_ptr<NetworkContext> network_context_;
   std::unique_ptr<WebSocketFactory> factory_;
-  std::unique_ptr<StubWebSocketHandshakeClient> stub_handshake_client_;
+  std::vector<std::unique_ptr<StubWebSocketHandshakeClient>>
+      stub_handshake_clients_;
 };
 
 class WebSocketFactoryBadMessageTest : public WebSocketFactoryTest {
@@ -143,6 +168,31 @@ TEST_F(WebSocketFactoryBadMessageTest, EmptySubprotocol) {
 TEST_F(WebSocketFactoryBadMessageTest, DuplicateSubprotocol) {
   CreateWebSocket(GURL("ws://example.com/"), {"foo", "foo"});
   EXPECT_EQ(GetBadMessage(), "Invalid protocols.");
+}
+
+// Tests for CreateNetLogEntriesForActiveConnections()
+TEST_F(WebSocketFactoryTest, CreateNetLogEntriesEmptyFactory) {
+  // An empty factory should produce no NetLog entries.
+  TestNetLogObserver observer;
+  factory_->CreateNetLogEntriesForActiveConnections(&observer);
+  EXPECT_TRUE(observer.entries().empty());
+}
+
+TEST_F(WebSocketFactoryTest, CreateNetLogEntriesForActiveConnections) {
+  // Create multiple connections to verify entries are produced for each.
+  CreateWebSocket(GURL("wss://example.com/chat1"), {});
+  CreateWebSocket(GURL("wss://example.com/chat2"), {});
+
+  TestNetLogObserver observer;
+  factory_->CreateNetLogEntriesForActiveConnections(&observer);
+
+  // Each connection with a channel should produce one WEBSOCKET_ALIVE entry.
+  EXPECT_EQ(observer.entries().size(), 2u);
+  for (const auto& entry : observer.entries()) {
+    EXPECT_EQ(entry.type, net::NetLogEventType::WEBSOCKET_ALIVE);
+    EXPECT_EQ(entry.phase, net::NetLogEventPhase::BEGIN);
+    EXPECT_TRUE(entry.HasParams());
+  }
 }
 
 }  // namespace

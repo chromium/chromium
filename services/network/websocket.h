@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_delegate.h"
+#include "net/log/net_log.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_event_interface.h"
@@ -114,6 +115,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   // Gets the WebSocket associated with this request.
   static WebSocket* ForRequest(const net::URLRequest& request);
+
+  // If there is an active channel, logs a WEBSOCKET_ALIVE begin event to
+  // `observer`. No-op if the channel has not been created yet.
+  void AddActiveEntryIfActive(net::NetLog::ThreadSafeObserver* observer) const;
+
+  // Returns true if `lhs` should be logged before `rhs` when replaying
+  // pre-existing connections to a new NetLog observer. Orders by channel
+  // creation time, breaking ties by NetLog source ID. Connections without
+  // channels are sorted to the end.
+  static bool CompareForNetlog(const WebSocket& lhs, const WebSocket& rhs);
 
   static const void* const kUserDataKey;
 

@@ -40,7 +40,10 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/log/test_net_log.h"
 #include "net/ssl/ssl_info.h"
 #include "net/storage_access_api/status.h"
 #include "net/test/test_with_task_environment.h"
@@ -2902,6 +2905,159 @@ TEST_F(WebSocketChannelStreamTimeoutTest, ConnectionCloseTimesOut) {
   *read_frames = CreateFrameVector(frames, &result_frame_data_);
   std::move(read_callback).Run(OK);
   completion.WaitForResult();
+}
+
+// Tests for WebSocket NetLog tracking feature
+TEST_F(WebSocketChannelEventInterfaceTest, CreationTimeIsSetOnConstruction) {
+  // Record time before construction
+  base::TimeTicks before = base::TimeTicks::Now();
+
+  CreateChannelAndConnect();
+
+  // Record time after construction
+  base::TimeTicks after = base::TimeTicks::Now();
+
+  // creation_time() should be between before and after timestamps
+  base::TimeTicks creation_time = channel_->creation_time();
+  EXPECT_GE(creation_time, before);
+  EXPECT_LE(creation_time, after);
+  EXPECT_FALSE(creation_time.is_null());
+}
+
+TEST_F(WebSocketChannelEventInterfaceTest, CreationTimeRemainsConstant) {
+  CreateChannelAndConnect();
+
+  // Get creation time twice
+  base::TimeTicks first_call = channel_->creation_time();
+  base::TimeTicks second_call = channel_->creation_time();
+
+  // Should return the same value (not call Now() each time)
+  EXPECT_EQ(first_call, second_call);
+}
+
+TEST_F(WebSocketChannelEventInterfaceTest, GetURLReturnsCorrectURL) {
+  const GURL expected_url("ws://example.com/test");
+
+  // Update connect_data with our test URL
+  connect_data_.socket_url = expected_url;
+
+  // Create channel using the test fixture's method
+  CreateChannelAndConnect();
+
+  // GetURL() should return the URL we set
+  EXPECT_EQ(channel_->GetURL(), expected_url);
+}
+
+TEST_F(WebSocketChannelEventInterfaceTest, NetLogStateChangedOnConnect) {
+  // Start observing NetLog events before creating the channel.
+  net::RecordingNetLogObserver observer(
+      connect_data_.url_request_context->net_log(),
+      net::NetLogCaptureMode::kIncludeSensitive);
+
+  // OnSuccess triggers OnAddChannelResponse on the StrictMock interface.
+  EXPECT_CALL(*event_interface_, OnAddChannelResponse(_, _, _));
+
+  // CreateChannelAndConnect triggers FRESHLY_CONSTRUCTED -> CONNECTING.
+  CreateChannelAndConnect();
+
+  // Simulate a successful connection, which triggers CONNECTING -> CONNECTED.
+  connect_data_.argument_saver.connect_delegate->OnSuccess(
+      std::move(stream_), std::make_unique<WebSocketHandshakeResponseInfo>(
+                              GURL(), nullptr, IPEndPoint(), base::Time()));
+
+  auto entries = observer.GetEntriesWithType(
+      net::NetLogEventType::WEBSOCKET_STATE_CHANGED);
+  ASSERT_EQ(entries.size(), 2u);
+
+  // First transition: FRESHLY_CONSTRUCTED -> CONNECTING
+  EXPECT_EQ(entries[0].source.type, net::NetLogSourceType::WEBSOCKET_CHANNEL);
+  EXPECT_EQ(entries[0].phase, net::NetLogEventPhase::NONE);
+  const std::string* old_state_0 = entries[0].params.FindString("old_state");
+  const std::string* new_state_0 = entries[0].params.FindString("new_state");
+  ASSERT_TRUE(old_state_0);
+  ASSERT_TRUE(new_state_0);
+  EXPECT_EQ(*old_state_0, "FRESHLY_CONSTRUCTED");
+  EXPECT_EQ(*new_state_0, "CONNECTING");
+
+  // Second transition: CONNECTING -> CONNECTED
+  EXPECT_EQ(entries[1].source.type, net::NetLogSourceType::WEBSOCKET_CHANNEL);
+  EXPECT_EQ(entries[1].phase, net::NetLogEventPhase::NONE);
+  const std::string* old_state_1 = entries[1].params.FindString("old_state");
+  const std::string* new_state_1 = entries[1].params.FindString("new_state");
+  ASSERT_TRUE(old_state_1);
+  ASSERT_TRUE(new_state_1);
+  EXPECT_EQ(*old_state_1, "CONNECTING");
+  EXPECT_EQ(*new_state_1, "CONNECTED");
+}
+
+TEST_F(WebSocketChannelEventInterfaceTest, GetStateAsValueContainsUrlAndState) {
+  const GURL expected_url("ws://example.com/test");
+  connect_data_.socket_url = expected_url;
+
+  CreateChannelAndConnect();
+
+  base::DictValue value =
+      channel_->GetStateAsValue(NetLogCaptureMode::kIncludeSensitive);
+
+  // Must contain "url" key with the correct URL.
+  const std::string* url = value.FindString("url");
+  ASSERT_TRUE(url);
+  EXPECT_EQ(*url, expected_url.spec());
+
+  // Must contain "state" key with a non-empty string.
+  const std::string* state = value.FindString("state");
+  ASSERT_TRUE(state);
+  EXPECT_FALSE(state->empty());
+}
+
+TEST_F(WebSocketChannelEventInterfaceTest,
+       GetStateAsValueSanitizesUrlInDefaultMode) {
+  // Use a URL with embedded credentials to verify sanitization.
+  const GURL url_with_credentials("ws://user:pass@example.com/test");
+  connect_data_.socket_url = url_with_credentials;
+
+  CreateChannelAndConnect();
+
+  // In kDefault mode, credentials should be stripped.
+  base::DictValue default_value =
+      channel_->GetStateAsValue(NetLogCaptureMode::kDefault);
+  const std::string* default_url = default_value.FindString("url");
+  ASSERT_TRUE(default_url);
+  EXPECT_THAT(*default_url, testing::Not(testing::HasSubstr("pass")));
+
+  // In kIncludeSensitive mode, credentials should be preserved.
+  base::DictValue sensitive_value =
+      channel_->GetStateAsValue(NetLogCaptureMode::kIncludeSensitive);
+  const std::string* sensitive_url = sensitive_value.FindString("url");
+  ASSERT_TRUE(sensitive_url);
+  EXPECT_THAT(*sensitive_url, testing::HasSubstr("user"));
+}
+
+TEST_F(WebSocketChannelEventInterfaceTest,
+       StateChangedEventsEmittedOnConnectionFailure) {
+  net::RecordingNetLogObserver observer(
+      connect_data_.url_request_context->net_log(),
+      net::NetLogCaptureMode::kIncludeSensitive);
+
+  EXPECT_CALL(*event_interface_, OnFailChannel(_, _, _));
+
+  CreateChannelAndConnect();
+
+  // Simulate handshake failure
+  connect_data_.argument_saver.connect_delegate->OnFailure(
+      "Connection refused", ERR_CONNECTION_REFUSED, std::nullopt);
+
+  auto entries = observer.GetEntriesWithType(
+      net::NetLogEventType::WEBSOCKET_STATE_CHANGED);
+  ASSERT_EQ(entries.size(), 2u);
+
+  // First transition: FRESHLY_CONSTRUCTED -> CONNECTING
+  EXPECT_EQ(*entries[0].params.FindString("old_state"), "FRESHLY_CONSTRUCTED");
+  EXPECT_EQ(*entries[0].params.FindString("new_state"), "CONNECTING");
+
+  // Second transition: CONNECTING -> CLOSED (failure)
+  EXPECT_EQ(*entries[1].params.FindString("old_state"), "CONNECTING");
+  EXPECT_EQ(*entries[1].params.FindString("new_state"), "CLOSED");
 }
 
 }  // namespace

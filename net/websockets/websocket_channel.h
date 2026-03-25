@@ -21,7 +21,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
+#include "net/log/net_log_capture_mode.h"
+#include "net/log/net_log_with_source.h"
 #include "net/storage_access_api/status.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_frame.h"
@@ -157,6 +160,24 @@ class NET_EXPORT WebSocketChannel {
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request);
 
+  // Returns the creation time of this channel (for NetLog tracking).
+  // Note: This timestamp is captured when the WebSocketChannel is constructed,
+  // which occurs after any throttling delay imposed by WebSocket::AddChannel().
+  // Therefore, it reflects when the channel was actually created, not when the
+  // connection was first requested by the renderer.
+  base::TimeTicks creation_time() const { return creation_time_; }
+
+  // Returns the WebSocket URL (for NetLog tracking).
+  const GURL& GetURL() const { return socket_url_; }
+
+  // Returns the channel's NetLog source (for NetLog tracking).
+  const NetLogWithSource& net_log() const { return net_log_; }
+
+  // Returns a partial representation of the channel's state as a value,
+  // for debugging. Modeled after URLRequest::GetStateAsValue().
+  [[nodiscard]] base::DictValue GetStateAsValue(
+      NetLogCaptureMode capture_mode) const;
+
  private:
   // The object passes through a linear progression of states from
   // FRESHLY_CONSTRUCTED to CLOSED, except that the SEND_CLOSED and RECV_CLOSED
@@ -174,6 +195,9 @@ class NET_EXPORT WebSocketChannel {
     CLOSED,       // The Closing Handshake has completed and the connection
                   // has been closed; or the connection is failed.
   };
+
+  // Returns the name of the given state for NetLog reporting.
+  [[nodiscard]] static const char* StateToString(State state);
 
   // Implementation of WebSocketStream::ConnectDelegate for
   // WebSocketChannel. WebSocketChannel does not inherit from
@@ -234,7 +258,8 @@ class NET_EXPORT WebSocketChannel {
                      base::OnceCallback<void(const AuthCredentials*)> callback,
                      std::optional<AuthCredentials>* credentials);
 
-  // Sets |state_| to |new_state| and updates UMA if necessary.
+  // Sets |state_| to |new_state| and logs a WEBSOCKET_STATE_CHANGED NetLog
+  // event for the transition.
   void SetState(State new_state);
 
   // Returns true if state_ is SEND_CLOSED, CLOSE_WAIT or CLOSED.
@@ -394,6 +419,19 @@ class NET_EXPORT WebSocketChannel {
   // UTF-8 validator for incoming Text messages.
   base::StreamingUtf8Validator incoming_utf8_validator_;
   bool receiving_text_message_ = false;
+
+  // Timestamp when this channel was created (for NetLog tracking).
+  // This is captured at WebSocketChannel construction time, which occurs after
+  // any throttling delay (see WebSocket::AddChannel()). Thus, it represents
+  // when the channel was de-throttled and actually created, not when the
+  // initial connection request was made.
+  base::TimeTicks creation_time_;
+
+  // NetLog source for this channel. Emits WEBSOCKET_ALIVE BEGIN on
+  // construction and END on destruction, and WEBSOCKET_STATE_CHANGED events
+  // during state transitions. Synthetic WEBSOCKET_ALIVE events are also
+  // replayed for pre-existing connections when NetLog capture starts.
+  NetLogWithSource net_log_;
 
   // True if we are in the middle of receiving a message.
   bool expecting_to_handle_continuation_ = false;
