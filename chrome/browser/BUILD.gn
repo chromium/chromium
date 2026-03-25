@@ -115,7 +115,8 @@ buildflag_header("buildflags") {
 }
 
 source_set("browser_features") {
-  sources = [ "browser_features.h" ]
+  public = [ "browser_features.h" ]
+  sources = [ "browser_features.cc" ]
   public_deps = [
     "//base",
     "//build:branding_buildflags",
@@ -220,7 +221,6 @@ static_library("browser") {
     "bad_message.h",
     "browser_about_handler.cc",
     "browser_about_handler.h",
-    "browser_features.cc",
     "browser_process_impl.cc",
     "browser_process_impl.h",
     "browser_process_platform_part.h",

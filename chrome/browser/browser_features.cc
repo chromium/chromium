@@ -8,10 +8,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/net/system_network_context_manager.h"
-#endif
-
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
