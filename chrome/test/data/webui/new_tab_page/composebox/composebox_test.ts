@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -13,10 +14,45 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, createComposeboxElement, FAKE_TOKEN_STRING, getSubmitContainer, MockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, createComposeboxElement, FAKE_TOKEN_STRING, getSubmitContainer, getSubmitIcon, MockInputState, setupComposeboxTest} from './test_support.js';
 
 suite('NewTabPageComposeboxTest', () => {
   const testProxy = setupComposeboxTest();
+
+  test('ntp composebox uses configured forward submit icon', async () => {
+    createComposeboxElement(testProxy, {
+      searchboxNextEnabled: true,
+      submitButtonIconType: SubmitButtonIconType.FORWARD,
+    });
+    testProxy.element.searchboxLayoutMode = 'Compact';
+    await microtasksFinished();
+
+    testProxy.element.getInputElement().$.input.value = 'test';
+    testProxy.element.getInputElement().$.input.dispatchEvent(
+        new Event('input'));
+    await microtasksFinished();
+
+    const submitIcon = getSubmitIcon(testProxy);
+    assertTrue(submitIcon.classList.contains('icon-arrow-forward'));
+    assertFalse(submitIcon.classList.contains('icon-arrow-upward'));
+  });
+
+  test('composebox defaults to forward submit icon', async () => {
+    createComposeboxElement(testProxy, {
+      searchboxNextEnabled: true,
+    });
+    testProxy.element.searchboxLayoutMode = 'Compact';
+    await microtasksFinished();
+
+    testProxy.element.getInputElement().$.input.value = 'test';
+    testProxy.element.getInputElement().$.input.dispatchEvent(
+        new Event('input'));
+    await microtasksFinished();
+
+    const submitIcon = getSubmitIcon(testProxy);
+    assertTrue(submitIcon.classList.contains('icon-arrow-upward'));
+  });
+
 
   test(
       'submit disabled when tool is Deep Search (default entrypoint)',

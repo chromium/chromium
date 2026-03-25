@@ -108,8 +108,11 @@ export function setupComposeboxTest(): ComposeboxTestElement {
   return testProxy;
 }
 
-export function createComposeboxElement(testProxy: ComposeboxTestElement) {
+export function createComposeboxElement(
+    testProxy: ComposeboxTestElement,
+    properties: Partial<ComposeboxElement> = {}) {
   testProxy.element = new ComposeboxElement();
+  Object.assign(testProxy.element, properties);
   document.body.appendChild(testProxy.element);
 }
 
@@ -244,4 +247,11 @@ export function getSubmitContainer(testProxy: ComposeboxTestElement):
       '#submitContainer');
   assertTrue(!!container);
   return container;
+}
+
+export function getSubmitIcon(testProxy: ComposeboxTestElement): HTMLElement {
+  const submitIcon = testProxy.element.shadowRoot.querySelector<HTMLElement>(
+      '#submitIcon');
+  assertTrue(!!submitIcon);
+  return submitIcon;
 }
