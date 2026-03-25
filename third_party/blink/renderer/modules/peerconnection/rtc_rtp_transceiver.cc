@@ -265,7 +265,7 @@ void RTCRtpTransceiver::setCodecPreferences(
           DOMExceptionCode::kInvalidModificationError, "Invalid codec");
       return;
     }
-    auto type = codec->mimeType().Left(slash_position);
+    auto type = codec->mimeType().subview(0, slash_position);
     if (type == "video") {
       webrtc_codec.kind = webrtc::MediaType::VIDEO;
     } else if (type == "audio") {
@@ -294,7 +294,7 @@ void RTCRtpTransceiver::setCodecPreferences(
                 DOMExceptionCode::kInvalidModificationError, "Invalid codec");
             return;
           }
-          auto parameter_name = parameter.Left(equal_position);
+          auto parameter_name = parameter.substr(0, equal_position);
           auto parameter_value = parameter.substr(equal_position + 1);
           webrtc_codec.parameters.emplace(parameter_name.Ascii(),
                                           parameter_value.Ascii());

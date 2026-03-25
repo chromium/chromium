@@ -79,7 +79,7 @@ media_session::mojom::blink::MediaImagePtr SanitizeMediaImageAndConvertToMojo(
 
   mojo_image = media_session::mojom::blink::MediaImage::New();
   mojo_image->src = url;
-  mojo_image->type = image->type().Left(kMaxImageTypeLength);
+  mojo_image->type = image->type().substr(0, kMaxImageTypeLength);
   for (const auto& web_size :
        WebIconSizesParser::ParseIconSizes(image->sizes())) {
     mojo_image->sizes.push_back(web_size);
@@ -106,7 +106,7 @@ SanitizeChapterInformationAndConvertToMojo(const ChapterInformation* chapter,
   }
 
   mojo_chapter = media_session::mojom::blink::ChapterInformation::New();
-  mojo_chapter->title = chapter->title().Left(kMaxStringLength);
+  mojo_chapter->title = chapter->title().substr(0, kMaxStringLength);
   mojo_chapter->startTime = base::Seconds(chapter->startTime());
 
   for (const MediaImage* image : chapter->artwork()) {
@@ -138,9 +138,9 @@ MediaMetadataSanitizer::SanitizeAndConvertToMojo(const MediaMetadata* metadata,
   blink::mojom::blink::SpecMediaMetadataPtr mojo_metadata(
       blink::mojom::blink::SpecMediaMetadata::New());
 
-  mojo_metadata->title = metadata->title().Left(kMaxStringLength);
-  mojo_metadata->artist = metadata->artist().Left(kMaxStringLength);
-  mojo_metadata->album = metadata->album().Left(kMaxStringLength);
+  mojo_metadata->title = metadata->title().substr(0, kMaxStringLength);
+  mojo_metadata->artist = metadata->artist().substr(0, kMaxStringLength);
+  mojo_metadata->album = metadata->album().substr(0, kMaxStringLength);
 
   for (const MediaImage* image : metadata->artwork()) {
     media_session::mojom::blink::MediaImagePtr mojo_image =

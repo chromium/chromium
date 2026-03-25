@@ -42,7 +42,7 @@ String GetContextStateEnum(BaseAudioContext* context) {
 // Strips "Node" from the node name string. For example, "GainNode" will return
 // "Gain".
 String StripNodeSuffix(const String& nodeName) {
-  return nodeName.ends_with("Node") ? nodeName.Left(nodeName.length() - 4)
+  return nodeName.ends_with("Node") ? nodeName.substr(0, nodeName.length() - 4)
                                     : "Unknown";
 }
 
