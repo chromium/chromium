@@ -5,6 +5,8 @@
 source_set("ui") {
   sources = [
     "page_action_menu_consumer.h",
+    "page_action_menu_content_entry_point.h",
+    "page_action_menu_content_entry_point.mm",
     "page_action_menu_entrypoint_view.h",
     "page_action_menu_entrypoint_view.mm",
     "page_action_menu_feature.h",

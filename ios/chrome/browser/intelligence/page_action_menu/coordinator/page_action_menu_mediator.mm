@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 
+#import <optional>
+
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/prefs/pref_service.h"
@@ -19,9 +21,11 @@
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -136,35 +140,72 @@ const CGFloat kFeatureRowIconSize = 20;
       signin::ConsentLevel::kSignin);
 }
 
-- (BOOL)isLensAvailableForTraitCollection:(UITraitCollection*)traitCollection {
-  BOOL isLandscape = IsCompactHeight(traitCollection);
-  return [self isLensAvailableForProfile] &&
-         search::DefaultSearchProviderIsGoogle(_templateURLService) &&
-         !isLandscape;
-}
-
-- (BOOL)isGeminiAvailable {
-  if (!_geminiService || !_geminiTabHelper) {
-    return NO;
-  }
-
-  return _geminiTabHelper->IsGeminiAvailableForWebState() &&
-         _geminiService->IsProfileEligibleForGemini();
-}
-
-- (BOOL)isReaderModeAvailable {
-  // TODO(crbug.com/447371545): Migrate Reader Mode to the feature type system.
-  if (!_readerModeTabHelper) {
-    return NO;
-  }
-  return _readerModeTabHelper->CurrentPageIsEligibleForReaderMode();
-}
-
 - (BOOL)isReaderModeActive {
   if (!_readerModeTabHelper) {
     return NO;
   }
   return _readerModeTabHelper->IsActive();
+}
+
+- (PageActionMenuContentEntryPoint*)geminiEntryPoint {
+  if (!_geminiService || !_geminiTabHelper) {
+    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+  }
+
+  std::optional<gemini::IneligibilityReasons> result =
+      _geminiService->GeminiIneligibilityForProfile();
+
+  if (result.has_value()) {
+    // TODO(crbug.com/485297147): Add footer item when the footer UI gets
+    // implemented.
+    return result.value().chrome_enterprise
+               ? [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO
+                                                               footerItem:nil]
+               : [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+  }
+
+  return [[PageActionMenuContentEntryPoint alloc]
+      initWithEnabled:_geminiTabHelper->IsGeminiAvailableForWebState()];
+}
+
+- (PageActionMenuContentEntryPoint*)lensEntryPointForTraitCollection:
+    (UITraitCollection*)traitCollection {
+  const BOOL isLandscape = IsCompactHeight(traitCollection);
+  const BOOL hasDefaultSearchEngine =
+      search::DefaultSearchProviderIsGoogle(_templateURLService);
+  const BOOL featureAvailable = [self isLensAvailableForProfile];
+  if (featureAvailable && hasDefaultSearchEngine && !isLandscape) {
+    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:YES];
+  }
+
+  if (!featureAvailable) {
+    // TODO(crbug.com/485297147): Add footer item when the footer UI gets
+    // implemented.
+    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO
+                                                         footerItem:nil];
+  }
+
+  if (!hasDefaultSearchEngine) {
+    // TODO(crbug.com/485297147): Add footer item when the footer UI gets
+    // implemented.
+    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO
+                                                         footerItem:nil];
+  }
+
+  // Disabled without disclaimer.
+  return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+}
+
+- (PageActionMenuContentEntryPoint*)readerModeEntryPoint {
+  // TODO(crbug.com/447371545): Migrate Reader Mode to the feature type system.
+  if (!_readerModeTabHelper) {
+    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+  }
+
+  const BOOL eligible =
+      _readerModeTabHelper->CurrentPageIsEligibleForReaderMode();
+  // There are no readerMode non eligibility disclaimers.
+  return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:eligible];
 }
 
 - (BOOL)isFeatureAvailable:(PageActionMenuFeatureType)featureType {

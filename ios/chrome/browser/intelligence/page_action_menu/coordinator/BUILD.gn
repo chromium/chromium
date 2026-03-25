@@ -25,6 +25,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/infobars/ui_bundled/modals",
     "//ios/chrome/browser/intelligence/bwg/coordinator",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",

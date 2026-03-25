@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 
+#import <optional>
+
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -57,6 +59,11 @@ void BwgService::Shutdown() {
 #pragma mark - Public
 
 bool BwgService::IsProfileEligibleForGemini() {
+  return !GeminiIneligibilityForProfile().has_value();
+}
+
+std::optional<gemini::IneligibilityReasons>
+BwgService::GeminiIneligibilityForProfile() {
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   const bool can_use_model_execution = CanUseGeminiModelExecution(account_info);
@@ -90,7 +97,8 @@ bool BwgService::IsProfileEligibleForGemini() {
   RecordGeminiIneligibilityReasons(ineligibility_reasons);
   RecordGeminiEligibility(is_eligible);
 
-  return is_eligible;
+  return is_eligible ? std::optional<gemini::IneligibilityReasons>()
+                     : ineligibility_reasons;
 }
 
 #pragma mark - signin::IdentityManager::Observer

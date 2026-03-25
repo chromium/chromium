@@ -1,0 +1,55 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_CONTENT_ENTRY_POINT_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_CONTENT_ENTRY_POINT_H_
+
+#import <UIKit/UIKit.h>
+
+// Model class for an element in the footer displaying information on entry
+// points that aren't available.
+@interface ContentEntryPointUnavailabilityItem : NSObject
+
+// Information about the unavailability reason.
+@property(nonatomic, copy) NSString* text;
+//  Optional icon which can be displayed next to the text.
+@property(nonatomic, strong) UIImage* icon;
+// Optional "url" associated with the link in the text; this is not a valid
+// url per say and only gets used to uniquely identify the link during handling.
+@property(nonatomic, copy) NSString* actionIdentifier;
+
+- (instancetype)init NS_UNAVAILABLE;
+// Convenience initializer for texts without associated icons nor links.
+- (instancetype)initWithText:(NSString*)text;
+// Designated initializer that minimally requires the text. The icon and action
+// identifier are optional.
+- (instancetype)initWithText:(NSString*)text
+                        icon:(UIImage*)icon
+            actionIdentifier:(NSString*)actionIdentifier
+    NS_DESIGNATED_INITIALIZER;
+
+@end
+
+// Model class for a main entry point in the page tools menu. When not enabled,
+// we optionally provide a disclaimer in the footer for some of the reasons of
+// unavailability.
+@interface PageActionMenuContentEntryPoint : NSObject
+
+// Whether the entry point is eligible and available.
+@property(nonatomic, readonly) BOOL enabled;
+// Optional model entity for the footer element associated with the entry point.
+@property(nonatomic, readonly)
+    ContentEntryPointUnavailabilityItem* unavailabilityItem;
+
+- (instancetype)init NS_UNAVAILABLE;
+// Convenience initializer for entry points with no disclaimers in the footer.
+- (instancetype)initWithEnabled:(BOOL)enabled;
+// Designated initializer for entry points with an associated item describing
+// the disclaimer for ineligibility.
+- (instancetype)initWithEnabled:(BOOL)enabled
+                     footerItem:(ContentEntryPointUnavailabilityItem*)item
+    NS_DESIGNATED_INITIALIZER;
+@end
+
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_CONTENT_ENTRY_POINT_H_
