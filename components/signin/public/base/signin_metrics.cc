@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/metrics/profile_metrics_service.h"
 
 namespace signin_metrics {
 
@@ -260,8 +261,10 @@ void LogSignInOffered(AccessPoint access_point, PromoAction promo_action) {
       access_point);
 }
 
-void LogSignInStarted(AccessPoint access_point) {
-  base::UmaHistogramEnumeration("Signin.SignIn.Started", access_point);
+void LogSignInStarted(AccessPoint access_point,
+                      metrics::ProfileMetricsService& profile_metrics_service) {
+  profile_metrics_service.UmaHistogramEnumeration("Signin.SignIn.Started",
+                                                  access_point);
 }
 
 void LogSigninPendingOffered(AccessPoint access_point) {

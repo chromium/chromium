@@ -12,9 +12,11 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -58,8 +60,19 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   // ChromeRenderViewHostTestHarness::
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactories();
+    TestingProfile::TestingFactories testing_factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+
+    testing_factories.emplace_back(TestingProfile::TestingFactory{
+        ProfileMetricsServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<metrics::ProfileMetricsService>(
+              metrics::ProfileMetricsContext(1));
+        })});
+
+    return testing_factories;
   }
 
   // Does a navigation to Gaia and initializes the tab helper.
@@ -209,6 +222,8 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
       signin_metrics::AccessPoint::kSettings, 1);
   h_tester.ExpectUniqueSample("Signin.SignIn.Started",
                               signin_metrics::AccessPoint::kSettings, 1);
+  h_tester.ExpectUniqueSample("Signin.SignIn.Started.Profile1",
+                              signin_metrics::AccessPoint::kSettings, 1);
 
   // First call to did finish load does logs any Signin_SigninPage_Shown user
   // action.
@@ -242,6 +257,8 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
                               signin_metrics::AccessPoint::kSettings, 1);
   h_tester.ExpectUniqueSample("Signin.SignIn.Started",
                               signin_metrics::AccessPoint::kSettings, 2);
+  h_tester.ExpectUniqueSample("Signin.SignIn.Started.Profile1",
+                              signin_metrics::AccessPoint::kSettings, 2);
 
   // Check metrics are NOT logged again when `record_signin_started_metrics`is
   // false.
@@ -264,6 +281,8 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
   h_tester.ExpectUniqueSample("Signin.SigninStartedAccessPoint.WithDefault",
                               signin_metrics::AccessPoint::kSettings, 1);
   h_tester.ExpectUniqueSample("Signin.SignIn.Started",
+                              signin_metrics::AccessPoint::kSettings, 2);
+  h_tester.ExpectUniqueSample("Signin.SignIn.Started.Profile1",
                               signin_metrics::AccessPoint::kSettings, 2);
 }
 
@@ -290,6 +309,8 @@ TEST_F(DiceTabHelperTest, AddSecondaryAccountMetrics) {
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::ShowSigninErrorCallback());
   h_tester.ExpectUniqueSample("Signin.SignIn.Started",
+                              signin_metrics::AccessPoint::kSettings, 1);
+  h_tester.ExpectUniqueSample("Signin.SignIn.Started.Profile1",
                               signin_metrics::AccessPoint::kSettings, 1);
 
   // First call to did finish load does logs any Signin_SigninPage_Shown user

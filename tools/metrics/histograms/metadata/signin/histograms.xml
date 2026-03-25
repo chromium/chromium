@@ -3085,7 +3085,7 @@ OAuth Multilogin call. -->
   </token>
 </histogram>
 
-<histogram name="Signin.SignIn.Started" enum="SigninAccessPoint"
+<histogram name="Signin.SignIn.Started{Profile}" enum="SigninAccessPoint"
     expires_after="2026-07-26">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
@@ -3103,6 +3103,7 @@ OAuth Multilogin call. -->
     - More access points were added in M134 in iOS, which should lead to an
     increase in the number of log, not related to an actual increase in usage.
   </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <!-- LINT.IfChange(SigninFlowTimestamps) -->

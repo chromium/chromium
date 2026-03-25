@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -154,10 +155,12 @@
 
 - (void)start {
   [super start];
-  signin_metrics::LogSignInStarted(self.accessPoint);
+  ProfileIOS* profile = self.profile;
+  metrics::ProfileMetricsService* profile_metrics_service =
+      IOSProfileMetricsServiceFactory::GetForProfile(profile);
+  signin_metrics::LogSignInStarted(self.accessPoint, *profile_metrics_service);
   base::RecordAction(base::UserMetricsAction("Signin_BottomSheet_Opened"));
   // Create ConsistencyPromoSigninMediator.
-  ProfileIOS* profile = self.profile;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   // The sign-in bottom sheet should not be opened if the user is already signed

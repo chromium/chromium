@@ -785,6 +785,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
                   SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
   auto access_point = signin_metrics::AccessPoint::kChromeSigninInterceptBubble;
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Started", access_point, 1);
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Started.Profile1",
+                                      access_point, 1);
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed", access_point,
                                       1);
   histogram_tester.ExpectUniqueSample(

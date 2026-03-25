@@ -1303,7 +1303,8 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
 
       auto access_point =
           signin_metrics::AccessPoint::kChromeSigninInterceptBubble;
-      signin_metrics::LogSignInStarted(access_point);
+      signin_metrics::LogSignInStarted(access_point,
+                                       profile_metrics_service_.get());
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSignin, access_point);
       signin::LaunchHatsSurveyForProfile(

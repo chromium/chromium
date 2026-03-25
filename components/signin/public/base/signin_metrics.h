@@ -15,6 +15,10 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
+
 namespace signin_metrics {
 
 // Track all the ways a profile can become signed out as a histogram.
@@ -687,7 +691,8 @@ void LogSignInOffered(AccessPoint access_point, PromoAction promo_action);
 // Logs sign in start events and their associated access points. The
 // completion events are automatically logged when the primary account state
 // changes, see `signin::PrimaryAccountMutator`.
-void LogSignInStarted(AccessPoint access_point);
+void LogSignInStarted(AccessPoint access_point,
+                      metrics::ProfileMetricsService& profile_metrics_service);
 
 // Logs that sign in was offered when the user is in SigninPending state.
 void LogSigninPendingOffered(AccessPoint access_point);

@@ -61,6 +61,7 @@ static_library("base") {
   ]
   deps = [
     "//components/contextual_tasks/public:feature_list",
+    "//components/metrics",
     "//components/prefs",
 
     # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.
@@ -154,6 +155,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/metrics",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",

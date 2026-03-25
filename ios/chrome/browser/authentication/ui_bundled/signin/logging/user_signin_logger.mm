@@ -34,7 +34,7 @@ using signin_metrics::PromoAction;
 #pragma mark - SigninLogger
 
 - (void)logSigninStarted {
-  LogSignInStarted(self.accessPoint);
+  LogSignInStarted(self.accessPoint, *self.profileMetricsService);
   LogSigninAccessPointStarted(self.accessPoint, self.promoAction);
 }
 

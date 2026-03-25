@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -190,11 +191,12 @@ void DiceTabHelper::InitializeSigninFlow(
     state_->sync_signin_flow_status = SyncSigninFlowStatus::kStarted;
   }
 
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   // This profile creation may lead to the user signing in. To speed up a
   // potential subsequent account capabililties fetch, notify IdentityManager.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+      IdentityManagerFactory::GetForProfile(profile);
   identity_manager->PrepareForAddingNewAccount();
 
   if (!record_signin_started_metrics) {
@@ -207,7 +209,8 @@ void DiceTabHelper::InitializeSigninFlow(
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount ||
       reason == signin_metrics::Reason::kAddSecondaryAccount) {
     // See details at go/chrome-signin-metrics-revamp.
-    signin_metrics::LogSignInStarted(access_point);
+    signin_metrics::LogSignInStarted(
+        access_point, *ProfileMetricsServiceFactory::GetForProfile(profile));
   }
 
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {

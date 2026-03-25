@@ -20,7 +20,8 @@
 
 - (void)logSigninStarted {
   if (!self.hasRecordedSigninStarted) {
-    signin_metrics::LogSignInStarted(self.accessPoint);
+    signin_metrics::LogSignInStarted(self.accessPoint,
+                                     *self.profileMetricsService);
     signin_metrics::LogSigninAccessPointStarted(self.accessPoint,
                                                 self.promoAction);
     signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
