@@ -67,6 +67,7 @@ using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
 using password_manager::PasswordSaveManagerImpl;
 using testing::_;
+using testing::An;
 using testing::Eq;
 using testing::NiceMock;
 using testing::Return;
@@ -163,7 +164,7 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
                                            -> std::unique_ptr<KeyedService> {
           auto mock_service =
               std::make_unique<NiceMock<MockActorLoginPermissionService>>();
-          ON_CALL(*mock_service, ListPermissions)
+          ON_CALL(*mock_service, ListPermissions(An<const url::Origin&>(), _))
               .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
                   std::vector<FederatedPermission>()));
           return mock_service;
@@ -821,7 +822,8 @@ TEST_F(ActorLoginDelegateImplTest,
 
   auto* mock_permission_service = static_cast<MockActorLoginPermissionService*>(
       ActorLoginPermissionServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*mock_permission_service, ListPermissions);
+  EXPECT_CALL(*mock_permission_service,
+              ListPermissions(An<const url::Origin&>(), _));
 
   base::test::TestFuture<CredentialsOrError> future;
   delegate_->GetCredentials(/*has_sign_in_with_google_button=*/true,
@@ -842,7 +844,9 @@ TEST_F(ActorLoginDelegateImplTest,
 
   auto* mock_permission_service = static_cast<MockActorLoginPermissionService*>(
       ActorLoginPermissionServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*mock_permission_service, ListPermissions).Times(0);
+  EXPECT_CALL(*mock_permission_service,
+              ListPermissions(An<const url::Origin&>(), _))
+      .Times(0);
 
   base::test::TestFuture<CredentialsOrError> future;
   delegate_->GetCredentials(/*has_sign_in_with_google_button=*/false,

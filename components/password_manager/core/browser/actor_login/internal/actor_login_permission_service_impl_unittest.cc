@@ -98,6 +98,33 @@ TEST_F(ActorLoginPermissionServiceImplTest, ListAllPermissionsReturnsEmpty) {
 }
 
 TEST_F(ActorLoginPermissionServiceImplTest,
+       ListPermissionsSingleOriginSendsCorrectRequest) {
+  base::test::TestFuture<std::vector<FederatedPermission>> future;
+  service_.ListPermissions(url::Origin::Create(GURL("https://embedder.com")),
+                           future.GetCallback());
+  IssueAccessToken();
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_EQ(kTestListUrl, request.url.spec());
+  EXPECT_EQ("POST", request.method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  EXPECT_EQ(base::test::ParseJson(R"({
+              "filters": [
+                {
+                  "federatedCredentialPermissionFilter": {
+                    "matchAffiliatedRequesterOrigins": true,
+                    "rpEmbedderOrigin": "https://embedder.com"
+                  }
+                }
+              ]
+            })"),
+            base::test::ParseJson(network::GetUploadData(request)));
+}
+
+TEST_F(ActorLoginPermissionServiceImplTest,
        ListPermissionsSendsCorrectRequest) {
   base::test::TestFuture<std::vector<FederatedPermission>> future;
   std::vector<FederatedOrigins> origins = {

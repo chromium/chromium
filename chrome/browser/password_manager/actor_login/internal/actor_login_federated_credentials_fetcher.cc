@@ -72,9 +72,8 @@ void ActorLoginFederatedCredentialsFetcher::Fetch(
                      weak_ptr_factory_.GetWeakPtr(), barrier_callback));
 
   // Request all permissions for the main frame origin.
-  std::vector<FederatedOrigins> origins = {{request_origin_, url::Origin()}};
   permission_service_->ListPermissions(
-      origins,
+      request_origin_,
       base::BindOnce(
           &ActorLoginFederatedCredentialsFetcher::OnGetPermissionsCompleted,
           weak_ptr_factory_.GetWeakPtr(), barrier_callback));

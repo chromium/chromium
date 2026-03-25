@@ -30,6 +30,9 @@
 
 namespace actor_login {
 
+using testing::_;
+using testing::An;
+
 namespace {
 
 class MockIdentityCredentialSource
@@ -109,7 +112,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
   EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions)
       .WillOnce(base::test::RunOnceCallback<1>(std::move(accounts)));
 
-  EXPECT_CALL(mock_permission_service_, ListPermissions)
+  EXPECT_CALL(mock_permission_service_,
+              ListPermissions(An<const url::Origin&>(), _))
       .WillOnce(
           base::test::RunOnceCallback<1>(std::vector<FederatedPermission>()));
 
@@ -166,7 +170,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
       url::Origin::Create(GURL("https://requester.com"));
   permission.chosen_account_id = "123";
 
-  EXPECT_CALL(mock_permission_service_, ListPermissions)
+  EXPECT_CALL(mock_permission_service_,
+              ListPermissions(An<const url::Origin&>(), _))
       .WillOnce(base::test::RunOnceCallback<1>(
           std::vector<FederatedPermission>{permission}));
 
@@ -209,7 +214,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
       url::Origin::Create(GURL("https://requester.com"));
   permission.chosen_account_id = "WRONG_ID";
 
-  EXPECT_CALL(mock_permission_service_, ListPermissions)
+  EXPECT_CALL(mock_permission_service_,
+              ListPermissions(An<const url::Origin&>(), _))
       .WillOnce(base::test::RunOnceCallback<1>(
           std::vector<FederatedPermission>{permission}));
 
@@ -253,7 +259,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
       url::Origin::Create(GURL("https://requester.com"));
   permission.chosen_account_id = "123";
 
-  EXPECT_CALL(mock_permission_service_, ListPermissions)
+  EXPECT_CALL(mock_permission_service_,
+              ListPermissions(An<const url::Origin&>(), _))
       .WillOnce(base::test::RunOnceCallback<1>(
           std::vector<FederatedPermission>{permission}));
 
@@ -309,7 +316,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
   EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions)
       .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
 
-  EXPECT_CALL(mock_permission_service_, ListPermissions)
+  EXPECT_CALL(mock_permission_service_,
+              ListPermissions(An<const url::Origin&>(), _))
       .WillOnce(
           base::test::RunOnceCallback<1>(std::vector<FederatedPermission>()));
 

@@ -42,6 +42,12 @@ class ActorLoginPermissionService : public KeyedService {
   virtual void ListPermissions(const std::vector<FederatedOrigins>& origins,
                                ListPermissionsResult callback) = 0;
 
+  // Lists actor login permissions for the primary profile on the given
+  // origin. Opaque origins are ignored, meaning setting the origin to an opaque
+  // origin is equivalent to calling `ListAllPermissions`.
+  virtual void ListPermissions(const url::Origin& embedder_origin,
+                               ListPermissionsResult callback) = 0;
+
   // Lists all actor login permissions for the primary profile.
   virtual void ListAllPermissions(ListPermissionsResult callback) = 0;
 

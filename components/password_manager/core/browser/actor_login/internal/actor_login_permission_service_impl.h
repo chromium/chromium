@@ -38,6 +38,8 @@ class ActorLoginPermissionServiceImpl : public ActorLoginPermissionService {
   // ActorLoginPermissionService:
   void ListPermissions(const std::vector<FederatedOrigins>& origins,
                        ListPermissionsResult callback) override;
+  void ListPermissions(const url::Origin& embedder_origin,
+                       ListPermissionsResult callback) override;
   void ListAllPermissions(ListPermissionsResult callback) override;
   void DeletePermission(const url::Origin& embedder_origin,
                         const std::string& display_name,

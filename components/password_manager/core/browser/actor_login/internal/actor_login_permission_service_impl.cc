@@ -363,9 +363,17 @@ void ActorLoginPermissionServiceImpl::ListPermissions(
           .Then(std::move(callback))));
 }
 
+void ActorLoginPermissionServiceImpl::ListPermissions(
+    const url::Origin& embedder_origin,
+    ListPermissionsResult callback) {
+  ListPermissions(
+      std::vector<FederatedOrigins>{{embedder_origin, url::Origin()}},
+      std::move(callback));
+}
+
 void ActorLoginPermissionServiceImpl::ListAllPermissions(
     ListPermissionsResult callback) {
-  ListPermissions({}, std::move(callback));
+  ListPermissions(std::vector<FederatedOrigins>(), std::move(callback));
 }
 
 void ActorLoginPermissionServiceImpl::DeletePermission(

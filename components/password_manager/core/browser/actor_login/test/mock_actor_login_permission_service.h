@@ -20,6 +20,10 @@ class MockActorLoginPermissionService : public ActorLoginPermissionService {
               ListPermissions,
               (const std::vector<FederatedOrigins>&, ListPermissionsResult),
               (override));
+  MOCK_METHOD(void,
+              ListPermissions,
+              (const url::Origin&, ListPermissionsResult),
+              (override));
   MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
   MOCK_METHOD(void,
               DeletePermission,
