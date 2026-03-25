@@ -121,7 +121,7 @@ const CLIENT_DELEGATE: ClientDelegate = {
       headers: {[key: string]: string}|null, accountEmail: string|null):
       Promise<XhrResponseResult> {
         return browserProxy.sendXhr(
-            url, method, requestBody, !!useCredentials, !!useApiKey, headers,
+            url, method, requestBody, useCredentials, useApiKey, headers,
             accountEmail);
       },
 

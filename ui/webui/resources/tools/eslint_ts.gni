@@ -20,7 +20,6 @@ template("eslint_ts") {
                              "in_files",
                              "tsconfig",
                              "enable_no_chrome_send",
-                             "enable_no_unnecessary_type_conversion",
                              "enable_web_component_missing_deps",
                              "visibility",
                            ])
@@ -71,11 +70,6 @@ template("eslint_ts") {
 
     if (defined(enable_no_chrome_send) && enable_no_chrome_send) {
       args += [ "--enable_no_chrome_send" ]
-    }
-
-    if (defined(enable_no_unnecessary_type_conversion) &&
-        enable_no_unnecessary_type_conversion) {
-      args += [ "--enable_no_unnecessary_type_conversion" ]
     }
   }
 }

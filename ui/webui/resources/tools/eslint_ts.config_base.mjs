@@ -35,6 +35,7 @@ export const defaultConfig = [
       'require-await': 'off',
       '@typescript-eslint/require-await' : 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/no-unnecessary-type-conversion': 'error',
 
       // https://google.github.io/styleguide/tsguide.html#export-type
       '@typescript-eslint/consistent-type-exports': 'error',
@@ -105,12 +106,5 @@ export const noChromeSendConfig = {
         ],
       },
     ],
-  },
-};
-
-export const noUnnecessaryTypeConversionConfig = {
-  files: ['**/*.ts'],
-  rules: {
-    '@typescript-eslint/no-unnecessary-type-conversion': 'error',
   },
 };
