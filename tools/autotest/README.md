@@ -26,6 +26,8 @@ via `-C`.
 `autotest.py -C out/Default StringUtilTest.IsStringUTF8`
 * **Run tests modified in your current Git branch:**
 `autotest.py -C out/Default --run-changed`
+* **Run tests related to modified files in your current Git branch:**
+`autotest.py -C out/Default --run-related`
 * **Run a specific line (useful for editor integration):**
 `autotest.py -C out/Default --line 42 base/pickle_unittest.cc`
 
