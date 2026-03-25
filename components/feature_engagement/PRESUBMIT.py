@@ -16,33 +16,52 @@ def CheckChangeOnCommit(input_api, output_api):
 
 def _CommonChecks(input_api, output_api):
   results = []
-  results.extend(_CheckFeatureConstantsSorting(input_api, output_api))
+  results.extend(_CheckJavaConstantsSorting(input_api, output_api))
   return results
 
-def _CheckFeatureConstantsSorting(input_api, output_api):
+def _CheckJavaConstantsSorting(input_api, output_api):
   FEATURE_CONSTANTS_PATH = (
       'components/feature_engagement/public/android/java/src/org/chromium/'
       'components/feature_engagement/FeatureConstants.java')
+  EVENT_CONSTANTS_PATH = (
+      'components/feature_engagement/public/android/java/src/org/chromium/'
+      'components/feature_engagement/EventConstants.java')
 
-  affected_file = None
+  results = []
   for f in input_api.AffectedFiles():
     if f.LocalPath() == FEATURE_CONSTANTS_PATH:
-      affected_file = f
-      break
+      results.extend(_CheckFeatureConstantsFile(input_api, output_api, f))
+    elif f.LocalPath() == EVENT_CONSTANTS_PATH:
+      results.extend(_CheckEventConstantsFile(input_api, output_api, f))
 
-  if not affected_file:
-    return []
+  return results
 
+def _CheckFeatureConstantsFile(input_api, output_api, affected_file):
   new_contents = affected_file.NewContents()
+  file_path = affected_file.LocalPath()
   results = []
 
   # 1. Check @StringDef block
   results.extend(_CheckKeepSortedBlock(input_api, output_api,
-                 new_contents, FEATURE_CONSTANTS_PATH))
+                 new_contents, file_path))
 
   # 2. Check String constants block
   results.extend(_CheckStringConstantsSorted(input_api, output_api,
-                 new_contents, FEATURE_CONSTANTS_PATH))
+                 new_contents, file_path, r'^\s*String\s+([A-Z0-9_]+)\s*='))
+
+  return results
+
+def _CheckEventConstantsFile(input_api, output_api, affected_file):
+  new_contents = affected_file.NewContents()
+  file_path = affected_file.LocalPath()
+  results = []
+
+  # Check String constants block
+  # Rules: if a line startsWith 'public static final String ',
+  # then it gets added to our list
+  results.extend(_CheckStringConstantsSorted(input_api, output_api,
+                 new_contents, file_path,
+                 r'^\s*public\s+static\s+final\s+String\s+([A-Z0-9_]+)\s*='))
 
   return results
 
@@ -72,12 +91,13 @@ def _CheckKeepSortedBlock(input_api, output_api, lines, file_path):
       return [output_api.PresubmitPromptWarning(message)]
   return []
 
-def _CheckStringConstantsSorted(input_api, output_api, lines, file_path):
+def _CheckStringConstantsSorted(input_api, output_api, lines,
+                                file_path, regex_pattern):
   string_constants = []
   for line in lines:
-    # Match 'String NAME = '
+    # Match constant declaration based on regex_pattern
     # Note: Using input_api.re for regex as is standard in Chromium presubmits.
-    match = input_api.re.search(r'^\s*String\s+([A-Z0-9_]+)\s*=', line)
+    match = input_api.re.search(regex_pattern, line)
     if match:
       string_constants.append(match.group(1))
 

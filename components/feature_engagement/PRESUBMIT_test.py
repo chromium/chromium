@@ -43,27 +43,23 @@ class MockFile(object):
   def NewContents(self):
     return self._new_contents
 
-class FeatureConstantsPresubmitTest(unittest.TestCase):
+class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
   FEATURE_CONSTANTS_PATH = (
       'components/feature_engagement/public/android/java/src/org/chromium/'
       'components/feature_engagement/FeatureConstants.java')
+  EVENT_CONSTANTS_PATH = (
+      'components/feature_engagement/public/android/java/src/org/chromium/'
+      'components/feature_engagement/EventConstants.java')
 
   def testNoAffectedFiles(self):
     input_api = MockInputApi()
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
-  def testOtherAffectedFiles(self):
-    input_api = MockInputApi()
-    input_api.files = [MockFile('other/file.java', ['String A = "A";'])]
-    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
-    self.assertEqual(0, len(results))
-
-  def testSorted(self):
+  def testSortedFeatureConstants(self):
     input_api = MockInputApi()
     input_api.files = [MockFile(self.FEATURE_CONSTANTS_PATH, [
       '@StringDef({',
-      '    // Test comment',
       '    FeatureConstants.A,',
       '    FeatureConstants.B,',
       '})',
@@ -75,26 +71,7 @@ class FeatureConstantsPresubmitTest(unittest.TestCase):
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
-  def testUnsortedStringDef(self):
-    input_api = MockInputApi()
-    input_api.files = [MockFile(self.FEATURE_CONSTANTS_PATH, [
-      '@StringDef({',
-      '    FeatureConstants.B,',
-      '    FeatureConstants.A,',
-      '})',
-      'public @interface FeatureConstants {',
-      '    String A = "A";',
-      '    String B = "B";',
-      '}'
-    ])]
-    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
-    self.assertEqual(1, len(results))
-    self.assertEqual('Warning', results[0].type)
-    self.assertIn('The @StringDef block', results[0].message)
-    self.assertIn('Actual item:   FeatureConstants.B', results[0].message)
-    self.assertIn('Expected item: FeatureConstants.A', results[0].message)
-
-  def testUnsortedStringConstants(self):
+  def testUnsortedFeatureConstants(self):
     input_api = MockInputApi()
     input_api.files = [MockFile(self.FEATURE_CONSTANTS_PATH, [
       '@StringDef({',
@@ -110,24 +87,32 @@ class FeatureConstantsPresubmitTest(unittest.TestCase):
     self.assertEqual(1, len(results))
     self.assertEqual('Error', results[0].type)
     self.assertIn('The String constants', results[0].message)
-    self.assertIn('Actual item:   B', results[0].message)
-    self.assertIn('Expected item: A', results[0].message)
 
-  def testUnsortedBoth(self):
+  def testSortedEventConstants(self):
     input_api = MockInputApi()
-    input_api.files = [MockFile(self.FEATURE_CONSTANTS_PATH, [
-      '@StringDef({',
-      '    FeatureConstants.B,',
-      '    FeatureConstants.A,',
-      '})',
-      'public @interface FeatureConstants {',
-      '    String B = "B";',
-      '    String A = "A";',
+    input_api.files = [MockFile(self.EVENT_CONSTANTS_PATH, [
+      'public final class EventConstants {',
+      '    public static final String A = "a";',
+      '    public static final String B = "b";',
       '}'
     ])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
-    # It should return both errors/warnings
-    self.assertEqual(2, len(results))
+    self.assertEqual(0, len(results))
+
+  def testUnsortedEventConstants(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(self.EVENT_CONSTANTS_PATH, [
+      'public final class EventConstants {',
+      '    public static final String B = "b";',
+      '    public static final String A = "a";',
+      '}'
+    ])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('Error', results[0].type)
+    self.assertIn('The String constants', results[0].message)
+    self.assertIn('Actual item:   B', results[0].message)
+    self.assertIn('Expected item: A', results[0].message)
 
 if __name__ == '__main__':
   unittest.main()
