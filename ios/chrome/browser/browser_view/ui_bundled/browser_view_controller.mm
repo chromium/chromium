@@ -592,6 +592,7 @@ const CGFloat kTopDynamicIslandInset = 24;
     return;
   }
   _topToolbarInset = inset;
+  self.primaryToolbarOffsetConstraint.constant = inset;
   [self updateToolbarState];
   [self.view setNeedsLayout];
 }
