@@ -61,6 +61,10 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   // issued when it is not created yet or destroyed (by BrowserMainLoop).
   static SpeechRecognitionManagerImpl* GetInstance();
 
+  // Returns the number of sessions tracked by FrameSessionTracker.
+  static int GetSessionTrackerCountForTesting(int render_process_id,
+                                              int render_frame_id);
+
   // SpeechRecognitionManager implementation.
   int CreateSession(const SpeechRecognitionSessionConfig& config) override;
   int CreateSession(

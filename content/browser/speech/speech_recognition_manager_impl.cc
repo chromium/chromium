@@ -133,6 +133,17 @@ class FrameSessionTracker
     tracker->RemoveSession(session_id);
   }
 
+  static int GetSessionCountForTesting(int render_process_id,  // IN-TEST
+                                       int render_frame_id) {  // IN-TEST
+    RenderFrameHost* render_frame_host =
+        RenderFrameHost::FromID(render_process_id, render_frame_id);
+    if (!render_frame_host) {
+      return 0;
+    }
+    FrameSessionTracker* tracker = GetForCurrentDocument(render_frame_host);
+    return tracker ? tracker->sessions_.size() : 0;
+  }
+
  private:
   explicit FrameSessionTracker(content::RenderFrameHost* rfh)
       : DocumentUserData<FrameSessionTracker>(rfh) {}
@@ -163,6 +174,14 @@ SpeechRecognitionManager* SpeechRecognitionManager::GetInstance() {
 void SpeechRecognitionManager::SetManagerForTesting(
     SpeechRecognitionManager* manager) {
   manager_for_tests_ = manager;
+}
+
+// static
+int SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(  // IN-TEST
+    int render_process_id,
+    int render_frame_id) {
+  return FrameSessionTracker::GetSessionCountForTesting(  // IN-TEST
+      render_process_id, render_frame_id);
 }
 
 SpeechRecognitionManagerImpl* SpeechRecognitionManagerImpl::GetInstance() {
@@ -918,6 +937,13 @@ void SpeechRecognitionManagerImpl::SessionDelete(Session* session) {
   }
   if (!session->context.label.empty())
     media_stream_manager_->CancelRequest(session->context.label);
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FrameSessionTracker::RemoveObserverForSession,
+                     session->config.initial_context.render_process_id,
+                     session->config.initial_context.render_frame_id,
+                     session->id));
+
   sessions_.erase(session->id);
 }
 

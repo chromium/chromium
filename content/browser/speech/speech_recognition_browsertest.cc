@@ -405,6 +405,38 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, MAYBE_OneShotRecognition) {
       nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       FrameSessionTrackerMemoryLeak) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  int render_process_id = rfh->GetProcess()->GetID().GetUnsafeValue();
+  int render_frame_id = rfh->GetRoutingID();
+
+  const char kTriggerLeakScript[] = R"(
+    new Promise(resolve => {
+      const SpeechRecognition = window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.onend = () => { resolve("ended"); };
+      recognition.onerror = () => { resolve("error"); };
+      recognition.start();
+    });
+  )";
+
+  for (int i = 0; i < 5; ++i) {
+    EXPECT_EQ("error", EvalJs(rfh, kTriggerLeakScript));
+  }
+  // Wait for the asynchronously posted cleanup tasks from the IO thread to
+  // execute on the UI thread.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                   render_process_id, render_frame_id));
+}
+
 #if !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
                        OnDeviceWebSpeechRecognition) {
