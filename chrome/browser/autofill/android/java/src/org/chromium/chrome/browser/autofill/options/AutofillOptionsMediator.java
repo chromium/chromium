@@ -139,9 +139,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
         mModel.set(
                 AutofillOptionsProperties.AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE,
                 isAutofillAiReauthToggleVisible(referrer));
-        mModel.set(
-                AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON,
-                isAutofillAiOn() && isEligibleToAutofillAi());
+        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON, isAutofillAiReauthOn());
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_REFERRER, referrer, AutofillOptionsReferrer.COUNT);
@@ -199,12 +197,18 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
 
     private boolean isEligibleToAutofillAi() {
         @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
-        return isAutofillAiEnabled() && manager != null && manager.isEligibleToAutofillAi();
+        return isAutofillAiEnabled()
+                && manager != null
+                && manager.isEligibleToAutofillAi()
+                && !prefs().getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
     }
 
     private boolean isAutofillAiOn() {
         @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
-        return isAutofillAiEnabled() && manager != null && manager.getAutofillAiOptInStatus();
+        return isAutofillAiEnabled()
+                && manager != null
+                && manager.getAutofillAiOptInStatus()
+                && isEligibleToAutofillAi();
     }
 
     private void onAutofillAiSettingToggled(boolean isOn) {

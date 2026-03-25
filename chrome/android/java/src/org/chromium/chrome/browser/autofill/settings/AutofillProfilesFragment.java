@@ -488,11 +488,13 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         Map<EntityType, List<EntityInstanceWithLabels>> instancesToList =
                 entityDataManager.getInstancesToList();
 
-        boolean addButtonEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+        boolean isEligibleToAddEntities =
+                (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
                         ? entityDataManager.canEnableOrDisableAutofillAi()
                         : entityDataManager.isEligibleToAutofillAi()
-                                && entityDataManager.getAutofillAiOptInStatus();
+                                && entityDataManager.getAutofillAiOptInStatus());
+        boolean addButtonEnabled =
+                isEligibleToAddEntities && !disabledSettingsInThirdPartyMode(getProfile());
 
         for (Map.Entry<EntityType, List<EntityInstanceWithLabels>> entry :
                 instancesToList.entrySet()) {

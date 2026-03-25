@@ -910,6 +910,23 @@ public class AutofillOptionsTest {
                 View.GONE, thingsToConsider.findViewById(R.id.info_item_summary_2).getVisibility());
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiToggleDisabledWhenUsingThirdPartyProvider() {
+        doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
+        doReturn(true).when(mMockEntityDataManager).getAutofillAiOptInStatus();
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        // Even if the user is opted in and is eligible, the AutofillAi toggle is at off state and
+        // disabled IF they are using a third party provider.
+        assertFalse(mFragment.getAutofillAiSwitch().isEnabled());
+        assertFalse(mFragment.getAutofillAiSwitch().isChecked());
+    }
+
     private ModalDialogManager assertModalNotUsed() {
         fail("The modal dialog manager shouldn't have been used yet!");
         return null;

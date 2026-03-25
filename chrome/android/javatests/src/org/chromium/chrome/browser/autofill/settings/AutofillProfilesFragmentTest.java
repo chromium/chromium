@@ -1821,6 +1821,41 @@ public class AutofillProfilesFragmentTest {
         onView(withText("Edit Vehicle")).check(doesNotExist());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+    public void testAddEntityButton_disabledInThirdPartyMode() throws Exception {
+        EntityType vehicleType = TestUtils.getVehicleEntityType();
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(vehicleType, Collections.emptyList());
+
+        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+
+        // Set third party mode.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    PreferenceCategory category = fragment.findPreference("Vehicle");
+                    Criteria.checkThat(category, Matchers.notNullValue());
+                    Preference addVehicle = category.findPreference("Vehicle" + " Add");
+                    Criteria.checkThat(addVehicle, Matchers.notNullValue());
+                    Criteria.checkThat(addVehicle.isEnabled(), Matchers.is(false));
+                });
+    }
+
     private void checkPreferenceCount(int expectedPreferenceCount) {
         int preferenceCount =
                 ThreadUtils.runOnUiThreadBlocking(
