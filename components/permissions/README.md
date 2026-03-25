@@ -228,6 +228,32 @@ the appropriate UI flavor.
 A quiet UI prompt will use a right-side omnibox indicator on desktop or a
 mini-infobar on Android.
 
+## Security and Context Verifications
+
+Permission requests and status queries undergo several security and environment-specific verifications before a decision is made. These checks are primarily implemented in `PermissionContextBase` and `PermissionControllerImpl`.
+
+### Frame-Level Verifications
+
+*   **Fenced Frames**: Permissions are denied for documents loaded inside a fenced frame (`content::RenderFrameHost::IsNestedWithinFencedFrame()`). Fenced frames do not currently support permission requests to preserve privacy boundaries.
+*   **Inactive or BFCache Frames**: Requests are disallowed if the frame is inactive. Attempting a request on an inactive frame may trigger eviction from the Back/Forward Cache.
+
+### Origin and URL Verifications
+
+*   **Invalid URLs**: Requests require valid requesting and embedding origins. Invalid URLs (e.g., in some popup scenarios) are automatically rejected.
+*   **Secure Origins**: Permissions are generally restricted to secure origins. This is verified using `network::IsUrlPotentiallyTrustworthy()`. Some permissions can bypass this check under specific conditions controlled by the embedder.
+*   **Virtual URL Mismatch**: Requests are denied if there is an origin mismatch between the document's loaded URL and its virtual URL (the one visible to the user). This prevents phishing or deceptive UI where a site loads content from one origin but presents another to the user.
+
+### Policy and Kill-Switch Verifications
+
+*   **Permissions Policy**: Checked to ensure the feature is allowed for the specific frame. If a policy disables the feature (e.g., camera or geolocation), the request is automatically denied.
+*   **Kill Switch**: Individual permissions can be disabled globally or for specific groups via Finch field trials (`PermissionContextBase::IsPermissionKillSwitchOn`).
+
+### Environment and Platform-Specific Verifications
+
+*   **Guest View**: Content inside a `GuestView` (like `<webview>`) may have different permission behavior. Checks ensure that permissions granted inside a guest are not inappropriately shared across separate `StoragePartition`s.
+*   **Glic Actor**: Permissions may be auto-rejected if an actor (e.g., an assistant surface) is actively operating on the `WebContents` to prevent ambient eavesdropping or privilege escalation risks.
+*   **App-Level Settings (Android)**: For the Notifications permission, verification checks if Chrome has the corresponding system-level permission enabled.
+
 ## [PermissionsSecurityModelInteractiveUITest](https://cs.chromium.org/chromium/src/chrome/browser/permissions/permissions_security_model_interactive_uitest.cc)
 
 ### Testing
