@@ -380,7 +380,7 @@ static bool GetOutputDeviceChannelsAndLayout(AudioDeviceID device,
   int total_channel_count = 0;
   if (GetDeviceTotalChannelCount(device, kAudioDevicePropertyScopeOutput,
                                  &total_channel_count) &&
-      total_channel_count > GetConcurrentMaxChannels()) {
+      total_channel_count > kMaxConcurrentChannels) {
     *channels = total_channel_count;
     *channel_layout = CHANNEL_LAYOUT_DISCRETE;
   } else {

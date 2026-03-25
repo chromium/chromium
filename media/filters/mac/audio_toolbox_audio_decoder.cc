@@ -315,7 +315,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
     return false;
   }
 
-  if (channel_count_ > static_cast<uint32_t>(GetConcurrentMaxChannels())) {
+  if (channel_count_ > kMaxConcurrentChannels) {
     channel_layout_ = CHANNEL_LAYOUT_DISCRETE;
   } else {
     // Get the decoder's output channel layout.

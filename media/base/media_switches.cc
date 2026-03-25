@@ -372,9 +372,6 @@ BASE_FEATURE(kEncryptedMediaOcclusionTracking,
 BASE_FEATURE(kExtendedVideoBitstreamValidation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables support for >8 audio channel layouts (i.e., 5.1.4 and 7.1.4).
-BASE_FEATURE(kEnableHighChannelLayouts, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables user control over muting tab audio from the tab strip.
 BASE_FEATURE(kEnableTabMuting, base::FEATURE_DISABLED_BY_DEFAULT);
 
