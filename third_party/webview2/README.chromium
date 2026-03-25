@@ -21,4 +21,5 @@ Only includes the following headers and libraries required for the build:
 - include/WebView2.h
 - {x86/x64/arm64}/WebView2Loader.dll
 - {x86/x64/arm64}/WebView2Loader.dll.lib
+- {x86/x64/arm64}/WebView2LoaderStatic.lib
 
