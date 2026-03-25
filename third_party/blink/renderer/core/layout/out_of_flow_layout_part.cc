@@ -2411,9 +2411,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     return builder.ToConstraintSpace();
   })();
 
-  const LogicalAlignment alignment = ComputeAlignment(
-      candidate_style, container_info.is_scroll_container,
-      container_writing_direction, candidate_writing_direction);
+  const LogicalAlignment alignment =
+      ComputeAlignment(candidate_style, container_writing_direction,
+                       candidate_writing_direction);
 
   const LogicalOofInsets insets =
       ComputeOutOfFlowInsets(candidate_style, space.AvailableSize(), alignment,

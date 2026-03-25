@@ -532,19 +532,18 @@ LogicalOofInsets ComputeOutOfFlowInsets(
 
 LogicalAlignment ComputeAlignment(
     const ComputedStyle& style,
-    bool is_containing_block_scrollable,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction) {
   StyleSelfAlignmentData align_normal_behavior(ItemPosition::kNormal,
                                                OverflowAlignment::kDefault);
   StyleSelfAlignmentData justify_normal_behavior(ItemPosition::kNormal,
                                                  OverflowAlignment::kDefault);
-  const PositionArea position_area = style.GetPositionArea().ToPhysical(
-      container_writing_direction, self_writing_direction);
-  if (!position_area.IsNone()) {
+  if (style.PositionAreaOffsets()) {
+    const PositionArea position_area = style.GetPositionArea().ToPhysical(
+        container_writing_direction, self_writing_direction);
+    DCHECK(!position_area.IsNone());
     std::tie(align_normal_behavior, justify_normal_behavior) =
-        position_area.AlignJustifySelfFromPhysical(
-            container_writing_direction, is_containing_block_scrollable);
+        position_area.AlignJustifySelfFromPhysical(container_writing_direction);
   }
   const bool is_parallel =
       IsParallelWritingMode(container_writing_direction.GetWritingMode(),

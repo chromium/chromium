@@ -59,7 +59,6 @@ struct LogicalAlignment {
 
 LogicalAlignment ComputeAlignment(
     const ComputedStyle& style,
-    bool is_containing_block_scrollable,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction);
 

@@ -235,8 +235,7 @@ PositionArea PositionArea::ToPhysical(
 
 std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>
 PositionArea::AlignJustifySelfFromPhysical(
-    WritingDirectionMode container_writing_direction,
-    bool is_containing_block_scrollable) const {
+    WritingDirectionMode container_writing_direction) const {
   ItemPosition align = ItemPosition::kStart;
   ItemPosition align_reverse = ItemPosition::kEnd;
   ItemPosition justify = ItemPosition::kStart;
