@@ -70,6 +70,7 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('app_window.idl', 'app_window.webidl'),
         ('accessibility_service_private.idl',
          'accessibility_service_private.webidl'),
+        ('appview_tag.idl', 'appview_tag.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'
