@@ -836,6 +836,7 @@ INSTANTIATE_TEST_SUITE_P(
         WebActuationTestParams{
             .test_name = "SimulateCanActOnWebOnAndOff",
             .policy_control_exemption = true,
+            .consent_pref_set = true,
             .expected_suite = "GlicSubpage SimulateCanActOnWebOnAndOff"},
 
         WebActuationTestParams{
