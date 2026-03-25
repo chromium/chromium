@@ -8,12 +8,19 @@ from codegen import header_common
 import common
 
 
-def _return_type_cpp(java_type):
+def _return_type_cpp_non_mirror(java_type):
   if converted_type := java_type.converted_type:
     return converted_type
   if java_type.is_primitive():
     return java_type.to_cpp()
   return f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
+
+
+def _return_type_cpp_mirror(java_type):
+  if java_type.enable_mirror():
+    jobject_type = java_type.to_mirror_cpp()
+    return f'jni_zero::ScopedJavaLocalRef<{jobject_type}>'
+  return _return_type_cpp_non_mirror(java_type)
 
 
 def _param_type_cpp_non_mirror(java_type, use_const=False):
@@ -31,7 +38,7 @@ def _param_type_cpp_non_mirror(java_type, use_const=False):
   return f'const jni_zero::JavaRef<{ret}>&'
 
 
-def _param_type_cpp_mirror(native, java_type, use_const=False):
+def _param_type_cpp_mirror(java_type, use_const=False):
   if java_type.enable_mirror():
     jobject_type = java_type.to_mirror_cpp()
     return f'const jni_zero::JavaRef<{jobject_type}>&'
@@ -42,7 +49,7 @@ def _impl_forward_declaration(sb, native, params):
   sb('// Forward declaration. To be implemented by the including .cc file.\n')
   with sb.statement():
     name = f'JNI_{native.java_class.name}_{native.capitalized_name}'
-    sb(f'static {_return_type_cpp(native.return_type)} {name}')
+    sb(f'static {_return_type_cpp_non_mirror(native.return_type)} {name}')
     with sb.param_list() as plist:
       plist.append('JNIEnv* env')
       if not native.static:
@@ -62,12 +69,12 @@ def _entry_point_example(sb, native):
   with sb.statement():
     if not native.first_param_cpp_type:
       sb('static ')
-    sb(f'{_return_type_cpp(native.return_type)} {name}')
+    sb(f'{_return_type_cpp_mirror(native.return_type)} {name}')
     with sb.param_list() as plist:
       plist.append('JNIEnv* env')
       if not native.static:
         plist.append('const jni_zero::JavaRef<jobject>& jcaller')
-      plist.extend(f'{_param_type_cpp_mirror(native, p.java_type, True)} '
+      plist.extend(f'{_param_type_cpp_mirror(p.java_type, True)} '
                    f'{p.cpp_name()}' for p in params)
 
 

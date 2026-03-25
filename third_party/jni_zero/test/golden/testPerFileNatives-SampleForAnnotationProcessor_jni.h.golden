@@ -16,7 +16,7 @@
 // * JNIEnv* parameters are optional.
 // * Types do not have to be exact; they must accept rvalues of the examples.
 //
-// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_Bar(
+// static jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForAnnotationProcessor> JNI_SampleForAnnotationProcessor_Bar(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor>& sample);
 //
@@ -27,7 +27,7 @@
 // static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForAnnotationProcessor_ReturnClass(
 //     JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnClasses(
+// static jni_zero::ScopedJavaLocalRef<JArray<jclass>> JNI_SampleForAnnotationProcessor_ReturnClasses(
 //     JNIEnv* env);
 //
 // static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(
@@ -43,75 +43,75 @@
 // static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnObject(
 //     JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnObjects(
+// static jni_zero::ScopedJavaLocalRef<JArray<jobject>> JNI_SampleForAnnotationProcessor_ReturnObjects(
 //     JNIEnv* env);
 //
 // static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleForAnnotationProcessor_ReturnString(
 //     JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnStrings(
+// static jni_zero::ScopedJavaLocalRef<JArray<jstring>> JNI_SampleForAnnotationProcessor_ReturnStrings(
 //     JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnStruct(
+// static jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct> JNI_SampleForAnnotationProcessor_ReturnStruct(
 //     JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnStructs(
+// static jni_zero::ScopedJavaLocalRef<JArray<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>> JNI_SampleForAnnotationProcessor_ReturnStructs(
 //     JNIEnv* env);
 //
 // static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleForAnnotationProcessor_ReturnThrowable(
 //     JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_ReturnThrowables(
+// static jni_zero::ScopedJavaLocalRef<JArray<jthrowable>> JNI_SampleForAnnotationProcessor_ReturnThrowables(
 //     JNIEnv* env);
 //
 // static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleForAnnotationProcessor_RevString(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jstring>& stringToReverse);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_SendSamplesToNative(
+// static jni_zero::ScopedJavaLocalRef<JArray<::org::jni_zero::JSampleForAnnotationProcessor>> JNI_SampleForAnnotationProcessor_SendSamplesToNative(
 //     JNIEnv* env,
-//     const jni_zero::JavaRef<jobjectArray>& strs);
+//     const jni_zero::JavaRef<JArray<::org::jni_zero::JSampleForAnnotationProcessor>>& strs);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleForAnnotationProcessor_SendToNative(
+// static jni_zero::ScopedJavaLocalRef<JArray<jstring>> JNI_SampleForAnnotationProcessor_SendToNative(
 //     JNIEnv* env,
-//     const jni_zero::JavaRef<jobjectArray>& strs);
+//     const jni_zero::JavaRef<JArray<jstring>>& strs);
 //
 // static std::vector<int32_t> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
 //     JNIEnv* env,
 //     int zint,
 //     const std::vector<int32_t>& ints,
 //     int64_t zlong,
-//     const jni_zero::JavaRef<jlongArray>& longs,
+//     const jni_zero::JavaRef<JArray<int64_t>>& longs,
 //     int16_t zshort,
-//     const jni_zero::JavaRef<jshortArray>& shorts,
+//     const jni_zero::JavaRef<JArray<int16_t>>& shorts,
 //     int zchar,
-//     const jni_zero::JavaRef<jcharArray>& chars,
+//     const jni_zero::JavaRef<JArray<uint16_t>>& chars,
 //     int8_t zbyte,
-//     const jni_zero::JavaRef<jbyteArray>& bytes,
+//     const jni_zero::JavaRef<JArray<int8_t>>& bytes,
 //     double zdouble,
-//     const jni_zero::JavaRef<jdoubleArray>& doubles,
+//     const jni_zero::JavaRef<JArray<double>>& doubles,
 //     float zfloat,
-//     const jni_zero::JavaRef<jfloatArray>& floats,
+//     const jni_zero::JavaRef<JArray<float>>& floats,
 //     bool zbool,
-//     const jni_zero::JavaRef<jbooleanArray>& bools);
+//     const jni_zero::JavaRef<JArray<bool>>& bools);
 //
 // static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jclass>& clazz,
-//     const jni_zero::JavaRef<jobjectArray>& classes,
+//     const jni_zero::JavaRef<JArray<jclass>>& classes,
 //     const jni_zero::JavaRef<jthrowable>& throwable,
-//     const jni_zero::JavaRef<jobjectArray>& throwables,
+//     const jni_zero::JavaRef<JArray<jthrowable>>& throwables,
 //     const jni_zero::JavaRef<jstring>& string,
-//     const jni_zero::JavaRef<jobjectArray>& strings,
+//     const jni_zero::JavaRef<JArray<jstring>>& strings,
 //     const std::string& convertedString,
 //     const std::vector<std::string>& convertedStrings,
 //     const std::optional<std::string>& optionalString,
 //     const std::optional<void(*)(const std::vector<bool>&)>& funcType,
 //     const jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>& tStruct,
-//     const jni_zero::JavaRef<jobjectArray>& structs,
+//     const jni_zero::JavaRef<JArray<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>>& structs,
 //     const jni_zero::JavaRef<jobject>& obj,
 //     const jni_zero::tests::CPPClass& convertedObj,
-//     const jni_zero::JavaRef<jobjectArray>& objects,
+//     const jni_zero::JavaRef<JArray<jobject>>& objects,
 //     const jni_zero::JavaRef<::org::stubs::JMyClass_SecondNestedInterface>& nestedInterface,
 //     const jni_zero::JavaRef<::android::view::JView>& view,
 //     const jni_zero::JavaRef<::android::content::JContext>& context,
@@ -544,8 +544,8 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject strs) {                                                                              \
-    auto strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                              \
-        static_cast<jobjectArray>(strs));                                                          \
+    auto strs_ref = jni_zero::JavaRef<JArray<::org::jni_zero::JSampleForAnnotationProcessor>>::CreateLeaky(env, \
+        static_cast<JArray<::org::jni_zero::JSampleForAnnotationProcessor>>(strs));                \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \
@@ -558,7 +558,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
       } else if constexpr (requires { func_wrapper(strs_ref); }) {                                 \
         return func_wrapper(strs_ref);                                                             \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_SendSamplesToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_SendSamplesToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<::org::jni_zero::JSampleForAnnotationProcessor>>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -569,8 +569,8 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject strs) {                                                                              \
-    auto strs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                              \
-        static_cast<jobjectArray>(strs));                                                          \
+    auto strs_ref = jni_zero::JavaRef<JArray<jstring>>::CreateLeaky(env,                           \
+        static_cast<JArray<jstring>>(strs));                                                       \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \
@@ -583,7 +583,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
       } else if constexpr (requires { func_wrapper(strs_ref); }) {                                 \
         return func_wrapper(strs_ref);                                                             \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_SendToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_SendToNative() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<jstring>>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -615,23 +615,23 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
     std::vector<int32_t> ints_converted = jni_zero::FromJniArray<std::vector<int32_t>>(            \
         env,                                                                                       \
         jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(ints)));             \
-    auto longs_ref = jni_zero::JavaRef<jlongArray>::CreateLeaky(env,                               \
-        static_cast<jlongArray>(longs));                                                           \
-    auto shorts_ref = jni_zero::JavaRef<jshortArray>::CreateLeaky(env,                             \
-        static_cast<jshortArray>(shorts));                                                         \
+    auto longs_ref = jni_zero::JavaRef<JArray<int64_t>>::CreateLeaky(env,                          \
+        static_cast<JArray<int64_t>>(longs));                                                      \
+    auto shorts_ref = jni_zero::JavaRef<JArray<int16_t>>::CreateLeaky(env,                         \
+        static_cast<JArray<int16_t>>(shorts));                                                     \
     int zchar_converted = jni_zero::internal::PrimitiveConvert<int, uint16_t>::FromJniType(        \
         env,                                                                                       \
         zchar);                                                                                    \
-    auto chars_ref = jni_zero::JavaRef<jcharArray>::CreateLeaky(env,                               \
-        static_cast<jcharArray>(chars));                                                           \
-    auto bytes_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env,                               \
-        static_cast<jbyteArray>(bytes));                                                           \
-    auto doubles_ref = jni_zero::JavaRef<jdoubleArray>::CreateLeaky(env,                           \
-        static_cast<jdoubleArray>(doubles));                                                       \
-    auto floats_ref = jni_zero::JavaRef<jfloatArray>::CreateLeaky(env,                             \
-        static_cast<jfloatArray>(floats));                                                         \
-    auto bools_ref = jni_zero::JavaRef<jbooleanArray>::CreateLeaky(env,                            \
-        static_cast<jbooleanArray>(bools));                                                        \
+    auto chars_ref = jni_zero::JavaRef<JArray<uint16_t>>::CreateLeaky(env,                         \
+        static_cast<JArray<uint16_t>>(chars));                                                     \
+    auto bytes_ref = jni_zero::JavaRef<JArray<int8_t>>::CreateLeaky(env,                           \
+        static_cast<JArray<int8_t>>(bytes));                                                       \
+    auto doubles_ref = jni_zero::JavaRef<JArray<double>>::CreateLeaky(env,                         \
+        static_cast<JArray<double>>(doubles));                                                     \
+    auto floats_ref = jni_zero::JavaRef<JArray<float>>::CreateLeaky(env,                           \
+        static_cast<JArray<float>>(floats));                                                       \
+    auto bools_ref = jni_zero::JavaRef<JArray<bool>>::CreateLeaky(env,                             \
+        static_cast<JArray<bool>>(bools));                                                         \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \
@@ -710,7 +710,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
             zbool,                                                                                 \
             bools_ref);                                                                            \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_TestAllPrimitives() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int, std::vector<int32_t>, int64_t, const jni_zero::JavaRef<jlongArray>&, int16_t, const jni_zero::JavaRef<jshortArray>&, int, const jni_zero::JavaRef<jcharArray>&, int8_t, const jni_zero::JavaRef<jbyteArray>&, double, const jni_zero::JavaRef<jdoubleArray>&, float, const jni_zero::JavaRef<jfloatArray>&, bool, const jni_zero::JavaRef<jbooleanArray>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_TestAllPrimitives() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int, std::vector<int32_t>, int64_t, const jni_zero::JavaRef<JArray<int64_t>>&, int16_t, const jni_zero::JavaRef<JArray<int16_t>>&, int, const jni_zero::JavaRef<JArray<uint16_t>>&, int8_t, const jni_zero::JavaRef<JArray<int8_t>>&, double, const jni_zero::JavaRef<JArray<double>>&, float, const jni_zero::JavaRef<JArray<float>>&, bool, const jni_zero::JavaRef<JArray<bool>>&)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -742,16 +742,16 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
       jobject convertedObjects) {                                                                  \
     auto clazz_ref = jni_zero::JavaRef<jclass>::CreateLeaky(env,                                   \
         static_cast<jclass>(clazz));                                                               \
-    auto classes_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
-        static_cast<jobjectArray>(classes));                                                       \
+    auto classes_ref = jni_zero::JavaRef<JArray<jclass>>::CreateLeaky(env,                         \
+        static_cast<JArray<jclass>>(classes));                                                     \
     auto throwable_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env,                           \
         static_cast<jthrowable>(throwable));                                                       \
-    auto throwables_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                        \
-        static_cast<jobjectArray>(throwables));                                                    \
+    auto throwables_ref = jni_zero::JavaRef<JArray<jthrowable>>::CreateLeaky(env,                  \
+        static_cast<JArray<jthrowable>>(throwables));                                              \
     auto string_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                                 \
         static_cast<jstring>(string));                                                             \
-    auto strings_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
-        static_cast<jobjectArray>(strings));                                                       \
+    auto strings_ref = jni_zero::JavaRef<JArray<jstring>>::CreateLeaky(env,                        \
+        static_cast<JArray<jstring>>(strings));                                                    \
     std::string convertedString_converted = jni_zero::FromJniType<std::string>(                    \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedString));                            \
@@ -766,15 +766,15 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
         jni_zero::JavaRef<jobject>::CreateLeaky(env, funcType));                                   \
     auto tStruct_ref = jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>::CreateLeaky(env, \
         static_cast<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>(tStruct));          \
-    auto structs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
-        static_cast<jobjectArray>(structs));                                                       \
+    auto structs_ref = jni_zero::JavaRef<JArray<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>>::CreateLeaky(env, \
+        static_cast<JArray<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>>(structs));  \
     auto obj_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env,                                    \
         obj);                                                                                      \
     jni_zero::tests::CPPClass convertedObj_converted = jni_zero::FromJniType<jni_zero::tests::CPPClass>( \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedObj));                               \
-    auto objects_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
-        static_cast<jobjectArray>(objects));                                                       \
+    auto objects_ref = jni_zero::JavaRef<JArray<jobject>>::CreateLeaky(env,                        \
+        static_cast<JArray<jobject>>(objects));                                                    \
     auto nestedInterface_ref = jni_zero::JavaRef<::org::stubs::JMyClass_SecondNestedInterface>::CreateLeaky(env, \
         static_cast<::org::stubs::JMyClass_SecondNestedInterface>(nestedInterface));               \
     auto view_ref = jni_zero::JavaRef<::android::view::JView>::CreateLeaky(env,                    \
@@ -874,7 +874,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
             context_ref,                                                                           \
             std::move(convertedObjects_converted));                                                \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, std::string, std::vector<std::string>, std::optional<std::string>, std::optional<void(*)(const std::vector<bool>&)>, const jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<::org::stubs::JMyClass_SecondNestedInterface>&, const jni_zero::JavaRef<::android::view::JView>&, const jni_zero::JavaRef<::android::content::JContext>&, std::vector<jni_zero::tests::CPPClass>)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
+        static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<JArray<jclass>>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<JArray<jthrowable>>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<JArray<jstring>>&, std::string, std::vector<std::string>, std::optional<std::string>, std::optional<void(*)(const std::vector<bool>&)>, const jni_zero::JavaRef<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>&, const jni_zero::JavaRef<JArray<::org::jni_zero::JSampleForAnnotationProcessor_TestStruct>>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<JArray<jobject>>&, const jni_zero::JavaRef<::org::stubs::JMyClass_SecondNestedInterface>&, const jni_zero::JavaRef<::android::view::JView>&, const jni_zero::JavaRef<::android::content::JContext>&, std::vector<jni_zero::tests::CPPClass>)\nSee SampleForAnnotationProcessor_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

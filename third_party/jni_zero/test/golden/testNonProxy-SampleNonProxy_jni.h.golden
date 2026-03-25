@@ -33,13 +33,13 @@
 //     const jni_zero::JavaRef<::java::lang::JLong>& created,
 //     const jni_zero::JavaRef<::java::lang::JBoolean>& isBookmark,
 //     const jni_zero::JavaRef<::java::lang::JLong>& date,
-//     const jni_zero::JavaRef<jbyteArray>& favicon,
+//     const jni_zero::JavaRef<JArray<int8_t>>& favicon,
 //     const jni_zero::JavaRef<jstring>& title,
 //     const jni_zero::JavaRef<::java::lang::JInteger>& visits);
 //
 // static void JNI_SampleNonProxy_CreateHistoricalTabFromState(
 //     JNIEnv* env,
-//     const jni_zero::JavaRef<jbyteArray>& state,
+//     const jni_zero::JavaRef<JArray<int8_t>>& state,
 //     int32_t tabIndex);
 //
 // static void JNI_SampleNonProxy_Destroy(
@@ -52,16 +52,17 @@
 //     const jni_zero::JavaRef<jobject>& jcaller,
 //     const jni_zero::JavaRef<jstring>& find);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleNonProxy_GetAutofillProfileGUIDs(
+// static jni_zero::ScopedJavaLocalRef<JArray<jstring>> JNI_SampleNonProxy_GetAutofillProfileGUIDs(
 //     JNIEnv* env);
 //
 // static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleNonProxy_GetDomainAndRegistry(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jstring>& url);
 //
-// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_GetInnerClass(JNIEnv* env);
+// static jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleNonProxy_OnFrameAvailableListener> JNI_SampleNonProxy_GetInnerClass(
+//     JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jbyteArray> JNI_SampleNonProxy_GetStateAsByteArray(
+// static jni_zero::ScopedJavaLocalRef<JArray<int8_t>> JNI_SampleNonProxy_GetStateAsByteArray(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
 //     const jni_zero::JavaRef<::android::view::JView>& view);
@@ -82,20 +83,20 @@
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jthrowable>& e);
 //
-// static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_QueryBitmap(
+// static jni_zero::ScopedJavaLocalRef<::android::graphics::JBitmap> JNI_SampleNonProxy_QueryBitmap(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
 //     int32_t nativeChromeBrowserProvider,
-//     const jni_zero::JavaRef<jobjectArray>& projection,
+//     const jni_zero::JavaRef<JArray<jstring>>& projection,
 //     const jni_zero::JavaRef<jstring>& selection,
-//     const jni_zero::JavaRef<jobjectArray>& selectionArgs,
+//     const jni_zero::JavaRef<JArray<jstring>>& selectionArgs,
 //     const jni_zero::JavaRef<jstring>& sortOrder);
 //
 // static void JNI_SampleNonProxy_SetRecognitionResults(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
 //     int32_t sessionId,
-//     const jni_zero::JavaRef<jobjectArray>& results);
+//     const jni_zero::JavaRef<JArray<jstring>>& results);
 //
 
 // Triggers a compiler warning if DEFINE_JNI(SampleNonProxy) is forgotten (requires -Wunused-function).
@@ -184,8 +185,8 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
         static_cast<::java::lang::JBoolean>(isBookmark));                                          \
     auto date_ref = jni_zero::JavaRef<::java::lang::JLong>::CreateLeaky(env,                       \
         static_cast<::java::lang::JLong>(date));                                                   \
-    auto favicon_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env,                             \
-        favicon);                                                                                  \
+    auto favicon_ref = jni_zero::JavaRef<JArray<int8_t>>::CreateLeaky(env,                         \
+        static_cast<JArray<int8_t>>(favicon));                                                     \
     auto title_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                                  \
         title);                                                                                    \
     auto visits_ref = jni_zero::JavaRef<::java::lang::JInteger>::CreateLeaky(env,                  \
@@ -240,7 +241,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
             title_ref,                                                                             \
             visits_ref);                                                                           \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_AddBookmarkFromAPI() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<::java::lang::JLong>&, const jni_zero::JavaRef<::java::lang::JBoolean>&, const jni_zero::JavaRef<::java::lang::JLong>&, const jni_zero::JavaRef<jbyteArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<::java::lang::JInteger>&)\nSee SampleNonProxy_jni.h for an example."); \
+        static_assert(false, "JNI_SampleNonProxy_AddBookmarkFromAPI() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<::java::lang::JLong>&, const jni_zero::JavaRef<::java::lang::JBoolean>&, const jni_zero::JavaRef<::java::lang::JLong>&, const jni_zero::JavaRef<JArray<int8_t>>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<::java::lang::JInteger>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -252,8 +253,8 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
       jclass jcaller,                                                                              \
       jbyteArray state,                                                                            \
       int32_t tabIndex) {                                                                          \
-    auto state_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env,                               \
-        state);                                                                                    \
+    auto state_ref = jni_zero::JavaRef<JArray<int8_t>>::CreateLeaky(env,                           \
+        static_cast<JArray<int8_t>>(state));                                                       \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \
@@ -266,7 +267,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
       } else if constexpr (requires { func_wrapper(state_ref, tabIndex); }) {                      \
         return func_wrapper(state_ref, tabIndex);                                                  \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_CreateHistoricalTabFromState() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jbyteArray>&, int32_t)\nSee SampleNonProxy_jni.h for an example."); \
+        static_assert(false, "JNI_SampleNonProxy_CreateHistoricalTabFromState() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<int8_t>>&, int32_t)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
@@ -563,12 +564,12 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
       jstring selection,                                                                           \
       jobjectArray selectionArgs,                                                                  \
       jstring sortOrder) {                                                                         \
-    auto projection_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                        \
-        projection);                                                                               \
+    auto projection_ref = jni_zero::JavaRef<JArray<jstring>>::CreateLeaky(env,                     \
+        static_cast<JArray<jstring>>(projection));                                                 \
     auto selection_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                              \
         selection);                                                                                \
-    auto selectionArgs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                     \
-        selectionArgs);                                                                            \
+    auto selectionArgs_ref = jni_zero::JavaRef<JArray<jstring>>::CreateLeaky(env,                  \
+        static_cast<JArray<jstring>>(selectionArgs));                                              \
     auto sortOrder_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                              \
         sortOrder);                                                                                \
     /* Lambda required to make "if constexpr" work properly. */                                    \
@@ -609,7 +610,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
             selectionArgs_ref,                                                                     \
             sortOrder_ref);                                                                        \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_QueryBitmap() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&)\nSee SampleNonProxy_jni.h for an example."); \
+        static_assert(false, "JNI_SampleNonProxy_QueryBitmap() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<JArray<jstring>>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<JArray<jstring>>&, const jni_zero::JavaRef<jstring>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -621,8 +622,8 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
       jobject jcaller,                                                                             \
       int32_t sessionId,                                                                           \
       jobjectArray results) {                                                                      \
-    auto results_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                           \
-        results);                                                                                  \
+    auto results_ref = jni_zero::JavaRef<JArray<jstring>>::CreateLeaky(env,                        \
+        static_cast<JArray<jstring>>(results));                                                    \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \
@@ -649,7 +650,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
             sessionId,                                                                             \
             results_ref);                                                                          \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_SetRecognitionResults() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<jobjectArray>&)\nSee SampleNonProxy_jni.h for an example."); \
+        static_assert(false, "JNI_SampleNonProxy_SetRecognitionResults() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (int32_t, const jni_zero::JavaRef<JArray<jstring>>&)\nSee SampleNonProxy_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \

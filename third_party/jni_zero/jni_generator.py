@@ -335,6 +335,9 @@ class JniObject:
                  if t.enable_mirror())
       if n.return_type.enable_mirror():
         ret.add(n.return_type.java_class)
+    # When the java type is a primitive array, its enable_mirror() will be true,
+    # but its java_class is None, so we remove None from the return value here.
+    ret.discard(None)
     return sorted(ret)
 
   def RemoveTestOnlyNatives(self):

@@ -189,7 +189,7 @@ def _param_type_cpp_non_mirror(java_type):
 
 def _param_type_cpp_mirror(java_type):
   if java_type.enable_mirror():
-    jobject_type = java_type.java_class.to_mirror_cpp()
+    jobject_type = java_type.to_mirror_cpp()
     return (f'const ::jni_zero::JavaRef<{jobject_type}>&')
   return _param_type_cpp_non_mirror(java_type)
 
@@ -375,7 +375,7 @@ def called_by_natives_specialization(sb, java_class, fields, called_by_natives):
 def _mirrored_field_getter(sb, java_class, field):
   jobject_type = java_class.to_mirror_cpp()
   if field.java_type.enable_mirror():
-    return_jobject_type = field.java_type.java_class.to_mirror_cpp()
+    return_jobject_type = field.java_type.to_mirror_cpp()
     return_type_cpp = f'::jni_zero::ScopedJavaLocalRef<{return_jobject_type}>'
   else:
     return_jobject_type = field.java_type.to_cpp()
@@ -465,7 +465,7 @@ def _mirrored_cpp_function(sb, cbn):
   is_instance_method = not cbn.static and not cbn.is_constructor
 
   if cbn.return_type.enable_mirror():
-    return_jobject_type = cbn.return_type.java_class.to_mirror_cpp()
+    return_jobject_type = cbn.return_type.to_mirror_cpp()
     return_type_cpp = f'::jni_zero::ScopedJavaLocalRef<{return_jobject_type}>'
   else:
     return_jobject_type = None

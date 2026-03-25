@@ -325,7 +325,7 @@ class _CalledByNatives<::org::jni_zero::JJavapClass> {
   ::jni_zero::ScopedJavaLocalRef<jclass> objTest(
       JNIEnv* env,
       const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobjectArray>& p1) const {
+      const ::jni_zero::JavaRef<JArray<::java::lang::JRunnable>>& p1) const {
     auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::org::jni_zero::JJavapClass>*>(this);
     return Java_JavapClass_objTest(env, *this_obj, p0, p1);
   }
@@ -337,10 +337,11 @@ class _CalledByNatives<::org::jni_zero::JJavapClass> {
     return Java_JavapClass_staticIntMethod(env, p0, p1);
   }
 
-  static ::jni_zero::ScopedJavaLocalRef<jobjectArray> staticIntMethod(
+  static ::jni_zero::ScopedJavaLocalRef<JArray<JArray<int32_t>>> staticIntMethod(
       JNIEnv* env,
       const ::jni_zero::JavaRef<jstring>& p0) {
-    return Java_JavapClass_staticIntMethod(env, p0);
+    return Java_JavapClass_staticIntMethod(env, p0)
+        .As<JArray<JArray<int32_t>>>();
   }
 
 };

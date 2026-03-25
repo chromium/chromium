@@ -12,6 +12,20 @@
 #include "extra_include.h"
 
 // Relevant jobject subclasses:
+#ifndef _JNI_ZERO_java_lang_JRunnable_DEFINED
+namespace java::lang {
+class _JRunnable : public _jobject {};
+using JRunnable = _JRunnable*;
+}
+#define _JNI_ZERO_java_lang_JRunnable_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JRunnable_DEFINED
+using ::java::lang::JRunnable;
+#define _JNI_ZERO_JRunnable_DEFINED
+#endif
+
 #ifndef _JNI_ZERO_java_util_JArrayList_DEFINED
 namespace java::util {
 class _JArrayList : public _jobject {};

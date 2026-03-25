@@ -21,21 +21,21 @@
 //     const jni_zero::JavaRef<::org::jni_zero::JSampleForTests>& caller,
 //     const jni_zero::JavaRef<::org::jni_zero::JSampleForTests_InnerStructB>& b);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_ArrayTypes1(
+// static jni_zero::ScopedJavaLocalRef<JArray<JArray<jstring>>> JNI_SampleProxyEdgeCases_ArrayTypes1(
 //     JNIEnv* env,
-//     const jni_zero::JavaRef<jintArray>& a,
-//     const jni_zero::JavaRef<jobjectArray>& b);
+//     const jni_zero::JavaRef<JArray<int32_t>>& a,
+//     const jni_zero::JavaRef<JArray<JArray<jobject>>>& b);
 //
-// static jni_zero::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTypes2(
+// static jni_zero::ScopedJavaLocalRef<JArray<int32_t>> JNI_SampleProxyEdgeCases_ArrayTypes2(
 //     JNIEnv* env,
-//     const jni_zero::JavaRef<jintArray>& a,
-//     const jni_zero::JavaRef<jobjectArray>& b);
+//     const jni_zero::JavaRef<JArray<int32_t>>& a,
+//     const jni_zero::JavaRef<JArray<JArray<jthrowable>>>& b);
 //
 // static void JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(JNIEnv* env);
 //
-// static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
+// static jni_zero::ScopedJavaLocalRef<JArray<::java::util::JMap>> JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
 //     JNIEnv* env,
-//     const jni_zero::JavaRef<jobjectArray>& arg);
+//     const jni_zero::JavaRef<JArray<::java::util::JMap>>& arg);
 //
 // static void JNI_SampleProxyEdgeCases_SetBool(
 //     JNIEnv* env,
@@ -100,10 +100,10 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       JNIEnv* env,                                                                                 \
       jobject a,                                                                                   \
       jobject b) {                                                                                 \
-    auto a_ref = jni_zero::JavaRef<jintArray>::CreateLeaky(env,                                    \
-        static_cast<jintArray>(a));                                                                \
-    auto b_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                                 \
-        static_cast<jobjectArray>(b));                                                             \
+    auto a_ref = jni_zero::JavaRef<JArray<int32_t>>::CreateLeaky(env,                              \
+        static_cast<JArray<int32_t>>(a));                                                          \
+    auto b_ref = jni_zero::JavaRef<JArray<JArray<jobject>>>::CreateLeaky(env,                      \
+        static_cast<JArray<JArray<jobject>>>(b));                                                  \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \
@@ -116,7 +116,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       } else if constexpr (requires { func_wrapper(a_ref, b_ref); }) {                             \
         return func_wrapper(a_ref, b_ref);                                                         \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes1() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jintArray>&, const jni_zero::JavaRef<jobjectArray>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes1() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<int32_t>>&, const jni_zero::JavaRef<JArray<JArray<jobject>>>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -127,10 +127,10 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       JNIEnv* env,                                                                                 \
       jobject a,                                                                                   \
       jobject b) {                                                                                 \
-    auto a_ref = jni_zero::JavaRef<jintArray>::CreateLeaky(env,                                    \
-        static_cast<jintArray>(a));                                                                \
-    auto b_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                                 \
-        static_cast<jobjectArray>(b));                                                             \
+    auto a_ref = jni_zero::JavaRef<JArray<int32_t>>::CreateLeaky(env,                              \
+        static_cast<JArray<int32_t>>(a));                                                          \
+    auto b_ref = jni_zero::JavaRef<JArray<JArray<jthrowable>>>::CreateLeaky(env,                   \
+        static_cast<JArray<JArray<jthrowable>>>(b));                                               \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \
@@ -143,7 +143,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       } else if constexpr (requires { func_wrapper(a_ref, b_ref); }) {                             \
         return func_wrapper(a_ref, b_ref);                                                         \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes2() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jintArray>&, const jni_zero::JavaRef<jobjectArray>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes2() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<int32_t>>&, const jni_zero::JavaRef<JArray<JArray<jthrowable>>>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
@@ -173,8 +173,8 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
   JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray( \
       JNIEnv* env,                                                                                 \
       jobject arg) {                                                                               \
-    auto arg_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env,                               \
-        static_cast<jobjectArray>(arg));                                                           \
+    auto arg_ref = jni_zero::JavaRef<JArray<::java::util::JMap>>::CreateLeaky(env,                 \
+        static_cast<JArray<::java::util::JMap>>(arg));                                             \
     /* Lambda required to make "if constexpr" work properly. */                                    \
     auto dependent_context = [&](auto) {                                                           \
       /* Lambda required to disambiguate overloads. */                                             \
@@ -187,7 +187,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleProxyEdgeCases() {}
       } else if constexpr (requires { func_wrapper(arg_ref); }) {                                  \
         return func_wrapper(arg_ref);                                                              \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobjectArray>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
+        static_assert(false, "JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<::java::util::JMap>>&)\nSee SampleProxyEdgeCases_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \

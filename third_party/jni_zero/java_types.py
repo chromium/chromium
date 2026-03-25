@@ -301,7 +301,13 @@ class JavaType:
 
   def to_mirror_cpp(self):
     if self.enable_mirror():
-      return self.java_class.to_mirror_cpp()
+      dim = self.array_dimensions
+      if self.java_class:
+        ret = self.java_class.to_mirror_cpp()
+      else:
+        ret = CPP_UNDERLYING_TYPE_BY_JAVA_TYPE.get(
+            self.non_array_full_name_with_slashes, 'jobject')
+      return ('JArray<' * dim) + ret + ('>' * dim)
     return self.to_cpp()
 
   def to_cpp_default_value(self):
@@ -316,8 +322,8 @@ class JavaType:
 
   def enable_mirror(self):
     """Whether to use a jobject subclass e.g. JMyClass."""
-    return (self.java_class and self.java_class.enable_mirror()
-            and not self.converted_type and self.array_dimensions == 0)
+    return (((self.java_class and self.java_class.enable_mirror())
+             or self.array_dimensions > 0) and not self.converted_type)
 
 
 @dataclasses.dataclass(frozen=True)

@@ -26,6 +26,20 @@ using ::java::lang::JStringBuilder;
 #define _JNI_ZERO_JStringBuilder_DEFINED
 #endif
 
+#ifndef _JNI_ZERO_java_util_JMap_DEFINED
+namespace java::util {
+class _JMap : public _jobject {};
+using JMap = _JMap*;
+}
+#define _JNI_ZERO_java_util_JMap_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JMap_DEFINED
+using ::java::util::JMap;
+#define _JNI_ZERO_JMap_DEFINED
+#endif
+
 #ifndef _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
 namespace org::jni_zero {
 class _JSampleForTests : public _jobject {};
