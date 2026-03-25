@@ -219,8 +219,10 @@ void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
       !ongoing_flow_state_->final_checkout_amount) {
     browser_autofill_manager_->GetAmountExtractionManager()
         .TriggerCheckoutAmountExtractionWithAi();
-    // TODO(crbug.com/477689220): If Pay Now Pay Later tabs UI is enabled, show
-    // autofill popup progress screen.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnablePayNowPayLaterTabs)) {
+      ShowProgressUiForPayLaterTab();
+    }
     return;
   }
 
@@ -480,8 +482,8 @@ void BnplManager::FetchVcnDetails(GURL url) {
                           [](base::WeakPtr<BnplManager> manager) {
                             if (manager) {
                               // Note: Does not call
-                              // `BnplUiDelegate::CloseProgressUi()` as this is
-                              // expected to be handled by UI code.
+                              // `BnplUiDelegate::CloseProgressUi()` as this
+                              // is expected to be handled by UI code.
                               manager->Reset();
                             }
                           },
@@ -1018,6 +1020,66 @@ void BnplManager::UpdateSuggestionsOnAiAmountExtractionResponse(
 
   CHECK(autofill_suggestion_trigger_source_.has_value());
   update_suggestions_callback_.Run(std::move(suggestions),
+                                   autofill_suggestion_trigger_source_.value());
+}
+
+void BnplManager::ShowProgressUiForPayLaterTab() {
+  const base::span<const Suggestion> current_suggestions =
+      browser_autofill_manager_->client().GetAutofillSuggestions();
+
+  // This function is only called to update the Pay Later tab suggestions after
+  // the user accepted an BNPL issuer. At this moment, there has to be
+  // suggestions showing.
+  CHECK(!current_suggestions.empty());
+
+  auto type_is_bnpl_entry = [](const Suggestion& s) {
+    return s.type == SuggestionType::kBnplEntry;
+  };
+  auto type_is_not_bnpl_entry = [](const Suggestion& s) {
+    return s.type != SuggestionType::kBnplEntry;
+  };
+
+  // Find the start position of BNPL suggestions.
+  auto bnpl_suggestions_start =
+      std::find_if(current_suggestions.begin(), current_suggestions.end(),
+                   type_is_bnpl_entry);
+  // This function is only called to update the Pay Later tab suggestions after
+  // the user accepted an issuer. At this moment, there has to be at least one
+  // BNPL suggestions showing.
+  CHECK(bnpl_suggestions_start != current_suggestions.end());
+  // Find the end position of BNPL suggestions.
+  auto bnpl_suggestions_end =
+      std::find_if(bnpl_suggestions_start, current_suggestions.end(),
+                   type_is_not_bnpl_entry);
+
+  // When there are pay later BNPL suggestions, there must be footer
+  // suggestions with different suggestion type after the BNPL entries.
+  CHECK(bnpl_suggestions_end != current_suggestions.end());
+  // BNPL suggestions are inserted together into the suggestion list and there
+  // should be no other BNPL suggestions after `bnpl_suggestions_end`.
+  CHECK(std::ranges::none_of(bnpl_suggestions_end, current_suggestions.end(),
+                             type_is_bnpl_entry));
+
+  int bnpl_suggestion_count =
+      std::distance(bnpl_suggestions_start, bnpl_suggestions_end);
+  std::vector<Suggestion> updated_suggestions;
+  // All BNPL suggestions will be replaced by a single loading suggestion.
+  updated_suggestions.reserve(current_suggestions.size() -
+                              bnpl_suggestion_count + 1);
+
+  // Copy suggestions before BNPL entries.
+  updated_suggestions.insert(updated_suggestions.end(),
+                             current_suggestions.begin(),
+                             bnpl_suggestions_start);
+  // Insert the loading suggestion based on number of BNPL suggestions.
+  updated_suggestions.push_back(
+      GetLoadingSuggestionForPayLaterTab(bnpl_suggestion_count));
+  // Copy the remaining suggestions.
+  updated_suggestions.insert(updated_suggestions.end(), bnpl_suggestions_end,
+                             current_suggestions.end());
+
+  CHECK(autofill_suggestion_trigger_source_.has_value());
+  update_suggestions_callback_.Run(std::move(updated_suggestions),
                                    autofill_suggestion_trigger_source_.value());
 }
 

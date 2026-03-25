@@ -2699,6 +2699,19 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$35");
 }
 
+// Verifies that `GetLoadingSuggestionForPayLaterTab()` creates suggestions with
+// expected values.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetLoadingSuggestionForPayLaterTab) {
+  Suggestion loading_suggestion = GetLoadingSuggestionForPayLaterTab(2);
+
+  EXPECT_EQ(loading_suggestion.type, SuggestionType::kLoadingThrobber);
+  EXPECT_EQ(loading_suggestion.acceptability,
+            Suggestion::Acceptability::kUnacceptable);
+  EXPECT_EQ(loading_suggestion.tab_index, kPayLaterSuggestionTabIndex);
+  EXPECT_EQ(loading_suggestion.expected_number_of_suggestions, 2u);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Verifies that a BNPL suggestion is added to Touch to Fill suggestions when
 // BNPL is eligible and there are credit card suggestions.

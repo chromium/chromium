@@ -2587,6 +2587,54 @@ TEST_F(BnplManagerTest, OnIssuerAccepted_TriggersExtractionAfterTermsNotSeen) {
       std::make_pair(1'000'000, "USD"));
 }
 
+TEST_F(BnplManagerTest,
+       OnIssuerAccepted_AiAmountExtractionTermsNotSeen_ShowProgressSuggestion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list
+      .InitWithFeatures(/*enabled_features=*/
+                        {features::kAutofillEnableAiBasedAmountExtraction,
+                         features::kAutofillEnablePayNowPayLaterTabs},
+                        /*disabled_features=*/{});
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAmountExtractionAiTermsSeen, false);
+  base::MockRepeatingCallback<void(std::vector<Suggestion>,
+                                   AutofillSuggestionTriggerSource)>
+      mock_update_suggestions_callback;
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry),
+      Suggestion(SuggestionType::kBnplEntry),
+      Suggestion(SuggestionType::kBnplFootnote),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  autofill_client().SetAutofillSuggestions(suggestions);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  bnpl_manager_->OnCreditCardSuggestionsShown(
+      suggestions, mock_update_suggestions_callback.Get());
+  bnpl_manager_->OnUserDecisionToUseBnpl(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+
+  EXPECT_CALL(*mock_amount_extraction_manager_,
+              TriggerCheckoutAmountExtractionWithAi());
+  EXPECT_CALL(
+      mock_update_suggestions_callback,
+      Run(ElementsAre(
+              Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
+              AllOf(Field(&Suggestion::type, SuggestionType::kLoadingThrobber),
+                    Field(&Suggestion::acceptability,
+                          Suggestion::Acceptability::kUnacceptable),
+                    Field(&Suggestion::expected_number_of_suggestions,
+                          std::optional(2)),
+                    Field(&Suggestion::tab_index, kPayLaterSuggestionTabIndex)),
+              Field(&Suggestion::type, SuggestionType::kBnplFootnote),
+              Field(&Suggestion::type, SuggestionType::kManageCreditCard)),
+          AutofillSuggestionTriggerSource::kFormControlElementClicked));
+
+  test_api(*bnpl_manager_).OnIssuerAccepted(test::GetTestUnlinkedBnplIssuer());
+}
+
 // Tests that `OnIssuerAccepted()` calls with a linked issuer where ToS
 // acceptance is required will call the payments network interface with the
 // request details filled out correctly.

@@ -52,6 +52,9 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
     const std::string& app_locale,
     const bool is_card_number_field_empty);
 
+Suggestion GetLoadingSuggestionForPayLaterTab(
+    int expected_number_of_suggestions);
+
 // A `SuggestionGenerator` for `FillingProduct::kCreditCard`.
 //
 // This class encapsulates logic used exclusively for generating credit card

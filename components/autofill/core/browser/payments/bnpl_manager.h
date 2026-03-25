@@ -293,6 +293,10 @@ class BnplManager : public AutofillManager::Observer {
   void UpdateSuggestionsOnAiAmountExtractionResponse(
       const std::vector<payments::BnplIssuerContext>& issuer_contexts);
 
+  // Replace the existing BNPL suggestions on the Pay Later tab of the
+  // suggestion dropdown with a loading throbber.
+  void ShowProgressUiForPayLaterTab();
+
   // Hides the autofill suggestions or removes the select BNPL issuer or
   // progress UI.
   void HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi();

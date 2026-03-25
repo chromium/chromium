@@ -189,14 +189,8 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
         client.GetPersonalDataManager().payments_data_manager();
     if (payments::ShouldStartPayLaterWithLoadingSpinner(
             payments_data_manager)) {
-      Suggestion loading_suggestion =
-          Suggestion(SuggestionType::kLoadingThrobber);
-      loading_suggestion.acceptability =
-          Suggestion::Acceptability::kUnacceptable;
-      loading_suggestion.expected_number_of_suggestions =
-          payments_data_manager.GetBnplIssuers().size();
-      loading_suggestion.tab_index = kPayLaterSuggestionTabIndex;
-      suggestions.push_back(std::move(loading_suggestion));
+      suggestions.push_back(GetLoadingSuggestionForPayLaterTab(
+          payments_data_manager.GetBnplIssuers().size()));
     } else {
       suggestions.append_range(GetSuggestionsForBnpl(
           payments::GetSortedBnplIssuerContext(
@@ -403,6 +397,16 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
   }
 
   return bnpl_suggestions;
+}
+
+Suggestion GetLoadingSuggestionForPayLaterTab(
+    int expected_number_of_suggestions) {
+  Suggestion loading_suggestion = Suggestion(SuggestionType::kLoadingThrobber);
+  loading_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  loading_suggestion.expected_number_of_suggestions =
+      expected_number_of_suggestions;
+  loading_suggestion.tab_index = kPayLaterSuggestionTabIndex;
+  return loading_suggestion;
 }
 
 CreditCardSuggestionGenerator::CreditCardSuggestionGenerator(
