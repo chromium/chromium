@@ -649,11 +649,6 @@ ios_builder(
 
 ios_builder(
     name = "ios-catalyst",
-    description_html = (
-        "Builds the open-source version of Chrome for iOS as a Catalyst app " +
-        "(i.e. an iOS app for running in a wrapper on macOS). Build-only " +
-        "(does not run tests)."
-    ),
     mirrors = [
         "ci/ios-catalyst",
     ],
@@ -665,10 +660,6 @@ ios_builder(
 
 ios_builder(
     name = "ios-device",
-    description_html = (
-        "Builds the open-source version of Chrome for iOS as a binary for " +
-        "running on a real device. Build-only (does not run tests)."
-    ),
     mirrors = [
         "ci/ios-device",
     ],
@@ -693,11 +684,6 @@ ios_builder(
 try_.orchestrator_builder(
     name = "ios-simulator",
     branch_selector = branches.selector.IOS_BRANCHES,
-    description_html = (
-        "Builds the open-source version of Chrome for iOS as a simulator " +
-        "binary and runs tests. This is what's included on most CQ runs " +
-        "(even for CLs that don't explicitly touch an iOS file)."
-    ),
     mirrors = [
         "ci/ios-simulator",
     ],
@@ -765,15 +751,6 @@ ios_builder(
 ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.selector.IOS_BRANCHES,
-    description_html = (
-        "Builds the open-source version of Chrome for iOS as a simulator " +
-        "binary, and runs tests on a large variety of configurations. These " +
-        "configurations are less common (e.g. weird screen sizes, older OS " +
-        "versions) and failures are less frequent, so these configs only " +
-        "run in the CQ for CLs that actually touch an ios-related file. " +
-        "Other CLs may introduce failures, but we handle them reactively as " +
-        "they appear on the console."
-    ),
     mirrors = [
         "ci/ios-simulator-full-configs",
     ],
@@ -799,11 +776,6 @@ ios_builder(
 
 ios_builder(
     name = "ios-simulator-noncq",
-    description_html = (
-        "Builds the open-source version of Chrome for iOS as a simulator " +
-        "binary. Runs tests that are not included on CQ runs, but that we " +
-        "still want tested regularly."
-    ),
     mirrors = [
         "ci/ios-simulator-noncq",
     ],
