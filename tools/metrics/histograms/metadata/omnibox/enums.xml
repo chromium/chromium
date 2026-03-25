@@ -390,6 +390,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h:FallbackReason) -->
 
+<!-- LINT.IfChange(SearchPrefetchEligibilityReason) -->
+
 <enum name="SearchPrefetchEligibilityReason">
   <int value="0" label="Prefetch started"/>
   <int value="1" label="User disabled prefetch/preconnect"/>
@@ -403,6 +405,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="SlowNetwork suppressed the prefetch"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h:SearchPrefetchEligibilityReason) -->
+
 <enum name="SearchPrefetchResponseDataReaderStatus">
   <int value="0" label="kCreated"/>
   <int value="1" label="kServingError"/>
@@ -410,6 +414,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kCompleted"/>
   <int value="4" label="kCanceledByLoader"/>
 </enum>
+
+<!-- LINT.IfChange(SearchPrefetchServingReason) -->
 
 <enum name="SearchPrefetchServingReason">
   <int value="0" label="Served a prefetch response"/>
@@ -425,7 +431,10 @@ chromium-metrics-reviews@google.com.
   <int value="10"
       label="A prerender navigation request has taken this response away
              (Obsolete)."/>
+  <int value="11" label="Prefetch was not ready as it was in-flight."/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h:SearchPrefetchServingReason) -->
 
 <enum name="SearchPrefetchStatus">
   <int value="0" label="Not started"/>
