@@ -33,15 +33,19 @@ class MockOutputApi(object):
     return self.PresubmitResult(message, 'Warning')
 
 class MockFile(object):
-  def __init__(self, local_path, new_contents):
+  def __init__(self, local_path, new_contents, changed_lines=None):
     self._local_path = local_path
     self._new_contents = new_contents
+    self._changed_lines = changed_lines or []
 
   def LocalPath(self):
     return self._local_path
 
   def NewContents(self):
     return self._new_contents
+
+  def ChangedContents(self):
+    return self._changed_lines
 
 class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
   FEATURE_CONSTANTS_PATH = (
@@ -113,6 +117,27 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
     self.assertIn('The String constants', results[0].message)
     self.assertIn('Actual item:   B', results[0].message)
     self.assertIn('Expected item: A', results[0].message)
+
+  def testFeatureListSorting(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_list.h',
+      [],
+      [(1, '#if BUILDFLAG(IS_ANDROID)')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('Warning', results[0].type)
+    self.assertIn('It looks like you are adding a new BUILDFLAG block',
+                  results[0].message)
+
+  def testFeatureListSorting_NoBuildflag(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_list.h',
+      [],
+      [(1, 'DEFINE_VARIATION_PARAM(...)')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
 
 if __name__ == '__main__':
   unittest.main()

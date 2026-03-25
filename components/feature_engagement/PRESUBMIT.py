@@ -17,6 +17,31 @@ def CheckChangeOnCommit(input_api, output_api):
 def _CommonChecks(input_api, output_api):
   results = []
   results.extend(_CheckJavaConstantsSorting(input_api, output_api))
+  results.extend(_CheckFeatureListSorting(input_api, output_api))
+  return results
+
+def _CheckFeatureListSorting(input_api, output_api):
+  FEATURE_LIST_H_PATH = 'components/feature_engagement/public/feature_list.h'
+  FEATURE_LIST_CC_PATH = 'components/feature_engagement/public/feature_list.cc'
+
+  results = []
+  for f in input_api.AffectedFiles():
+    if f.LocalPath() not in (FEATURE_LIST_H_PATH, FEATURE_LIST_CC_PATH):
+      continue
+
+    for line_num, line in f.ChangedContents():
+      if '#if BUILDFLAG' in line:
+        message = (
+            f'It looks like you are adding a new BUILDFLAG block to '
+            f'{f.LocalPath()}. Please re-use the existing blocks and keep '
+            f'the items in alphabetical order within those blocks. If there '
+            f'is no existing block that matches your new block, then you can '
+            f'ignore this message. For questions or if this is too noisy, '
+            f'please ping mschillaci@.'
+        )
+        results.append(output_api.PresubmitPromptWarning(message))
+        break
+
   return results
 
 def _CheckJavaConstantsSorting(input_api, output_api):
