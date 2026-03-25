@@ -148,7 +148,7 @@ class MODULES_EXPORT AIPageContentAgent final
     void AddNodeInteractionInfo(
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes,
-        bool is_aria_disabled) const;
+        bool is_aria_disabled);
     void AddInteractionInfoForHitTesting(
         const Node* node,
         mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) const;

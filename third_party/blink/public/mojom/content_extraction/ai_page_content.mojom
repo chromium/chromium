@@ -252,6 +252,14 @@ struct AIPageContentNodeInteractionInfo {
   // currently active.
   bool has_aria_activedescendant;
 
+  // Secondary-action targets for a container widget as specified by the
+  // aria-actions attribute. This lets APC represent cases where both the
+  // container and the secondary action element are actionable, such as:
+  // - split buttons
+  // - tabs with close buttons
+  // - listbox options with a secondary button inside of the option
+  array<int32> aria_action_target_node_ids;
+
   // The z-order of the content node relative to other nodes in the same
   // Document. A higher value means the node is in front of other nodes with
   // lower values.

@@ -22,6 +22,8 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/space_split_string.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -626,6 +628,27 @@ bool IsVisible(const LayoutObject& object) {
 bool AreChildrenBlockedByDisplayLock(const LayoutObject& object) {
   return object.ChildLayoutBlockedByDisplayLock() ||
          object.ChildPrePaintBlockedByDisplayLock();
+}
+
+Vector<int32_t> GetAriaActionTargetNodeIds(Element& element) {
+  Vector<int32_t> dom_node_ids;
+  if (!element.FastHasAttribute(html_names::kAriaActionsAttr)) {
+    return dom_node_ids;
+  }
+
+  SpaceSplitString action_ids(
+      AXObject::AriaAttribute(element, html_names::kAriaActionsAttr));
+  for (wtf_size_t i = 0; i < action_ids.size(); ++i) {
+    Element* target = element.GetTreeScope().getElementById(action_ids[i]);
+    if (!target) {
+      continue;
+    }
+    if (DOMNodeId dom_node_id = DOMNodeIds::IdForNode(target)) {
+      dom_node_ids.push_back(dom_node_id);
+    }
+  }
+
+  return dom_node_ids;
 }
 
 void AddClickabilityReasons(
@@ -2771,7 +2794,7 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes,
-    bool is_aria_disabled) const {
+    bool is_aria_disabled) {
   // The node is not hit-testable which also means no interaction is supported.
   const ComputedStyle& style = *object.Style();
   if (style.UsedPointerEvents() == EPointerEvents::kNone) {
@@ -2843,11 +2866,18 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     // descendants and there could be one in the future.
     node_interaction_info->has_aria_activedescendant =
         element->FastHasAttribute(html_names::kAriaActivedescendantAttr);
+    node_interaction_info->aria_action_target_node_ids =
+        GetAriaActionTargetNodeIds(*element);
+    for (DOMNodeId dom_node_id :
+         node_interaction_info->aria_action_target_node_ids) {
+      AddInteractiveNode(dom_node_id);
+    }
   }
 
   const bool needs_interaction_info =
       node_interaction_info->scroller_info ||
       node_interaction_info->is_focusable ||
+      !node_interaction_info->aria_action_target_node_ids.empty() ||
       node_interaction_info->document_scoped_z_order ||
       !node_interaction_info->clickability_reasons.empty();
 

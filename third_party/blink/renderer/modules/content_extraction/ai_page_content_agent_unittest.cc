@@ -6131,6 +6131,32 @@ TEST_F(AIPageContentAgentTest, HasAriaActivedescendant) {
                   ->has_aria_activedescendant);
 }
 
+TEST_F(AIPageContentAgentTest, AriaActionTargetNodeIds) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <div role="tab" tabindex="0" aria-actions="close-action">
+          Closable Tab
+          <button id="close-action">Close</button>
+        </div>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& tab_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(tab_node.content_attributes->node_interaction_info);
+  ASSERT_EQ(tab_node.content_attributes->node_interaction_info
+                ->aria_action_target_node_ids.size(),
+            1u);
+
+  const auto& close_button_node = *tab_node.children_nodes[1];
+  ASSERT_TRUE(close_button_node.content_attributes->dom_node_id.has_value());
+  EXPECT_EQ(tab_node.content_attributes->node_interaction_info
+                ->aria_action_target_node_ids[0],
+            *close_button_node.content_attributes->dom_node_id);
+}
+
 TEST_F(AIPageContentAgentTest, ClipPathCircle) {
   // The <div> element is clipped to a small circle.
   frame_test_helpers::LoadHTMLString(
