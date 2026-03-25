@@ -7,9 +7,11 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -42,6 +44,10 @@ extern const char* kSearchSparkIconResourceName;
 
 // Base class for browser-side handlers that handle bi-directional communication
 // with WebUI search boxes.
+
+// This just allows declaration in class to avoid cluttering global namespace.
+#define DECLARE_FEATURE(feature) static constinit const base::Feature feature
+
 class SearchboxHandler : public searchbox::mojom::PageHandler,
                          public AutocompleteController::Observer {
  public:
@@ -146,6 +152,11 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   // Stores `callback` to be run when the page remote is bound and ready to
   // receive calls. Runs `callback` immediately if the remote is already bound.
   void set_page_is_bound_callback_for_testing(base::OnceClosure callback);
+
+  DECLARE_FEATURE(kVoiceSearchCoherence);
+  static const base::FeatureParam<bool> kVoiceSearchRecordingAnimation;
+
+  DECLARE_FEATURE(kVoiceSearchPermissions);
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);

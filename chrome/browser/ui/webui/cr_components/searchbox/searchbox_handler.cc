@@ -302,6 +302,25 @@ BASE_FEATURE(kDropMismatchedSelections, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 // static
+// Enables a unified voice search system and metric tracking system in new tab
+// page, co-browsing, and omnibox composebox.
+BASE_FEATURE(SearchboxHandler::kVoiceSearchCoherence,
+             "VoiceSearchCoherence",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a new recording animation that matches across all surfaces.
+const base::FeatureParam<bool> SearchboxHandler::kVoiceSearchRecordingAnimation{
+    &SearchboxHandler::kVoiceSearchCoherence, "VoiceSearchRecordingAnimation",
+    false};
+
+// Transitions the voice permission dialogue popup to PEPC (Page-Embedded
+// Permission Controls) to have a dynamically placed permission dialogue pop up
+// for every time it is needed.
+BASE_FEATURE(SearchboxHandler::kVoiceSearchPermissions,
+             "VoiceSearchPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// static
 void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                             Profile* profile,
                                             bool enable_voice_search,
