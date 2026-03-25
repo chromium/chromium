@@ -594,6 +594,8 @@ void MojoTrap::DispatchOrQueueEvent(Trigger& trigger,
   }
 }
 
+// TODO(crbug.com/458351803): Re-enable the check once CFI is enabled in Rust.
+NO_SANITIZE("cfi-icall")
 void MojoTrap::DispatchEvent(const MojoTrapEvent& event) {
   lock_.AssertAcquired();
   DCHECK(dispatching_thread_ == base::PlatformThread::CurrentRef());

@@ -19,16 +19,11 @@ group("all") {
 group("tests") {
   testonly = true
 
-  # These tests don't work on all configurations yet, but we need to
-  # run them as part of this target so we can share its gtest setup. So
-  # enable them for at least one known-good configuration.
-  if (!is_cfi) {
-    deps = [
-      "bindings/test:bindings_unittests",
-      "mojom_value_parser:mojom_value_parser_unittests",
-      "system:ffi_unittests",
-      "system:system_bindings_unittests",
-      "tests:testing_mojom_rust",
-    ]
-  }
+  deps = [
+    "bindings/test:bindings_unittests",
+    "mojom_value_parser:mojom_value_parser_unittests",
+    "system:ffi_unittests",
+    "system:system_bindings_unittests",
+    "tests:testing_mojom_rust",
+  ]
 }
