@@ -204,6 +204,8 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
     agent_.audience = audience_;
     agent_.appState = app_state_;
     audience_.runLoop = &run_loop_;
+
+    [agent_ appState:app_state_ willTransitionToInitStage:AppInitStage::kStart];
   }
 
   ~BackgroundRefreshAppAgentTest() override {

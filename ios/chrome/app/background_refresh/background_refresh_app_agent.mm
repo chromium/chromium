@@ -116,7 +116,6 @@
     _activeProviders = [NSMutableSet set];
     _startupWaitDuration = base::TimeDelta();
     _hasStartupWaitDuration = NO;
-    [self registerBackgroundRefreshTask];
   }
   return self;
 }
@@ -135,8 +134,11 @@
 
 - (void)appState:(AppState*)appState
     willTransitionToInitStage:(AppInitStage)nextInitStage {
-  if (nextInitStage > AppInitStage::kBrowserObjectsForBackgroundHandlers &&
-      _pendingTask) {
+  if (nextInitStage == AppInitStage::kStart) {
+    [self registerBackgroundRefreshTask];
+  } else if (nextInitStage >
+                 AppInitStage::kBrowserObjectsForBackgroundHandlers &&
+             _pendingTask) {
     [self executeProvidersForTask:_pendingTask];
   }
 }
