@@ -876,6 +876,8 @@ crbug.com/1027125 [ android angle-disabled no-passthrough qualcomm ] deqp/functi
 
 crbug.com/906742 [ android android-pixel-2 no-passthrough qualcomm ] conformance2/glsl3/compare-structs-containing-arrays.html [ Failure ]
 crbug.com/40167875 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
+# Possibly happens because of a driver issue with depth/stencil buffers on Pixel 2
+crbug.com/495385041 [ android android-pixel-2 passthrough qualcomm ] deqp/functional/gles3/fbostencilbuffer.html [ Failure ]
 
 ## Pixel 4 ##
 
