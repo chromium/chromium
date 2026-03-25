@@ -200,7 +200,6 @@ dependencies = [
  "small_ctor",
  "static_assertions",
  "strum 0.28.0",
- "strum_macros 0.28.0",
  "subtle",
  "symphonia",
  "symphonia-adapter-libopus",
@@ -1289,6 +1288,9 @@ dependencies = [
 name = "strum"
 version = "0.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "strum_macros 0.28.0",
+]
 
 [[package]]
 name = "strum_macros"
