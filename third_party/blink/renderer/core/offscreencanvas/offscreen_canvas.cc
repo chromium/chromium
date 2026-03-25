@@ -154,6 +154,8 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
     if (context_ && context_->IsRenderingContext2D()) {
       context_->Reset();
       origin_clean_ = true;
+      // We need to trigger the draw, because we did reset the context.
+      context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
     }
     return;
   }
