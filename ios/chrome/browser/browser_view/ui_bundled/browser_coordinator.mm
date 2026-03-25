@@ -9,12 +9,14 @@
 #import <memory>
 #import <optional>
 
+#import "base/check.h"
 #import "base/check_deref.h"
 #import "base/check_op.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/config/ios/swift_buildflags.h"
@@ -3505,10 +3507,16 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - BWGCommands
 
 - (void)startGeminiFlowWithStartupState:(GeminiStartupState*)startupState {
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
+  if (!geminiBrowserAgent) {
+    CHECK(geminiBrowserAgent, base::NotFatalUntil::M152);
+    return;
+  }
+
   if (IsGeminiRefactoredFREEnabled() ||
       startupState.entryPoint == gemini::EntryPoint::ImageContextMenu) {
-    GeminiBrowserAgent::FromBrowser(self.browser)
-        ->StartGeminiFlow(self.viewController, startupState);
+    geminiBrowserAgent->StartGeminiFlow(self.viewController, startupState);
     return;
   }
 
@@ -3528,7 +3536,13 @@ const char kChromeAppStoreUrl[] =
       return;
     }
 
-    GeminiBrowserAgent::FromBrowser(self.browser)->DismissFloaty();
+    GeminiBrowserAgent* geminiBrowserAgent =
+        GeminiBrowserAgent::FromBrowser(self.browser);
+    if (geminiBrowserAgent) {
+      geminiBrowserAgent->DismissFloaty();
+    } else {
+      CHECK(geminiBrowserAgent, base::NotFatalUntil::M152);
+    }
     if (completion) {
       completion();
     }

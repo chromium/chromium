@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 
+#import "base/check.h"
+#import "base/not_fatal_until.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
@@ -78,11 +80,17 @@ const CGFloat kPromoMaxImpressionCount = 3;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
+  if (!geminiBrowserAgent) {
+    CHECK(geminiBrowserAgent, base::NotFatalUntil::M152);
+    return;
+  }
+
   __weak BWGCoordinator* weakSelf = self;
-  GeminiBrowserAgent::FromBrowser(self.browser)
-      ->DismissGeminiFromOtherWindows(base::BindOnce(^{
-        [weakSelf startCoordinator];
-      }));
+  geminiBrowserAgent->DismissGeminiFromOtherWindows(base::BindOnce(^{
+    [weakSelf startCoordinator];
+  }));
 }
 
 - (void)stop {
