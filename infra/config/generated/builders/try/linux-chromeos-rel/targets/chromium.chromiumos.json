@@ -129,7 +129,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 1
         },
         "test": "ash_pixeltests",
         "test_id_prefix": "ninja://ash:ash_pixeltests/"

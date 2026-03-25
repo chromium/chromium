@@ -62,7 +62,7 @@
         },
         "linux-chromeos-rel": {
             "ash_pixeltests": {
-                "shards": 2,
+                "shards": 1,
                 "try_builder": "linux-chromeos-rel"
             },
             "ash_unittests": {
