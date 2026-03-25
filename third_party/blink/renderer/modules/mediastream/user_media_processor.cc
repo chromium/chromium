@@ -140,12 +140,14 @@ void MaybeLogStreamDevice(const int32_t& request_id,
       device->name.c_str()));
 }
 
-std::string GetTrackLogString(MediaStreamComponent* component,
+std::string GetTrackLogString(int32_t request_id,
+                              MediaStreamComponent* component,
                               bool is_pending) {
   String str = String::Format(
-      "StartAudioTrack({track=[id: %s, enabled: %d]}, "
+      "StartAudioTrack({track=[request_id = %d, id: %s, enabled: %d]}, "
       "{is_pending=%d})",
-      component->Id().Utf8().c_str(), component->Enabled(), is_pending);
+      request_id, component->Id().Utf8().c_str(), component->Enabled(),
+      is_pending);
   return str.Utf8();
 }
 
@@ -165,12 +167,14 @@ std::string GetTrackSourceLogString(blink::MediaStreamAudioSource* source) {
 }
 
 std::string GetOnTrackStartedLogString(
+    int32_t request_id,
     blink::WebPlatformMediaStreamSource* source,
     MediaStreamRequestResult result) {
   const MediaStreamDevice& device = source->device();
-  String str = String::Format("OnTrackStarted({session_id=%s}, {result=%s})",
-                              device.session_id().ToString().c_str(),
-                              base::ToString(result).c_str());
+  String str = String::Format(
+      "OnTrackStarted({request_id = %d}, {session_id=%s}, {result=%s})",
+      request_id, device.session_id().ToString().c_str(),
+      base::ToString(result).c_str());
   return str.Utf8();
 }
 
@@ -572,7 +576,7 @@ void UserMediaProcessor::RequestInfo::StartAudioTrack(
 #if DCHECK_IS_ON()
   DCHECK(audio_capture_settings_.HasValue());
 #endif
-  SendLogMessage(GetTrackLogString(component, is_pending));
+  SendLogMessage(GetTrackLogString(request_id(), component, is_pending));
   auto* native_source = MediaStreamAudioSource::From(component->Source());
   SendLogMessage(GetTrackSourceLogString(native_source));
   // Add the source as pending since OnTrackStarted will expect it to be there.
@@ -626,7 +630,7 @@ void UserMediaProcessor::RequestInfo::OnTrackStarted(
     blink::WebPlatformMediaStreamSource* source,
     MediaStreamRequestResult result,
     const blink::WebString& result_name) {
-  SendLogMessage(GetOnTrackStartedLogString(source, result));
+  SendLogMessage(GetOnTrackStartedLogString(request_id(), source, result));
   auto it = std::ranges::find(sources_waiting_for_callback_, source);
   CHECK(it != sources_waiting_for_callback_.end());
   sources_waiting_for_callback_.erase(it);
@@ -1559,14 +1563,15 @@ void UserMediaProcessor::OnDeviceStopped(const MediaStreamDevice& device) {
 void UserMediaProcessor::OnDeviceChanged(const MediaStreamDevice& old_device,
                                          const MediaStreamDevice& new_device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(https://crbug.com/1017219): possibly useful in native logs as well.
-  DVLOG(1) << "UserMediaProcessor::OnDeviceChange("
-           << "{old_device_id = " << old_device.id
-           << ", session id = " << old_device.session_id()
-           << ", type = " << old_device.type << "}"
-           << "{new_device_id = " << new_device.id
-           << ", session id = " << new_device.session_id()
-           << ", type = " << new_device.type << "})";
+  std::string log_message = base::StringPrintf(
+      "OnDeviceChange({old_device_id=%s, session_id=%s, type=%d}, "
+      "{new_device_id=%s, session_id=%s, type=%d})",
+      old_device.id.c_str(), old_device.session_id().ToString().c_str(),
+      static_cast<int>(old_device.type), new_device.id.c_str(),
+      new_device.session_id().ToString().c_str(),
+      static_cast<int>(new_device.type));
+  SendLogMessage(log_message);
+  DVLOG(1) << "UserMediaProcessor::" << log_message;
 
   MediaStreamSource* source = FindLocalSource(old_device);
   if (!source) {
@@ -1753,9 +1758,10 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
     bool* is_pending) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_);
-  SendLogMessage(
-      base::StringPrintf("InitializeAudioSourceObject({session_id=%s})",
-                         device.session_id().ToString().c_str()));
+  SendLogMessage(base::StringPrintf(
+      "InitializeAudioSourceObject({request_id=%d, session_id=%s})",
+      current_request_info_->request_id(),
+      device.session_id().ToString().c_str()));
 
   *is_pending = true;
 
@@ -1892,8 +1898,9 @@ UserMediaProcessor::CreateAudioSource(
   if (processing_layout && processing_layout->NeedWebrtcAudioProcessing()) {
     // The audio device is not associated with screen capture and also requires
     // processing.
-    SendLogMessage(
-        base::StringPrintf("%s => (audiprocessing is required)", __func__));
+    SendLogMessage(base::StringPrintf(
+        "%s => (audioprocessing is required for request_id %d)", __func__,
+        current_request_info_->request_id()));
     return std::make_unique<blink::ProcessedLocalAudioSource>(
         *frame_, device, stream_controls->disable_local_echo,
         *processing_layout, std::move(source_ready), task_runner_);
@@ -1920,7 +1927,8 @@ UserMediaProcessor::CreateAudioSource(
   CHECK(!local_source_processing_layout.NeedWebrtcAudioProcessing());
 
   SendLogMessage(
-      base::StringPrintf("%s => (no audioprocessing is used)", __func__));
+      base::StringPrintf("%s => (no audioprocessing is used for request_id %d)",
+                         __func__, current_request_info_->request_id()));
   return std::make_unique<blink::LocalMediaStreamAudioSource>(
       frame_, device,
       base::OptionalToPtr(current_request_info_->audio_capture_settings()
@@ -2031,9 +2039,9 @@ MediaStreamComponent* UserMediaProcessor::CreateAudioTrack(
       current_request_info_->audio_capture_settings()
           .render_to_associated_sink();
 
-  SendLogMessage(
-      base::StringPrintf("CreateAudioTrack({render_to_associated_sink=%d})",
-                         render_to_associated_sink));
+  SendLogMessage(base::StringPrintf(
+      "CreateAudioTrack({request_id=%d, render_to_associated_sink=%d})",
+      current_request_info_->request_id(), render_to_associated_sink));
 
   if (!render_to_associated_sink) {
     // If the GetUserMedia request did not explicitly set the constraint
