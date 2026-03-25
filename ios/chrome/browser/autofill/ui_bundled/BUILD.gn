@@ -23,7 +23,6 @@ source_set("coordinator") {
     "//components/browser_sync",
     "//components/infobars/core",
     "//components/leveldb_proto",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/proto:optimization_guide_proto_gen",
     "//components/password_manager/core/browser",

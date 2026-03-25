@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 source_set("model") {
   sources = [
     "segmentation_platform_config.h",
@@ -23,6 +21,7 @@ source_set("model") {
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public/proto",
@@ -43,9 +42,6 @@ source_set("model") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
   ]
-  if (build_with_tflite_lib) {
-    deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
-  }
   frameworks = [ "Foundation.framework" ]
 }
 

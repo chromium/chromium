@@ -7,7 +7,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 }
-import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("internal") {
@@ -226,24 +225,22 @@ static_library("internal") {
   }
 }
 
-if (build_with_tflite_lib) {
-  static_library("optimization_guide_segmentation_handler") {
-    sources = [
-      "execution/optimization_guide/optimization_guide_segmentation_model_handler.cc",
-      "execution/optimization_guide/optimization_guide_segmentation_model_handler.h",
-      "execution/optimization_guide/optimization_guide_segmentation_model_provider.cc",
-      "execution/optimization_guide/optimization_guide_segmentation_model_provider.h",
-      "execution/optimization_guide/segmentation_model_executor.cc",
-      "execution/optimization_guide/segmentation_model_executor.h",
-    ]
-    deps = [
-      ":internal",
-      "//base",
-      "//components/optimization_guide/core",
-      "//components/segmentation_platform/internal/proto",
-      "//components/segmentation_platform/public",
-    ]
-  }
+static_library("optimization_guide_segmentation_handler") {
+  sources = [
+    "execution/optimization_guide/optimization_guide_segmentation_model_handler.cc",
+    "execution/optimization_guide/optimization_guide_segmentation_model_handler.h",
+    "execution/optimization_guide/optimization_guide_segmentation_model_provider.cc",
+    "execution/optimization_guide/optimization_guide_segmentation_model_provider.h",
+    "execution/optimization_guide/segmentation_model_executor.cc",
+    "execution/optimization_guide/segmentation_model_executor.h",
+  ]
+  deps = [
+    ":internal",
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+  ]
 }
 
 source_set("unit_tests") {
@@ -333,11 +330,18 @@ source_set("unit_tests") {
     "signals/user_action_signal_handler_unittest.cc",
     "stats_unittest.cc",
     "ukm_data_manager_impl_unittest.cc",
+
+    # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+    # tests in //components/segmentation_platform/components_unittests.filter
+    "execution/optimization_guide/optimization_guide_segmentation_model_provider_unittest.cc",
+    "execution/optimization_guide/segmentation_model_executor_unittest.cc",
   ]
 
   deps = [
     ":internal",
+    ":optimization_guide_segmentation_handler",
     ":test_support",
+    ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
     "//components/history/core/browser",
@@ -360,19 +364,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
-
-  if (build_with_tflite_lib) {
-    # IMPORTANT NOTE: When adding new tests, also remember to update the list of
-    # tests in //components/segmentation_platform/components_unittests.filter
-    sources += [
-      "execution/optimization_guide/optimization_guide_segmentation_model_provider_unittest.cc",
-      "execution/optimization_guide/segmentation_model_executor_unittest.cc",
-    ]
-    deps += [
-      ":optimization_guide_segmentation_handler",
-      ":unit_tests_bundle_data",
-    ]
-  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

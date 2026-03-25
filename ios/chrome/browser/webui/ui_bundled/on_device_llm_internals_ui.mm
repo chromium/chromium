@@ -29,7 +29,6 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"  // nogncheck
 #import "components/optimization_guide/core/optimization_guide_switches.h"  // nogncheck
 #import "components/optimization_guide/core/optimization_guide_util.h"  // nogncheck
-#import "components/optimization_guide/machine_learning_tflite_buildflags.h"  // nogncheck
 #import "components/optimization_guide/proto/model_execution.pb.h"  // nogncheck
 #import "components/optimization_guide/proto/model_validation.pb.h"  // nogncheck
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck

@@ -735,6 +735,8 @@ static_library("browser") {
     "password_manager/password_change_delegate.h",
     "password_manager/password_change_service_factory.cc",
     "password_manager/password_change_service_factory.h",
+    "password_manager/password_field_classification_model_handler_factory.cc",
+    "password_manager/password_field_classification_model_handler_factory.h",
     "password_manager/password_manager_settings_service_factory.cc",
     "password_manager/password_receiver_service_factory.cc",
     "password_manager/password_receiver_service_factory.h",
@@ -2153,6 +2155,7 @@ static_library("browser") {
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
@@ -8080,14 +8083,6 @@ static_library("browser") {
     ]
   }
 
-  if (build_with_tflite_lib) {
-    sources += [
-      "password_manager/password_field_classification_model_handler_factory.cc",
-      "password_manager/password_field_classification_model_handler_factory.h",
-    ]
-    deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
-  }
-
   if (enable_compose) {
     deps += [
       "//chrome/browser/compose",
@@ -8167,7 +8162,6 @@ group("browser_public_dependencies") {
     "//components/input",
     "//components/media_router/common/mojom:media_controller",
     "//components/on_device_translation/buildflags",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core",
     "//components/page_info",
     "//components/page_info/core",

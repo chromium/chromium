@@ -5,7 +5,6 @@
 #include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -56,16 +55,12 @@ ModelProviderFactoryImpl::~ModelProviderFactoryImpl() = default;
 
 std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateProvider(
     proto::SegmentId segment_id) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!optimization_guide_provider_) {
     // Optimization guide may not be available in some tests,
     return std::make_unique<DummyModelProvider>();
   }
   return std::make_unique<OptimizationGuideSegmentationModelProvider>(
       optimization_guide_provider_, background_task_runner_, segment_id);
-#else
-  return std::make_unique<DummyModelProvider>();
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 std::unique_ptr<DefaultModelProvider>

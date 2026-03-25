@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 source_set("model") {
   sources = [
     "ios_chrome_bulk_leak_check_service_factory.h",
@@ -18,6 +16,8 @@ source_set("model") {
     "ios_chrome_password_reuse_detection_manager_client.mm",
     "ios_chrome_shared_password_controller.h",
     "ios_chrome_shared_password_controller.mm",
+    "ios_password_field_classification_model_handler_factory.h",
+    "ios_password_field_classification_model_handler_factory.mm",
     "ios_password_requirements_service_factory.cc",
     "ios_password_requirements_service_factory.h",
     "notify_auto_signin_view_controller.h",
@@ -39,12 +39,6 @@ source_set("model") {
     "well_known_change_password_tab_helper.h",
     "well_known_change_password_tab_helper.mm",
   ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "ios_password_field_classification_model_handler_factory.h",
-      "ios_password_field_classification_model_handler_factory.mm",
-    ]
-  }
   deps = [
     ":features",
     ":infobar_delegates",
@@ -92,6 +86,7 @@ source_set("model") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/ui_bundled/coordinators",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/password_suggestion/ui:password_suggestion_utils",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/shared/model/application_context",
@@ -120,9 +115,6 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
-  if (build_with_tflite_lib) {
-    deps += [ "//ios/chrome/browser/optimization_guide/model" ]
-  }
   public_deps = [
     ":password_controller_delegate",
     ":store_factory",

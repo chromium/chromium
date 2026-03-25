@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 
-#import "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
@@ -24,6 +23,7 @@
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_cache_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_ai_model_executor_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
@@ -118,6 +118,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_sender_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_manager_settings_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
@@ -204,11 +205,6 @@
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
 #import "ios/web/common/features.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
-#endif
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"
@@ -330,6 +326,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSAutofillAiModelCacheFactory::GetInstance();
   IOSAutofillAiModelExecutorFactory::GetInstance();
   IOSAutofillEntityDataManagerFactory::GetInstance();
+  IOSAutofillFieldClassificationModelHandlerFactory::GetInstance();
   IOSChromeAccountPasswordStoreFactory::GetInstance();
   IOSChromeAffiliationServiceFactory::GetInstance();
   IOSChromeAimEligibilityServiceFactory::GetInstance();
@@ -347,6 +344,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSChromeProfilePasswordStoreFactory::GetInstance();
   IOSChromeSafetyCheckManagerFactory::GetInstance();
   IOSChromeTabRestoreServiceFactory::GetInstance();
+  IOSPasswordFieldClassificationModelHandlerFactory::GetInstance();
   IOSPasskeyModelFactory::GetInstance();
   IOSPasswordManagerSettingsServiceFactory::GetInstance();
   IOSPasswordRequirementsServiceFactory::GetInstance();
@@ -417,11 +415,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   VerdictCacheManagerFactory::GetInstance();
   VisitedURLRankingServiceFactory::GetInstance();
   // Keep the above list alphabetized! Don't just add new entries at the end.
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  IOSPasswordFieldClassificationModelHandlerFactory::GetInstance();
-  IOSAutofillFieldClassificationModelHandlerFactory::GetInstance();
-#endif
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();
