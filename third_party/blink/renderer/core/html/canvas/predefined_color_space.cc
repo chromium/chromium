@@ -128,10 +128,12 @@ void ParseCanvasHighDynamicRangeOptions(
         .fMinimumDisplayMasteringLuminance = v8_metadata->minimumLuminance(),
     });
   }
-  if (options->hasAgtm()) {
-    auto span = options->agtm().RawByteSpan();
-    auto data = SkData::MakeWithCopy(span.data(), span.size());
-    hdr_metadata.setSerializedAgtm(std::move(data));
+  if (gfx::HdrMetadataAgtm::IsEnabled()) {
+    if (options->hasAgtm()) {
+      auto span = options->agtm().RawByteSpan();
+      auto data = SkData::MakeWithCopy(span.data(), span.size());
+      hdr_metadata.setSerializedAgtm(std::move(data));
+    }
   }
 }
 

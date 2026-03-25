@@ -529,6 +529,7 @@ _CONFIG = [
             'gfx::ColorSpace',
             'gfx::CubicBezier',
             'gfx::HDRMetadata',
+            'gfx::HdrMetadataAgtm',
             'gfx::HdrMetadataExtendedRange',
             'gfx::ICCProfile',
 
