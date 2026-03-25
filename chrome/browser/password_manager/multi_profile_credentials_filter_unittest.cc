@@ -24,6 +24,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
@@ -174,7 +175,8 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
     Profile* input_profile = Profile::FromBrowserContext(browser_context);
     CHECK_EQ(input_profile, profile());
     return std::make_unique<DiceWebSigninInterceptor>(
-        profile(), std::make_unique<TestDiceWebSigninInterceptorDelegate>());
+        profile(), std::make_unique<TestDiceWebSigninInterceptorDelegate>(),
+        &profile_metrics_service_);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -201,6 +203,7 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   password_manager::SyncCredentialsFilter sync_filter_;
+  metrics::ProfileMetricsService profile_metrics_service_;
 };
 
 // Checks that `MultiProfileCredentialsFilter` returns false when

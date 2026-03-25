@@ -59,6 +59,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -342,8 +343,9 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
     std::unique_ptr<FakeDiceWebSigninInterceptorDelegate> fake_delegate =
         std::make_unique<FakeDiceWebSigninInterceptorDelegate>();
     interceptor_delegates_[context] = fake_delegate.get();
+    Profile* profile = Profile::FromBrowserContext(context);
     return std::make_unique<DiceWebSigninInterceptor>(
-        Profile::FromBrowserContext(context), std::move(fake_delegate));
+        profile, std::move(fake_delegate), &profile_metrics_service_);
   }
 
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
@@ -351,6 +353,8 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
   std::map<content::BrowserContext*,
            raw_ptr<FakeDiceWebSigninInterceptorDelegate, CtnExperimental>>
       interceptor_delegates_;
+  metrics::ProfileMetricsService profile_metrics_service_{
+      metrics::ProfileMetricsContext(1)};
 };
 
 // Tests the complete profile switch flow when the profile is not loaded.
@@ -1244,6 +1248,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
 
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.InconsistentStateInvoked", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SigninPending.InconsistentStateInvoked.Profile1", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,

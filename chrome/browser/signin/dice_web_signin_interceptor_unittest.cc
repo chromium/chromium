@@ -36,6 +36,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
@@ -291,8 +292,8 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     auto delegate = std::make_unique<
         testing::StrictMock<MockDiceWebSigninInterceptorDelegate>>();
     mock_delegate_ = delegate->GetWeakPtr();
-    return std::make_unique<DiceWebSigninInterceptor>(profile(),
-                                                      std::move(delegate));
+    return std::make_unique<DiceWebSigninInterceptor>(
+        profile(), std::move(delegate), &profile_metrics_service_);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -323,6 +324,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
       identity_test_env_profile_adaptor_;
   base::WeakPtr<MockDiceWebSigninInterceptorDelegate> mock_delegate_;
   base::ScopedClosureRunner disclaimer_service_resetter_;
+  metrics::ProfileMetricsService profile_metrics_service_;
 };
 
 TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {

@@ -41,4 +41,12 @@ ProfileMetricsService::ProfileMetricsService(ProfileMetricsContext context)
     : profile_metrics_context_(context),
       histogram_suffix_(GetHistogramSuffix(profile_metrics_context_)) {}
 
+void ProfileMetricsService::UmaHistogramBoolean(std::string_view name,
+                                                bool sample) {
+  base::UmaHistogramBoolean(name, sample);
+  if (!histogram_suffix_.empty()) {
+    base::UmaHistogramBoolean(base::StrCat({name, histogram_suffix_}), sample);
+  }
+}
+
 }  // namespace metrics
