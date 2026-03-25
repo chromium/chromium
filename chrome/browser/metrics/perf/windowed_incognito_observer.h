@@ -123,7 +123,10 @@ class WindowedIncognitoMonitor : public BrowserCollectionObserver {
   // The number of incognito windows we have ever seen.
   uint64_t num_incognito_window_opened_;
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+  // TODO(crbug.com/496191222): remove when the WindowedIncognitoObserver is no
+  // longer outliving the GlobalBrowserCollection it observes.
+  base::ScopedObservation<GlobalBrowserCollection,
+                          BrowserCollectionObserver>::LeakedDanglingUntriaged
       browser_collection_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
