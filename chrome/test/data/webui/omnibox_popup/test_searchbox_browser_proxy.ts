@@ -32,8 +32,7 @@ export class TestSearchboxBrowserProxy {
   }
 
   initVisibilityPrefs() {
-    this.page.updateAimEligibility(true);
-    this.page.onShowAiModePrefChanged(true);
+    this.page.updateAimPopupEligibility(true);
     this.page.updateContentSharingPolicy(true);
   }
 }

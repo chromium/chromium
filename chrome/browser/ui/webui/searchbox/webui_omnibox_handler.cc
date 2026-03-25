@@ -115,13 +115,13 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
   if (aim_eligibility_service) {
     aim_eligibility_subscription_ =
         aim_eligibility_service->RegisterEligibilityChangedCallback(
-            base::BindRepeating(&WebuiOmniboxHandler::OnAimEligibilityChanged,
-                                weak_ptr_factory_.GetWeakPtr()));
+            base::BindRepeating(&WebuiOmniboxHandler::OnAimPopupEligibilityChanged,
+                                base::Unretained(this)));
   }
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       omnibox::kShowAiModeOmniboxButton,
-      base::BindRepeating(&WebuiOmniboxHandler::OnShowAiModeButtonPrefChanged,
+      base::BindRepeating(&WebuiOmniboxHandler::OnAimPopupEligibilityChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
       contextual_search::kSearchContentSharingSettings,
@@ -205,8 +205,7 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
 void WebuiOmniboxHandler::SetPage(
     mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
   ContextualSearchboxHandler::SetPage(std::move(pending_page));
-  OnAimEligibilityChanged();
-  OnShowAiModeButtonPrefChanged();
+  OnAimPopupEligibilityChanged();
   OnContentSharingPolicyChanged();
 }
 void WebuiOmniboxHandler::StepSelection(
@@ -429,15 +428,6 @@ int WebuiOmniboxHandler::GetContextMenuMaxTabSuggestions() {
   return omnibox::kContextMenuMaxTabSuggestions.Get();
 }
 
-void WebuiOmniboxHandler::OnShowAiModeButtonPrefChanged() {
-  if (!IsRemoteBound()) {
-    return;
-  }
-  bool show =
-      profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton);
-  page_->OnShowAiModePrefChanged(show);
-}
-
 void WebuiOmniboxHandler::OnContentSharingPolicyChanged() {
   // Ignore the call until the page remote is bound and ready to receive calls.
   if (!IsRemoteBound()) {
@@ -449,21 +439,14 @@ void WebuiOmniboxHandler::OnContentSharingPolicyChanged() {
           profile_->GetPrefs()));
 }
 
-void WebuiOmniboxHandler::OnAimEligibilityChanged() {
-  auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile_);
-  if (!aim_eligibility_service) {
-    return;
-  }
+void WebuiOmniboxHandler::OnAimPopupEligibilityChanged() {
   InitializeInputStateModel();
 
-  // Ignore the call until the page remote is bound and ready to receive calls.
-  if (!IsRemoteBound()) {
-    return;
+  if (IsRemoteBound()) {
+    page_->UpdateAimPopupEligibility(
+        omnibox::IsAimPopupEnabled(profile_) &&
+        profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
   }
-  bool eligible = aim_eligibility_service->IsAimEligible() &&
-                  aim_eligibility_service->IsFuseboxEligible();
-  page_->UpdateAimEligibility(eligible);
 }
 
 void WebuiOmniboxHandler::OnNavigationFinished(

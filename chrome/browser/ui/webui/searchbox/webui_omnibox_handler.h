@@ -116,9 +116,8 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   // ContextualSearchboxHandler:
   int GetContextMenuMaxTabSuggestions() override;
 
-  void OnShowAiModeButtonPrefChanged();
   void OnContentSharingPolicyChanged();
-  void OnAimEligibilityChanged();
+  void OnAimPopupEligibilityChanged();
   void OnNavigationFinished(content::NavigationHandle* navigation_handle);
 
   WebContentsObserver web_contents_observer_;
