@@ -85,6 +85,14 @@ public final class RadioButtonGroupThirdPartyPreference
         mOptInOption =
                 (RadioButtonWithDescription)
                         holder.findViewById(R.id.autofill_third_party_filling_opt_in);
+        // TODO(crbug.com/411324196): Once the feature is launched, update the XML directly to use
+        // IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION_V2 and remove this Java override.
+        if (AutofillOptionsFragment.isAutofillAiEnabled()) {
+            mOptInOption.setDescriptionText(
+                    getContext()
+                            .getString(
+                                    R.string.autofill_third_party_filling_opt_in_description_v2));
+        }
         RadioButtonWithDescriptionLayout group =
                 (RadioButtonWithDescriptionLayout)
                         holder.findViewById(R.id.autofill_third_party_radio_group);

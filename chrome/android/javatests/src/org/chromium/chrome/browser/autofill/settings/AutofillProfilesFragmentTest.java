@@ -1006,6 +1006,7 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDisabledSettingsText_linksToAutofillOptionsPage() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1030,6 +1031,48 @@ public class AutofillProfilesFragmentTest {
         String summary = disabledSettingsInfoPref.getSummary().toString();
         assertThat(summary)
                 .isEqualTo(context.getString(R.string.autofill_disable_settings_explanation));
+
+        onView(withId(R.id.card_button))
+                .check(matches(withText(R.string.autofill_disable_settings_button_label)))
+                .perform(scrollTo(), click());
+
+        // Verify that the Autofill options fragment is opened.
+        assertTrue(rule.getLastestShownFragment() instanceof AutofillOptionsFragment);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sSettingsActivityTestRule.getActivity().onBackPressed();
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testDisabledSettingsText_linksToAutofillOptionsPage_defaultAvailabilityEnabled()
+            throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        Context context = autofillProfileFragment.getContext();
+
+        // Trigger address profile list rebuild.
+        mHelper.setProfile(sAccountProfile);
+
+        CardWithButtonPreference disabledSettingsInfoPref =
+                autofillProfileFragment.findPreference(
+                        AutofillProfilesFragment.DISABLED_SETTINGS_INFO);
+        assertNotNull(disabledSettingsInfoPref);
+        onView(allOf(withId(R.id.icon), isDescendantOfA(withId(R.id.card_layout))))
+                .check(matches(isDisplayed()));
+        String title = disabledSettingsInfoPref.getTitle().toString();
+        assertThat(title)
+                .isEqualTo(context.getString(R.string.autofill_disable_settings_explanation_title));
+        String summary = disabledSettingsInfoPref.getSummary().toString();
+        assertThat(summary)
+                .isEqualTo(context.getString(R.string.autofill_disable_settings_explanation_v2));
 
         onView(withId(R.id.card_button))
                 .check(matches(withText(R.string.autofill_disable_settings_button_label)))

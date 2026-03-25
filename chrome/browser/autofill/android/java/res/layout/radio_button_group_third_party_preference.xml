@@ -23,6 +23,8 @@ found in the LICENSE file.
           app:primaryText="@string/autofill_third_party_filling_default"
           app:descriptionText="@string/autofill_third_party_filling_default_description"/>
 
+        <!-- TODO(crbug.com/411324196): Use IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION_V2
+             directly once the feature is fully launched. -->
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
           android:id="@+id/autofill_third_party_filling_opt_in"
           android:layout_width="match_parent"
