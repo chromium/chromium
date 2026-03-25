@@ -27,6 +27,7 @@
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/lens/lens_url_utils.h"
 #include "content/public/test/test_web_ui.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
@@ -52,12 +53,7 @@ class MockPage : public mojom::Page {
   }
 
   MOCK_METHOD(void, SetThreadTitle, (const std::string& title), (override));
-  MOCK_METHOD(void,
-              SetTaskDetails,
-              (const base::Uuid& uuid,
-               const std::string& thread_id,
-               const std::string& turn_id),
-              (override));
+  MOCK_METHOD(void, SetTaskDetails, (const base::Uuid& uuid), (override));
   MOCK_METHOD(void, SetAimUrl, (const GURL& url), (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
   MOCK_METHOD(void,
@@ -125,6 +121,7 @@ class TestContextualTasksUI : public ContextualTasksUI {
               GetOrCreateContextualSessionHandle,
               (),
               (override));
+  MOCK_METHOD(GURL, GetWebUiUrl, (), (override));
 };
 
 class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
@@ -263,6 +260,37 @@ TEST_F(ContextualTasksPageHandlerTest, GetUrlForTask_FetchFromService) {
                                  EXPECT_EQ(url, expected_url);
                                  run_loop.Quit();
                                }));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest, GetUrlForTask_CopiesWebUiParams) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL thread_url("https://google.com/search?mtid=123");
+  GURL webui_url("chrome://contextual-tasks/?chrome_task_id=" +
+                 task_id.AsLowercaseString() + "&p1=1&p2=2");
+
+  EXPECT_CALL(*contextual_tasks_ui_, GetWebUiUrl())
+      .WillRepeatedly(Return(webui_url));
+  EXPECT_CALL(*mock_contextual_tasks_ui_service_, GetInitialUrlForTask(task_id))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
+              GetThreadUrlFromTaskId(task_id, _))
+      .WillOnce(
+          [&](const base::Uuid&, base::OnceCallback<void(GURL)> callback) {
+            std::move(callback).Run(thread_url);
+          });
+
+  base::RunLoop run_loop;
+  page_handler_->GetUrlForTask(
+      task_id, base::BindLambdaForTesting([&](const GURL& url) {
+        std::string value;
+        EXPECT_TRUE(net::GetValueForKeyInQuery(url, "p1", &value));
+        EXPECT_EQ(value, "1");
+        EXPECT_TRUE(net::GetValueForKeyInQuery(url, "p2", &value));
+        EXPECT_EQ(value, "2");
+        EXPECT_FALSE(net::GetValueForKeyInQuery(url, "chrome_task_id", &value));
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 

@@ -79,10 +79,7 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
               OnLensOverlayStateChanged,
               (bool is_showing, bool maybe_show_overlay_hint_text),
               (override));
-  MOCK_METHOD(void,
-              SetTaskDetails,
-              (const base::Uuid&, const std::string&, const std::string&),
-              (override));
+  MOCK_METHOD(void, SetTaskDetails, (const base::Uuid&), (override));
   MOCK_METHOD(void, SetAimUrl, (const GURL&), (override));
   MOCK_METHOD(void, ShowErrorPage, (), (override));
   MOCK_METHOD(void, HideErrorPage, (), (override));

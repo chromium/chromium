@@ -81,6 +81,8 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   // Moves the UI associated with this WebUI to a new tab.
   virtual void MoveTaskUiToNewTab() = 0;
 
+  virtual GURL GetWebUiUrl() = 0;
+
   // Mojo & Session.
 
   // Sends a message to the <webview> guest. The WebUI is responsible for

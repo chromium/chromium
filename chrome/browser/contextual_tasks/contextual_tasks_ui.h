@@ -134,7 +134,6 @@ class ContextualTasksUI
   void OnZeroStateChange(bool is_zero_state) override;
   void PrepareForTaskChange() override;
   void OnTaskChanged() override;
-  GURL GetAimUrl() override;
 
   // contextual_tasks::ContextualTasksUIInterface implementation:
   Profile* GetProfile() override;
@@ -154,6 +153,7 @@ class ContextualTasksUI
   void PostMessageToWebview(const lens::ClientToAimMessage& message) override;
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle() override;
+  GURL GetWebUiUrl() override;
 
   void ClearContextualSessionHandle();
 

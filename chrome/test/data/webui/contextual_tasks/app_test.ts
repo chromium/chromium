@@ -52,7 +52,7 @@ suite('ContextualTasksAppTest', function() {
   test('gets task url when query param set and updates title', async () => {
     // Set a task Uuid as a query parameter.
     const taskId = '123';
-    window.history.replaceState({}, '', `?task=${taskId}`);
+    window.history.replaceState({}, '', `?chrome_task_id=${taskId}`);
 
     // Set the q query parameter for the AI page.
     const query = 'abc';
@@ -78,7 +78,7 @@ suite('ContextualTasksAppTest', function() {
   test('sets title to default string when query param is not set', async () => {
     // Set a task Uuid as a query parameter.
     const taskId = '123';
-    window.history.replaceState({}, '', `?task=${taskId}`);
+    window.history.replaceState({}, '', `?chrome_task_id=${taskId}`);
 
     // Don't set the q query parameter for the AI page.
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
@@ -99,14 +99,8 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('AI Mode', document.title);
   });
 
-  test('restores thread url with webui url params', async () => {
-    const taskId = '123';
-    const threadId = '111';
-    const turnId = '222';
-    const title = 'title';
-    window.history.replaceState(
-        {}, '',
-        `?task=${taskId}&thread=${threadId}&turn=${turnId}&title=${title}`);
+  test('restores thread if task param set', async () => {
+    window.history.replaceState({}, '', '?chrome_task_id=123');
 
     // Don't set the q query parameter for the AI page.
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
@@ -116,16 +110,12 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(appElement);
     await microtasksFinished();
 
-    const threadUrl = new URL(appElement.getThreadUrlForTesting());
-
-    assertEquals(threadId, threadUrl.searchParams.get('mtid'));
-    assertEquals(turnId, threadUrl.searchParams.get('mstk'));
-    assertEquals(title, threadUrl.searchParams.get('q'));
+    assertEquals(1, proxy.handler.getCallCount('getUrlForTask'));
   });
 
   test('does not attempt to restore thread if params available', async () => {
     window.history.replaceState(
-        {}, '', `?task=123&thread=333&turn=444&title=wrong`);
+        {}, '', `?chrome_task_id=123&thread=333&turn=444&title=wrong`);
 
     const threadId = '111';
     const turnId = '222';
@@ -147,7 +137,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('history entry added if task changes', async () => {
     window.history.replaceState(
-        {}, '', `?task=111&thread=222&turn=333&title=wrong`);
+        {}, '', `?chrome_task_id=111&thread=222&turn=333&title=wrong`);
 
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
@@ -160,7 +150,7 @@ suite('ContextualTasksAppTest', function() {
 
     // Since the task ID is different from the one above, this call should add
     // an entry to history.
-    proxy.callbackRouterRemote.setTaskDetails({value: '123'}, '456', '789');
+    proxy.callbackRouterRemote.setTaskDetails({value: '123'});
     await proxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
@@ -169,7 +159,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('no history entry added if task did not change', async () => {
     window.history.replaceState(
-        {}, '', `?task=111&thread=222&turn=333&title=wrong`);
+        {}, '', `?chrome_task_id=111&thread=222&turn=333&title=wrong`);
 
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
@@ -182,7 +172,7 @@ suite('ContextualTasksAppTest', function() {
 
     // Since the task ID is is the same as above, a history entry should not be
     // added.
-    proxy.callbackRouterRemote.setTaskDetails({value: '111'}, '456', '789');
+    proxy.callbackRouterRemote.setTaskDetails({value: '111'});
     await proxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
@@ -191,7 +181,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('back navigation fetches previous task url', async () => {
     window.history.replaceState(
-        {}, '', `?task=111&thread=222&turn=333&title=wrong`);
+        {}, '', `?chrome_task_id=111&thread=222&turn=333&title=wrong`);
 
     const proxy = new TestContextualTasksBrowserProxy(
         `http://example.com?mtid=111&mstk=222&q=title`);
@@ -204,7 +194,7 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
 
     // Fake a task change event.
-    proxy.callbackRouterRemote.setTaskDetails({value: '999'}, '456', '789');
+    proxy.callbackRouterRemote.setTaskDetails({value: '999'});
     await proxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
@@ -243,7 +233,7 @@ suite('ContextualTasksAppTest', function() {
 
   test('error page shown if pending error page is true for task', async () => {
     const taskId = '123';
-    window.history.replaceState({}, '', `?task=${taskId}`);
+    window.history.replaceState({}, '', `?chrome_task_id=${taskId}`);
 
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
     proxy.handler.setIsPendingErrorPage({value: taskId}, true);
@@ -393,27 +383,38 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(document.createElement('contextual-tasks-app'));
 
     const taskId = {value: '12345'};
-    proxy.callbackRouterRemote.setTaskDetails(taskId, '1111', '2222');
+    proxy.callbackRouterRemote.setTaskDetails(taskId);
     await proxy.callbackRouterRemote.$.flushForTesting();
 
     const currentUrl = new URL(window.location.href);
-    assertEquals(taskId.value, currentUrl.searchParams.get('task'));
-    assertEquals('1111', currentUrl.searchParams.get('thread'));
-    assertEquals('2222', currentUrl.searchParams.get('turn'));
+    assertEquals(taskId.value, currentUrl.searchParams.get('chrome_task_id'));
   });
 
-  test('aim url saved in contextual task url', async () => {
+  test('aim url updates webui url params', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 
     document.body.appendChild(document.createElement('contextual-tasks-app'));
 
-    const aimUrl = `${fixtureUrl}/search?q=123`;
+    const aimUrl = `${fixtureUrl}/search?q=123&mtid=456&old_param=1`;
     proxy.callbackRouterRemote.setAimUrl(aimUrl);
     await proxy.callbackRouterRemote.$.flushForTesting();
 
-    const currentUrl = new URL(window.location.href);
-    assertEquals(aimUrl, currentUrl.searchParams.get('aim_url'));
+    let currentUrl = new URL(window.location.href);
+    assertEquals('123', currentUrl.searchParams.get('q'));
+    assertEquals('456', currentUrl.searchParams.get('mtid'));
+    assertEquals('1', currentUrl.searchParams.get('old_param'));
+
+    // Ensure old params are removed if no longer present on the aim URL.
+    const updatedAimUrl = `${fixtureUrl}/search?q=123&mtid=456&new_param=2`;
+    proxy.callbackRouterRemote.setAimUrl(updatedAimUrl);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+
+    currentUrl = new URL(window.location.href);
+    assertEquals('123', currentUrl.searchParams.get('q'));
+    assertEquals('456', currentUrl.searchParams.get('mtid'));
+    assertEquals('2', currentUrl.searchParams.get('new_param'));
+    assertFalse(currentUrl.searchParams.has('old_param'));
   });
 
   test('isAiPage reflected in dom', async () => {

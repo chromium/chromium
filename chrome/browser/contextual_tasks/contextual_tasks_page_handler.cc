@@ -202,20 +202,18 @@ void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
     return;
   }
 
-  GURL aim_url = web_ui_controller_->GetAimUrl();
-  if (!aim_url.is_empty()) {
-    std::move(callback).Run(aim_url);
-    return;
-  }
-
   // There's a slight difference in the callback signature between the mojo
   // api (wants a reference) and the ui service (provided a moved object).
   // The latter can't provide a reference since we're not keeping it
   // long-term, hence wrapping this in a base::BindOnce.
   ui_service_->GetThreadUrlFromTaskId(
-      uuid, base::BindOnce([](GetUrlForTaskCallback callback,
-                              GURL url) { std::move(callback).Run(url); },
-                           std::move(callback)));
+      uuid,
+      base::BindOnce(
+          [](GetUrlForTaskCallback callback, GURL webui_url, GURL url) {
+            std::move(callback).Run(contextual_tasks::ContextualTasksUiService::
+                                        CopyParamsFromWebUIUrl(url, webui_url));
+          },
+          std::move(callback), web_ui_controller_->GetWebUiUrl()));
 }
 
 void ContextualTasksPageHandler::SetTaskId(const base::Uuid& uuid) {
