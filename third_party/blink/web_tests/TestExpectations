@@ -9651,9 +9651,6 @@ crbug.com/41187256 http/tests/devtools/sources/debugger/properties-special.js [ 
 # Started to fail on Linux, previously was flaky on all platforms (crbug.com/387374119)
 crbug.com/453144946 external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Failure Pass Timeout ]
 
-# Gardener 2025-12-15
-crbug.com/469128832 virtual/permission-element/external/wpt/html/semantics/permission-element/geolocation-element/display-values.tentative.html [ Failure Pass ]
-
 # Gardener 2025-12-19
 crbug.com/470189922 external/wpt/bluetooth/bidi/characteristic/notifications/characteristic-is-removed.https.window.html [ Failure Pass Timeout ]
 
@@ -9728,11 +9725,6 @@ crbug.com/477241796 http/tests/devtools/elements/styles-4/styles-update-links-2.
 # Intentionally slow SVG test became slower with Rust for SVG parsing.
 crbug.com/466303347 [ Win ] http/tests/misc/object-embedding-svg-delayed-size-negotiation-2.htm [ Pass Timeout ]
 crbug.com/466303347 [ Linux ] http/tests/misc/object-embedding-svg-delayed-size-negotiation-2.htm [ Pass Timeout ]
-
-# Gardener 2026-02-18
-crbug.com/469578374 [ Win ] external/wpt/html/semantics/permission-element/geolocation-element/display-values.tentative.html [ Failure Pass ]
-
-crbug.com/491031516 [ Linux ] external/wpt/html/semantics/permission-element/geolocation-element/display-values.tentative.html [ Failure Pass ]
 
 # Temporary entry before fixing headless_shell failure introduced by crrev.com/c/7596170
 crbug.com/486315292 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
