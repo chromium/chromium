@@ -139,7 +139,12 @@ class ImmersiveModeController {
   virtual void RemoveObserver(Observer* observer);
 
  protected:
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
   ui::ScopedUnownedUserData<ImmersiveModeController> scoped_unowned_user_data_;
 };
 

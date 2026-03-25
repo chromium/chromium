@@ -360,7 +360,11 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
       FocusChangeReason::kDirectFocusChange;
 
   // The list of registered FocusChange listeners.
-  base::ObserverList<FocusChangeListener, true>::Unchecked
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      FocusChangeListener,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
       focus_change_listeners_;
 
   // This is true if full keyboard accessibility is needed. This causes

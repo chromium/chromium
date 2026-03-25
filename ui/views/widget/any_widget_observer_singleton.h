@@ -40,7 +40,8 @@ class AnyWidgetObserverSingleton {
   AnyWidgetObserverSingleton();
   ~AnyWidgetObserverSingleton();
 
-  base::ObserverList<AnyWidgetObserver> observers_;
+  // Changing one widget's state may change other widgets' states.
+  base::ReentrantObserverList<AnyWidgetObserver> observers_;
 };
 
 }  // namespace internal
