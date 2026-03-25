@@ -265,6 +265,8 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
                               resource_provider_->IsAccelerated());
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                   resource_provider_->GetType());
+
+    dirty_rect_for_commit_ = SkIRect::MakeWH(Width(), Height());
     host->DidDraw();
   }
   return resource_provider_.get();
