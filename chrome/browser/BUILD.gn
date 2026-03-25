@@ -5246,6 +5246,7 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:google_key_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
+      "//chrome/browser/extensions/api/document_scan",
       "//chrome/browser/extensions/api/enterprise_networking_attributes",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
@@ -5762,6 +5763,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/upload_office_to_cloud",
+      "//chrome/browser/extensions/api/document_scan",
       "//chrome/browser/extensions/api/enterprise_networking_attributes",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when

@@ -111,12 +111,6 @@ class DocumentScanAshTest : public testing::Test {
     return future.Take();
   }
 
-  mojom::CancelScanResponsePtr CancelScan(const std::string& job_handle) {
-    base::test::TestFuture<mojom::CancelScanResponsePtr> future;
-    document_scan_ash().CancelScan(job_handle, future.GetCallback());
-    return future.Take();
-  }
-
  private:
   // Must outlive `profile_`.
   content::BrowserTaskEnvironment task_environment_;
@@ -351,25 +345,6 @@ TEST_F(DocumentScanAshTest, GetOptionGroups_GoodResponse) {
   EXPECT_EQ(response->groups.value()[0]->title, "group-title");
   EXPECT_THAT(response->groups.value()[0]->members,
               ElementsAre("group-member"));
-}
-
-TEST_F(DocumentScanAshTest, CancelScan_BadResponse) {
-  GetLorgnetteScannerManager()->SetCancelScanResponse(std::nullopt);
-  const mojom::CancelScanResponsePtr response = CancelScan("job-handle");
-
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
-  EXPECT_EQ(response->job_handle, "job-handle");
-}
-
-TEST_F(DocumentScanAshTest, CancelScan_GoodResponse) {
-  lorgnette::CancelScanResponse fake_response;
-  fake_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-  fake_response.mutable_job_handle()->set_token("job-handle");
-  GetLorgnetteScannerManager()->SetCancelScanResponse(std::move(fake_response));
-  const mojom::CancelScanResponsePtr response = CancelScan("job-handle");
-
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
-  EXPECT_EQ(response->job_handle, "job-handle");
 }
 
 }  // namespace crosapi

@@ -116,6 +116,9 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 
     document_scan_api_handler_ = DocumentScanAPIHandler::CreateForTesting(
         testing_profile_, &document_scan_);
+
+    GetLorgnetteScannerManager()->SetCancelScanCallback(base::BindRepeating(
+        &FakeDocumentScanAsh::CancelScan, base::Unretained(&document_scan_)));
   }
 
   void TearDown() override {
@@ -179,11 +182,14 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     return "";
   }
 
-  void AddScanners(std::vector<lorgnette::ScannerInfo> scanners) {
-    auto* scanner_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
+  ash::FakeLorgnetteScannerManager* GetLorgnetteScannerManager() {
+    return static_cast<ash::FakeLorgnetteScannerManager*>(
         ash::LorgnetteScannerManagerFactory::GetForBrowserContext(
             testing_profile_.get()));
+  }
 
+  void AddScanners(std::vector<lorgnette::ScannerInfo> scanners) {
+    auto* scanner_manager = GetLorgnetteScannerManager();
     base::test::TestFuture<
         const std::optional<lorgnette::ListScannersResponse>&>
         future;
@@ -1421,6 +1427,9 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_ValidJob) {
   std::string job_handle = StartScanForExtension(extension_);
   EXPECT_FALSE(job_handle.empty());
 
+  GetLorgnetteScannerManager()->SetCancelScanResult(
+      lorgnette::OPERATION_RESULT_SUCCESS);
+
   CancelScanFuture cancel_future;
   document_scan_api_handler_->CancelScan(extension_, job_handle,
                                          cancel_future.GetCallback());
@@ -1429,6 +1438,23 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_ValidJob) {
       cancel_future.Get();
   EXPECT_EQ(cancel_response.result,
             api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(cancel_response.job, job_handle);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, CancelScan_DBusFailure) {
+  std::string job_handle = StartScanForExtension(extension_);
+  EXPECT_FALSE(job_handle.empty());
+
+  GetLorgnetteScannerManager()->SetCancelScanResult(std::nullopt);
+
+  CancelScanFuture cancel_future;
+  document_scan_api_handler_->CancelScan(extension_, job_handle,
+                                         cancel_future.GetCallback());
+
+  const api::document_scan::CancelScanResponse& cancel_response =
+      cancel_future.Get();
+  EXPECT_EQ(cancel_response.result,
+            api::document_scan::OperationResult::kInternalError);
   EXPECT_EQ(cancel_response.job, job_handle);
 }
 

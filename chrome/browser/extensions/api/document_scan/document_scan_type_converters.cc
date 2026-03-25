@@ -4,6 +4,9 @@
 
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 
+#include "base/notreached.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
+
 namespace mojo {
 
 namespace document_scan = extensions::api::document_scan;
@@ -48,6 +51,61 @@ TypeConverter<document_scan::OperationResult, mojom::ScannerOperationResult>::
     case mojom::ScannerOperationResult::kInternalError:
       return document_scan::OperationResult::kInternalError;
   }
+}
+
+document_scan::OperationResult TypeConverter<
+    document_scan::OperationResult,
+    lorgnette::OperationResult>::Convert(lorgnette::OperationResult input) {
+  switch (input) {
+    case lorgnette::OPERATION_RESULT_UNKNOWN:
+      return document_scan::OperationResult::kUnknown;
+    case lorgnette::OPERATION_RESULT_SUCCESS:
+      return document_scan::OperationResult::kSuccess;
+    case lorgnette::OPERATION_RESULT_UNSUPPORTED:
+      return document_scan::OperationResult::kUnsupported;
+    case lorgnette::OPERATION_RESULT_CANCELLED:
+      return document_scan::OperationResult::kCancelled;
+    case lorgnette::OPERATION_RESULT_DEVICE_BUSY:
+      return document_scan::OperationResult::kDeviceBusy;
+    case lorgnette::OPERATION_RESULT_INVALID:
+      return document_scan::OperationResult::kInvalid;
+    case lorgnette::OPERATION_RESULT_WRONG_TYPE:
+      return document_scan::OperationResult::kWrongType;
+    case lorgnette::OPERATION_RESULT_EOF:
+      return document_scan::OperationResult::kEof;
+    case lorgnette::OPERATION_RESULT_ADF_JAMMED:
+      return document_scan::OperationResult::kAdfJammed;
+    case lorgnette::OPERATION_RESULT_ADF_EMPTY:
+      return document_scan::OperationResult::kAdfEmpty;
+    case lorgnette::OPERATION_RESULT_COVER_OPEN:
+      return document_scan::OperationResult::kCoverOpen;
+    case lorgnette::OPERATION_RESULT_IO_ERROR:
+      return document_scan::OperationResult::kIoError;
+    case lorgnette::OPERATION_RESULT_ACCESS_DENIED:
+      return document_scan::OperationResult::kAccessDenied;
+    case lorgnette::OPERATION_RESULT_NO_MEMORY:
+      return document_scan::OperationResult::kNoMemory;
+    case lorgnette::OPERATION_RESULT_UNREACHABLE:
+      return document_scan::OperationResult::kUnreachable;
+    case lorgnette::OPERATION_RESULT_MISSING:
+      return document_scan::OperationResult::kMissing;
+    case lorgnette::OPERATION_RESULT_INTERNAL_ERROR:
+      return document_scan::OperationResult::kInternalError;
+    case lorgnette::OperationResult_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case lorgnette::OperationResult_INT_MAX_SENTINEL_DO_NOT_USE_:
+      break;
+  }
+  NOTREACHED();
+}
+
+document_scan::CancelScanResponse TypeConverter<
+    document_scan::CancelScanResponse,
+    lorgnette::CancelScanResponse>::Convert(const lorgnette::CancelScanResponse&
+                                                input) {
+  document_scan::CancelScanResponse output;
+  output.job = input.job_handle().token();
+  output.result = ConvertTo<document_scan::OperationResult>(input.result());
+  return output;
 }
 
 template <>
@@ -512,16 +570,6 @@ TypeConverter<extensions::api::document_scan::StartScanResponse,
   if (input->job_handle.has_value()) {
     output.job = input->job_handle.value();
   }
-  return output;
-}
-
-extensions::api::document_scan::CancelScanResponse
-TypeConverter<extensions::api::document_scan::CancelScanResponse,
-              crosapi::mojom::CancelScanResponsePtr>::
-    Convert(const crosapi::mojom::CancelScanResponsePtr& input) {
-  document_scan::CancelScanResponse output;
-  output.job = input->job_handle;
-  output.result = ConvertTo<document_scan::OperationResult>(input->result);
   return output;
 }
 

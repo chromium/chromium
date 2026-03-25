@@ -9,6 +9,11 @@
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 
+namespace lorgnette {
+class CancelScanResponse;
+enum OperationResult : int;
+}  // namespace lorgnette
+
 namespace mojo {
 
 template <>
@@ -16,6 +21,20 @@ struct TypeConverter<extensions::api::document_scan::OperationResult,
                      crosapi::mojom::ScannerOperationResult> {
   static extensions::api::document_scan::OperationResult Convert(
       crosapi::mojom::ScannerOperationResult input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::OperationResult,
+                     lorgnette::OperationResult> {
+  static extensions::api::document_scan::OperationResult Convert(
+      lorgnette::OperationResult input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::CancelScanResponse,
+                     lorgnette::CancelScanResponse> {
+  static extensions::api::document_scan::CancelScanResponse Convert(
+      const lorgnette::CancelScanResponse& input);
 };
 
 template <>
@@ -79,13 +98,6 @@ struct TypeConverter<extensions::api::document_scan::StartScanResponse,
                      crosapi::mojom::StartPreparedScanResponsePtr> {
   static extensions::api::document_scan::StartScanResponse Convert(
       const crosapi::mojom::StartPreparedScanResponsePtr& input);
-};
-
-template <>
-struct TypeConverter<extensions::api::document_scan::CancelScanResponse,
-                     crosapi::mojom::CancelScanResponsePtr> {
-  static extensions::api::document_scan::CancelScanResponse Convert(
-      const crosapi::mojom::CancelScanResponsePtr& input);
 };
 
 template <>

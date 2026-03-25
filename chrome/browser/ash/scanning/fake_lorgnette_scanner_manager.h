@@ -96,9 +96,16 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetScanResponse(
       const std::optional<std::vector<std::string>>& scan_data);
 
-  // Sets the response returned by CancelScan().
-  void SetCancelScanResponse(
-      const std::optional<lorgnette::CancelScanResponse>& response);
+  // Sets the result field of the response returned by the two-parameter version
+  // of CancelScan(). If this is std::nullopt, the callback is passed
+  // std::nullopt. The default is OPERATION_RESULT_ADF_JAMMED.
+  void SetCancelScanResult(std::optional<lorgnette::OperationResult> result);
+
+  // Sets a callback that is invoked by the two-parameter version of
+  // CancelScan().
+  // TODO(crbug.com/479031241): Remove once FakeDocumentAsh is gone.
+  void SetCancelScanCallback(
+      base::RepeatingCallback<void(const std::string& job_handle)> callback);
 
   // Optionally sets `scan_data` if a matching set of scan settings is found.
   void MaybeSetScanDataBasedOnSettings(const lorgnette::ScanSettings& settings);
@@ -115,7 +122,10 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   std::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
   std::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
-  std::optional<lorgnette::CancelScanResponse> cancel_scan_response_;
+  std::optional<lorgnette::OperationResult> cancel_scan_result_ =
+      lorgnette::OPERATION_RESULT_ADF_JAMMED;
+  base::RepeatingCallback<void(const std::string& job_handle)>
+      cancel_scan_callback_;
   std::optional<std::vector<std::string>> scan_data_;
 };
 

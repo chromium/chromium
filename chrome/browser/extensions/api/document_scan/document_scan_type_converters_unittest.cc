@@ -747,23 +747,6 @@ TEST(DocumentScanTypeConvertersTest, StartScanResponse_Success) {
   EXPECT_EQ(output.job.value(), "job-handle");
 }
 
-TEST(DocumentScanTypeConvertersTest, CancelScanResponse_Empty) {
-  auto input = mojom::CancelScanResponse::New();
-  auto output = input.To<document_scan::CancelScanResponse>();
-  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
-  EXPECT_TRUE(output.job.empty());
-}
-
-TEST(DocumentScanTypeConvertersTest, CancelScanResponse_Success) {
-  auto input = mojom::CancelScanResponse::New();
-  input->job_handle = "job-handle";
-  input->result = mojom::ScannerOperationResult::kSuccess;
-
-  auto output = input.To<document_scan::CancelScanResponse>();
-  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
-  EXPECT_EQ(output.job, "job-handle");
-}
-
 TEST(DocumentScanTypeConvertersTest, ReadScanDataResponse_Empty) {
   auto input = mojom::ReadScanDataResponse::New();
   auto output = input.To<document_scan::ReadScanDataResponse>();

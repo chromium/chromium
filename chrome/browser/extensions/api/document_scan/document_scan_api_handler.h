@@ -30,6 +30,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace lorgnette {
+class CancelScanResponse;
+}  // namespace lorgnette
+
 namespace extensions {
 
 class Extension;
@@ -256,9 +260,6 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
       std::unique_ptr<StartScanRunner> runner,
       StartScanCallback callback,
       crosapi::mojom::StartPreparedScanResponsePtr response);
-  void OnCancelScanResponse(const ExtensionId& extension_id,
-                            CancelScanCallback callback,
-                            crosapi::mojom::CancelScanResponsePtr response);
   void OnReadScanDataResponse(ReadScanDataCallback callback,
                               crosapi::mojom::ReadScanDataResponsePtr response);
 

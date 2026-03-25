@@ -305,29 +305,14 @@ void FakeDocumentScanAsh::SetOptions(
   std::move(callback).Run(std::move(response));
 }
 
-void FakeDocumentScanAsh::CancelScan(const std::string& job_handle,
-                                     CancelScanCallback callback) {
-  auto response = crosapi::mojom::CancelScanResponse::New();
-  response->job_handle = job_handle;
-  // Explicitly set this to kAdfJammed instead of kInvalid since kAdfJammed is
-  // not used in the DocumentScanAPIHandler cancel methods.  If this was
-  // kInvalid the tests may not know if the kInvalid was returned from this fake
-  // (in which case, the test may not be testing what it is intended to test) or
-  // was returned from the DocumentScanAPIHandler object (as expected).
-  response->result = crosapi::mojom::ScannerOperationResult::kAdfJammed;
-
-  // Check all of our open scanners.  If any has this job, cancel it and return
-  // a success result.  If not, return a failure result.
+void FakeDocumentScanAsh::CancelScan(const std::string& job_handle) {
   for (auto& [scanner_handle, state] : open_scanners_) {
     if (state.job_handle.value_or("") == job_handle) {
-      response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
       state.job_handle.reset();
       state.cancelled = true;
       break;
     }
   }
-
-  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::SetReadScanDataResponses(

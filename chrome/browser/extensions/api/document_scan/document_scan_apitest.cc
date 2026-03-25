@@ -116,6 +116,12 @@ class DocumentScanApiTest : public ExtensionApiTest,
         &document_scan_ash_);
 
     document_scan()->SetSmallestMaxReadSize(kRealBackendMinimumReadSize);
+
+    auto* lorgnette_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
+        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
+    lorgnette_manager->SetCancelScanCallback(base::BindRepeating(
+        &FakeDocumentScanAsh::CancelScan, base::Unretained(document_scan())));
+    lorgnette_manager->SetCancelScanResult(lorgnette::OPERATION_RESULT_SUCCESS);
   }
 
   void SetUpBrowserContextKeyedServices(

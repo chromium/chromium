@@ -18,13 +18,15 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 #include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
 #include "chrome/browser/extensions/api/document_scan/simple_scan_runner.h"
 #include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -44,6 +46,21 @@ crosapi::mojom::DocumentScan* GetDocumentScanInterface() {
   return crosapi::CrosapiManager::Get()->crosapi_ash()->document_scan_ash();
 }
 
+void OnCancelScanResponse(
+    const std::string& job_handle,
+    DocumentScanAPIHandler::CancelScanCallback callback,
+    const std::optional<lorgnette::CancelScanResponse>& response) {
+  api::document_scan::CancelScanResponse api_response;
+  if (response.has_value()) {
+    api_response =
+        mojo::ConvertTo<api::document_scan::CancelScanResponse>(*response);
+  } else {
+    api_response.job = job_handle;
+    api_response.result = api::document_scan::OperationResult::kInternalError;
+  }
+  std::move(callback).Run(std::move(api_response));
+}
+
 }  // namespace
 
 // static
@@ -51,6 +68,7 @@ std::unique_ptr<DocumentScanAPIHandler>
 DocumentScanAPIHandler::CreateForTesting(
     content::BrowserContext* browser_context,
     crosapi::mojom::DocumentScan* document_scan) {
+  CHECK_IS_TEST();
   return base::WrapUnique(
       new DocumentScanAPIHandler(browser_context, document_scan));
 }
@@ -511,28 +529,18 @@ void DocumentScanAPIHandler::CancelScan(
   // Ensure this job is allocated to this extension.
   ExtensionState& state = extension_state_[extension->id()];
   if (!state.active_job_handles.contains(job_handle)) {
-    auto response = crosapi::mojom::CancelScanResponse::New();
-    response->job_handle = job_handle;
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    OnCancelScanResponse(extension->id(), std::move(callback),
-                         std::move(response));
+    api::document_scan::CancelScanResponse response;
+    response.job = job_handle;
+    response.result = api::document_scan::OperationResult::kInvalid;
+    std::move(callback).Run(std::move(response));
     return;
   }
 
-  document_scan_->CancelScan(
-      job_handle, base::BindOnce(&DocumentScanAPIHandler::OnCancelScanResponse,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 extension->id(), std::move(callback)));
-}
-
-void DocumentScanAPIHandler::OnCancelScanResponse(
-    const ExtensionId& extension_id,
-    CancelScanCallback callback,
-    crosapi::mojom::CancelScanResponsePtr response) {
-  auto api_response =
-      std::move(response).To<api::document_scan::CancelScanResponse>();
-
-  std::move(callback).Run(std::move(api_response));
+  lorgnette::CancelScanRequest request;
+  request.mutable_job_handle()->set_token(job_handle);
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->CancelScan(request, base::BindOnce(&OnCancelScanResponse, job_handle,
+                                           std::move(callback)));
 }
 
 void DocumentScanAPIHandler::ReadScanData(

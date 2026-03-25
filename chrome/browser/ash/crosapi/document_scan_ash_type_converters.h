@@ -76,13 +76,6 @@ struct TypeConverter<crosapi::mojom::GetOptionGroupsResponsePtr,
       const lorgnette::GetCurrentConfigResponse& input);
 };
 
-template <>
-struct TypeConverter<crosapi::mojom::CancelScanResponsePtr,
-                     lorgnette::CancelScanResponse> {
-  static crosapi::mojom::CancelScanResponsePtr Convert(
-      const lorgnette::CancelScanResponse& input);
-};
-
 // Types that don't need to be converted directly, but are easier to test in
 // isolation.
 crosapi::mojom::OptionType ConvertForTesting(lorgnette::OptionType input);
