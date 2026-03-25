@@ -361,8 +361,7 @@ void CustomTabBarView::UpdateContents() {
   }
 
   title_origin_view_->Update(title, location);
-  location_icon_view_->Update(/*suppress_animations=*/false,
-                              /*force_hide_background=*/false);
+  location_icon_view_->Update(/*suppress animations = */ false);
 
   // Hide location icon if we're already hiding the origin.
   location_icon_view_->SetVisible(!location.empty());

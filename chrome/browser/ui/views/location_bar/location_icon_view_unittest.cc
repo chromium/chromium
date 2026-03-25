@@ -118,10 +118,10 @@ class LocationIconViewTest : public ChromeViewsTestBase {
 TEST_F(LocationIconViewTest, ShouldNotAnimateWhenSuppressingAnimations) {
   // Make sure the initial status is secure.
   SetSecurityLevel(security_state::SecurityLevel::SECURE);
-  view()->Update(/*suppress_animations=*/true, /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/true);
 
   SetSecurityLevel(security_state::SecurityLevel::DANGEROUS);
-  view()->Update(/*suppress_animations=*/true, /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/true);
   // When we change tab, suppress animations is true.
   EXPECT_FALSE(view()->is_animating_label());
 }
@@ -129,33 +129,30 @@ TEST_F(LocationIconViewTest, ShouldNotAnimateWhenSuppressingAnimations) {
 TEST_F(LocationIconViewTest, ShouldAnimateTextWhenWarning) {
   // Make sure the initial status is secure.
   SetSecurityLevel(security_state::SecurityLevel::SECURE);
-  view()->Update(/*suppress_animations=*/true, /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/true);
 
   SetSecurityLevel(security_state::SecurityLevel::WARNING);
-  view()->Update(/*suppress_animations=*/false,
-                 /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/false);
   EXPECT_TRUE(view()->is_animating_label());
 }
 
 TEST_F(LocationIconViewTest, ShouldAnimateTextWhenDangerous) {
   // Make sure the initial status is secure.
   SetSecurityLevel(security_state::SecurityLevel::SECURE);
-  view()->Update(/*suppress_animations=*/true, /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/true);
 
   SetSecurityLevel(security_state::SecurityLevel::DANGEROUS);
-  view()->Update(/*suppress_animations=*/false,
-                 /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/false);
   EXPECT_TRUE(view()->is_animating_label());
 }
 
 TEST_F(LocationIconViewTest, ShouldNotAnimateWarningToDangerous) {
   // Make sure the initial status is secure.
   SetSecurityLevel(security_state::SecurityLevel::WARNING);
-  view()->Update(/*suppress_animations=*/true, /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/true);
 
   SetSecurityLevel(security_state::SecurityLevel::DANGEROUS);
-  view()->Update(/*suppress_animations=*/false,
-                 /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/false);
   EXPECT_FALSE(view()->is_animating_label());
 }
 
@@ -171,7 +168,7 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kPopUpButton);
 
   delegate()->set_is_editing_or_empty(true);
-  view()->Update(/*suppress_animations=*/true, /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/true);
   data = ui::AXNodeData();
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(),
@@ -184,7 +181,7 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
 
   delegate()->set_is_editing_or_empty(false);
   SetSecurityLevel(security_state::SecurityLevel::WARNING);
-  view()->Update(/*suppress_animations=*/true, /*force_hide_background=*/false);
+  view()->Update(/*suppress_animations=*/true);
   data = ui::AXNodeData();
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(), u"Insecure");

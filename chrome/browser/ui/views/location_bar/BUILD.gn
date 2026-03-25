@@ -22,7 +22,6 @@ source_set("location_bar") {
       "location_bar_bubble_delegate_view.h",
       "location_bar_layout.h",
       "location_bar_view.h",
-      "location_icon_interface.h",
       "location_icon_view.h",
       "merchant_trust_chip_button_controller.h",
       "omnibox_chip_button.h",

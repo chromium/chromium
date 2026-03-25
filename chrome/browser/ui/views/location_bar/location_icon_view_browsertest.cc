@@ -55,16 +55,14 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewBrowserTest, InkDropMode) {
   OmniboxEditModel* model =
       location_bar()->GetOmniboxController()->edit_model();
   model->SetInputInProgress(true);
-  icon_view()->Update(/*suppress_animations=*/true,
-                      /*force_hide_background=*/false);
+  icon_view()->Update(/*suppress_animations=*/true);
 
   EXPECT_EQ(views::InkDropHost::InkDropMode::OFF,
             views::test::InkDropHostTestApi(views::InkDrop::Get(icon_view()))
                 .ink_drop_mode());
 
   model->SetInputInProgress(false);
-  icon_view()->Update(/*suppress_animations=*/true,
-                      /*force_hide_background=*/false);
+  icon_view()->Update(/*suppress_animations=*/true);
 
   EXPECT_EQ(views::InkDropHost::InkDropMode::ON,
             views::test::InkDropHostTestApi(views::InkDrop::Get(icon_view()))
