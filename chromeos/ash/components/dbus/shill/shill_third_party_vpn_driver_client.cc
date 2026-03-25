@@ -8,9 +8,10 @@
 #include <stdint.h>
 
 #include <map>
-#include <set>
+#include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -28,16 +29,16 @@ namespace ash {
 
 namespace {
 
-constexpr const char* kSetParametersKeyList[] = {
-    shill::kAddressParameterThirdPartyVpn,
-    shill::kBroadcastAddressParameterThirdPartyVpn,
-    shill::kExclusionListParameterThirdPartyVpn,
-    shill::kInclusionListParameterThirdPartyVpn,
-    shill::kSubnetPrefixParameterThirdPartyVpn,
-    shill::kMtuParameterThirdPartyVpn,
-    shill::kDomainSearchParameterThirdPartyVpn,
-    shill::kDnsServersParameterThirdPartyVpn,
-    shill::kReconnectParameterThirdPartyVpn};
+constexpr auto kValidKeys = base::MakeFixedFlatSet<std::string_view>(
+    {shill::kAddressParameterThirdPartyVpn,
+     shill::kBroadcastAddressParameterThirdPartyVpn,
+     shill::kExclusionListParameterThirdPartyVpn,
+     shill::kInclusionListParameterThirdPartyVpn,
+     shill::kSubnetPrefixParameterThirdPartyVpn,
+     shill::kMtuParameterThirdPartyVpn,
+     shill::kDomainSearchParameterThirdPartyVpn,
+     shill::kDnsServersParameterThirdPartyVpn,
+     shill::kReconnectParameterThirdPartyVpn});
 
 ShillThirdPartyVpnDriverClient* g_instance = nullptr;
 
@@ -128,7 +129,6 @@ class ShillThirdPartyVpnDriverClientImpl
 
   raw_ptr<dbus::Bus> bus_;
   HelperMap helpers_;
-  std::set<std::string> valid_keys_;
 };
 
 ShillThirdPartyVpnDriverClientImpl::HelperInfo::HelperInfo(
@@ -138,9 +138,6 @@ ShillThirdPartyVpnDriverClientImpl::HelperInfo::HelperInfo(
 ShillThirdPartyVpnDriverClientImpl::ShillThirdPartyVpnDriverClientImpl(
     dbus::Bus* bus)
     : bus_(bus) {
-  for (uint32_t i = 0; i < std::size(kSetParametersKeyList); ++i) {
-    valid_keys_.insert(UNSAFE_TODO(kSetParametersKeyList[i]));
-  }
 }
 
 ShillThirdPartyVpnDriverClientImpl::~ShillThirdPartyVpnDriverClientImpl() {
@@ -220,7 +217,7 @@ void ShillThirdPartyVpnDriverClientImpl::SetParameters(
   dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("{ss}", &array_writer);
   for (auto it : parameters) {
-    if (!valid_keys_.contains(it.first)) {
+    if (!kValidKeys.contains(it.first)) {
       LOG(WARNING) << "Unknown key " << it.first;
       continue;
     }
