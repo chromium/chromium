@@ -342,8 +342,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     TrackerFactory.getTrackerForProfile(getProfile()));
         }
 
+        OneshotSupplierImpl<BottomSheetSigninAndHistorySyncCoordinator> signinCoordinatorSupplier =
+                new OneshotSupplierImpl<>();
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
         if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            // TODO(crbug.com/495349057): update this to use the new sign-in coordinator API with
+            // suppliers.
             SupplierUtils.waitForAll(
                     () -> {
                         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
@@ -364,14 +368,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                                 SupplierUtils.asNonNull(mSnackbarManagerSupplier)
                                                         .get(),
                                                 SigninAccessPoint.SETTINGS);
+                        signinCoordinatorSupplier.set(mSigninCoordinator);
                     },
                     mWindowAndroidSupplier,
                     mModalDialogManagerSupplier,
                     mSnackbarManagerSupplier);
         }
-
         signInPreference.initialize(
-                getProfile(), profileDataCache, accountManagerFacade, mSigninCoordinator);
+                getProfile(), profileDataCache, accountManagerFacade, signinCoordinatorSupplier);
         ChromeBasePreference googleServicePreference = findPreference(PREF_GOOGLE_SERVICES);
         googleServicePreference.setViewId(R.id.account_management_google_services_row);
 

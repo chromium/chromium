@@ -17,6 +17,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -51,6 +52,8 @@ import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.function.Supplier;
+
 /**
  * A preference that displays "Sign in to Chrome" when the user is not sign in, and displays the
  * user's name, email, profile image and sync error icon if necessary when the user is signed in.
@@ -74,7 +77,8 @@ public class SignInPreference extends Preference
     private @Nullable SyncService mSyncService;
     private SigninManager mSigninManager;
     // TODO(crbug.com/469772349): Remove @Nullable after activity-less sign-in launch.
-    private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+    private Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
+            mSigninCoordinatorSupplier;
 
     public ProfileDataCache getProfileDataCache() {
         return mProfileDataCache;
@@ -99,11 +103,12 @@ public class SignInPreference extends Preference
             Profile profile,
             ProfileDataCache profileDataCache,
             AccountManagerFacade accountManagerFacade,
-            @Nullable BottomSheetSigninAndHistorySyncCoordinator signinCoordinator) {
+            Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
+                    signinCoordinatorSupplier) {
         mProfile = profile;
         mProfileDataCache = profileDataCache;
         mAccountManagerFacade = accountManagerFacade;
-        mSigninCoordinator = signinCoordinator;
+        mSigninCoordinatorSupplier = signinCoordinatorSupplier;
         mPrefService = UserPrefs.get(mProfile);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
@@ -234,8 +239,9 @@ public class SignInPreference extends Preference
                                             getContext().getString(R.string.history_sync_subtitle))
                                     .build();
                     if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
-                        assert mSigninCoordinator != null;
-                        mSigninCoordinator.startSigninFlow(config);
+                        SupplierUtils.asNonNull(mSigninCoordinatorSupplier)
+                                .get()
+                                .startSigninFlow(config);
                     } else {
                         @Nullable Intent intent =
                                 SigninAndHistorySyncActivityLauncherImpl.get()
