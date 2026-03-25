@@ -383,6 +383,26 @@ public class ProfileDataCacheUnitTest {
         verify(mObserverMock).onProfileDataUpdated(any());
     }
 
+    @Test
+    public void testUpdateShouldFallbackToPrimaryAccountInfoIfAccountsAreNotReady() {
+        mAccountManagerTestRule.blockGetAccountsUpdate();
+        mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
+        mAccountManagerTestRule
+                .getIdentityManager()
+                .setPrimaryAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
+        // Create a new ProfileDataCache to ensure that the accounts are not ready.
+        var profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+        var accounts = profileDataCache.getAccounts().getResult();
+        var profileData = profileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+
+        Assert.assertEquals(1, accounts.size());
+        Assert.assertEquals(
+                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(), profileData.getAccountEmail());
+    }
+
     // TODO(crbug.com/494569985): Remove after MakeIdentityManagerSourceOfAccounts flag cleanup
     @Test
     public void testUpdateProfileDataWithoutDisplayableInfo_Legacy() {
