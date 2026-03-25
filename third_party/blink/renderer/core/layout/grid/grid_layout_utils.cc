@@ -994,6 +994,45 @@ bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
   return false;
 }
 
+bool ValidateMinMaxSizesCache(const BlockNode& grid_node,
+                              const GridSizingSubtree& sizing_subtree,
+                              GridTrackSizingDirection track_direction) {
+  DCHECK(sizing_subtree.HasValidRootFor(grid_node));
+
+  bool should_invalidate_min_max_sizes_cache = false;
+
+  // Only iterate over items if this grid has nested subgrids.
+  if (auto next_subgrid_subtree = sizing_subtree.FirstChild()) {
+    for (const auto& grid_item : sizing_subtree.GetGridItems()) {
+      if (!grid_item.IsSubgrid()) {
+        continue;
+      }
+
+      DCHECK(next_subgrid_subtree);
+      should_invalidate_min_max_sizes_cache |= ValidateMinMaxSizesCache(
+          To<GridNode>(grid_item.node), next_subgrid_subtree,
+          grid_item.RelativeDirectionInSubgrid(track_direction));
+      next_subgrid_subtree = next_subgrid_subtree.NextSibling();
+    }
+  }
+
+  const auto& layout_data = sizing_subtree.LayoutData();
+  if (layout_data.IsSubgridWithStandaloneAxis(track_direction)) {
+    // If no nested subgrid marked this subtree to be invalidated already, check
+    // that the cached intrinsic sizes are reusable by the current sizing tree.
+    if (!should_invalidate_min_max_sizes_cache) {
+      should_invalidate_min_max_sizes_cache =
+          To<GridNode>(grid_node).ShouldInvalidateSubgridMinMaxSizesCacheFor(
+              layout_data);
+    }
+
+    if (should_invalidate_min_max_sizes_cache) {
+      To<GridNode>(grid_node).InvalidateSubgridMinMaxSizesCache();
+    }
+  }
+  return should_invalidate_min_max_sizes_cache;
+}
+
 LayoutUnit GetSynthesizedLogicalBaseline(
     const GridItemData& grid_item,
     LayoutUnit block_size,

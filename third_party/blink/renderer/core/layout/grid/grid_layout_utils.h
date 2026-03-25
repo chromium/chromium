@@ -361,6 +361,35 @@ void CompleteTrackSizingAlgorithmForEachSubgrid(
       });
 }
 
+// Iterates over subgrids in `sizing_subtree` and performs a baseline
+// alignment pass for each.
+template <typename LayoutAlgorithmType>
+void ComputeBaselineAlignmentForEachSubgrid(
+    const GridSizingSubtree& sizing_subtree,
+    const LayoutAlgorithmType& algorithm,
+    const GridLayoutTree* layout_tree,
+    const std::optional<GridTrackSizingDirection>& opt_track_direction,
+    SizingConstraint sizing_constraint) {
+  // TODO(almaher): Support grid-lanes subgrids as well.
+  ForEachSubgrid(
+      sizing_subtree, algorithm,
+      [&](const GridLayoutAlgorithm& subgrid_algorithm,
+          const GridSizingSubtree& subgrid_subtree,
+          const SubgriddedItemData& subgrid_data) {
+        subgrid_algorithm.ComputeBaselineAlignment(
+            layout_tree, subgrid_subtree, subgrid_data,
+            subgrid_data->RelativeDirectionFilterInSubgrid(opt_track_direction),
+            sizing_constraint);
+      });
+}
+
+// Validates the min/max sizes cache for subgrids in the sizing tree. A
+// subgrid might need to invalidate the cache if it inherited a different track
+// collection in its subgridded axis. Returns true if invalidation was needed.
+bool ValidateMinMaxSizesCache(const BlockNode& grid_node,
+                              const GridSizingSubtree& sizing_subtree,
+                              GridTrackSizingDirection track_direction);
+
 // Returns the synthesized logical baseline for a grid item. This is used when
 // computing min/max content contributions without a full layout result.
 LayoutUnit GetSynthesizedLogicalBaseline(

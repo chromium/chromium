@@ -17,6 +17,7 @@ class BaselineAccumulator;
 class ComputedStyle;
 class GridItems;
 class GridLayoutData;
+class GridLayoutTree;
 class GridLineResolver;
 class GridSizingTrackCollection;
 class GridSizingSubtree;
@@ -180,7 +181,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
 
   // Performs the final baseline alignment pass of a sizing subtree in the grid
   // axis.
-  void ComputeBaselineAlignment(GridSizingTree* sizing_tree);
+  void ComputeBaselineAlignment(const GridLayoutTree* layout_tree,
+                                const GridSizingSubtree& sizing_subtree);
 
   // Helper that calls the method above for the entire grid sizing tree.
   void CompleteFinalBaselineAlignment(GridSizingTree* sizing_tree);

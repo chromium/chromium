@@ -1302,60 +1302,6 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
       });
 }
 
-namespace {
-
-// A subgrid's `MinMaxSizes` cache is stored in its respective `LayoutGrid` and
-// gets invalidated via the `IsSubgridMinMaxSizesCacheDirty` flag.
-//
-// However, a subgrid might need to invalidate the cache if it inherited a
-// different track collection in its subgridded axis, which might cause its
-// intrinsic sizes to change. This invalidation goes from parent to children,
-// which is not accounted for by the invalidation logic in `LayoutObject`.
-//
-// This method addresses such issue by traversing the tree in postorder checking
-// whether the cache at each subgrid level is reusable or not: if the subgrid
-// has a valid cache, but its input tracks for the subgridded axis changed,
-// then we'll invalidate the cache for that subgrid and its ancestors.
-bool ValidateMinMaxSizesCache(const GridNode& grid_node,
-                              const GridSizingSubtree& sizing_subtree,
-                              GridTrackSizingDirection track_direction) {
-  DCHECK(sizing_subtree.HasValidRootFor(grid_node));
-
-  bool should_invalidate_min_max_sizes_cache = false;
-
-  // Only iterate over items if this grid has nested subgrids.
-  if (auto next_subgrid_subtree = sizing_subtree.FirstChild()) {
-    for (const auto& grid_item : sizing_subtree.GetGridItems()) {
-      if (!grid_item.IsSubgrid()) {
-        continue;
-      }
-
-      DCHECK(next_subgrid_subtree);
-      should_invalidate_min_max_sizes_cache |= ValidateMinMaxSizesCache(
-          To<GridNode>(grid_item.node), next_subgrid_subtree,
-          grid_item.RelativeDirectionInSubgrid(track_direction));
-      next_subgrid_subtree = next_subgrid_subtree.NextSibling();
-    }
-  }
-
-  const auto& layout_data = sizing_subtree.LayoutData();
-  if (layout_data.IsSubgridWithStandaloneAxis(track_direction)) {
-    // If no nested subgrid marked this subtree to be invalidated already, check
-    // that the cached intrinsic sizes are reusable by the current sizing tree.
-    if (!should_invalidate_min_max_sizes_cache) {
-      should_invalidate_min_max_sizes_cache =
-          grid_node.ShouldInvalidateSubgridMinMaxSizesCacheFor(layout_data);
-    }
-
-    if (should_invalidate_min_max_sizes_cache) {
-      grid_node.InvalidateSubgridMinMaxSizesCache();
-    }
-  }
-  return should_invalidate_min_max_sizes_cache;
-}
-
-}  // namespace
-
 void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
@@ -1418,16 +1364,9 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
     ComputeOrRecreateBaselines(kForRows);
   }
 
-  ForEachSubgrid(
-      sizing_subtree, *this,
-      [&](const GridLayoutAlgorithm& subgrid_algorithm,
-          const GridSizingSubtree& subgrid_subtree,
-          const SubgriddedItemData& subgrid_data) {
-        subgrid_algorithm.ComputeBaselineAlignment(
-            layout_tree, subgrid_subtree, subgrid_data,
-            subgrid_data->RelativeDirectionFilterInSubgrid(opt_track_direction),
-            sizing_constraint);
-      });
+  ComputeBaselineAlignmentForEachSubgrid(sizing_subtree, *this, layout_tree,
+                                         opt_track_direction,
+                                         sizing_constraint);
 }
 
 void GridLayoutAlgorithm::CompleteFinalBaselineAlignment(

@@ -1443,30 +1443,40 @@ void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
     SizingConstraint sizing_constraint,
     GridSizingTree* sizing_tree,
     bool needs_intrinsic_track_size) const {
-  // TODO(almaher): When baselines are updated to handle subgrids, do we need
-  // to call `ValidateMinMaxSizesCache()` and `ComputeBaselineAlignment()` here
-  // (similar to `GridLayoutAlgorithm::CompleteTrackSizingAlgorithm`)?
-  CompleteTrackSizingAlgorithm(GridSizingSubtree(sizing_tree),
-                               sizing_constraint, needs_intrinsic_track_size);
+  const auto sizing_subtree = GridSizingSubtree(sizing_tree);
+
+  ValidateMinMaxSizesCache(Node(), sizing_subtree,
+                           Style().GridLanesTrackSizingDirection());
+
+  // TODO(almaher): When a grid subgrid is under grid-lanes, we may need to
+  // call `ComputeBaselineAlignment` here for the subgrid's track direction, as
+  // `GridLayoutAlgorithm` does. Revisit when testing grid-lanes baselines with
+  // subgrid.
+
+  CompleteTrackSizingAlgorithm(sizing_subtree, sizing_constraint,
+                               needs_intrinsic_track_size);
 }
 
 void GridLanesLayoutAlgorithm::CompleteFinalBaselineAlignment(
     GridSizingTree* sizing_tree) {
-  ComputeBaselineAlignment(sizing_tree);
+  ComputeBaselineAlignment(sizing_tree->FinalizeTree(),
+                           GridSizingSubtree(sizing_tree));
 }
 
 void GridLanesLayoutAlgorithm::ComputeBaselineAlignment(
-    GridSizingTree* sizing_tree) {
-  DCHECK(sizing_tree);
-
+    const GridLayoutTree* layout_tree,
+    const GridSizingSubtree& sizing_subtree) {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   auto& track_collection =
-      sizing_tree->LayoutData().SizingCollection(grid_axis_direction);
+      sizing_subtree.LayoutData().SizingCollection(grid_axis_direction);
 
   if (!track_collection.HasBaselines()) {
     return;
   }
+
+  // TODO(almaher): We will need special subgrid logic here utilizing
+  // `opt_subgrid_data`, similar to grid.
 
   track_collection.ResetBaselines();
 
@@ -1500,13 +1510,15 @@ void GridLanesLayoutAlgorithm::ComputeBaselineAlignment(
     baseline_accumulator = &grid_baseline_accumulator.value();
   }
 
-  RunGridLanesPlacementPhase(sizing_tree->GetGridItems(),
-                             sizing_tree->LayoutData(),
+  RunGridLanesPlacementPhase(sizing_subtree.GetGridItems(),
+                             sizing_subtree.LayoutData(),
                              SizingConstraint::kLayout, stacking_axis_gap,
                              PlacementPhase::kCalculateBaselines,
                              baseline_accumulator, running_positions);
 
-  // TODO(almaher): Do this for each layer of subgrid (similar to grid).
+  ComputeBaselineAlignmentForEachSubgrid(sizing_subtree, *this, layout_tree,
+                                         grid_axis_direction,
+                                         SizingConstraint::kLayout);
 }
 
 void GridLanesLayoutAlgorithm::ComputeSizingTreeInGridAxis(
