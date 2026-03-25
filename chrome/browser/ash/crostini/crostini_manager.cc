@@ -1396,7 +1396,7 @@ bool CrostiniManager::IsVmLaunchAllowed() {
   return is_vm_launch_allowed_;
 }
 
-void CrostiniManager::MaybeResumeFromChromeCrash() {
+void CrostiniManager::OnUserProfilePrepared() {
   // This is a new user session, perhaps using an old CrostiniManager.
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock()},

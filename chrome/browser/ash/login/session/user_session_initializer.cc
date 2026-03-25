@@ -292,7 +292,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   crostini::CrostiniManager* crostini_manager =
       crostini::CrostiniManager::GetForProfile(profile);
   if (crostini_manager) {
-    crostini_manager->MaybeResumeFromChromeCrash();
+    crostini_manager->OnUserProfilePrepared();
   }
 
   if (::captions::IsLiveCaptionFeatureSupported()) {
