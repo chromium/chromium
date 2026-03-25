@@ -234,8 +234,8 @@ void IceTransportChannel::OnChannelDestroyed() {
 void IceTransportChannel::NotifyRouteChanged() {
   TransportRoute route;
 
-  DCHECK(channel_->best_connection());
-  const webrtc::Connection* connection = channel_->best_connection();
+  const webrtc::Connection* connection = channel_->selected_connection();
+  DCHECK(connection);
 
   // A connection has both a local and a remote candidate. For our purposes, the
   // route type is determined by the most indirect candidate type. For example:
