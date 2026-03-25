@@ -156,6 +156,26 @@ TEST(ScopedGenericTest, Receive) {
   }
 }
 
+TEST(ScopedGenericTest, Swap) {
+  std::vector<int> values_freed;
+  IntTraits traits(&values_freed);
+
+  constexpr int kFirst = 0;
+  constexpr int kSecond = 1;
+  {
+    ScopedInt a(kFirst, traits);
+    ScopedInt b(kSecond, traits);
+
+    swap(a, b);
+    EXPECT_TRUE(values_freed.empty());
+
+    EXPECT_EQ(kSecond, a.get());
+    EXPECT_EQ(kFirst, b.get());
+  }
+
+  EXPECT_THAT(values_freed, testing::ElementsAre(kFirst, kSecond));
+}
+
 TEST(ScopedGenericTest, ReceiverMoveConstruct) {
   std::vector<int> values_freed;
   IntTraits traits(&values_freed);

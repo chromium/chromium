@@ -134,6 +134,13 @@ class ScopedGeneric {
     return *this;
   }
 
+  void swap(ScopedGeneric& other) {
+    CHECK(!receiving_);
+    CHECK(!other.receiving_);
+    using std::swap;
+    swap(data_.generic, other.data_.generic);
+  }
+
   // Frees the currently owned object, if any. Then takes ownership of a new
   // object, if given. Self-resets are not allowed as on unique_ptr. See
   // http://crbug.com/162971
@@ -296,8 +303,8 @@ class ScopedGeneric {
 };
 
 template <class T, class Traits>
-void swap(const ScopedGeneric<T, Traits>& a,
-          const ScopedGeneric<T, Traits>& b) {
+void swap(ScopedGeneric<T, Traits>& a,
+          ScopedGeneric<T, Traits>& b) {
   a.swap(b);
 }
 
