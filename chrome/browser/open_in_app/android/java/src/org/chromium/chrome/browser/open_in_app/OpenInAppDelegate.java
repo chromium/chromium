@@ -41,6 +41,7 @@ public class OpenInAppDelegate implements UserData {
         }
     }
 
+    private final Tab mTab;
     private @Nullable OpenInAppInfo mCurrentOpenInAppInfo;
     private @Nullable ExternalNavigationHelper mExternalNavigationHelper;
     private @Nullable GURL mLastNavigatedUrl;
@@ -64,12 +65,19 @@ public class OpenInAppDelegate implements UserData {
         return mLastNavigatedUrl;
     }
 
+    /** Sets a {@link ExternalNavigationHelper}. */
     public void setExternalNavigationHelper(ExternalNavigationHelper helper) {
         mExternalNavigationHelper = helper;
     }
 
+    /** Returns the {@link ExternalNavigationHelper}. */
     public @Nullable ExternalNavigationHelper getExternalNavigationHelper() {
         return mExternalNavigationHelper;
+    }
+
+    /** Returns the {@link Tab} that hosts this {@link OpenInAppDelegate}. */
+    public Tab getTab() {
+        return mTab;
     }
 
     private static final Class<OpenInAppDelegate> USER_DATA_KEY = OpenInAppDelegate.class;
@@ -84,7 +92,7 @@ public class OpenInAppDelegate implements UserData {
     public static OpenInAppDelegate from(Tab tab) {
         OpenInAppDelegate delegate = get(tab);
         if (delegate == null) {
-            delegate = tab.getUserDataHost().setUserData(USER_DATA_KEY, new OpenInAppDelegate());
+            delegate = tab.getUserDataHost().setUserData(USER_DATA_KEY, new OpenInAppDelegate(tab));
         }
         return delegate;
     }
@@ -93,5 +101,7 @@ public class OpenInAppDelegate implements UserData {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
-    private OpenInAppDelegate() {}
+    private OpenInAppDelegate(Tab tab) {
+        mTab = tab;
+    }
 }

@@ -42,13 +42,13 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationHelper;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Page;
@@ -87,14 +87,13 @@ public class TabbedOpenInAppEntryPointUnitTest {
     private UserDataHost mUserDataHost;
     private final GURL mUrl = JUnitTestGURLs.EXAMPLE_URL;
     private NavigationHandle mNavigationHandle;
-    private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     @Before
     public void setUp() throws PackageManager.NameNotFoundException {
         mContext = spy(Robolectric.buildActivity(Activity.class).setup().get());
         mTabSupplier = ObservableSuppliers.createNullable();
         mUserDataHost = new UserDataHost();
-        mTabModelSelectorSupplier = ObservableSuppliers.createMonotonic(mTabModelSelector);
+        TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mPackageManager.getApplicationInfo(any(), anyInt())).thenReturn(new ApplicationInfo());
@@ -123,9 +122,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
                 /* mimeType= */ "",
                 Page.createForTesting());
 
-        mEntryPoint =
-                new TabbedOpenInAppEntryPoint(
-                        mTabSupplier, mOmniboxChipManager, mContext, mTabModelSelectorSupplier);
+        mEntryPoint = new TabbedOpenInAppEntryPoint(mTabSupplier, mOmniboxChipManager, mContext);
         mTabSupplier.set(mTab);
     }
 

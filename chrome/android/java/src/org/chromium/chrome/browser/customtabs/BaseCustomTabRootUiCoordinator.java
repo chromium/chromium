@@ -341,10 +341,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         if (OpenInAppUtils.isOpenInAppAvailable() && intentDataProvider.get().isOpenedByChrome()) {
             mOpenInAppEntryPoint =
-                    new CustomTabOpenInAppEntryPoint(
-                            mActivityTabProvider.asObservable(),
-                            activity,
-                            tabModelSelectorSupplier);
+                    new CustomTabOpenInAppEntryPoint(mActivityTabProvider.asObservable(), activity);
         }
     }
 
