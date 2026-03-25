@@ -174,7 +174,8 @@ void ActorLoginDelegateImpl::AttemptLogin(
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     LoginStatusResultOrErrorReply done_callback,
-    LoginStatusResultCallback federated_login_outcome_callback) {
+    LoginStatusResultCallback federated_login_outcome_callback,
+    base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) {
   CHECK(done_callback);
 
   // One request at a time mechanism using pending callbacks.
@@ -197,6 +198,8 @@ void ActorLoginDelegateImpl::AttemptLogin(
 
   // Store the callback to mark as active
   pending_attempt_login_done_callback_ = std::move(done_callback);
+  action_sequence_delegate_ = std::move(action_sequence_delegate);
+  action_sequence_subscription_ = {};
 
   PasswordManagerDriver* driver = driver_supplier_.Run(&GetWebContents());
   CHECK(driver);
@@ -309,14 +312,19 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   // There shouldn't be a pending request without a pending callback.
   CHECK(pending_attempt_login_done_callback_);
   credential_filler_.reset();
+
   // `kRequiresButtonClick` means that the federated login is not yet done.
   // We need to keep the controller alive so it can receive the result of the
   // login and store permissions if needed. It will be cleaned up together with
-  // the delegate or on the next federated login attempt.
-  // TODO(crbug.com/495745319): Use an observer on the click tool's status to
-  // clean up SiwG controller once we get the click status.
+  // the delegate or when the current sequence of actions completes.
   if (result.has_value() &&
-      result.value() != LoginStatusResult::kRequiresButtonClick) {
+      result.value() == LoginStatusResult::kRequiresButtonClick &&
+      action_sequence_delegate_) {
+    action_sequence_subscription_ =
+        action_sequence_delegate_->RegisterActionSequenceEnded(
+            base::BindOnce(&ActorLoginDelegateImpl::OnActionSequenceEnded,
+                           weak_ptr_factory_.GetWeakPtr()));
+  } else {
     siwg_controller_.reset();
   }
 
@@ -324,6 +332,11 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   metrics_helper_.reset();
 
   std::move(pending_attempt_login_done_callback_).Run(std::move(result));
+}
+
+void ActorLoginDelegateImpl::OnActionSequenceEnded(bool success) {
+  siwg_controller_.reset();
+  action_sequence_subscription_ = {};
 }
 
 void ActorLoginDelegateImpl::OnActorTaskStateChanged(actor::ActorTask& task) {

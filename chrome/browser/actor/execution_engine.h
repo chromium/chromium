@@ -24,11 +24,12 @@
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
+#include "chrome/common/buildflags.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -63,7 +64,8 @@ class UiEventDispatcher;
 }
 
 // Coordinates the execution of a multi-step task.
-class ExecutionEngine : public ToolDelegate {
+class ExecutionEngine : public ToolDelegate,
+                        public actor_login::ActionSequenceDelegate {
  public:
   // State machine (success case)
   //
@@ -182,7 +184,13 @@ class ExecutionEngine : public ToolDelegate {
   void InterruptFromTool() override;
   void UninterruptFromTool() override;
   void EnqueueFollowupAction(std::unique_ptr<ToolRequest> action) override;
+  base::WeakPtr<actor_login::ActionSequenceDelegate> GetActionSequenceDelegate()
+      override;
   base::WeakPtr<ToolDelegate> GetAsWeakPtrForCurrentActions() override;
+
+  // actor_login::ActionSequenceDelegate:
+  base::CallbackListSubscription RegisterActionSequenceEnded(
+      base::OnceCallback<void(bool /*success*/)> callback) override;
 
   void AddWritableMainframeOrigins(
       const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
@@ -421,6 +429,9 @@ class ExecutionEngine : public ToolDelegate {
   std::optional<mojom::ActionResultCode> user_takeover_result_;
 
   base::ObserverList<StateObserver> observers_;
+
+  base::OnceCallbackList<void(bool /*success*/)>
+      action_sequence_ended_callbacks_;
 
   // If a tool finishes while the task is in a waiting state, the finish
   // callback and processing is deferred until the task is resumed.

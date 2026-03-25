@@ -1018,6 +1018,8 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
 
   SetState(State::kComplete);
 
+  action_sequence_ended_callbacks_.Notify(IsOk(*result));
+
   if (!IsOk(*result)) {
     GURL url;
     if (action_index) {
@@ -1210,8 +1212,18 @@ void ExecutionEngine::EnqueueFollowupAction(
                           std::move(action));
 }
 
+base::WeakPtr<actor_login::ActionSequenceDelegate>
+ExecutionEngine::GetActionSequenceDelegate() {
+  return actions_weak_ptr_factory_.GetWeakPtr();
+}
+
 base::WeakPtr<ToolDelegate> ExecutionEngine::GetAsWeakPtrForCurrentActions() {
   return actions_weak_ptr_factory_.GetWeakPtr();
+}
+
+base::CallbackListSubscription ExecutionEngine::RegisterActionSequenceEnded(
+    base::OnceCallback<void(bool)> callback) {
+  return action_sequence_ended_callbacks_.Add(std::move(callback));
 }
 
 void ExecutionEngine::AddWritableMainframeOrigins(

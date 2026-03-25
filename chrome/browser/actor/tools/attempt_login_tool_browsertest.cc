@@ -984,6 +984,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
   EXPECT_EQ(1, action_results.size());
 
   EXPECT_EQ(signin_success_url, web_contents()->GetLastCommittedURL());
+  EXPECT_TRUE(mock_login_service().last_sequence_succeeded());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
@@ -1041,6 +1042,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
   navigation_observer.Wait();
 
   EXPECT_EQ(signin_success_url, navigation_observer.last_navigation_url());
+  EXPECT_TRUE(mock_login_service().last_sequence_succeeded());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
@@ -1086,6 +1088,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
   const auto& action_results = result.Get();
   // The caller should see the failed click as the attempt login action failing.
   EXPECT_EQ(1, action_results.size());
+
+  EXPECT_FALSE(mock_login_service().last_sequence_succeeded());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
@@ -1115,6 +1119,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
+
+  EXPECT_FALSE(mock_login_service().last_sequence_succeeded());
 }
 
 }  // namespace

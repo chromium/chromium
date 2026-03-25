@@ -59,7 +59,9 @@ class MockActorLoginService : public actor_login::ActorLoginService {
       base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       actor_login::LoginStatusResultOrErrorReply callback,
-      actor_login::LoginStatusResultCallback federated_login_callback) override;
+      actor_login::LoginStatusResultCallback federated_login_callback,
+      base::WeakPtr<actor_login::ActionSequenceDelegate>
+          action_sequence_delegate) override;
 
   void SetCredentials(const actor_login::CredentialsOrError& credentials);
 
@@ -69,12 +71,20 @@ class MockActorLoginService : public actor_login::ActorLoginService {
 
   const std::optional<actor_login::Credential>& last_credential_used() const;
   bool last_permission_was_permanent() const;
+  bool last_sequence_succeeded() const;
 
  private:
+  void OnActionSequenceEnded(bool success);
+
   actor_login::CredentialsOrError credentials_;
   actor_login::LoginStatusResultOrError login_status_;
+
+  base::WeakPtr<actor_login::ActionSequenceDelegate> action_sequence_delegate_;
+  base::CallbackListSubscription action_sequence_subscription_;
+
   std::optional<actor_login::Credential> last_credential_used_;
   bool last_permission_was_permanent_ = false;
+  std::optional<bool> last_sequence_succeeded_;
 };
 
 inline constexpr int32_t kNonExistentContentNodeId =

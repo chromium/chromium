@@ -63,7 +63,8 @@ class ActorLoginDelegateImpl
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       LoginStatusResultOrErrorReply done_callback,
-      LoginStatusResultCallback federated_login_outcome_callback) override;
+      LoginStatusResultCallback federated_login_outcome_callback,
+      base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) override;
 
  private:
   friend class content::WebContentsUserData<ActorLoginDelegateImpl>;
@@ -92,6 +93,8 @@ class ActorLoginDelegateImpl
 
   void OnActorTaskStateChanged(actor::ActorTask& task);
 
+  void OnActionSequenceEnded(bool success);
+
   // Helper methods for recording metrics.
   void RecordGetCredentialsMetricsAndResetHelper(
       const CredentialsOrError& result);
@@ -100,6 +103,9 @@ class ActorLoginDelegateImpl
   // Store the pending callback. A non-null callback indicates an active
   // request.
   LoginStatusResultOrErrorReply pending_attempt_login_done_callback_;
+
+  base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate_;
+  base::CallbackListSubscription action_sequence_subscription_;
 
   // Helper for `GetCredentials`. Scoped to one `GetCredentials` request.
   std::unique_ptr<ActorLoginGetCredentialsHelper> get_credentials_helper_;

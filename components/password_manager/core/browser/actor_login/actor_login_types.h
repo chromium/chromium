@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "base/types/id_type.h"
@@ -227,6 +228,19 @@ enum class AttemptLoginOutcomeMqls {
 optimization_guide::proto::
     ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome
     OutcomeEnumToProtoType(AttemptLoginOutcomeMqls outcome);
+
+// For federated logins, outcomes can be delayed until after the AttemptLogin
+// operation completes. This interface allows password_manager to be informed of
+// these outcomes as they impact its own state.
+class ActionSequenceDelegate {
+ public:
+  virtual ~ActionSequenceDelegate() = default;
+
+  // Registers a callback to be called when the current action sequence ends
+  // along with whether it was successful.
+  virtual base::CallbackListSubscription RegisterActionSequenceEnded(
+      base::OnceCallback<void(bool /* success */)> callback) = 0;
+};
 
 }  // namespace actor_login
 

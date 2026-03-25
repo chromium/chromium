@@ -37,7 +37,8 @@ class ActorLoginServiceImpl : public ActorLoginService {
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       LoginStatusResultOrErrorReply done_callback,
-      LoginStatusResultCallback federated_login_outcome_callback) override;
+      LoginStatusResultCallback federated_login_outcome_callback,
+      base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) override;
   void SetActorLoginDelegateFactoryForTesting(
       base::RepeatingCallback<ActorLoginDelegate*(content::WebContents*)>
           factory);

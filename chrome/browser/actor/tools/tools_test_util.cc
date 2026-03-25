@@ -95,7 +95,18 @@ void MockActorLoginService::AttemptLogin(
     base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     actor_login::LoginStatusResultOrErrorReply callback,
-    actor_login::LoginStatusResultCallback federated_login_callback) {
+    actor_login::LoginStatusResultCallback federated_login_callback,
+    base::WeakPtr<actor_login::ActionSequenceDelegate>
+        action_sequence_delegate) {
+  action_sequence_delegate_ = action_sequence_delegate;
+  action_sequence_subscription_ = {};
+  if (action_sequence_delegate_) {
+    action_sequence_subscription_ =
+        action_sequence_delegate_->RegisterActionSequenceEnded(
+            base::BindOnce(&MockActorLoginService::OnActionSequenceEnded,
+                           base::Unretained(this)));
+  }
+
   last_credential_used_ = credential;
   last_permission_was_permanent_ = should_store_permission;
   std::move(callback).Run(login_status_);
@@ -120,8 +131,18 @@ const std::optional<actor_login::Credential>&
 MockActorLoginService::last_credential_used() const {
   return last_credential_used_;
 }
+
 bool MockActorLoginService::last_permission_was_permanent() const {
   return last_permission_was_permanent_;
+}
+
+bool MockActorLoginService::last_sequence_succeeded() const {
+  EXPECT_TRUE(last_sequence_succeeded_.has_value());
+  return last_sequence_succeeded_.value_or(false);
+}
+
+void MockActorLoginService::OnActionSequenceEnded(bool success) {
+  last_sequence_succeeded_ = success;
 }
 
 ActorToolsTest::ActorToolsTest() {

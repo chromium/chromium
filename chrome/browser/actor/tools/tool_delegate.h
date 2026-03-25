@@ -135,6 +135,9 @@ class ToolDelegate {
   // given reason.
   virtual void FailCurrentTool(mojom::ActionResultCode reason) = 0;
 
+  virtual base::WeakPtr<actor_login::ActionSequenceDelegate>
+  GetActionSequenceDelegate() = 0;
+
   virtual base::WeakPtr<ToolDelegate> GetAsWeakPtrForCurrentActions() = 0;
 };
 

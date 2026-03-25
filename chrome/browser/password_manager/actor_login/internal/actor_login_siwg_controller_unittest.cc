@@ -397,6 +397,10 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest, DelegatesClick) {
 
   start_run_loop.Run();
 
+  // The attempt by the controller is complete, but it is not destroyed until
+  // the action sequence is complete.
+
+  // The result still needs to be reported.
   base::RunLoop outcome_run_loop;
   EXPECT_CALL(federated_login_outcome_callback,
               Run(LoginStatusResult::kSuccessFederated))
@@ -410,6 +414,10 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest, DelegatesClick) {
       content::webid::FederatedLoginResult::kSuccess);
 
   outcome_run_loop.Run();
+
+  // Simulate the action sequence ending, at which point the delegate would
+  // destroy its SIWG controller.
+  controller.reset();
 
   histogram_tester.ExpectUniqueSample("Actor.Login.Federated.LoginResult",
                                       ActorLoginFederatedLoginResult::kSuccess,
