@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
@@ -24,10 +25,10 @@ Symbol MakeSymbol(SectionId section_id,
                   int32_t size,
                   const char* path,
                   std::string_view name = "") {
-  static std::deque<std::string> symbol_names;
+  static base::NoDestructor<std::deque<std::string>> symbol_names;
   if (name.empty()) {
-    symbol_names.push_back(std::string());
-    std::string& s = symbol_names.back();
+    symbol_names->emplace_back();
+    std::string& s = symbol_names->back();
     s += static_cast<char>(section_id);
     s += "_";
     s += base::NumberToString(size);
@@ -85,11 +86,11 @@ std::unique_ptr<SizeInfo> CreateSizeInfo() {
 }
 
 void MakeAliasGroup(SizeInfo* info, size_t start, size_t end) {
-  static std::deque<std::vector<Symbol*>> alias_groups;
-  alias_groups.emplace_back();
+  static base::NoDestructor<std::deque<std::vector<Symbol*>>> alias_groups;
+  alias_groups->emplace_back();
   for (size_t i = start; i < end; i++) {
-    info->raw_symbols[i].aliases_ = &alias_groups.back();
-    alias_groups.back().push_back(&info->raw_symbols[i]);
+    info->raw_symbols[i].aliases_ = &alias_groups->back();
+    alias_groups->back().push_back(&info->raw_symbols[i]);
   }
 }
 

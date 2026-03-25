@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
@@ -35,10 +36,10 @@ void MakeSymbol(SizeInfo* size_info,
                 const char* path,
                 const char* component,
                 std::string_view name = "") {
-  static std::deque<std::string> symbol_names;
+  static base::NoDestructor<std::deque<std::string>> symbol_names;
   if (name.empty()) {
-    symbol_names.push_back(std::string());
-    std::string& s = symbol_names.back();
+    symbol_names->emplace_back();
+    std::string& s = symbol_names->back();
     s += static_cast<char>(section_id);
     s += "_";
     s += base::NumberToString(size);

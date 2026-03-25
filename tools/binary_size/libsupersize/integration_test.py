@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -95,7 +95,7 @@ def _CompareWithGolden(name=None):
 
 
 def _RunApp(name, args, debug_measures=False):
-  argv = [os.path.join(_SCRIPT_DIR, 'main.py'), name]
+  argv = [sys.executable, os.path.join(_SCRIPT_DIR, 'main.py'), name]
   argv.extend(args)
   if '-v' in sys.argv:
     argv.append('-v')

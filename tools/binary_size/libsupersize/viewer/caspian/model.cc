@@ -331,8 +331,9 @@ BaseSizeInfo::BaseSizeInfo(const BaseSizeInfo&) = default;
 BaseSizeInfo::~BaseSizeInfo() = default;
 
 SectionId BaseSizeInfo::ShortSectionName(const char* section_name) {
-  static std::map<const char*, SectionId> short_section_name_cache;
-  SectionId& ret = short_section_name_cache[section_name];
+  static std::map<const char*, SectionId>* short_section_name_cache =
+      new std::map<const char*, SectionId>();
+  SectionId& ret = (*short_section_name_cache)[section_name];
   if (ret == SectionId::kNone) {
     if (!strcmp(section_name, ".text")) {
       ret = SectionId::kText;

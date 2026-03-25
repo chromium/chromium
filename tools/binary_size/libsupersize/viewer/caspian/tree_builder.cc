@@ -128,9 +128,6 @@ TreeNode* TreeBuilder::Find(std::string_view path) {
 }
 
 Json::Value TreeBuilder::Open(const char* path) {
-  // Returns a string that can be parsed to a JS object.
-  static std::string result;
-
   TreeNode::CompareFunc node_sort_func =
       method_count_mode_ ? &CompareCount : &CompareAbsSize;
 

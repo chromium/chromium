@@ -34,10 +34,6 @@ source_set("caspian-lib") {
   public_deps = [ "//third_party/jsoncpp" ]
   configs -= [ "//build/config/compiler:default_optimization" ]
   configs += [ "//build/config/compiler:optimize_speed" ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("caspian_unittests") {
@@ -55,10 +51,6 @@ test("caspian_unittests") {
     "//testing/gtest:gtest_main",
     "//third_party/re2",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 executable("caspian_cli") {
@@ -75,6 +67,10 @@ if (enable_caspian) {
         ":caspian-lib",
         "//third_party/re2",
       ]
+
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
       ldflags = [
         "-s",
         "EXPORTED_FUNCTIONS=['_BuildTree','_GetMetadata','_LoadBeforeSizeFile','_LoadSizeFile','_Open','_QueryAncestryById','_QueryProperty','_free','_malloc']",

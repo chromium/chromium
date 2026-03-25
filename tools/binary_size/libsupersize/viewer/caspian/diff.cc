@@ -130,10 +130,10 @@ class DiffHelper {
   DiffHelper() = default;
 
   std::string_view StripNumbers(std::string_view in) {
-    static const RE2 number_regex("\\d+");
-    if (RE2::PartialMatch(in, number_regex)) {
+    static const RE2* number_regex = new RE2("\\d+");
+    if (RE2::PartialMatch(in, *number_regex)) {
       tmp_strings_.emplace_back(in);
-      RE2::GlobalReplace(&tmp_strings_.back(), number_regex, "");
+      RE2::GlobalReplace(&tmp_strings_.back(), *number_regex, "");
       return tmp_strings_.back();
     }
     return in;
@@ -141,10 +141,11 @@ class DiffHelper {
 
   std::string_view NormalizeStarSymbols(std::string_view in) {
     // Used only for "*" symbols to strip suffixes "abc123" or "abc123 (any)".
-    static const RE2 normalize_star_symbols("\\s+\\d+(?: \\(.*\\))?$");
-    if (RE2::PartialMatch(in, normalize_star_symbols)) {
+    static const RE2* normalize_star_symbols =
+        new RE2("\\s+\\d+(?: \\(.*\\))?$");
+    if (RE2::PartialMatch(in, *normalize_star_symbols)) {
       tmp_strings_.emplace_back(in);
-      RE2::Replace(&tmp_strings_.back(), normalize_star_symbols, "s");
+      RE2::Replace(&tmp_strings_.back(), *normalize_star_symbols, "s");
       return tmp_strings_.back();
     }
     return in;
