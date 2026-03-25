@@ -12930,21 +12930,6 @@
             ]
         }
     ],
-    "IOSTabGridDragAndDrop": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGridDragAndDrop"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTabGroupColorOnSurface": [
         {
             "platforms": [

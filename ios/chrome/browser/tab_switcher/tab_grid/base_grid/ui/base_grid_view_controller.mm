@@ -285,9 +285,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
   [self updateTabsSectionHeaderType];
 
-  if (IsTabGridDragAndDropEnabled()) {
-    self.entryDirectionCache = [NSMutableDictionary dictionary];
-  }
+  self.entryDirectionCache = [NSMutableDictionary dictionary];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -733,9 +731,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
-  if (IsTabGridDragAndDropEnabled()) {
-    [self.entryDirectionCache removeAllObjects];
-  }
+  [self.entryDirectionCache removeAllObjects];
   self.dragEndAtNewIndex = NO;
   self.localDragActionInProgress = YES;
 
@@ -770,10 +766,8 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
 - (void)collectionView:(UICollectionView*)collectionView
      dragSessionDidEnd:(id<UIDragSession>)session {
-  if (IsTabGridDragAndDropEnabled()) {
-    [self clearCurrentlyHighlightedCell];
-    [self.entryDirectionCache removeAllObjects];
-  }
+  [self clearCurrentlyHighlightedCell];
+  [self.entryDirectionCache removeAllObjects];
   self.localDragActionInProgress = NO;
 
   DragDropItem dragEvent = self.dragEndAtNewIndex
@@ -936,7 +930,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   UIDropOperation dropOperation = [self.dragDropHandler
       dropOperationForDropSession:session
                           toIndex:destinationIndexPath.item];
-  if (IsTabGridDragAndDropEnabled() && !isGroup && destinationItemIndexPath &&
+  if (!isGroup && destinationItemIndexPath &&
       draggedItemIndexPath != destinationItemIndexPath &&
       dropOperation != UIDropOperationForbidden) {
     // If the drag goes into a different cell's frame, either highlight or allow
@@ -967,9 +961,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
                              UICollectionViewDropIntentInsertIntoDestinationIndexPath];
     }
   }
-  if (IsTabGridDragAndDropEnabled()) {
-    [self clearCurrentlyHighlightedCell];
-  }
+  [self clearCurrentlyHighlightedCell];
 
   return [[UICollectionViewDropProposal alloc]
       initWithDropOperation:dropOperation
@@ -986,8 +978,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   // created as a tab isn't dropped into another tab/group.
   // [self.dragDropHandler dropItemFromProvider:toIndex:placeholderContext:]
   // will handle this case further down in the method and load the URL.
-  if (IsTabGridDragAndDropEnabled() &&
-      coordinator.proposal.intent ==
+  if (coordinator.proposal.intent ==
           UICollectionViewDropIntentInsertIntoDestinationIndexPath &&
       coordinator.items.count == 1 && sourceIndexPath) {
     NSIndexPath* destinationIndexPath = coordinator.destinationIndexPath;
@@ -1111,9 +1102,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidExit:(id<UIDropSession>)session {
-  if (IsTabGridDragAndDropEnabled()) {
-    [self clearCurrentlyHighlightedCell];
-  }
+  [self clearCurrentlyHighlightedCell];
   if (!_localDragActionInProgress) {
     // Enable back toolbar buttons if no items are dragged in the current
     // collection view.
@@ -1123,9 +1112,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
 - (void)collectionView:(UICollectionView*)collectionView
      dropSessionDidEnd:(id<UIDropSession>)session {
-  if (IsTabGridDragAndDropEnabled()) {
-    [self clearCurrentlyHighlightedCell];
-  }
+  [self clearCurrentlyHighlightedCell];
   if (IsPinnedTabsEnabled()) {
     // Notify the delegate that a drag ends from another app.
     [self.delegate gridViewControllerDropAnimationDidEnd:self];
@@ -1831,7 +1818,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   cell.activityLabelData =
       [self.gridProvider activityLabelDataForItem:groupItemIdentifier];
 
-  if (IsTabGridDragAndDropEnabled() && _highlightedGroupIndexPath) {
+  if (_highlightedGroupIndexPath) {
     NSUInteger newGroupIndexPath = _highlightedGroupIndexPath.item;
     if (_isNewGroupShiftingToDifferentFinalIndexPath &&
         _isGroupBeingCreatedFromDragAndDrop) {

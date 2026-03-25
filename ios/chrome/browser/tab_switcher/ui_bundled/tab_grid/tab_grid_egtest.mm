@@ -287,9 +287,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testDragAndDropCreatesGroup)]) {
-    config.features_enabled.push_back(kTabGridDragAndDrop);
-  }
 
   if ([self isRunningTest:@selector(testCloseOtherTabsUsingEditMenu)] ||
       [self isRunningTest:@selector(testCloseOtherTabsUsingContextMenu)] ||

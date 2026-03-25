@@ -467,8 +467,7 @@ NSCollectionLayoutSection* SuggestedActionsSection(
     return attributes;
   }
 
-  if (IsTabGridDragAndDropEnabled() &&
-      self.dragAndDropGroupIndexPath == itemIndexPath) {
+  if (self.dragAndDropGroupIndexPath == itemIndexPath) {
     attributes.alpha = 1.0;
     attributes.transform = CGAffineTransformScale(
         attributes.transform, /*sx=*/kGridCellHighlightScaleTransform,

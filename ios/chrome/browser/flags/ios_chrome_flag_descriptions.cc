@@ -1618,11 +1618,6 @@ const char kSyncWalletVehicleRegistrationsName[] =
 const char kSyncWalletVehicleRegistrationsDescription[] =
     "Enables syncing vehicle registrations in the wallet to the server.";
 
-const char kTabGridDragAndDropName[] = "Enable Drag and Drop in Tab Grid";
-const char kTabGridDragAndDropDescription[] =
-    "Enables drag and drop in the tab grid to reorder tabs and create tab "
-    "groups.";
-
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"

@@ -107,18 +107,16 @@ const CGFloat kTopBarLargeInset = 20;
     self.contentView.layer.masksToBounds = YES;
     UIView* contentContainer = self.contentView;
 
-    if (IsTabGridDragAndDropEnabled()) {
-      UIView* containerView = [[UIView alloc] init];
-      containerView.translatesAutoresizingMaskIntoConstraints = NO;
-      containerView.backgroundColor =
-          [UIColor colorNamed:kSecondaryBackgroundColor];
-      containerView.layer.cornerRadius = kGridCellCornerRadius;
-      containerView.layer.masksToBounds = YES;
-      [self.contentView addSubview:containerView];
-      _containerView = containerView;
-      AddSameConstraints(self.contentView, containerView);
-      contentContainer = _containerView;
-    }
+    UIView* containerView = [[UIView alloc] init];
+    containerView.translatesAutoresizingMaskIntoConstraints = NO;
+    containerView.backgroundColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
+    containerView.layer.cornerRadius = kGridCellCornerRadius;
+    containerView.layer.masksToBounds = YES;
+    [self.contentView addSubview:containerView];
+    _containerView = containerView;
+    AddSameConstraints(self.contentView, containerView);
+    contentContainer = _containerView;
 
     [self setupTopBar];
     _groupSnapshotsView = [[TabGroupSnapshotsView alloc]
@@ -180,33 +178,30 @@ const CGFloat kTopBarLargeInset = 20;
     ];
     [NSLayoutConstraint activateConstraints:constraints];
 
-    if (IsTabGridDragAndDropEnabled()) {
-      self.groupingBackgroundView = [[UIView alloc] initWithFrame:self.bounds];
-      self.groupingBackgroundView.translatesAutoresizingMaskIntoConstraints =
-          NO;
-      self.groupingBackgroundView.backgroundColor =
-          [UIColor colorNamed:kStaticBlue400Color];
-      self.groupingBackgroundView.layer.cornerRadius = kGridCellCornerRadius;
-      self.groupingBackgroundView.layer.masksToBounds = YES;
-      self.groupingBackgroundView.alpha = 0.0;
-      self.groupingBackgroundView.hidden = YES;
-      // Insert it behind the cell's contentView
-      [self addSubview:self.groupingBackgroundView];
-      [self.contentView insertSubview:self.groupingBackgroundView
-                         belowSubview:self.containerView];
-      AddSameConstraints(self.groupingBackgroundView, self);
+    self.groupingBackgroundView = [[UIView alloc] initWithFrame:self.bounds];
+    self.groupingBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.groupingBackgroundView.backgroundColor =
+        [UIColor colorNamed:kStaticBlue400Color];
+    self.groupingBackgroundView.layer.cornerRadius = kGridCellCornerRadius;
+    self.groupingBackgroundView.layer.masksToBounds = YES;
+    self.groupingBackgroundView.alpha = 0.0;
+    self.groupingBackgroundView.hidden = YES;
+    // Insert it behind the cell's contentView
+    [self addSubview:self.groupingBackgroundView];
+    [self.contentView insertSubview:self.groupingBackgroundView
+                       belowSubview:self.containerView];
+    AddSameConstraints(self.groupingBackgroundView, self);
 
-      self.dimmingView = [[UIView alloc] initWithFrame:self.bounds];
-      self.dimmingView.translatesAutoresizingMaskIntoConstraints = NO;
-      self.dimmingView.backgroundColor =
-          [[UIColor blackColor] colorWithAlphaComponent:0.5];
-      self.dimmingView.hidden = YES;
-      self.dimmingView.alpha = 0.0;
-      self.dimmingView.layer.cornerRadius =
-          kGridCellCornerRadius - kSnapshotViewLeadingOffset;
-      [contentContainer addSubview:self.dimmingView];
-      AddSameConstraints(self.dimmingView, contentContainer);
-    }
+    self.dimmingView = [[UIView alloc] initWithFrame:self.bounds];
+    self.dimmingView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.dimmingView.backgroundColor =
+        [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    self.dimmingView.hidden = YES;
+    self.dimmingView.alpha = 0.0;
+    self.dimmingView.layer.cornerRadius =
+        kGridCellCornerRadius - kSnapshotViewLeadingOffset;
+    [contentContainer addSubview:self.dimmingView];
+    AddSameConstraints(self.dimmingView, contentContainer);
 
     [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateTopBarConstraints)];
@@ -236,9 +231,7 @@ const CGFloat kTopBarLargeInset = 20;
   self.opacity = 1.0;
   self.hidden = NO;
   self.facePileProvider = nil;
-  if (IsTabGridDragAndDropEnabled()) {
-    [self setHighlightForGrouping:NO];
-  }
+  [self setHighlightForGrouping:NO];
 }
 
 #pragma mark - UIAccessibility
@@ -281,7 +274,6 @@ const CGFloat kTopBarLargeInset = 20;
 }
 
 - (void)setHighlightForGrouping:(BOOL)highlight {
-  CHECK(IsTabGridDragAndDropEnabled());
   if (_highlighted == highlight) {
     return;
   }

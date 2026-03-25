@@ -988,9 +988,6 @@ extern const char kSyncWalletFlightReservationsDescription[];
 extern const char kSyncWalletVehicleRegistrationsName[];
 extern const char kSyncWalletVehicleRegistrationsDescription[];
 
-extern const char kTabGridDragAndDropName[];
-extern const char kTabGridDragAndDropDescription[];
-
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 
