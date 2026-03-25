@@ -846,7 +846,15 @@ class CrossbenchTest(object):
       return ['--env={screen_refresh_rate:60}']
     if self.is_android:
       # Set Android CPU governor due to crbug.com/487175106.
-      return ['--env={"cpu_power_mode":"performance"}']
+      # In most cases, use "performance" to be consistent with Telemetry.
+      # But for CBB (indicated by using official build of Chrome),
+      # use "sched_pixel", which is the default mode for Pixel Tablets
+      # (see crbug.com/495679726).
+      if self.cb_options.official_browser:
+        power_mode = 'sched_pixel'
+      else:
+        power_mode = 'performance'
+      return [f'--env={{"cpu_power_mode":"{power_mode}"}}']
     return []
 
   def _create_fileserver_network(self, arg):
