@@ -12,6 +12,8 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -46,6 +48,12 @@ FormFillingHelper::FormFillingHelper(
       callback_(std::move(callback)) {
   CHECK(!filling_tasks.empty());
 
+  if (content::RenderWidgetHostView* view =
+          web_contents->GetRenderWidgetHostView()) {
+    if (content::RenderWidgetHost* host = view->GetRenderWidgetHost()) {
+      host->Focus();
+    }
+  }
   auto callback_chain = base::BindOnce(&FormFillingHelper::ExtractForm,
                                        weak_ptr_factory_.GetWeakPtr(),
                                        filling_tasks.begin()->first);
