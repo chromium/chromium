@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -45,6 +46,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogHandle;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DismissHandler;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -321,6 +323,60 @@ public class ActionConfirmationDialogUnitTest {
         // The dismiss is already handled by the modal dialog manager. Further calls to dismiss it
         // will not do anything.
         verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
+    }
+
+    @Test
+    public void testDismiss() {
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
+        DialogHandle dismissHandler =
+                dialog.show(
+                        new ConfirmationDialogParams(mContext)
+                                .withTitle(R.string.title)
+                                .withDescription(R.string.learn_more)
+                                .withPositiveButton(R.string.confirm)
+                                .withNegativeButton(R.string.cancel)
+                                .withSupportStopShowing(true),
+                        mConfirmationDialogHandler);
+
+        verify(mModalDialogManager)
+                .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
+        PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
+
+        dismissHandler.dismiss(DialogDismissalCause.UNKNOWN);
+        verify(mModalDialogManager).dismissDialog(propertyModel, DialogDismissalCause.UNKNOWN);
+
+        // Subsequent calls trigger another dismissal, as ModalDialogManager handles it safely.
+        dismissHandler.dismiss(DialogDismissalCause.UNKNOWN);
+        verify(mModalDialogManager, times(2))
+                .dismissDialog(propertyModel, DialogDismissalCause.UNKNOWN);
+    }
+
+    @Test
+    public void testDismissAfterNaturalDismiss() {
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
+        DialogHandle dismissHandler =
+                dialog.show(
+                        new ConfirmationDialogParams(mContext)
+                                .withTitle(R.string.title)
+                                .withDescription(R.string.learn_more)
+                                .withPositiveButton(R.string.confirm)
+                                .withNegativeButton(R.string.cancel)
+                                .withSupportStopShowing(true),
+                        mConfirmationDialogHandler);
+
+        verify(mModalDialogManager)
+                .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
+        PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
+
+        Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
+        controller.onDismiss(propertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+
+        // If dismiss is called now, it will trigger another dismissal to ModalDialogManager
+        // which handles such duplicate dismissals safely.
+        dismissHandler.dismiss(DialogDismissalCause.UNKNOWN);
+        verify(mModalDialogManager).dismissDialog(propertyModel, DialogDismissalCause.UNKNOWN);
     }
 
     @Test

@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
@@ -93,7 +92,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 backPressManager,
                 edgeToEdgeControllerSupplier,
                 keyboardDelegate,
-                new ConfirmationDialogHelper(context),
                 browserControlsManager);
     }
 
@@ -107,7 +105,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BackPressManager backPressManager,
             Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             SoftKeyboardDelegate keyboardDelegate,
-            ConfirmationDialogHelper confirmationHelper,
             @Nullable BrowserControlsManager controlsManager) {
         mMediator.initialize(
                 accessoryBar,
@@ -118,7 +115,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 backPressManager,
                 edgeToEdgeControllerSupplier,
                 keyboardDelegate,
-                confirmationHelper,
                 controlsManager);
     }
 

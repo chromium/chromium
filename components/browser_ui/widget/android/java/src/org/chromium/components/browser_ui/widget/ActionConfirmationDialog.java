@@ -57,6 +57,16 @@ public class ActionConfirmationDialog {
         int DISMISS_LATER = 1;
     }
 
+    /** A handle to the shown dialog that can be used to dismiss it programmatically. */
+    public interface DialogHandle {
+        /**
+         * Programmatically dismiss the dialog if it is currently showing.
+         *
+         * @param cause The cause for the dismissal.
+         */
+        void dismiss(@DialogDismissalCause int cause);
+    }
+
     @FunctionalInterface
     public interface ConfirmationDialogHandler {
         /**
@@ -80,7 +90,7 @@ public class ActionConfirmationDialog {
     }
 
     /** Handles dismissals for the dialog. */
-    public interface DismissHandler {
+    public interface DismissHandler extends DialogHandle {
         /**
          * Blocks dismissal until the returned {@link Runnable} is run. May dismiss on a timeout if
          * this condition is not fulfilled within a minimum time threshold.
@@ -143,6 +153,11 @@ public class ActionConfirmationDialog {
          */
         void setPropertyModel(PropertyModel propertyModel) {
             mPropertyModel = propertyModel;
+        }
+
+        @Override
+        public void dismiss(@DialogDismissalCause int dismissalCause) {
+            mModalDialogManager.dismissDialog(mPropertyModel, dismissalCause);
         }
 
         @Override
@@ -391,8 +406,9 @@ public class ActionConfirmationDialog {
      *
      * @param params The parameters for the dialog.
      * @param confirmationDialogHandler The callback to invoke on exit of the dialog.
+     * @return A {@link DialogHandle} that can be used to dismiss the dialog programmatically.
      */
-    public void show(
+    public DialogHandle show(
             ConfirmationDialogParams params, ConfirmationDialogHandler confirmationDialogHandler) {
         View customView =
                 LayoutInflater.from(mContext).inflate(R.layout.action_confirmation_dialog, null);
@@ -432,6 +448,8 @@ public class ActionConfirmationDialog {
         modelSupplier.set(model);
         dismissHandler.setPropertyModel(model);
         mModalDialogManager.showDialog(model, ModalDialogType.APP);
+
+        return dismissHandler;
     }
 
     private static View createCustomButtonBarView(

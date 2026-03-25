@@ -68,7 +68,6 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -96,7 +95,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
-import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
@@ -154,7 +152,6 @@ public class ManualFillingControllerTest {
     @Mock private CompositorViewHolder mMockCompositorViewHolder;
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private ManualFillingComponent.SoftKeyboardDelegate mMockSoftKeyboardDelegate;
-    @Mock private ConfirmationDialogHelper mMockConfirmationHelper;
     @Mock private FullscreenManager mMockFullscreenManager;
     @Mock private InsetObserver mInsetObserver;
     @Mock private BackPressManager mMockBackPressManager;
@@ -376,7 +373,6 @@ public class ManualFillingControllerTest {
                 mMockBackPressManager,
                 mMockEdgeToEdgeControllerSupplier,
                 mMockSoftKeyboardDelegate,
-                mMockConfirmationHelper,
                 mMockBrowserControlsManager);
     }
 
@@ -1432,21 +1428,6 @@ public class ManualFillingControllerTest {
         mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 180);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
-    }
-
-    @Test
-    public void testCallsHelperToConfirmDeletion() {
-        Runnable testConfirmRunnable = CallbackUtils.emptyRunnable();
-        Runnable testDeclineRunnable = CallbackUtils.emptyRunnable();
-        mMediator.confirmDeletionOperation(
-                "Suggestion", "Delete it?", "Delete", testConfirmRunnable, testDeclineRunnable);
-        verify(mMockConfirmationHelper)
-                .showConfirmation(
-                        "Suggestion",
-                        "Delete it?",
-                        "Delete",
-                        testConfirmRunnable,
-                        testDeclineRunnable);
     }
 
     @Test
