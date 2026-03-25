@@ -2797,7 +2797,7 @@ deps = {
 
   # Dependency of skia.
   'src/third_party/pyelftools': {
-      'url': Var('chromium_git') + '/chromiumos/third_party/pyelftools.git' + '@' + '19b3e610c86fcadb837d252c794cb5e8008826ae',
+      'url': Var('chromium_git') + '/chromiumos/third_party/pyelftools.git' + '@' + '8047437615d66d3267ac0134834b80e70639d572',
       'condition': 'checkout_linux',
   },
 
