@@ -149,6 +149,10 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 
   _saveButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_AUTOFILL_AI_WALLET_UPLOAD_THROBBER_ACCESSIBLE_NAME);
+
+  // Prevent dismissing the bottomsheet while the view is in loading state.
+  self.navigationItem.leftBarButtonItem.enabled = NO;
+  self.modalInPresentation = YES;
 }
 
 #pragma mark - Actions
