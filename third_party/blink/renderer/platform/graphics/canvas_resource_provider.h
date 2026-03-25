@@ -217,7 +217,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
                          Delegate* delegate);
 
   virtual void RasterRecord(cc::PaintRecord) = 0;
-  void UnacceleratedRasterRecord(cc::PaintRecord);
+  void UnacceleratedRasterRecordForCanvas2D(cc::PaintRecord);
 
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 

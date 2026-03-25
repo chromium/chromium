@@ -170,7 +170,7 @@ sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
 
 void Canvas2DResourceProviderBitmap::RasterRecord(
     cc::PaintRecord last_recording) {
-  return UnacceleratedRasterRecord(last_recording);
+  return UnacceleratedRasterRecordForCanvas2D(last_recording);
 }
 
 bool Canvas2DResourceProviderBitmap::WritePixelsForCanvas2D(
@@ -1081,7 +1081,7 @@ void Canvas2DResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    UnacceleratedRasterRecord(std::move(last_recording));
+    UnacceleratedRasterRecordForCanvas2D(std::move(last_recording));
     return;
   }
 
@@ -1136,7 +1136,9 @@ void Canvas2DResourceProviderSharedImage::RasterRecord(
 void CanvasNon2DResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
-    UnacceleratedRasterRecord(std::move(last_recording));
+    EnsureSkiaCanvas();
+    skia_canvas_->drawPicture(std::move(last_recording));
+    skgpu::ganesh::FlushAndSubmit(GetSkSurface());
     return;
   }
 
@@ -1914,9 +1916,10 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
   return FlushCanvas(reason);
 }
 
-void CanvasResourceProvider::UnacceleratedRasterRecord(
+void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
     cc::PaintRecord last_recording) {
   CHECK(!IsAccelerated());
+  CHECK(IsCanvas2D());
 
   EnsureSkiaCanvas();
   skia_canvas_->drawPicture(std::move(last_recording));
