@@ -210,6 +210,14 @@ void DisplayLockDocumentState::ElementAddedToTopLayer(Element* element) {
     return;
   }
 
+  // MarkAncestorContextsHaveTopLayerElement walks up from the element
+  // and notifies ancestor locks, but does not notify the element's own
+  // lock. If the top layer element itself has a content-visibility:auto
+  // lock, notify it as well.
+  if (auto* context = element->GetDisplayLockContext()) {
+    context->NotifyHasTopLayerElement();
+  }
+
   if (MarkAncestorContextsHaveTopLayerElement(element)) {
     StyleEngine& style_engine = document_->GetStyleEngine();
     StyleEngine::DetachLayoutTreeScope detach_scope(style_engine);

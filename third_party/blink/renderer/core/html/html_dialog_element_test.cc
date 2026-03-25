@@ -24,4 +24,44 @@ TEST_F(HTMLDialogElementTest, CancelEventDontClose) {
   EXPECT_TRUE(dialog->FastHasAttribute(html_names::kOpenAttr));
 }
 
+TEST_F(HTMLDialogElementTest, ShowModalWithContentVisibilityAuto) {
+  SetBodyInnerHTML(R"HTML(
+    <dialog id="d" style="content-visibility:auto">
+      <rp></rp>
+    </dialog>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* dialog = To<HTMLDialogElement>(GetElementById("d"));
+  dialog->showModal(ASSERT_NO_EXCEPTION);
+}
+
+TEST_F(HTMLDialogElementTest, ShowModalWithContentVisibilityAutoOnDescendant) {
+  SetBodyInnerHTML(R"HTML(
+    <dialog id="d">
+      <label style="content-visibility:auto">
+        <rp></rp>
+      </label>
+    </dialog>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* dialog = To<HTMLDialogElement>(GetElementById("d"));
+  dialog->showModal(ASSERT_NO_EXCEPTION);
+}
+
+TEST_F(HTMLDialogElementTest,
+       ShowModalWithNestedContentVisibilityAutoSiblingBranches) {
+  SetBodyInnerHTML(R"HTML(
+    <dialog id="d" style="content-visibility:auto">
+      <input id="i" style="content-visibility:auto" value="">
+      <label>text</label>
+    </dialog>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* dialog = To<HTMLDialogElement>(GetElementById("d"));
+  dialog->showModal(ASSERT_NO_EXCEPTION);
+}
+
 }  // namespace blink
