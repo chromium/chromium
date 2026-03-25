@@ -554,9 +554,6 @@ void V4L2IoctlShim::StreamOff(const enum v4l2_buf_type type) const {
 void V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
                                 v4l2_ext_controls* ext_ctrls,
                                 bool immediate) const {
-  // TODO(b/230021497): add compressed header probability related change
-  // when V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is supported
-
   // "If |request_fd| is set to a not-yet-queued request file descriptor
   // and |which| is set to V4L2_CTRL_WHICH_REQUEST_VAL, then the controls
   // are not applied immediately when calling VIDIOC_S_EXT_CTRLS, but
