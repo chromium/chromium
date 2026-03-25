@@ -51,12 +51,16 @@ export class AppElement extends CrLitElement {
       isConnecting_: {
         type: Boolean,
       },
+      transcription_: {
+        type: String,
+      },
     };
   }
 
   protected accessor mockButtons_: MockAudioButton[] = [];
   protected accessor isSpeaking_: boolean = false;
   protected accessor isConnecting_: boolean = false;
+  protected accessor transcription_: string = '';
 
   private pageHandler: PageHandlerRemote;
   private pageCallbackRouter: PageCallbackRouter;
@@ -242,9 +246,17 @@ export class AppElement extends CrLitElement {
     }
   }
 
+  private transcriptionTimeout_: number = 0;
+
   private onMessageFromConversation(msg: any) {
-    console.info('Message from conversation:', msg);
-    // TODO(bokan): Handle messages like 'tool-call', 'transcription', etc.
+    if (msg.type === 'outputTranscription') {
+      this.transcription_ = msg.text;
+
+      clearTimeout(this.transcriptionTimeout_);
+      this.transcriptionTimeout_ = setTimeout(() => {
+        this.transcription_ = '';
+      }, 3000);
+    }
   }
 }
 

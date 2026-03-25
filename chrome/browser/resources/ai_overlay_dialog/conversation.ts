@@ -38,6 +38,8 @@ export class Conversation implements ApiSessionDelegate {
 
   private session: ApiSession|null = null;
   private state: State = State.STOPPED;
+  private currentInput: string = '';
+  private currentOutput: string = '';
 
   constructor(
       apiKey: string, uiDelegate: UiDelegate, router: PageCallbackRouter,
@@ -76,11 +78,35 @@ export class Conversation implements ApiSessionDelegate {
     this.uiDelegate.onResponse(audioData);
   }
 
+  onTranscription(text: string, isInput: boolean) {
+    if (!this.connected) {
+      return;
+    }
+
+    if (isInput) {
+      this.currentInput += text;
+    } else {
+      this.currentOutput += text;
+
+      this.uiDelegate.sendToUI({
+        type: 'outputTranscription',
+        text: this.currentOutput,
+      });
+    }
+  }
+
+  onTurnComplete() {
+    this.currentInput = '';
+    this.currentOutput = '';
+  }
+
   interrupt() {
     if (!this.connected) {
       return;
     }
 
+    this.currentInput = '';
+    this.currentOutput = '';
     this.setState(State.LISTENING);
   }
 

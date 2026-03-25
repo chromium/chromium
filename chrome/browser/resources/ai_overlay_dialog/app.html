@@ -4,6 +4,9 @@
       @click="${this.onStateClick_}">
     <!-- UI content for AI Overlay Dialog goes here -->
   </button>
+  <div id="transcription" ?hidden="${!this.transcription_}">
+    <span id="transcription-text">${this.transcription_}</span>
+  </div>
   <!--
     If there's no microphone present, show a button to inject a pre-canned audio
     message to make development easier.

@@ -89,6 +89,28 @@
   100% { transform: scale(1); }
 }
 
+#transcription {
+  margin-bottom: 20px;
+  max-width: 300px;
+  text-align: right;
+  pointer-events: none;
+}
+
+#transcription[hidden] {
+  display: none;
+}
+
+#transcription-text {
+  display: inline;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1.4;
+  box-decoration-break: clone;
+}
+
 .inject-audio {
   margin-top: 10px;
   padding: 8px 16px;

@@ -25,6 +25,8 @@ interface SetupMessage {
     systemInstruction?: {
       parts: Array<{text: string}>,
     },
+    inputAudioTranscription?: {},
+    outputAudioTranscription?: {},
   };
 }
 
@@ -50,6 +52,12 @@ interface ServerContentMessage {
     },
     interrupted?: boolean,
     turnComplete?: boolean,
+    inputTranscription?: {
+      text?: string,
+    },
+    outputTranscription?: {
+      text?: string,
+    },
   };
   setupComplete?: {};
 }
@@ -61,6 +69,8 @@ interface ApiConfig {
 
 export interface ApiSessionDelegate {
   onResponse(audioData: string): void;
+  onTranscription(text: string, isInput: boolean): void;
+  onTurnComplete(): void;
   interrupt(): void;
   onConnectionChanged(connected: boolean): void;
 }
@@ -170,6 +180,8 @@ export class ApiSession {
             text: this.systemInstruction,
           }],
         },
+        inputAudioTranscription: {},
+        outputAudioTranscription: {},
       },
     };
     this.ws?.send(JSON.stringify(setup));
@@ -199,12 +211,24 @@ export class ApiSession {
       return;
     }
 
+    if (content.inputTranscription?.text) {
+      this.delegate.onTranscription(content.inputTranscription.text, true);
+    }
+
+    if (content.outputTranscription?.text) {
+      this.delegate.onTranscription(content.outputTranscription.text, false);
+    }
+
     if (content.modelTurn?.parts) {
       for (const part of content.modelTurn?.parts) {
         if (part.inlineData) {
           this.delegate.onResponse(part.inlineData.data);
         }
       }
+    }
+
+    if (content.turnComplete) {
+      this.delegate.onTurnComplete();
     }
 
     if (content.interrupted) {
