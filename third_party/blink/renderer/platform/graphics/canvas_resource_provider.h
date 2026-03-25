@@ -687,6 +687,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
                               int y) override {
     NOTREACHED();
   }
+
+  // NOTE: Can only be used if this instance is accelerated.
   bool UploadToBackingSharedImage(const SkPixmap& pixmap,
                                   uint32_t src_x,
                                   uint32_t src_y);

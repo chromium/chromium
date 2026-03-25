@@ -782,6 +782,8 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
     uint32_t src_x,
     uint32_t src_y) {
+  CHECK(is_accelerated_);
+
   const int dest_width = Size().width();
   const int dest_height = Size().height();
 
@@ -791,18 +793,6 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
           SkIRect::MakeXYWH(static_cast<int>(src_x), static_cast<int>(src_y),
                             dest_width, dest_height))) {
     return false;
-  }
-
-  if (!is_accelerated_) {
-    WillDrawUnaccelerated();
-
-    DCHECK(IsValid());
-    DCHECK(!recorder_->HasRecordedDrawOps());
-
-    EnsureSkiaCanvas();
-
-    return GetSkSurface()->getCanvas()->writePixels(
-        subset.info(), subset.addr(), subset.rowBytes(), /*x=*/0, /*y=*/0);
   }
 
   TRACE_EVENT0("blink",
