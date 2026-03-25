@@ -478,7 +478,7 @@ BASE_FEATURE(kLocalNetworkAccessForFencedFrameNavigationsWarningOnly,
 // This includes checking local/loopback network policies and prompting
 // in unmanaged Isolated Web Apps (IWAs).
 BASE_FEATURE(kLocalNetworkAccessPromptDirectSockets,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, allows the ReusePrerenderingProcessForMainFrames feature
 // and the ProcessPerSiteUpToMainFrameThreshold feature to reuse processes

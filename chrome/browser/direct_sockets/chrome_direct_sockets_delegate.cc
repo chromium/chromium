@@ -129,14 +129,14 @@ bool ChromeDirectSocketsDelegate::ValidateRequestForServiceWorker(
          ValidateAddressAndPortForIwa(request);
 }
 
-bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForRenderFrame(
+bool ChromeDirectSocketsDelegate::RenderFrameHasDirectSocketsPNAContentSetting(
     content::RenderFrameHost& rfh) {
   return IsContentSettingAllowedForUrl(
       rfh.GetBrowserContext(), rfh.GetMainFrame()->GetLastCommittedURL(),
       ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS);
 }
 
-bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForSharedWorker(
+bool ChromeDirectSocketsDelegate::SharedWorkerHasDirectSocketsPNAContentSetting(
     content::BrowserContext* browser_context,
     const GURL& shared_worker_url) {
   return IsContentSettingAllowedForUrl(
@@ -144,9 +144,10 @@ bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForSharedWorker(
       ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS);
 }
 
-bool ChromeDirectSocketsDelegate::IsPrivateNetworkAccessAllowedForServiceWorker(
-    content::BrowserContext* browser_context,
-    const url::Origin& origin) {
+bool ChromeDirectSocketsDelegate::
+    ServiceWorkerHasDirectSocketsPNAContentSetting(
+        content::BrowserContext* browser_context,
+        const url::Origin& origin) {
   const GURL& url = origin.GetURL();
   return IsContentSettingAllowedForUrl(
       browser_context, url,

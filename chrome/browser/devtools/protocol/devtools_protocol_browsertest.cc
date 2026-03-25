@@ -102,6 +102,7 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/test/browser_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -2446,6 +2447,10 @@ class IsolatedWebMulticastSocketsTest
             .AddPermissionsPolicyWildcard(
                 PermissionsPolicyFeature::kDirectSocketsPrivate)
             .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kLocalNetwork)
+            .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kLoopbackNetwork)
+            .AddPermissionsPolicyWildcard(
                 PermissionsPolicyFeature::kMulticastInDirectSockets);
     auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .BuildBundle();
@@ -2542,6 +2547,13 @@ class IsolatedWebMulticastSocketsTest
 IN_PROC_BROWSER_TEST_F(IsolatedWebMulticastSocketsTest,
                        DirectSocketsUDPJoinLeaveMulticastEvents) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(iwa_frame);
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
   ASSERT_TRUE(iwa_frame);
 
   AttachToFrame(iwa_frame);

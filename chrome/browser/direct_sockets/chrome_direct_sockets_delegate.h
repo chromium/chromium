@@ -18,12 +18,12 @@ class ChromeDirectSocketsDelegate : public content::DirectSocketsDelegate {
   bool ValidateRequestForServiceWorker(content::BrowserContext* browser_context,
                                        const url::Origin& origin,
                                        const RequestDetails&) override;
-  bool IsPrivateNetworkAccessAllowedForRenderFrame(
+  bool RenderFrameHasDirectSocketsPNAContentSetting(
       content::RenderFrameHost& rfh) override;
-  bool IsPrivateNetworkAccessAllowedForSharedWorker(
+  bool SharedWorkerHasDirectSocketsPNAContentSetting(
       content::BrowserContext* browser_context,
       const GURL& shared_worker_url) override;
-  bool IsPrivateNetworkAccessAllowedForServiceWorker(
+  bool ServiceWorkerHasDirectSocketsPNAContentSetting(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
   bool ShouldAllowPrivateNetworkAccessUnconditionally(

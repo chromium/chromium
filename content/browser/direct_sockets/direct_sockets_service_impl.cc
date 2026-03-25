@@ -241,6 +241,12 @@ void RequestPrivateNetworkAccess(
 
             if (base::FeatureList::IsEnabled(
                     features::kLocalNetworkAccessPromptDirectSockets)) {
+              if (!delegate->RenderFrameHasDirectSocketsPNAContentSetting(
+                      *rfh)) {
+                std::move(callback).Run(/*access_allowed=*/false);
+                return;
+              }
+
               rfh->GetBrowserContext()
                   ->GetPermissionController()
                   ->RequestPermissionsFromCurrentDocument(
@@ -265,7 +271,7 @@ void RequestPrivateNetworkAccess(
             } else {
               std::move(callback).Run(
                   /*access_allowed=*/delegate
-                      ->IsPrivateNetworkAccessAllowedForRenderFrame(*rfh));
+                      ->RenderFrameHasDirectSocketsPNAContentSetting(*rfh));
             }
           },
           [&](base::WeakPtr<SharedWorkerHost> shared_worker) {
@@ -274,6 +280,14 @@ void RequestPrivateNetworkAccess(
 
             if (base::FeatureList::IsEnabled(
                     features::kLocalNetworkAccessPromptDirectSockets)) {
+              if (!shared_worker ||
+                  !delegate->SharedWorkerHasDirectSocketsPNAContentSetting(
+                      CHECK_DEREF(shared_worker->GetProcessHost())
+                          .GetBrowserContext(),
+                      shared_worker->instance().url())) {
+                std::move(callback).Run(/*access_allowed=*/false);
+                return;
+              }
               std::move(callback).Run(
                   /*access_allowed=*/shared_worker &&
                   ArePermissionTypesAllowedForWorker(
@@ -284,7 +298,7 @@ void RequestPrivateNetworkAccess(
               std::move(callback)
                   .Run(/*access_allowed=*/
                        shared_worker &&
-                       delegate->IsPrivateNetworkAccessAllowedForSharedWorker(
+                       delegate->SharedWorkerHasDirectSocketsPNAContentSetting(
                            CHECK_DEREF(shared_worker->GetProcessHost())
                                .GetBrowserContext(),
                            shared_worker->instance().url()));
@@ -296,6 +310,13 @@ void RequestPrivateNetworkAccess(
 
             if (base::FeatureList::IsEnabled(
                     features::kLocalNetworkAccessPromptDirectSockets)) {
+              if (!service_worker || !service_worker->context() ||
+                  !delegate->ServiceWorkerHasDirectSocketsPNAContentSetting(
+                      service_worker->context()->wrapper()->browser_context(),
+                      service_worker->key().origin())) {
+                std::move(callback).Run(/*access_allowed=*/false);
+                return;
+              }
               std::move(callback).Run(
                   /*access_allowed=*/service_worker &&
                   ArePermissionTypesAllowedForWorker(
@@ -307,7 +328,7 @@ void RequestPrivateNetworkAccess(
               std::move(callback).Run(
                   /*access_allowed=*/service_worker &&
                   service_worker->context() &&
-                  delegate->IsPrivateNetworkAccessAllowedForServiceWorker(
+                  delegate->ServiceWorkerHasDirectSocketsPNAContentSetting(
                       service_worker->context()->wrapper()->browser_context(),
                       service_worker->key().origin()));
             }

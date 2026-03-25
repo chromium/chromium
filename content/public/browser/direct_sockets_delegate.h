@@ -43,12 +43,12 @@ class CONTENT_EXPORT DirectSocketsDelegate {
                                                const url::Origin& origin,
                                                const RequestDetails&) = 0;
 
-  virtual bool IsPrivateNetworkAccessAllowedForRenderFrame(
+  virtual bool RenderFrameHasDirectSocketsPNAContentSetting(
       RenderFrameHost& rfh) = 0;
-  virtual bool IsPrivateNetworkAccessAllowedForSharedWorker(
+  virtual bool SharedWorkerHasDirectSocketsPNAContentSetting(
       BrowserContext* browser_context,
       const GURL& shared_worker_url) = 0;
-  virtual bool IsPrivateNetworkAccessAllowedForServiceWorker(
+  virtual bool ServiceWorkerHasDirectSocketsPNAContentSetting(
       BrowserContext* browser_context,
       const url::Origin& origin) = 0;
 
