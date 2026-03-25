@@ -248,8 +248,7 @@ void WebUIBrowserWindow::Hide() {
 }
 
 bool WebUIBrowserWindow::IsVisible() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  return widget_->IsVisible();
 }
 
 void WebUIBrowserWindow::SetBounds(const gfx::Rect& bounds) {
@@ -672,11 +671,23 @@ void WebUIBrowserWindow::OnActiveTabChanged(content::WebContents* old_contents,
   // This is a no-op if it's already set to |this|.
   new_contents->SetColorProviderSource(this);
 
+  // Unlike BrowserView, WebUIBrowserWindow does not use native views that
+  // automatically propagate visibility to WebContents. Explicitly update
+  // visibility here so that the old tab is hidden and the new tab reflects
+  // the window's current visibility state. Features like prerendering rely
+  // on this timing of visibility updates.
+  if (old_contents) {
+    old_contents->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  }
+  if (IsVisible()) {
+    new_contents->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  } else {
+    new_contents->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  }
+
   // State of extensions depends on what's active --- e.g. some may be disabled
   // on some URLs.
   extensions_container_->NotifyOfAllActions();
-
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::OnTabDetached(content::WebContents* contents,
