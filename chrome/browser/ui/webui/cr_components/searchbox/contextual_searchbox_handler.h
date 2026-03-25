@@ -16,8 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -87,7 +88,7 @@ class ContextualSearchboxHandler
     : public contextual_search::ContextualSearchContextController::
           ContextUploadStatusObserver,
       public SearchboxHandler,
-      public TabStripModelObserver {
+      public TabListInterfaceObserver {
  public:
   explicit ContextualSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
@@ -163,11 +164,17 @@ class ContextualSearchboxHandler
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
+  // TabListInterfaceObserver:
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) override;
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
+  void OnTabRemoved(TabListInterface& tab_list,
+                    tabs::TabInterface* tab,
+                    TabRemovedReason removed_reason) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
+  void OnAllTabsAreClosing(TabListInterface& tab_list) override;
 
   std::optional<lens::ContextualInputData> context_input_data() {
     return context_input_data_;
@@ -293,6 +300,9 @@ class ContextualSearchboxHandler
 
   // Callback to get the contextual session handle from WebUI controller.
   GetSessionHandleCallback get_session_callback_;
+
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observation_{this};
 
  protected:
   base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};

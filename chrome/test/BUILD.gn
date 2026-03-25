@@ -7173,6 +7173,7 @@ test("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/sync_file_system/drive_backend:sync_file_system_drive_proto",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/tab_list:test_support",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/browser/tpcd/metadata",
     "//chrome/browser/tracing:unit_tests",

@@ -63,7 +63,7 @@ class TabContextualizationController : public content::WebContentsObserver {
   // Triggers initial page context eligibility check on the current page.
   // Equivalent to calling `optimization_guide::IsPageContextEligible()` with
   // empty frame_metadata.
-  bool GetInitialPageContextEligibility();
+  virtual bool GetInitialPageContextEligibility();
 
   // Returns whether the page is context eligible based on the latest cached
   // state. If the page context eligibility API has not been loaded, this will

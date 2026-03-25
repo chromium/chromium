@@ -387,13 +387,10 @@ void WebuiOmniboxHandler::OnCharTyped(base::TimeTicks timestamp) {
   }
 }
 
-void WebuiOmniboxHandler::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  web_contents_observer_.ScopedObserve(selection.new_contents);
-  ContextualSearchboxHandler::OnTabStripModelChanged(tab_strip_model, change,
-                                                     selection);
+void WebuiOmniboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
+                                             tabs::TabInterface* tab) {
+  web_contents_observer_.ScopedObserve(tab->GetContents());
+  ContextualSearchboxHandler::OnActiveTabChanged(tab_list, tab);
 }
 
 WebuiOmniboxHandler::WebContentsObserver::WebContentsObserver(
@@ -403,8 +400,11 @@ WebuiOmniboxHandler::WebContentsObserver::WebContentsObserver(
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents);
   if (browser_window_interface) {
-    Observe(
-        browser_window_interface->GetTabStripModel()->GetActiveWebContents());
+    if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
+      if (auto* active_tab = tab_list->GetActiveTab()) {
+        Observe(active_tab->GetContents());
+      }
+    }
   }
 }
 

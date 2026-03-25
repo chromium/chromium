@@ -23,6 +23,8 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/tab_list/mock_tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -30,8 +32,6 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
@@ -990,36 +990,33 @@ class ContextualSearchboxHandlerTestTabsTest
  public:
   ContextualSearchboxHandlerTestTabsTest() = default;
 
-  ~ContextualSearchboxHandlerTestTabsTest() override {
-    // Break loop so we can deconstruct without dangling pointers.
-    delegate_.SetBrowserWindowInterface(nullptr);
-  }
+  ~ContextualSearchboxHandlerTestTabsTest() override = default;
 
   void SetUp() override {
     ContextualSearchboxHandlerTest::SetUp();
-    tab_strip_model_ = std::make_unique<TabStripModel>(&delegate_, profile());
-    ON_CALL(browser_window_interface_, GetTabStripModel())
-        .WillByDefault(::testing::Return(tab_strip_model_.get()));
+    tab_list_ = std::make_unique<testing::NiceMock<MockTabListInterface>>();
+    tab_list_registration_ =
+        std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
+            user_data_host_, *tab_list_);
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
-    delegate_.SetBrowserWindowInterface(&browser_window_interface_);
     webui::SetBrowserWindowInterface(web_contents(),
                                      &browser_window_interface_);
   }
 
   void TearDown() override {
     // Clear TabContextualizationController to avoid dangling pointers.
-    if (tab_strip_model_) {
-      for (int i = 0; i < tab_strip_model_->count(); ++i) {
-        tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(i);
-        if (tab && tab->GetTabFeatures()) {
-          tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
-              nullptr);
-        }
+    for (tabs::TabInterface* tab : all_tabs_) {
+      if (tab && tab->GetTabFeatures()) {
+        tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
+            nullptr);
       }
     }
     handler_.reset();
-    tab_strip_model_.reset();
+    tab_list_registration_.reset();
+    tab_list_.reset();
+    all_tabs_.clear();
+    owned_tabs_.clear();
     ContextualSearchboxHandlerTest::TearDown();
   }
 
@@ -1028,8 +1025,7 @@ class ContextualSearchboxHandlerTestTabsTest
     return last_active_time_ticks_;
   }
 
-  TestTabStripModelDelegate* delegate() { return &delegate_; }
-  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+  MockTabListInterface* tab_list() { return tab_list_.get(); }
   MockBrowserWindowInterface* browser_window_interface() {
     return &browser_window_interface_;
   }
@@ -1039,16 +1035,17 @@ class ContextualSearchboxHandlerTestTabsTest
   }
 
   tabs::TabInterface* AddTab(GURL url) {
-    std::unique_ptr<content::WebContents> contents_unique_ptr =
-        CreateWebContents();
+    auto contents_unique_ptr = CreateWebContents();
     content::WebContentsTester::For(contents_unique_ptr.get())
         ->NavigateAndCommit(url);
     content::WebContents* content_ptr = contents_unique_ptr.get();
     content::WebContentsTester::For(content_ptr)
         ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
-    tab_strip_model()->AppendWebContents(std::move(contents_unique_ptr), true);
-    tabs::TabInterface* tab_interface =
-        tab_strip_model()->GetTabForWebContents(content_ptr);
+
+    auto tab_model = std::make_unique<tabs::TabModel>(
+        std::move(contents_unique_ptr), nullptr);
+    tabs::TabInterface* tab_interface = tab_model.get();
+
     tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
     std::unique_ptr<TabUIHelper> tab_ui_helper =
         tabs::TabFeatures::GetUserDataFactoryForTesting()
@@ -1061,19 +1058,39 @@ class ContextualSearchboxHandlerTestTabsTest
                     *tab_interface, tab_interface);
     tab_features->SetTabContextualizationControllerForTesting(
         std::move(tab_contextualization_controller));
+    ON_CALL(*static_cast<MockTabContextualizationController*>(
+                tab_interface->GetTabFeatures()
+                    ->tab_contextualization_controller()),
+            GetInitialPageContextEligibility())
+        .WillByDefault(testing::Return(true));
     std::unique_ptr<tabs::TabAlertController> tab_alert_controller =
         tabs::TabFeatures::GetUserDataFactoryForTesting()
             .CreateInstance<tabs::TabAlertController>(*tab_interface,
                                                       *tab_interface);
     tab_features->SetTabAlertControllerForTesting(
         std::move(tab_alert_controller));
+
+    owned_tabs_.push_back(std::move(tab_model));
+    all_tabs_.push_back(tab_interface);
+    ON_CALL(*tab_list_, GetAllTabs()).WillByDefault(testing::Return(all_tabs_));
+    ON_CALL(*tab_list_, GetTabCount())
+        .WillByDefault(testing::Return(static_cast<int>(all_tabs_.size())));
+    ON_CALL(*tab_list_, GetIndexOfTab(tab_interface->GetHandle()))
+        .WillByDefault(testing::Return(static_cast<int>(all_tabs_.size()) - 1));
+
+    ON_CALL(*tab_list_, GetActiveTab())
+        .WillByDefault(testing::Return(tab_interface));
+
     return tab_interface;
   }
 
- private:
+ protected:
   base::TimeTicks last_active_time_ticks_;
-  TestTabStripModelDelegate delegate_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::vector<std::unique_ptr<tabs::TabModel>> owned_tabs_;
+  std::vector<tabs::TabInterface*> all_tabs_;
+  std::unique_ptr<MockTabListInterface> tab_list_;
+  std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
+      tab_list_registration_;
   ui::UnownedUserDataHost user_data_host_;
   MockBrowserWindowInterface browser_window_interface_;
   base::HistogramTester histogram_tester_;
@@ -1379,9 +1396,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
        TabStripModelObserverIsAddedWithValidSession) {
   EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
-  handler().OnTabStripModelChanged(
-      tab_strip_model(), TabStripModelChange(TabStripModelChange::Remove()),
-      {});
+  handler().OnTabAdded(*tab_list(), nullptr, 0);
   mock_searchbox_page_.FlushForTesting();
 }
 
@@ -1390,17 +1405,13 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   {
     // Tab insert updates notify.
     EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
-    handler().OnTabStripModelChanged(
-        tab_strip_model(), TabStripModelChange(TabStripModelChange::Insert()),
-        {});
+    handler().OnTabAdded(*tab_list(), nullptr, 0);
     mock_searchbox_page_.FlushForTesting();
   }
   {
-    // Tab move updates don't notify.
-    EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(0);
-    handler().OnTabStripModelChanged(
-        tab_strip_model(), TabStripModelChange(TabStripModelChange::Move()),
-        {});
+    // Tab active updates notify.
+    EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
+    handler().OnActiveTabChanged(*tab_list(), nullptr);
     mock_searchbox_page_.FlushForTesting();
   }
 }
@@ -1429,7 +1440,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   // The observer should not be added, so OnTabStripChanged should not be
   // called.
   EXPECT_CALL(local_mock_searchbox_page, OnTabStripChanged).Times(0);
-  handler_with_null_session->OnTabStripModelChanged(tab_strip_model(), {}, {});
+  handler_with_null_session->OnTabAdded(*tab_list(), nullptr, 0);
   local_mock_searchbox_page.FlushForTesting();
 }
 
@@ -1437,14 +1448,11 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
        TabWithDuplicateTitleClickedMetric) {
   // Add tabs with duplicate titles.
   tabs::TabInterface* tab_a1 = AddTab(GURL("https://a1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
-      ->SetTitle(u"Title A");
+  content::WebContentsTester::For(tab_a1->GetContents())->SetTitle(u"Title A");
   tabs::TabInterface* tab_b1 = AddTab(GURL("https://b1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
-      ->SetTitle(u"Title B");
-  AddTab(GURL("https://a2.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(2))
-      ->SetTitle(u"Title A");
+  content::WebContentsTester::For(tab_b1->GetContents())->SetTitle(u"Title B");
+  tabs::TabInterface* tab_a2 = AddTab(GURL("https://a2.com"));
+  content::WebContentsTester::For(tab_a2->GetContents())->SetTitle(u"Title A");
 
   // Mock tab upload flow.
   MockTabContextualizationController* controller_a1 =
@@ -1506,11 +1514,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
        TabWithDuplicateTitleClickedMetric_NoDuplicates) {
   // Add tabs with unique titles.
   tabs::TabInterface* tab_a1 = AddTab(GURL("https://a1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
-      ->SetTitle(u"Title A");
-  AddTab(GURL("https://b1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
-      ->SetTitle(u"Title B");
+  content::WebContentsTester::For(tab_a1->GetContents())->SetTitle(u"Title A");
+  tabs::TabInterface* tab_b1 = AddTab(GURL("https://b1.com"));
+  content::WebContentsTester::For(tab_b1->GetContents())->SetTitle(u"Title B");
 
   // Mock the call to GetPageContext.
   MockTabContextualizationController* controller_a1 =
@@ -1560,10 +1566,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {
   // Add tabs with unique titles.
   tabs::TabInterface* tab_a1 = AddTab(GURL("https://a1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
-      ->SetTitle(u"Title A");
+  content::WebContentsTester::For(tab_a1->GetContents())->SetTitle(u"Title A");
   AddTab(GURL("https://b1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
+  content::WebContentsTester::For(all_tabs_.back()->GetContents())
       ->SetTitle(u"Title B");
 
   // Mock the call to GetPageContext.
@@ -1613,8 +1618,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
   }
 
   auto* contextual_tasks_tab = AddTab(GURL(chrome::kChromeUIContextualTasksURL));
-  tab_strip_model()->ActivateTabAt(tab_strip_model()->GetIndexOfWebContents(
-      contextual_tasks_tab->GetContents()));
+  ON_CALL(*tab_list(), GetActiveTab())
+      .WillByDefault(testing::Return(contextual_tasks_tab));
 
   {
     // Add a contextual tasks tab and ensure it is not returned when it is the
@@ -1640,7 +1645,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     EXPECT_EQ(tabs[1]->tab_id, youtube_tab->GetHandle().raw_value());
   }
 
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
+  content::WebContentsTester::For(about_blank_tab->GetContents())
       ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
 
   {
@@ -1748,25 +1753,25 @@ TEST_F(ContextualSearchboxHandlerSignedInTestTabsTest,
 TEST_F(ContextualSearchboxHandlerTestTabsTest, DuplicateTabsShownMetric) {
   // Add tabs with duplicate titles.
   AddTab(GURL("https://a1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
+  content::WebContentsTester::For(all_tabs_[0]->GetContents())
       ->SetTitle(u"Title A");
   AddTab(GURL("https://b1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
+  content::WebContentsTester::For(all_tabs_[1]->GetContents())
       ->SetTitle(u"Title B");
   AddTab(GURL("https://a2.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(2))
+  content::WebContentsTester::For(all_tabs_[2]->GetContents())
       ->SetTitle(u"Title A");
   AddTab(GURL("https://c1.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(3))
+  content::WebContentsTester::For(all_tabs_[3]->GetContents())
       ->SetTitle(u"Title C");
   AddTab(GURL("https://a3.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(4))
+  content::WebContentsTester::For(all_tabs_[4]->GetContents())
       ->SetTitle(u"Title A");
   AddTab(GURL("https://b2.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(5))
+  content::WebContentsTester::For(all_tabs_[5]->GetContents())
       ->SetTitle(u"Title B");
   AddTab(GURL("https://b3.com"));
-  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(6))
+  content::WebContentsTester::For(all_tabs_[6]->GetContents())
       ->SetTitle(u"Title B");
 
   base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>>

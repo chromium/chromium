@@ -30,6 +30,7 @@ class MockTabContextualizationController
       tabs::TabInterface* tab_interface);
   ~MockTabContextualizationController() override;
 
+  MOCK_METHOD(bool, GetInitialPageContextEligibility, (), (override));
   MOCK_METHOD(void,
               GetPageContext,
               (GetPageContextCallback callback),

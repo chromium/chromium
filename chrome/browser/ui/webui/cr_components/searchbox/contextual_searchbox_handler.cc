@@ -22,6 +22,8 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -110,15 +112,20 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   }
 
   // Get tabs with recency only first, for the sort and cull step.
-  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+  auto* tab_list = TabListInterface::From(browser_window_interface);
+  if (!tab_list) {
+    std::move(callback).Run({});
+    return;
+  }
   struct TabTime {
     raw_ptr<tabs::TabInterface> tab;
     base::TimeTicks time;
   };
   std::vector<TabTime> tab_times;
+  tabs::TabInterface* active_tab_interface = tab_list->GetActiveTab();
   content::WebContents* active_web_contents =
-    tab_strip_model->GetActiveWebContents();
-  for (tabs::TabInterface* tab : *tab_strip_model) {
+      active_tab_interface ? active_tab_interface->GetContents() : nullptr;
+  for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
     content::WebContents* web_contents = tab->GetContents();
     const GURL& url = web_contents->GetLastCommittedURL();
     if (!url.is_valid()) {
@@ -163,8 +170,8 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
         base::UTF16ToUTF8(TabUIHelper::From(tab_time.tab)->GetTitle());
     tab_data->url = last_committed_url;
     const bool show_in_current_tab_chip =
-        tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
-        last_committed_url;
+        active_web_contents &&
+        active_web_contents->GetLastCommittedURL() == last_committed_url;
     tab_data->show_in_current_tab_chip = show_in_current_tab_chip;
 
     lens::TabContextualizationController* tab_context_controller =
@@ -172,7 +179,8 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     tab_data->show_in_previous_tab_chip =
         !google_util::IsGoogleSearchUrl(last_committed_url) &&
         tab_context_controller->GetInitialPageContextEligibility() &&
-        tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
+        active_web_contents &&
+        active_web_contents->GetLastCommittedURL() ==
             chrome::kChromeUINewTabURL &&
         !show_in_current_tab_chip;
     tab_data->last_active = tab_time.time;
@@ -195,7 +203,7 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
           return pair.second > 1;
         });
 
-    metrics_recorder->RecordTabContextMenuMetrics(tab_strip_model->count(),
+    metrics_recorder->RecordTabContextMenuMetrics(tab_list->GetTabCount(),
                                                   duplicate_count);
   }
 
@@ -230,27 +238,6 @@ void ContextualSearchboxHandler::OnPreviewReceived(
           : std::make_optional(webui::GetBitmapDataUrl(preview_bitmap)));
 }
 
-void ContextualSearchboxHandler::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!IsRemoteBound()) {
-    return;
-  }
-  if (change.type() != TabStripModelChange::Type::kInserted &&
-      change.type() != TabStripModelChange::Type::kRemoved &&
-      !selection.active_tab_changed()) {
-    return;
-  }
-
-  // TODO(crbug.com/449196853): We should be using the `tab_strip_api` on the
-  // typescript side, but it's not visible to `cr_components`, so we're using
-  // `TabStripModelObserver` for now until `tab_strip_api` gets moved out of
-  // //chrome. The current implementation is likely brittle, as it's not a
-  // supported API for external users.
-  page_->OnTabStripChanged();
-}
-
 std::optional<lens::ImageEncodingOptions>
 ContextualSearchboxHandler::CreateTabPreviewEncodingOptions(
     content::WebContents* web_contents) {
@@ -283,7 +270,15 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
   if (browser_window_interface) {
-    browser_window_interface->GetTabStripModel()->AddObserver(this);
+    if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
+      // TODO(crbug.com/449196853): We should be using the `tab_strip_api` on
+      // the typescript side, but it's not visible to `cr_components`, so we're
+      // using `TabListInterfaceObserver` for now until `tab_strip_api` gets
+      // moved out of
+      // //chrome. The current implementation is likely brittle, as it's not a
+      // supported API for external users.
+      tab_list_observation_.Observe(tab_list);
+    }
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -291,6 +286,49 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
       contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
           profile);
 #endif
+}
+
+void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
+                                            tabs::TabInterface* tab,
+                                            int index) {
+  if (!IsRemoteBound()) {
+    return;
+  }
+
+  page_->OnTabStripChanged();
+}
+
+void ContextualSearchboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
+                                                    tabs::TabInterface* tab) {
+  if (!IsRemoteBound()) {
+    return;
+  }
+
+  page_->OnTabStripChanged();
+}
+
+void ContextualSearchboxHandler::OnTabRemoved(TabListInterface& tab_list,
+                                              tabs::TabInterface* tab,
+                                              TabRemovedReason removed_reason) {
+  if (!IsRemoteBound()) {
+    return;
+  }
+
+  page_->OnTabStripChanged();
+}
+
+void ContextualSearchboxHandler::OnTabListDestroyed(
+    TabListInterface& tab_list) {
+  tab_list_observation_.Reset();
+}
+
+void ContextualSearchboxHandler::OnAllTabsAreClosing(
+    TabListInterface& tab_list) {
+  if (!IsRemoteBound()) {
+    return;
+  }
+
+  page_->OnTabStripChanged();
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -316,11 +354,6 @@ ContextualSearchboxHandler::GetContextualSessionHandle() {
 }
 
 ContextualSearchboxHandler::~ContextualSearchboxHandler() {
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents_);
-  if (browser_window_interface) {
-    browser_window_interface->GetTabStripModel()->RemoveObserver(this);
-  }
   if (context_controller_) {
     context_controller_->RemoveObserver(this);
   }
@@ -612,8 +645,11 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
     return;
   }
 
-  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-  int tab_index = tab_strip_model->GetIndexOfTab(tab);
+  auto* tab_list = TabListInterface::From(browser_window_interface);
+  if (!tab_list) {
+    return;
+  }
+  int tab_index = tab_list->GetIndexOfTab(tab->GetHandle());
   if (tab_index == TabStripModel::kNoTab) {
     return;
   }
@@ -621,9 +657,10 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
   const std::u16string& current_title = TabUIHelper::From(tab)->GetTitle();
 
   int title_count = 0;
-  std::vector<std::pair<int, base::TimeTicks>> last_active_times;
-  for (int i = 0; i < tab_strip_model->count(); i++) {
-    tabs::TabInterface* tab_interface = tab_strip_model->GetTabAtIndex(i);
+  std::vector<std::pair<size_t, base::TimeTicks>> last_active_times;
+  auto all_tabs = tab_list->GetAllTabs();
+  for (size_t i = 0; i < all_tabs.size(); i++) {
+    tabs::TabInterface* tab_interface = all_tabs[i];
 
     const std::u16string& tab_title =
         TabUIHelper::From(tab_interface)->GetTitle();
@@ -639,18 +676,20 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
     has_duplicate_title = true;
   }
 
-  std::vector<std::pair<int, base::TimeTicks>> reverse_chron_last_active_times(
-      last_active_times.begin(), last_active_times.end());
+  std::vector<std::pair<size_t, base::TimeTicks>>
+      reverse_chron_last_active_times(last_active_times.begin(),
+                                      last_active_times.end());
   std::sort(reverse_chron_last_active_times.begin(),
             reverse_chron_last_active_times.end(),
-            [](const std::pair<int, base::TimeTicks>& a,
-               const std::pair<int, base::TimeTicks>& b) {
+            [](const std::pair<size_t, base::TimeTicks>& a,
+               const std::pair<size_t, base::TimeTicks>& b) {
               return a.second > b.second;
             });
   std::optional<int> recency_ranking;
   for (size_t i = 0; i < reverse_chron_last_active_times.size(); ++i) {
-    if (reverse_chron_last_active_times[i].first == tab_index) {
-      recency_ranking = i;
+    if (reverse_chron_last_active_times[i].first ==
+        static_cast<size_t>(tab_index)) {
+      recency_ranking = static_cast<int>(i);
       break;
     }
   }
@@ -941,12 +980,15 @@ void ContextualSearchboxHandler::OpenUrl(
                                   ui::PAGE_TRANSITION_LINK, false);
     // If the current tab is part of the context list, navigate in the lens side
     // panel if co-browsing is disabled.
+    auto* tab_list = TabListInterface::From(browser_window_interface);
+    auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
     auto* active_web_contents =
-        browser_window_interface->GetTabStripModel()->GetActiveWebContents();
+        active_tab ? active_tab->GetContents() : nullptr;
     auto* eligibility_manager =
         contextual_tasks::EntryPointEligibilityManager::From(
             browser_window_interface);
-    if ((!eligibility_manager ||
+    if (active_web_contents &&
+        (!eligibility_manager ||
          !eligibility_manager->AreEntryPointsEligible()) &&
         contextual_session_handle->IsTabInContext(
             sessions::SessionTabHelper::IdForTab(active_web_contents))) {
