@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.activeInRecyclerView;
 
 import android.app.Activity;
-import android.os.Build;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
@@ -33,7 +32,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -49,7 +47,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Set;
 
@@ -93,8 +90,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(
-            DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/372858049, https://crbug.com/481444730
     public void shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
@@ -105,8 +100,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
-    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/419932169
     public void shouldShowBookmarksSigninPromoIfDataTypesAreNotManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -117,8 +110,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(
-            DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/372858049, crbug.com/394674606
     public void shouldHideBookmarksSigninPromoIfDataTypesSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -130,8 +121,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
-    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/419932169
     public void shouldShowBookmarksSigninPromoIfBookmarkNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -142,8 +131,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
-    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/419932169
     public void shouldShowBookmarksSigninPromoIfReadingListNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -165,7 +152,6 @@ public class BookmarkPersonalizedSigninPromoTest {
     private void showBookmarkManagerAndCheckSigninPromoIsDisplayed() {
         var shownHistogram = HistogramWatcher.newSingleRecordWatcher(SHOWN_HISTOGRAM_NAME, 1);
         mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
-        shownHistogram.assertExpected();
 
         // TODO(https://crbug.com/1383638): If this stops the flakes, consider removing
         // activeInRecyclerView.
@@ -179,6 +165,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         // only what is currently valid, otherwise the match will be ambiguous.
         onView(allOf(withId(R.id.signin_promo_view_container), activeInRecyclerView()))
                 .check(matches(isDisplayed()));
+        shownHistogram.assertExpected();
     }
 
     private void showBookmarkManagerAndCheckSigninPromoIsHidden() {
@@ -189,9 +176,6 @@ public class BookmarkPersonalizedSigninPromoTest {
         Assert.assertNotNull(recyclerView);
         RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
 
-        Assert.assertNull(
-                mBookmarkTestRule
-                        .getBookmarkActivity()
-                        .findViewById(R.id.signin_promo_view_container));
+        Assert.assertNull(getBookmarkHostActivity().findViewById(R.id.signin_promo_view_container));
     }
 }
