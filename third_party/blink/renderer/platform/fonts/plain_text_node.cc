@@ -65,7 +65,7 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
     if (character != normalized && !buffer) {
       buffer.emplace(length);
       base::span<const CharType> prefix = chars.first(last_index);
-      std::copy(prefix.begin(), prefix.end(), buffer->Span().data());
+      StringImpl::CopyChars(buffer->Span().first(last_index), prefix);
       result_length = last_index;
     }
     if (buffer) {
