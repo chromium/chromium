@@ -1394,12 +1394,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, AdTopicsCardNavigations) {
           "runMochaSuite('AdTopicsCardNavigations')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
-                       AdTopicsCardHiddenAdPrivacyDeprecationEnabled) {
-  RunTest("settings/privacy_guide_page_test.js",
-          "runMochaSuite('AdTopicsCardHiddenAdPrivacyDeprecationEnabled')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuideDialog')");

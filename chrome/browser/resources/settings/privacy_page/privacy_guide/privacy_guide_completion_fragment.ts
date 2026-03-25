@@ -66,11 +66,8 @@ export class PrivacyGuideCompletionFragmentElement extends
 
       shouldShowPrivacySandbox_: {
         type: Boolean,
-        value: () => !loadTimeData.getBoolean(
-                         'isPrivacySandboxAdPrivacyUxDeprecationEnabled') &&
-            (!loadTimeData.getBoolean('isPrivacySandboxRestricted') ||
-             loadTimeData.getBoolean(
-                 'isPrivacySandboxRestrictedNoticeEnabled')),
+        value: () => !loadTimeData.getBoolean('isPrivacySandboxRestricted') ||
+            loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
       shouldShowWaa_: {
