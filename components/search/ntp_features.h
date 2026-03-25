@@ -56,7 +56,6 @@ BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpFeedModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
-BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
 enum class NtpSharepointModuleDataType {
   kTrendingInsights,
@@ -143,11 +142,6 @@ extern const char kNtpPhotosModuleDataParam[];
 extern const char kNtpPhotosModuleOptInArtWorkParam[];
 // Parameter determining the title for the opt-in card.
 extern const char kNtpPhotosModuleOptInTitleParam[];
-// Parameter determining the number of times a module is shown to a user
-// before cooldown starts.
-extern const char kNtpSafeBrowsingModuleCountMaxParam[];
-// Parameter determining the cooldown period (in days) for a target user.
-extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
 extern const char kNtpMostRelevantTabResumptionModuleDataParam[];

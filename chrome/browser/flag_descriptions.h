@@ -6383,10 +6383,6 @@ inline constexpr char kNtpRealboxCr23ThemingName[] =
 inline constexpr char kNtpRealboxCr23ThemingDescription[] =
     "CR23 theming will be applied in Realbox when enabled.";
 
-inline constexpr char kNtpSafeBrowsingModuleName[] = "NTP Safe Browsing Module";
-inline constexpr char kNtpSafeBrowsingModuleDescription[] =
-    "Shows the safe browsing module on the New Tab Page.";
-
 inline constexpr char kNtpSharepointModuleName[] = "NTP Sharepoint Module";
 inline constexpr char kNtpSharepointModuleDescription[] =
     "Shows the Sharepoint module on the New Tab Page.";

@@ -3667,10 +3667,6 @@ static_library("browser") {
       "new_tab_page/modules/modules_switches.h",
       "new_tab_page/modules/new_tab_page_modules.cc",
       "new_tab_page/modules/new_tab_page_modules.h",
-      "new_tab_page/modules/safe_browsing/safe_browsing_handler.cc",
-      "new_tab_page/modules/safe_browsing/safe_browsing_handler.h",
-      "new_tab_page/modules/safe_browsing/safe_browsing_prefs.cc",
-      "new_tab_page/modules/safe_browsing/safe_browsing_prefs.h",
       "new_tab_page/modules/v2/authentication/microsoft_auth_page_handler.cc",
       "new_tab_page/modules/v2/authentication/microsoft_auth_page_handler.h",
       "new_tab_page/modules/v2/calendar/calendar_fake_data_helper.cc",
@@ -8309,7 +8305,6 @@ group("browser_generated_files") {
     public_deps += [
       "//chrome/browser/lens/core/mojom:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",
-      "//chrome/browser/new_tab_page/modules/safe_browsing:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/authentication:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",

@@ -6743,11 +6743,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "ntp-safe-browsing-module",
-    "owners": [ "tiborg@chromium.org" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "ntp-sharepoint-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 150

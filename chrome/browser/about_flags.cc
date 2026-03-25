@@ -2387,13 +2387,6 @@ const FeatureEntry::FeatureVariation kNtpRealboxCr23ThemingVariations[] = {
      kNtpRealboxCr23ShadowExpandedStateBgMatchesSteadyState, nullptr},
 };
 
-const FeatureEntry::FeatureParam kNtpSafeBrowsingModuleFastCooldown[] = {
-    {ntp_features::kNtpSafeBrowsingModuleCooldownPeriodDaysParam, "0.001"},
-    {ntp_features::kNtpSafeBrowsingModuleCountMaxParam, "1"}};
-const FeatureEntry::FeatureVariation kNtpSafeBrowsingModuleVariations[] = {
-    {"(Fast Cooldown)", kNtpSafeBrowsingModuleFastCooldown, nullptr},
-};
-
 const FeatureEntry::FeatureParam kNtpSharepointModuleTrendingInsights[] = {
     {"NtpSharepointModuleDataParam", "trending-insights"}};
 const FeatureEntry::FeatureParam kNtpSharepointModuleNonInsights[] = {
@@ -7252,12 +7245,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxCr23Theming,
                                     kNtpRealboxCr23ThemingVariations,
                                     "NtpRealboxCr23Theming")},
-
-    {"ntp-safe-browsing-module", flag_descriptions::kNtpSafeBrowsingModuleName,
-     flag_descriptions::kNtpSafeBrowsingModuleDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSafeBrowsingModule,
-                                    kNtpSafeBrowsingModuleVariations,
-                                    "DesktopNtpModules")},
 
     {"ntp-sharepoint-module", flag_descriptions::kNtpSharepointModuleName,
      flag_descriptions::kNtpSharepointModuleDescription, kOsDesktop,

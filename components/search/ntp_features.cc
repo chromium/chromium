@@ -159,9 +159,6 @@ BASE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork,
 // If enabled, Following Feed module will be shown.
 BASE_FEATURE(kNtpFeedModule, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, SafeBrowsing module will be shown to a target user.
-BASE_FEATURE(kNtpSafeBrowsingModule, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, sharepoint module will be shown.
 BASE_FEATURE(kNtpSharepointModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -291,10 +288,6 @@ const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";
 const char kNtpPhotosModuleOptInTitleParam[] = "NtpPhotosModuleOptInTitleParam";
 const char kNtpPhotosModuleOptInArtWorkParam[] =
     "NtpPhotosModuleOptInArtWorkParam";
-const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
-    "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
-const char kNtpSafeBrowsingModuleCountMaxParam[] =
-    "NtpSafeBrowsingModuleCountMaxParam";
 const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpMostRelevantTabResumptionModuleMaxVisitsParam[] =

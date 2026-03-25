@@ -275,7 +275,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files_page_handler.h"
-#include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
@@ -963,6 +962,14 @@ constexpr char kNtpContextMenuClickCount[] = "ntp.context_menu_click_count";
 constexpr char kNtpPromoPrefLastSnoozed[] =
     "in_product_help.ntp_promos.last_snoozed";
 
+// Deprecated 03/2026.
+constexpr char kSafeBrowsingModuleShownCount[] =
+    "safebrowsing.ntp.module_shown_count";
+constexpr char kSafeBrowsingModuleLastCooldownStartAt[] =
+    "safebrowsing.ntp.last_cooldown_start_timestamp";
+constexpr char kSafeBrowsingModuleOpened[] =
+    "safebrowsing.ntp.user_opened_module";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1320,6 +1327,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2026.
   registry->RegisterTimePref(kNtpPromoPrefLastSnoozed, base::Time());
+
+  // Deprecated 03/2026.
+  registry->RegisterIntegerPref(kSafeBrowsingModuleShownCount, 0);
+  registry->RegisterInt64Pref(kSafeBrowsingModuleLastCooldownStartAt, 0);
+  registry->RegisterBooleanPref(kSafeBrowsingModuleOpened, false);
 }
 
 }  // namespace
@@ -1867,7 +1879,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NewTabFooterUI::RegisterProfilePrefs(registry);
   NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);
-  ntp::SafeBrowsingHandler::RegisterProfilePrefs(registry);
   OutlookCalendarPageHandler::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
   promos_utils::RegisterProfilePrefs(registry);
@@ -2579,6 +2590,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
       kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref);
   profile_prefs->ClearPref(
       kBookmarksBubblePromoShownSyntheticTrialGroupNamePref);
+
+  // Added 03/2026.
+  profile_prefs->ClearPref(kSafeBrowsingModuleShownCount);
+  profile_prefs->ClearPref(kSafeBrowsingModuleLastCooldownStartAt);
+  profile_prefs->ClearPref(kSafeBrowsingModuleOpened);
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 03/2026.
