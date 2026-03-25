@@ -69,6 +69,7 @@ suite('NewTabPageActionChipsTest', () => {
     windowTimestampStart: number;
     windowTimestampEnd: number;
     prefersReducedMotion: boolean;
+    disablementContextMenuEnabled: boolean;
   }
 
   async function initializeChips(
@@ -78,6 +79,7 @@ suite('NewTabPageActionChipsTest', () => {
       windowTimestampStart: Date.now().valueOf(),
       windowTimestampEnd: Date.now().valueOf() + 1,
       prefersReducedMotion: false,
+      disablementContextMenuEnabled: true,
     };
     const options = {...defaultOptions, ...providedOptions};
     handler.setResultMapperFor('startActionChipsRetrieval', () => {
@@ -90,6 +92,8 @@ suite('NewTabPageActionChipsTest', () => {
 
     loadTimeData.overrideValues({
       addTabUploadDelayOnActionChipClick: true,
+      ntpNextDisablementContextMenuEnabled:
+          options.disablementContextMenuEnabled,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     if (options.prefersReducedMotion) {
@@ -639,6 +643,40 @@ suite('NewTabPageActionChipsTest', () => {
 
           assertFalse(actionMenu.open);
         });
+
+    test('does not show context menu when killswitch is disabled', async () => {
+      loadTimeData.overrideValues({
+        ntpNextShowSimplificationUIEnabled: true,
+      });
+      await initializeChips({
+        disablementContextMenuEnabled: false,
+      });
+      chips.showBackground = true;
+      await microtasksFinished();
+
+      const container = chips.shadowRoot.querySelector<HTMLElement>(
+          '.action-chips-container');
+      assertTrue(!!container);
+
+      const actionMenu =
+          chips.shadowRoot.querySelector<CrActionMenuElement>('#actionMenu');
+      assertTrue(!!actionMenu);
+
+      container.dispatchEvent(
+          new MouseEvent('contextmenu', {cancelable: true}));
+      await microtasksFinished();
+
+      assertFalse(actionMenu.open);
+
+      const allChips =
+          chips.shadowRoot.querySelectorAll<HTMLButtonElement>('.action-chip');
+      const firstChip = allChips[0]!;
+      firstChip.dispatchEvent(
+          new MouseEvent('contextmenu', {cancelable: true}));
+      await microtasksFinished();
+
+      assertFalse(actionMenu.open);
+    });
 
     test(
         'disables action chips when context menu option is clicked',

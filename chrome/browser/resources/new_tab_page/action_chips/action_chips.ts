@@ -84,6 +84,10 @@ export class ActionChipsElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      disablementContextMenuEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -94,6 +98,8 @@ export class ActionChipsElement extends CrLitElement {
       loadTimeData.getBoolean('ntpNextShowDismissalUIEnabled');
   protected accessor showSimplifiedUI_: boolean =
       loadTimeData.getBoolean('ntpNextShowSimplificationUIEnabled');
+  protected accessor disablementContextMenuEnabled_: boolean =
+      loadTimeData.getBoolean('ntpNextDisablementContextMenuEnabled');
 
   private callbackRouter: PageCallbackRouter;
   private delayTabUploads_: boolean =
