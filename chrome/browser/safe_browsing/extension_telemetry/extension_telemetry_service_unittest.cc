@@ -29,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -190,6 +191,20 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
     return telemetry_service_->activity_log_ingester_ != nullptr;
   }
 
+  void SetEnterpriseReportingConfig(
+      bool enabled,
+      const std::vector<std::string>& enabled_opt_in_events) {
+    std::map<std::string, std::vector<std::string>> opt_in_events_map;
+    for (const auto& event : enabled_opt_in_events) {
+      opt_in_events_map[event] = {"*"};
+    }
+    enterprise_connectors::test::SetOnSecurityEventReporting(
+        /*prefs=*/prefs(),
+        /*enabled=*/enabled,
+        /*enabled_event_names=*/{},
+        /*enabled_opt_in_events=*/opt_in_events_map);
+  }
+
   // Create telemetry service instance.
   std::unique_ptr<ExtensionTelemetryService> CreateTelemetryService(
       Profile* profile) {
@@ -240,8 +255,7 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
   enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
       &profile_)
       ->SetBrowserCloudPolicyClientForTesting(cloud_policy_client_.get());
-  enterprise_connectors::test::SetOnSecurityEventReporting(/*prefs=*/prefs(),
-                                                           /*enabled=*/false);
+  SetEnterpriseReportingConfig(/*enabled=*/false, {});
 
   // Create test extension service instance.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -385,12 +399,8 @@ TEST_F(ExtensionTelemetryServiceTest, CheckEnableConditionsForEnterprise) {
   EXPECT_FALSE(IsTelemetryServiceEnabledForEnterprise());
 
   // Enable enterprise policy. Verify that enterprise reporting is enabled.
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/
-      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
   EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise());
 
   // Destruct and restart service and verify that it starts enabled.
@@ -398,11 +408,7 @@ TEST_F(ExtensionTelemetryServiceTest, CheckEnableConditionsForEnterprise) {
   EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise());
 
   // Disable enterprise policy. Verify that enterprise reporting is disabled.
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/false,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/{});
+  SetEnterpriseReportingConfig(/*enabled=*/false, {});
   EXPECT_FALSE(IsTelemetryServiceEnabledForEnterprise());
 }
 
@@ -414,37 +420,35 @@ TEST_F(ExtensionTelemetryServiceTest, CheckDOMActivityLoggingState) {
   // Start with enterprise disabled.
   EXPECT_FALSE(HasActivityLogIngester());
 
-  // Enable overall enterprise policy.
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/
-      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  // Enable overall enterprise policy but without DOM activity event.
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
   EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise());
 
-  // Ingester shouldn't be active yet because the DOM pref is false by default.
+  // Ingester shouldn't be active yet because the DOM event is not enabled.
   EXPECT_FALSE(HasActivityLogIngester());
 
-  // Enable DOM activity logging pref.
-  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, true);
+  // Enable DOM activity event.
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent,
+                         enterprise_connectors::kExtensionDOMActivityEvent});
 
   // Now it should be created.
   EXPECT_TRUE(HasActivityLogIngester());
 
-  // Disable the pref.
-  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, false);
+  // Disable the DOM activity event.
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
   EXPECT_FALSE(HasActivityLogIngester());
 
-  // Re-enable pref, but disable enterprise overall.
-  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, true);
-  EXPECT_TRUE(HasActivityLogIngester());
+  // Re-enable DOM activity event, but disable enterprise overall.
+  // Note: enterprise overall depends on kExtensionTelemetryEvent.
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionDOMActivityEvent});
+  EXPECT_FALSE(HasActivityLogIngester());
 
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/false,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/{});
+  // Disable both event types.
+  SetEnterpriseReportingConfig(/*enabled=*/false, {});
   EXPECT_FALSE(HasActivityLogIngester());
 }
 
@@ -464,12 +468,8 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {
 }
 
 TEST_F(ExtensionTelemetryServiceTest, ProcessesSignalForEnterprise) {
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/
-      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
   PrimeTelemetryServiceWithSignal();
   // Verify that the registered extension information is saved in the
   // telemetry service's enterprise extension store.
@@ -486,12 +486,8 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignalForEnterprise) {
 
 TEST_F(ExtensionTelemetryServiceTest, ProcessesDOMAccessSignalForEnterprise) {
   // Enable enterprise telemetry.
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/
-      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
 
   // Re-create telemetry service so it initializes the enterprise processors.
   telemetry_service_ = CreateTelemetryService(&profile_);
@@ -518,12 +514,8 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesDOMAccessSignalForEnterprise) {
 TEST_F(ExtensionTelemetryServiceTest,
        ProcessesScriptInjectionSignalForEnterprise) {
   // Enable enterprise telemetry.
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/
-      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
 
   // Re-create telemetry service so it initializes the enterprise processors.
   telemetry_service_ = CreateTelemetryService(&profile_);
@@ -604,13 +596,8 @@ TEST_F(ExtensionTelemetryServiceTest, DoesNotGenerateEmptyTelemetryReport) {
 
 TEST_F(ExtensionTelemetryServiceTest,
        DoesNotGenerateEmptyTelemetryReportForEnterprise) {
-  // Enable enterprise policy.
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/true,
-      /*enabled_event_names=*/
-      {enterprise_connectors::kExtensionTelemetryEvent},
-      /*enabled_opt_in_events=*/{});
+  // Enable enterprise policy but do not opt-in to telemetry events.
+  SetEnterpriseReportingConfig(/*enabled=*/true, {});
 
   // Check that telemetry service does not generate a telemetry report for
   // enterprise when there are no signals.
@@ -656,8 +643,7 @@ TEST_F(ExtensionTelemetryServiceTest,
        GeneratesTelemetryReportWithSignalForESBOnly) {
   // Enable ESB, disable enterprise.
   prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  enterprise_connectors::test::SetOnSecurityEventReporting(/*prefs=*/prefs(),
-                                                           /*enabled=*/false);
+  SetEnterpriseReportingConfig(/*enabled=*/false, {});
   PrimeTelemetryServiceWithSignal();
 
   // Since enterprise is disabled and no signals is added for enterprise, verify
@@ -699,12 +685,8 @@ TEST_F(ExtensionTelemetryServiceTest,
        GeneratesTelemetryReportWithSignalForEnterpriseOnly) {
   // Disable ESB, enable enterprise.
   prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/
-      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
   PrimeTelemetryServiceWithSignal();
 
   // Since ESB is disabled, verify that extension store is empty and no ESB
@@ -742,12 +724,8 @@ TEST_F(ExtensionTelemetryServiceTest,
        GeneratesTelemetryReportWithSignalForESBAndEnterprise) {
   // Enable ESB and enterprise.
   prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  enterprise_connectors::test::SetOnSecurityEventReporting(
-      /*prefs=*/prefs(),
-      /*enabled=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/
-      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
   PrimeTelemetryServiceWithSignal();
 
   std::unique_ptr<TelemetryReport> esb_telemetry_report = GetTelemetryReport();

@@ -516,7 +516,8 @@ ExtensionTelemetryEventRouter::ExtensionTelemetryEventRouter(
 
 ExtensionTelemetryEventRouter::~ExtensionTelemetryEventRouter() = default;
 
-bool ExtensionTelemetryEventRouter::IsPolicyEnabled() {
+bool ExtensionTelemetryEventRouter::IsReportingEnabledForEvent(
+    const char* event_name) {
   auto* reporting_client =
       RealtimeReportingClientFactory::GetForProfile(context_);
   if (!reporting_client) {
@@ -526,7 +527,15 @@ bool ExtensionTelemetryEventRouter::IsPolicyEnabled() {
   std::optional<ReportingSettings> settings =
       reporting_client->GetReportingSettings();
   return settings.has_value() &&
-         settings->enabled_opt_in_events.count(kExtensionTelemetryEvent) > 0;
+         settings->enabled_opt_in_events.count(event_name) > 0;
+}
+
+bool ExtensionTelemetryEventRouter::IsPolicyEnabled() {
+  return IsReportingEnabledForEvent(kExtensionTelemetryEvent);
+}
+
+bool ExtensionTelemetryEventRouter::IsDOMActivityTelemetryEnabled() {
+  return IsReportingEnabledForEvent(kExtensionDOMActivityEvent);
 }
 
 void ExtensionTelemetryEventRouter::UploadTelemetryReport(

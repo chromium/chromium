@@ -18,6 +18,13 @@ using EventCase = ::chrome::cros::reporting::proto::Event::EventCase;
 
 inline constexpr char kExtensionInstallEvent[] = "browserExtensionInstallEvent";
 inline constexpr char kExtensionTelemetryEvent[] = "extensionTelemetryEvent";
+// This event is used to add DOM activity signals to the existing
+// `extensionTelemetryEvent` and therefore is not added to the list of
+// events in `kAllReportingEnabledEvents`. This is a separate opt-in
+// event because processing DOM activity signals is resource intensive
+// and should only be enabled when necessary.
+inline constexpr char kExtensionDOMActivityEvent[] =
+    "extensionDOMActivityEvent";
 inline constexpr char kBrowserCrashEvent[] = "browserCrashEvent";
 inline constexpr char kKeyUrlFilteringInterstitialEvent[] =
     "urlFilteringInterstitialEvent";

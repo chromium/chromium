@@ -1035,8 +1035,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsAndReportsDOMAccessSignal) {
-  // Enable DOM activity logging pref.
-  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, true);
+  // Enable enterprise policy with DOM activity event.
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}},
+       {enterprise_connectors::kExtensionDOMActivityEvent, {"*"}}});
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   static constexpr char kManifest[] =
@@ -1105,8 +1111,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsAndReportsScriptInjectionSignal) {
-  // Enable DOM activity logging pref.
-  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, true);
+  // Enable enterprise policy with DOM activity event.
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}},
+       {enterprise_connectors::kExtensionDOMActivityEvent, {"*"}}});
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   static constexpr char kManifest[] =

@@ -164,10 +164,6 @@ class ExtensionTelemetryService : public KeyedService {
   // changed.
   void OnEnterprisePolicyChanged();
 
-  // Called when the pref that affects extension DOM activity logging is
-  // changed.
-  void OnExtensionDOMActivityLoggingPrefChanged();
-
   // Helper method to add and process an extension signal. Shared by both ESB
   // and enterprise reporting.
   void AddSignalHelper(const ExtensionSignal& signal,

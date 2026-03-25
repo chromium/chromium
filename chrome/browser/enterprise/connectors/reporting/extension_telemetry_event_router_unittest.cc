@@ -391,4 +391,29 @@ TEST_F(ExtensionTelemetryEventRouterTest, CheckIsPolicyEnabled) {
   EXPECT_TRUE(extension_telemetry_event_router_->IsPolicyEnabled());
 }
 
+TEST_F(ExtensionTelemetryEventRouterTest, CheckIsDOMActivityTelemetryEnabled) {
+  // Feature disabled by default, and set reporting to false.
+  test::SetOnSecurityEventReporting(profile_->GetPrefs(), /*enabled=*/false);
+  EXPECT_FALSE(
+      extension_telemetry_event_router_->IsDOMActivityTelemetryEnabled());
+
+  // Enable reporting but without the DOM activity opt-in event.
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  EXPECT_FALSE(
+      extension_telemetry_event_router_->IsDOMActivityTelemetryEnabled());
+
+  // Enable reporting with the DOM activity opt-in event.
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionDOMActivityEvent, {"*"}}});
+  EXPECT_TRUE(
+      extension_telemetry_event_router_->IsDOMActivityTelemetryEnabled());
+}
+
 }  // namespace enterprise_connectors
