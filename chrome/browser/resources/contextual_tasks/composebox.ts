@@ -17,6 +17,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -107,8 +108,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
       },
       zeroStateSuggestions_: {type: Object},
-      activeToolMode_: {
-        type: Number,
+      inputState_: {
+        type: Object,
       },
       isLoading_: {
         type: Boolean,
@@ -154,7 +155,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected accessor isComposeboxFocused_: boolean = false;
   protected accessor showContextMenu_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
-  protected accessor activeToolMode_: ToolMode = ToolMode.kUnspecified;
+  protected accessor inputState_: InputState|null = null;
   protected accessor showSuggestionsActivityLink_: boolean = false;
   protected accessor inVoiceSearchMode_: boolean = false;
   protected accessor selectedMatchIndex_: number = -1;
@@ -180,7 +181,11 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   override connectedCallback() {
     super.connectedCallback();
-
+    this.searchboxListenerIds_.push(
+        this.searchboxCallbackRouter_.onInputStateChanged.addListener(
+            (inputState: InputState) => {
+              this.inputState_ = inputState;
+            }));
     const composebox = this.$.composebox;
     if (composebox) {
       this.eventTracker_.add(composebox, 'composebox-focus-in', () => {
@@ -242,16 +247,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
                 VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED);
           });
       this.eventTracker_.add(
-          composebox, 'active-tool-mode-changed',
-          (e: CustomEvent<{value: ToolMode}>) => {
-            this.activeToolMode_ = e.detail.value;
-          });
-      this.eventTracker_.add(
           composebox, 'composebox-voice-search-user-canceled', () => {
             this.endVoiceSearch();
             recordVoiceSearchAction(VoiceSearchState.VOICE_SEARCH_CANCELED);
           });
-      this.activeToolMode_ = composebox.activeToolMode;
 
       this.fire('update-tooltip-visibility', {height: composebox.offsetHeight});
 
@@ -304,7 +303,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   get showLensButton_() {
     // Lens should be hidden in the side panel if deep search is enabled.
-    return this.isSidePanel && this.activeToolMode_ !== ToolMode.kDeepSearch;
+    return this.isSidePanel &&
+        this.inputState_?.activeTool !== ToolMode.kDeepSearch;
   }
 
   protected getInputPlaceholder_() {

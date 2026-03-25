@@ -541,10 +541,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('activeToolMode')) {
-      this.inToolMode_ =
-          this.activeToolMode !== ComposeboxToolMode.kUnspecified;
-    }
     // When the result initially gets set check if dropdown should show.
     if (changedPrivateProperties.has('input') ||
         changedPrivateProperties.has('result_') ||
@@ -560,18 +556,20 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
           this.submitEnabled_ && this.fileUploadsComplete;
     }
 
-    if (changedPrivateProperties.has('inputState')) {
-      this.hasAllowedInputs_ = !!this.inputState &&
+    if (changedPrivateProperties.has('inputState') && this.inputState) {
+      this.hasAllowedInputs_ =
           (this.inputState.allowedModels.length > 0 ||
            this.inputState.allowedTools.length > 0 ||
            this.inputState.allowedInputTypes.length > 0);
+      this.inToolMode_ =
+          this.inputState.activeTool !== ComposeboxToolMode.kUnspecified;
     }
 
     if (changedPrivateProperties.has('inputPlaceholderOverride') ||
         changedPrivateProperties.has('files') ||
         changedPrivateProperties.has('enableFileHint') ||
         changedPrivateProperties.has('inputState') ||
-        changedPrivateProperties.has('activeToolMode')) {
+        changedPrivateProperties.has('inputState.activeTool')) {
       this.updateInputPlaceholder_();
     }
   }
@@ -675,8 +673,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   resetModes() {
-    const previousTool = this.activeToolMode;
-    this.activeToolMode = ComposeboxToolMode.kUnspecified;
+    const previousTool = this.inputState?.activeTool;
     this.uploadButtonDisabled_ = false;
 
     if (previousTool !== ComposeboxToolMode.kUnspecified) {
@@ -1383,7 +1380,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private hasContent_(): boolean {
-    return this.activeToolMode !== ComposeboxToolMode.kUnspecified ||
+    return this.inputState?.activeTool !== ComposeboxToolMode.kUnspecified ||
         this.input.trim().length > 0 || this.files.size > 0;
   }
 
@@ -1414,7 +1411,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const isOnlyAutoTab = this.files.size === 1 && !!this.automaticActiveTab_;
     const shouldUseFileHint = this.enableFileHint && this.hasFiles() &&
         !isOnlyAutoTab &&
-        this.activeToolMode === ComposeboxToolMode.kUnspecified;
+        this.inputState?.activeTool === ComposeboxToolMode.kUnspecified;
     if (shouldUseFileHint) {
       if (this.files.size > 1) {
         this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThese');
@@ -1435,9 +1432,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     if (this.inputState) {
-      if (this.activeToolMode !== ComposeboxToolMode.kUnspecified) {
+      if (this.inputState.activeTool !== ComposeboxToolMode.kUnspecified) {
         const config = this.inputState.toolConfigs.find(
-            c => c.tool === this.activeToolMode);
+            c => c.tool === this.inputState!.activeTool);
         if (config?.hintText) {
           this.inputPlaceholder = config.hintText;
           return;
@@ -1459,10 +1456,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    if (this.activeToolMode === ComposeboxToolMode.kDeepSearch) {
+    if (this.inputState?.activeTool === ComposeboxToolMode.kDeepSearch) {
       this.inputPlaceholder =
           loadTimeData.getString('composeDeepSearchPlaceholder');
-    } else if (this.activeToolMode === ComposeboxToolMode.kImageGen) {
+    } else if (this.inputState?.activeTool === ComposeboxToolMode.kImageGen) {
       this.inputPlaceholder =
           loadTimeData.getString('composeCreateImagePlaceholder');
     } else {
@@ -1476,7 +1473,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected handleToolClick_(tool: ComposeboxToolMode) {
-    const isTogglingOff = this.activeToolMode === tool;
+    const isTogglingOff = this.inputState?.activeTool === tool;
 
     if (this.contextMenuDescriptionEnabled_) {
       this.showContextMenuDescription_ =
@@ -1496,12 +1493,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.handleToolModeUpdate_(newToolMode);
   }
 
-  private handleToolModeUpdate_(toolMode: ComposeboxToolMode) {
-    this.activeToolMode = toolMode;
-    this.searchboxHandler_.setActiveToolMode(this.activeToolMode);
+  private handleToolModeUpdate_(newTool: ComposeboxToolMode) {
+    this.searchboxHandler_.setActiveToolMode(newTool);
     this.queryAutocomplete_(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
-    this.fire('active-tool-mode-changed', {value: this.activeToolMode});
   }
 
   protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
@@ -2377,8 +2372,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (!files || files.length === 0) {
       return;
     }
-
-    if (this.activeToolMode === ComposeboxToolMode.kDeepSearch) {
+    if (this.inputState?.activeTool === ComposeboxToolMode.kDeepSearch) {
       this.handleProcessFilesError_(ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED);
       return;
     }
@@ -2409,9 +2403,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     for (const file of files) {
       const inputType = this.getInputType_(file.type);
-      if (this.inputState &&
-          this.activeToolMode !== ComposeboxToolMode.kUnspecified) {
-        const disabledTypes = this.inputState.disabledInputTypes || [];
+      if (this.inputState?.activeTool !== ComposeboxToolMode.kUnspecified) {
+        const disabledTypes = this.inputState?.disabledInputTypes || [];
         if (disabledTypes.includes(inputType)) {
           errorToDisplay =
               Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
@@ -2565,10 +2558,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   setAutomaticActiveTabForTesting(file: ComposeboxFile) {
     this.automaticActiveTab_ = file;
-  }
-
-  onToolClickForTesting(toolMode: ComposeboxToolMode) {
-    this.handleToolClick_(toolMode);
   }
 
   updateAutoSuggestedTabContextForTesting(tab: TabInfo|null) {
