@@ -5,11 +5,12 @@
 #import "ios/chrome/browser/intelligence/actuation/model/tools/click_tool_java_script_feature.h"
 
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
-#import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
+#import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 namespace {
@@ -67,8 +68,7 @@ void ClickToolJavaScriptFeature::Click(
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(
       target_frame, function_name, parameters,
-      base::BindOnce(&ClickToolJavaScriptFeature::ProcessClickResult,
-                     base::Unretained(GetInstance()), std::move(cb_for_js)),
+      base::BindOnce(&ParseJavaScriptResult, std::move(cb_for_js)),
       base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
 
   if (!sent) {
@@ -77,25 +77,4 @@ void ClickToolJavaScriptFeature::Click(
             ActuationErrorCode::
                 kJavascriptFeatureFailedToCallJavaScriptFunction}));
   }
-}
-
-void ClickToolJavaScriptFeature::ProcessClickResult(
-    ActuationTool::ActuationCallback callback,
-    const base::Value* click_result) {
-  if (!click_result || !click_result->is_dict()) {
-    std::move(callback).Run(base::unexpected(ActuationError{
-        ActuationErrorCode::kJavascriptFeatureGotInvalidResult}));
-    return;
-  }
-  const base::DictValue& result_dict = click_result->GetDict();
-  bool success = result_dict.FindBool("success").value_or(false);
-  const std::string* error_message = result_dict.FindString("message");
-  if (!success) {
-    // TODO: (crbug.com/476090817) - Add support for actuating in iframes here.
-    std::move(callback).Run(base::unexpected(ActuationError{
-        ActuationErrorCode::kJavascriptFeatureFailedInJavaScriptExecution,
-        error_message ? *error_message : "Unknown error in JS."}));
-    return;
-  }
-  std::move(callback).Run(base::ok());
 }

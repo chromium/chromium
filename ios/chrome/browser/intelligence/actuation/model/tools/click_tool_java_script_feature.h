@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
-namespace base {
-class Value;
-}
-
 namespace web {
 class WebFrame;
 }  // namespace web
@@ -41,9 +37,6 @@ class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
 
  private:
   friend class base::NoDestructor<ClickToolJavaScriptFeature>;
-
-  void ProcessClickResult(ActuationTool::ActuationCallback callback,
-                          const base::Value* click_result);
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTUATION_MODEL_TOOLS_CLICK_TOOL_JAVA_SCRIPT_FEATURE_H_

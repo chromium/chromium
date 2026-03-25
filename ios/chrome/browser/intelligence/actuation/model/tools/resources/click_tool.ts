@@ -111,7 +111,10 @@ function dispatchClickEvents(
  */
 function clickByCoordinate(
     x: number, y: number, clickType: number, clickCount: number,
-    pixelType: number): {success: boolean, message: string} {
+    pixelType: number): {
+  success: boolean,
+  message?: string,
+} {
   const {element, clientX, clientY} = getElementFromPoint(x, y, pixelType);
 
   if (!element) {
@@ -125,6 +128,7 @@ function clickByCoordinate(
 
 /**
  * Simulates a click on an element specified by its DOM node ID.
+ * @param nodeId The ID of the node.
  * @param clickType The type of click (0=UNKNOWN, 1=LEFT, 2=RIGHT).
  * @param clickCount The number of clicks (0=UNKNOWN, 1=SINGLE, 2=DOUBLE).
  * @return an object containing the result of the click attempt.

@@ -7,6 +7,8 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("actuation_interface") {
   sources = [
+    "actuation_java_script_feature_util.h",
+    "actuation_java_script_feature_util.mm",
     "actuation_tool.h",
     "actuation_tool.mm",
   ]
