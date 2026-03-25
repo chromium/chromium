@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 
 namespace glic {
@@ -18,11 +19,19 @@ namespace glic {
 constexpr base::TimeDelta kDefaultTimeout = base::Minutes(1);
 
 GlicInvokeHandler::GlicInvokeHandler(GlicInstanceImpl& instance,
+                                     tabs::TabInterface* tab,
                                      GlicInvokeOptions options,
                                      CompletionCallback completion_callback)
     : instance_(instance),
       options_(std::move(options)),
-      completion_callback_(std::move(completion_callback)) {}
+      completion_callback_(std::move(completion_callback)) {
+  if (tab && GlicInstanceHelper::From(tab)) {
+    tab_destruction_subscription_ =
+        GlicInstanceHelper::From(tab)->SubscribeToDestruction(
+            base::BindRepeating(&GlicInvokeHandler::OnTabClosed,
+                                weak_ptr_factory_.GetWeakPtr()));
+  }
+}
 
 GlicInvokeHandler::~GlicInvokeHandler() = default;
 
@@ -31,6 +40,13 @@ void GlicInvokeHandler::Invoke() {
                        base::BindOnce(&GlicInvokeHandler::OnError,
                                       weak_ptr_factory_.GetWeakPtr(),
                                       GlicInvokeError::kTimeout));
+
+  // If we weren't able to set up tab destruction subscription, we should
+  // treat this as an error.
+  if (!tab_destruction_subscription_) {
+    OnError(GlicInvokeError::kInvalidTab);
+    return;
+  }
 
   if (instance_->host().IsReady()) {
     SendToClient();
@@ -54,6 +70,10 @@ void GlicInvokeHandler::SendToClient() {
   instance_->host().Invoke(CreateMojoOptions(),
                            base::BindOnce(&GlicInvokeHandler::OnSuccess,
                                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicInvokeHandler::OnTabClosed(tabs::TabInterface* tab) {
+  OnError(GlicInvokeError::kTabClosed);
 }
 
 void GlicInvokeHandler::OnSuccess() {

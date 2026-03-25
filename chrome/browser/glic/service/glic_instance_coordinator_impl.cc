@@ -332,7 +332,7 @@ void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
       *tab, GlicPinTrigger::kInstanceCreation, options.invocation_source));
 
   invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(
-      *instance, std::move(options),
+      *instance, tab, std::move(options),
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
                      base::Unretained(this)));
   invoke_handlers_[instance]->Invoke();
