@@ -127,12 +127,15 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   }
 };
 
-content::OpenURLParams CreateOpenUrlParams(const GURL& url,
-                                           bool is_renderer_initiated) {
+content::OpenURLParams CreateOpenUrlParams(
+    const GURL& url,
+    bool is_renderer_initiated,
+    ui::PageTransition page_transition =
+        ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL) {
   content::Referrer referrer;
-  return content::OpenURLParams(
-      url, referrer, WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, is_renderer_initiated);
+  return content::OpenURLParams(url, referrer,
+                                WindowOpenDisposition::CURRENT_TAB,
+                                page_transition, is_renderer_initiated);
 }
 
 // A matcher that checks that an OpenURLParams object has the specified URL.
@@ -1222,6 +1225,7 @@ TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
       /*is_to_new_tab=*/false));
   run_loop.Run();
 }
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   GURL display_url("chrome://google.com/search?udm=50&q=test+query");
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -1250,6 +1254,52 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
+}
+
+// Enter cobrowse if it's forward back navibation and is originally from link
+// click.
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_ForwardButtonEnterCobrowseOnLink) {
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL("chrome://contextual-tasks"));
+
+  base::RunLoop run_loop;
+  GURL navigated_url("https://example.com");
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(
+          navigated_url, false,
+          ui::PageTransitionFromInt(
+              ui::PageTransition::PAGE_TRANSITION_LINK |
+              ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
+      web_contents.get(),
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  run_loop.Run();
+}
+
+// Do not enter cobrowse if it's forward back navibation and is originally from
+// typed.
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_ForwardButtonNotEnterCobrowseOnType) {
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL("chrome://contextual-tasks"));
+
+  GURL navigated_url("https://example.com");
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(
+          navigated_url, false,
+          ui::PageTransitionFromInt(
+              ui::PageTransition::PAGE_TRANSITION_TYPED |
+              ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
+      web_contents.get(),
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
 }
 
 }  // namespace contextual_tasks
