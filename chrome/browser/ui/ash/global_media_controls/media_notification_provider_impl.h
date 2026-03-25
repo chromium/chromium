@@ -115,7 +115,12 @@ class ASH_EXPORT MediaNotificationProviderImpl
   global_media_controls::mojom::DeviceService* GetDeviceService(
       base::WeakPtr<media_message_center::MediaNotificationItem> item) const;
 
-  base::ObserverList<MediaNotificationProviderObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      MediaNotificationProviderObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   base::WeakPtr<global_media_controls::MediaItemUIListView>
       media_item_ui_list_view_;
