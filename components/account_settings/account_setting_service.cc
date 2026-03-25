@@ -44,6 +44,16 @@ AccountSettingService::AccountSettingService(
 
 AccountSettingService::~AccountSettingService() = default;
 
+void AccountSettingService::AddObserver(
+    AccountSettingService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AccountSettingService::RemoveObserver(
+    AccountSettingService::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool AccountSettingService::IsWalletPrivacyContextualSurfacingEnabled() const {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kEnableAutofillWalletPrivacyContextualSurfacingForTesting)) {
@@ -70,7 +80,7 @@ void AccountSettingService::OnDataLoadedFromDisk() {
 }
 
 void AccountSettingService::OnDataUpdated() {
-  // TODO(crbug.com/494149753): Implement.
+  observers_.Notify(&Observer::OnAccountSettingDataUpdated);
 }
 
 }  // namespace account_settings

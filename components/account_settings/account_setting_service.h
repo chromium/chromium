@@ -8,6 +8,8 @@
 #include <memory>
 #include <string_view>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/account_settings/account_setting_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,9 +26,18 @@ namespace account_settings {
 class AccountSettingService : public KeyedService,
                               public AccountSettingSyncBridge::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when account settings data changes.
+    virtual void OnAccountSettingDataUpdated() = 0;
+  };
+
   explicit AccountSettingService(
       std::unique_ptr<AccountSettingSyncBridge> bridge);
   ~AccountSettingService() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Getter to check whether the user agreed to share public pass data from
   // Wallet to other Google services, including Chrome, in their Google account
@@ -41,6 +52,8 @@ class AccountSettingService : public KeyedService,
   // AccountSettingSyncBridge::Observer:
   void OnDataLoadedFromDisk() override;
   void OnDataUpdated() override;
+
+  base::ObserverList<AccountSettingService::Observer> observers_;
 
   std::unique_ptr<AccountSettingSyncBridge> sync_bridge_;
 
