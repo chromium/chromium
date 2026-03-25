@@ -227,6 +227,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
                 content::IdentityRequestAccount::LoginState::kSignIn);
 
+  // Initially, for sign-in, the suggestion chip should be showing.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
 
@@ -242,17 +243,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   // Simulate click on the omnibox chip.
   view()->OnPageActionClicked();
 
-  // It should NOT have selected the account yet. It should have opened the
-  // anchored message.
-  EXPECT_FALSE(account_selected);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer.GetCurrentPageActionState().anchored_message_showing;
-  }));
-
-  view()->OnPageActionClicked();
+  // It should have selected the account and logged the user in.
   ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
 
-  EXPECT_FALSE(view()->GetDialogWidget());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !observer.GetCurrentPageActionState().chip_showing; }));
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
@@ -267,11 +265,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
                 content::IdentityRequestAccount::LoginState::kSignIn);
 
+  // Initially, for sign-in, the suggestion chip should be showing.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
-
-  // Initially, for sign-in, the suggestion chip should be showing.
-  EXPECT_TRUE(observer.GetCurrentPageActionState().chip_showing);
 
   // We simulate it being collapsed.
   controller->HideSuggestionChip(kActionFederation);
@@ -283,78 +279,27 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
     account_selected = true;
   }));
 
-  // Simulate click on the collapsed omnibox chip.
+  // We simulate it expanding into a page action.
   view()->OnPageActionClicked();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
 
   // It should NOT have selected the account yet.
   EXPECT_FALSE(account_selected);
 
-  // Instead, it should have re-shown the suggestion chip.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
-
-  // Click on the suggestion chip.
-  view()->OnPageActionClicked();
-
-  // It should still NOT have selected the account yet. It should have opened
-  // the anchored message.
-  EXPECT_FALSE(account_selected);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer.GetCurrentPageActionState().anchored_message_showing;
-  }));
-
   // Finally, click on the anchored message, now it should select the account.
   view()->OnPageActionClicked();
   ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
-}
 
-IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInAnchoredMessageClick) {
-  auto* controller = browser()
-                         ->GetActiveTabInterface()
-                         ->GetTabFeatures()
-                         ->page_action_controller();
-
-  page_actions::PageActionObserver observer(kActionFederation);
-  observer.RegisterAsPageActionObserver(*controller);
-
-  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
-                content::IdentityRequestAccount::LoginState::kSignIn);
-
+  // When the anchored message is used, both the chip and the anchored message
+  // should be hidden.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
-
-  // Simulate click on the omnibox chip to open the anchored message.
-  view()->OnPageActionClicked();
+      [&]() { return !observer.GetCurrentPageActionState().chip_showing; }));
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer.GetCurrentPageActionState().anchored_message_showing;
+    return !observer.GetCurrentPageActionState().anchored_message_showing;
   }));
-
-  bool account_selected = false;
-  EXPECT_CALL(*delegate_, OnAccountSelected).WillOnce(InvokeWithoutArgs([&]() {
-    account_selected = true;
-  }));
-
-  // Find the anchored message view and simulate clicking its button.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  auto* page_action_view = browser_view->GetLocationBarView()
-                               ->page_action_container()
-                               ->GetPageActionView(kActionFederation);
-  ASSERT_TRUE(page_action_view);
-  auto* anchored_message = page_action_view->GetAnchoredMessageForTesting();
-  ASSERT_TRUE(anchored_message);
-
-  // The confirm button is the 3rd child (index 2) as seen in
-  // AnchoredMessageBubbleView constructor.
-  views::View* confirm_button = anchored_message->children()[2];
-  ASSERT_TRUE(confirm_button);
-
-  // Click the confirm button.
-  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-  confirm_button->OnMousePressed(click);
-
-  ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiAccountFallback) {
@@ -546,31 +491,12 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
   histograms.ExpectBucketCount("PageActionController.ChipTypeShown",
                                PageActionIconType::kFederation, 1);
 
-  // For sign-in, the first click shows the anchored message, not the dialog.
   // Blink.FedCm.AccountsDialogShown is currently associated with the widget
   // (modal or bubble), which is *not* shown in this case (only the anchored
   // message bubble is shown, which is part of the Page Action framework).
   histograms.ExpectTotalCount("Blink.FedCm.AccountsDialogShown", 0);
 
-  // Verify anchored message is showing.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer.GetCurrentPageActionState().anchored_message_showing;
-  }));
-
-  // Simulate click on the anchored message's chip.
-  // The Page Action framework itself records the click because the click was
-  // on the AnchoredMessageBubbleView's chip.
-  auto* anchored_message = page_action_view->GetAnchoredMessageForTesting();
-  ASSERT_TRUE(anchored_message);
-  // The chip container is the 3rd child (index 2) of the anchored message.
-  views::View* anchored_message_chip = anchored_message->children()[2];
-  ASSERT_TRUE(anchored_message_chip);
-  ui::MouseEvent anchored_click(
-      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-  anchored_message_chip->OnEvent(&anchored_click);
-
-  // For sign-in, clicking the anchored message chip completes the flow.
+  // For sign-in, clicking the chip completes the flow.
   // In a fully integrated browser test (without MockDelegate), we would
   // expect the success status (Blink.FedCm.Status.RequestIdToken) to be
   // recorded in the content layer here.

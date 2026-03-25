@@ -117,31 +117,21 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
   hide_dialog_widget_after_idp_login_popup_ = false;
 
   if (is_returning) {
-    // For sign-in users with only one account logged-in we show a chip. When
-    // the chip is selected, we open an anchored message for confirmation.
-    // When the anchored message is used for confirmation, we immediately notify
-    // the delegate of the account selection without showing any further account
-    // selection dialog (since there is a single account).
-    // The anchored message gets hidden and collapsed automatically into a chip
-    // if the user doesn't engage with it, so we re-open it in case it is
-    // not showing.
+    // For sign-in users with only one account logged-in we show a chip by
+    // default.
+    // If the user doesn't interact with the chip, it gets collapsed after a
+    // timeout into an icon in the omnibox.
+    // If the user clicks on the icon, we open the anchored message.
     if (!GetCurrentPageActionState().chip_showing &&
         !GetCurrentPageActionState().anchored_message_showing) {
-      controller->Show(kActionFederation);
-      controller->ShowSuggestionChip(kActionFederation);
       controller->ShowAnchoredMessage(kActionFederation);
       return;
     }
 
-    if (!GetCurrentPageActionState().anchored_message_showing) {
-      controller->ShowAnchoredMessage(kActionFederation);
-      return;
-    }
-
-    // If the anchored message is still showing, we immediately trigger the
-    // account selection.
-    controller->Hide(kActionFederation);
+    // After clicking on the chip or the anchored message, we hide both of them
+    // to collapse the page action back into an icon and sign the user in.
     controller->HideAnchoredMessage(kActionFederation);
+    controller->HideSuggestionChip(kActionFederation);
     state_ = State::VERIFYING;
     NotifyDelegateOfAccountSelection(*accounts_[0], *idp_list_[0]);
   } else {
