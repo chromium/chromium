@@ -26,6 +26,21 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ContextualCueingDecision) -->
+
+<enum name="ContextualCueingDecision">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No Longer Active Tab After Category Classification">
+    Tab was not active when the category classification for the page was
+    completed.
+  </int>
+  <int value="2" label="Failed Category Classification">
+    Tab was active but the page was not classified as a category we support.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_controller.h:ContextualCueingDecision) -->
+
 <!-- LINT.IfChange(NudgeDecision) -->
 
 <enum name="ContextualCueingNudgeDecision">
@@ -105,7 +120,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/suggestions/contextual_cueing_enums.h:NudgeDecision) -->
 
 <!-- LINT.IfChange(NudgeInteraction) -->
 
@@ -140,7 +155,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeInteraction) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/suggestions/contextual_cueing_enums.h:NudgeInteraction) -->
 
 <enum name="ContextualCueingZeroStateSuggestionsPageContextIneligibilityType">
   <int value="0" label="None"/>

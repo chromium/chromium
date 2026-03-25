@@ -164,6 +164,16 @@ chromium-metrics-reviews@google.com.
   <token key="CueType" variants="ContextualCueingCueType"/>
 </histogram>
 
+<histogram name="ContextualCueing.V2.Decision" enum="ContextualCueingDecision"
+    expires_after="2026-09-13">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    The decision for generating a contextual cue for the page in the V2
+    framework. Recorded once per page load.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

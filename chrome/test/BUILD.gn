@@ -2604,6 +2604,7 @@ if (!is_android) {
       "//chrome/browser/content_settings:browser_tests",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/content_settings:content_settings_util",
+      "//chrome/browser/contextual_cueing:browser_tests",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/data_saver",
       "//chrome/browser/data_sharing:browser_tests",

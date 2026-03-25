@@ -59,6 +59,7 @@ source_set("internal") {
       "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/collaboration",
+      "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/devtools",
       "//chrome/browser/glic",

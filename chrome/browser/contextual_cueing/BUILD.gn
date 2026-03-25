@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("contextual_cueing") {
+  sources = [
+    "contextual_cueing_controller.h",
+    "features.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/page_content_annotations/core",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+
+  sources = [
+    "contextual_cueing_controller.cc",
+    "features.cc",
+  ]
+
+  deps = [
+    ":contextual_cueing",
+    "//chrome/browser/page_content_annotations",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "contextual_cueing_controller_browsertest.cc" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":contextual_cueing",
+      "//base/test:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

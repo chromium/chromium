@@ -17,6 +17,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -356,6 +358,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       ai_overlay_dialog_controller_ =
           GetUserDataFactory().CreateInstance<AiOverlayDialogController>(
               *browser, browser);
+    }
+
+    if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
+      contextual_cueing_controller_ =
+          std::make_unique<contextual_cueing::ContextualCueingController>(
+              browser, tab_list_bridge_.get());
     }
   }
 

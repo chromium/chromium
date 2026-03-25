@@ -153,6 +153,10 @@ namespace chrome {
 class BrowserCommandController;
 }  // namespace chrome
 
+namespace contextual_cueing {
+class ContextualCueingController;
+}  // namespace contextual_cueing
+
 namespace contextual_tasks {
 class ActiveTaskContextProvider;
 class ContextualTasksSidePanelCoordinator;
@@ -496,6 +500,11 @@ class BrowserWindowFeatures {
     return omnibox_popup_closer_.get();
   }
 
+  contextual_cueing::ContextualCueingController*
+  contextual_cueing_controller() {
+    return contextual_cueing_controller_.get();
+  }
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -800,6 +809,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<ContextHighlightWindowFeature>
       context_highlight_window_feature_;
+
+  std::unique_ptr<contextual_cueing::ContextualCueingController>
+      contextual_cueing_controller_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.
