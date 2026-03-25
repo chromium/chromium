@@ -242,7 +242,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </div>
         <div class="section-content">
           <ul id="inspect-views">
-            <li ?hidden="${this.data.views.length}">
+            <li ?hidden="${this.data.views.length > 0}">
               $i18n{noActiveViews}
             </li>
             ${this.sortedViews_.map((item, index) => html`

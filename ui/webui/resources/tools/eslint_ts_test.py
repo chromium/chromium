@@ -648,6 +648,8 @@ class EslintTsTest(unittest.TestCase):
 
     _NO_FALSE_BINDING_ERROR = "Incorrect assignment to boolean attribute expression '?%(attributeName)s=' using '${false}'. Use property binding '.%(propertyName)s=\"${false}\"' instead"
 
+    _PROPERTY_TYPE_MISMATCH_ERROR = "Property type mismatch: %(propertyName)s is declared as %(declaredType)s reactive property but is typed as %(tsType)s"
+
     # The following strings *should* appear in the error output.
     errors = [
         _INCORRECT_ATTRIBUTE_ERROR % {
@@ -675,6 +677,16 @@ class EslintTsTest(unittest.TestCase):
         _NO_FALSE_BINDING_ERROR % {
             'attributeName': 'some-multi-word-attr',
             'propertyName': 'someMultiWordAttr',
+        },
+        _PROPERTY_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'someBooleanProp',
+            'declaredType': 'Boolean',
+            'tsType': 'number | boolean',
+        },
+        _PROPERTY_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'someArrayProp',
+            'declaredType': 'Array',
+            'tsType': 'string',
         },
     ]
     for e in errors:

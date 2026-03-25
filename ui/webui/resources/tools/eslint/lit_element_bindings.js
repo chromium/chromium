@@ -7,6 +7,7 @@ import path from 'node:path';
 
 import {ESLintUtils} from '../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '../../../../../third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
+import ts from '../../../../../third_party/node/node_modules/typescript/lib/typescript.js';
 
 import {dashCaseToCamelCase, extractClassImport, LIT_IMPORT_REGEX} from './query_utils.js';
 
@@ -28,6 +29,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           'Boolean attribute \'{{attributeName}}\' does not need to be bound to \'${true}\'. Use either \'{{attributeName}}\' or \'.{{propertyName}}="${true}"\' instead.',
       noFalseBinding:
           'Incorrect assignment to boolean attribute expression \'?{{attributeName}}=\' using \'${false}\'. Use property binding \'.{{propertyName}}="${false}"\' instead.',
+      propertyTypeMismatch:
+          'Property type mismatch: {{propertyName}} is declared as {{declaredType}} reactive property but is typed as {{tsType}}.',
     },
   },
   defaultOptions: [],
@@ -125,18 +128,68 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           }
 
           const propName = expression.property.name;
+          let isBooleanType = false;
+          let isObjectOrArrayType = false;
+          let declaredTypeName = null;
+
+          // Determine the type that is declared for the Lit reactive property,
+          // for expressions of form "this.someProp". This can fail for reactive
+          // properties that are inherited from mixins.
           const declaredProp =
               declaredProps.find(prop => prop.key.name === propName);
-          if (!declaredProp) {
-            // Ignore seemingly missing properties, as these may be from mixins.
-            continue;
+          if (declaredProp) {
+            const declaredType = declaredProp.value.properties.find(
+                prop => prop.key.name === 'type');
+            if (declaredType) {
+              declaredTypeName = declaredType.value.name;
+              isBooleanType = declaredTypeName === 'Boolean';
+              isObjectOrArrayType =
+                  declaredTypeName === 'Array' || declaredTypeName === 'Object';
+            }
           }
 
-          const declaredType = declaredProp.value.properties.find(
-              prop => prop.key.name === 'type');
-          assert.ok(!!declaredType);
-          if (!!match.groups['boolName'] &&
-              declaredType.value.name !== 'Boolean') {
+          // Determine the TypeScript type.
+          const checker = services.program.getTypeChecker();
+          const tsNode = services.esTreeNodeToTSNodeMap.get(expression);
+          assert.ok(tsNode);
+          const type = checker.getTypeAtLocation(tsNode);
+          // Convert to non-nullable type for purposes of matching for now.
+          // Optionally undefined types are commonly used for code migrated
+          // from Polymer that relies on a parent passing a value via data
+          // binding.
+          const typeStr =
+              checker.typeToString(checker.getNonNullableType(type));
+
+          const isTsBoolean = typeStr === 'boolean';
+          const isTsObjectOrArray = (type.flags & ts.TypeFlags.Object) !== 0 ||
+              typeStr.endsWith('[]') || typeStr.startsWith('Array<') ||
+              typeStr.startsWith('Record<') || typeStr.startsWith('{') ||
+              typeStr === 'object';
+
+          if (declaredTypeName) {
+            // If info for the class property and corresponding Lit reactive
+            // property both exist, ensure the two match.
+            if ((isBooleanType && !isTsBoolean) ||
+                (isObjectOrArrayType && !isTsObjectOrArray)) {
+              context.report({
+                node: expression,
+                messageId: 'propertyTypeMismatch',
+                data: {
+                  propertyName: propName,
+                  declaredType: declaredTypeName,
+                  tsType: typeStr,
+                },
+              });
+              continue;
+            }
+          } else {
+            // Fall back to TS type if a declared type was not found for the
+            // reactive property.
+            isBooleanType = isTsBoolean;
+            isObjectOrArrayType = isTsObjectOrArray;
+          }
+
+          if (!!match.groups['boolName'] && !isBooleanType) {
             context.report({
               node: expression,
               messageId: 'incorrectBooleanBinding',
@@ -148,8 +201,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
             continue;
           }
 
-          if (declaredType.value.name === 'Array' ||
-              declaredType.value.name === 'Object') {
+          if (!!match.groups['attrName'] && isObjectOrArrayType) {
             const attrName = match.groups['attrName'];
             context.report({
               node: expression,

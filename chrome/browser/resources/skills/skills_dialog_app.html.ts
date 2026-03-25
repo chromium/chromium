@@ -42,7 +42,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
                 ?invalid="${this.hasNameCharLimitError_}">
               <div class="emoji-prefix-container" slot="inline-prefix">
                 <cr-icon id="emojiZeroStateIcon" icon="skills:add-reaction"
-                    ?hidden="${this.skill_.icon}" aria-hidden="true">
+                    ?hidden="${!!this.skill_.icon}" aria-hidden="true">
                 </cr-icon>
                 <input id="emojiTrigger" class="emoji-trigger" type="text"
                   .value="${this.skill_.icon}" @click="${this.onEmojiBtnClick_}"

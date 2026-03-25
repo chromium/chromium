@@ -4,7 +4,10 @@
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {TabData, TabGroupData} from './tab_data.js';
+import {tokenToString} from './tab_data.js';
 import type {TabSearchPageElement} from './tab_search_page.js';
+import type {TitleItem} from './title_item.js';
 
 // clang-format off
 export function getHtml(this: TabSearchPageElement) {
@@ -37,13 +40,14 @@ export function getHtml(this: TabSearchPageElement) {
         .items="${this.filteredItems_}"
         @selected-change="${this.onSelectedChange_}"
         role="listbox"
-        .isSelectable="${(item: any) => {
+        .isSelectable="${(item: TitleItem|TabData|TabGroupData) => {
           return item.constructor.name === 'TabData' ||
               item.constructor.name === 'TabGroupData';
         }}"
-        .template="${(item: any, index: number) => {
+        .template="${(item: TitleItem|TabData|TabGroupData, index: number) => {
       switch (item.constructor.name) {
        case 'TitleItem':
+        this.assertIsTitleItem_(item);
         return html`
           <div class="list-section-title">
             <div>${item.title}</div>
@@ -61,6 +65,7 @@ export function getHtml(this: TabSearchPageElement) {
               </cr-expand-button>` : ''}
           </div>`;
        case 'TabData':
+        this.assertIsTabData_(item);
         return html`<tab-search-item id="${item.tab.tabId}"
             aria-label="${this.ariaLabel_(item)}"
             class="mwb-list-item selectable" .data="${item}"
@@ -73,7 +78,9 @@ export function getHtml(this: TabSearchPageElement) {
             tabindex="0">
         </tab-search-item>`;
        case 'TabGroupData':
-        return html`<tab-search-group-item id="${item.tabGroup.id}"
+        this.assertIsTabGroupData_(item);
+        return html`<tab-search-group-item
+            id="${tokenToString(item.tabGroup.id)}"
             class="mwb-list-item selectable"
             .data="${item}"
             data-index="${index}"
@@ -89,7 +96,7 @@ export function getHtml(this: TabSearchPageElement) {
     }}">
     </selectable-lazy-list>
   </div>
-  <div id="no-results" ?hidden="${this.filteredItems_.length}">
+  <div id="no-results" ?hidden="${this.filteredItems_.length > 0}">
     $i18n{noResultsFound}
   </div>
 </div>

@@ -14,8 +14,8 @@ export function getHtml(this: ToolsElement) {
 </div>
 
 <cr-input id="modelInput" label="Model directory" placeholder="/tmp/model"
-    ?disabled="${this.isLoading_()}"
-    error-message="${this.error_}" ?invalid="${this.error_.length}" autofocus>
+    ?disabled="${this.isLoading_()}" error-message="${this.error_}"
+    ?invalid="${this.error_.length > 0}" autofocus>
   <cr-button slot="suffix" ?disabled="${this.isLoading_()}"
       @click="${this.onLoadClick_}">
     Load
@@ -130,7 +130,7 @@ ${this.currentResponse_ ? html`
         class="${this.currentResponse_.responseClass}"><!--
         -->${this.currentResponse_.response}</div>
     <div class="throbber"
-        ?hidden="${this.currentResponse_.response.length}"></div>
+        ?hidden="${this.currentResponse_.response.length > 0}"></div>
   </div>
 ` : ''}
 ${this.responses_.map(item => html`

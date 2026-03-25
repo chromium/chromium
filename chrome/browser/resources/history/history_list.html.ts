@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {HistoryEntry} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 
 import type {HistoryListElement} from './history_list.js';
 
@@ -20,23 +21,25 @@ export function getHtml(this: HistoryListElement) {
         role="grid" aria-rowcount="${this.historyData_.length}"
         ?hidden="${!this.hasResults_()}"
         .scrollTarget="${this.scrollTarget}" .scrollOffset="${this.scrollOffset}"
-        .template='${(item: any, index: number, tabindex: number) => html`
-            <history-item tabindex="${tabindex}"
-                .item="${item}"
-                ?selected="${item.selected}"
-                ?is-card-start="${this.isCardStart_(item, index)}"
-                ?is-card-end="${this.isCardEnd_(item, index)}"
-                ?has-time-gap="${this.needsTimeGap_(item, index)}"
-                .searchTerm="${this.searchedTerm}"
-                .numberOfItems="${this.historyData_.length}"
-                .index="${index}"
-                .focusRowIndex="${index}"
-                .listTabIndex="${tabindex}"
-                .lastFocused="${this.lastFocused_}"
-                @last-focused-changed="${this.onLastFocusedChanged_}"
-                .listBlurred="${this.listBlurred_}"
-                @list-blurred-changed="${this.onListBlurredChanged_}">
-            </history-item>`}'>
+        .template='${(item: HistoryEntry, index: number, tabindex: number) =>
+            html`
+              <history-item tabindex="${tabindex}"
+                  .item="${item}"
+                  ?selected="${item.selected}"
+                  ?is-card-start="${this.isCardStart_(item, index)}"
+                  ?is-card-end="${this.isCardEnd_(item, index)}"
+                  ?has-time-gap="${this.needsTimeGap_(item, index)}"
+                  .searchTerm="${this.searchedTerm}"
+                  .numberOfItems="${this.historyData_.length}"
+                  .index="${index}"
+                  .focusRowIndex="${index}"
+                  .listTabIndex="${tabindex}"
+                  .lastFocused="${this.lastFocused_}"
+                  @last-focused-changed="${this.onLastFocusedChanged_}"
+                  .listBlurred="${this.listBlurred_}"
+                  @list-blurred-changed="${this.onListBlurredChanged_}">
+              </history-item>
+            `}'>
     </cr-infinite-list>
 
     <cr-lazy-render-lit id="dialog" .template='${() => html`

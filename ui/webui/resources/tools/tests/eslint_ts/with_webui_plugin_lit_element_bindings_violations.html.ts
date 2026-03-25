@@ -14,7 +14,8 @@ export function getHtml(this: DummyElement) {
     ?disabled="${this.disabled}" error-message="${this.errorMessage}"
     min="${this.limits.min}" max="${this.limits.max}"
     ?invalid="${this.errorMessage}" ?readonly="${true}"
-    ?disabled="${false}" ?some-multi-word-attr="${false}">
+    ?disabled="${false}" ?some-multi-word-attr="${false}"
+    ?hidden="${this.someBooleanProp}" some-array="${this.someArrayProp}">
 </cr-input>
 `;
 }

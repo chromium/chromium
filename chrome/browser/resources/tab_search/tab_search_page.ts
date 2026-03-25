@@ -631,7 +631,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     getAnnouncerInstance().announce(text);
   }
 
-  protected ariaLabel_(tabData: TabData): string {
+  protected ariaLabel_(tabData: TabData|TabGroupData): string {
     return ariaLabel(tabData);
   }
 
@@ -816,6 +816,21 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     this.activeSelectionId_ = (itemData && itemData instanceof TabData) ?
         itemData.tab.tabId.toString() :
         undefined;
+  }
+
+  protected assertIsTitleItem_(item: TitleItem|TabData|TabGroupData):
+      asserts item is TitleItem {
+    assert(item instanceof TitleItem);
+  }
+
+  protected assertIsTabData_(item: TitleItem|TabData|TabGroupData):
+      asserts item is TabData {
+    assert(item instanceof TabData);
+  }
+
+  protected assertIsTabGroupData_(item: TitleItem|TabData|TabGroupData):
+      asserts item is TabGroupData {
+    assert(item instanceof TabGroupData);
   }
 }
 
