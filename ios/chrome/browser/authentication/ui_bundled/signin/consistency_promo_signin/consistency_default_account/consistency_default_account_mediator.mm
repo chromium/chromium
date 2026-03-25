@@ -90,6 +90,8 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kNotificationsOptInScreenContentToggle:
       return l10n_util::GetNSString(
           IDS_IOS_NOTIFICATIONS_OPT_IN_SIGN_IN_MESSAGE_CONTENT);
+    case signin_metrics::AccessPoint::kSaveToDriveIos:
+      return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SAVE_TO_DRIVE);
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
       // No text.
@@ -119,7 +121,6 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kReadingList:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
-    case signin_metrics::AccessPoint::kSaveToDriveIos:
     case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
