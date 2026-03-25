@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/devtools_util.h"

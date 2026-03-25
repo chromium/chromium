@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/profiles/profile.h"

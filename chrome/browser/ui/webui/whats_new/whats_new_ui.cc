@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/version.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"

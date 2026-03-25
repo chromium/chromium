@@ -17,7 +17,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
