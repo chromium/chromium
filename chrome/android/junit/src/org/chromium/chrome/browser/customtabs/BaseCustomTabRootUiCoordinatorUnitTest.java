@@ -361,10 +361,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
     public void testCreateMismatchNotificationChecker() {
         // No profile
         assertNull(
