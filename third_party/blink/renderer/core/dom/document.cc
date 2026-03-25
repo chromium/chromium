@@ -9606,6 +9606,11 @@ bool Document::IsFocusAllowed(FocusTrigger trigger) const {
     return true;
   }
 
+  // Allow focus during prerendering to match same-origin behavior.
+  if (frame->GetDocument() && frame->GetDocument()->IsPrerendering()) {
+    return true;
+  }
+
   WebFeature uma_type;
   bool sandboxed = dom_window_->IsSandboxed(
       network::mojom::blink::WebSandboxFlags::kNavigation);

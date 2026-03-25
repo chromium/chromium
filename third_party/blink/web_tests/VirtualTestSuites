@@ -4219,6 +4219,26 @@
     "expires": "Apr 1, 2026"
   },
   {
+    "prefix": "prerender-cross-origin-iframe-scroll",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/speculation-rules/prerender/scroll-into-view-cross-origin-iframe.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=Prerender2CrossOriginIframes",
+      "--site-per-process"
+    ],
+    "owners": [
+      "stevenwei@microsoft.com"
+    ],
+    "expires": "Apr 1, 2027"
+  },
+  {
     "prefix": "speech-with-unified-autoplay",
     "owners": [
       "media-dev@chromium.org",

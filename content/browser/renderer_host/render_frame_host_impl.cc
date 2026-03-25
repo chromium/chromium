@@ -9447,8 +9447,12 @@ void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
     const gfx::RectF& rect_to_scroll,
     blink::mojom::ScrollIntoViewParamsPtr params) {
   // Do not update the parent on behalf of inactive RenderFrameHost.
-  if (IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kDispatchLoad)) {
+  // Allow prerendering pages to propagate scroll to match same-origin
+  // in-process behavior.
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+    // Skip the inactive check for prerendering.
+  } else if (IsInactiveAndDisallowActivation(
+                 DisallowActivationReasonId::kDispatchLoad)) {
     return;
   }
 
@@ -9482,8 +9486,12 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
     blink::mojom::ScrollDirection direction,
     ui::ScrollGranularity granularity) {
   // Do not update the parent on behalf of inactive RenderFrameHost.
-  if (IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kDispatchLoad)) {
+  // Allow prerendering pages to propagate scroll to match same-origin
+  // in-process behavior.
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+    // Skip the inactive check for prerendering.
+  } else if (IsInactiveAndDisallowActivation(
+                 DisallowActivationReasonId::kDispatchLoad)) {
     return;
   }
 
