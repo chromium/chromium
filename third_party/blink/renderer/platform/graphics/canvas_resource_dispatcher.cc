@@ -222,7 +222,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
     bool is_opaque,
     viz::CompositorFrame* frame) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::PrepareFrame");
-  if (!canvas_resource || !VerifyImageSize(canvas_resource->Size())) {
+  if (!canvas_resource) {
     return false;
   }
 
@@ -468,10 +468,6 @@ void CanvasResourceDispatcher::OnMainThreadReceivedImage() {
     latest_unposted_resource_.reset();
     latest_unposted_resource_id_ = viz::kInvalidResourceId;
   }
-}
-
-bool CanvasResourceDispatcher::VerifyImageSize(const gfx::Size& image_size) {
-  return image_size == size_;
 }
 
 void CanvasResourceDispatcher::Reshape(const gfx::Size& size) {

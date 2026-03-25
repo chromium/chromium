@@ -145,7 +145,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   // state has actually changed or not.
   void UpdateBeginFrameSource();
 
-  bool VerifyImageSize(const gfx::Size&);
   void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>&&,
                                           viz::ResourceId resource_id);
   // virtual for testing
