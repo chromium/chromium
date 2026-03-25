@@ -1522,26 +1522,29 @@ VideoCodecProfile H265Parser::ProfileIDCToVideoCodecProfile(int profile_idc) {
   }
 }
 
-gfx::HdrMetadataCta861_3 H265SEIContentLightLevelInfo::ToGfx() const {
-  return gfx::HdrMetadataCta861_3(max_content_light_level,
-                                  max_picture_average_light_level);
+skhdr::ContentLightLevelInformation H265SEIContentLightLevelInfo::ToSkHdr()
+    const {
+  return skhdr::ContentLightLevelInformation::MakeUint16(
+      /*maxCLL=*/max_content_light_level,
+      /*maxFALL=*/max_picture_average_light_level);
 }
 
-gfx::HdrMetadataSmpteSt2086 H265SEIMasteringDisplayInfo::ToGfx() const {
+skhdr::MasteringDisplayColorVolume H265SEIMasteringDisplayInfo::ToSkHdr()
+    const {
   constexpr auto kChromaDenominator = 50000.0f;
   constexpr auto kLumaDenoninator = 10000.0f;
   // display primaries are in G/B/R order in MDCV SEI.
-  return gfx::HdrMetadataSmpteSt2086(
-      {display_primaries[2][0] / kChromaDenominator,
-       display_primaries[2][1] / kChromaDenominator,
-       display_primaries[0][0] / kChromaDenominator,
-       display_primaries[0][1] / kChromaDenominator,
-       display_primaries[1][0] / kChromaDenominator,
-       display_primaries[1][1] / kChromaDenominator,
-       white_points[0] / kChromaDenominator,
-       white_points[1] / kChromaDenominator},
-      /*luminance_max=*/max_luminance / kLumaDenoninator,
-      /*luminance_min=*/min_luminance / kLumaDenoninator);
+  return {
+      .fDisplayPrimaries = {display_primaries[2][0] / kChromaDenominator,
+                            display_primaries[2][1] / kChromaDenominator,
+                            display_primaries[0][0] / kChromaDenominator,
+                            display_primaries[0][1] / kChromaDenominator,
+                            display_primaries[1][0] / kChromaDenominator,
+                            display_primaries[1][1] / kChromaDenominator,
+                            white_points[0] / kChromaDenominator,
+                            white_points[1] / kChromaDenominator},
+      .fMaximumDisplayMasteringLuminance = max_luminance / kLumaDenoninator,
+      .fMinimumDisplayMasteringLuminance = min_luminance / kLumaDenoninator};
 }
 
 H265Parser::Result H265Parser::ParseProfileTierLevel(

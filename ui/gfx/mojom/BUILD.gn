@@ -532,18 +532,6 @@ mojom("hdr_metadata") {
     {
       types = [
         {
-          mojom = "gfx.mojom.HdrMetadataCta861_3"
-          cpp = "::gfx::HdrMetadataCta861_3"
-        },
-        {
-          mojom = "gfx.mojom.HdrMetadataSmpteSt2086"
-          cpp = "::gfx::HdrMetadataSmpteSt2086"
-        },
-        {
-          mojom = "gfx.mojom.HdrMetadataNdwl"
-          cpp = "::gfx::HdrMetadataNdwl"
-        },
-        {
           mojom = "gfx.mojom.HdrMetadataExtendedRange"
           cpp = "::gfx::HdrMetadataExtendedRange"
         },

@@ -11,6 +11,7 @@
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkString.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/skia_span_util.h"
 #include "ui/gfx/switches.h"
@@ -39,47 +40,6 @@ std::weak_ordering SkDataCompare(const sk_sp<const SkData>& a,
 
 }  // namespace
 
-std::string HdrMetadataCta861_3::ToString() const {
-  std::stringstream ss;
-  ss << std::fixed << std::setprecision(4)
-     << "{maxCLL:" << max_content_light_level
-     << ", maxFALL:" << max_frame_average_light_level << "}";
-  return ss.str();
-}
-
-HdrMetadataSmpteSt2086& HdrMetadataSmpteSt2086::operator=(
-    const HdrMetadataSmpteSt2086& rhs) = default;
-
-std::string HdrMetadataSmpteSt2086::ToString() const {
-  std::stringstream ss;
-  ss << std::fixed << std::setprecision(4) << "{"
-     << "red:[" << primaries.fRX << ", " << primaries.fRY << "], "
-     << "green:[" << primaries.fGX << ", " << primaries.fGY << "], "
-     << "blue:[" << primaries.fBX << ", " << primaries.fBY << "], "
-     << "whitePoint:[" << primaries.fWX << ", " << primaries.fWY << "], "
-     << "minLum:" << luminance_min << ", "
-     << "maxLum:" << luminance_max << "}";
-  return ss.str();
-}
-
-std::partial_ordering HdrMetadataSmpteSt2086::operator<=>(
-    const HdrMetadataSmpteSt2086& rhs) const {
-  return std::tie(primaries.fRX, primaries.fRY, primaries.fGX, primaries.fGY,
-                  primaries.fBX, primaries.fBY, primaries.fWX, primaries.fWY,
-                  luminance_min, luminance_max) <=>
-         std::tie(rhs.primaries.fRX, rhs.primaries.fRY, rhs.primaries.fGX,
-                  rhs.primaries.fGY, rhs.primaries.fBX, rhs.primaries.fBY,
-                  rhs.primaries.fWX, rhs.primaries.fWY, rhs.luminance_min,
-                  rhs.luminance_max);
-}
-
-std::string HdrMetadataNdwl::ToString() const {
-  std::stringstream ss;
-  ss << std::fixed << std::setprecision(4) << "{"
-     << "nits:" << nits << "}";
-  return ss.str();
-}
-
 std::string HdrMetadataExtendedRange::ToString() const {
   std::stringstream ss;
   ss << std::fixed << std::setprecision(4) << "{"
@@ -99,37 +59,34 @@ HDRMetadata::HDRMetadata() = default;
 HDRMetadata::HDRMetadata(const skhdr::Metadata& sk_hdr_metadata) {
   skhdr::ContentLightLevelInformation clli;
   if (sk_hdr_metadata.getContentLightLevelInformation(&clli)) {
-    cta_861_3.emplace(clli.fMaxCLL, clli.fMaxFALL);
+    clli_ = clli;
   }
 
   skhdr::MasteringDisplayColorVolume mdcv;
   if (sk_hdr_metadata.getMasteringDisplayColorVolume(&mdcv)) {
-    smpte_st_2086.emplace(mdcv.fDisplayPrimaries,
-                          mdcv.fMaximumDisplayMasteringLuminance,
-                          mdcv.fMinimumDisplayMasteringLuminance);
+    mdcv_ = mdcv;
   }
 }
 
-HDRMetadata::HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
-                         const HdrMetadataCta861_3& cta_861_3)
-    : smpte_st_2086(smpte_st_2086), cta_861_3(cta_861_3) {}
-HDRMetadata::HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086)
-    : smpte_st_2086(smpte_st_2086) {}
-HDRMetadata::HDRMetadata(const HdrMetadataCta861_3& cta_861_3)
-    : cta_861_3(cta_861_3) {}
+HDRMetadata::HDRMetadata(const skhdr::MasteringDisplayColorVolume& mdcv,
+                         const skhdr::ContentLightLevelInformation& clli)
+    : mdcv_(mdcv), clli_(clli) {}
+HDRMetadata::HDRMetadata(const skhdr::MasteringDisplayColorVolume& mdcv)
+    : mdcv_(mdcv) {}
+HDRMetadata::HDRMetadata(const skhdr::ContentLightLevelInformation& clli)
+    : clli_(clli) {}
 HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;
 HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
 HDRMetadata::~HDRMetadata() = default;
 
 // static
 float HDRMetadata::GetContentMaxLuminance(const HDRMetadata& metadata) {
-  if (metadata.cta_861_3.has_value() &&
-      metadata.cta_861_3->max_content_light_level > 0.f) {
-    return metadata.cta_861_3->max_content_light_level;
+  if (metadata.clli_.has_value() && metadata.clli_->fMaxCLL > 0.f) {
+    return metadata.clli_->fMaxCLL;
   }
-  if (metadata.smpte_st_2086.has_value() &&
-      metadata.smpte_st_2086->luminance_max > 0.f) {
-    return metadata.smpte_st_2086->luminance_max;
+  if (metadata.mdcv_.has_value() &&
+      metadata.mdcv_->fMaximumDisplayMasteringLuminance > 0.f) {
+    return metadata.mdcv_->fMaximumDisplayMasteringLuminance;
   }
   return 1000.f;
 }
@@ -145,8 +102,8 @@ float HDRMetadata::GetWaylandReferenceLuminance(
     }
   }
 
-  if (hdr_metadata.ndwl.has_value() && hdr_metadata.ndwl->nits > 0.f) {
-    return hdr_metadata.ndwl->nits;
+  if (hdr_metadata.ndwl_.has_value() && hdr_metadata.ndwl_.value() > 0.f) {
+    return hdr_metadata.ndwl_.value();
   }
 
   if (color_space.GetTransferID() == ColorSpace::TransferID::PQ ||
@@ -163,28 +120,31 @@ float HDRMetadata::GetWaylandReferenceLuminance(
 // static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
     const HDRMetadata& hdr_metadata) {
-  constexpr HdrMetadataSmpteSt2086 kDefaults2086(SkNamedPrimaries::kRec2020,
-                                                 1000.f, 0.f);
+  const skhdr::MasteringDisplayColorVolume kDefaults2086 = {
+      .fDisplayPrimaries = SkNamedPrimaries::kRec2020,
+      .fMaximumDisplayMasteringLuminance = 1000.f,
+      .fMinimumDisplayMasteringLuminance = 0.f};
 
   if (hdr_metadata.IsEmpty()) {
     return HDRMetadata(kDefaults2086);
   }
 
   HDRMetadata result = hdr_metadata;
-  if (!result.smpte_st_2086) {
-    result.smpte_st_2086 = kDefaults2086;
+  if (!result.mdcv_) {
+    result.mdcv_ = kDefaults2086;
     return result;
   }
 
   // If the gamut is unspecified, replace it with the default Rec2020.
-  if (result.smpte_st_2086->primaries == SkNamedPrimariesExt::kInvalid) {
-    result.smpte_st_2086->primaries = kDefaults2086.primaries;
+  if (result.mdcv_->fDisplayPrimaries == SkNamedPrimariesExt::kInvalid) {
+    result.mdcv_->fDisplayPrimaries = kDefaults2086.fDisplayPrimaries;
   }
 
   // If the max luminance is unspecified, replace it with the default 1,000
   // nits.
-  if (result.smpte_st_2086->luminance_max == 0.f) {
-    result.smpte_st_2086->luminance_max = kDefaults2086.luminance_max;
+  if (result.mdcv_->fMaximumDisplayMasteringLuminance == 0.f) {
+    result.mdcv_->fMaximumDisplayMasteringLuminance =
+        kDefaults2086.fMaximumDisplayMasteringLuminance;
   }
 
   return result;
@@ -193,14 +153,14 @@ HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
 std::string HDRMetadata::ToString() const {
   std::stringstream ss;
   ss << "{";
-  if (smpte_st_2086) {
-    ss << "smpte_st_2086:" << smpte_st_2086->ToString() << ", ";
+  if (mdcv_) {
+    ss << "mdcv:" << mdcv_->toString().c_str() << ", ";
   }
-  if (cta_861_3) {
-    ss << "cta_861_3:" << cta_861_3->ToString() << ", ";
+  if (clli_) {
+    ss << "clli:" << clli_->toString().c_str() << ", ";
   }
-  if (ndwl) {
-    ss << "ndwl:" << ndwl->ToString() << ", ";
+  if (ndwl_) {
+    ss << "ndwl:" << *ndwl_ << ", ";
   }
   if (extended_range) {
     ss << "extended_range:" << extended_range->ToString() << ", ";
@@ -213,22 +173,65 @@ std::string HDRMetadata::ToString() const {
 }
 
 bool HDRMetadata::operator==(const HDRMetadata& other) const {
-  if (std::tie(smpte_st_2086, cta_861_3, ndwl, extended_range) !=
-      std::tie(other.smpte_st_2086, other.cta_861_3, other.ndwl,
-               other.extended_range)) {
-    return false;
-  }
-  return SkData::Equals(agtm_.get(), other.agtm_.get());
+  return (*this <=> other) == std::partial_ordering::equivalent;
 }
 
 std::partial_ordering HDRMetadata::operator<=>(const HDRMetadata& other) const {
-  auto cmp = std::tie(smpte_st_2086, cta_861_3, ndwl, extended_range) <=>
-             std::tie(other.smpte_st_2086, other.cta_861_3, other.ndwl,
-                      other.extended_range);
+  auto cmp = std::partial_ordering::equivalent;
+  {
+    const auto& a = *this;
+    const auto& b = other;
+    cmp = std::tie(a.ndwl_, a.extended_range) <=>
+          std::tie(b.ndwl_, b.extended_range);
+    if (cmp != std::partial_ordering::equivalent) {
+      return cmp;
+    }
+  }
+
+  cmp = SkDataCompare(agtm_, other.agtm_);
   if (cmp != std::partial_ordering::equivalent) {
     return cmp;
   }
-  return SkDataCompare(agtm_, other.agtm_);
+
+  // Skia does not provide an arbitrary operator<=> (that is, one that is just
+  // to provide an ordering for types like std::map, but does not reflect a
+  // meaningful ordering), so create one here.
+  cmp = mdcv_.has_value() <=> other.mdcv_.has_value();
+  if (cmp != std::partial_ordering::equivalent) {
+    return cmp;
+  }
+  if (mdcv_.has_value()) {
+    const auto& a = *mdcv_;
+    const auto& b = *other.mdcv_;
+    cmp = std::tie(a.fDisplayPrimaries.fRX, a.fDisplayPrimaries.fRY,
+                   a.fDisplayPrimaries.fGX, a.fDisplayPrimaries.fGY,
+                   a.fDisplayPrimaries.fBX, a.fDisplayPrimaries.fBY,
+                   a.fDisplayPrimaries.fWX, a.fDisplayPrimaries.fWY,
+                   a.fMaximumDisplayMasteringLuminance,
+                   a.fMinimumDisplayMasteringLuminance) <=>
+          std::tie(b.fDisplayPrimaries.fRX, b.fDisplayPrimaries.fRY,
+                   b.fDisplayPrimaries.fGX, b.fDisplayPrimaries.fGY,
+                   b.fDisplayPrimaries.fBX, b.fDisplayPrimaries.fBY,
+                   b.fDisplayPrimaries.fWX, b.fDisplayPrimaries.fWY,
+                   b.fMaximumDisplayMasteringLuminance,
+                   b.fMinimumDisplayMasteringLuminance);
+    if (cmp != std::partial_ordering::equivalent) {
+      return cmp;
+    }
+  }
+  cmp = clli_.has_value() <=> other.clli_.has_value();
+  if (cmp != std::partial_ordering::equivalent) {
+    return cmp;
+  }
+  if (clli_.has_value()) {
+    const auto& a = *clli_;
+    const auto& b = *other.clli_;
+    cmp = std::tie(a.fMaxCLL, a.fMaxFALL) <=> std::tie(b.fMaxCLL, b.fMaxFALL);
+    if (cmp != std::partial_ordering::equivalent) {
+      return cmp;
+    }
+  }
+  return cmp;
 }
 
 }  // namespace gfx

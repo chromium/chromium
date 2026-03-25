@@ -281,9 +281,9 @@ bool WaylandWpColorManager::PopulateDescriptionCreator(
   if (color_space.IsHDR()) {
     if (IsSupportedFeature(
             WP_COLOR_MANAGER_V1_FEATURE_SET_MASTERING_DISPLAY_PRIMARIES)) {
-      if (hdr_metadata.smpte_st_2086 && hdr_metadata.smpte_st_2086->IsValid()) {
-        const auto& smpte_st_2086 = *hdr_metadata.smpte_st_2086;
-        const auto& primaries = smpte_st_2086.primaries;
+      if (hdr_metadata.HasMDCV()) {
+        const auto& mdcv = hdr_metadata.GetMDCV();
+        const auto& primaries = mdcv.fDisplayPrimaries;
         wp_image_description_creator_params_v1_set_mastering_display_primaries(
             creator, static_cast<int32_t>(primaries.fRX * 1000000),
             static_cast<int32_t>(primaries.fRY * 1000000),
@@ -295,8 +295,10 @@ bool WaylandWpColorManager::PopulateDescriptionCreator(
             static_cast<int32_t>(primaries.fWY * 1000000));
 
         wp_image_description_creator_params_v1_set_mastering_luminance(
-            creator, static_cast<uint32_t>(smpte_st_2086.luminance_min * 10000),
-            static_cast<uint32_t>(smpte_st_2086.luminance_max));
+            creator,
+            static_cast<uint32_t>(mdcv.fMinimumDisplayMasteringLuminance *
+                                  10000),
+            static_cast<uint32_t>(mdcv.fMaximumDisplayMasteringLuminance));
       }
     }
 
@@ -310,13 +312,13 @@ bool WaylandWpColorManager::PopulateDescriptionCreator(
 
     uint32_t cll = ref_luma;
     uint32_t fall = ref_luma;
-    if (hdr_metadata.cta_861_3 && hdr_metadata.cta_861_3->IsValid()) {
-      const auto& cta_861_3 = *hdr_metadata.cta_861_3;
-      if (cta_861_3.max_content_light_level > 0) {
-        cll = cta_861_3.max_content_light_level;
+    if (hdr_metadata.HasCLLI()) {
+      const auto& clli = hdr_metadata.GetCLLI();
+      if (clli.fMaxCLL > 0) {
+        cll = clli.getUint16MaxCLL();
       }
-      if (cta_861_3.max_frame_average_light_level > 0) {
-        fall = cta_861_3.max_frame_average_light_level;
+      if (clli.fMaxFALL > 0) {
+        fall = clli.getUint16MaxFALL();
       }
     }
     wp_image_description_creator_params_v1_set_max_cll(creator, cll);

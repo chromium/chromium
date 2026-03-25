@@ -63,6 +63,7 @@
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_implementation.h"
@@ -1072,11 +1073,12 @@ TEST_F(GpuRasterPixelTest, DrawHdrImageWithMetadata) {
         {
           ImageHeaderMetadata image_metadata;
           if (peak_luminance.has_value()) {
-            image_metadata.hdr_metadata.cta_861_3.emplace(
-                peak_luminance.value(), kContentAvgNits);
+            image_metadata.hdr_metadata.SetCLLI(
+                skhdr::ContentLightLevelInformation{peak_luminance.value(),
+                                                    kContentAvgNits});
           }
           if (white_luminance.has_value()) {
-            image_metadata.hdr_metadata.ndwl.emplace(white_luminance.value());
+            image_metadata.hdr_metadata.SetNDWL(white_luminance.value());
           }
           image_generator->SetImageHeaderMetadata(image_metadata);
           EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));

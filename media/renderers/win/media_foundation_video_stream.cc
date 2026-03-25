@@ -131,18 +131,18 @@ MFVideoTransferFunction VideoTransferFunctionToMF(
 }
 
 MT_CUSTOM_VIDEO_PRIMARIES CustomVideoPrimaryToMF(
-    const gfx::HdrMetadataSmpteSt2086& smpte_st_2086) {
+    const skhdr::MasteringDisplayColorVolume& mdcv) {
   // MT_CUSTOM_VIDEO_PRIMARIES stores value in float no scaling factor needed
   // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/ns-mfapi-mt_custom_video_primaries
   MT_CUSTOM_VIDEO_PRIMARIES primaries = {0};
-  primaries.fRx = smpte_st_2086.primaries.fRX;
-  primaries.fRy = smpte_st_2086.primaries.fRY;
-  primaries.fGx = smpte_st_2086.primaries.fGX;
-  primaries.fGy = smpte_st_2086.primaries.fGY;
-  primaries.fBx = smpte_st_2086.primaries.fBX;
-  primaries.fBy = smpte_st_2086.primaries.fBY;
-  primaries.fWx = smpte_st_2086.primaries.fWX;
-  primaries.fWy = smpte_st_2086.primaries.fWY;
+  primaries.fRx = mdcv.fDisplayPrimaries.fRX;
+  primaries.fRy = mdcv.fDisplayPrimaries.fRY;
+  primaries.fGx = mdcv.fDisplayPrimaries.fGX;
+  primaries.fGy = mdcv.fDisplayPrimaries.fGY;
+  primaries.fBx = mdcv.fDisplayPrimaries.fBX;
+  primaries.fBy = mdcv.fDisplayPrimaries.fBY;
+  primaries.fWx = mdcv.fDisplayPrimaries.fWX;
+  primaries.fWy = mdcv.fDisplayPrimaries.fWY;
   return primaries;
 }
 
@@ -254,30 +254,30 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
     const auto hdr_metadata = gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
         config.hdr_metadata());
     UINT32 max_display_mastering_luminance =
-        hdr_metadata.smpte_st_2086->luminance_max;
+        hdr_metadata.GetMDCV().fMaximumDisplayMasteringLuminance;
     RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MAX_MASTERING_LUMINANCE,
                                            max_display_mastering_luminance));
 
     UINT32 min_display_mastering_luminance =
-        hdr_metadata.smpte_st_2086->luminance_min *
+        hdr_metadata.GetMDCV().fMinimumDisplayMasteringLuminance *
         kMasteringDispLuminanceScale;
     RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MIN_MASTERING_LUMINANCE,
                                            min_display_mastering_luminance));
 
     MT_CUSTOM_VIDEO_PRIMARIES primaries =
-        CustomVideoPrimaryToMF(hdr_metadata.smpte_st_2086.value());
+        CustomVideoPrimaryToMF(hdr_metadata.GetMDCV());
     RETURN_IF_FAILED(media_type->SetBlob(MF_MT_CUSTOM_VIDEO_PRIMARIES,
                                          reinterpret_cast<UINT8*>(&primaries),
                                          sizeof(MT_CUSTOM_VIDEO_PRIMARIES)));
 
-    if (hdr_metadata.cta_861_3.has_value()) {
+    if (hdr_metadata.HasCLLI()) {
       UINT32 max_luminance_level =
-          hdr_metadata.cta_861_3->max_content_light_level;
+          static_cast<UINT32>(hdr_metadata.GetCLLI().fMaxCLL);
       RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MAX_LUMINANCE_LEVEL,
                                              max_luminance_level));
 
       UINT32 max_frame_average_luminance_level =
-          hdr_metadata.cta_861_3->max_frame_average_light_level;
+          static_cast<UINT32>(hdr_metadata.GetCLLI().fMaxFALL);
       RETURN_IF_FAILED(
           media_type->SetUINT32(MF_MT_MAX_FRAME_AVERAGE_LUMINANCE_LEVEL,
                                 max_frame_average_luminance_level));

@@ -396,9 +396,13 @@ bool TryDisableDesktopPlane(IDXGIDecodeSwapChain* decode_swap_chain,
 }
 
 bool IsCompatibleHDRMetadata(const gfx::HDRMetadata& hdr_metadata) {
-  return (
-      (hdr_metadata.smpte_st_2086 && hdr_metadata.smpte_st_2086->IsValid()) ||
-      (hdr_metadata.cta_861_3 && hdr_metadata.cta_861_3->IsValid()));
+  return ((hdr_metadata.HasMDCV() &&
+           (hdr_metadata.GetMDCV().fDisplayPrimaries !=
+                SkNamedPrimariesExt::kInvalid ||
+            hdr_metadata.GetMDCV().fMaximumDisplayMasteringLuminance != 0.f ||
+            hdr_metadata.GetMDCV().fMinimumDisplayMasteringLuminance != 0.f)) ||
+          (hdr_metadata.HasCLLI() && (hdr_metadata.GetCLLI().fMaxCLL > 0 ||
+                                      hdr_metadata.GetCLLI().fMaxFALL > 0)));
 }
 
 }  // namespace

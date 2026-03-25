@@ -780,6 +780,7 @@ _CONFIG = [
 
             # Standalone utility libraries that only depend on //base
             'skia::.+',
+            'skhdr::.+',
             'url::.+',
 
             # Nested namespaces under the blink namespace

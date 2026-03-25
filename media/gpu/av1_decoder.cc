@@ -100,27 +100,31 @@ VideoChromaSampling GetAV1ChromaSampling(
   }
 }
 
-gfx::HdrMetadataSmpteSt2086 ToGfxSmpteSt2086(
+skhdr::MasteringDisplayColorVolume ToSkHdrMDCV(
     const libgav1::ObuMetadataHdrMdcv& mdcv) {
   constexpr auto kChromaDenominator = 65536.0f;
   constexpr auto kLumaMaxDenoninator = 256.0f;
   constexpr auto kLumaMinDenoninator = 16384.0f;
   // display primaries are in R/G/B order in metadata_hdr_mdcv OBU Metadata.
-  return gfx::HdrMetadataSmpteSt2086(
-      {mdcv.primary_chromaticity_x[0] / kChromaDenominator,
-       mdcv.primary_chromaticity_y[0] / kChromaDenominator,
-       mdcv.primary_chromaticity_x[1] / kChromaDenominator,
-       mdcv.primary_chromaticity_y[1] / kChromaDenominator,
-       mdcv.primary_chromaticity_x[2] / kChromaDenominator,
-       mdcv.primary_chromaticity_y[2] / kChromaDenominator,
-       mdcv.white_point_chromaticity_x / kChromaDenominator,
-       mdcv.white_point_chromaticity_y / kChromaDenominator},
-      /*luminance_max=*/mdcv.luminance_max / kLumaMaxDenoninator,
-      /*luminance_min=*/mdcv.luminance_min / kLumaMinDenoninator);
+  return {.fDisplayPrimaries =
+              {mdcv.primary_chromaticity_x[0] / kChromaDenominator,
+               mdcv.primary_chromaticity_y[0] / kChromaDenominator,
+               mdcv.primary_chromaticity_x[1] / kChromaDenominator,
+               mdcv.primary_chromaticity_y[1] / kChromaDenominator,
+               mdcv.primary_chromaticity_x[2] / kChromaDenominator,
+               mdcv.primary_chromaticity_y[2] / kChromaDenominator,
+               mdcv.white_point_chromaticity_x / kChromaDenominator,
+               mdcv.white_point_chromaticity_y / kChromaDenominator},
+          .fMaximumDisplayMasteringLuminance =
+              mdcv.luminance_max / kLumaMaxDenoninator,
+          .fMinimumDisplayMasteringLuminance =
+              mdcv.luminance_min / kLumaMinDenoninator};
 }
 
-gfx::HdrMetadataCta861_3 ToGfxCta861_3(const libgav1::ObuMetadataHdrCll& cll) {
-  return gfx::HdrMetadataCta861_3(cll.max_cll, cll.max_fall);
+skhdr::ContentLightLevelInformation ToSkHdrCLLI(
+    const libgav1::ObuMetadataHdrCll& cll) {
+  return skhdr::ContentLightLevelInformation::MakeUint16(
+      /*maxCLL=*/cll.max_cll, /*maxFALL=*/cll.max_fall);
 }
 }  // namespace
 
@@ -469,11 +473,10 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     // Thus we should also extract HDR metadata here in case we
     // miss the information.
     if (current_frame_->hdr_cll_set()) {
-      hdr_metadata_.cta_861_3 = ToGfxCta861_3(current_frame_->hdr_cll());
+      hdr_metadata_.SetCLLI(ToSkHdrCLLI(current_frame_->hdr_cll()));
     }
     if (current_frame_->hdr_mdcv_set()) {
-      hdr_metadata_.smpte_st_2086 =
-          ToGfxSmpteSt2086(current_frame_->hdr_mdcv());
+      hdr_metadata_.SetMDCV(ToSkHdrMDCV(current_frame_->hdr_mdcv()));
     }
     if (current_frame_->itut_t35_count() > 0) {
       // SAFETY: The best we can do is trust the count provided by libgav1.

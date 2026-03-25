@@ -141,19 +141,23 @@ bool ReadFixedPoint32(float fixed_point_divisor,
   return true;
 }
 
-gfx::HdrMetadataSmpteSt2086 ConvertMdcvToColorVolumeMetadata(
+skhdr::MasteringDisplayColorVolume ConvertMdcvToColorVolumeMetadata(
     const MasteringDisplayColorVolume& mdcv) {
-  gfx::HdrMetadataSmpteSt2086 smpte_st_2086;
-  smpte_st_2086.primaries = {
-      mdcv.display_primaries_rx, mdcv.display_primaries_ry,
-      mdcv.display_primaries_gx, mdcv.display_primaries_gy,
-      mdcv.display_primaries_bx, mdcv.display_primaries_by,
-      mdcv.white_point_x,        mdcv.white_point_y,
+  return {
+      .fDisplayPrimaries =
+          {
+              mdcv.display_primaries_rx,
+              mdcv.display_primaries_ry,
+              mdcv.display_primaries_gx,
+              mdcv.display_primaries_gy,
+              mdcv.display_primaries_bx,
+              mdcv.display_primaries_by,
+              mdcv.white_point_x,
+              mdcv.white_point_y,
+          },
+      .fMaximumDisplayMasteringLuminance = mdcv.max_display_mastering_luminance,
+      .fMinimumDisplayMasteringLuminance = mdcv.min_display_mastering_luminance,
   };
-  smpte_st_2086.luminance_max = mdcv.max_display_mastering_luminance;
-  smpte_st_2086.luminance_min = mdcv.min_display_mastering_luminance;
-
-  return smpte_st_2086;
 }
 
 }  // namespace
@@ -1384,16 +1388,17 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       SMPTE2086MasteringDisplayMetadataBox color_volume;
       if (reader->HasChild(&color_volume)) {
         RCHECK(reader->ReadChild(&color_volume));
-        hdr_static_metadata.smpte_st_2086 =
-            ConvertMdcvToColorVolumeMetadata(color_volume);
+        hdr_static_metadata.SetMDCV(
+            ConvertMdcvToColorVolumeMetadata(color_volume));
       }
 
       ContentLightLevel level_information;
       if (reader->HasChild(&level_information)) {
         RCHECK(reader->ReadChild(&level_information));
-        hdr_static_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(
-            level_information.max_content_light_level,
-            level_information.max_pic_average_light_level);
+        hdr_static_metadata.SetCLLI(
+            skhdr::ContentLightLevelInformation::MakeUint16(
+                /*maxCLL=*/level_information.max_content_light_level,
+                /*maxFALL=*/level_information.max_pic_average_light_level));
       }
       break;
     }
@@ -1435,16 +1440,15 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
   MasteringDisplayColorVolume color_volume;
   if (reader->HasChild(&color_volume)) {
     RCHECK(reader->ReadChild(&color_volume));
-    hdr_static_metadata.smpte_st_2086 =
-        ConvertMdcvToColorVolumeMetadata(color_volume);
+    hdr_static_metadata.SetMDCV(ConvertMdcvToColorVolumeMetadata(color_volume));
   }
 
   ContentLightLevelInformation level_information;
   if (reader->HasChild(&level_information)) {
     RCHECK(reader->ReadChild(&level_information));
-    hdr_static_metadata.cta_861_3 =
-        gfx::HdrMetadataCta861_3(level_information.max_content_light_level,
-                                 level_information.max_pic_average_light_level);
+    hdr_static_metadata.SetCLLI(skhdr::ContentLightLevelInformation::MakeUint16(
+        /*maxCLL=*/level_information.max_content_light_level,
+        /*maxFALL=*/level_information.max_pic_average_light_level));
   }
 
   if (hdr_static_metadata.IsValid()) {

@@ -964,10 +964,10 @@ TEST_F(VideoResourceUpdaterTest,
 TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP010HDR) {
   constexpr auto kHDR10ColorSpace = gfx::ColorSpace::CreateHDR10();
   gfx::HDRMetadata hdr_metadata{};
-  hdr_metadata.smpte_st_2086 =
-      gfx::HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kP3,
-                                  /*luminance_max=*/1000,
-                                  /*luminance_min=*/0);
+  hdr_metadata.SetMDCV(skhdr::MasteringDisplayColorVolume{
+      .fDisplayPrimaries = SkNamedPrimariesExt::kP3,
+      .fMaximumDisplayMasteringLuminance = 1000,
+      .fMinimumDisplayMasteringLuminance = 0});
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(

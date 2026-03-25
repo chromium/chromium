@@ -1755,11 +1755,11 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
                         // 3. Both container and bitstream.
                         // Thus we should also extract HDR metadata here in case
                         // we miss the information.
-                        hdr_metadata_.cta_861_3 = info.ToGfx();
+                        hdr_metadata_.SetCLLI(info.ToSkHdr());
                         return true;
                       },
                       [this](const H264SEIMasteringDisplayInfo& info) {
-                        hdr_metadata_.smpte_st_2086 = info.ToGfx();
+                        hdr_metadata_.SetMDCV(info.ToSkHdr());
                         return true;
                       },
                       [](const std::monostate) { return true; }},

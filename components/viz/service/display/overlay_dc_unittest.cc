@@ -456,9 +456,11 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
           color_space = gfx::ColorSpace::CreateHDR10();
 
           // Content has valid HDR metadata.
-          hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 400);
-          hdr_metadata.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
-              SkNamedPrimaries::kRec2020, 1000, 0.0001);
+          hdr_metadata.SetCLLI(skhdr::ContentLightLevelInformation{1000, 400});
+          hdr_metadata.SetMDCV(skhdr::MasteringDisplayColorVolume{
+              .fDisplayPrimaries = SkNamedPrimaries::kRec2020,
+              .fMaximumDisplayMasteringLuminance = 1000,
+              .fMinimumDisplayMasteringLuminance = 0.0001});
 
           // Render Pass has HDR content usage.
           pass->content_color_usage = gfx::ContentColorUsage::kHDR;
@@ -1704,9 +1706,11 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
   InitializeDCLayerOverlayProcessor();
   // Prepare a valid hdr metadata.
   gfx::HDRMetadata valid_hdr_metadata;
-  valid_hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 400);
-  valid_hdr_metadata.smpte_st_2086 =
-      gfx::HdrMetadataSmpteSt2086(SkNamedPrimaries::kRec2020, 1000, 0.0001);
+  valid_hdr_metadata.SetCLLI(skhdr::ContentLightLevelInformation{1000, 400});
+  valid_hdr_metadata.SetMDCV(skhdr::MasteringDisplayColorVolume{
+      .fDisplayPrimaries = SkNamedPrimaries::kRec2020,
+      .fMaximumDisplayMasteringLuminance = 1000,
+      .fMinimumDisplayMasteringLuminance = 0.0001});
 
   // Device has RGB10A2 overlay support.
   gl::SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1799,7 +1803,7 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
 
     // Content has HDR metadata which contains cta_861_3.
     gfx::HDRMetadata cta_861_3_hdr_metadata;
-    cta_861_3_hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(0, 400);
+    cta_861_3_hdr_metadata.SetCLLI(skhdr::ContentLightLevelInformation{0, 400});
     // Content is 10bit P010 content with HDR10 colorspace.
     CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -1826,8 +1830,10 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
 
     // Content has HDR metadata which contains smpte_st_2086.
     gfx::HDRMetadata smpte_st_2086_hdr_metadata;
-    smpte_st_2086_hdr_metadata.smpte_st_2086 =
-        gfx::HdrMetadataSmpteSt2086(SkNamedPrimaries::kRec2020, 1000, 0.0001);
+    smpte_st_2086_hdr_metadata.SetMDCV(skhdr::MasteringDisplayColorVolume{
+        .fDisplayPrimaries = SkNamedPrimaries::kRec2020,
+        .fMaximumDisplayMasteringLuminance = 1000,
+        .fMinimumDisplayMasteringLuminance = 0.0001});
     // Content is 10bit P010 content with HDR10 colorspace.
     CreateFullscreenCandidateYUVTextureQuad(
         resource_provider_.get(), child_resource_provider_.get(),

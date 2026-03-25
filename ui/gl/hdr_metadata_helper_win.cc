@@ -5,6 +5,7 @@
 #include "ui/gl/hdr_metadata_helper_win.h"
 
 #include "base/compiler_specific.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 #include "ui/gl/gpu_switching_manager.h"
 
 namespace {
@@ -112,9 +113,10 @@ DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
     const gfx::HDRMetadata& hdr_metadata) {
   DXGI_HDR_METADATA_HDR10 metadata{};
 
-  const auto smpte_st_2086 =
-      hdr_metadata.smpte_st_2086.value_or(gfx::HdrMetadataSmpteSt2086());
-  const auto& primaries = smpte_st_2086.primaries;
+  const auto mdcv = hdr_metadata.HasMDCV()
+                        ? hdr_metadata.GetMDCV()
+                        : skhdr::MasteringDisplayColorVolume();
+  const auto& primaries = mdcv.fDisplayPrimaries;
   metadata.RedPrimary[0] = primaries.fRX * kPrimariesFixedPoint;
   // SAFETY: required from Windows API.
   UNSAFE_BUFFERS(metadata.RedPrimary[1]) = primaries.fRY * kPrimariesFixedPoint;
@@ -126,14 +128,15 @@ DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
       primaries.fBY * kPrimariesFixedPoint;
   metadata.WhitePoint[0] = primaries.fWX * kPrimariesFixedPoint;
   UNSAFE_BUFFERS(metadata.WhitePoint[1]) = primaries.fWY * kPrimariesFixedPoint;
-  metadata.MaxMasteringLuminance = smpte_st_2086.luminance_max;
+  metadata.MaxMasteringLuminance = mdcv.fMaximumDisplayMasteringLuminance;
   metadata.MinMasteringLuminance =
-      smpte_st_2086.luminance_min * kMinLuminanceFixedPoint;
+      mdcv.fMinimumDisplayMasteringLuminance * kMinLuminanceFixedPoint;
 
-  const auto cta_861_3 =
-      hdr_metadata.cta_861_3.value_or(gfx::HdrMetadataCta861_3());
-  metadata.MaxContentLightLevel = cta_861_3.max_content_light_level;
-  metadata.MaxFrameAverageLightLevel = cta_861_3.max_frame_average_light_level;
+  const auto clli = hdr_metadata.HasCLLI()
+                        ? hdr_metadata.GetCLLI()
+                        : skhdr::ContentLightLevelInformation();
+  metadata.MaxContentLightLevel = clli.fMaxCLL;
+  metadata.MaxFrameAverageLightLevel = clli.fMaxFALL;
 
   return metadata;
 }

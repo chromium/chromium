@@ -111,16 +111,22 @@ void ParseCanvasHighDynamicRangeOptions(
     }
   }
   if (options->hasSmpteSt2086Metadata()) {
-    auto& smpte_st_2086 = hdr_metadata.smpte_st_2086.emplace();
     const auto* v8_metadata = options->smpteSt2086Metadata();
-    smpte_st_2086.primaries = {
-        v8_metadata->redPrimaryX(),   v8_metadata->redPrimaryY(),
-        v8_metadata->greenPrimaryX(), v8_metadata->greenPrimaryY(),
-        v8_metadata->bluePrimaryX(),  v8_metadata->bluePrimaryY(),
-        v8_metadata->whitePointX(),   v8_metadata->whitePointY(),
-    };
-    smpte_st_2086.luminance_min = v8_metadata->minimumLuminance();
-    smpte_st_2086.luminance_max = v8_metadata->maximumLuminance();
+    hdr_metadata.SetMDCV({
+        .fDisplayPrimaries =
+            {
+                v8_metadata->redPrimaryX(),
+                v8_metadata->redPrimaryY(),
+                v8_metadata->greenPrimaryX(),
+                v8_metadata->greenPrimaryY(),
+                v8_metadata->bluePrimaryX(),
+                v8_metadata->bluePrimaryY(),
+                v8_metadata->whitePointX(),
+                v8_metadata->whitePointY(),
+            },
+        .fMaximumDisplayMasteringLuminance = v8_metadata->maximumLuminance(),
+        .fMinimumDisplayMasteringLuminance = v8_metadata->minimumLuminance(),
+    });
   }
   if (options->hasAgtm()) {
     auto span = options->agtm().RawByteSpan();

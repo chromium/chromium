@@ -117,25 +117,24 @@ TEST(StarboardConversionsTest,
       VideoTransformation(), gfx::Size(3840, 2160), gfx::Rect(3840, 2160),
       gfx::Size(3840, 2160), /*extra_data=*/{}, EncryptionScheme::kUnencrypted);
   gfx::HDRMetadata hdr_metadata;
-  gfx::HdrMetadataSmpteSt2086 smpte;
-  smpte.luminance_max = 0.9;
-  smpte.primaries.fRX = 0.1;
-  smpte.primaries.fRY = 0.2;
-  smpte.primaries.fGX = 0.3;
-  smpte.primaries.fGY = 0.4;
-  smpte.primaries.fBX = 0.5;
-  smpte.primaries.fBY = 0.6;
-  smpte.primaries.fWX = 0.7;
-  smpte.primaries.fWY = 0.8;
-  smpte.luminance_max = 1.1;
-  smpte.luminance_min = 0.01;
+  skhdr::MasteringDisplayColorVolume smpte;
+  smpte.fDisplayPrimaries.fRX = 0.1;
+  smpte.fDisplayPrimaries.fRY = 0.2;
+  smpte.fDisplayPrimaries.fGX = 0.3;
+  smpte.fDisplayPrimaries.fGY = 0.4;
+  smpte.fDisplayPrimaries.fBX = 0.5;
+  smpte.fDisplayPrimaries.fBY = 0.6;
+  smpte.fDisplayPrimaries.fWX = 0.7;
+  smpte.fDisplayPrimaries.fWY = 0.8;
+  smpte.fMaximumDisplayMasteringLuminance = 1.1;
+  smpte.fMinimumDisplayMasteringLuminance = 0.01;
 
-  gfx::HdrMetadataCta861_3 cta;
-  cta.max_content_light_level = 100;
-  cta.max_frame_average_light_level = 1000;
+  skhdr::ContentLightLevelInformation cta;
+  cta.fMaxCLL = 100;
+  cta.fMaxFALL = 1000;
 
-  hdr_metadata.smpte_st_2086 = smpte;
-  hdr_metadata.cta_861_3 = cta;
+  hdr_metadata.SetMDCV(smpte);
+  hdr_metadata.SetCLLI(cta);
   chromium_config.set_hdr_metadata(hdr_metadata);
 
   EXPECT_THAT(ToStarboardVideoSampleInfo(chromium_config),

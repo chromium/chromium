@@ -282,10 +282,10 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
           std::visit(absl::Overload{
                          [](const H265SEIAlphaChannelInfo& info) {},
                          [&](const H265SEIContentLightLevelInfo& info) {
-                           hdr_metadata.cta_861_3 = info.ToGfx();
+                           hdr_metadata.SetCLLI(info.ToSkHdr());
                          },
                          [&](const H265SEIMasteringDisplayInfo& info) {
-                           hdr_metadata.smpte_st_2086 = info.ToGfx();
+                           hdr_metadata.SetMDCV(info.ToSkHdr());
                          },
                          [](std::monostate) {},
                      },

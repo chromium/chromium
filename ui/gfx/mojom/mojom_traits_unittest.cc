@@ -424,19 +424,22 @@ TEST_F(StructTraitsTest, HDRMetadata) {
   EXPECT_EQ(input, output);
 
   // Include CTA 861.3.
-  input.cta_861_3.emplace(123, 456);
+  input.SetCLLI(skhdr::ContentLightLevelInformation{123, 456});
   EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
 
   // Include SMPTE ST 2086.
-  input.smpte_st_2086.emplace(SkNamedPrimaries::kRec2020, 789, 123);
+  input.SetMDCV(skhdr::MasteringDisplayColorVolume{
+      .fDisplayPrimaries = SkNamedPrimaries::kRec2020,
+      .fMaximumDisplayMasteringLuminance = 789,
+      .fMinimumDisplayMasteringLuminance = 123});
   EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
 
   // Include SDR white level.
-  input.ndwl.emplace(123.f);
+  input.SetNDWL(123.f);
   EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);

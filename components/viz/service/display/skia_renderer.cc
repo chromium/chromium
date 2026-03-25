@@ -2667,7 +2667,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
             features::kUseDisplaySDRMaxLuminanceNits)) {
       hdr_metadata =
           gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
-      hdr_metadata.ndwl = gfx::HdrMetadataNdwl(
+      hdr_metadata.SetNDWL(
           current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
     }
     cc::ToneMapUtil::AddGlobalToneMapFilterToPaint(

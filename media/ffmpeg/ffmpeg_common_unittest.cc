@@ -393,21 +393,21 @@ TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
 
   VideoDecoderConfig video_config;
   EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
-  ASSERT_TRUE(video_config.hdr_metadata().smpte_st_2086.has_value());
-  const auto& smpte_st_2086 = video_config.hdr_metadata().smpte_st_2086.value();
-  EXPECT_EQ(30.0, smpte_st_2086.luminance_min);
-  EXPECT_EQ(40.0, smpte_st_2086.luminance_max);
-  EXPECT_EQ(0.1f, smpte_st_2086.primaries.fRX);
-  EXPECT_EQ(0.2f, smpte_st_2086.primaries.fRY);
-  EXPECT_EQ(0.1f, smpte_st_2086.primaries.fGX);
-  EXPECT_EQ(0.2f, smpte_st_2086.primaries.fGY);
-  EXPECT_EQ(0.1f, smpte_st_2086.primaries.fBX);
-  EXPECT_EQ(0.2f, smpte_st_2086.primaries.fBY);
-  EXPECT_EQ(0.1f, smpte_st_2086.primaries.fWX);
-  EXPECT_EQ(0.2f, smpte_st_2086.primaries.fWY);
-  const auto& cta_861_3 = video_config.hdr_metadata().cta_861_3.value();
-  EXPECT_EQ(11.0f, cta_861_3.max_content_light_level);
-  EXPECT_EQ(12.0f, cta_861_3.max_frame_average_light_level);
+  ASSERT_TRUE(video_config.hdr_metadata().HasMDCV());
+  const auto& mdcv = video_config.hdr_metadata().GetMDCV();
+  EXPECT_EQ(30.0, mdcv.fMinimumDisplayMasteringLuminance);
+  EXPECT_EQ(40.0, mdcv.fMaximumDisplayMasteringLuminance);
+  EXPECT_EQ(0.1f, mdcv.fDisplayPrimaries.fRX);
+  EXPECT_EQ(0.2f, mdcv.fDisplayPrimaries.fRY);
+  EXPECT_EQ(0.1f, mdcv.fDisplayPrimaries.fGX);
+  EXPECT_EQ(0.2f, mdcv.fDisplayPrimaries.fGY);
+  EXPECT_EQ(0.1f, mdcv.fDisplayPrimaries.fBX);
+  EXPECT_EQ(0.2f, mdcv.fDisplayPrimaries.fBY);
+  EXPECT_EQ(0.1f, mdcv.fDisplayPrimaries.fWX);
+  EXPECT_EQ(0.2f, mdcv.fDisplayPrimaries.fWY);
+  const auto& clli = video_config.hdr_metadata().GetCLLI();
+  EXPECT_EQ(11.0f, clli.fMaxCLL);
+  EXPECT_EQ(12.0f, clli.fMaxFALL);
   EXPECT_EQ(VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST428_1,
                             VideoColorSpace::TransferID::LOG,
                             VideoColorSpace::MatrixID::RGB,

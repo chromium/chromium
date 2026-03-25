@@ -92,17 +92,17 @@ std::optional<StarboardVideoCodec> ToSbVideoCodec(
 // Populates HDR fields of `out_color_metadata` based on `hdr_metadata`.
 void PopulateHdrMetadata(const gfx::HDRMetadata& hdr_metadata,
                          StarboardColorMetadata& out_color_metadata) {
-  if (hdr_metadata.cta_861_3) {
-    out_color_metadata.max_cll =
-        hdr_metadata.cta_861_3->max_content_light_level;
-    out_color_metadata.max_fall =
-        hdr_metadata.cta_861_3->max_frame_average_light_level;
+  if (hdr_metadata.HasCLLI()) {
+    const auto& cta_861_3 = hdr_metadata.GetCLLI();
+    out_color_metadata.max_cll = cta_861_3.fMaxCLL;
+    out_color_metadata.max_fall = cta_861_3.fMaxFALL;
   } else {
     LOG(INFO) << "HDR metadata is missing cta_861_3 info.";
   }
 
-  if (hdr_metadata.smpte_st_2086) {
-    const auto& color_volume_metadata = hdr_metadata.smpte_st_2086->primaries;
+  if (hdr_metadata.HasMDCV()) {
+    const auto& smpte_st_2086 = hdr_metadata.GetMDCV();
+    const auto& color_volume_metadata = smpte_st_2086.fDisplayPrimaries;
 
     StarboardMediaMasteringMetadata& mastering_metadata =
         out_color_metadata.mastering_metadata;
@@ -115,9 +115,9 @@ void PopulateHdrMetadata(const gfx::HDRMetadata& hdr_metadata,
     mastering_metadata.white_point_chromaticity_x = color_volume_metadata.fWX;
     mastering_metadata.white_point_chromaticity_y = color_volume_metadata.fWY;
     mastering_metadata.luminance_max =
-        hdr_metadata.smpte_st_2086->luminance_max;
+        smpte_st_2086.fMaximumDisplayMasteringLuminance;
     mastering_metadata.luminance_min =
-        hdr_metadata.smpte_st_2086->luminance_min;
+        smpte_st_2086.fMinimumDisplayMasteringLuminance;
   } else {
     LOG(INFO) << "HDR metadata is missing smpte_st_2086 info.";
   }

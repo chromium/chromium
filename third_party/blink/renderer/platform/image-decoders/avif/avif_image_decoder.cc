@@ -856,8 +856,9 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   chroma_shift_y_ = format_info.chromaShiftY;
 
   if (container->clli.maxCLL || container->clli.maxPALL) {
-    hdr_metadata_.cta_861_3 = gfx::HdrMetadataCta861_3(container->clli.maxCLL,
-                                                       container->clli.maxPALL);
+    hdr_metadata_.SetCLLI(skhdr::ContentLightLevelInformation::MakeUint16(
+        /*maxCLL=*/container->clli.maxCLL,
+        /*maxFALL=*/container->clli.maxPALL));
   }
 
   // SetEmbeddedColorProfile() must be called before IsSizeAvailable() becomes

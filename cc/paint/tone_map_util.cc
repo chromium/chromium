@@ -65,28 +65,17 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   }
 
   // Use NDWL to specify HDR reference white only if AGTM was not present.
-  if (!agtm_valid && metadata.ndwl.has_value() && metadata.ndwl->nits > 0.f) {
-    agtm.fHdrReferenceWhite = metadata.ndwl->nits;
+  if (!agtm_valid && metadata.HasNDWL() && metadata.GetNDWL() > 0.f) {
+    agtm.fHdrReferenceWhite = metadata.GetNDWL();
     agtm_valid = true;
   }
 
   // Set the MDCV, CLLI, and AGTM values on `skia_metadata`.
-  if (metadata.smpte_st_2086.has_value()) {
-    skia_metadata.setMasteringDisplayColorVolume({
-        .fDisplayPrimaries = metadata.smpte_st_2086->primaries,
-        .fMaximumDisplayMasteringLuminance =
-            metadata.smpte_st_2086->luminance_max,
-        .fMinimumDisplayMasteringLuminance =
-            metadata.smpte_st_2086->luminance_min,
-    });
+  if (metadata.HasMDCV()) {
+    skia_metadata.setMasteringDisplayColorVolume(metadata.GetMDCV());
   }
-  if (metadata.cta_861_3.has_value()) {
-    skia_metadata.setContentLightLevelInformation({
-        .fMaxCLL =
-            static_cast<float>(metadata.cta_861_3->max_content_light_level),
-        .fMaxFALL = static_cast<float>(
-            metadata.cta_861_3->max_frame_average_light_level),
-    });
+  if (metadata.HasCLLI()) {
+    skia_metadata.setContentLightLevelInformation(metadata.GetCLLI());
   }
   if (agtm_valid) {
     skia_metadata.setAdaptiveGlobalToneMap(agtm);

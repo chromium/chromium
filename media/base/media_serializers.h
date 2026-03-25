@@ -21,6 +21,7 @@
 #include "media/base/renderer.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
+#include "third_party/skia/include/core/SkString.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -309,14 +310,14 @@ template <>
 struct MediaSerializer<gfx::HDRMetadata> {
   static base::Value Serialize(const gfx::HDRMetadata& value) {
     base::DictValue result;
-    if (value.smpte_st_2086.has_value()) {
-      FIELD_SERIALIZE("smpte_st_2086", value.smpte_st_2086->ToString());
+    if (value.HasMDCV()) {
+      FIELD_SERIALIZE("mdcv", value.GetMDCV().toString().c_str());
     }
-    if (value.cta_861_3.has_value()) {
-      FIELD_SERIALIZE("cta_861_3", value.cta_861_3->ToString());
+    if (value.HasCLLI()) {
+      FIELD_SERIALIZE("clli", value.GetCLLI().toString().c_str());
     }
-    if (value.ndwl.has_value()) {
-      FIELD_SERIALIZE("ndwl", value.ndwl->ToString());
+    if (value.HasNDWL()) {
+      FIELD_SERIALIZE("ndwl", value.GetNDWL());
     }
     if (value.extended_range.has_value()) {
       FIELD_SERIALIZE("extended_range", value.extended_range->ToString());

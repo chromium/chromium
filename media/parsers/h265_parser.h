@@ -23,11 +23,7 @@
 #include "media/parsers/h264_bit_reader.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/h265_nalu_parser.h"
-
-namespace gfx {
-struct HdrMetadataCta861_3;
-struct HdrMetadataSmpteSt2086;
-}  // namespace gfx
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 
 namespace media {
 
@@ -467,7 +463,7 @@ struct MEDIA_EXPORT H265SEIContentLightLevelInfo {
   uint16_t max_content_light_level;
   uint16_t max_picture_average_light_level;
 
-  gfx::HdrMetadataCta861_3 ToGfx() const;
+  skhdr::ContentLightLevelInformation ToSkHdr() const;
 };
 
 struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
@@ -483,7 +479,7 @@ struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
   uint32_t max_luminance;
   uint32_t min_luminance;
 
-  gfx::HdrMetadataSmpteSt2086 ToGfx() const;
+  skhdr::MasteringDisplayColorVolume ToSkHdr() const;
 };
 
 using H265SEIMessage = std::variant<std::monostate,

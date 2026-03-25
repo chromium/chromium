@@ -354,25 +354,26 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
   if (hdr_metadata) {
     video_config.have_hdr_metadata = true;
 
-    if (const auto& cta_861_3 = hdr_metadata->cta_861_3) {
-      video_config.hdr_metadata.max_content_light_level =
-          cta_861_3->max_content_light_level;
+    if (hdr_metadata->HasCLLI()) {
+      const auto& cta_861_3 = hdr_metadata->GetCLLI();
+      video_config.hdr_metadata.max_content_light_level = cta_861_3.fMaxCLL;
       video_config.hdr_metadata.max_frame_average_light_level =
-          cta_861_3->max_frame_average_light_level;
+          cta_861_3.fMaxFALL;
     }
 
-    if (const auto& mm1 = hdr_metadata->smpte_st_2086) {
+    if (hdr_metadata->HasMDCV()) {
+      const auto& mm1 = hdr_metadata->GetMDCV();
       auto& mm2 = video_config.hdr_metadata.color_volume_metadata;
-      mm2.primary_r_chromaticity_x = mm1->primaries.fRX;
-      mm2.primary_r_chromaticity_y = mm1->primaries.fRY;
-      mm2.primary_g_chromaticity_x = mm1->primaries.fGX;
-      mm2.primary_g_chromaticity_y = mm1->primaries.fGY;
-      mm2.primary_b_chromaticity_x = mm1->primaries.fBX;
-      mm2.primary_b_chromaticity_y = mm1->primaries.fBY;
-      mm2.white_point_chromaticity_x = mm1->primaries.fWX;
-      mm2.white_point_chromaticity_y = mm1->primaries.fWY;
-      mm2.luminance_max = mm1->luminance_max;
-      mm2.luminance_min = mm1->luminance_min;
+      mm2.primary_r_chromaticity_x = mm1.fDisplayPrimaries.fRX;
+      mm2.primary_r_chromaticity_y = mm1.fDisplayPrimaries.fRY;
+      mm2.primary_g_chromaticity_x = mm1.fDisplayPrimaries.fGX;
+      mm2.primary_g_chromaticity_y = mm1.fDisplayPrimaries.fGY;
+      mm2.primary_b_chromaticity_x = mm1.fDisplayPrimaries.fBX;
+      mm2.primary_b_chromaticity_y = mm1.fDisplayPrimaries.fBY;
+      mm2.white_point_chromaticity_x = mm1.fDisplayPrimaries.fWX;
+      mm2.white_point_chromaticity_y = mm1.fDisplayPrimaries.fWY;
+      mm2.luminance_max = mm1.fMaximumDisplayMasteringLuminance;
+      mm2.luminance_min = mm1.fMinimumDisplayMasteringLuminance;
     }
   }
 
