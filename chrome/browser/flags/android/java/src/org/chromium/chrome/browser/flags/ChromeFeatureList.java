@@ -951,7 +951,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =
             newCachedFlag(EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD, false, true);
     public static final CachedFlag sEnableAndroidSidePanel =
-            newCachedFlag(ENABLE_ANDROID_SIDE_PANEL, false);
+            newCachedFlag(
+                    ENABLE_ANDROID_SIDE_PANEL,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sEnableAndroidSidePanelDevFeature =
             newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE, false);
     public static final CachedFlag sEnableBrowserWindowInterfaceForCustomTabActivity =

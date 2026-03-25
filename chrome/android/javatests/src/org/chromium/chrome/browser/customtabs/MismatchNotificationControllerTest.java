@@ -33,8 +33,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -52,6 +54,8 @@ import java.util.concurrent.TimeoutException;
 /** Tests for the {@link MismatchNotificationController} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+// TODO(http://crbug.com/495529795): Enable side panel and fix this test.
+@DisableFeatures({ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
 @DoNotBatch(reason = "This test relies on native initialization")
 public class MismatchNotificationControllerTest {
     private static final String TEST_URL = "https://www.google.com";
