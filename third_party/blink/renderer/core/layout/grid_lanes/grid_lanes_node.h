@@ -12,6 +12,7 @@
 
 namespace blink {
 
+struct GridItemData;
 class GridItems;
 class GridLineResolver;
 
@@ -53,6 +54,15 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
                                 bool* must_invalidate_placement_cache,
                                 HeapVector<Member<LayoutBox>>* opt_oof_children,
                                 bool* opt_has_nested_subgrid = nullptr) const;
+
+  // Adjusts a subgridded item's span to be relative to the parent grid's
+  // coordinate system if the span is definite.
+  void AdjustSubgriddedItemSpan(const GridItemData& subgrid_item,
+                                GridItemData& subgridded_item) const;
+
+  // Translates the subgrid item's span and computes its set indices.
+  void ComputeSetIndicesForSubgrid(GridItemData& subgrid_item,
+                                   GridLayoutData& layout_data) const;
 
   // Computes the largest span size among all children by examining their
   // grid placement styles directly. Note that this may be an inaccurate value

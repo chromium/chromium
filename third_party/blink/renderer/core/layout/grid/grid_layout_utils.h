@@ -272,10 +272,52 @@ void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,
 // sizing.
 bool HasBlockSizeDependentGridItem(const GridItems& grid_items);
 
-// Appends items from any subgridded children to `grid_items`, translating
-// their positions from the subgrid's coordinate space to the root grid's.
-CORE_EXPORT void AppendSubgriddedItems(const ComputedStyle& root_grid_style,
-                                       GridItems* grid_items);
+// Appends items from any subgridded children to `grid_items`.
+template <typename NodeType>
+void AppendSubgriddedItems(const NodeType& node, GridItems* grid_items) {
+  DCHECK(grid_items);
+
+  const auto& root_grid_style = node.Style();
+  for (wtf_size_t i = 0; i < grid_items->Size(); ++i) {
+    auto& current_item = grid_items->At(i);
+
+    if (!current_item.must_consider_grid_items_for_column_sizing &&
+        !current_item.must_consider_grid_items_for_row_sizing) {
+      continue;
+    }
+
+    // TODO(almaher): This should eventually support grid lanes, as well.
+    bool must_invalidate_placement_cache = false;
+    const auto subgrid = To<GridNode>(current_item.node);
+
+    auto* subgridded_items = subgrid.ConstructGridItems(
+        subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
+        current_item.must_consider_grid_items_for_column_sizing,
+        current_item.must_consider_grid_items_for_row_sizing,
+        &must_invalidate_placement_cache);
+
+    DCHECK(!must_invalidate_placement_cache)
+        << "We shouldn't need to invalidate the placement cache if we relied "
+           "on the cached line resolver; it must produce the same placement.";
+
+    for (auto& subgridded_item : *subgridded_items) {
+      subgridded_item.is_subgridded_to_parent_grid = true;
+
+      // TODO(almaher): We will eventually need to update this for grid lanes
+      // subgrids.
+      //
+      // If the subgrid has a different writing mode, columns and rows are
+      // swapped in its coordinate system relative to the root grid.
+      if (!current_item.is_parallel_with_root_grid) {
+        std::swap(subgridded_item.resolved_position.columns,
+                  subgridded_item.resolved_position.rows);
+      }
+
+      node.AdjustSubgriddedItemSpan(current_item, subgridded_item);
+    }
+    grid_items->Append(subgridded_items);
+  }
+}
 
 // Returns the synthesized logical baseline for a grid item. This is used when
 // computing min/max content contributions without a full layout result.

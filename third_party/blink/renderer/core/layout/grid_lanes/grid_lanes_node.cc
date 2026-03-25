@@ -157,6 +157,76 @@ GridItems* GridLanesNode::ConstructGridItems(
   return grid_lanes_items;
 }
 
+void GridLanesNode::AdjustSubgriddedItemSpan(
+    const GridItemData& subgrid_item,
+    GridItemData& subgridded_item) const {
+  const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
+
+  // In grid lanes, subgridding only occurs in the grid axis.
+  CHECK(subgrid_item.MustConsiderGridItemsForSizing(grid_axis_direction));
+
+  auto& subgridded_span = (grid_axis_direction == kForColumns)
+                              ? subgridded_item.resolved_position.columns
+                              : subgridded_item.resolved_position.rows;
+
+  // If the subgrid is auto-placed or the subgridded item has an indefinite
+  // span, the item is treated as auto placed, contributing to every possible
+  // parent grid lanes track.
+  if (subgrid_item.is_auto_placed || subgridded_span.IsIndefinite()) {
+    subgridded_span = GridSpan::IndefiniteGridSpan(subgridded_span.SpanSize());
+    subgridded_item.is_auto_placed = true;
+  } else {
+    // Both the subgrid and the subgridded item have definite positions.
+    // Translate the subgridded item's span to the parent grid's coordinate
+    // space, constrained to the subgrid's actual track range.
+    if (subgrid_item.IsOppositeDirectionInRootGrid(grid_axis_direction)) {
+      // If a subgrid is in an opposite writing direction to the root
+      // grid, we should "reverse" the subgridded item's span.
+      const wtf_size_t subgrid_span_size =
+          subgrid_item.SpanSize(grid_axis_direction);
+      DCHECK_LE(subgridded_span.EndLine(), subgrid_span_size);
+      subgridded_span = GridSpan::TranslatedDefiniteGridSpan(
+          subgrid_span_size - subgridded_span.EndLine(),
+          subgrid_span_size - subgridded_span.StartLine());
+    }
+    subgridded_span.Translate(subgrid_item.StartLine(grid_axis_direction));
+  }
+}
+
+void GridLanesNode::ComputeSetIndicesForSubgrid(
+    GridItemData& subgrid_item,
+    GridLayoutData& layout_data) const {
+  // In grid lanes, placement happens after sizing, so the placement of subgrid
+  // items may not be known at this point. Translate definite spans using the
+  // `start_offset` cached by BuildSizingCollection. For items without a known
+  // position, assume they start at the beginning of the explicit grid.
+  //
+  // TODO(almaher): We may need to do an additional pass for row grid-lanes
+  // containers, or if items depend on the block size constraint in column
+  // grid-lanes, to ensure we get the correct position for these subgrids, as
+  // that can impact subgridded item contributions and thus track sizing.
+  const auto grid_axis = Style().GridLanesTrackSizingDirection();
+  const wtf_size_t start_offset = CachedPlacementData().StartOffset(grid_axis);
+
+  auto& span = (grid_axis == kForColumns)
+                   ? subgrid_item.resolved_position.columns
+                   : subgrid_item.resolved_position.rows;
+
+  if (span.IsUntranslatedDefinite()) {
+    span.Translate(start_offset);
+  } else if (span.IsIndefinite()) {
+    span = GridSpan::TranslatedDefiniteGridSpan(start_offset,
+                                                start_offset + span.SpanSize());
+  }
+
+  // Grid-lanes only has tracks in the grid axis.
+  if (grid_axis == kForColumns) {
+    subgrid_item.ComputeSetIndices(layout_data.Columns());
+  } else {
+    subgrid_item.ComputeSetIndices(layout_data.Rows());
+  }
+}
+
 // TODO(almaher): We may be able to optimize this by caching the largest span
 // size when children are added to `LayoutGridLanes`, but this would require
 // extra invalidation logic, which, given that we only need this in certain

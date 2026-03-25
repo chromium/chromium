@@ -11,6 +11,7 @@
 
 namespace blink {
 
+struct GridItemData;
 class GridItems;
 class GridSizingSubtree;
 
@@ -57,6 +58,16 @@ class CORE_EXPORT GridNode final : public BlockNode {
   LayoutUnit ComputeSubgridIntrinsicBlockSize(
       const GridSizingSubtree& sizing_subtree,
       const ConstraintSpace& space) const;
+
+  // Adjusts a subgridded item's span to be relative to the parent grid's
+  // coordinate system.
+  void AdjustSubgriddedItemSpan(const GridItemData& subgrid_item,
+                                GridItemData& subgridded_item) const;
+
+  // Computes the set indices for the `subgrid_item` in both the column and row
+  // axes.
+  void ComputeSetIndicesForSubgrid(GridItemData& subgrid_item,
+                                   GridLayoutData& layout_data) const;
 
   // Constructs grid items with explicit subgrid parameters.
   GridItems* ConstructGridItems(

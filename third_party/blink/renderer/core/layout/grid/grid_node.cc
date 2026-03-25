@@ -122,6 +122,38 @@ GridItems* GridNode::ConstructGridItems(
   return grid_items;
 }
 
+void GridNode::AdjustSubgriddedItemSpan(const GridItemData& subgrid_item,
+                                        GridItemData& subgridded_item) const {
+  // Translate the subgridded item's spans from the subgrid's coordinate space
+  // to the parent grid's coordinate space.
+  auto& item_position = subgridded_item.resolved_position;
+
+  auto TranslateSpan = [&subgrid_item](GridSpan& span,
+                                       GridTrackSizingDirection direction) {
+    if (subgrid_item.MustConsiderGridItemsForSizing(direction)) {
+      // If a subgrid is in an opposite writing direction to the root
+      // grid, we should "reverse" the subgridded item's span.
+      if (subgrid_item.IsOppositeDirectionInRootGrid(direction)) {
+        const wtf_size_t subgrid_span_size = subgrid_item.SpanSize(direction);
+        DCHECK_LE(span.EndLine(), subgrid_span_size);
+        span = GridSpan::TranslatedDefiniteGridSpan(
+            subgrid_span_size - span.EndLine(),
+            subgrid_span_size - span.StartLine());
+      }
+      span.Translate(subgrid_item.StartLine(direction));
+    }
+  };
+
+  TranslateSpan(item_position.columns, kForColumns);
+  TranslateSpan(item_position.rows, kForRows);
+}
+
+void GridNode::ComputeSetIndicesForSubgrid(GridItemData& subgrid_item,
+                                           GridLayoutData& layout_data) const {
+  subgrid_item.ComputeSetIndices(layout_data.Columns());
+  subgrid_item.ComputeSetIndices(layout_data.Rows());
+}
+
 MinMaxSizesResult GridNode::ComputeSubgridMinMaxSizes(
     const GridSizingSubtree& sizing_subtree,
     const ConstraintSpace& space) const {

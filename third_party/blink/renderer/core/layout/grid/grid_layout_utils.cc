@@ -720,34 +720,28 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     return;
   }
 
+  const bool has_grid_columns = style.HasGridTrackAxis(kForColumns);
+  const bool has_grid_rows = style.HasGridTrackAxis(kForRows);
+
   // For grid-lanes, only the grid axis has tracks; the stacking axis does not.
-  if (style.HasGridTrackAxis(kForColumns)) {
+  if (has_grid_columns) {
     InitializeTrackCollection(opt_subgrid_data, style, constraint_space,
                               algorithm.BorderScrollbarPadding(),
                               algorithm.GetGridAvailableSize(), kForColumns,
                               layout_data);
   }
-  if (style.HasGridTrackAxis(kForRows)) {
+  if (has_grid_rows) {
     InitializeTrackCollection(opt_subgrid_data, style, constraint_space,
                               algorithm.BorderScrollbarPadding(),
                               algorithm.GetGridAvailableSize(), kForRows,
                               layout_data);
   }
 
-  if (has_standalone_columns && style.HasGridTrackAxis(kForColumns)) {
+  if (has_standalone_columns && has_grid_columns) {
     layout_data->SizingCollection(kForColumns).CacheDefiniteSetsGeometry();
   }
-  if (has_standalone_rows && style.HasGridTrackAxis(kForRows)) {
+  if (has_standalone_rows && has_grid_rows) {
     layout_data->SizingCollection(kForRows).CacheDefiniteSetsGeometry();
-  }
-
-  // TODO(almaher): Remove the Grid Lanes check once more of the functionality
-  // is in place for subgrid support in Grid Lanes (specifically using virtual
-  // items for track sizing instead of the grid items directly).
-  if (style.IsDisplayGridLanesBox()) {
-    sizing_tree->SetSizingNodeData(node, grid_items, layout_data,
-                                   virtual_items);
-    return;
   }
 
   // `AppendSubgriddedItems` rely on the cached placement data of a subgrid to
@@ -757,16 +751,7 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
       continue;
     }
 
-    // TODO(almaher): For grid lanes we need to use virtual items instead of
-    // getting the actual position since placement happens after sizing in grid
-    // lanes.
-    //
-    // TODO(ethavar): Currently we have an issue where we can't correctly cache
-    // the set indices of this grid item to determine its available space. This
-    // happens because subgridded items are not considered by the range builder
-    // since they can't be placed before we recurse into subgrids.
-    grid_item.ComputeSetIndices(layout_data->Columns());
-    grid_item.ComputeSetIndices(layout_data->Rows());
+    node.ComputeSetIndicesForSubgrid(grid_item, *layout_data);
 
     const SubgriddedItemData subgridded_item(grid_item, layout_data,
                                              writing_mode);
@@ -796,7 +781,7 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     grid_item.ResetPlacementIndices();
   }
 
-  AppendSubgriddedItems(style, grid_items);
+  AppendSubgriddedItems(node, grid_items);
 
   // We need to recreate the track builder collections to ensure track coverage
   // for subgridded items; it would be ideal to have them accounted for already,
@@ -1006,69 +991,6 @@ bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
     }
   }
   return false;
-}
-
-void AppendSubgriddedItems(const ComputedStyle& root_grid_style,
-                           GridItems* grid_items) {
-  DCHECK(grid_items);
-
-  for (wtf_size_t i = 0; i < grid_items->Size(); ++i) {
-    auto& current_item = grid_items->At(i);
-
-    if (!current_item.must_consider_grid_items_for_column_sizing &&
-        !current_item.must_consider_grid_items_for_row_sizing) {
-      continue;
-    }
-
-    // TODO(almaher): This should eventually use a GridLanesNode if
-    // required once subgrids are supported for grid lanes items.
-    bool must_invalidate_placement_cache = false;
-    const auto subgrid = To<GridNode>(current_item.node);
-
-    auto* subgridded_items = subgrid.ConstructGridItems(
-        subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
-        current_item.must_consider_grid_items_for_column_sizing,
-        current_item.must_consider_grid_items_for_row_sizing,
-        &must_invalidate_placement_cache);
-
-    DCHECK(!must_invalidate_placement_cache)
-        << "We shouldn't need to invalidate the placement cache if we relied "
-           "on the cached line resolver; it must produce the same placement.";
-
-    auto TranslateSubgriddedItem =
-        [&current_item](GridSpan& subgridded_item_span,
-                        GridTrackSizingDirection track_direction) {
-          if (current_item.MustConsiderGridItemsForSizing(track_direction)) {
-            // If a subgrid is in an opposite writing direction to the root
-            // grid, we should "reverse" the subgridded item's span.
-            if (current_item.IsOppositeDirectionInRootGrid(track_direction)) {
-              const wtf_size_t subgrid_span_size =
-                  current_item.SpanSize(track_direction);
-
-              DCHECK_LE(subgridded_item_span.EndLine(), subgrid_span_size);
-
-              subgridded_item_span = GridSpan::TranslatedDefiniteGridSpan(
-                  subgrid_span_size - subgridded_item_span.EndLine(),
-                  subgrid_span_size - subgridded_item_span.StartLine());
-            }
-            subgridded_item_span.Translate(
-                current_item.StartLine(track_direction));
-          }
-        };
-
-    for (auto& subgridded_item : *subgridded_items) {
-      subgridded_item.is_subgridded_to_parent_grid = true;
-      auto& item_position = subgridded_item.resolved_position;
-
-      if (!current_item.is_parallel_with_root_grid) {
-        std::swap(item_position.columns, item_position.rows);
-      }
-
-      TranslateSubgriddedItem(item_position.columns, kForColumns);
-      TranslateSubgriddedItem(item_position.rows, kForRows);
-    }
-    grid_items->Append(subgridded_items);
-  }
 }
 
 LayoutUnit GetSynthesizedLogicalBaseline(

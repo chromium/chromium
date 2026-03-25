@@ -33,10 +33,7 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
   for (wtf_size_t current_item_index = 0; const auto& grid_item : *grid_items) {
     // If this grid item is a subgrid, we need to add its subtree size to this
     // grid's subtree size and move to the next `child_subgrid_index`.
-    //
-    // TODO(almaher): Remove the grid-lanes check once subgrid support is
-    // implemented for grid-lanes.
-    if (grid_item.IsSubgrid() && !grid_node.Style().IsDisplayGridLanesBox()) {
+    if (grid_item.IsSubgrid()) {
       DCHECK_EQ(child_subgrid_index, LookupSubgridIndex(grid_item.node));
       const auto subtree_size = SubtreeSize(child_subgrid_index);
       tree_node.subtree_size += subtree_size;
