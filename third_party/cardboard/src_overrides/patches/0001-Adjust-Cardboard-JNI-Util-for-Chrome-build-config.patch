@@ -1,0 +1,41 @@
+From 3af7b78665624fbf819c87aed65d87dc22921b6c Mon Sep 17 00:00:00 2001
+From: Alexander Cooper <alcooper@chromium.org>
+Date: Thu, 27 Feb 2025 12:59:57 -0800
+Subject: [PATCH 1/2] Adjust Cardboard JNI Util for Chrome build config
+
+---
+ .../src_overrides/sdk/jni_utils/android/jni_utils.cc     | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/third_party/cardboard/src_overrides/sdk/jni_utils/android/jni_utils.cc b/third_party/cardboard/src_overrides/sdk/jni_utils/android/jni_utils.cc
+index fe6c8cd45e577..8a1f29405f42a 100644
+--- a/third_party/cardboard/src_overrides/sdk/jni_utils/android/jni_utils.cc
++++ b/third_party/cardboard/src_overrides/sdk/jni_utils/android/jni_utils.cc
+@@ -13,9 +13,10 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-#include "jni_utils/android/jni_utils.h"
++#include "third_party/cardboard/src/sdk/jni_utils/android/jni_utils.h"
+ 
+-#include "util/logging.h"
++#include "base/android/jni_android.h"
++#include "third_party/cardboard/src/sdk/util/logging.h"
+ 
+ namespace cardboard::jni {
+ namespace {
+@@ -60,9 +61,9 @@ void LoadJNIEnv(JavaVM* vm, JNIEnv** env) {
+ }
+ 
+ jclass LoadJClass(JNIEnv* env, const char* class_name) {
+-  jclass local = env->FindClass(class_name);
++  auto local_ref = base::android::GetClass(env, class_name);
+   CheckExceptionInJava(env);
+-  return static_cast<jclass>(env->NewGlobalRef(local));
++  return static_cast<jclass>(env->NewGlobalRef(local_ref.obj()));
+ }
+ 
+ void ThrowJavaRuntimeException(JNIEnv* env, const char* msg) {
+-- 
+2.48.1.711.g2feabab25a-goog
+
