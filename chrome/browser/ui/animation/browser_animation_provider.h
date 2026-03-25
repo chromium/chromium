@@ -221,14 +221,27 @@ class BrowserAnimationProvider {
 
   // Creates a sequence that snaps from `starting_value` to `ending_value` at
   // `at_time`.
-  template <typename T>
-    requires std::same_as<T, AtMs> || std::same_as<T, AtPercent>
   static SequenceInfo Snap(BrowserAnimationSequence sequence,
                            FromValue starting_value,
                            ToValue ending_value,
-                           T at_time) {
-    return Sequence(sequence, Keyframe(at_time, Value(starting_value.value)),
-                    Keyframe(at_time, Value(ending_value.value)));
+                           AtMs at_time) {
+    return at_time.time.is_zero()
+               ? Sequence(sequence,
+                          Keyframe(at_time, Value(ending_value.value)))
+               : Sequence(sequence,
+                          Keyframe(at_time, Value(starting_value.value)),
+                          Keyframe(at_time, Value(ending_value.value)));
+  }
+  static SequenceInfo Snap(BrowserAnimationSequence sequence,
+                           FromValue starting_value,
+                           ToValue ending_value,
+                           AtPercent at_time) {
+    return at_time.percent == 0.0
+               ? Sequence(sequence,
+                          Keyframe(at_time, Value(ending_value.value)))
+               : Sequence(sequence,
+                          Keyframe(at_time, Value(starting_value.value)),
+                          Keyframe(at_time, Value(ending_value.value)));
   }
 
   // Creates a sequence that animates from `starting_value` to `ending_value`

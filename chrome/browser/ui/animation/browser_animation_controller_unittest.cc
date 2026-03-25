@@ -323,7 +323,7 @@ TEST_F(BrowserAnimationControllerTest, GetCurrentValueSnapAndAnimate) {
   controller()->Start(kTestAnimationGroup2, kTestAnimationMotion2);
   EXPECT_EQ(0.0, controller()->GetCurrentValue(kTestAnimationGroup2,
                                                kTestAnimationSequence1));
-  EXPECT_EQ(0.0, controller()->GetCurrentValue(kTestAnimationGroup2,
+  EXPECT_EQ(1.0, controller()->GetCurrentValue(kTestAnimationGroup2,
                                                kTestAnimationSequence2));
   EXPECT_EQ(0.0, controller()->GetCurrentValue(kTestAnimationGroup2,
                                                kTestAnimationSequence3));
