@@ -44,6 +44,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
@@ -374,7 +375,7 @@ TEST_F(DrawingBufferTest, TransferableResourcesAreNotOverlayCandidates) {
 TEST_F(
     DrawingBufferTest,
     TransferableResourcesAreOverlayCandidatesWhenUseOverlaysForWebGLIsEnabled) {
-  SharedGpuContext::SetUseOverlaysForWebGLForTesting(true);
+  SetUseOverlaysForWebGLForTesting(true);
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
 
@@ -727,7 +728,7 @@ TEST_F(DrawingBufferTest, VerifyLowLatencyRenderingIsNotSetByDefault) {
 TEST_F(
     DrawingBufferTest,
     VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrueAndLowLatencyUsageIsSupportedForWebGL) {
-  SharedGpuContext::SetLowLatencyUsageSupportedForWebGLForTesting(true);
+  SetLowLatencyUsageSupportedForWebGLForTesting(true);
 
   gfx::Size initial_size(kInitialWidth, kInitialHeight);
   auto gl = std::make_unique<GLES2InterfaceForTests>();

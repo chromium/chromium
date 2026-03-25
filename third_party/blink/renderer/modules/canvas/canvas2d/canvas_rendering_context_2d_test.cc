@@ -101,6 +101,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -1533,7 +1534,7 @@ TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedLowLatencyIsNotSingleBuffered) {
   // Ensure that the context will create a SharedImage provider for the test to
   // be meaningful.
-  SharedGpuContext::SetUseMappableSharedImagesForCanvas2DForTesting(true);
+  SetUseMappableSharedImagesForCanvas2DForTesting(true);
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
@@ -1717,7 +1718,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
 
 TEST_P(CanvasRenderingContext2DTest,
        SoftwareCanvasIsCompositedIfMappableSharedImageIsUsed) {
-  SharedGpuContext::SetUseMappableSharedImagesForCanvas2DForTesting(true);
+  SetUseMappableSharedImagesForCanvas2DForTesting(true);
 
   // Ensure that support for BGRA overlays is present, as otherwise compositing
   // will not occur regardless.
@@ -1738,7 +1739,7 @@ TEST_P(CanvasRenderingContext2DTest,
 
 TEST_P(CanvasRenderingContext2DTest,
        SoftwareCanvasIsNotCompositedIfMappableSharedImageIsNotUsed) {
-  SharedGpuContext::SetUseMappableSharedImagesForCanvas2DForTesting(false);
+  SetUseMappableSharedImagesForCanvas2DForTesting(false);
 
   CreateContext(kNonOpaque);
   EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider());
@@ -3509,7 +3510,7 @@ class CanvasRenderingContext2DTestLowLatency
  protected:
   CanvasRenderingContext2DTestLowLatency()
       : CanvasRenderingContext2DTestAccelerated() {
-    SharedGpuContext::SetLowLatencyUsageSupportedForCanvas2DForTesting(true);
+    SetLowLatencyUsageSupportedForCanvas2DForTesting(true);
   }
 
   void ConfigureContextProvider(

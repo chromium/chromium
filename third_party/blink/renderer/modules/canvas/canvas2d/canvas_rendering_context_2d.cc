@@ -106,6 +106,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -1330,8 +1331,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   // either (a) using GPU raster or (b) using CPU raster and want to use
   // mappable SharedImage for Canvas2D.
   if (is_gpu_compositing_enabled &&
-      (use_gpu_raster ||
-       SharedGpuContext::UseMappableSharedImagesForCanvas2D())) {
+      (use_gpu_raster || UseMappableSharedImagesForCanvas2D())) {
     RasterMode raster_mode =
         use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU;
     gpu::SharedImageUsageSet shared_image_usage_flags =
@@ -1341,8 +1341,8 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // appropriate.
     bool low_latency_supported =
         canvas()->LowLatencyEnabled() &&
-        SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(raster_mode);
-    if (low_latency_supported || SharedGpuContext::UseOverlaysForCanvas2D()) {
+        LowLatencyUsageSupportedForCanvas2D(raster_mode);
+    if (low_latency_supported || UseOverlaysForCanvas2D()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       if (low_latency_supported) {
         shared_image_usage_flags |=

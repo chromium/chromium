@@ -283,7 +283,7 @@ DrawingBuffer::DrawingBuffer(
       requested_format_(want_alpha_channel ? GL_RGBA8 : GL_RGB8),
       context_info_(context_info),
       can_use_low_latency_(desynchronized &&
-                           SharedGpuContext::LowLatencyUsageSupportedForWebGL(
+                           LowLatencyUsageSupportedForWebGL(
                                ContextProvider()->SharedImageInterface())),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
@@ -2018,8 +2018,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   if (SharedGpuContext::IsGpuCompositingEnabled() &&
       (!is_offscreen_canvas_ ||
        base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas))) {
-    use_as_overlay =
-        SharedGpuContext::UseOverlaysForWebGL() || can_use_low_latency_;
+    use_as_overlay = UseOverlaysForWebGL() || can_use_low_latency_;
   }
   if (use_as_overlay) {
 #if !BUILDFLAG(IS_ANDROID)
