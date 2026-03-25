@@ -990,6 +990,8 @@ PLATFORM_INFO = {
     },
 }
 
+# TODO: add more details.
+BENCHMARK_INFO = {k: {} for k, v in _BENCHMARKS_CONFIG_FACTORIES.items()}
 
 def LoadAllScheduleFiles() -> set[_PerfPlatform]:
   schedule_dir = pathlib.Path(__file__).resolve().parent / 'schedule'

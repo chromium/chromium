@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import difflib
 import shutil
 import pathlib
 import sys
@@ -83,7 +84,7 @@ def _get_filtered_schedule_files(benchmarks: list[str]) -> list[pathlib.Path]:
 def cmd_add(args):
   csv_files = _get_filtered_schedule_files(args.benchmarks)
   if not csv_files:
-    print('No matching benchmarks found.')
+    print(f'No matching benchmarks found: {args.benchmarks!r}')
     return
   for csv_file in csv_files:
     add_bot(csv_file, args.bot, args.repeat, args.shard, args.flags)
@@ -131,7 +132,7 @@ def add_bot(path: pathlib.Path, bot: str, repeat: int | None, shard: int | None,
 
 
 def cmd_remove(args):
-  csv_files = _get_filtered_schedule_files(args.benchmakrs)
+  csv_files = _get_filtered_schedule_files(args.benchmarks)
   if not csv_files:
     print('No matching benchmarks found.')
     return
@@ -148,7 +149,7 @@ def remove_bot(path: pathlib.Path, bot: str):
 
 
 def _filter_bot_rows(rows: list[str], bot: str) -> list[str]:
-  assert ',' not in bot, 'Invalid bot name {bot!r}'
+  assert ',' not in bot, f'Invalid bot name {bot!r}'
   bot_prefix = bot + ','
   filtered_rows: list[str] = []
   removed = False
@@ -167,25 +168,66 @@ def _filter_bot_rows(rows: list[str], bot: str) -> list[str]:
   return []
 
 
+def closest_matches_error(msg, value, choices):
+  suggestions = difflib.get_close_matches(value, choices, n=4, cutoff=0.1)
+  error_msg = f"{msg}: {value!r}"
+  if suggestions:
+    # Format as: (did you mean: one, two, or three?)
+    suggestion_str = ", ".join(f"'{s}'" for s in suggestions[:-1])
+    if len(suggestions) > 1:
+      suggestion_str += f", or '{suggestions[-1]}'"
+    else:
+      suggestion_str = f"'{suggestions[0]}'"
+    error_msg += f" (did you mean: {suggestion_str}?)"
+  else:
+    error_msg += f" choices are: {', '.join(c for c in choices)}"
+  return argparse.ArgumentTypeError(error_msg)
+
 def main():
   parser = argparse.ArgumentParser(
       description='Query and modify benchmark schedules.')
   subparsers = parser.add_subparsers(dest='command')
 
+  bot_choices = sorted(bot_platforms.PLATFORM_INFO.keys())
+  directory = pathlib.Path(__file__).resolve().parent
+  local_benchmarks = {f.stem for f in _get_schedule_files(directory)}
+  official_benchmarks = set(bot_platforms.BENCHMARK_INFO.keys())
+  all_benchmarks = sorted(local_benchmarks | official_benchmarks)
+
+  def benchmark_type(value):
+    if any(c in value for c in '*?['):
+      return value
+    if value in all_benchmarks:
+      return value
+    raise closest_matches_error('Invalid benchmark', value, all_benchmarks)
+
+  def bot_type(value):
+    if value in bot_choices:
+      return value
+    raise closest_matches_error('Invalid bot', value, bot_choices)
+
+
   # list command
   list_parser = subparsers.add_parser('list', help='list benchmarks or bots')
-  list_parser.add_argument('--bot', help='list all benchmarks run by this bot')
+  list_parser.add_argument('--bot',
+                           help='list all benchmarks run by this bot',
+                           type=bot_type,
+                           metavar='BOT')
   list_parser.add_argument(
       '--benchmark',
-      help='list all bots running this benchmark (supports globs)')
+      help='list all bots running this benchmark (supports globs)',
+      type=benchmark_type,
+      metavar='BENCHMARK')
 
   # Add command
   add_parser = subparsers.add_parser('add',
                                      help='Add or update a bot in benchmarks')
-  add_parser.add_argument('bot', help='Bot name')
+  add_parser.add_argument('bot', help='Bot name', type=bot_type, metavar='BOT')
   add_parser.add_argument('benchmarks',
                           nargs='+',
-                          help='Benchmark names or glob patterns')
+                          help='Benchmark names or glob patterns',
+                          type=benchmark_type,
+                          metavar='BENCHMARK')
   add_parser.add_argument('--repeat', type=int, help='Number of repeats')
   add_parser.add_argument('--shard', type=int, help='Number of shards')
   add_parser.add_argument('--flags', help='Custom flags')
@@ -193,10 +235,15 @@ def main():
   # Remove command
   remove_parser = subparsers.add_parser('remove',
                                         help='Remove a bot from benchmarks')
-  remove_parser.add_argument('bot', help='Bot name')
+  remove_parser.add_argument('bot',
+                             help='Bot name',
+                             type=bot_type,
+                             metavar='BOT')
   remove_parser.add_argument('benchmarks',
                              nargs='+',
-                             help='Benchmark names or glob patterns')
+                             help='Benchmark names or glob patterns',
+                             type=benchmark_type,
+                             metavar='BENCHMARK')
 
   args = parser.parse_args()
   cmd = args.command

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import unittest
 import pathlib
 import sys
@@ -98,6 +99,36 @@ bot2,1,1
     query.remove_bot(csv_path, 'bot2')
     content = csv_path.read_text(encoding='utf-8')
     self.assertEqual(content, csv_content)
+
+  def test_main_invalid_bot(self):
+    # Test that argparse validates the bot choice.
+    with mock.patch('sys.argv', ['query.py', 'list', '--bot', 'invalid-bot']):
+      with mock.patch('sys.stderr', new=io.StringIO()) as mock_stderr:
+        with self.assertRaises(SystemExit) as cm:
+          query.main()
+        self.assertEqual(cm.exception.code, 2)
+        stderr_output = mock_stderr.getvalue()
+        self.assertIn('invalid choice: \'invalid-bot\'', stderr_output)
+
+  def test_main_invalid_benchmark(self):
+    # Test that argparse validates the benchmark choice.
+    with mock.patch('sys.argv',
+                    ['query.py', 'list', '--benchmark', 'invalid-benchmark']):
+      with mock.patch('sys.stderr', new=io.StringIO()) as mock_stderr:
+        with self.assertRaises(SystemExit) as cm:
+          query.main()
+        self.assertEqual(cm.exception.code, 2)
+        stderr_output = mock_stderr.getvalue()
+        self.assertIn('invalid benchmark: \'invalid-benchmark\'', stderr_output)
+
+  def test_main_valid_benchmark_glob(self):
+    # Test that globs are allowed even if they don't match anything in
+    # all_benchmarks (validation happens later in cmd_*)
+    with mock.patch('sys.argv',
+                    ['query.py', 'list', '--benchmark', 'blink_perf.*']):
+      with mock.patch('core.schedule.query.cmd_list') as mock_cmd:
+        query.main()
+        mock_cmd.assert_called_once()
 
 
 if __name__ == '__main__':
