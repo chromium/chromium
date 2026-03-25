@@ -197,6 +197,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   _authServiceObserverBridge.reset();
   _identityManagerObserverBridge.reset();
   _webSigninTracker.reset();
+  [_authenticationFlow interrupt];
   _authenticationFlow = nil;
 }
 
