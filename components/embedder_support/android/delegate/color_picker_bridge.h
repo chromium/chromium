@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "content/public/browser/color_chooser.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
 
@@ -24,6 +25,9 @@ namespace web_contents_delegate_android {
 
 // Glues the Java (ColorPickerDialogView.java) picker with the native part.
 class ColorPickerBridge : public content::ColorChooser {
+  // TODO(https://crbug.com/495898193): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   ColorPickerBridge(
       content::WebContents* tab,
