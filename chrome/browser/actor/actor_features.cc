@@ -71,11 +71,6 @@ BASE_FEATURE_PARAM(bool,
                    "gate_on_site_not_origin",
                    false);
 BASE_FEATURE_PARAM(bool,
-                   kGlicIncludeHardcodedBlockListEntries,
-                   &kGlicCrossOriginNavigationGating,
-                   "include_hardcoded_block_list_entries",
-                   true);
-BASE_FEATURE_PARAM(bool,
                    kGlicEnforceComponentUpdaterBlockListEntries,
                    &kGlicCrossOriginNavigationGating,
                    "enforce_component_updater_block_list_entries",

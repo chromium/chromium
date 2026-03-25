@@ -19,9 +19,7 @@ namespace {
 using Decision = SafetyListManager::Decision;
 using ParseResult = SafetyListManager::ParseResult;
 
-class SafetyListManagerTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+class SafetyListManagerTest : public ::testing::TestWithParam<bool> {
  public:
   SafetyListManagerTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -29,8 +27,6 @@ class SafetyListManagerTest
         {
             {kGlicCrossOriginNavigationGating,
              {
-                 {"include_hardcoded_block_list_entries",
-                  initialize_hardcoded_blocklist() ? "true" : "false"},
                  {"enforce_component_updater_block_list_entries",
                   enforce_component_updater_blocklist() ? "true" : "false"},
              }},
@@ -42,15 +38,7 @@ class SafetyListManagerTest
  protected:
   SafetyListManager& manager() { return *manager_; }
 
-  bool initialize_hardcoded_blocklist() { return std::get<0>(GetParam()); }
-  bool enforce_component_updater_blocklist() { return std::get<1>(GetParam()); }
-
-  Decision ExpectedHardcodedDecision() {
-    return (initialize_hardcoded_blocklist() &&
-            enforce_component_updater_blocklist())
-               ? Decision::kBlock
-               : Decision::kNone;
-  }
+  bool enforce_component_updater_blocklist() { return GetParam(); }
 
   Decision ExpectedBlocklistDecision() {
     return enforce_component_updater_blocklist() ? Decision::kBlock
@@ -66,87 +54,13 @@ class SafetyListManagerTest
   std::optional<SafetyListManager> manager_;
 };
 
-TEST_P(SafetyListManagerTest, InitializeWithHardcodedLists) {
+TEST_P(SafetyListManagerTest, DefaultInstance) {
   EXPECT_EQ(manager().Find(GURL("https://anything.com"),
                            GURL("https://www.googleplex.com")),
-            ExpectedHardcodedDecision());
+            Decision::kNone);
   EXPECT_EQ(manager().Find(GURL("https://anything.com"),
                            GURL("https://corp.google.com")),
-            ExpectedHardcodedDecision());
-}
-
-// Hardcoded domains should behave properly even if parts of the input were
-// invalid.
-TEST_P(SafetyListManagerTest, ParseSafetyLists_PreservesHardcodedLists) {
-  const struct {
-    std::string_view description;
-    std::string_view json;
-  } kTestCases[] = {
-      {
-          "Invalid top-level dict",
-          R"json([])json",
-      },
-      {
-          "Invalid blocklist",
-          R"json({
-            "navigation_allowed": [
-              { "from": "foo.com", "to": "[*.]bar.com" }
-            ],
-            "navigation_blocked": {}
-          })json",
-      },
-      {
-          "Invalid allowlist",
-          R"json({
-            "navigation_allowed": {},
-            "navigation_blocked": [
-              { "from": "blocked.com", "to": "not-allowed.com"}
-            ]
-          })json",
-      },
-      {
-          "Both lists valid",
-          R"json({
-            "navigation_allowed": [
-              { "from": "foo.com", "to": "[*.]bar.com" },
-            ],
-            "navigation_blocked": [
-              { "from": "blocked.com", "to": "not-allowed.com"}
-            ]
-          })json",
-      },
-      {
-          "Empty dict is ok",
-          R"json({})json",
-      },
-      {
-          "Both lists valid, blocklist is empty",
-          R"json({
-            "navigation_allowed": [
-              { "from": "foo.com", "to": "[*.]bar.com" },
-            ]
-          })json",
-      },
-      {
-          "Both lists valid, allowlist is empty",
-          R"json({
-            "navigation_blocked": [
-              { "from": "blocked.com", "to": "not-allowed.com"}
-            ]
-          })json",
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);
-    manager().ParseSafetyLists(test_case.json);
-    EXPECT_EQ(manager().Find(GURL("https://anything.com"),
-                             GURL("https://www.googleplex.com")),
-              ExpectedHardcodedDecision());
-    EXPECT_EQ(manager().Find(GURL("https://anything.com"),
-                             GURL("https://corp.google.com")),
-              ExpectedHardcodedDecision());
-  }
+            Decision::kNone);
 }
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
@@ -704,9 +618,7 @@ TEST_P(SafetyListManagerTest, Find) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SafetyListManagerTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, SafetyListManagerTest, testing::Bool());
 
 }  // namespace
 }  // namespace actor

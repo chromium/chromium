@@ -59,25 +59,6 @@ void SetAll(base::span<const SafetyListEntry> entries,
   }
 }
 
-void MaybeSetHardcodedBlocklistEntries(
-    content_settings::HostIndexedContentSettings& indexed_settings) {
-  if (IsNavigationGatingEnabled() &&
-      kGlicIncludeHardcodedBlockListEntries.Get()) {
-    SetAll(
-        {
-            {
-                ContentSettingsPattern::FromString("*"),
-                ContentSettingsPattern::FromString("[*.]googleplex.com"),
-            },
-            {
-                ContentSettingsPattern::FromString("*"),
-                ContentSettingsPattern::FromString("[*.]corp.google.com"),
-            },
-        },
-        ContentSetting::CONTENT_SETTING_BLOCK, indexed_settings);
-  }
-}
-
 // Parses a list of entries from a JSON list. Returns the parsed vector on
 // success, or a ParseResult on failure. If the result is a ParseResult, the
 // enum value is guaranteed to not be `kSuccess`.
@@ -161,9 +142,7 @@ SafetyListManager::Decision SafetyListManager::Find(
   NOTREACHED();
 }
 
-SafetyListManager::SafetyListManager() {
-  MaybeSetHardcodedBlocklistEntries(navigation_settings_);
-}
+SafetyListManager::SafetyListManager() = default;
 SafetyListManager::~SafetyListManager() = default;
 
 SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
@@ -201,7 +180,6 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
            ContentSetting::CONTENT_SETTING_ALLOW, navigation_settings_);
     SetAll(SpanOverExpected(blocked_result),
            ContentSetting::CONTENT_SETTING_BLOCK, navigation_settings_);
-    MaybeSetHardcodedBlocklistEntries(navigation_settings_);
   }
 
   return {allowed_result.error_or(ParseResult::kSuccess),
