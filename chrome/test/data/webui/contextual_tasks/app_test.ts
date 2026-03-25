@@ -904,7 +904,7 @@ suite('ContextualTasksAppTest', function() {
     };
 
     // Simulate callback update
-    (appElement as any).forcedComposeboxBounds_ = rect;
+    appElement.setForcedComposeboxBoundsForTesting(rect);
     await microtasksFinished();
 
     const frameRect = appElement.$.threadFrame.getBoundingClientRect();
@@ -919,7 +919,7 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('', composebox.style.height);
 
     // Verify zero state clears styles
-    (appElement as any).isZeroState_ = true;
+    appElement.setIsZeroStateForTesting(true);
     await microtasksFinished();
 
     assertEquals('', composebox.style.position);
@@ -927,6 +927,64 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('', composebox.style.left);
     assertEquals('', composebox.style.width);
     assertEquals('', composebox.style.height);
+  });
+
+  test('composebox hidden when jump fix conditions met', async () => {
+    loadTimeData.overrideValues({enableComposeboxJumpFix: true});
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+    await removeThreadFrameToPreventRaceConditions();
+
+    const composebox = appElement.$.composebox;
+    assertTrue(!!composebox);
+
+    // Initial state setup: AI page, not zero state, no forced bounds
+    proxy.handler.setIsAiPage(true);
+    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
+    appElement.setIsZeroStateForTesting(false);
+    appElement.setForcedComposeboxBoundsForTesting(null);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await appElement.updateComplete;
+
+    assertTrue(composebox.hasAttribute('hidden'));
+
+    // Set forced bounds, composebox should not be hidden
+    appElement.setForcedComposeboxBoundsForTesting({
+      top: 10, left: 20, width: 100, height: 200, right: 120, bottom: 210,
+    });
+    await microtasksFinished();
+    await appElement.updateComplete;
+    assertFalse(composebox.hasAttribute('hidden'));
+
+    // Unset forced bounds, composebox should be hidden again
+    appElement.setForcedComposeboxBoundsForTesting(null);
+    await microtasksFinished();
+    await appElement.updateComplete;
+    assertTrue(composebox.hasAttribute('hidden'));
+
+    // Set zero state, composebox should not be hidden
+    appElement.setIsZeroStateForTesting(true);
+    await microtasksFinished();
+    await appElement.updateComplete;
+    assertFalse(composebox.hasAttribute('hidden'));
+
+    // Reset zero state, composebox should be hidden
+    appElement.setIsZeroStateForTesting(false);
+    await microtasksFinished();
+    await appElement.updateComplete;
+    assertTrue(composebox.hasAttribute('hidden'));
+
+    // Set not AI page, composebox should not be hidden
+    proxy.callbackRouterRemote.onAiPageStatusChanged(false);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await appElement.updateComplete;
+    assertFalse(composebox.hasAttribute('hidden'));
   });
 
   test('updates clip path on post message', async () => {
@@ -1017,7 +1075,7 @@ suite('ContextualTasksAppTest', function() {
     assertEquals(
         rect.bottom, finalBounds!.bottom,
         'Bottom should be passed through unchanged.');
-    assertDeepEquals([occluder], (appElement as any).occluders_);
+    assertDeepEquals([occluder], appElement.getOccludersForTesting());
 
     // Verify clip-path on webview
     const clipPath = webview.style.clipPath;
@@ -1134,7 +1192,7 @@ suite('ContextualTasksAppTest', function() {
         assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
 
         // Verify pendingBasicMode_ is false (private property access).
-        assertFalse((appElement as any).pendingBasicMode_);
+        assertFalse(appElement.getPendingBasicModeForTesting()!);
 
         // Simulate navigation complete.
         appElement.onThreadFrameContentLoadForTesting();
@@ -1177,7 +1235,7 @@ suite('ContextualTasksAppTest', function() {
         await microtasksFinished();
 
         // Verify pendingBasicMode_ is null (private property access).
-        assertEquals(null, (appElement as any).pendingBasicMode_);
+        assertEquals(null, appElement.getPendingBasicModeForTesting());
 
         // Simulate navigation complete.
         appElement.$.threadFrame.dispatchEvent(new Event('contentload'));
@@ -1224,7 +1282,7 @@ suite('ContextualTasksAppTest', function() {
         assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
 
         // Verify pendingBasicMode_ is false (private property access).
-        assertFalse((appElement as any).pendingBasicMode_);
+        assertFalse(appElement.getPendingBasicModeForTesting()!);
 
         // Simulate load commit.
         appElement.onThreadFrameContentLoadForTesting();
