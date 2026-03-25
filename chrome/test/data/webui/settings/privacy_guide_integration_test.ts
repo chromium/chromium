@@ -137,6 +137,9 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
   optionalSteps.push(PrivacyGuideStep.COOKIES);
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
+    });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });

@@ -35,6 +35,7 @@ suite('CompletionFragment', function() {
       isPrivacySandboxRestricted: false,
       isPrivacySandboxRestrictedNoticeEnabled: false,
       showAiPage: true,
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
     });
     resetRouterForTesting();
   });
@@ -181,6 +182,7 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
       isPrivacySandboxRestrictedNoticeEnabled: false,
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
     });
     resetRouterForTesting();
   });
@@ -235,6 +237,7 @@ suite(
         loadTimeData.overrideValues({
           isPrivacySandboxRestricted: true,
           isPrivacySandboxRestrictedNoticeEnabled: true,
+          isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
         });
         resetRouterForTesting();
       });
@@ -269,6 +272,7 @@ suite('CompletionFragmentWithAdTopicsCard', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isPrivacySandboxRestrictedNoticeEnabled: false,
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
     });
     resetRouterForTesting();
   });
@@ -297,5 +301,37 @@ suite('CompletionFragmentWithAdTopicsCard', function() {
         fragment.i18n(
             'privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics'),
         privacySandboxRow.subLabel);
+  });
+});
+
+suite('CompletionFragmentAdPrivacyDeprecationEnabled', function() {
+  let fragment: PrivacyGuideCompletionFragmentElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxRestrictedNoticeEnabled: false,
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: true,
+    });
+    resetRouterForTesting();
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
+    fragment = document.createElement('privacy-guide-completion-fragment');
+    document.body.appendChild(fragment);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    fragment.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('privacySandboxRowHidden', function() {
+    assertFalse(isChildVisible(fragment, '#privacySandboxRow'));
   });
 });

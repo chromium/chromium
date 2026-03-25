@@ -180,7 +180,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     this.privacyGuideBrowserProxy_
         .privacySandboxPrivacyGuideShouldShowAdTopicsCard()
         .then(state => {
-          this.shouldShowAdTopicsCard_ = state;
+          this.shouldShowAdTopicsCard_ = state &&
+              !loadTimeData.getBoolean(
+                  'isPrivacySandboxAdPrivacyUxDeprecationEnabled');
         });
   }
 

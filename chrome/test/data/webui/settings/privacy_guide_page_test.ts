@@ -114,7 +114,9 @@ function getExpectedNumberOfActiveCards(
   if (!shouldShowSafeBrowsingCard(page)) {
     numSteps -= 1;
   }
-  if (!testPrivacyGuideBrowserProxy.getShouldShowAdTopicsCardForTesting()) {
+  if (!testPrivacyGuideBrowserProxy.getShouldShowAdTopicsCardForTesting() ||
+      loadTimeData.getBoolean(
+          'isPrivacySandboxAdPrivacyUxDeprecationEnabled')) {
     numSteps -= 1;
   }
   return numSteps;
@@ -1225,6 +1227,9 @@ suite('AdTopicsCardNavigations', function() {
   let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
+    });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -1386,6 +1391,66 @@ suite('AdTopicsCardNavigations', function() {
         'recordPrivacyGuideStepsEligibleAndReachedHistogram'));
     assertTrue(eligibleAndReachedSteps.has(
         PrivacyGuideStepsEligibleAndReached.AD_TOPICS_REACHED));
+  });
+});
+
+suite('AdTopicsCardHiddenAdPrivacyDeprecationEnabled', function() {
+  let page: SettingsPrivacyGuidePageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let syncBrowserProxy: TestSyncBrowserProxy;
+  let testPrivacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    testPrivacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    testPrivacyGuideBrowserProxy.setShouldShowAdTopicsCardForTesting(true);
+    PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
+    page = createPrivacyGuidePageForTest(settingsPrefs);
+    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('ForwardNavigationSkipsAdTopics', async function() {
+    setParametersForCookiesStep(page, true);
+    await navigateToStep(PrivacyGuideStep.COOKIES);
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
+    const nextButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
+    assertTrue(!!nextButton);
+    nextButton.click();
+    await flushTasks();
+    assertCompletionCardVisible(page);
+  });
+
+  test('BackwardNavigationSkipsAdTopics', async function() {
+    setParametersForCookiesStep(page, true);
+    await navigateToStep(PrivacyGuideStep.COMPLETION);
+    assertCompletionCardVisible(page);
+    const completionFragment =
+        page.shadowRoot!.querySelector('#' + PrivacyGuideStep.COMPLETION);
+    assertTrue(!!completionFragment);
+    completionFragment.dispatchEvent(
+        new CustomEvent('back-button-click', {bubbles: true, composed: true}));
+    await flushTasks();
+    assertCookiesCardVisible(
+        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
   });
 });
 
