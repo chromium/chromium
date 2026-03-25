@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CollapsibleCardElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,6 +16,7 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 function setupDefaultPrefs(settingsPrefs: SettingsPrefsElement) {
   settingsPrefs.set(
@@ -29,6 +30,7 @@ function setupDefaultPrefs(settingsPrefs: SettingsPrefsElement) {
 
 suite('CollapsibleAutofillSettingsCard', function() {
   let entityDataManager: TestEntityDataManagerProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let settingsPrefs: SettingsPrefsElement;
   // Note that authentication is not available on linux.
@@ -48,6 +50,9 @@ suite('CollapsibleAutofillSettingsCard', function() {
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
     entityDataManager.setGetOptInStatusResponse(false);
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
@@ -685,6 +690,10 @@ suite('CollapsibleAutofillSettingsCard', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(
         loadTimeData.getString('accessibilityAnnotatorSettingsUrl'), url);
+
+    const metric = await testMetricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'Autofill.Settings.AccessibilityAnnotatorSettingsLinkRowClick', metric);
   });
 
   test('AccessibilityAnnotatorSettingsLinkRowNotVisible', async function() {

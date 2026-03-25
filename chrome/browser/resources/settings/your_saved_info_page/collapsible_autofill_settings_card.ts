@@ -37,6 +37,7 @@ import type {EntityDataManagerProxy, EntityInstancesChangedListener} from '../au
 import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './collapsible_autofill_settings_card.html.js';
@@ -240,7 +241,8 @@ export class CollapsibleCardElement extends SettingsViewMixin
   private onAccessibilityAnnotatorSettingsLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('accessibilityAnnotatorSettingsUrl'));
-    // TODO(b/494136945): Implement on-click metrics.
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        'Autofill.Settings.AccessibilityAnnotatorSettingsLinkRowClick');
   }
 
   /**
