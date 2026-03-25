@@ -11,6 +11,7 @@
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
@@ -144,6 +145,14 @@ export class CollapsibleCardElement extends SettingsViewMixin
               'enableYourSavedInfoPolicyAndExtentionToggleIndicators');
         },
       },
+
+      showAccessibilityAnnotatorSettingsLink_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'showAccessibilityAnnotatorSettingsLink');
+        },
+      },
     };
   }
 
@@ -166,6 +175,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
   declare private autofillAiAvailableByDefault_: boolean;
   declare private enableYourSavedInfoPolicyAndExtentionToggleIndicators_:
       boolean;
+  declare private showAccessibilityAnnotatorSettingsLink_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -224,6 +234,11 @@ export class CollapsibleCardElement extends SettingsViewMixin
       return;
     }
     this.entityDataManager_.toggleAutofillAiReauthRequirement();
+  }
+
+  private onAccessibilityAnnotatorSettingsLinkClick_() {
+    // TODO(b/493907185): Implement on-click action.
+    // TODO(b/494136945): Implement on-click metrics.
   }
 
   /**

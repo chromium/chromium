@@ -12,7 +12,7 @@ import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from
 import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 
@@ -59,14 +59,17 @@ suite('CollapsibleAutofillSettingsCard', function() {
       eligibleUser: boolean = true,
       autofillAddOtherDatatypesPrefIsEnabled: boolean = false,
       optInStatusResponse: boolean = true,
-      autofillAiAvailableByDefault: boolean =
-          false): Promise<CollapsibleCardElement> {
+      autofillAiAvailableByDefault: boolean = false,
+      showAccessibilityAnnotatorSettingsLink: boolean =
+          true): Promise<CollapsibleCardElement> {
     entityDataManager.setGetOptInStatusResponse(optInStatusResponse);
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: eligibleUser,
       AutofillAddOtherDatatypesPrefIsEnabled:
           autofillAddOtherDatatypesPrefIsEnabled,
       autofillAiAvailableByDefault: autofillAiAvailableByDefault,
+      showAccessibilityAnnotatorSettingsLink:
+          showAccessibilityAnnotatorSettingsLink,
     });
 
     const card: CollapsibleCardElement =
@@ -654,4 +657,36 @@ suite('CollapsibleAutofillSettingsCard', function() {
         0, entityDataManager.getCallCount('toggleAutofillAiReauthRequirement'));
   });
   // </if>
+
+  test('AccessibilityAnnotatorSettingsLinkRow', async function() {
+    const card = await createCollapsibleAutofillSettingsCard(
+        /*eligibleUser=*/ true,
+        /*autofillAddOtherDatatypesPrefIsEnabled=*/ false,
+        /*optInStatusResponse=*/ true,
+        /*autofillAiAvailableByDefault=*/ false,
+        /*showAccessibilityAnnotatorSettingsLink=*/ true);
+
+    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+
+    assertTrue(isChildVisible(card, '#accessibilityAnnotatorSettingsLink'));
+  });
+
+  test('AccessibilityAnnotatorSettingsLinkRowNotVisible', async function() {
+    const card = await createCollapsibleAutofillSettingsCard(
+        /*eligibleUser=*/ true,
+        /*autofillAddOtherDatatypesPrefIsEnabled=*/ false,
+        /*optInStatusResponse=*/ true,
+        /*autofillAiAvailableByDefault=*/ false,
+        /*showAccessibilityAnnotatorSettingsLink=*/ false);
+
+    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+
+    assertFalse(isChildVisible(card, '#accessibilityAnnotatorSettingsLink'));
+  });
 });

@@ -21,6 +21,16 @@
   </div>
 </cr-expand-button>
 <cr-collapse id="expandedContent" opened="[[expanded_]]">
+  <template is="dom-if" if="[[showAccessibilityAnnotatorSettingsLink_]]"
+      restamp>
+    <!-- TODO(b/494479460): Update strings. -->
+    <cr-link-row id="accessibilityAnnotatorSettingsLink"
+        label="$i18n{privacyPageTitle}"
+        sub-label="$i18n{privacyPageTitle}"
+        on-click="onAccessibilityAnnotatorSettingsLinkClick_"
+        external>
+    </cr-link-row>
+  </template>
   <settings-toggle-button id="optInToggle"
       on-settings-boolean-control-change="onOptInToggleChange_"
       disabled=

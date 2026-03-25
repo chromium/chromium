@@ -681,6 +681,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "searchSettingsUpdate",
       base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
 
+  // TODO(b/493907185): Connect to accessibility annotator visibility.
+  html_source->AddBoolean("showAccessibilityAnnotatorSettingsLink", false);
+
   TryShowHatsSurveyWithTimeout();
 }
 
