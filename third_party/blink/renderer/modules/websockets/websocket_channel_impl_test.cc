@@ -1856,4 +1856,89 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
   successful_channel->Disconnect();
 }
 
+TEST_F(WebSocketChannelImplTest, MessageSizeLimitReached) {
+  Checkpoint checkpoint;
+  {
+    InSequence s;
+    EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
+    EXPECT_CALL(*ChannelClient(), DidError());
+    EXPECT_CALL(
+        *ChannelClient(),
+        DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete,
+                 WebSocketChannel::kCloseEventCodeAbnormalClosure, String()));
+  }
+
+  mojo::ScopedDataPipeProducerHandle writable;
+  mojo::ScopedDataPipeConsumerHandle readable;
+  mojo::Remote<network::mojom::blink::WebSocketClient> client;
+  auto websocket = Connect(4 * 1024, &writable, &readable, &client);
+  ASSERT_TRUE(websocket);
+
+  // Set a small limit for testing.
+  Channel()->SetMaxMessageSizeForTesting(10);
+
+  const char data[] = "0123456789A";  // 11 bytes
+  client->OnDataFrame(/*fin=*/true, WebSocketMessageType::BINARY,
+                      sizeof(data) - 1);
+
+  size_t num_bytes = sizeof(data) - 1;
+  base::span<uint8_t> buffer;
+  ASSERT_EQ(MOJO_RESULT_OK, writable->BeginWriteData(
+                                num_bytes, MOJO_WRITE_DATA_FLAG_NONE, buffer));
+  ASSERT_GE(buffer.size(), num_bytes);
+  buffer.first(num_bytes).copy_from(base::as_byte_span(data).first(num_bytes));
+  ASSERT_EQ(MOJO_RESULT_OK, writable->EndWriteData(num_bytes));
+
+  test::RunPendingTasks();
+}
+
+TEST_F(WebSocketChannelImplTest, MessageSizeLimitReachedAcrossFrames) {
+  Checkpoint checkpoint;
+  {
+    InSequence s;
+    EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
+    EXPECT_CALL(*ChannelClient(), DidError());
+    EXPECT_CALL(
+        *ChannelClient(),
+        DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete,
+                 WebSocketChannel::kCloseEventCodeAbnormalClosure, String()));
+  }
+
+  mojo::ScopedDataPipeProducerHandle writable;
+  mojo::ScopedDataPipeConsumerHandle readable;
+  mojo::Remote<network::mojom::blink::WebSocketClient> client;
+  auto websocket = Connect(4 * 1024, &writable, &readable, &client);
+  ASSERT_TRUE(websocket);
+
+  // Set a small limit for testing.
+  Channel()->SetMaxMessageSizeForTesting(10);
+
+  // First frame: 6 bytes, not fin.
+  const char data1[] = "012345";
+  client->OnDataFrame(/*fin=*/false, WebSocketMessageType::BINARY, 6);
+  size_t num_bytes1 = 6;
+  base::span<uint8_t> buffer1;
+  ASSERT_EQ(
+      MOJO_RESULT_OK,
+      writable->BeginWriteData(num_bytes1, MOJO_WRITE_DATA_FLAG_NONE, buffer1));
+  buffer1.first(num_bytes1)
+      .copy_from(base::as_byte_span(data1).first(num_bytes1));
+  ASSERT_EQ(MOJO_RESULT_OK, writable->EndWriteData(num_bytes1));
+  test::RunPendingTasks();
+
+  // Second frame: 5 bytes, would make it 11, fin.
+  const char data2[] = "6789A";
+  client->OnDataFrame(/*fin=*/true, WebSocketMessageType::CONTINUATION, 5);
+
+  size_t num_bytes2 = 5;
+  base::span<uint8_t> buffer2;
+  ASSERT_EQ(
+      MOJO_RESULT_OK,
+      writable->BeginWriteData(num_bytes2, MOJO_WRITE_DATA_FLAG_NONE, buffer2));
+  buffer2.first(num_bytes2)
+      .copy_from(base::as_byte_span(data2).first(num_bytes2));
+  ASSERT_EQ(MOJO_RESULT_OK, writable->EndWriteData(num_bytes2));
+  test::RunPendingTasks();
+}
+
 }  // namespace blink

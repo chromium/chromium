@@ -33,6 +33,7 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -130,6 +131,10 @@ class MODULES_EXPORT WebSocketChannelImpl final
   void CancelHandshake() override;
   void ApplyBackpressure() override;
   void RemoveBackpressure() override;
+
+  void SetMaxMessageSizeForTesting(size_t max_message_size) {
+    max_message_size_ = max_message_size;
+  }
 
   // network::mojom::blink::WebSocketHandshakeClient methods:
   void OnOpeningHandshakeStarted(
@@ -393,6 +398,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
   String failure_message_;
+  size_t max_message_size_ = std::numeric_limits<wtf_size_t>::max();
 
   const Member<const SourceLocation> location_at_construction_;
   network::mojom::blink::WebSocketHandshakeRequestPtr handshake_request_;
