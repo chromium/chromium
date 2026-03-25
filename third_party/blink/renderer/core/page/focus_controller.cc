@@ -2090,7 +2090,7 @@ Element* FocusController::FindFocusableElementForImeAutofillAndTesting(
   return FindFocusableElementAcrossFocusScopes(type, scope, owner_map);
 }
 
-Element* FocusController::NextFocusableElementForImeAndAutofill(
+Element* FocusController::NextFocusableElementForIme(
     Element* element,
     const mojom::blink::FocusType focus_type) {
   // TODO(ajith.v) Due to crbug.com/781026 when next/previous element is far

@@ -755,8 +755,8 @@ void LocalFrameMojoHandler::AdvanceFocusForIME(
     return;
 
   Element* next_element =
-      GetPage()->GetFocusController().NextFocusableElementForImeAndAutofill(
-          element, focus_type);
+      GetPage()->GetFocusController().NextFocusableElementForIme(element,
+                                                                 focus_type);
   if (!next_element)
     return;
 

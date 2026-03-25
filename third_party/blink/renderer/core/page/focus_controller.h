@@ -105,8 +105,7 @@ class CORE_EXPORT FocusController final
   // Autofill to infer whether the enclosing <form> is ready for auto-submission
   // after filling the given element or focus should be firstly moved to the
   // next focusable element.
-  Element* NextFocusableElementForImeAndAutofill(Element*,
-                                                 mojom::blink::FocusType);
+  Element* NextFocusableElementForIme(Element*, mojom::blink::FocusType);
   Element* FindFocusableElementForImeAutofillAndTesting(mojom::blink::FocusType,
                                                         Element&,
                                                         OwnerMap&);
