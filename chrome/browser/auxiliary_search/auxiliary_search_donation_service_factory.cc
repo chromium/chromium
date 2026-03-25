@@ -64,7 +64,10 @@ AuxiliarySearchDonationServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool AuxiliarySearchDonationServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
+  // Don't attempt to eagerly create the service (and its dependents) if we know
+  // the feature is disabled.
+  return base::FeatureList::IsEnabled(
+      chrome::android::kAuxiliarySearchHistoryDonation);
 }
 
 bool AuxiliarySearchDonationServiceFactory::ServiceIsNULLWhileTesting() const {

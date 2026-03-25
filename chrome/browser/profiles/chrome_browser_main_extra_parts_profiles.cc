@@ -310,6 +310,7 @@
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
+#include "chrome/browser/auxiliary_search/auxiliary_search_donation_service_factory.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -752,8 +753,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::ValuablesDataManagerFactory::GetInstance();
   autofill::WalletPassAccessManagerFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
-  AuxiliarySearchProvider::EnsureFactoryBuilt();
   AutocompleteControllerAndroid::EnsureFactoryBuilt();
+  AuxiliarySearchDonationServiceFactory::GetInstance();
+  AuxiliarySearchProvider::EnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(ENABLE_BACKGROUND_CONTENTS)
   BackgroundContentsServiceFactory::GetInstance();
