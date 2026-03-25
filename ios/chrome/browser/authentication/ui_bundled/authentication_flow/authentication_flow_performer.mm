@@ -332,11 +332,10 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 - (void)managedConfirmationAlertAccepted:(BOOL)accepted {
   CHECK(_managedConfirmationAlertCoordinator);
   CHECK(!_managedConfirmationScreenCoordinator);
+  CHECK(!AreSeparateProfilesForManagedAccountsEnabled());
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
-  [self managedConfirmationDidAccept:accepted
-                browsingDataSeparate:
-                    AreSeparateProfilesForManagedAccountsEnabled()];
+  [self managedConfirmationDidAccept:accepted browsingDataSeparate:NO];
 }
 
 // Called when `_leavingPrimaryAccountConfirmationDialogCoordinator` is done.

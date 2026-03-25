@@ -217,6 +217,7 @@ AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
     UIViewController* view_controller,
     ProceduralBlock accept_block,
     ProceduralBlock cancel_block) {
+  CHECK(!AreSeparateProfilesForManagedAccountsEnabled());
   NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
   NSString* subtitle =
       l10n_util::GetNSStringF(IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,

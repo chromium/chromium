@@ -96,7 +96,7 @@ NSString* ViewControllerPresentationStatusDescription(
     UIViewController* view_controller);
 
 // Returns an alert coordinator asking the user whether they accept to switch to
-// a managed account.
+// a managed account. Must only be called if separate profiles is disabled.
 AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
     NSString* hosted_domain,
     Browser* browser,
