@@ -15,10 +15,9 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/actor_center_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_spark_24dp"
-        android:tint="@macro/default_control_color_active"
+        android:src="@drawable/ic_spark_blue_16dp"
         android:importantForAccessibility="no" />
 </FrameLayout>

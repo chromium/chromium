@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt" android:width="16dp" android:height="16dp" android:viewportWidth="16" android:viewportHeight="16">
+    <group>
+        <clip-path android:pathData="M0,0h16v16h-16z"/>
+        <path android:pathData="M13.744,7.223C12.614,6.737 11.626,6.07 10.778,5.222C9.93,4.375 9.263,3.386 8.777,2.256C8.59,1.822 8.44,1.378 8.325,0.921C8.288,0.772 8.154,0.667 8,0.667C7.846,0.667 7.713,0.772 7.675,0.921C7.56,1.378 7.41,1.822 7.223,2.256C6.737,3.386 6.07,4.375 5.223,5.222C4.375,6.069 3.386,6.737 2.256,7.223C1.823,7.41 1.378,7.56 0.921,7.675C0.772,7.713 0.667,7.846 0.667,8C0.667,8.154 0.772,8.288 0.921,8.325C1.378,8.44 1.822,8.59 2.256,8.777C3.386,9.263 4.374,9.93 5.223,10.778C6.07,11.625 6.738,12.614 7.223,13.744C7.41,14.177 7.56,14.623 7.675,15.079C7.713,15.228 7.847,15.333 8,15.333C8.154,15.333 8.288,15.228 8.325,15.079C8.44,14.623 8.59,14.178 8.777,13.744C9.263,12.614 9.93,11.626 10.778,10.778C11.625,9.93 12.614,9.262 13.744,8.777C14.178,8.59 14.623,8.44 15.079,8.325C15.228,8.288 15.333,8.153 15.333,8C15.333,7.846 15.228,7.713 15.079,7.675C14.623,7.56 14.178,7.41 13.744,7.223Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:startX="5.364" android:startY="10.228" android:endX="11.749" android:endY="4.831" android:type="linear">
+                    <item android:offset="0" android:color="@color/spark_blue_gradient_start"/>
+                    <item android:offset="0.378" android:color="@color/spark_blue_gradient_mid"/>
+                    <item android:offset="0.775" android:color="@color/spark_blue_gradient_end"/>
+                    <item android:offset="0.796" android:color="@color/spark_blue_gradient_last"/>
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
+</vector>

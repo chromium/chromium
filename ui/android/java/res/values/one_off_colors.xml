@@ -129,4 +129,10 @@ found in the LICENSE file.
     <color name="setup_list_celebratory_promo_yellow_base">#FCC934</color>
     <color name="setup_list_celebratory_promo_green_dark_base">#1AA64A</color>
     <color name="setup_list_celebratory_promo_blue_dark_base">#4E8FF8</color>
+
+    <!-- Colors used for the actor spark icon gradient. -->
+    <color name="spark_blue_gradient_start">#346BF1</color>
+    <color name="spark_blue_gradient_mid">#3186FF</color>
+    <color name="spark_blue_gradient_end">#4E9FFF</color>
+    <color name="spark_blue_gradient_last">#4FA0FF</color>
 </resources>
