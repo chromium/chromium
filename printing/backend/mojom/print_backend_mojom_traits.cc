@@ -206,23 +206,19 @@ EnumTraits<printing::mojom::AdvancedCapabilityType,
 }
 
 // static
-bool EnumTraits<printing::mojom::AdvancedCapabilityType,
-                ::printing::AdvancedCapability::Type>::
-    FromMojom(printing::mojom::AdvancedCapabilityType input,
-              ::printing::AdvancedCapability::Type* output) {
+::printing::AdvancedCapability::Type
+EnumTraits<printing::mojom::AdvancedCapabilityType,
+           ::printing::AdvancedCapability::Type>::
+    FromMojom(printing::mojom::AdvancedCapabilityType input) {
   switch (input) {
     case printing::mojom::AdvancedCapabilityType::kBoolean:
-      *output = ::printing::AdvancedCapability::Type::kBoolean;
-      return true;
+      return ::printing::AdvancedCapability::Type::kBoolean;
     case printing::mojom::AdvancedCapabilityType::kFloat:
-      *output = ::printing::AdvancedCapability::Type::kFloat;
-      return true;
+      return ::printing::AdvancedCapability::Type::kFloat;
     case printing::mojom::AdvancedCapabilityType::kInteger:
-      *output = ::printing::AdvancedCapability::Type::kInteger;
-      return true;
+      return ::printing::AdvancedCapability::Type::kInteger;
     case printing::mojom::AdvancedCapabilityType::kString:
-      *output = ::printing::AdvancedCapability::Type::kString;
-      return true;
+      return ::printing::AdvancedCapability::Type::kString;
   }
   NOTREACHED();
 }

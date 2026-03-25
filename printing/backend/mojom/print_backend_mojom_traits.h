@@ -122,8 +122,8 @@ struct EnumTraits<printing::mojom::AdvancedCapabilityType,
                   ::printing::AdvancedCapability::Type> {
   static printing::mojom::AdvancedCapabilityType ToMojom(
       ::printing::AdvancedCapability::Type input);
-  static bool FromMojom(printing::mojom::AdvancedCapabilityType input,
-                        ::printing::AdvancedCapability::Type* output);
+  static ::printing::AdvancedCapability::Type FromMojom(
+      printing::mojom::AdvancedCapabilityType input);
 };
 
 template <>
