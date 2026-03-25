@@ -394,6 +394,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     const IdentityManager* identity_manager,
     bool has_entity_data_saved,
     AutofillAiAction action,
+    std::optional<EntityType> entity_type,
     std::string* debug_message) {
   if (IsRelevantForDataTransparency(action) && has_entity_data_saved) {
     return true;
@@ -412,6 +413,44 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     MaybeOutputReason(debug_message,
                       "User's sign-in is in a persistent error state.");
     return false;
+  }
+  switch (action) {
+    case AutofillAiAction::kImportToWallet:
+      CHECK(entity_type) << "An entity type is required to check if an entity "
+                            "can be upstreamed";
+      if (!IsMaskedStorageSupported(
+              *entity_type, EntityInstance::RecordType::kServerWallet)) {
+        // For public passes, there are no additional account requirements.
+        break;
+      }
+      // For private passes, underaged users are not allowed to save.
+      // TODO(crbug.com/495779639): This `can_use_model_execution_features()`
+      // check is a very hacky way to check whether the user is underaged.
+      // Consider defining a separate capability or syncing a separate setting
+      // through ACCOUNT_SETTING instead.
+      if (identity_manager
+              ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSignin))
+              .capabilities.can_use_model_execution_features() !=
+          signin::Tribool::kTrue) {
+        MaybeOutputReason(debug_message, "User is underaged.");
+        return false;
+      }
+      break;
+    case AutofillAiAction::kAddLocalEntityInstanceInSettings:
+    case AutofillAiAction::kCrowdsourcingVote:
+    case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
+    case AutofillAiAction::kFilling:
+    case AutofillAiAction::kImport:
+    case AutofillAiAction::kIphForOptIn:
+    case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kEnableOrDisable:
+    case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
+    case AutofillAiAction::kWalletDataSharingPromotion:
+      break;
   }
   return true;
 }
@@ -538,7 +577,7 @@ bool MayPerformAutofillAiAction(
   }
 
   if (!SatisfiesAccountRequirements(identity_manager, has_entity_data_saved,
-                                    action, debug_message)) {
+                                    action, entity_type, debug_message)) {
     return false;
   }
 

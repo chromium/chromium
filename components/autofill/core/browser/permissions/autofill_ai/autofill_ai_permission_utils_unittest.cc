@@ -938,6 +938,25 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
   }
 }
 
+TEST_F(AutofillAiMayPerformImportToWalletTest,
+       ImportToWallet_FalseForPrivatePassesForUnderagedUsers) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
+  // Simulate that the can_use_model_execution_features() capability is false.
+  signin::IdentityManager* identity_manager = client().GetIdentityManager();
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  // Expect that Wallet imports for public passes are allowed.
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
+  // Expect that Wallet imports for private passes are not allowed.
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kPassport)));
+}
+
 }  // namespace
 
 }  // namespace autofill
