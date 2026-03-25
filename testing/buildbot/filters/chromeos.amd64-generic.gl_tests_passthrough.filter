@@ -32,3 +32,6 @@
 
 # crbug.com/404905709
 -OzoneImageBackingFactoryTest.CreateGpuMemoryBufferHandle
+
+# crbug.com/495262784
+-WebGPUMailboxBufferTest.*
