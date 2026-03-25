@@ -16,11 +16,8 @@
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 using base::test::TestFuture;
@@ -29,74 +26,11 @@ namespace actor {
 
 namespace {
 
-class TestDevToolsClient : public ::content::DevToolsAgentHostClient {
- public:
-  TestDevToolsClient() = default;
-  ~TestDevToolsClient() override { Detach(); }
-
-  void AttachToAndEnableWebMCP(
-      scoped_refptr<content::DevToolsAgentHost> agent_host) {
-    agent_host_ = agent_host;
-    agent_host_->AttachClient(this);
-
-    const std::string enable_message =
-        R"JSON({"id": 1, "method": "WebMCP.enable"})JSON";
-    agent_host_->DispatchProtocolMessage(this,
-                                         base::as_byte_span(enable_message));
-  }
-
-  void Detach() {
-    if (agent_host_) {
-      agent_host_->DetachClient(this);
-      agent_host_ = nullptr;
-    }
-  }
-
-  void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
-                               base::span<const uint8_t> message) override {
-    std::string_view message_str(reinterpret_cast<const char*>(message.data()),
-                                 message.size());
-    std::optional<base::Value> parsed = base::test::ParseJson(message_str);
-    if (!parsed || !parsed->is_dict()) {
-      return;
-    }
-
-    const base::DictValue& dict = parsed->GetDict();
-
-    const std::string* method = dict.FindString("method");
-    if (!method) {
-      return;
-    }
-
-    if (*method == "WebMCP.toolInvoked") {
-      invoked_events_.push_back(std::move(*parsed));
-    } else if (*method == "WebMCP.toolResponded") {
-      responded_events_.push_back(std::move(*parsed));
-    }
-  }
-
-  void AgentHostClosed(content::DevToolsAgentHost* agent_host) override {}
-
-  const std::vector<base::Value>& invoked_events() const {
-    return invoked_events_;
-  }
-  const std::vector<base::Value>& responded_events() const {
-    return responded_events_;
-  }
-
- private:
-  scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  std::vector<base::Value> invoked_events_;
-  std::vector<base::Value> responded_events_;
-};
-
 class ActorToolsTestScriptTool : public ActorToolsTest {
  public:
   ActorToolsTestScriptTool() {
     features_.InitWithFeatures(
-        {blink::features::kWebMCP, blink::features::kDevToolsWebMCPSupport,
-         actor::kGlicActorEnableScriptTools},
-        {});
+        {blink::features::kWebMCP, actor::kGlicActorEnableScriptTools}, {});
   }
 
   void SetUpOnMainThread() override {
@@ -146,49 +80,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   EXPECT_EQ(response->tool->input_schema, expected_input_schema);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEvents) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  TestDevToolsClient client;
-  client.AttachToAndEnableWebMCP(
-      content::DevToolsAgentHost::GetOrCreateFor(web_contents()));
-
-  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
-  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
-  auto response = RunScriptTool(std::move(action));
-
-  EXPECT_EQ(response->result, "test_input");
-
-  ASSERT_EQ(client.invoked_events().size(), 1u);
-  const base::DictValue& invoked_event = client.invoked_events()[0].GetDict();
-  const base::DictValue* invoked_params = invoked_event.FindDict("params");
-  ASSERT_TRUE(invoked_params);
-  const std::string* tool_name = invoked_params->FindString("toolName");
-  ASSERT_TRUE(tool_name);
-  EXPECT_EQ(*tool_name, "echo");
-  const std::string* input = invoked_params->FindString("input");
-  ASSERT_TRUE(input);
-  EXPECT_EQ(*input, input_arguments);
-  const std::string* invocation_id = invoked_params->FindString("invocationId");
-  ASSERT_TRUE(invocation_id);
-
-  ASSERT_EQ(client.responded_events().size(), 1u);
-  const base::DictValue& responded_event =
-      client.responded_events()[0].GetDict();
-  const base::DictValue* responded_params = responded_event.FindDict("params");
-  ASSERT_TRUE(responded_params);
-  const std::string* responded_invocation_id =
-      responded_params->FindString("invocationId");
-  ASSERT_TRUE(responded_invocation_id);
-  EXPECT_EQ(*responded_invocation_id, *invocation_id);
-  const std::string* status = responded_params->FindString("status");
-  ASSERT_TRUE(status);
-  EXPECT_EQ(*status, "Success");
-
-  client.Detach();
-}
-
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -202,53 +93,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
-}
-
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEventsOnFailure) {
-  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  TestDevToolsClient client;
-  client.AttachToAndEnableWebMCP(
-      content::DevToolsAgentHost::GetOrCreateFor(web_contents()));
-
-  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
-  auto action =
-      MakeScriptToolRequest(*main_frame(), "invalid", input_arguments);
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
-
-  ASSERT_EQ(client.invoked_events().size(), 1u);
-  const base::DictValue& invoked_event = client.invoked_events()[0].GetDict();
-  const base::DictValue* invoked_params = invoked_event.FindDict("params");
-  ASSERT_TRUE(invoked_params);
-  const std::string* tool_name = invoked_params->FindString("toolName");
-  ASSERT_TRUE(tool_name);
-  EXPECT_EQ(*tool_name, "invalid");
-  const std::string* input = invoked_params->FindString("input");
-  ASSERT_TRUE(input);
-  EXPECT_EQ(*input, input_arguments);
-  const std::string* invocation_id = invoked_params->FindString("invocationId");
-  ASSERT_TRUE(invocation_id);
-
-  ASSERT_EQ(client.responded_events().size(), 1u);
-  const base::DictValue& responded_event =
-      client.responded_events()[0].GetDict();
-  const base::DictValue* responded_params = responded_event.FindDict("params");
-  ASSERT_TRUE(responded_params);
-  const std::string* responded_invocation_id =
-      responded_params->FindString("invocationId");
-  ASSERT_TRUE(responded_invocation_id);
-  EXPECT_EQ(*responded_invocation_id, *invocation_id);
-  const std::string* status = responded_params->FindString("status");
-  ASSERT_TRUE(status);
-  EXPECT_EQ(*status, "Error");
-  const std::string* error_text = responded_params->FindString("errorText");
-  ASSERT_TRUE(error_text);
-  EXPECT_EQ(*error_text, "Tool not found: invalid");
-
-  client.Detach();
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
@@ -271,62 +115,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
   EXPECT_EQ(response->input_arguments, declarative_input);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
-                       EmitsCdpEventsDeclarativeTool) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/declarative_script_tool.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  TestDevToolsClient client;
-  client.AttachToAndEnableWebMCP(
-      content::DevToolsAgentHost::GetOrCreateFor(web_contents()));
-
-  const std::string declarative_input =
-      R"JSON(
-        {
-          "text": "text #1",
-          "text2": "text #2",
-          "select": "Option 2"
-        }
-      )JSON";
-  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
-                                      declarative_input);
-  auto response = RunScriptTool(std::move(action));
-
-  ASSERT_EQ(client.invoked_events().size(), 1u);
-  const base::DictValue& invoked_event = client.invoked_events()[0].GetDict();
-  const base::DictValue* invoked_params = invoked_event.FindDict("params");
-  ASSERT_TRUE(invoked_params);
-  const std::string* tool_name = invoked_params->FindString("toolName");
-  ASSERT_TRUE(tool_name);
-  EXPECT_EQ(*tool_name, "declarative_tool");
-  const std::string* input = invoked_params->FindString("input");
-  ASSERT_TRUE(input);
-  // Compare parsed JSON to ignore whitespace differences
-  std::optional<base::Value> parsed_input = base::test::ParseJson(*input);
-  std::optional<base::Value> parsed_expected_input =
-      base::test::ParseJson(declarative_input);
-  ASSERT_TRUE(parsed_input);
-  ASSERT_TRUE(parsed_expected_input);
-  EXPECT_EQ(*parsed_input, *parsed_expected_input);
-  const std::string* invocation_id = invoked_params->FindString("invocationId");
-  ASSERT_TRUE(invocation_id);
-
-  ASSERT_EQ(client.responded_events().size(), 1u);
-  const base::DictValue& responded_event =
-      client.responded_events()[0].GetDict();
-  const base::DictValue* responded_params = responded_event.FindDict("params");
-  ASSERT_TRUE(responded_params);
-  const std::string* responded_invocation_id =
-      responded_params->FindString("invocationId");
-  ASSERT_TRUE(responded_invocation_id);
-  EXPECT_EQ(*responded_invocation_id, *invocation_id);
-  const std::string* status = responded_params->FindString("status");
-  ASSERT_TRUE(status);
-  EXPECT_EQ(*status, "Success");
-
-  client.Detach();
-}
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/script_tool_navigate_after_response.html");
@@ -380,48 +168,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DISABLED_DeclarativeToolCrossDo
 )JSON");
 
   EXPECT_EQ(actual_json, expected_json);
-}
-
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
-                       EmitsCdpEventsDeclarativeToolCrossDocument) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  TestDevToolsClient client;
-  client.AttachToAndEnableWebMCP(
-      content::DevToolsAgentHost::GetOrCreateFor(web_contents()));
-
-  const std::string declarative_input =
-      R"JSON(
-        {
-          "echo": "hello world"
-        }
-      )JSON";
-  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
-                                      declarative_input);
-
-  auto response = RunScriptTool(std::move(action));
-  EXPECT_EQ(response->input_arguments, declarative_input);
-  EXPECT_EQ(response->tool->name, "declarative_tool");
-
-  ASSERT_EQ(client.invoked_events().size(), 1u);
-  const base::DictValue& invoked_event = client.invoked_events()[0].GetDict();
-  const base::DictValue* invoked_params = invoked_event.FindDict("params");
-  ASSERT_TRUE(invoked_params);
-  const std::string* tool_name = invoked_params->FindString("toolName");
-  ASSERT_TRUE(tool_name);
-  EXPECT_EQ(*tool_name, "declarative_tool");
-  const std::string* input = invoked_params->FindString("input");
-  ASSERT_TRUE(input);
-  EXPECT_EQ(*input, declarative_input);
-  const std::string* invocation_id = invoked_params->FindString("invocationId");
-  ASSERT_TRUE(invocation_id);
-
-  // Cross document tools do not send a WebMCP.toolResponded event.
-  EXPECT_EQ(client.responded_events().size(), 0u);
-
-  client.Detach();
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
