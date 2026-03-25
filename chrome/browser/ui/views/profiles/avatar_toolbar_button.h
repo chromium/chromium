@@ -211,7 +211,12 @@ class AvatarToolbarButton : public ToolbarButton,
   void AnimationEnded(const gfx::Animation* animation) override;
 
   // Lists of observers.
-  base::ObserverList<Observer, true> observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observer_list_;
 
   std::unique_ptr<AvatarToolbarButtonStateManager> state_manager_;
 

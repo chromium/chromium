@@ -315,9 +315,12 @@ class ProfileAttributesStorage {
   mutable absl::flat_hash_map<base::FilePath::StringType,
                               std::unique_ptr<ProfileAttributesEntry>>
       profile_attributes_entries_;
-
-  mutable base::ObserverList<Observer>::UncheckedAndDanglingUntriaged
-      observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  mutable base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::
+      UncheckedAndDanglingUntriaged observer_list_;
 
   // A cache of gaia/high res avatar profile pictures. This cache is updated
   // lazily so it needs to be mutable.
