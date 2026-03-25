@@ -808,8 +808,18 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
                     CompositorElementIdNamespace::kDOMNodeId)
               : cc::ElementId();
     }
-    OnUpdateTransform(properties_->UpdatePaintOffsetTranslation(
-        *context_.current.transform, std::move(state)));
+
+    auto* parent = context_.current.transform;
+    if (PseudoElement* pseudo_element =
+            DynamicTo<PseudoElement>(object_.GetNode());
+        !NeedsPaintPropertyUpdate() && pseudo_element &&
+        pseudo_element->GetPseudoId() == kPseudoIdOverscrollAreaParent) {
+      CHECK(properties_->PaintOffsetTranslation());
+      parent = properties_->PaintOffsetTranslation()->Parent();
+    }
+
+    OnUpdateTransform(
+        properties_->UpdatePaintOffsetTranslation(*parent, std::move(state)));
     context_.current.transform = properties_->PaintOffsetTranslation();
     if (IsA<LayoutView>(object_)) {
       context_.absolute_position.transform =
