@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -1339,6 +1340,37 @@ TEST_F(CloudBinaryUploadServiceTest, VerifyBlockingSet) {
 
   request->set_blocking(false);
   ASSERT_FALSE(request->blocking());
+}
+
+TEST_F(CloudBinaryUploadServiceTest, TrackUserCancellation) {
+  base::HistogramTester histogram_tester;
+  enterprise_connectors::ScanRequestUploadResult scanning_result =
+      enterprise_connectors::ScanRequestUploadResult::kUnknown;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+
+  std::string user_action_id = "test_action_id";
+  request->set_user_action_id(user_action_id);
+  request->set_analysis_connector(enterprise_connectors::FILE_ATTACHED);
+
+  ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
+
+  UploadForDeepScanning(std::move(request));
+
+  auto cancel_request =
+      std::make_unique<enterprise_connectors::BinaryUploadCancelRequests>(
+          enterprise_connectors::CloudOrLocalAnalysisSettings(
+              enterprise_connectors::CloudAnalysisSettings()));
+  cancel_request->set_user_action_id(user_action_id);
+  service_->MaybeCancelRequests(std::move(cancel_request));
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+  content::RunAllTasksUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.DeepScan.Upload.CancelledByUserCancellationTime.Duration",
+      1);
 }
 
 TEST_F(CloudBinaryUploadServiceTest, SkipMalwareScanForLargeFiles) {

@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CLOUD_BINARY_UPLOAD_SERVICE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CLOUD_BINARY_UPLOAD_SERVICE_H_
 
-#include <list>
 #include <memory>
 #include <queue>
 
 #include "base/callback_list.h"
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 
 class Profile;
@@ -220,6 +221,10 @@ class CloudBinaryUploadService
       enterprise_connectors::BinaryUploadRequest::Data data,
       enterprise_connectors::ScanRequestUploadResult result);
 
+  void MaybeTrackUploadUserCancellation(const std::string& action_id);
+
+  bool CheckForUserActionDone(const std::string& action_id);
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const raw_ptr<Profile> profile_;
@@ -228,7 +233,8 @@ class CloudBinaryUploadService
       request_id_generator_;
 
   // enterprise_connectors::BinaryUploadRequest queued for upload.
-  std::queue<std::unique_ptr<enterprise_connectors::BinaryUploadRequest>>
+  base::circular_deque<
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest>>
       request_queue_;
 
   // Resources associated with an in-progress request.
@@ -278,6 +284,18 @@ class CloudBinaryUploadService
 
   // Used to obtain an access token to attach to requests.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
+
+  // Data associated with a user action. Used to track metrics for a user
+  // action.
+  struct UserActionData {
+    bool is_cloud = false;
+    enterprise_connectors::DeepScanAccessPoint access_point;
+    std::optional<base::TimeTicks> cancelled_time;
+  };
+
+  // Tracks the start time and cancellation status for all requests in a user
+  // action. Keyed by user action id.
+  base::flat_map<std::string, UserActionData> user_action_data_;
 
   base::WeakPtrFactory<CloudBinaryUploadService> weakptr_factory_;
 };

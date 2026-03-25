@@ -45,6 +45,12 @@ void ReportAnalysisConnectorWarningBypass(
     const enterprise_connectors::ContentAnalysisResponse& response,
     std::optional<std::u16string> user_justification);
 
+// Maps the request's connector and reason to the corresponding
+// DeepScanAccessPoint.
+enterprise_connectors::DeepScanAccessPoint AccessPointFromRequest(
+    enterprise_connectors::AnalysisConnector connector,
+    enterprise_connectors::ContentAnalysisRequest::Reason reason);
+
 // Helper functions to record DeepScanning UMA metrics for the duration of the
 // request split by its result and bytes/sec for successful requests.
 void RecordDeepScanMetrics(

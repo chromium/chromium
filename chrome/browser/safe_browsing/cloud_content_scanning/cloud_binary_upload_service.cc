@@ -285,9 +285,12 @@ void CloudBinaryUploadService::MaybeAcknowledge(
 
 void CloudBinaryUploadService::MaybeCancelRequests(
     std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel) {
-  // Nothing to do for cloud upload service.
-  // TODO(crbug.com/40242713): Might consider canceling requests in
-  // `request_queue_`.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::string action_id = cancel->get_user_action_id();
+  if (user_action_data_.contains(action_id)) {
+    user_action_data_[action_id].cancelled_time = base::TimeTicks::Now();
+  }
 }
 
 base::WeakPtr<enterprise_connectors::BinaryUploadService>
@@ -310,8 +313,16 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
 
 void CloudBinaryUploadService::QueueForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
+  // Track the start time for the entire user action bundle
+  std::string action_id = request->user_action_id();
+  if (!action_id.empty() && !user_action_data_.contains(action_id)) {
+    user_action_data_[action_id] = {
+        request->cloud_or_local_settings().is_cloud_analysis(),
+        safe_browsing::AccessPointFromRequest(request->analysis_connector(),
+                                              request->reason())};
+  }
   if (active_requests_.size() >= GetParallelActiveRequestsMax()) {
-    request_queue_.push(std::move(request));
+    request_queue_.push_back(std::move(request));
   } else {
     UploadForDeepScanning(std::move(request));
   }
@@ -612,6 +623,40 @@ void CloudBinaryUploadService::FinishAndCleanupRequest(
   CleanupRequest(request);
 }
 
+void CloudBinaryUploadService::MaybeTrackUploadUserCancellation(
+    const std::string& action_id) {
+  // Record metrics for the user action duration if this is the last request for
+  // the batch cancelled by user.
+  if (!action_id.empty() && user_action_data_.contains(action_id) &&
+      user_action_data_[action_id].cancelled_time.has_value() &&
+      CheckForUserActionDone(action_id)) {
+    base::TimeDelta total_duration =
+        base::TimeTicks::Now() -
+        user_action_data_[action_id].cancelled_time.value();
+    safe_browsing::RecordDeepScanMetrics(
+        user_action_data_[action_id].is_cloud,
+        user_action_data_[action_id].access_point, total_duration, 0,
+        "CancelledByUserCancellationTime", false);
+
+    user_action_data_.erase(action_id);
+  }
+}
+
+bool CloudBinaryUploadService::CheckForUserActionDone(
+    const std::string& action_id) {
+  for (const auto& request : request_queue_) {
+    if (request->user_action_id() == action_id) {
+      return false;
+    }
+  }
+  for (const auto& it : active_requests_) {
+    if (it.second->user_action_id() == action_id) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void CloudBinaryUploadService::FinishRequest(
     BinaryUploadRequest* request,
     enterprise_connectors::ScanRequestUploadResult result,
@@ -638,9 +683,11 @@ void CloudBinaryUploadService::FinishRequest(
 }
 
 void CloudBinaryUploadService::CleanupRequest(BinaryUploadRequest* request) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   BinaryUploadRequest::Id request_id = request->id();
   std::string dm_token = request->device_token();
   auto connector = request->analysis_connector();
+  std::string action_id = request->user_action_id();
   active_requests_.erase(request_id);
   active_timers_.erase(request_id);
   active_uploads_.erase(request_id);
@@ -649,7 +696,7 @@ void CloudBinaryUploadService::CleanupRequest(BinaryUploadRequest* request) {
   start_times_.erase(request_id);
 
   MaybeRunAuthorizationCallbacks(dm_token, connector);
-
+  MaybeTrackUploadUserCancellation(action_id);
   // Now that a request has been cleaned up, we can try to allocate resources
   // for queued uploads.
   PopRequestQueue();
@@ -1035,10 +1082,11 @@ GURL CloudBinaryUploadService::GetUploadUrl(bool is_consumer_scan_eligible) {
 }
 
 void CloudBinaryUploadService::PopRequestQueue() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   while (active_requests_.size() < GetParallelActiveRequestsMax() &&
          !request_queue_.empty()) {
     auto request = std::move(request_queue_.front());
-    request_queue_.pop();
+    request_queue_.pop_front();
     UploadForDeepScanning(std::move(request));
   }
 }
