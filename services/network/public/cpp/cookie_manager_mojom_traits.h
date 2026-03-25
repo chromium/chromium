@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -222,12 +223,9 @@ struct StructTraits<network::mojom::CookiePartitionKeyDataView,
     return cpk.nonce();
   }
 
-  static network::mojom::AncestorChainBit ancestor_chain_bit(
+  static net::CookiePartitionKey::AncestorChainBit ancestor_chain_bit(
       const net::CookiePartitionKey& cpk) {
-    return EnumTraits<network::mojom::AncestorChainBit,
-                      net::CookiePartitionKey::AncestorChainBit>::
-        ToMojom(net::CookiePartitionKey::BoolToAncestorChainBit(
-            cpk.IsThirdParty()));
+    return net::CookiePartitionKey::BoolToAncestorChainBit(cpk.IsThirdParty());
   }
 
   static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,
