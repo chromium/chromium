@@ -27,10 +27,10 @@ FakeOAuth2AccessTokenManager::FakeOAuth2AccessTokenManager(
       auto_post_fetch_response_on_message_loop_(false) {}
 
 FakeOAuth2AccessTokenManager::~FakeOAuth2AccessTokenManager() {
-  CompleteRequests(
-      CoreAccountId(), true, FakeOAuth2AccessTokenManager::ScopeSet(),
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-      OAuth2AccessTokenConsumer::TokenResponse());
+  CompleteRequests(CoreAccountId(), true,
+                   FakeOAuth2AccessTokenManager::ScopeSet(),
+                   GoogleServiceAuthError::CreateRequestCanceled(),
+                   OAuth2AccessTokenConsumer::TokenResponse());
 }
 
 void FakeOAuth2AccessTokenManager::IssueAllTokensForAccount(

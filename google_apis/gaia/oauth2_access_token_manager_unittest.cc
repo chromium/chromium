@@ -376,15 +376,13 @@ TEST_F(OAuth2AccessTokenManagerTest, CancelRequestsForAccount) {
   EXPECT_EQ(0, consumer_.number_of_errors_);
 
   token_manager_->CancelRequestsForAccount(
-      account_id_,
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      account_id_, GoogleServiceAuthError::CreateRequestCanceled());
 
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(2, consumer_.number_of_errors_);
 
   token_manager_->CancelRequestsForAccount(
-      account_id_2,
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      account_id_2, GoogleServiceAuthError::CreateRequestCanceled());
 
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(3, consumer_.number_of_errors_);
@@ -515,11 +513,10 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenInvalidated) {
 
 // Test that `OnAccessTokenFetched()` is invoked when a request is canceled.
 TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedOnRequestCanceled) {
-  GoogleServiceAuthError::State error_states[] = {
-      GoogleServiceAuthError::REQUEST_CANCELED,
-      GoogleServiceAuthError::ACCOUNT_NOT_FOUND};
-  for (const auto& state : error_states) {
-    GoogleServiceAuthError error(state);
+  GoogleServiceAuthError errors[] = {
+      GoogleServiceAuthError::CreateRequestCanceled(),
+      GoogleServiceAuthError::CreateAccountNotFound()};
+  for (const auto& error : errors) {
     SCOPED_TRACE(error.ToString());
     base::RunLoop run_loop;
     delegate_.SetOnAccessTokenFetched(account_id_, error,
@@ -535,7 +532,7 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedOnRequestCanceled) {
 // Test that OnAccessTokenFetched is invoked when a request is completed.
 TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedOnRequestCompleted) {
   base::RunLoop run_loop;
-  GoogleServiceAuthError error(GoogleServiceAuthError::NONE);
+  GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   delegate_.SetOnAccessTokenFetched(account_id_, error, run_loop.QuitClosure());
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
       token_manager_->StartRequest(
@@ -548,12 +545,11 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedOnRequestCompleted) {
 // Regression test for https://crbug.com/1186630.
 TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedCancelsRequests) {
   base::RunLoop run_loop;
-  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+  GoogleServiceAuthError error = GoogleServiceAuthError::FromServiceError("");
   delegate_.SetOnAccessTokenFetched(
       account_id_, error, base::BindLambdaForTesting([&]() {
         token_manager_->CancelRequestsForAccount(
-            account_id_,
-            GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+            account_id_, GoogleServiceAuthError::CreateRequestCanceled());
         run_loop.Quit();
       }));
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
@@ -587,7 +583,7 @@ TEST_F(OAuth2AccessTokenManagerTest,
   OAuth2AccessTokenManager::ScopeSet scopeset;
   scopeset.insert("scope");
   base::RunLoop run_loop;
-  GoogleServiceAuthError error(GoogleServiceAuthError::NONE);
+  GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   observer.SetOnFetchAccessTokenComplete(account_id_, consumer_.id(), scopeset,
                                          error, run_loop.QuitClosure());
   token_manager_->AddDiagnosticsObserver(&observer);
@@ -607,7 +603,7 @@ TEST_F(OAuth2AccessTokenManagerTest,
   OAuth2AccessTokenManager::ScopeSet scopeset;
   scopeset.insert("scope");
   base::RunLoop run_loop;
-  GoogleServiceAuthError error(GoogleServiceAuthError::NONE);
+  GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   observer.SetOnFetchAccessTokenComplete(account_id_, consumer_.id(), scopeset,
                                          error, run_loop.QuitClosure());
   token_manager_->AddDiagnosticsObserver(&observer);
@@ -634,7 +630,8 @@ TEST_F(OAuth2AccessTokenManagerTest,
   base::RunLoop run_loop;
   // |account_id| doesn't have a refresh token, OnFetchAccessTokenComplete
   // should report GoogleServiceAuthError::ACCOUNT_NOT_FOUND.
-  GoogleServiceAuthError error(GoogleServiceAuthError::ACCOUNT_NOT_FOUND);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::CreateAccountNotFound();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("new_account_id"));
   observer.SetOnFetchAccessTokenComplete(account_id, consumer_.id(), scopeset,

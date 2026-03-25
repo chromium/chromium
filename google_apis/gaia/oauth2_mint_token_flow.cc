@@ -205,8 +205,7 @@ OAuth2ErrorDetails ParseErrorResponse(
     const network::mojom::URLResponseHead* head,
     std::optional<std::string> body) {
   if (net_error == net::ERR_ABORTED) {
-    return {GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-            std::nullopt};
+    return {GoogleServiceAuthError::CreateRequestCanceled(), std::nullopt};
   }
 
   if (net_error != net::OK || !head || !head->headers) {

@@ -388,8 +388,7 @@ OAuth2AccessTokenManager::OAuth2AccessTokenManager(
 
 OAuth2AccessTokenManager::~OAuth2AccessTokenManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelAllRequests(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+  CancelAllRequests(GoogleServiceAuthError::CreateRequestCanceled());
 }
 
 OAuth2AccessTokenManager::Delegate* OAuth2AccessTokenManager::GetDelegate() {
@@ -606,7 +605,8 @@ OAuth2AccessTokenManager::StartRequestForClientWithContext(
   }
 
   if (!delegate_->HasRefreshToken(account_id)) {
-    GoogleServiceAuthError error(GoogleServiceAuthError::ACCOUNT_NOT_FOUND);
+    GoogleServiceAuthError error =
+        GoogleServiceAuthError::CreateAccountNotFound();
 
     for (auto& observer : diagnostics_observer_list_) {
       observer.OnFetchAccessTokenComplete(account_id, consumer->id(), scopes,
@@ -654,7 +654,7 @@ void OAuth2AccessTokenManager::InformConsumerWithCachedTokenResponse(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RequestImpl::InformConsumer, request->AsWeakPtr(),
-                     GoogleServiceAuthError(GoogleServiceAuthError::NONE),
+                     GoogleServiceAuthError::AuthErrorNone(),
                      *cache_token_response));
 }
 

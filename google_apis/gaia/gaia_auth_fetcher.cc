@@ -715,7 +715,7 @@ GoogleServiceAuthError GaiaAuthFetcher::GenerateAuthError(
 
   if (net_error != net::OK) {
     if (net_error == net::ERR_ABORTED) {
-      return GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
+      return GoogleServiceAuthError::CreateRequestCanceled();
     }
     DVLOG(1) << "Could not reach Google Accounts servers: errno " << net_error;
     return GoogleServiceAuthError::FromConnectionError(net_error);
@@ -732,7 +732,7 @@ GoogleServiceAuthError GaiaAuthFetcher::GenerateAuthError(
         GoogleServiceAuthError::InvalidGaiaCredentialsReason::
             CREDENTIALS_REJECTED_BY_SERVER);
   }
-  return GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+  return GoogleServiceAuthError::FromServiceUnavailable("");
 }
 
 void GaiaAuthFetcher::OnOAuth2TokenPairFetched(const std::string& data,
