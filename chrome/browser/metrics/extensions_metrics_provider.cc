@@ -33,6 +33,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/install_verifier.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -40,6 +41,8 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::Extension;
 using extensions::Manifest;

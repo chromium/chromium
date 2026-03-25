@@ -35,7 +35,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -219,9 +219,10 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers++;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  expected_providers++;  // ExtensionsMetricsProvider.
-#endif                   // defined(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // ExtensionsMetricsProvider.
+  expected_providers++;
+#endif  // defined(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_ANDROID)
   // AndroidMetricsProvider, ChromeAndroidMetricsProvider,
@@ -300,7 +301,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 // header files but those can't even be included if this build flag is not
 // set. This can't be in the anonymous namespace because it is a "friend" of
 // the ChromeMetricsServiceClient class.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(ChromeMetricsServiceClientTest, IsWebstoreExtension) {
   static const char test_extension_id1[] = "abcdefghijklmnopqrstuvwxyzabcdef";
   static const char test_extension_id2[] = "bhcnanendmgjjeghamaccjnochlnhcgj";
@@ -327,7 +328,7 @@ TEST_F(ChromeMetricsServiceClientTest, IsWebstoreExtension) {
   EXPECT_TRUE(
       TestChromeMetricsServiceClient::IsWebstoreExtension(test_extension_id2));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 TEST_F(ChromeMetricsServiceClientTest, GetUploadSigningKey_NotEmpty) {
   std::unique_ptr<TestChromeMetricsServiceClient>

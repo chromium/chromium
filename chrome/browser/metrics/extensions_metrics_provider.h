@@ -16,7 +16,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "components/metrics/metrics_provider.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/metrics_proto/extension_install.pb.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

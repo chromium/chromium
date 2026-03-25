@@ -150,7 +150,7 @@
 #include <signal.h>
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/metrics/extensions_metrics_provider.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/buildflags/buildflags.h"
@@ -796,7 +796,7 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AccessibilityStateProvider>());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ExtensionsMetricsProvider>(metrics_state_manager_));
 #endif
@@ -1401,7 +1401,7 @@ void ChromeMetricsServiceClient::AsyncInitSystemProfileProvider() {
 
 // static
 bool ChromeMetricsServiceClient::IsWebstoreExtension(std::string_view id) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Only acceptable if at least one profile knows the extension and all
   // profiles that know the extension say it was from the web-store.
   bool matched = false;
