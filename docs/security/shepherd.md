@@ -104,6 +104,10 @@ which _are_ valid. As a rule:
 
 * **If the bug is an in-the-wild report**:
     * Start a thread in the Shepherding chat immediately
+* If the bug looks eligible for a [delegated triage
+  rotation](delegated-triage.md):
+    * Move it to that rotation's component
+    * You are now done triaging this bug, congratulations!
 * If the bug is a v8 bug (including wasm):
     * Do not attempt to reproduce!
     * Assign it to [the current v8 shepherd](https://goto.google.com/current-v8-sheriff)
