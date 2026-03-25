@@ -20,6 +20,7 @@ android_library("java") {
   ]
 
   deps = [
+    ":branding_common_java",
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
@@ -47,6 +48,19 @@ android_library("java") {
 
   public_deps = [ ":proto_java" ]
   resources_package = "org.chromium.chrome"
+}
+
+# Low-level branding target that doesn't depend on chrome_java to avoid dependency cycles.
+android_library("branding_common_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationSigninDelegate.java" ]
+  deps = [
+    ":proto_java",
+    "//base:base_java",
+    "//chrome/browser/ui/android/signin:java",
+    "//third_party/android_deps:guava_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
 }
 
 android_resources("java_resources") {
