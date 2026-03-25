@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/android/application_status_listener.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -67,10 +67,10 @@ class AuxiliarySearchDonationService
       const visited_url_ranking::URLVisitsMetadata& metadata);
   void OnApplicationStateChanged(base::android::ApplicationState state);
 
-  raw_ptr<page_content_annotations::PageContentAnnotationsService>
+  const raw_ref<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_;
-  raw_ptr<visited_url_ranking::VisitedURLRankingService> ranking_service_;
-  raw_ptr<PrefService> pref_service_;
+  const raw_ref<visited_url_ranking::VisitedURLRankingService> ranking_service_;
+  const raw_ref<PrefService> pref_service_;
   std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;
   base::OneShotTimer donation_timer_;
