@@ -8,6 +8,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
@@ -17,7 +20,7 @@ class GlicInstanceImpl;
 
 // Handles an invocation of Glic, parsing options and communicating with the
 // instance's host.
-class GlicInvokeHandler {
+class GlicInvokeHandler : public Host::Observer {
  public:
   using CompletionCallback =
       base::OnceCallback<void(GlicInstance*, GlicInvokeHandler*)>;
@@ -25,7 +28,7 @@ class GlicInvokeHandler {
   GlicInvokeHandler(GlicInstanceImpl& instance,
                     GlicInvokeOptions options,
                     CompletionCallback completion_callback);
-  ~GlicInvokeHandler();
+  ~GlicInvokeHandler() override;
 
   GlicInvokeHandler(const GlicInvokeHandler&) = delete;
   GlicInvokeHandler& operator=(const GlicInvokeHandler&) = delete;
@@ -36,6 +39,9 @@ class GlicInvokeHandler {
   // Ends the invocation process with the given error.
   void OnError(GlicInvokeError error);
 
+  // Host::Observer:
+  void ClientReadyToShow(const mojom::OpenPanelInfo&) override;
+
  private:
   void SendToClient();
   mojom::InvokeOptionsPtr CreateMojoOptions();
@@ -44,6 +50,9 @@ class GlicInvokeHandler {
   const base::raw_ref<GlicInstanceImpl> instance_;
   GlicInvokeOptions options_;
   CompletionCallback completion_callback_;
+
+  base::ScopedObservation<Host, Host::Observer> host_observation_{this};
+  base::OneShotTimer timeout_timer_;
 
   base::WeakPtrFactory<GlicInvokeHandler> weak_ptr_factory_{this};
 };
