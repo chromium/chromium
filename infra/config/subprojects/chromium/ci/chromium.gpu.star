@@ -158,7 +158,8 @@ gpu.ci.linux_builder(
     ),
     targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
-        category = "Linux",
+        category = "Linux|Builder",
+        short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -193,7 +194,8 @@ gpu.ci.linux_builder(
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
-        category = "Linux",
+        category = "Linux|Builder",
+        short_name = "dbg",
     ),
 )
 
@@ -235,7 +237,8 @@ gpu.ci.mac_builder(
     ),
     targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
-        category = "Mac",
+        category = "Mac|Builder",
+        short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -269,7 +272,8 @@ gpu.ci.mac_builder(
     targets = targets.bundle(),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
-        category = "Mac",
+        category = "Mac|Builder",
+        short_name = "dbg",
     ),
 )
 
@@ -310,7 +314,8 @@ gpu.ci.windows_builder(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Windows",
+        category = "Windows|Builder",
+        short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -343,7 +348,8 @@ gpu.ci.windows_builder(
     ),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
-        category = "Windows",
+        category = "Windows|Builder",
+        short_name = "dbg",
     ),
     # TODO(crbug.com/413285147): Restore this to the default once sync/compile
     # times are reduced.
@@ -392,7 +398,8 @@ ci.thin_tester(
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
-        category = "Linux",
+        category = "Linux|Nvidia",
+        short_name = "dbg",
     ),
 )
 
@@ -440,7 +447,8 @@ ci.thin_tester(
         os_type = targets.os_type.LINUX,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Linux",
+        category = "Linux|Nvidia",
+        short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -491,7 +499,8 @@ ci.thin_tester(
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
-        category = "Mac",
+        category = "Mac|Intel",
+        short_name = "dbg",
     ),
 )
 
@@ -530,7 +539,8 @@ ci.thin_tester(
         os_type = targets.os_type.MAC,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Mac",
+        category = "Mac|Intel",
+        short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -582,7 +592,8 @@ ci.thin_tester(
     ),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
-        category = "Mac",
+        category = "Mac|AMD",
+        short_name = "dbg",
     ),
 )
 
@@ -621,7 +632,8 @@ ci.thin_tester(
         os_type = targets.os_type.MAC,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Mac",
+        category = "Mac|AMD",
+        short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -684,7 +696,8 @@ ci.thin_tester(
     ),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
-        category = "Windows",
+        category = "Windows|Nvidia",
+        short_name = "dbg",
     ),
 )
 
@@ -744,7 +757,8 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Windows",
+        category = "Windows|Nvidia",
+        short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
 )
