@@ -210,8 +210,9 @@ std::optional<::tflite::ActivationFunctionType> GetActivationType(
 }
 
 struct PaddingSizes {
-  uint32_t begin;
-  uint32_t end;
+  // Use int16_t to match tflite::PaddingValues.
+  int16_t begin;
+  int16_t end;
 };
 
 // Helper to calculate the explicit padding for tflite::Padding_SAME mode with
@@ -260,23 +261,25 @@ std::optional<PaddingSizes> CalculateExplicitPaddingForSamePaddingMode(
       checked_total_padding / 2;
   base::CheckedNumeric<uint32_t> checked_padding_end =
       (checked_total_padding + 1) / 2;
-  uint32_t padding_begin, padding_end;
-  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
-      !checked_padding_end.AssignIfValid(&padding_end)) {
+
+  PaddingSizes padding_sizes;
+  if (!checked_padding_begin.AssignIfValid(&padding_sizes.begin) ||
+      !checked_padding_end.AssignIfValid(&padding_sizes.end)) {
     return std::nullopt;
   }
-  return PaddingSizes({.begin = padding_begin, .end = padding_end});
+  return padding_sizes;
 }
 
 struct TfLitePadding {
   ::tflite::Padding mode;
-  // The explicit paddings are used to create TfLite Pad operator.
-  std::optional<std::array<uint32_t, 4>> paddings;
+  // The explicit paddings are used to create TfLite Pad operator. Use int16_t
+  // to match tflite::PaddingValues.
+  std::optional<std::array<int16_t, 4>> paddings;
 };
 
 // Calculate explicit padding end to ensure TFLite's VALID padding produces the
 // expected WebNN output shape for ceil rounding type.
-base::expected<uint32_t, std::string> CalculatePaddingEndForCeilRoundingType(
+base::expected<int16_t, std::string> CalculatePaddingEndForCeilRoundingType(
     uint32_t input_size,
     uint32_t filter_size,
     uint32_t stride,
@@ -299,7 +302,7 @@ base::expected<uint32_t, std::string> CalculatePaddingEndForCeilRoundingType(
   checked_padding_end_int32 -= base::CheckedNumeric<int32_t>(input_size);
   checked_padding_end_int32 -= base::CheckedNumeric<int32_t>(padding_begin);
 
-  auto checked_padding_end = checked_padding_end_int32.Cast<uint32_t>();
+  auto checked_padding_end = checked_padding_end_int32.Cast<int16_t>();
   // Check if the value is valid for rounding to uint32_t type.
   if (!checked_padding_end.IsValid()) {
     return base::unexpected("The padding end is too large.");
@@ -317,12 +320,23 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
     const mojom::Size2d& dilation,
     const webnn::Size2d<uint32_t>& output,
     bool is_transposed_conv2d) {
+  if (!base::IsValueInRangeForNumericType<int16_t>(
+          padding2d.beginning->height) ||
+      !base::IsValueInRangeForNumericType<int16_t>(padding2d.ending->height) ||
+      !base::IsValueInRangeForNumericType<int16_t>(
+          padding2d.beginning->width) ||
+      !base::IsValueInRangeForNumericType<int16_t>(padding2d.ending->width)) {
+    return base::unexpected("The padding is too large.");
+  }
+
   // WebNN explicit padding is in [beginning_height, ending_height,
   // beginning_width, ending_width] sequence.
-  std::array<uint32_t, 4> explicit_padding = {
-      padding2d.beginning->height, padding2d.ending->height,
-      padding2d.beginning->width, padding2d.ending->width};
-  std::array<uint32_t, 4> no_padding = {0, 0, 0, 0};
+  std::array<int16_t, 4> explicit_padding = {
+      static_cast<int16_t>(padding2d.beginning->height),
+      static_cast<int16_t>(padding2d.ending->height),
+      static_cast<int16_t>(padding2d.beginning->width),
+      static_cast<int16_t>(padding2d.ending->width)};
+  std::array<int16_t, 4> no_padding = {0, 0, 0, 0};
   if (explicit_padding == no_padding) {
     return TfLitePadding{.mode = ::tflite::Padding_VALID};
   }
@@ -344,7 +358,7 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
   if (!padding_height || !padding_width) {
     return base::unexpected("Failed to calculate explicit padding.");
   }
-  std::array<uint32_t, 4> upper_padding = {
+  std::array<int16_t, 4> upper_padding = {
       padding_height->begin, padding_height->end, padding_width->begin,
       padding_width->end};
   if (explicit_padding == upper_padding) {
@@ -413,19 +427,25 @@ base::expected<TfLitePadding, std::string> GetPool2dTfLitePaddingMode(
                  base::ClampCeil<uint32_t>(calculated_output_sizes.height) &&
              actual_output_width ==
                  base::ClampCeil<uint32_t>(calculated_output_sizes.width)) {
+    if (!base::IsValueInRangeForNumericType<int16_t>(
+            padding2d.beginning->height) ||
+        !base::IsValueInRangeForNumericType<int16_t>(
+            padding2d.beginning->width)) {
+      return base::unexpected("The padding is too large.");
+    }
     ASSIGN_OR_RETURN(
-        const uint32_t padding_height_end,
+        const int16_t padding_height_end,
         CalculatePaddingEndForCeilRoundingType(
             input.height, filter.height, stride.height, dilation.height,
             output.height, padding2d.beginning->height));
     ASSIGN_OR_RETURN(
-        const uint32_t padding_width_end,
+        const int16_t padding_width_end,
         CalculatePaddingEndForCeilRoundingType(
             input.width, filter.width, stride.width, dilation.width,
             output.width, padding2d.beginning->width));
-    std::array<uint32_t, 4> explicit_padding = {
-        padding2d.beginning->height, padding_height_end,
-        padding2d.beginning->width, padding_width_end};
+    std::array<int16_t, 4> explicit_padding = {
+        static_cast<int16_t>(padding2d.beginning->height), padding_height_end,
+        static_cast<int16_t>(padding2d.beginning->width), padding_width_end};
     // The explicit padding are used to insert a TfLite PAD operator.
     return TfLitePadding{.mode = ::tflite::Padding_VALID,
                          .paddings = explicit_padding};
@@ -3589,7 +3609,7 @@ auto GraphBuilderTflite::SerializeWhereOperation(
 }
 
 auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
-                                            base::span<const uint32_t> paddings)
+                                            base::span<const int16_t> paddings)
     -> base::expected<TensorIndex, std::string> {
   // WebNN explicit padding is in [beginning_height, ending_height,
   // beginning_width, ending_width] sequence.
