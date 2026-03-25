@@ -1291,10 +1291,16 @@ void NintendoController::HandleInputReport(
 
 void NintendoController::HandleUsbInputReport81(
     const std::vector<uint8_t>& report_bytes) {
+  if (report_bytes.size() < sizeof(UsbInputReport81)) {
+    return;
+  }
   const auto* ack_report = UNSAFE_TODO(
       reinterpret_cast<const UsbInputReport81*>(report_bytes.data()));
   switch (ack_report->subtype) {
     case kSubTypeRequestMac: {
+      if (report_bytes.size() < sizeof(MacAddressReport)) {
+        return;
+      }
       const auto* mac_report = UNSAFE_TODO(
           reinterpret_cast<const MacAddressReport*>(report_bytes.data()));
       mac_address_ = UnpackSwitchMacAddress(mac_report->mac_data);
@@ -1333,6 +1339,9 @@ void NintendoController::HandleUsbInputReport81(
 
 void NintendoController::HandleInputReport21(
     const std::vector<uint8_t>& report_bytes) {
+  if (report_bytes.size() < sizeof(SpiReadReport)) {
+    return;
+  }
   const auto* spi_report =
       UNSAFE_TODO(reinterpret_cast<const SpiReadReport*>(report_bytes.data()));
   if (UpdateGamepadFromControllerData(spi_report->controller_data, cal_data_,
@@ -1365,6 +1374,9 @@ void NintendoController::HandleInputReport21(
 
 void NintendoController::HandleInputReport30(
     const std::vector<uint8_t>& report_bytes) {
+  if (report_bytes.size() < sizeof(ControllerDataReport)) {
+    return;
+  }
   const auto* controller_report = UNSAFE_TODO(
       reinterpret_cast<const ControllerDataReport*>(report_bytes.data()));
   // Each input report contains three frames of IMU data.
@@ -1383,6 +1395,10 @@ void NintendoController::HandleInputReport30(
 void NintendoController::ContinueInitSequence(
     uint8_t report_id,
     const std::vector<uint8_t>& report_bytes) {
+  if (report_bytes.size() < sizeof(UsbInputReport81) ||
+      report_bytes.size() < sizeof(SpiReadReport)) {
+    return;
+  }
   const auto* ack_report = UNSAFE_TODO(
       reinterpret_cast<const UsbInputReport81*>(report_bytes.data()));
   const auto* spi_report =
