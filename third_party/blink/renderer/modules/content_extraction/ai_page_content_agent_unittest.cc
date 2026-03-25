@@ -6113,6 +6113,24 @@ TEST_F(AIPageContentAgentTest, IsTabbable) {
   EXPECT_TRUE(tabbable_interaction_info.is_tabbable);
 }
 
+TEST_F(AIPageContentAgentTest, HasAriaActivedescendant) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(
+      <body>
+        <div role="listbox" tabindex="0" aria-activedescendant="active-option">
+          <div id="active-option" role="option">Active Option</div>
+        </div>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& listbox_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(listbox_node.content_attributes->node_interaction_info);
+  EXPECT_TRUE(listbox_node.content_attributes->node_interaction_info
+                  ->has_aria_activedescendant);
+}
+
 TEST_F(AIPageContentAgentTest, ClipPathCircle) {
   // The <div> element is clipped to a small circle.
   frame_test_helpers::LoadHTMLString(

@@ -15,6 +15,9 @@
   <div role="checkbox" aria-checked="true">ARIA Checkable</div>
   <button tabindex="-1">Programmatic Focus</button>
   <div tabindex="0">Tab Stop</div>
+  <div role="listbox" tabindex="0" aria-activedescendant="active-option">
+    <div id="active-option" role="option">Active Option</div>
+  </div>
   <script>
     const btn = document.getElementById('multiReasonBtn');
     btn.onclick = function(){};

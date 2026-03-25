@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
   // aria-checked should also be treated as a toggle signal so we cover both
   // toggle-related ARIA attributes.
-  ASSERT_GE(ActionableContentRootNode().children_nodes().size(), 8u);
+  ASSERT_EQ(ActionableContentRootNode().children_nodes().size(), 9u);
   const auto& aria_checked = ActionableContentRootNode().children_nodes()[5];
   ASSERT_TRUE(aria_checked.content_attributes().has_interaction_info());
   EXPECT_THAT(aria_checked.content_attributes()
@@ -669,6 +669,13 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   ASSERT_TRUE(tabbable.content_attributes().has_interaction_info());
   EXPECT_TRUE(tabbable.content_attributes().interaction_info().is_focusable());
   EXPECT_TRUE(tabbable.content_attributes().interaction_info().is_tabbable());
+
+  const auto& activedescendant =
+      ActionableContentRootNode().children_nodes()[8];
+  ASSERT_TRUE(activedescendant.content_attributes().has_interaction_info());
+  EXPECT_TRUE(activedescendant.content_attributes()
+                  .interaction_info()
+                  .has_aria_activedescendant());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

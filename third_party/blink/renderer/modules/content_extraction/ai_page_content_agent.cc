@@ -2837,6 +2837,12 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     //    and not action.
     node_interaction_info->is_tabbable =
         element_is_focusable && has_non_negative_tabindex;
+    // We check for the mere presence of the aria-activedescendant
+    // attribute because aria-activedescendant="" means that while no
+    // descendant is active currently, this widget supports active
+    // descendants and there could be one in the future.
+    node_interaction_info->has_aria_activedescendant =
+        element->FastHasAttribute(html_names::kAriaActivedescendantAttr);
   }
 
   const bool needs_interaction_info =

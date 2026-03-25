@@ -247,6 +247,11 @@ struct AIPageContentNodeInteractionInfo {
   // which indicates it fits into the tab cycle in its natural order).
   bool is_tabbable;
 
+  // Whether the content node has the aria-activedescendant attribute set. This
+  // attribute is used to indicate which element in a set of child elements is
+  // currently active.
+  bool has_aria_activedescendant;
+
   // The z-order of the content node relative to other nodes in the same
   // Document. A higher value means the node is in front of other nodes with
   // lower values.
