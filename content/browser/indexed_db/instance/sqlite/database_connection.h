@@ -91,11 +91,11 @@ class CONTENT_EXPORT DatabaseConnection {
   }
 
   // Prepares the connection for destruction by moving out the `sql::Database`.
-  // Returns a closure that performs cleanup (close, vacuum, recovery, etc.).
-  // Callers are free to run the closure synchronously or on a background
+  // Returns a callback that performs cleanup (close, vacuum, recovery, etc.).
+  // Callers are free to run the callback synchronously or on a background
   // thread as appropriate. Some "optional" cleanup steps are skipped if the
-  // backing store is `force_closing`.
-  base::OnceClosure GetCleanupTask(bool force_closing) &&;
+  // backing store is `force_closing` when the callback is run.
+  base::OnceCallback<void(bool force_closing)> GetCleanupTask() &&;
 
   // Gets the version of the database that is actually committed. This can be
   // different from the version in `metadata_` during a version change
@@ -296,7 +296,8 @@ class CONTENT_EXPORT DatabaseConnection {
       bool should_delete,
       bool should_attempt_recovery,
       bool should_vacuum,
-      std::optional<std::set<int64_t>> known_legacy_blob_ids);
+      std::optional<std::set<int64_t>> known_legacy_blob_ids,
+      bool force_closing);
 
   DatabaseConnection(base::FilePath path, BackingStoreImpl& backing_store);
 

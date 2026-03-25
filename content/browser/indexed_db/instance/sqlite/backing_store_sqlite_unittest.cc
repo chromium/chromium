@@ -445,7 +445,7 @@ TEST_F(BackingStoreSqliteTest,
       std::unique_ptr<DatabaseConnection> connection,
       DatabaseConnection::Open(kDbName, db_path, *backing_store_impl));
   EXPECT_TRUE(base::PathExists(db_path));
-  std::ignore = std::move(*connection).GetCleanupTask(/*force_closing=*/true);
+  std::ignore = std::move(*connection).GetCleanupTask();
   EXPECT_TRUE(base::PathExists(db_path));
 
   // `GetDatabaseNamesAndVersions()` won't return the zygotic database, and
@@ -534,12 +534,10 @@ TEST_F(BackingStoreSqliteTest, VacuumOnClose) {
 #else
   histograms.ExpectBucketCount("IndexedDB.SQLite.FreelistPercentageAtClose", 0,
                                1);
-  histograms.ExpectTotalCount("IndexedDB.SQLite.VacuumEvent", 3);
-  histograms.ExpectBucketCount("IndexedDB.SQLite.VacuumEvent", 0 /*kNeeded*/,
+  histograms.ExpectTotalCount("IndexedDB.SQLite.VacuumEvent", 2);
+  histograms.ExpectBucketCount("IndexedDB.SQLite.VacuumEvent", 1 /*kRequested*/,
                                1);
-  histograms.ExpectBucketCount("IndexedDB.SQLite.VacuumEvent", 2 /*kRequested*/,
-                               1);
-  histograms.ExpectBucketCount("IndexedDB.SQLite.VacuumEvent", 3 /*kSucceeded*/,
+  histograms.ExpectBucketCount("IndexedDB.SQLite.VacuumEvent", 2 /*kSucceeded*/,
                                1);
 #endif
 }
