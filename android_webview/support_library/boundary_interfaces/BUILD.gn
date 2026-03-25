@@ -57,6 +57,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/util/BoundaryInterfaceReflectionUtil.java",
     "src/org/chromium/support_lib_boundary/util/Contract.java",
     "src/org/chromium/support_lib_boundary/util/Features.java",
+    "src/org/chromium/support_lib_boundary/util/InvocationHandlerMethodMismatchException.java",
   ]
 
   proguard_configs = [ "proguard.flags" ]

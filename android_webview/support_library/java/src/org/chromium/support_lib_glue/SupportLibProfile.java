@@ -32,6 +32,7 @@ import org.chromium.support_lib_boundary.SpeculativeLoadingConfigBoundaryInterfa
 import org.chromium.support_lib_boundary.SpeculativeLoadingParametersBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.util.Features;
+import org.chromium.support_lib_boundary.util.InvocationHandlerMethodMismatchException;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
@@ -227,16 +228,12 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                     } else {
                         operationCallback.onSuccess();
                     }
-                } catch (RuntimeException e) {
-                    if (e.getCause() != null && e.getCause() instanceof NoSuchMethodException) {
-                        // PrefetchOperationCallbackBoundaryInterface did not originally implement
-                        // FeatureFlagHolderBoundaryInterface, so it is possible that the call to
-                        // `getSupportedFeatures` will fail.
-                        // This means that we should call the old `onSuccess` method instead.
-                        operationCallback.onSuccess();
-                    } else {
-                        throw e;
-                    }
+                } catch (InvocationHandlerMethodMismatchException e) {
+                    // PrefetchOperationCallbackBoundaryInterface did not originally implement
+                    // FeatureFlagHolderBoundaryInterface, so it is possible that the call to
+                    // `getSupportedFeatures` will fail.
+                    // This means that we should call the old `onSuccess` method instead.
+                    operationCallback.onSuccess();
                 }
             }
 

@@ -206,6 +206,12 @@ public class BoundaryInterfaceReflectionUtil {
                 throw e.getTargetException();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Reflection failed for method " + method, e);
+            } catch (IllegalArgumentException e) {
+                // when `mDelegate` doesn't contain the method being invoked. And we wrap this
+                // exception with `InvalidInvocationHandlerException` to be able to distinguish it
+                // from any `IllegalArgumentExceptions` being rethrown in the `throw
+                // e.getTargetException()` block above.
+                throw new InvocationHandlerMethodMismatchException(e);
             }
         }
 
