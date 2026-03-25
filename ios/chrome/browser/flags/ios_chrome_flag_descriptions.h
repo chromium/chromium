@@ -77,6 +77,15 @@ extern const char kAutofillAiReauthRequiredDescription[];
 extern const char kAutofillAiValuablesIPHName[];
 extern const char kAutofillAiValuablesIPHDescription[];
 
+extern const char kAutofillAiWalletFlightReservationName[];
+extern const char kAutofillAiWalletFlightReservationDescription[];
+
+extern const char kAutofillAiWalletPrivatePassesName[];
+extern const char kAutofillAiWalletPrivatePassesDescription[];
+
+extern const char kAutofillAiWalletVehicleRegistrationName[];
+extern const char kAutofillAiWalletVehicleRegistrationDescription[];
+
 extern const char kAutofillAiWithDataSchemaName[];
 extern const char kAutofillAiWithDataSchemaDescription[];
 

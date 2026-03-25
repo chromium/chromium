@@ -93,6 +93,23 @@ const char kAutofillAiValuablesIPHName[] = "IPH Autofill AI Valuables";
 const char kAutofillAiValuablesIPHDescription[] =
     "Enables the In-Product Help for Autofill AI valuables.";
 
+const char kAutofillAiWalletFlightReservationName[] =
+    "Autofill AI Google Wallet flight reservations";
+const char kAutofillAiWalletFlightReservationDescription[] =
+    "Enables Autofill AI support for flight reservation entities from Google "
+    "Wallet.";
+
+const char kAutofillAiWalletPrivatePassesName[] =
+    "Autofill AI Google Wallet private passes";
+const char kAutofillAiWalletPrivatePassesDescription[] =
+    "Enables Autofill AI support for private passes from Google Wallet.";
+
+const char kAutofillAiWalletVehicleRegistrationName[] =
+    "Autofill AI Google Wallet vehicle registration";
+const char kAutofillAiWalletVehicleRegistrationDescription[] =
+    "Enables Autofill AI support for vehicle registration entities from Google "
+    "Wallet.";
+
 const char kAutofillAiWithDataSchemaName[] = "Autofill AI With Data Schema";
 const char kAutofillAiWithDataSchemaDescription[] =
     "Enables Autofill AI With Data Schema.";
