@@ -4131,25 +4131,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   loop.Run();
 }
 
-namespace {
-// TODO(crbug.com/450537562): Fix underlying behavior and run these tests with
-// the feature enabled.
-class NavigationBrowserTestNoRfhDtorDelay : public NavigationBrowserTest {
- public:
-  NavigationBrowserTestNoRfhDtorDelay() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kDelayRfhDestructionsOnUnloadAndDetach);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-}  // namespace
 
 // A document initiates a form submission in another frame, then deletes itself.
 // Check the initiator frame token.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTestNoRfhDtorDelay,
-                       FormSubmissionThenDeleteFrame) {
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   GURL always_referrer_url(embedded_test_server()->GetURL(
       "/set-header?Referrer-Policy: unsafe-url"));
@@ -4261,7 +4246,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestNoRfhDtorDelay,
 // Same as the previous test, but for a remote frame navigation:
 // A document initiates a form submission in a cross-origin frame, then deletes
 // itself. Check the initiator frame token.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTestNoRfhDtorDelay,
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        FormSubmissionInRemoteFrameThenDeleteFrame) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   GURL cross_origin_always_referrer_url(embedded_test_server()->GetURL(
