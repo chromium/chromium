@@ -234,22 +234,24 @@ bool ThreadTypeLoggingLevelGreaterOrEqual(HangWatcher::ThreadType thread_type,
   }
 }
 
+constexpr base::FeatureState HangWatcherFeatureDefault() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+  return FEATURE_ENABLED_BY_DEFAULT;
+#else
+  return FEATURE_DISABLED_BY_DEFAULT;
+#endif
+}
+
 }  // namespace
 
 // Enables the HangWatcher. When disabled, the HangWatcher thread should not be
 // started. Enabled by default only on platforms where the generated data is
 // used, to avoid unnecessary overhead.
-BASE_FEATURE(kEnableHangWatcher,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_LINUX)
-             FEATURE_ENABLED_BY_DEFAULT
-#else
-             FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kEnableHangWatcher, HangWatcherFeatureDefault());
 
 // Enable HangWatcher on the GPU process.
-BASE_FEATURE(kEnableHangWatcherOnGpuProcess, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableHangWatcherOnGpuProcess, HangWatcherFeatureDefault());
 
 // Browser process.
 // Note: Do not use the prepared macro as of no need for a local cache.
@@ -278,13 +280,13 @@ const char kGpuProcessThreadPoolLogLevelParam[] =
     "gpu_process_threadpool_log_level";
 constexpr base::FeatureParam<int> kGPUProcessIOThreadLogLevel{
     &kEnableHangWatcherOnGpuProcess, kGpuProcessIoThreadLogLevelParam,
-    static_cast<int>(LoggingLevel::kUmaOnly)};
+    static_cast<int>(LoggingLevel::kUmaAndCrash)};
 constexpr base::FeatureParam<int> kGPUProcessMainThreadLogLevel{
     &kEnableHangWatcherOnGpuProcess, kGpuProcessMainThreadLogLevelParam,
-    static_cast<int>(LoggingLevel::kUmaOnly)};
+    static_cast<int>(LoggingLevel::kUmaAndCrash)};
 constexpr base::FeatureParam<int> kGPUProcessCompositorThreadLogLevel{
     &kEnableHangWatcherOnGpuProcess, kGpuProcessCompositorThreadLogLevelParam,
-    static_cast<int>(LoggingLevel::kUmaOnly)};
+    static_cast<int>(LoggingLevel::kUmaAndCrash)};
 constexpr base::FeatureParam<int> kGPUProcessThreadPoolLogLevel{
     &kEnableHangWatcherOnGpuProcess, kGpuProcessThreadPoolLogLevelParam,
     static_cast<int>(LoggingLevel::kUmaOnly)};

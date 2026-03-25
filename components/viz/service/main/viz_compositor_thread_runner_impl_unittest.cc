@@ -31,19 +31,34 @@ void WaitForThreadRunnerToStart(VizCompositorThreadRunnerImpl& thread_runner) {
   thread_started.Wait();
 }
 
-TEST(VizCompositorThreadRunnerImplTest, HangWatcherDisabledByDefault) {
+TEST(VizCompositorThreadRunnerImplTest, HangWatcherEnabledByDefault) {
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
   VizCompositorThreadRunnerImpl thread_runner;
   WaitForThreadRunnerToStart(thread_runner);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(hang_watcher.IsWatchingThreads());
+#else
   EXPECT_FALSE(hang_watcher.IsWatchingThreads());
+#endif
 }
 
-TEST(VizCompositorThreadRunnerImplTest, HangWatcherFeatureEnabled) {
+TEST(VizCompositorThreadRunnerImplTest, HangWatcherFeatureEnabledViaFeature) {
   ScopedFeatureList enable_gpu_watcher(base::kEnableHangWatcherOnGpuProcess);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
   VizCompositorThreadRunnerImpl thread_runner;
   WaitForThreadRunnerToStart(thread_runner);
   EXPECT_TRUE(hang_watcher.IsWatchingThreads());
+}
+
+TEST(VizCompositorThreadRunnerImplTest, HangWatcherFeatureDisabledViaFeature) {
+  ScopedFeatureList disable_gpu_watcher;
+  disable_gpu_watcher.InitAndDisableFeature(
+      base::kEnableHangWatcherOnGpuProcess);
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
+  VizCompositorThreadRunnerImpl thread_runner;
+  WaitForThreadRunnerToStart(thread_runner);
+  EXPECT_FALSE(hang_watcher.IsWatchingThreads());
 }
 
 TEST(VizCompositorThreadRunnerImplTest,
