@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Soubor manifestu je neplatný</translation>
 <translation id="7217838517480956708">Správce tohoto počítače vyžaduje instalaci rozšíření <ph name="EXTENSION_NAME" />. Nelze je odebrat ani upravit.</translation>
+<translation id="7287143125007575591">Přístup byl odepřen.</translation>
 <translation id="7612608473764576263">Vstupní hodnota pro soukromý klíč musí mít platný formát (klíč RSA ve formátu PKCS#8 a kódováním PEM).</translation>
 <translation id="765293928828334535">Nelze přidávat aplikace, rozšíření a uživatelské skripty z tohoto webu</translation>
 <translation id="7876803335449432072">Soubor „<ph name="RELATIVE_PATH" />“ pro obsahový skript nelze načíst. Šablony stylů pro obsahové skripty lze načítat jen z podporovaných souborů šablon stylů, jako jsou soubory s příponou .css.</translation>

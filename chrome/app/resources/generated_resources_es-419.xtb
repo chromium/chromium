@@ -338,6 +338,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="122082903575839559">Algoritmo de firma del certificado</translation>
 <translation id="1221266967850882682">Inicio inteligente</translation>
 <translation id="1221825588892235038">Solo selección</translation>
+<translation id="1222786882236067545">Cargar archivos del historial</translation>
 <translation id="1222835797152767346">Establece un PIN para que sea más fácil acceder</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requiere una licencia</translation>
 <translation id="1223498995510244364">Resumir</translation>
@@ -390,6 +391,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1252987234827889034">Se produjo un error en el perfil</translation>
 <translation id="1254034280040157728">Gran Cañón</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
+<translation id="1254767904958485584">Se creó la vista dividida</translation>
 <translation id="1255095393630332248">Cuando se comparten pestañas, se envían a Google las URLs, el contenido multimedia y el contenido de las páginas.</translation>
 <translation id="1256143630373008432">No se pudo realizar la autoevaluación</translation>
 <translation id="1256588359404100567">Se sincronizó la configuración de tu dispositivo anterior.</translation>
@@ -1123,6 +1125,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1767043563165955993">Usar en las apps para Android</translation>
 <translation id="1767508543310534319">Eco de los signos de puntuación</translation>
 <translation id="1768212860412467516">Envía comentarios sobre <ph name="EXPERIMENT_NAME" />.</translation>
+<translation id="1768928167751703843">Ver datos locales</translation>
 <translation id="1769104665586091481">Abrir vínculo en una ventana &amp;nueva</translation>
 <translation id="1769157454356586138">No se pudo realizar el análisis. Tu administrador bloqueó este archivo.</translation>
 <translation id="176920518817780870">Convertir grupo en carpeta de favoritos</translation>
@@ -2248,6 +2251,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2526590354069164005">Escritorio</translation>
 <translation id="2526619973349913024">Verificar actualización</translation>
 <translation id="2527167509808613699">Cualquier tipo de conexión</translation>
+<translation id="2528487766183344810">Desbloquea <ph name="TOKEN_NAME" /> para exportar el certificado de cliente.</translation>
 <translation id="2529887123641260401">Puedes volver a abrir la guía de configuración o cambiar otros parámetros en cualquier momento desde la configuración de Accesibilidad con interruptores.</translation>
 <translation id="2530166226437958497">Solución de problemas</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Hubo un problema y no se pudo instalar <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
@@ -2379,6 +2383,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2628258844236035475">¿Quieres quitar tu dirección de casa de la función Autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">Para habilitar la depuración de adb, es necesario restablecer la configuración de fábrica de esta Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Iniciar un nuevo chat con Gemini</translation>
+<translation id="2629058811622993283">Compartir también el audio de la app (de todas sus ventanas y apps relacionadas)</translation>
 <translation id="2629227353894235473">Desarrollar apps para Android</translation>
 <translation id="2629437048544561682">Borrar lienzo</translation>
 <translation id="2630703150574465936">Permitiste que Gemini te ayude a acceder automáticamente a estos sitios y apps con tus cuentas</translation>
@@ -2451,6 +2456,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2670403088701171361">No permitir que los sitios visualicen texto ni imágenes del portapapeles</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2671451824761031126">Tus marcadores y opciones de configuración están listos</translation>
+<translation id="267276224968585180">Chrome está cargando marcas desde un archivo de línea de comandos. Es posible que se vean afectadas la estabilidad y la seguridad.</translation>
 <translation id="2673135533890720193">Leer el historial de navegación</translation>
 <translation id="2673848446870717676">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados.</translation>
 <translation id="2673873887296220733">¿Quieres copiar 1 archivo en <ph name="CLOUD_PROVIDER" /> para abrirlo?</translation>
@@ -2810,6 +2816,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2916745397441987255">Buscar extensiones</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
 <translation id="2918484644467055090">No se puede inscribir este dispositivo en la organización al que pertenece tu cuenta porque ya lo administra otra organización.</translation>
+<translation id="2920257489056757859">Un ícono que indica que tu organización administra este perfil</translation>
 <translation id="2920346489891435227">Abrir vínculo en la vista derecha</translation>
 <translation id="2920852127376356161">No pueden procesar protocolos</translation>
 <translation id="2921081876747860777">Crea una contraseña para proteger tus datos locales.</translation>
@@ -3256,6 +3263,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3241638166094654466">Celdas en cada línea:</translation>
 <translation id="3241680850019875542">Seleccionar el directorio de raíz de la extensión que debe empaquetarse. Para actualizar una extensión, también debes seleccionar el archivo de clave privada que será reutilizado.</translation>
 <translation id="3241810535741601486">Este cambio es permanente y no se puede revertir. Las actualizaciones extendidas se aplican a todos los usuarios de este dispositivo. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
+<translation id="324205398936770726">Tu avatar</translation>
 <translation id="3243017971870859287">Leer los números de serie del componente y del dispositivo ChromeOS Flex</translation>
 <translation id="324366796737464147">Cancelación de ruido</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4465,6 +4473,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="405181879009056822">Configuración de ChromeOS</translation>
 <translation id="4052120076834320548">Diminuto</translation>
 <translation id="4052913941260326985">Crear código &amp;QR</translation>
+<translation id="4053028343167125998">Desbloquea <ph name="TOKEN_NAME" /> para importar el certificado de cliente.</translation>
 <translation id="4053833479432165765">&amp;Instalar página como app…</translation>
 <translation id="4054070260844648638">Visible para todos</translation>
 <translation id="4056908315660577142">Alcanzaste el límite de tiempo que tu madre o padre establecieron para la app de <ph name="APP_NAME" /> de Chrome. Mañana podrás volver a usarla por <ph name="TIME_LIMIT" />.</translation>
@@ -4678,6 +4687,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4226303886821889519">Versión del actualizador: <ph name="VERSION" /></translation>
 <translation id="4228071595943929139">Usa la dirección de correo electrónico de tu organización</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{No se permite esta extensión}other{No se permiten algunas extensiones}}</translation>
+<translation id="4229538146709970028">Desbloquea <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
 <translation id="4231053948789591973">La transmisión está en pausa. Puedes reanudar o detener la transmisión de la pantalla en cualquier momento.</translation>
 <translation id="4231095370974836764">Instala apps y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
@@ -4691,6 +4701,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4241140145060464825">Contenido de la app</translation>
 <translation id="4241224519481557898">Categoría</translation>
 <translation id="4242145785130247982">No se admiten Certificados de cliente múltiples.</translation>
+<translation id="4242245038391716252">Descargado por la extensión: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4242577469625748426">Se produjo un error al instalar la configuración de la política en el dispositivo: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> administra tu <ph name="BEGIN_LINK" />navegador y tu perfil<ph name="END_LINK" /></translation>
@@ -5812,6 +5823,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5026874946691314267">No volver a mostrar</translation>
 <translation id="5027550639139316293">Enviar certificado por correo electrónico</translation>
 <translation id="5027562294707732951">Agregar extensión</translation>
+<translation id="502811790397568978">Desbloquea <ph name="TOKEN_NAME" /> para importar el certificado de cliente desde <ph name="HOST_NAME" />.</translation>
 <translation id="5029287942302939687">Se estableció la contraseña</translation>
 <translation id="5029873138381728058">No se pudieron comprobar las VM</translation>
 <translation id="503155457707535043">Se están descargando las apps</translation>
@@ -6012,6 +6024,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5172855596271336236">Hay 1 impresora administrada.</translation>
 <translation id="5173668317844998239">Agrega huellas dactilares y borra las que están guardadas en tu llave de seguridad</translation>
 <translation id="5174169235862638850">Se copió la contraseña al portapapeles</translation>
+<translation id="517488401359338823">Desbloquear dispositivo de seguridad</translation>
 <translation id="5177479852722101802">Continuar el bloqueo del acceso a la cámara y al micrófono</translation>
 <translation id="5178667623289523808">Buscar anterior</translation>
 <translation id="5180276433875360121">Mostrar <ph name="CERT_LIST" /></translation>
@@ -6056,6 +6069,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5200191131577845078">Se permiten notificaciones de <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">Touch ID está bloqueado. Para continuar, ingresa tu contraseña.</translation>
 <translation id="5201945335223486172">Para <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{Visualizando el historial de 1 archivo}other{Visualizando el historial de # archivos}}</translation>
 <translation id="5203035663139409780">Pueden editar archivos o carpetas del dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Haz clic para ver la extensión}other{Haz clic para ver estas extensiones}}</translation>
 <translation id="5204282224596194174">Contraseña de recuperación de <ph name="USER_EMAIL" /></translation>
@@ -7296,6 +7310,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6095696531220637741">Macarrón</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Abrir de forma maximizada</translation>
+<translation id="6096192567014958958">¡<ph name="USER_NAME" />, te damos la bienvenida!</translation>
 <translation id="6096326118418049043">Nombre X 500</translation>
 <translation id="6097480669505687979">Si no liberas espacio, es posible que se quiten usuarios y datos de forma automática.</translation>
 <translation id="6097600385983390082">Se cerró la búsqueda por voz</translation>
@@ -8211,6 +8226,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6755702685749429945">Agregar diccionario</translation>
 <translation id="6756643207511618722">Motores de voz</translation>
 <translation id="6757431299485455321">Ayuda a que otros dispositivos encuentren este hotspot.</translation>
+<translation id="6757615605516049275">Desbloquea <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">Danos tu opinión sobre nuestro trabajo.</translation>
 <translation id="6759193508432371551">Restablecer configuración de fábrica</translation>
 <translation id="6760354150216532978">Advertencia: Este sitio puede ver los cambios que haces</translation>
@@ -8406,6 +8422,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6871644448911473373">Respondedor de OCSP:<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomas…</translation>
 <translation id="6872859537300194762"><ph name="TASK_TITLE" />\nDetuve tu tarea debido a otra actividad. Puedes volver a Chrome para verla cuando esté lista.</translation>
+<translation id="6873156759937047811">PIN:</translation>
 <translation id="6873571253135628430">Cambiar los permisos de sitios</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6876469544038980967">Poco útil</translation>
@@ -8968,7 +8985,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7284411326658527427">Cada persona podrá personalizar su cuenta y proteger la privacidad de sus datos.</translation>
 <translation id="7285008278689343502">Parque nacional Grand Teton</translation>
 <translation id="7286867818472074330">Seleccionar llave de acceso</translation>
-<translation id="7287143125007575591">Acceso denegado</translation>
 <translation id="7287411021188441799">Restablecer fondo predeterminado</translation>
 <translation id="7287949630503871403">Datos almacenados en la app</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> ppp</translation>
@@ -9945,6 +9961,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7947962633355574091">Copiar dirección del video</translation>
 <translation id="7947964080535614577">Por lo general los sitios muestran anuncios para poder proporcionar contenido o servicios de forma gratuita. No obstante, algunos sitios son conocidos por mostrar anuncios intrusivos o engañosos.</translation>
 <translation id="7948407723851303488">Todas las páginas de <ph name="DOMAIN_NAME" /></translation>
+<translation id="7949038991703929816">No se pudo cargar el historial. Asegúrate de que los archivos contengan registros de actualización válidos.</translation>
 <translation id="7950629216186736592">Motivo: LBS solo admite URLs con http://, https:// y file://.</translation>
 <translation id="7950814699499457511">Activada • Esta extensión no publicó prácticas de privacidad, como la forma en que recopila y usa datos</translation>
 <translation id="7951265006188088697">Para agregar o administrar formas de pago de Google Pay, visita tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" />.</translation>
@@ -10326,6 +10343,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8207404892907560325">Elige una llave de acceso</translation>
 <translation id="8207794858944505786">La VM "<ph name="DEFAULT_VM_NAME" />" existe, pero no parece ser una VM válida de <ph name="VM_TYPE" />. Comunícate con tu administrador.</translation>
 <translation id="8207901006380134182">Una gran ola que cubre el océano, con un bosque oscuro en la costa.</translation>
+<translation id="8208043093301544621">Página principal</translation>
 <translation id="8208216423136871611">No guardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
@@ -10487,6 +10505,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8317965619823678157">copiar contraseñas</translation>
 <translation id="8318266828739827371">Usa una vista de pantalla dividida para ver el área ampliada. Usa Búsqueda + Ctrl + D para activar y desactivar la lupa fijada.</translation>
 <translation id="8318680582681577962">Submarco de PDF en modo incógnito: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8319105959731007612">El aislamiento de procesos impide que otras aplicaciones manipulen <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8319414634934645341">Uso extendido de la clave</translation>
 <translation id="8320212361750431956">Actividad reciente</translation>
 <translation id="8321476692217554900">notificaciones</translation>
@@ -11776,6 +11795,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás una notificación cuando comience la grabación.}=2{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás una notificación cuando comience la grabación.}=3{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. No recibirás una notificación cuando comience la grabación.}other{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. No recibirás una notificación cuando comience la grabación.}}</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
+<translation id="9188142767272053574">Habilitar el aislamiento de procesos</translation>
 <translation id="9189618485998894982">Se bloqueó esta aplicación. Comunícate con el desarrollador</translation>
 <translation id="9192019773545828776">Escucha descripciones por voz para usar el dispositivo sin mirar la pantalla. Las descripciones en braille están disponibles con un dispositivo conectado. Usa Ctrl + Alt + Z para activar y desactivar ChromeVox. Usa Búsqueda + flecha hacia la izquierda o flecha hacia la derecha para navegar. Usa Búsqueda + barra espaciadora para seleccionar (activar).</translation>
 <translation id="9195969368671142407">Cuando tu organización limita el guardado en tu Cuenta de Google, no puedes compartir grupos de pestañas ni unirte a ellos</translation>

@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Escolha quais contas serão exportadas para outro app.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1506063256525392513">Esse app permite que você tire fotos, faça upload delas e leia QR codes</translation>
+<translation id="1506733063065214205">Cliente RCS MLS</translation>
 <translation id="1508263560970797965">Continuar na navegação anônima</translation>
 <translation id="1509486075633541495">Fazer login no site</translation>
 <translation id="1513858653616922153">Excluir senha</translation>
@@ -477,6 +478,7 @@
 <translation id="2671423594960767771">Compartilhar grupo</translation>
 <translation id="2673508731173059946">Visitar link copiado</translation>
 <translation id="2679659833697380">Suas informações são salvas no dispositivo</translation>
+<translation id="2681572445246787428">Assinatura de documentos</translation>
 <translation id="2688535388040882469">Banners</translation>
 <translation id="2690858294534178585">A câmera está sendo usada</translation>
 <translation id="2691653761409724435">Não está disponível off-line</translation>
@@ -907,10 +909,12 @@
 <translation id="429074084062258019">{count,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gerenciador de Senhas</translation>
+<translation id="4306349443295056740">Assinatura OCSP</translation>
 <translation id="4309403553630140242">Toque duas vezes para ver mais informações</translation>
 <translation id="4310738531374808763">Personalize sua página inicial</translation>
 <translation id="4320848494125124980">Recentes</translation>
 <translation id="4322394346347055525">Fechar outras guias</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Ativar notificações</translation>
 <translation id="4326912346867677256">Toque em "Usar senha" para fazer login com segurança.</translation>
 <translation id="4327017157997423717">Monitorar preço de <ph name="PRODUCT_NAME" />, por <ph name="PRICE" />, em <ph name="DOMAIN" /></translation>
@@ -1029,6 +1033,7 @@
 <translation id="4744428388659507035">Para acessar seus favoritos em todos os dispositivos, ative a opção "Favoritos" nas configurações.</translation>
 <translation id="4746926359847517643">Elas podem ser recuperadas a qualquer momento no histórico.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} cartão importado}one{{count} cartão importado}other{{count} cartões importados}}</translation>
+<translation id="4749924365937394956">Autenticação do servidor</translation>
 <translation id="4751645464639803239">Nova guia anônima</translation>
 <translation id="4752348350801431746">Desativar as notificações da Confirmação de segurança…</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -1394,12 +1399,14 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="598634819525651074">Área</translation>
 <translation id="5988097621740394599">Ver reduções no preço nas suas guias.</translation>
 <translation id="5988851877894965432">Abrir URLs no Chrome</translation>
+<translation id="599343768974649785">Texto explícito</translation>
 <translation id="6006672969046233841">Nova guia</translation>
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
 <translation id="6012140227487808125">Criptografando…</translation>
 <translation id="6027619584715411062">Faça login para ter acesso a favoritos, senhas e muito mais em todos os seus dispositivos.</translation>
 <translation id="6027945736510816438">Você quis dizer <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">novo recurso</translation>
+<translation id="6037458223703682108">Assinatura digital</translation>
 <translation id="6038823991892265570">Gerenciar o armazenamento do Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -1543,6 +1550,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6476284679642588870">Gerenciar formas de pagamento</translation>
 <translation id="6476800141292307438">Tradução da página para <ph name="LANGUAGE" />. Opções disponíveis na parte inferior da tela.</translation>
 <translation id="647867789226964031">Mudar suas senhas</translation>
+<translation id="6480363549849064919">Autenticação do cliente</translation>
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6503077044568424649">Mais visitados</translation>
 <translation id="6503763061813913607">Notificações da Confirmação de segurança</translation>
@@ -1588,6 +1596,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6619015782482868078">Tema aqua</translation>
 <translation id="6620279676667515405">Cancelar</translation>
 <translation id="6625830436658400045">Suas configurações de sincronização vão ser restauradas com base no seu último backup. Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
+<translation id="6626281667717553020">URI da CPS</translation>
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Adicione mais essa camada de proteção contra ameaças on-line.</translation>
@@ -2151,6 +2160,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8614671330774943747">Acessar o seletor de guias</translation>
 <translation id="862367213447108001">Sempre mostrar pop-ups neste site</translation>
 <translation id="8625706492572042370">Editar tela inicial</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Guias anônimas bloqueadas</translation>
 <translation id="8633025649649592204">Atividade recente</translation>
 <translation id="8636825310635137004">Para acessar suas guias abertas em outros dispositivos, ative a sincronização.</translation>
@@ -2337,6 +2347,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="942624946817804130">Exportar</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="94870150074703282">Excluir grupo?</translation>
+<translation id="951090530321144895">Emissores de AC</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="95332591904104970">Apps conectados</translation>
 <translation id="954667170699278022">Lista de leitura</translation>

@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notificació no llegida}other{# notificacions no llegides}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Activa l'extensió següent en mode d'incògnit:}other{Activa les extensions següents en mode d'incògnit:}}</translation>
+<translation id="4230098358142093034">Inici</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Fa 1 mes}other{Fa # mesos}}</translation>
 <translation id="4277033906326892359">La columna <ph name="COLUMN_NAME" /> es mostra en ordre ascendent</translation>
 <translation id="4289300219472526559">Comença a parlar</translation>

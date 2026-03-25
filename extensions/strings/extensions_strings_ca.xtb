@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Producte desconegut <ph name="PRODUCT_ID" /> de: <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">El fitxer de manifest no és vàlid</translation>
 <translation id="7217838517480956708">L'administrador d'aquest equip necessita que s'instal·li <ph name="EXTENSION_NAME" />. No es pot eliminar o modificar.</translation>
+<translation id="7287143125007575591">Accés denegat.</translation>
 <translation id="7612608473764576263">El valor d'entrada per a la clau privada ha de ser un format vàlid (clau RSA en format PKCS #8 amb codificació PEM).</translation>
 <translation id="765293928828334535">No es poden afegir aplicacions, extensions ni scripts d'usuari des d'aquest lloc web</translation>
 <translation id="7876803335449432072">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut. Els fulls d'estil dels scripts de contingut només es poden carregar des de fitxers de fulls d'estil admesos, com ara fitxers .css.</translation>

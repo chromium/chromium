@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1652197001188145583">Wanneer dit aan is, kan werwe vra om NFC-toestelle te gebruik. Wanneer dit af is, kan werwe nie NFC-toestelle gebruik nie.</translation>
 <translation id="1660204651932907780">Laat werwe toe om klank te speel (aanbeveel)</translation>
+<translation id="1676590040242013349">“Gebruik altyd veilige verbindings” is aan.</translation>
 <translation id="1677097821151855053">Webkoekies en ander werfdata word gebruik om jou te onthou, byvoorbeeld om jou aan te meld of om advertensies te personaliseer. Sien <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
 <translation id="1679305402657584804">Werwe kan vra om NFC-toestelle te gebruik</translation>
 <translation id="1686785653877010442">Werwe stuur gewoonlik kennisgewings om jou in te lig oor brekende nuus of kletsboodskappe.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Blokkeer werwe om teks en prente van die knipbord af te lees</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6950072572526089586">’n Werf wat jy besoek, kan inligting stoor oor wat jy besig is om te doen sodat dit kan werk soos verwag – byvoorbeeld, om jou by ’n werf aangemeld te hou of items in jou inkopiemandjie te stoor. Werwe stoor hierdie inligting dikwels tydelik op jou toestel.</translation>
+<translation id="6964291282260073066">“WebGPU” is gedeaktiveer.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Roostema</translation>
 <translation id="6980861169612950611">Vee werfdata uit? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Wanneer dit aan is, kan werwe vra om virtuelerealiteittoestelle en te gebruik. Wanneer dit af is, kan werwe nie virtuelerealiteittoestelle gebruik nie.</translation>
 <translation id="7282197670900591579">Sitroengeel tema</translation>
 <translation id="728412880473384942">Werwe is vinniger maar minder veilig</translation>
+<translation id="7352902948037373520">Bestuur in <ph name="BEGIN_LINK1" />Android-instellings<ph name="END_LINK1" />
+
+Gevorderde Beskerming beheer hierdie Chrome-instellings:</translation>
 <translation id="7366415735885268578">Voeg 'n werf by</translation>
 <translation id="7368695150573390554">Enige vanlyn data sal uitgevee word</translation>
 <translation id="7369678931043226462">Pasmaak die onderste blad van jou Nuwe Oortjie-bladsy is teen halwe hoogte oopgemaak</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Werwe koppel gewoonlik aan USB-toestelle vir kenmerke soos om 'n dokument te druk of om op 'n bergingtoestel te stoor</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />” is verouderd. Herinstalleer die app.</translation>
 <translation id="847433688444405067">Blaai op verskillende toestelle</translation>
+<translation id="8484556725636319115">“JavaScript-optimeerder” is af. <ph name="BEGIN_LINK2" />Bestuur werfuitsonderings<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="848952951823693243">Versoek altyd mobiele werf</translation>
 <translation id="8492822722330266509">Werwe kan opspringers stuur en herleidings gebruik</translation>

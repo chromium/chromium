@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1652197001188145583">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení NFC. Když je vypnutá, weby zařízení NFC používat nemohou.</translation>
 <translation id="1660204651932907780">Povolit webům přehrávat zvuky (doporučeno)</translation>
+<translation id="1676590040242013349">Možnost Vždy používat zabezpečená připojení je zapnutá.</translation>
 <translation id="1677097821151855053">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Weby můžou žádat o použití zařízení NFC</translation>
 <translation id="1686785653877010442">Weby obvykle zasílají oznámení, kterými vás informují o mimořádných zprávách nebo zprávách v chatu.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Blokovat webům přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6950072572526089586">Web, který navštívíte, může ukládat informace o tom, co děláte, aby fungoval podle očekávání – například abyste zůstali přihlášeni nebo v košíku zůstaly přidané položky. Weby tato data často ukládají dočasně na vašem zařízení.</translation>
+<translation id="6964291282260073066">WebGPU je deaktivováno.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Růžový motiv</translation>
 <translation id="6980861169612950611">Vymazat data webu? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Když je tato možnost zapnutá, mohou weby žádat o použití zařízení pro virtuální realitu. Když je vypnutá, weby zařízení pro virtuální realitu používat nemohou.</translation>
 <translation id="7282197670900591579">Citronový motiv</translation>
 <translation id="728412880473384942">Weby jsou rychlejší, ale méně bezpečné</translation>
+<translation id="7352902948037373520">Spravujte v <ph name="BEGIN_LINK1" />nastavení systému Android<ph name="END_LINK1" />
+
+Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="7366415735885268578">Přidání webu</translation>
 <translation id="7368695150573390554">Všechna offline data budou smazána</translation>
 <translation id="7369678931043226462">Spodní panel Přizpůsobení stránky Nová karta otevřený na polovinu výšky</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Weby se obvykle připojují k zařízením USB kvůli funkcím, jako je tisk dokumentu nebo uložení obsahu na paměťové zařízení</translation>
 <translation id="8473055640493819707">Aplikace <ph name="APP_NAME" /> je zastaralá. Přeinstalujte ji.</translation>
 <translation id="847433688444405067">Synchronizujte své procházení</translation>
+<translation id="8484556725636319115">Optimalizátor JavaScriptu je vypnutý. <ph name="BEGIN_LINK2" />Spravovat výjimky pro konkrétní weby<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Dostupné offline</translation>
 <translation id="848952951823693243">Vždy požadovat zobrazení na mobilu</translation>
 <translation id="8492822722330266509">Weby mohou zobrazovat vyskakovací okna a používat přesměrování</translation>

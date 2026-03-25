@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">已與你分享</translation>
 <translation id="1060847216467038176">「<ph name="ITEM_LABEL" />」和移除按鈕</translation>
 <translation id="1062407476771304334">取代</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />資料會備份到 Google 雲端硬碟，你隨時可以輕鬆還原或換用其他裝置。備份項目包含應用程式資料。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />應用程式資料泛指應用程式依開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />備份資料不會計入你的雲端硬碟儲存空間配額。<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />你可以前往「設定」關閉這項服務。<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">請更換電池或進行充電</translation>
 <translation id="1081015718268701546">目前不支援 Linux 應用程式，系統將儲存其他應用程式。</translation>
 <translation id="108486256082349153">行動裝置：<ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@
 <translation id="3470502288861289375">複製中...</translation>
 <translation id="347117769229524881">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 鍵，然後按 <ph name="KEY_TWO" /> 鍵或<ph name="KEY_THREE" />鍵</translation>
 <translation id="3477079411857374384">Ctrl + Shift + 空格鍵</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓 Android 應用程式和服務提供適地性功能。為達成此目標，Google 會定期收集裝置的感應器資訊和你附近的無線訊號，並匯總這些資料及建立無線訊號定位資料庫。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google 不會使用這些資訊識別你的身分，只會用於提升定位精確度和適地性服務的品質，並改善、提供及維護 Google 整體的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />你隨時可以前往裝置的位置資訊設定關閉「定位精確度」，方法如下：依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」&gt;「進階位置資訊設定」。如果關閉「定位精確度」，系統就不會收集任何定位精確度資料。這樣一來，Android 應用程式和服務只能使用 IP 位址 (如果有的話) 判斷裝置的位置，可能會影響 Google 地圖等 Android 應用程式和服務的位置資訊可用性和精確度。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />進一步瞭解「定位精確度」<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">自動隱藏檔案櫃</translation>
 <translation id="3496797737329654668">開始玩遊戲</translation>
@@ -875,6 +884,9 @@
 <translation id="3742055079367172538">已拍攝螢幕截圖</translation>
 <translation id="3743775386021959186">專注模式已開啟，還剩 <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">隱藏天氣建議</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式依開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />備份資料不會計入孩子的雲端硬碟儲存空間配額。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />你可以前往「設定」關閉這項服務。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">正在投放螢幕畫面</translation>
 <translation id="3765841382945324995">「<ph name="SIX_PACK_KEY_NAME" />」快速鍵已從 <ph name="OLD_SHORTCUT" />更新為 <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">今天編輯過</translation>
@@ -1196,6 +1208,7 @@
 <translation id="4708185346211948049">下週的<ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">你的 USB-C 連接線不支援 USB4。裝置效能可能會因此受到限制。</translation>
 <translation id="4730374152663651037">常用的應用程式</translation>
+<translation id="4731197594811674831">Home</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左側)</translation>
 <translation id="4734965478015604180">橫向</translation>
@@ -1340,6 +1353,10 @@
 <translation id="5147567197700016471">已解鎖</translation>
 <translation id="5150070631291639005">隱私權設定</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />這是裝置和使用情況的一般資訊，例如電池電量、系統和應用程式活動，以及錯誤記錄。這類資料將用於強化 Android，部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />即使關閉這項功能，裝置仍可傳送基礎服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />擁有者只要依序前往「設定」&gt;「進階」&gt;「自動將診斷資料和使用情況資料傳送給 Google」，即可控管這項功能。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />如果你已開啟「其他網路和應用程式活動」設定，這類資料可能會儲存到 Google 帳戶。你可以前往 account.google.com 查看、刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">電池健康度：<ph name="BATTERY_HEALTH_PERCENTAGE" />% | 充電循環次數：<ph name="CYCLE_COUNT" /> 次</translation>
 <translation id="5166007464919321363">將桌面儲存為範本</translation>
 <translation id="5168181903108465623">可用的投放裝置</translation>
@@ -1598,6 +1615,10 @@
 <translation id="5916646100036936191">共有 <ph name="NOTIFICATION_COUNT" /> 則新通知</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">麥克風已設為靜音。</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />「定位精確度」開啟時，系統會根據 Wi-Fi 存取點、行動網路基地台等無線訊號相關資訊，搭配加速計和陀螺儀等裝置感應器資料，估算出更精確的裝置位置，讓 Android 應用程式和服務提供適地性功能。為達成此目標，Google 會定期收集這部裝置的感應器資訊和附近的無線訊號，並匯總這些資料及建立無線訊號定位資料庫。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google 會使用從這部裝置收集到的資訊提升定位精確度和適地性服務的品質，並改善、提供及維護 Google 整體的服務。我們會基於自身和第三方的正當利益處理這些資訊，以滿足使用者需求，但不會將這些資訊用於識別任何人的身分。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />你隨時可以前往這部裝置的位置資訊設定關閉「定位精確度」，方法如下：依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」&gt;「進階位置資訊設定」。如果關閉「定位精確度」，系統就不會收集任何定位精確度資料。這樣一來，Android 應用程式和服務只能使用 IP 位址 (如果有的話) 判斷這部裝置的位置，可能會影響 Google 地圖等 Android 應用程式和服務的位置資訊可用性和精確度。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />進一步瞭解「定位精確度」<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">必須由 <ph name="MANAGER" /> 更新</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
@@ -1644,6 +1665,10 @@
 <translation id="6045629311476491587">正由 <ph name="APP_COUNT" /> 個應用程式使用</translation>
 <translation id="6045998054441862242">開啟高對比模式</translation>
 <translation id="6047696787498798094">切換到另一個使用者會停止共用螢幕，你要繼續嗎？</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />這是此裝置和使用情況的一般資訊，例如電池電量、系統和應用程式活動，以及錯誤記錄。這類資料將用於強化 Android，部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />即使關閉這項功能，這部裝置仍可傳送基礎服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />擁有者只要依序前往「設定」&gt;「進階」&gt;「自動將診斷資料和使用情況資料傳送給 Google」，即可控管這項功能。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />如果為孩子開啟「其他網路和應用程式活動」設定，這類資料可能會儲存到他們的 Google 帳戶。如要進一步瞭解這些設定及其調整方式，請前往 families.google.com。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">以滑鼠右鍵按一下連結</translation>
 <translation id="6054305421211936131">使用智慧型卡片登入</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
@@ -1752,6 +1777,8 @@
 <translation id="639644700271529076">大寫鍵已關閉</translation>
 <translation id="6406458002328242616">編輯計時器。<ph name="FOCUS_DURATION" />。</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，估算出裝置的位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />關閉裝置的主要位置資訊設定，即可停用定位功能。你也可以前往位置資訊設定，將使用 Wi‑Fi、行動網路和感應器的定位功能關閉。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">選取要安裝的「<ph name="VM_NAME" />」版本。</translation>
 <translation id="641469293210305670">安裝更新內容和應用程式</translation>
 <translation id="6417265370957905582">Google 助理</translation>
@@ -2416,6 +2443,8 @@
 <translation id="8481187309597259238">確認 USB 權限</translation>
 <translation id="8487660088084188539">開啟這些功能後，輸入的文字、文件內容和網頁網址可能會傳送到 Google 伺服器，用於產生撰寫建議、生成摘要、回答問題及提升產品品質。我們使用這類資訊時會遵守<ph name="LINK_TO_SERVICE_TERMS" />的規定。輸入內容時，請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="8487699605742506766">熱點</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，估算出這部裝置的位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />關閉這部裝置的主要位置資訊設定，即可停用定位功能。你也可以前往位置資訊設定，將使用 Wi‑Fi、行動網路和感應器的定位功能關閉。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">下列 Kiosk 應用程式「<ph name="UPDATED_APPS" />」已更新。請重新啟動裝置，以完成更新程序。</translation>
 <translation id="8491237443345908933">在新分頁中開啟連結</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解析度已變更為 <ph name="FALLBACK_RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>

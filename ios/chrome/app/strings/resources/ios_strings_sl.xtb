@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Dvakrat se dotaknite, če želite namestiti.</translation>
 <translation id="1740650426894359238">Preklop na drug profil</translation>
 <translation id="1741219894094057085">Pametna ura</translation>
+<translation id="1742773766788162541">Optično preberi kartico in samodejno izpolni</translation>
 <translation id="1743244221910283364">Zavrzi spremembe</translation>
 <translation id="1748975028205587434">Izberite datoteko</translation>
 <translation id="1749733017156547309">Vnesti morate geslo.</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Primer obogatene pomoči v izdelku za kontekstno podokno, ki bi se morala prikazati večkrat na dan.</translation>
 <translation id="2739887572830526131">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo izbrišite, če je ne potrebujete več.</translation>
 <translation id="2747003861858887689">Prejšnje polje</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> – premaknjeno na položaj <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Spremembe so vidne vsem v skupini</translation>
 <translation id="2755595981383829244">Prejemali boste obvestila o vsebini</translation>
 <translation id="2761788987260570878">Fotografiranje iskanja</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ki ga upravlja vaša organizacija.</translation>
 <translation id="3580448612293054698">Želite posodobiti to: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
+<translation id="3583726884554296148">Shranite kartico v račun Google, da jo boste lahko samodejno izpolnili za ta nakup in prihodnje nakupe v Chromu</translation>
 <translation id="3587482841069643663">Vse</translation>
 <translation id="3587885837929752825">Vaša organizacija omejuje, kaj je mogoče shraniti v računu Google.</translation>
 <translation id="3588820906588687999">Odpri sliko na novem zavihku</translation>
@@ -1557,6 +1560,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6532106788206463496">Shrani spremembe</translation>
 <translation id="6536759809440150308">Odpiranje skupine <ph name="GROUP_TITLE" />, skupina <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Hitrejše nakupovanje s samodejnim izpolnjevanjem v vseh napravah</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="6550891580932862748">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. To ne vpliva na vaše nastavitve varnega brskanja v drugih Googlovih izdelkih.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8209237163365258530">Modeli Geminija <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Prejeli ste gesla za spletno mesto <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Povezava je varna</translation>
+<translation id="8213190397436801658">Začetni zaslon</translation>
 <translation id="8214293972734702249">Pripeto, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Ogled različice brez povezave na novem zavihku</translation>
 <translation id="8221665793629393739">Opomnik za vnovični obisk</translation>

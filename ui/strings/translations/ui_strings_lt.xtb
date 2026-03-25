@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 neskaitytas pranešimas}one{# neskaitytas pranešimas}few{# neskaityti pranešimai}many{# neskaityto pranešimo}other{# neskaitytų pranešimų}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Toliau nurodytą plėtinį įjunkite inkognito režimu.}one{Toliau nurodytus plėtinius įjunkite inkognito režimu.}few{Toliau nurodytus plėtinius įjunkite inkognito režimu.}many{Toliau nurodytus plėtinius įjunkite inkognito režimu.}other{Toliau nurodytus plėtinius įjunkite inkognito režimu.}}</translation>
+<translation id="4230098358142093034">Namai</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Prieš 1 mėnesį}one{Prieš # mėnesį}few{Prieš # mėnesius}many{Prieš # mėnesio}other{Prieš # mėnesių}}</translation>
 <translation id="4277033906326892359">Stulpelis „<ph name="COLUMN_NAME" />“ rūšiuojamas didėjimo tvarka</translation>
 <translation id="4289300219472526559">Pradėti kalbėti</translation>

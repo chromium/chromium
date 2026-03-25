@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1740650426894359238">Switch to another profile</translation>
 <translation id="1741219894094057085">Smart watch</translation>
+<translation id="1742773766788162541">Scan card and autofill</translation>
 <translation id="1743244221910283364">Discard changes</translation>
 <translation id="1748975028205587434">Select your file</translation>
 <translation id="1749733017156547309">A password is required</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Sample rich in-product help for the Contextual panel, which should appear multiple times a day.</translation>
 <translation id="2739887572830526131">Keep this group to add tabs later or delete it if you no longer need it.</translation>
 <translation id="2747003861858887689">Previous field</translation>
+<translation id="2750583038402718064">Moved <ph name="WEBSITE_TITLE" /> to position <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Changes made are seen by everyone in the group</translation>
 <translation id="2755595981383829244">You'll now receive content notifications</translation>
 <translation id="2761788987260570878">Take a photo of your search</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, managed by your organisation.</translation>
 <translation id="3580448612293054698">Update <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
+<translation id="3583726884554296148">Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome</translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3587885837929752825">Your organisation limits what you can save in your Google Account.</translation>
 <translation id="3588820906588687999">Open image in new tab</translation>
@@ -1557,6 +1560,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6532106788206463496">Save changes</translation>
 <translation id="6536759809440150308">Open <ph name="GROUP_TITLE" />, group of <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Check out faster with autofill across your devices</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6550891580932862748">Does not protect you against dangerous websites, downloads and extensions. Your Safe Browsing settings in other Google products won't be affected.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> models</translation>
 <translation id="8211030355252954494">You have received passwords for <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Connection is secure</translation>
+<translation id="8213190397436801658">Home</translation>
 <translation id="8214293972734702249">Pinned, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">View offline version in a new tab</translation>
 <translation id="8221665793629393739">Your reminder to revisit</translation>

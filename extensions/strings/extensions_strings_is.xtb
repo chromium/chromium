@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Óþekkt vara <ph name="PRODUCT_ID" /> frá <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Upplýsingaskráin er ógild</translation>
 <translation id="7217838517480956708">Stjórnandi þessarar vélar krefst þess að <ph name="EXTENSION_NAME" /> sé sett upp. Ekki er hægt að fjarlægja hana eða breyta.</translation>
+<translation id="7287143125007575591">Aðgangur ekki veittur.</translation>
 <translation id="7612608473764576263">Inntaksgildi einkalykils verður að vera gilt snið (RSA-lykill á PKCS#8-sniði með PEM-kóðun).</translation>
 <translation id="765293928828334535">Ekki er hægt að bæta við forritum, viðbótum eða notendaskriftum af þessu vefsvæði</translation>
 <translation id="7876803335449432072">Ekki tókst að hlaða skránni „<ph name="RELATIVE_PATH" />“ til að sækja efnisskriftu. Aðeins er hægt að hlaða stílsniði efnisskrifta úr studdum stílsniðsskrám á borð við .css-skrár.</translation>

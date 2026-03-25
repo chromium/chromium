@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Produs necunoscut <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Fișierul manifest este nevalid</translation>
 <translation id="7217838517480956708">Administratorul acestui dispozitiv solicită instalarea extensiei <ph name="EXTENSION_NAME" />. Aceasta nu poate fi eliminată sau modificată.</translation>
+<translation id="7287143125007575591">Acces refuzat.</translation>
 <translation id="7612608473764576263">Valoarea introdusă pentru cheia privată trebuie să aibă un format valid (cheie RSA codificată PEM în format PKCS#8).</translation>
 <translation id="765293928828334535">Nu poți adăuga aplicații, extensii și scripturi de utilizator de pe acest site</translation>
 <translation id="7876803335449432072">Nu s-a putut încărca fișierul <ph name="RELATIVE_PATH" /> pentru scriptul de conținut. Foile de stil pentru scriptul de conținut pot fi încărcate numai din fișierele de foi de stil acceptate, cum ar fi fișierele .css.</translation>

@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Invalid ang manifest file</translation>
 <translation id="7217838517480956708">Kinakailangan ng administrator ng machine na ito na ma-install ang <ph name="EXTENSION_NAME" />. Hindi ito maaaring alisin o baguhin.</translation>
+<translation id="7287143125007575591">Tinanggihan ang access.</translation>
 <translation id="7612608473764576263">Dapat valid ang format ng value ng input para sa pribadong key (PKCS#8-format PEM-encoded RSA key).</translation>
 <translation id="765293928828334535">Hindi maidadagdag mula sa website na ito ang mga app, extension, at script ng user</translation>
 <translation id="7876803335449432072">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng content, malo-load lang ang style sheet ng script ng content mula sa mga sinusuportahang style sheet file tulad ng mga .css file.</translation>

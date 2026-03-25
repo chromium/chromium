@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">Condivisi con te</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> con pulsante Rimuovi</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Esegui il backup su Google Drive. Ripristina facilmente i tuoi dati o cambia dispositivo in qualsiasi momento. Il backup include i dati dell'app.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Le copie di backup vengono caricate su Google e criptate usando la password del tuo Account Google.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Per dati dell'app si intende qualsiasi dato salvato da un'app (in base alle impostazioni dello sviluppatore), inclusi dati come contatti, messaggi e foto.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />I dati di backup non incidono sulla tua quota di spazio di archiviazione di Drive.<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />Puoi disattivare questo servizio nelle Impostazioni.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">Sostituisci o ricarica la batteria</translation>
 <translation id="1081015718268701546">Le app Linux non sono al momento supportate. Le altre app verranno salvate.</translation>
 <translation id="108486256082349153">Cellulare: <ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3470502288861289375">Copia...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> poi <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">CTRL + MAIUSC + barra spaziatrice</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />Quando la precisione della localizzazione è attiva, le informazioni sui segnali wireless, ad esempio i punti di accesso Wi-Fi, le torri di reti mobile, così come i dati dei sensori dei dispositivi, ad esempio l'accelerometro e il giroscopio, vengono usati per stimare con maggiore precisione la posizione del dispositivo, che le app e i servizi per Android usano per offrire funzionalità basate sulla posizione. A questo scopo, Google raccoglie periodicamente informazioni relative a sensori dei dispositivi e segnali wireless nelle tue vicinanze per contribuire alle localizzazioni dei segnali wireless mediante crowdsourcing.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google utilizza queste informazioni senza identificarti per: migliorare la precisione della localizzazione e i servizi basati sulla posizione geografica e, in generale, migliorare, fornire e gestire i servizi di Google. Trattiamo queste informazioni in base agli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Puoi disattivare la precisione della localizzazione in qualsiasi momento nelle impostazioni di localizzazione del tuo dispositivo in Impostazioni &gt; Privacy e sicurezza &gt; Controlli per la privacy &gt; Accesso alla posizione &gt; Impostazioni di localizzazione avanzate. Se la precisione della localizzazione è disattivata, non verranno raccolti dati relativi alla precisione della localizzazione. Per le app e i servizi per Android, viene usato solo l'indirizzo IP, se disponibile, per determinare la posizione del tuo dispositivo, il che può influire sulla disponibilità e sulla precisione della localizzazioni per app e servizi per Android come Google Maps.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Scopri di più sulla precisione della localizzazione<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Barra delle app nascosta in automatico</translation>
 <translation id="3496797737329654668">Iniziamo a giocare</translation>
@@ -873,6 +882,9 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3743775386021959186">La modalità Niente distrazioni è attiva, mancano <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Nascondi suggerimento meteo</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Per dati dell'app si intende qualsiasi dato salvato da un'app (in base alle impostazioni dello sviluppatore), inclusi dati come contatti, messaggi e foto.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />I dati di backup non incidono sulla quota di spazio di archiviazione di Drive di tuo figlio.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Puoi disattivare questo servizio nelle Impostazioni.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">Trasmissione dello schermo</translation>
 <translation id="3765841382945324995">La scorciatoia <ph name="SIX_PACK_KEY_NAME" /> è stata cambiata in <ph name="NEW_SHORTCUT" /> da <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Modificato oggi</translation>
@@ -1196,6 +1208,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> della prossima settimana</translation>
 <translation id="4717575069099566988">Il cavo USB-C non supporta USB4. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="4730374152663651037">USATE SPESSO</translation>
+<translation id="4731197594811674831">Home</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (sinistro)</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
@@ -1340,6 +1353,10 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5147567197700016471">Sbloccato</translation>
 <translation id="5150070631291639005">Impostazioni privacy</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Si tratta di informazioni generali sul tuo dispositivo e sulla relativa modalità di utilizzo (ad esempio il livello batteria, l'attività dell'app e del sistema e gli errori). I dati saranno utilizzati per migliorare Android e alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android, che potranno migliorare i propri prodotti e le proprie app.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Il proprietario può controllare questa funzionalità dalla sezione Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Se hai attivato l'impostazione Attività web e app aggiuntiva, questi dati potrebbero essere salvati nel tuo Account Google. Puoi vedere ed eliminare i tuoi dati, nonché modificare le impostazioni dell'account all'indirizzo account.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">Integrità della batteria <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Numero di cicli <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Salva scrivania come modello</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
@@ -1598,6 +1615,10 @@ Nessun dispositivo connesso.</translation>
 <translation id="5916646100036936191">Nuova notifica, <ph name="NOTIFICATION_COUNT" /> in totale</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">L'audio del microfono è disattivato.</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />Quando la precisione della localizzazione è attiva, le informazioni sui segnali wireless, ad esempio i punti di accesso Wi-Fi, le torri di reti mobile, così come i dati dei sensori dei dispositivi, ad esempio l'accelerometro e il giroscopio, vengono usati per stimare con maggiore precisione la posizione del dispositivo, che le app e i servizi per Android usano per offrire funzionalità basate sulla posizione. A questo scopo, Google raccoglie periodicamente informazioni relative a sensori dei dispositivi e segnali wireless nelle vicinanze del dispositivo per contribuire alla localizzazione dei segnali wireless mediante crowdsourcing.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google utilizza queste informazioni raccolte da questo dispositivo per: migliorare la precisione della localizzazione e i servizi basati sulla posizione geografica e, in generale, migliorare, fornire e gestire i servizi di Google. Trattiamo queste informazioni in base agli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti. Queste informazioni non vengono utilizzate per identificare alcuna persona.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Puoi disattivare la precisione della localizzazione in qualsiasi momento nelle impostazioni di localizzazione del dispositivo in Impostazioni &gt; Privacy e sicurezza &gt; Controlli per la privacy &gt; Accesso alla posizione &gt; Impostazioni di localizzazione avanzate. Se la precisione della localizzazione è disattivata, non verranno raccolti dati relativi alla precisione della localizzazione. Per le app e i servizi per Android, viene usato solo l'indirizzo IP, se disponibile, per determinare la posizione di questo dispositivo, il che può influire sulla disponibilità e sulla precisione della localizzazione per app e servizi per Android come Google Maps.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Scopri di più sulla precisione della localizzazione<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">Aggiornamento richiesto da <ph name="MANAGER" /></translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="5946788582095584774">La funzionalità <ph name="FEATURE_NAME" /> è attiva.</translation>
@@ -1644,6 +1665,10 @@ Nessun dispositivo connesso.</translation>
 <translation id="6045629311476491587">Usati da <ph name="APP_COUNT" /> app</translation>
 <translation id="6045998054441862242">Attiva la modalità ad alto contrasto</translation>
 <translation id="6047696787498798094">La condivisione dello schermo verrà interrotta se cambi utente. Vuoi continuare?</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />Si tratta di informazioni generali su questo dispositivo e sulla relativa modalità di utilizzo (ad esempio il livello batteria, l'attività dell'app e del sistema e gli errori). I dati saranno utilizzati per migliorare Android e alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android, che potranno migliorare i propri prodotti e le proprie app.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Il proprietario può controllare questa funzionalità dalla sezione Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. Scopri di più su queste impostazioni e su come configurarle all'indirizzo families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">Consente di fare clic sul link con il pulsante destro del mouse</translation>
 <translation id="6054305421211936131">Accedi con la smart card</translation>
 <translation id="6059276912018042191">Schede Chrome recenti</translation>
@@ -1752,6 +1777,8 @@ Nessun dispositivo connesso.</translation>
 <translation id="639644700271529076">Funzione BLOC MAIUSC non attiva</translation>
 <translation id="6406458002328242616">Modifica il timer. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />Il servizio basato sulla posizione di Google utilizza fonti quali le reti Wi-Fi e mobile e i sensori per stabilire la posizione approssimativa del dispositivo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puoi disabilitare la posizione disattivando l'impostazione di localizzazione principale sul tuo dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobile e di sensori per la localizzazione nelle impostazioni di localizzazione.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">Seleziona la versione di <ph name="VM_NAME" /> da installare.</translation>
 <translation id="641469293210305670">Installa aggiornamenti e app</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
@@ -2417,6 +2444,8 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8481187309597259238">Conferma l'autorizzazione USB</translation>
 <translation id="8487660088084188539">Quando attivi queste funzionalità, il testo di input, i contenuti del documento e l'URL della pagina web potrebbero essere inviati ai server di Google. Queste informazioni vengono utilizzate per generare suggerimenti di bozza e riassunti, rispondere a domande e migliorare il prodotto, in conformità ai <ph name="LINK_TO_SERVICE_TERMS" />. Non includere informazioni personali, sensibili o riservate.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Il servizio basato sulla posizione di Google utilizza fonti quali le reti Wi-Fi e mobile e i sensori per stabilire la posizione approssimativa di questo dispositivo.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Puoi disabilitare la posizione disattivando l'impostazione di localizzazione principale su questo dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobile e di sensori per la localizzazione nelle impostazioni di localizzazione.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">Le seguenti app kiosk "<ph name="UPDATED_APPS" />" sono state aggiornate. Riavvia il dispositivo per completare la procedura di aggiornamento.</translation>
 <translation id="8491237443345908933">Apri link in un'altra scheda</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>

@@ -3030,6 +3030,13 @@ Politika, Yanlış değerine ayarlanırsa öğretmenler bu özelliğe erişemez.
 <translation id="2969568582351417848">İndirilen dosya türünün uzantısına dayalı uyarıları alanlarda belirlenen dosya türleri için engelle</translation>
 <translation id="2971096666394658693">İçerik menüsünde, resimlerin <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> ile paylaşılabileceği bir menü öğesi yer alır.</translation>
 <translation id="2973972555495515337">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamalarının, <ph name="PRODUCT_OS_NAME" /> masalarını kaydetmek ve paylaşmak için <ph name="DESK_API_NAME" /> kullanmasına izin verilir. Politika, Devre Dışı değerine ayarlanırsa kullanıcı, masa verilerini <ph name="DESK_API_NAME" /> aracılığıyla kaydedip paylaşamaz. Politika ayarlanmadan bırakılırsa davranış, devre dışı değerine ayarlandığında geçerli olan davranışla aynı olur. Politika yalnızca kayıtlı cihazlarda geçerli olur.</translation>
+<translation id="2974326457745806202">SharedWorker oluşturucuda "extendedLifetime" seçeneği doğru değerine ayarlanırsa SharedWorker'ların kullanım ömrü uzatılabilir.
+
+Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa SharedWorker'ların kullanım ömrü uzatılabilir.
+
+Bu politika, Devre Dışı değerine ayarlanırsa seçenek doğru değerine ayarlanmış olsa bile SharedWorker'ların kullanım ömrü uzatılamaz.
+
+Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</translation>
 <translation id="2976033779241323433">Varsayılan buluşsal sistem yöntemlerine göre dokunmatik sanal klavyeyi etkinleştir</translation>
 <translation id="2976429807269247880">Eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> çerez davranışı ayarları</translation>
 <translation id="2979696534869541158">Eski uygulamayı zorunlu kıl</translation>
@@ -9746,6 +9753,7 @@ Bu politika ayarının desteği <ph name="PRODUCT_NAME" /> 146 sürümünde sonl
 <translation id="7216442368414164495">Kullanıcıların Güvenli Tarama genişletilmiş raporlamasını etkinleştirmesine izin ver</translation>
 <translation id="7218238054592349618">Bu sitelerde JavaScript optimizasyonuna izin ver</translation>
 <translation id="721970071627370558">Cihazın güç durumu raporlamasını devre dışı bırak</translation>
+<translation id="7220960206733388609">SharedWorker'ların kullanım ömrü uzatılabilir.</translation>
 <translation id="7221574724100909818">Güvenli bağlantılar için kilit simgesini kullanın</translation>
 <translation id="7227348936232766462">Kullanıcıların, aşağıdaki tüm cihaz türlerine ait alt düzey hata ayıklama verilerini kullanıcı geri bildirimine eklemesine izin ver</translation>
 <translation id="7229365071755865554">Şifrelerin, şifre yöneticisi kullanılarak kaydedilmesini etkinleştir</translation>
@@ -10403,6 +10411,7 @@ Bu politika etkinleştirildiğinde PDF görüntüleyici Skia oluşturucuyu kulla
 Bu politika devre dışı bırakılırsa PDF görüntüleyici kendi AGG oluşturucusunu kullanır.
 
 Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından seçilir.</translation>
+<translation id="7704244074621846004">SharedWorker'lar için uzatılmış kullanım ömrünü etkinleştir.</translation>
 <translation id="7707869387893611318">Şarj sesleri özelliğini etkinleştirin.
 
           Bu özellik, şarj seslerini çalmaktan sorumludur.
@@ -10420,6 +10429,7 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
 
       Sunucuların, ECDHE şifre paketlerine taşınması önerilir. Bunlar kullanılamadığı takdirde, RSA anahtarı takası kullanan bir şifre paketinin etkinleştirildiğinden emin olun.</translation>
 <translation id="7709470712369261710">Otomatik resim açıklamaları sağlamak için Google hizmetlerini kullanma</translation>
+<translation id="7711003696883532277">SharedWorker'ların kullanım ömrü uzatılamaz.</translation>
 <translation id="7712109699186360774">Bir site kamera ve/veya mikrofona erişmek istediğinde her zaman sor</translation>
 <translation id="7712245244073542805">Tarayıcı işleminden platform yazdırma.</translation>
 <translation id="7713608076604149344">İndirme kısıtlamaları</translation>

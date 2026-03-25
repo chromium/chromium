@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Thepha kabili ukuze ufake.</translation>
 <translation id="1740650426894359238">Shintshela kwenye iphrofayela</translation>
 <translation id="1741219894094057085">Iwashi Elismathi</translation>
+<translation id="1742773766788162541">Skena Ikhadi bese Ugcwalise ngokuzenzekelayo</translation>
 <translation id="1743244221910283364">Lahla ushintsho</translation>
 <translation id="1748975028205587434">Khetha ifayela yakho</translation>
 <translation id="1749733017156547309">Kudingeka iphasiwedi</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Isampula losizo lomkhiqizo ocebile Wephaneli Yokuqukethwe, okufanele livele izikhathi eziningi ngosuku.</translation>
 <translation id="2739887572830526131">Gcina leli qembu ukuze wengeze amathebhu kamuva, noma lisule uma ungasalidingi.</translation>
 <translation id="2747003861858887689">Inkambu edlule</translation>
+<translation id="2750583038402718064">Kuhanjiswe okuthi <ph name="WEBSITE_TITLE" /> endaweni <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Izinguquko ezenziwe zibonwa yiwo wonke umuntu eqenjini</translation>
 <translation id="2755595981383829244">Manje usuzothola izaziso zokuqukethwe</translation>
 <translation id="2761788987260570878">Thatha isithombe sosesho lwakho</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ilawulwa yinhlangano yakho.</translation>
 <translation id="3580448612293054698">Vuselela i-<ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Nikeza ngokuhumusha amakhasi ngezinye izilimi</translation>
+<translation id="3583726884554296148">Londoloza ikhadi lakho kuGoogle Account yakho ukuze uligcwalise ngokuzenzekelayo kulokhu kuthenga kanye nokuthenga kwesikhathi esizayo okwenziwe kuChrome</translation>
 <translation id="3587482841069643663">Konke</translation>
 <translation id="3587885837929752825">Inhlangano yakho ikhawulela lokho ongakulondoloza ku-Google Account yakho.</translation>
 <translation id="3588820906588687999">Vula isithombe kuthebhu entsha</translation>
@@ -1557,6 +1560,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6532106788206463496">Londoloza ushintsho</translation>
 <translation id="6536759809440150308">Vula okuthi <ph name="GROUP_TITLE" />, iqembu lokungu-<ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Phuma ngokushesha ngokugcwalisa okuzenzekelayo kuwo wonke amadivayisi akho</translation>
 <translation id="6550675742724504774">Izinketho</translation>
 <translation id="6550891580932862748">Akukuvikeli kumawebusayithi ayingozi, okudawunilodwayo, kanye nezandiso. Amasethingi akho okubhrawuza okuphephile kweminye imikhiqizo ye-Google ngeke athinteke.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="8209237163365258530">Amamodeli eGemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Uthole amaphasiwedi we <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Ukuxhumeka kuvikelekile</translation>
+<translation id="8213190397436801658">Ekhaya</translation>
 <translation id="8214293972734702249">Kuphiniwe, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Buka uhlobo olungaxhunyiwe ku-inthanethi kuthebhu entsha</translation>
 <translation id="8221665793629393739">Isikhumbuzo sakho sokuvakasha kabusha</translation>

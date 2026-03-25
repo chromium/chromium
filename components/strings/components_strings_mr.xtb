@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">सिरीअल पोर्टशी कनेक्ट करण्याची विनंती करू शकते</translation>
 <translation id="2403474027143565107">अचूक</translation>
 <translation id="240450251994300576">दुय्यम हेडर लोगो</translation>
+<translation id="2404715426538856682">क्रेडिट आणि डेबिट कार्ड · IBANs · लॉयल्टी कार्ड</translation>
 <translation id="2404884497378469141">तुमच्या फाइल कॉपी करण्याचा पुन्हा प्रयत्न करा</translation>
 <translation id="2413155254802890957">जुना</translation>
 <translation id="2413528052993050574">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट कदाचित रद्द केले असू शकते. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
@@ -2167,6 +2168,7 @@
 <translation id="4340810192899866471">JSON मधून इंपोर्ट करा</translation>
 <translation id="4340982228985273705">हा कॉंप्युटर एंटरप्राइझ व्यवस्थापित म्हणून आढळला नाही म्हणून धोरण फक्त Chrome वेबस्टोअरवर होस्ट केलेले एक्स्टेंशन आपोआप इंस्टॉल करू शकते. Chrome वेबस्टोअर अपडेट URL <ph name="CWS_UPDATE_URL" /> ही आहे.</translation>
 <translation id="4342742994656318294">थीम पार्क</translation>
+<translation id="4346670990181948854">प्रवासाची माहिती · वाहने</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> चे कनेक्शन सुरक्षित नाही</translation>
 <translation id="4349365535725594680">गोपनीय आशय शेअर करू शकत नाही</translation>
 <translation id="4349810866125026513">तरीही अपलोड करा</translation>
@@ -3049,6 +3051,7 @@
 <translation id="5752519522101347518">बँक पडताळणी वेबसाइट लोड करत आहे</translation>
 <translation id="5753570386948603678">इतिहासामधून हटवा</translation>
 <translation id="5759751709240058861">तुमचा कॅमेरा वापरा आणि हलवा</translation>
+<translation id="5762131895127128324">ड्रायव्हरचे परवाने · ओळखपत्रे · पासपोर्ट</translation>
 <translation id="5763042198335101085">वैध ईमेल ॲड्रेस एंटर करा</translation>
 <translation id="5764725887548570807">ओरिजिनचा फॉरमॅट चुकीचा आहे.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ला पाठवा</translation>
@@ -3987,6 +3990,7 @@
 <translation id="7220786058474068424">प्रक्रिया करत आहे</translation>
 <translation id="7221855153210829124">सूचना दर्शवा</translation>
 <translation id="722454870747268814">नवीन गुप्त टॅब</translation>
+<translation id="7225676267118764980">ऑटोफिल पुरवठादार आणि इतर सेटिंग्ज बदला</translation>
 <translation id="7226892411756387078">साधा मजकूर</translation>
 <translation id="7227293336683593977">किमतीचा इतिहास</translation>
 <translation id="7228306718910595403">ईयूमधील पात्रतेचे स्टेटस</translation>

@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" />, <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Datoteka manifesta nije važeća</translation>
 <translation id="7217838517480956708">Administrator ovog računala zahtijeva instalaciju proširenja <ph name="EXTENSION_NAME" />. Ona se ne može ukloniti ni izmijeniti.</translation>
+<translation id="7287143125007575591">Pristup je odbijen.</translation>
 <translation id="7612608473764576263">Vrijednost unosa osobnog ključa mora biti u važećem formatu (RSA ključ u formatu PKCS#8 s PEM kodiranjem).</translation>
 <translation id="765293928828334535">Aplikacije, proširenja i korisničke skripte ne mogu se dodavati s ove web-lokacije</translation>
 <translation id="7876803335449432072">Nije bilo moguće učitati datoteku <ph name="RELATIVE_PATH" /> za sadržajnu skriptu. Stilske tablice sadržajnih skripti mogu se učitati samo iz podržanih datoteka stilskih tablica kao što su .css datoteke.</translation>

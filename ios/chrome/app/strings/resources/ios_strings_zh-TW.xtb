@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">輕觸兩下即可安裝。</translation>
 <translation id="1740650426894359238">切換至其他設定檔</translation>
 <translation id="1741219894094057085">智慧手錶</translation>
+<translation id="1742773766788162541">掃描卡片並自動填入</translation>
 <translation id="1743244221910283364">捨棄變更</translation>
 <translation id="1748975028205587434">選取檔案</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">這是內容面板的產品內詳細說明文字範例，這個面板每天會多次顯示。</translation>
 <translation id="2739887572830526131">如果保留，之後可以新增分頁；如果不會再使用，可以刪除群組。</translation>
 <translation id="2747003861858887689">上一個欄位</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> 已移到位置 <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">群組成員都會看到所做的變更</translation>
 <translation id="2755595981383829244">你現在會收到內容通知</translation>
 <translation id="2761788987260570878">拍下搜尋內容</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />，該帳戶由貴機構管理。</translation>
 <translation id="3580448612293054698">要更新「<ph name="ENTITY_TYPE" />」嗎？</translation>
 <translation id="3581564640715911333">詢問是否要將網頁內容翻譯成其他語言</translation>
+<translation id="3583726884554296148">將卡片儲存到 Google 帳戶後，只要在 Chrome 中購物都能自動填入卡片資訊</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587885837929752825">貴機構對你能在 Google 帳戶中儲存的內容設有限制。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
@@ -1557,6 +1560,7 @@
 <translation id="6532106788206463496">儲存變更</translation>
 <translation id="6536759809440150308">開啟內含 <ph name="NUMBER_OF_TABS" />的「<ph name="GROUP_TITLE" />」群組 (<ph name="CREATION_TEXT" />)</translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">在所有裝置上使用自動填入功能，結帳更快速</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="6550891580932862748">無法防範危險的網站、下載內容和擴充功能。其他 Google 產品的安全瀏覽設定不會受到影響。</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> 模型</translation>
 <translation id="8211030355252954494">你收到「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="8211406090763984747">已建立安全連線</translation>
+<translation id="8213190397436801658">住家</translation>
 <translation id="8214293972734702249">「<ph name="TAB_TITLE" />」已固定</translation>
 <translation id="8219424187226230983">在新分頁中查看離線版本</translation>
 <translation id="8221665793629393739">提醒你重新造訪</translation>

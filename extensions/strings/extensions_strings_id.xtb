@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Produk <ph name="PRODUCT_ID" /> tak dikenal dari <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">File manifes tidak valid</translation>
 <translation id="7217838517480956708">Administrator mesin ini membutuhkan <ph name="EXTENSION_NAME" /> untuk dipasang. Persyaratan ini tidak dapat dihapus atau dimodifikasi.</translation>
+<translation id="7287143125007575591">Akses ditolak.</translation>
 <translation id="7612608473764576263">Nilai masukan untuk kunci pribadi harus dalam format yang valid (kunci RSA dengan enkode PEM format PKCS#8).</translation>
 <translation id="765293928828334535">Aplikasi, ekstensi, dan skrip pengguna tidak dapat ditambahkan dari situs ini</translation>
 <translation id="7876803335449432072">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten. Lembar gaya skrip konten hanya dapat dimuat dari file lembar gaya yang didukung seperti file .css.</translation>

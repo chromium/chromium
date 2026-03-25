@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Торкніться двічі, щоб установити.</translation>
 <translation id="1740650426894359238">Увійти в інший профіль</translation>
 <translation id="1741219894094057085">Розумний годинник</translation>
+<translation id="1742773766788162541">Відсканувати картку й заповнювати автоматично</translation>
 <translation id="1743244221910283364">Відхилити зміни</translation>
 <translation id="1748975028205587434">Виберіть потрібний файл</translation>
 <translation id="1749733017156547309">Потрібно ввести пароль</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Приклад вбудованої довідки для контекстної панелі, яка має з’являтися кілька разів на день.</translation>
 <translation id="2739887572830526131">Збережіть цю групу, щоб додавати вкладки пізніше, або видаліть, якщо вона вам більше не потрібна.</translation>
 <translation id="2747003861858887689">Попереднє поле</translation>
+<translation id="2750583038402718064">Сайт <ph name="WEBSITE_TITLE" /> переміщено на позицію <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Внесені зміни бачитимуть усі учасники групи</translation>
 <translation id="2755595981383829244">Тепер ви отримуватимете сповіщення про контент</translation>
 <translation id="2761788987260570878">Сфотографуйте свій пошуковий запит</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475">Обліковим записом <ph name="EMAIL" /> керує ваша організація.</translation>
 <translation id="3580448612293054698">Оновити такі дані: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Пропозиція перекладати сторінки іншими мовами</translation>
+<translation id="3583726884554296148">Збережіть картку в обліковому записі Google, щоб автоматично заповнювати її дані під час цієї й майбутніх покупок у Chrome</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3587885837929752825">Ваша організація обмежила дані, які можна зберігати в обліковому записі Google.</translation>
 <translation id="3588820906588687999">Відкрити зображення в новій вкладці</translation>
@@ -1557,6 +1560,7 @@
 <translation id="6532106788206463496">Зберегти зміни</translation>
 <translation id="6536759809440150308">Відкрити групу "<ph name="GROUP_TITLE" />" (<ph name="CREATION_TEXT" />), яка містить стільки вкладок: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Швидше оплачуйте покупки за допомогою функції автозаповнення на всіх пристроях</translation>
 <translation id="6550675742724504774">Параметри</translation>
 <translation id="6550891580932862748">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Це не вплине на налаштування Безпечного перегляду в інших продуктах Google.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@
 <translation id="8209237163365258530">Моделі Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Ви отримали паролі для сайту <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">З’єднання безпечне</translation>
+<translation id="8213190397436801658">Головна</translation>
 <translation id="8214293972734702249">Вкладку "<ph name="TAB_TITLE" />" закріплено</translation>
 <translation id="8219424187226230983">Переглянути офлайн-версію в новій вкладці</translation>
 <translation id="8221665793629393739">Нагадування відвідати цей сайт повторно</translation>

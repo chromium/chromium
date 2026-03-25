@@ -339,6 +339,7 @@
 <translation id="122082903575839559">ಪ್ರಮಾಣಪತ್ರ ಸಹಿ ಅಲ್ಗಾರಿದಮ್</translation>
 <translation id="1221266967850882682">ವೆಲ್‌ಕಮ್ ರೀಕ್ಯಾಪ್</translation>
 <translation id="1221825588892235038">ಆಯ್ಕೆ ಮಾತ್ರ</translation>
+<translation id="1222786882236067545">ಇತಿಹಾಸದ ಫೈಲ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="1222835797152767346">ಸೈನ್ ಇನ್ ಮಾಡಲು ಸುಲಭಗೊಳಿಸುವುದಕ್ಕಾಗಿ ಪಿನ್‌‌ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ಗೆ ಪರವಾನಗಿ ಒಂದರ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1223498995510244364">ಸಾರಾಂಶಗೊಳಿಸಿ</translation>
@@ -1130,6 +1131,7 @@
 <translation id="1767043563165955993">Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆ ಬಳಸಿ</translation>
 <translation id="1767508543310534319">ವಿರಾಮಚಿಹ್ನೆ ಪ್ರತಿಧ್ವನಿ</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> ಗಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ.</translation>
+<translation id="1768928167751703843">ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1769104665586091481">ಹೊಸ &amp;ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="1769157454356586138">ಸ್ಕ್ಯಾನ್ ವಿಫಲಗೊಂಡಿದೆ. ಈ ಫೈಲ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="176920518817780870">ಗುಂಪನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್‌ಗೆ ಪರಿವರ್ತಿಸಿ</translation>
@@ -2390,6 +2392,7 @@
 <translation id="2628258844236035475">Chrome ಆಟೋಫಿಲ್‌ನಿಂದ ನಿಮ್ಮ ಮನೆ ವಿಳಾಸವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
 <translation id="2628770867680720336">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಈ Chromebook ಅನ್ನು ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸಬೇಕಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini ಮೂಲಕ ಹೊಸ ಚಾಟ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="2629058811622993283">ಆ್ಯಪ್ ಆಡಿಯೋವನ್ನು ಸಹ ಹಂಚಿಕೊಳ್ಳಿ (ಅದರ ಎಲ್ಲಾ ವಿಂಡೋಗಳು ಮತ್ತು ಸಂಬಂಧಿತ ಆ್ಯಪ್‌ಗಳಿಂದ)</translation>
 <translation id="2629227353894235473">Android ಆ್ಯಪ್‌ ಅನ್ನು ಡೆವಲಪ್ ಮಾಡಿ</translation>
 <translation id="2629437048544561682">ಕ್ಯಾನ್ವಾಸ್ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="2630703150574465936">ನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಈ ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು Gemini ಗೆ ಅನುಮತಿ ನೀಡಿದ್ದೀರಿ</translation>
@@ -4706,6 +4709,7 @@
 <translation id="4241140145060464825">ಆ್ಯಪ್ ಕಂಟೆಂಟ್‍</translation>
 <translation id="4241224519481557898">ವರ್ಗ</translation>
 <translation id="4242145785130247982">ಬಹು ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
+<translation id="4242245038391716252">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ ಮೂಲಕ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
 <translation id="4242577469625748426">ಸಾಧನದಲ್ಲಿ ನೀತಿಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> ನಿಮ್ಮ <ph name="BEGIN_LINK" />ಬ್ರೌಸರ್ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" /></translation>
@@ -6073,6 +6077,7 @@
 <translation id="5200191131577845078"><ph name="DOMAIN" /> ನಿಂದ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5200680225062692606">ಟಚ್ ID ಲಾಕ್ ಆಗಿದೆ. ಮುಂದುವರಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.</translation>
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> ಗಾಗಿ</translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{1 ಫೈಲ್‌ನಿಂದ ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ}one{# ಫೈಲ್‌ಗಳಿಂದ ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ}other{# ಫೈಲ್‌ಗಳಿಂದ ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ}}</translation>
 <translation id="5203035663139409780">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಫೈಲ್‌ಗಳು ಅಥವಾ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ವಿಸ್ತರಣೆಯನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}one{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}other{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" /> ಗಾಗಿ ರಿಕವರಿ ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -7313,6 +7318,7 @@
 <translation id="6095696531220637741">ಮ್ಯಾಕರಾನ್</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">ಗರಿಷ್ಠಗೊಳಿಸುವಿಕೆಯಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="6096192567014958958">ಸುಸ್ವಾಗತ, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">X.500 ಹೆಸರು</translation>
 <translation id="6097480669505687979">ಸ್ಥಳಾವಕಾಶವನ್ನು ನೀವು ಮುಕ್ತಗೊಳಿಸದೇ ಇದ್ದರೆ, ಬಳಕೆದಾರರು ಮತ್ತು ಡೇಟಾವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕಬಹುದು.</translation>
 <translation id="6097600385983390082">ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
@@ -8990,7 +8996,6 @@
 <translation id="7284411326658527427">ಪ್ರತಿಯೊಬ್ಬ ವ್ಯಕ್ತಿಯು ತಮ್ಮ ಖಾತೆಯನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು ಮತ್ತು ಡೇಟಾವನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸಬಹುದು.</translation>
 <translation id="7285008278689343502">ಗ್ರ್ಯಾಂಡ್ ಟೆಟಾನ್ ರಾಷ್ಟ್ರೀಯ ಉದ್ಯಾನ</translation>
 <translation id="7286867818472074330">ಪಾಸ್‌ಕೀಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="7287143125007575591">ಆ್ಯಕ್ಸೆಸ್ ನೀರಾಕರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7287411021188441799">ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆ ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="7287949630503871403">ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾದ ಡೇಟಾ</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -9966,6 +9971,7 @@
 <translation id="7947962633355574091">ವೀಡಿಯೋ ವಿಳಾಸ ನ&amp;ಕಲಿಸಿ</translation>
 <translation id="7947964080535614577">ಕಂಟೆಂಟ್ ಅಥವಾ ಸೇವೆಗಳನ್ನು ಉಚಿತವಾಗಿ ಒದಗಿಸುವ ಸಲುವಾಗಿ ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುತ್ತವೆ. ಆದರೆ, ಕೆಲವು ಸೈಟ್‌ಗಳು ಅನಪೇಕ್ಷಿತ ಅಥವಾ ದಾರಿತಪ್ಪಿಸುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುವ ಸಾಧ್ಯತೆಯಿರುತ್ತದೆ.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> ನ ಎಲ್ಲಾ ಪುಟಗಳು</translation>
+<translation id="7949038991703929816">ಇತಿಹಾಸವನ್ನು ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ಫೈಲ್‌ಗಳು ಮಾನ್ಯವಾದ ಅಪ್‌ಡೇಟರ್ ಲಾಗ್‌ಗಳನ್ನು ಹೊಂದಿವೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="7950629216186736592">ಕಾರಣ: LBS http://, https://, and file:// URLs ಅನ್ನು ಮಾತ್ರ ಬೆಂಬಲಿಸುತ್ತದೆ.</translation>
 <translation id="7950814699499457511">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ • ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಡೇಟಾವನ್ನು ಹೇಗೆ ಸಂಗ್ರಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಸುತ್ತದೆ ಎಂಬಂತಹ ಗೌಪ್ಯತೆಯ ರೂಢಿಗಳನ್ನು ಪ್ರಕಟಿಸಿಲ್ಲ</translation>
 <translation id="7951265006188088697">Google Pay ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಸೇರಿಸಲು ಅಥವಾ ನಿರ್ವಹಿಸಲು, ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಗೆ<ph name="END_LINK" /> ಭೇಟಿ ನೀಡಿ</translation>
@@ -10344,6 +10350,7 @@
 <translation id="8207404892907560325">ಪಾಸ್‌ಕೀ ಒಂದನ್ನು ಆರಿಸಿ</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ, ಆದರೆ ಮಾನ್ಯ <ph name="VM_TYPE" /> VM ಎಂದು ತೋರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8207901006380134182">ಒಂದು ದೊಡ್ಡ ಅಲೆಯು ಸಮುದ್ರವನ್ನು ಆವರಿಸುತ್ತದೆ, ದಡದಲ್ಲಿ ಕತ್ತಲೆಯ ಕಾಡಿದೆ.</translation>
+<translation id="8208043093301544621">ಹೋಮ್</translation>
 <translation id="8208216423136871611">ಉಳಿಸಬೇಡಿ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ಹೊಸ ನೋಟಿಫಿಕೇಶನ್}one{# ಹೊಸ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{# ಹೊಸ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ಡೌನ್‌ಲೋಡ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ}one{ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪ್ರಗತಿಯಲ್ಲಿವೆ}other{ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪ್ರಗತಿಯಲ್ಲಿವೆ}}</translation>

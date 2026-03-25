@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">点按两次即可安装。</translation>
 <translation id="1740650426894359238">切换到另一份个人资料</translation>
 <translation id="1741219894094057085">智能手表</translation>
+<translation id="1742773766788162541">扫描卡片并自动填充</translation>
 <translation id="1743244221910283364">舍弃更改</translation>
 <translation id="1748975028205587434">选择文件</translation>
 <translation id="1749733017156547309">必须输入密码</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">上下文面板的产品内帮助详细说明示例，每天会显示多次。</translation>
 <translation id="2739887572830526131">您可以保留此分组，以便日后添加标签页；如果不再需要，也可以将其删除。</translation>
 <translation id="2747003861858887689">上一个字段</translation>
+<translation id="2750583038402718064">已将 <ph name="WEBSITE_TITLE" /> 移至位置 <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">分组中的所有人都会看到所做的更改</translation>
 <translation id="2755595981383829244">现在您将收到内容通知</translation>
 <translation id="2761788987260570878">拍摄要搜索的内容</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />，由组织管理。</translation>
 <translation id="3580448612293054698">更新<ph name="ENTITY_TYPE" />？</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
+<translation id="3583726884554296148">将您的卡片保存在 Google 账号中，以便在 Chrome 上进行这笔购买交易和日后的购买交易时自动填充您的卡片信息</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587885837929752825">您的组织限制了您可在 Google 账号中保存的内容。</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
@@ -1557,6 +1560,7 @@
 <translation id="6532106788206463496">保存更改</translation>
 <translation id="6536759809440150308">打开“<ph name="GROUP_TITLE" />”，分组包含 <ph name="NUMBER_OF_TABS" />，<ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">在所有设备上使用自动填充功能更快结账</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="6550891580932862748">不会防范危险的网站、下载内容和扩展程序。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> 模型</translation>
 <translation id="8211030355252954494">您收到了多个用于登录 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8213190397436801658">家</translation>
 <translation id="8214293972734702249">已固定 <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">在新标签页中查看离线版本</translation>
 <translation id="8221665793629393739">重新访问提醒</translation>

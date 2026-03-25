@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">יש ללחוץ פעמיים כדי להתקין.</translation>
 <translation id="1740650426894359238">החלפת פרופיל</translation>
 <translation id="1741219894094057085">שעון חכם</translation>
+<translation id="1742773766788162541">סריקת כרטיס ומילוי אוטומטי</translation>
 <translation id="1743244221910283364">מחיקת השינויים</translation>
 <translation id="1748975028205587434">בחירת הקובץ הרצוי</translation>
 <translation id="1749733017156547309">נדרשת סיסמה</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">דוגמה לבועת מידע עשיר לגבי המוצר בחלונית ההקשר. הבועה אמורה להופיע כמה פעמים ביום.</translation>
 <translation id="2739887572830526131">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או למחוק אותה אם אין לך יותר צורך בה.</translation>
 <translation id="2747003861858887689">השדה הקודם</translation>
+<translation id="2750583038402718064">הפריט <ph name="WEBSITE_TITLE" /> הועבר למיקום <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">כל חברי הקבוצה יכולים לראות את השינויים</translation>
 <translation id="2755595981383829244">עכשיו נשלח לך התראות על תוכן</translation>
 <translation id="2761788987260570878">מצלמים תמונה של מה שרוצים לחפש.</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, חשבון שמנוהל על-ידי הארגון שלך.</translation>
 <translation id="3580448612293054698">לעדכן את <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
+<translation id="3583726884554296148">‏כדי למלא את פרטי הכרטיס אוטומטית ברכישה הזו וברכישות עתידיות ב-Chrome, אפשר לשמור אותו בחשבון Google</translation>
 <translation id="3587482841069643663">הכול</translation>
 <translation id="3587885837929752825">‏הארגון שלך מגביל את סוגי הנתונים שאפשר לשמור בחשבון Google שלך.</translation>
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
@@ -1557,6 +1560,7 @@
 <translation id="6532106788206463496">שמירת השינויים</translation>
 <translation id="6536759809440150308">פתיחה של <ph name="GROUP_TITLE" />, קבוצה של <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">רוצה לשלם מהר יותר עם מילוי אוטומטי בכל המכשירים?</translation>
 <translation id="6550675742724504774">אפשרויות</translation>
 <translation id="6550891580932862748">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. ההגדרות שקבעת לגלישה הבטוחה במוצרים אחרים של Google לא יושפעו.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@
 <translation id="8209237163365258530">‏מודלים של <ph name="VERSION_NUMBER" /> Gemini</translation>
 <translation id="8211030355252954494">קיבלת סיסמאות עבור <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">החיבור מאובטח</translation>
+<translation id="8213190397436801658">בית</translation>
 <translation id="8214293972734702249">כרטיסייה שהוצמדה, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">הצגת גרסה אופליין בכרטיסייה חדשה</translation>
 <translation id="8221665793629393739">תזכורת: רוצה לחזור לכאן?</translation>

@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Produto descoñecido <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">O ficheiro de manifesto non é válido</translation>
 <translation id="7217838517480956708">O administrador deste equipo require a instalación de <ph name="EXTENSION_NAME" />. Non se pode eliminar nin modificar.</translation>
+<translation id="7287143125007575591">Denegouse o acceso.</translation>
 <translation id="7612608473764576263">O valor de entrada da clave privada debe ter un formato válido (clave RSA en formato PKCS #8 e con codificación PEM).</translation>
 <translation id="765293928828334535">Non se poden engadir aplicacións, extensións nin scripts de usuarios desde este sitio web</translation>
 <translation id="7876803335449432072">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque as follas de estilo dos script de contido só se poden cargar desde ficheiros de follas de estilo admitidos, como os .css.</translation>

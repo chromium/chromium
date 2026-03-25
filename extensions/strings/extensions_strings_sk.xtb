@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Súbor manifestu je neplatný</translation>
 <translation id="7217838517480956708">Správca tohto zariadenia vyžaduje inštaláciu rozšírenia <ph name="EXTENSION_NAME" />. Nemôže byť odstránené alebo upravené.</translation>
+<translation id="7287143125007575591">Prístup bol odmietnutý</translation>
 <translation id="7612608473764576263">Vstupná hodnota pre súkromný kľúč musí mať platný formát (kľúč RSA vo formáte PKCS#8 so šifrovaním PEM).</translation>
 <translation id="765293928828334535">Aplikácie, rozšírenia a skripty používateľa sa nedajú pridať z tohto webu</translation>
 <translation id="7876803335449432072">Pre skript obsahu sa nepodarilo načítať súbor <ph name="RELATIVE_PATH" />. Šablóny kaskádových štýlov skriptu obsahu sa dajú načítať iba zo súborov podporovaných šablónami kaskádových štýlov, napríklad súborov .css.</translation>

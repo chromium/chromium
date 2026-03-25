@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочетено известие}other{# непрочетени известия}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Включете следното разширение в режим „инкогнито“:}other{Включете следните разширения в режим „инкогнито“:}}</translation>
+<translation id="4230098358142093034">Начална страница</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Преди 1 месец}other{Преди # месеца}}</translation>
 <translation id="4277033906326892359">Колоната <ph name="COLUMN_NAME" /> е сортирана във възходящ ред</translation>
 <translation id="4289300219472526559">Start Speaking</translation>

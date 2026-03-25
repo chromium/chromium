@@ -493,6 +493,7 @@
 <translation id="2721190673959776287">Prøv utsøkt, produktintegrert hjelp for det kontekstuelle panelet, som skal vises flere ganger om dagen.</translation>
 <translation id="2739887572830526131">Behold denne gruppen for å legge til faner senere, eller slett den hvis du ikke trenger den lenger.</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
+<translation id="2750583038402718064">Flyttet <ph name="WEBSITE_TITLE" /> til posisjon <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Alle i gruppen ser endringene du gjør</translation>
 <translation id="2755595981383829244">Nå får du varsler om innhold</translation>
 <translation id="2761788987260570878">Ta et bilde av søket</translation>
@@ -2033,6 +2034,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" />-modeller</translation>
 <translation id="8211030355252954494">Du har mottatt passord for <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
+<translation id="8213190397436801658">Startside</translation>
 <translation id="8214293972734702249">Festet – <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Se versjonen uten nett på en ny fane</translation>
 <translation id="8221665793629393739">Påminnelse om å besøke nettsiden igjen</translation>

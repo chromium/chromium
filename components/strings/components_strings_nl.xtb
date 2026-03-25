@@ -917,6 +917,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2400600116338235695">Kan vragen of deze site verbinding mag maken met seriële poorten</translation>
 <translation id="2403474027143565107">Exact</translation>
 <translation id="240450251994300576">Secundair koptekstlogo</translation>
+<translation id="2404715426538856682">Creditcards en pinpassen · IBAN's · Klantenkaarten</translation>
 <translation id="2404884497378469141">Probeer je bestanden opnieuw te kopiëren</translation>
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
@@ -2162,6 +2163,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4340810192899866471">Importeren vanuit json</translation>
 <translation id="4340982228985273705">Deze computer is niet gedetecteerd als een zakelijk beheerde computer. Overeenkomstig het beleid kunnen alleen automatisch extensies worden geïnstalleerd die worden gehost in de Chrome Web Store. De update-URL van de Chrome Web Store is <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Attractieparken</translation>
+<translation id="4346670990181948854">Reisinformatie · Voertuigen</translation>
 <translation id="4348834659292907206">De verbinding met <ph name="SITE" /> is niet beveiligd</translation>
 <translation id="4349365535725594680">Kan vertrouwelijke content niet delen</translation>
 <translation id="4349810866125026513">Toch uploaden</translation>
@@ -3044,6 +3046,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5752519522101347518">Website voor bankverificatie laden</translation>
 <translation id="5753570386948603678">Verwijderen uit geschiedenis</translation>
 <translation id="5759751709240058861">De camera gebruiken en bewegen</translation>
+<translation id="5762131895127128324">Rijbewijzen · Identiteitskaarten · Paspoorten</translation>
 <translation id="5763042198335101085">Geef een geldig e-mailadres op</translation>
 <translation id="5764725887548570807">Ongeldige oorsprongindeling.</translation>
 <translation id="5764920692828389743">Naar <ph name="EMAIL_ADDRESS" /> sturen</translation>
@@ -3980,6 +3983,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7220786058474068424">Verwerken</translation>
 <translation id="7221855153210829124">Meldingen tonen</translation>
 <translation id="722454870747268814">Nieuw incognitotabblad</translation>
+<translation id="7225676267118764980">Aanbieder van automatisch invullen en andere instellingen wijzigen</translation>
 <translation id="7226892411756387078">Platte tekst</translation>
 <translation id="7227293336683593977">Prijsgeschiedenis</translation>
 <translation id="7228306718910595403">Status gekwalificeerd voor de EU</translation>

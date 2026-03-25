@@ -2995,6 +2995,13 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 <translation id="2969568582351417848">도메인에서 특정 파일 형식에 관한 파일 형식 확장자 기반 다운로드 경고 사용 중지</translation>
 <translation id="2971096666394658693">컨텍스트 메뉴에는 <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />에 이미지를 공유하기 위한 메뉴 항목이 있습니다.</translation>
 <translation id="2973972555495515337">정책을 사용 설정하면 서드 파티 웹 애플리케이션에서 <ph name="DESK_API_NAME" />를 사용하여 <ph name="PRODUCT_OS_NAME" /> 데스크를 저장하고 공유할 수 있습니다. 정책을 사용 중지하면 사용자는 <ph name="DESK_API_NAME" />를 통해 데스크 데이터를 저장하고 공유할 수 없습니다. 정책을 설정하지 않으면 사용 중지와 동일하게 작동합니다. 이 정책은 등록된 기기에만 적용됩니다.</translation>
+<translation id="2974326457745806202">SharedWorker 생성자에서 'extendedLifetime' 옵션을 true로 설정하면 SharedWorker의 수명이 연장될 수 있습니다.
+
+정책을 사용 설정하거나 설정하지 않은 상태로 두면 SharedWorker의 수명이 연장될 수 있습니다.
+
+이 정책을 사용 중지로 설정하면 옵션이 true로 설정되어 있어도 SharedWorker의 수명이 연장될 수 없습니다.
+
+이 정책은 일시적이며 향후 삭제될 예정입니다.</translation>
 <translation id="2976033779241323433">기본 시스템 휴리스틱을 기반으로 터치 가상 키보드 사용 설정</translation>
 <translation id="2976429807269247880">레거시 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 쿠키 동작 설정</translation>
 <translation id="2979696534869541158">이전 구현 강제 적용</translation>
@@ -9721,6 +9728,7 @@ true로 설정하면 <ph name="PRODUCT_NAME" />에서는
 <translation id="7216442368414164495">사용자가 세이프 브라우징 확장 보고를 선택하도록 허용</translation>
 <translation id="7218238054592349618">이 사이트에서 JavaScript 최적화 허용</translation>
 <translation id="721970071627370558">기기 전원 상태 보고 사용 중지</translation>
+<translation id="7220960206733388609">SharedWorker는 수명이 연장될 수 있습니다.</translation>
 <translation id="7221574724100909818">보안 연결일 경우 자물쇠 아이콘 표시</translation>
 <translation id="7227348936232766462">사용자가 아래에서 제공되는 모든 기기 유형의 하위 수준 디버그 데이터를 사용자 의견에 포함하도록 허용</translation>
 <translation id="7229365071755865554">비밀번호 관리자를 통한 비밀번호 저장 기능 사용</translation>
@@ -10379,6 +10387,7 @@ URL 패턴은 <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책과 
 정책을 사용 중지하면 PDF 뷰어에서 현재 AGG 렌더기를 사용합니다.
 
 정책을 설정하지 않으면 브라우저에서 PDF 렌더러를 선택합니다.</translation>
+<translation id="7704244074621846004">SharedWorker에 수명 연장 사용 설정</translation>
 <translation id="7707869387893611318">충전음 기능을 사용 설정합니다.
 
           이 기능은 충전음을 재생합니다.
@@ -10396,6 +10405,7 @@ URL 패턴은 <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책과 
 
       서버는 ECDHE 암호화 스위트로 이전하는 것이 좋습니다. 이전할 수 없는 경우 RSA 키 교환을 사용하는 암호화 스위트를 사용 설정하세요.</translation>
 <translation id="7709470712369261710">자동 생성된 이미지 설명을 제공하는 Google 서비스를 사용하지 않음</translation>
+<translation id="7711003696883532277">SharedWorker는 수명이 연장될 수 없습니다.</translation>
 <translation id="7712109699186360774">사이트가 카메라 또는 마이크에 액세스하려고 할 때마다 확인함</translation>
 <translation id="7712245244073542805">브라우저 프로세스의 플랫폼 인쇄입니다.</translation>
 <translation id="7713608076604149344">다운로드 제한</translation>

@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Unknown product <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Manifest file is invalid</translation>
 <translation id="7217838517480956708">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to be installed. It cannot be removed or modified.</translation>
+<translation id="7287143125007575591">Access denied</translation>
 <translation id="7612608473764576263">Input value for private key must be a valid format (PKCS#8-format PEM-encoded RSA key).</translation>
 <translation id="765293928828334535">Apps, extensions and user scripts cannot be added from this website</translation>
 <translation id="7876803335449432072">Could not load file '<ph name="RELATIVE_PATH" />' for content script, content script style sheets can only be loaded from supported style sheet files such as .css files.</translation>

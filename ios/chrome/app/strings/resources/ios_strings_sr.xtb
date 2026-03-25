@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Додирните двапут да бисте инсталирали.</translation>
 <translation id="1740650426894359238">Пређите на други профил</translation>
 <translation id="1741219894094057085">Паметан сат</translation>
+<translation id="1742773766788162541">Скенирај картицу и аутоматски попуни</translation>
 <translation id="1743244221910283364">Одбаци промене</translation>
 <translation id="1748975028205587434">Изаберите фајл</translation>
 <translation id="1749733017156547309">Лозинка је обавезна</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Пример детаљне помоћи у производу за контекстуално окно које треба да се приказује више пута дневно.</translation>
 <translation id="2739887572830526131">Задржите ову групу да бисте додали картице касније или је избришите ако вам више не треба.</translation>
 <translation id="2747003861858887689">Претходно поље</translation>
+<translation id="2750583038402718064">Веб-сајт <ph name="WEBSITE_TITLE" /> је премештен на позицију <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Сви у групи виде унете промене</translation>
 <translation id="2755595981383829244">Сада ћете добијати обавештења о садржају</translation>
 <translation id="2761788987260570878">Сликајте претрагу</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, овим управља организација.</translation>
 <translation id="3580448612293054698">Желите да ажурирате ставку <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Понуди превод страница на другим језицима</translation>
+<translation id="3583726884554296148">Сачувајте картицу на Google налогу да бисте је аутоматски попуњавали за ову и будуће куповине у Chrome-у</translation>
 <translation id="3587482841069643663">Све</translation>
 <translation id="3587885837929752825">Организација ограничава садржај који можете да чувате на Google налогу.</translation>
 <translation id="3588820906588687999">Отвори слику на новој картици</translation>
@@ -1557,6 +1560,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6532106788206463496">Сачувај промене</translation>
 <translation id="6536759809440150308">Отворите групу <ph name="GROUP_TITLE" />, број картица у групи је <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Плаћајте брже помоћу аутоматског попуњавања на свим уређајима</translation>
 <translation id="6550675742724504774">Опције</translation>
 <translation id="6550891580932862748">Не штити вас од опасних веб-сајтова, преузимања и додатака. То неће утицати на подешавања Безбедног прегледања у другим Google производима.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> модели</translation>
 <translation id="8211030355252954494">Примили сте лозинке за <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Веза је безбедна</translation>
+<translation id="8213190397436801658">Почетна</translation>
 <translation id="8214293972734702249">Закачено, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Прикажи офлајн верзију на новој картици</translation>
 <translation id="8221665793629393739">Подсетник да поново посетите</translation>

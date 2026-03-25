@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{הודעה אחת שלא נקראה}one{# הודעות שלא נקראו}two{2 הודעות שלא נקראו}other{# הודעות שלא נקראו}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{מפעילים את התוסף הבא במצב פרטי:}one{מפעילים את התוספים הבאים במצב פרטי:}two{מפעילים את התוספים הבאים במצב פרטי:}other{מפעילים את התוספים הבאים במצב פרטי:}}</translation>
+<translation id="4230098358142093034">דף הבית</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{לפני חודש אחד}one{לפני # חודשים}two{לפני חודשיים}other{לפני # חודשים}}</translation>
 <translation id="4277033906326892359">העמודה <ph name="COLUMN_NAME" /> ממוינת בסדר עולה</translation>
 <translation id="4289300219472526559">יש להתחיל לדבר</translation>

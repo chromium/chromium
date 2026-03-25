@@ -3088,6 +3088,13 @@ Jika disetel ke salah (false), pengajar tidak dapat mengakses fitur ini.</transl
 <translation id="2969568582351417848">Menonaktifkan peringatan berbasis ekstensi jenis file download untuk jenis file tertentu di domain</translation>
 <translation id="2971096666394658693">Menu konteks akan memiliki item menu untuk membagikan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Jika kebijakan disetel ke Aktif, aplikasi web pihak ketiga akan diizinkan menggunakan <ph name="DESK_API_NAME" /> untuk menyimpan dan membagikan desktop <ph name="PRODUCT_OS_NAME" />. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat menyimpan dan membagikan data desktop virtual melalui <ph name="DESK_API_NAME" />. Jika kebijakan ini tidak disetel, perilakunya akan sama dengan disetel ke nonaktif. Kebijakan ini hanya akan berlaku di perangkat terdaftar.</translation>
+<translation id="2974326457745806202">SharedWorker dapat memiliki masa aktif yang diperpanjang jika opsi "extendedLifetime" disetel ke benar (true) di konstruktor SharedWorker.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, SharedWorker dapat memiliki masa aktif yang diperpanjang.
+
+Jika kebijakan ini disetel ke Nonaktif, SharedWorker tidak dapat memiliki masa aktif yang diperpanjang, meskipun opsi ini disetel ke benar (true).
+
+Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translation>
 <translation id="2976033779241323433">Aktifkan keyboard virtual sentuh berdasarkan heuristik sistem default</translation>
 <translation id="2976429807269247880">Setelan perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="2979696534869541158">Paksa implementasi lama</translation>
@@ -9995,6 +10002,7 @@ Dukungan untuk setelan kebijakan ini akan berakhir di <ph name="PRODUCT_NAME" />
 <translation id="7216442368414164495">Memungkinkan pengguna ikut serta dalam pelaporan yang diperluas Safe Browsing</translation>
 <translation id="7218238054592349618">Mengizinkan pengoptimalan JavaScript di situs ini</translation>
 <translation id="721970071627370558">Nonaktifkan pelaporan status daya perangkat</translation>
+<translation id="7220960206733388609">SharedWorker dapat memiliki masa aktif yang diperpanjang.</translation>
 <translation id="7221574724100909818">Gunakan ikon gembok untuk koneksi aman</translation>
 <translation id="7227348936232766462">Izinkan pengguna menyertakan data debug tingkat rendah dari semua jenis perangkat yang tersedia di bawah dalam masukan pengguna</translation>
 <translation id="7229365071755865554">Aktifkan penyimpanan sandi menggunakan pengelola sandi</translation>
@@ -10653,6 +10661,7 @@ Jika kebijakan ini disetel ke aktif, penampil PDF akan menggunakan perender Skia
 Jika kebijakan ini disetel ke nonaktif, penampil PDF akan menggunakan perender AGG saat ini.
 
 Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</translation>
+<translation id="7704244074621846004">Memungkinkan masa aktif yang diperpanjang untuk SharedWorker</translation>
 <translation id="7707869387893611318">Mengaktifkan fitur suara pengisian daya.
 
           Fitur ini berfungsi untuk memutar suara pengisian daya.
@@ -10670,6 +10679,7 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 
       Server dianjurkan untuk bermigrasi ke cipher suite ECDHE. Jika tidak tersedia, pastikan cipher suite yang menggunakan pertukaran kunci RSA diaktifkan.</translation>
 <translation id="7709470712369261710">Jangan gunakan layanan Google untuk memberikan deskripsi gambar otomatis</translation>
+<translation id="7711003696883532277">SharedWorker tidak dapat memiliki masa aktif yang diperpanjang.</translation>
 <translation id="7712109699186360774">Tanyakan setiap kali situs ingin mengakses kamera dan/atau mikrofon</translation>
 <translation id="7712245244073542805">Pencetakan platform dari proses browser.</translation>
 <translation id="7713608076604149344">Batasan download</translation>

@@ -372,6 +372,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1567405528131216114">Añadir <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Introducir fecha de vencimiento</translation>
 <translation id="1569694109004336106">Google Chrome está intentando activar Windows Hello para rellenar contraseñas.</translation>
+<translation id="1569905000953679183">Obtención de la política de instalación de extensiones</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Verificando método de pago</translation>
 <translation id="1576277203042721907">Seguimiento de productos</translation>
@@ -916,6 +917,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos serie</translation>
 <translation id="2403474027143565107">Precisa</translation>
 <translation id="240450251994300576">Logotipo del encabezado secundario</translation>
+<translation id="2404715426538856682">Tarjetas de crédito y débito · IBANs · Tarjetas de fidelización</translation>
 <translation id="2404884497378469141">Prueba a copiar tus archivos de nuevo</translation>
 <translation id="2413155254802890957">Antigua</translation>
 <translation id="2413528052993050574">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" /> y se podría rechazar su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
@@ -2167,6 +2169,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4340810192899866471">Importar de JSON</translation>
 <translation id="4340982228985273705">No se ha detectado que este ordenador esté administrado por la empresa, por lo que la política solo puede instalar automáticamente extensiones alojadas en Chrome Webstore. La URL de actualización de Chrome Webstore es "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Parques temáticos</translation>
+<translation id="4346670990181948854">Información sobre viajes · Vehículos</translation>
 <translation id="4348834659292907206">La conexión a <ph name="SITE" /> no es segura</translation>
 <translation id="4349365535725594680">No se puede compartir contenido confidencial</translation>
 <translation id="4349810866125026513">Subir de todos modos</translation>
@@ -2229,6 +2232,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4454620051637646665">Cerrar banner</translation>
 <translation id="4456937135469235202">Viajes de aventura</translation>
 <translation id="4458013283022578512">Introduce una pregunta</translation>
+<translation id="4458516738555515761">Obtención de la política</translation>
 <translation id="4464826014807964867">Sitios web con información de tu organización</translation>
 <translation id="4466576951214254884">Préstamos para estudiantes y financiación universitaria</translation>
 <translation id="4467821340016922962">Para salir de la pantalla completa y ver la descarga, pulsa |<ph name="ACCELERATOR" />|</translation>
@@ -3048,6 +3052,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5752519522101347518">Cargando sitio web de verificación bancaria</translation>
 <translation id="5753570386948603678">Eliminar del historial</translation>
 <translation id="5759751709240058861">Usar y mover tu cámara</translation>
+<translation id="5762131895127128324">Carnés de conducir · Documentos de identidad · Pasaportes</translation>
 <translation id="5763042198335101085">Introduce una dirección de correo electrónico válida</translation>
 <translation id="5764725887548570807">Formato de origen no válido.</translation>
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
@@ -3985,6 +3990,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="7220786058474068424">Procesando pago</translation>
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
 <translation id="722454870747268814">Nueva pestaña de Incógnito</translation>
+<translation id="7225676267118764980">Cambiar proveedor de autocompletar y otros ajustes</translation>
 <translation id="7226892411756387078">Texto sin formato</translation>
 <translation id="7227293336683593977">Historial de precios</translation>
 <translation id="7228306718910595403">Estado de cualificación de la UE</translation>

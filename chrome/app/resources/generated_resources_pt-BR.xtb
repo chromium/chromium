@@ -157,6 +157,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1099070179078143183">Para recursos como a Detecção de Golpe funcionarem, o Chrome pode usar modelos de IA executados diretamente no dispositivo sem enviar seus dados para os servidores do Google. Se essa opção estiver desativada, talvez os recursos não funcionem. <ph name="BEGIN_LINK" />Saiba mais sobre a IA no dispositivo<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Imagem copiada de <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Ícone atual</translation>
+<translation id="1101267749138963680">Verificando a segurança…</translation>
 <translation id="1102759278139578486">Não foi possível baixar os arquivos de anotações do nó principal. Tente de novo mais tarde.</translation>
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Você vai perder imediatamente o acesso a este grupo de guias, e ele será excluído de todos seus dispositivos</translation>
@@ -2917,6 +2918,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2979893796619951531">Excluir o site</translation>
 <translation id="2979966855249721010">Com base nos seus interesses, você pode receber recomendações de apps, dicas e muito mais</translation>
 <translation id="2981113813906970160">Mostrar cursor grande do mouse</translation>
+<translation id="2981728693230031897">Resumir esta página com o Gemini</translation>
 <translation id="2983102365694924129">Com base na sua atividade em um site. Esta configuração está desativada.</translation>
 <translation id="2983311431122838216">Pergunte ao Modo IA na Pesquisa Google</translation>
 <translation id="2983373101216420412">Nível da bateria do estojo: <ph name="PERCENTAGE" />%.</translation>
@@ -9005,7 +9007,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7284411326658527427">Cada pessoa pode personalizar a própria conta e manter os dados privados.</translation>
 <translation id="7285008278689343502">Parque Nacional de Grand Teton</translation>
 <translation id="7286867818472074330">Selecionar chave de acesso</translation>
-<translation id="7287143125007575591">Acesso negado.</translation>
 <translation id="7287411021188441799">Restaurar plano de fundo padrão</translation>
 <translation id="7287949630503871403">Dados armazenados no app</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -11359,6 +11360,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8884264823507872907">Quer criar um novo perfil de trabalho?</translation>
 <translation id="8884570509232205463">Seu dispositivo será bloqueado neste horário: <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8885449336974696155">Ajude a melhorar o ChromeOS informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
+<translation id="8886676545015748908">Resumir esta página com o Gemini</translation>
 <translation id="8888253246822647887">O app será aberto após a conclusão do upgrade. Os upgrades podem levar alguns minutos.</translation>
 <translation id="8888459276890791557">Fixe este painel lateral para facilitar o acesso</translation>
 <translation id="8888621340860433230">Mostrar opções</translation>

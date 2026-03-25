@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nelasīts paziņojums}zero{# nelasīti paziņojumi}one{# nelasīts paziņojums}other{# nelasīti paziņojumi}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Ieslēdziet šī paplašinājuma izmantošanu inkognito režīmā:}zero{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}one{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}other{Ieslēdziet šo paplašinājumu izmantošanu inkognito režīmā:}}</translation>
+<translation id="4230098358142093034">Sākums</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Pirms 1 mēneša}zero{Pirms # mēnešiem}one{Pirms # mēneša}other{Pirms # mēnešiem}}</translation>
 <translation id="4277033906326892359">Vienumi kolonnā “<ph name="COLUMN_NAME" />” ir sakārtoti augošā secībā</translation>
 <translation id="4289300219472526559">Sākt runāt</translation>

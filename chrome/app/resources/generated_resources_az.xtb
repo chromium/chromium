@@ -338,6 +338,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="122082903575839559">Sertifikat İmza Alqoritmi</translation>
 <translation id="1221266967850882682">Təkrar xoş gördük</translation>
 <translation id="1221825588892235038">Yalnız seçim</translation>
+<translation id="1222786882236067545">Tarixçə fayllarını yükləyin</translation>
 <translation id="1222835797152767346">Asan giriş üçün PIN təyin edin</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> lisenziya tələb edir</translation>
 <translation id="1223498995510244364">Xülasələyin</translation>
@@ -1127,6 +1128,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1767043563165955993">Android tətbiqləri ilə istifadə edin</translation>
 <translation id="1767508543310534319">Punktuasiya exosu</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> üçün istifadəçi rəyi göndərin.</translation>
+<translation id="1768928167751703843">Lokal dataya baxın</translation>
 <translation id="1769104665586091481">Linki Yeni Pəncərədə Açın</translation>
 <translation id="1769157454356586138">Skanlanmadı. Administrator bu faylı bloklayıb</translation>
 <translation id="176920518817780870">Qrupu əlfəcin qovluğuna çevirin</translation>
@@ -2387,6 +2389,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2628258844236035475">Ev ünvanınız Chrome avto-doldurmadan silinsin?</translation>
 <translation id="2628770867680720336">ADB sazlamasını aktivləşdirmək üçün bu Chromebook'un ilkin ayarlarına sıfırlanması tələb edilir. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini ilə Yeni Söhbətə başlayın</translation>
+<translation id="2629058811622993283">Tətbiq audiosunu da paylaşın (bütün pəncərələrdən və əlaqəli tətbiqlərdən)</translation>
 <translation id="2629227353894235473">Android tətbiqlərini inkişaf etdirin</translation>
 <translation id="2629437048544561682">Kanvası silin</translation>
 <translation id="2630703150574465936">Gemini-a hesablarınızdan istifadə edərək sizi bu sayt və tətbiqlərə avtomatik daxil etmək icazəsi verdiniz</translation>
@@ -4702,6 +4705,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4241140145060464825">Tətbiq kontenti</translation>
 <translation id="4241224519481557898">Kateqoriya</translation>
 <translation id="4242145785130247982">Çoxsaylı klient sertifikatları dəstəklənmir</translation>
+<translation id="4242245038391716252">Artırma tərəfindən endirildi: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Ayarları açın</translation>
 <translation id="4242577469625748426">Cihazda siyasət ayarlarını quraşdırmaq uğursuz oldu: <ph name="VALIDATION_ERROR" /> .</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Brauzer və profili<ph name="END_LINK" /> <ph name="DOMAIN" /> idarə edir</translation>
@@ -6069,6 +6073,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5200191131577845078"><ph name="DOMAIN" /> bildirişlərinə icazə verilir</translation>
 <translation id="5200680225062692606">Toxunuş ID-si kilidlənib. Davam etmək üçün parol daxil edin.</translation>
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> üçün</translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{1 fayldan tarixçəyə baxılır}other{# fayldan tarixçəyə baxılır}}</translation>
 <translation id="5203035663139409780">Cihazda fayl və ya qovluqları redaktə edə bilər</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Artırmaya baxmaq üçün toxunun}other{Bu artırmalara baxmaq üçün toxunun}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" /> üçün bərpa parolu</translation>
@@ -7307,6 +7312,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6095696531220637741">Makaron</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Maksimal açın</translation>
+<translation id="6096192567014958958">Xoş gəlmisiniz, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">X.500 Ad</translation>
 <translation id="6097480669505687979">Yer boşaltmasanız, istifadəçilər və data avtomatik silinə bilər.</translation>
 <translation id="6097600385983390082">Səslə axtarış bağlıdır</translation>
@@ -8980,7 +8986,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7284411326658527427">Hər bir şəxs öz hesabını fərdiləşdirə və datanı məxfi saxlaya bilər.</translation>
 <translation id="7285008278689343502">Grand Teton Milli Parkı</translation>
 <translation id="7286867818472074330">Giriş açarı seçin</translation>
-<translation id="7287143125007575591">Giriş rədd edildi.</translation>
 <translation id="7287411021188441799">Defolt arxa fonu bərpa edin</translation>
 <translation id="7287949630503871403">Tətbiqdə saxlanılan data</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -9957,6 +9962,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7947962633355574091">Video ünvanını kopyalayın</translation>
 <translation id="7947964080535614577">Saytlar adətən ödənişsiz məzmun və xidmətlər təklif etmək üçün reklamlar göstərir. Lakin bəzi saytlar müdaxilə edən və aldadıcı reklamlar göstərmələri ilə tanınır.</translation>
 <translation id="7948407723851303488">Bütün <ph name="DOMAIN_NAME" /> səhifələri</translation>
+<translation id="7949038991703929816">Tarixçə yüklənmədi. Fayllarda keçərli güncəlləyici loqlar olduğuna əmin olun.</translation>
 <translation id="7950629216186736592">Səbəb: LBS yalnız http://, https:// və file:// URL-lərini dəstəkləyir.</translation>
 <translation id="7950814699499457511">Yanılı • Bu artırma datanın toplanma və istifadə qaydası kimi məxfilik təcrübələrini dərc etməyib</translation>
 <translation id="7951265006188088697">Google Pay ödəniş metodlarını əlavə etmək və idarə etmək üçün <ph name="BEGIN_LINK" />Google Hesabına<ph name="END_LINK" /> daxil olun</translation>
@@ -10338,6 +10344,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8207404892907560325">Giriş açarı seçin</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" mövcuddur, lakin düzgün <ph name="VM_TYPE" /> VM olmadığı görünür. Administrator ilə əlaqə saxlayın.</translation>
 <translation id="8207901006380134182">Böyük dalğa okeanı bürüyür, sahildə isə qaranlıq meşə var.</translation>
+<translation id="8208043093301544621">Əsas səhifə</translation>
 <translation id="8208216423136871611">Yadda saxlamayın</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yeni bildiriş}other{# yeni bildiriş}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Endirmə gözlənilir}other{Endirmə gözlənilir}}</translation>

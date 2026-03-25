@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Toca dúas veces para instalar.</translation>
 <translation id="1740650426894359238">Cambiar a outro perfil</translation>
 <translation id="1741219894094057085">Reloxo intelixente</translation>
+<translation id="1742773766788162541">Escanear tarxeta e autocompletar</translation>
 <translation id="1743244221910283364">Descartar cambios</translation>
 <translation id="1748975028205587434">Seleccionar o teu ficheiro</translation>
 <translation id="1749733017156547309">Necesítase un contrasinal</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Exemplo de axuda detallada integrada no produto para o panel contextual, que debería mostrarse varias veces ao día.</translation>
 <translation id="2739887572830526131">Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> moveuse á posición <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Todos os membros do grupo poden ver os cambios realizados</translation>
 <translation id="2755595981383829244">Agora recibirás notificacións de contido</translation>
 <translation id="2761788987260570878">Tira unha foto do que queiras buscar</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, perfil xestionado pola túa organización.</translation>
 <translation id="3580448612293054698">Queres actualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Ofrece a tradución de páxinas noutros idiomas</translation>
+<translation id="3583726884554296148">Garda a túa tarxeta na túa Conta de Google para que se autocomplete a información cando fagas esta compra e outras futuras en Chrome</translation>
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3587885837929752825">A túa organización limita o que podes gardar na túa Conta de Google.</translation>
 <translation id="3588820906588687999">Abrir imaxe nunha pestana nova</translation>
@@ -1557,6 +1560,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6532106788206463496">Gardar cambios</translation>
 <translation id="6536759809440150308">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Paga máis rápido coa función de autocompletar en todos os teus dispositivos</translation>
 <translation id="6550675742724504774">Opcións</translation>
 <translation id="6550891580932862748">Non te protexe contra sitios web, descargas nin extensións perigosos. A configuración de Navegación segura noutros produtos de Google non se verá afectada.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8209237163365258530">Modelos <ph name="VERSION_NUMBER" /> de Gemini</translation>
 <translation id="8211030355252954494">Recibiches contrasinais para <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">A conexión é segura</translation>
+<translation id="8213190397436801658">Inicio</translation>
 <translation id="8214293972734702249">Ficheiros fixados, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Ver versión sen conexión nunha nova pestana</translation>
 <translation id="8221665793629393739">Recordatorio para vistar a páxina de novo</translation>

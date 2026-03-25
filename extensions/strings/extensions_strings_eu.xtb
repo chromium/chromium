@@ -66,6 +66,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
 <translation id="7068383018033524534">Manifestu-fitxategiak ez du balio</translation>
 <translation id="7217838517480956708">Gailu honen administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin izango da kendu edo aldatu.</translation>
+<translation id="7287143125007575591">Sarbidea ukatuta dago.</translation>
 <translation id="7612608473764576263">Gako pribatuak balio duen formatu bat eduki behar du (PKCS#8 formatua eta PEM kodetzea dituen RSA gakoa).</translation>
 <translation id="765293928828334535">Webgune honetatik ezin da gehitu aplikaziorik, luzapenik edo erabiltzaileen scriptik</translation>
 <translation id="7876803335449432072">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia eduki-scripta lortzeko. Eduki-scripten estilo-orriak estilo-orrien fitxategi bateragarrietatik (adibidez, .css fitxategiak) karga daitezke soilik.</translation>

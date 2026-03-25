@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1652197001188145583">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat NFC. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat NFC.</translation>
 <translation id="1660204651932907780">Mengizinkan situs memutar suara (direkomendasikan)</translation>
+<translation id="1676590040242013349">"Selalu gunakan koneksi aman" aktif.</translation>
 <translation id="1677097821151855053">Cookie dan data situs lainnya digunakan untuk mengingat Anda, misalnya untuk login atau personalisasi iklan. Untuk mengelola cookie semua situs, lihat <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Situs dapat meminta untuk menggunakan perangkat NFC</translation>
 <translation id="1686785653877010442">Situs biasanya mengirim notifikasi untuk memberi tahu Anda tentang berita terbaru atau pesan chat.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Blokir situs agar tidak membaca teks dan gambar dari papan klip</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950072572526089586">Situs yang Anda buka dapat menyimpan info tentang hal-hal yang Anda lakukan agar situs tersebut berfungsi seperti yang diharapkan — misalnya, untuk membuat Anda tetap login ke situs atau menyimpan item di keranjang belanja. Situs sering kali menyimpan info ini untuk sementara di perangkat Anda.</translation>
+<translation id="6964291282260073066">"WebGPU" dinonaktifkan.</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6980507581230208647">Tema merah mawar</translation>
 <translation id="6980861169612950611">Hapus data situs? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat virtual reality. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat virtual reality.</translation>
 <translation id="7282197670900591579">Tema sitrun</translation>
 <translation id="728412880473384942">Situs lebih cepat, tetapi kurang aman</translation>
+<translation id="7352902948037373520">Kelola di <ph name="BEGIN_LINK1" />setelan Android<ph name="END_LINK1" />
+
+Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="7366415735885268578">Tambahkan situs</translation>
 <translation id="7368695150573390554">Semua data offline akan dihapus</translation>
 <translation id="7369678931043226462">Panel bawah sesuaikan halaman tab baru Anda terbuka setengah</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Situs biasanya terhubung ke perangkat USB untuk fitur seperti pencetakan dokumen atau penyimpanan ke perangkat penyimpanan</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' sudah usang. Instal ulang aplikasi.</translation>
 <translation id="847433688444405067">Menjelajah di berbagai perangkat</translation>
+<translation id="8484556725636319115">"Pengoptimal JavaScript" nonaktif. <ph name="BEGIN_LINK2" />Kelola Pengecualian situs<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>
 <translation id="848952951823693243">Selalu minta situs seluler</translation>
 <translation id="8492822722330266509">Situs dapat menampilkan pop-up dan menggunakan pengalihan</translation>

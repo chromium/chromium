@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 neprebrano obvestilo}one{# neprebrano obvestilo}two{# neprebrani obvestili}few{# neprebrana obvestila}other{# neprebranih obvestil}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Vklopite to razširitev v anonimnem načinu:}one{Vklopite te razširitve v anonimnem načinu:}two{Vklopite te razširitve v anonimnem načinu:}few{Vklopite te razširitve v anonimnem načinu:}other{Vklopite te razširitve v anonimnem načinu:}}</translation>
+<translation id="4230098358142093034">Začetni zaslon</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Pred 1 mesecem}one{Pred # mesecem}two{Pred # mesecema}few{Pred # meseci}other{Pred # meseci}}</translation>
 <translation id="4277033906326892359">Stolpec <ph name="COLUMN_NAME" /> je bil razvrščen v naraščajočem vrstnem redu</translation>
 <translation id="4289300219472526559">Start Speaking</translation>

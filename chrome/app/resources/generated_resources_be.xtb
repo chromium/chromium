@@ -341,6 +341,7 @@
 <translation id="122082903575839559">Алгарытм подпісу сертыфіката</translation>
 <translation id="1221266967850882682">Кароткі агляд</translation>
 <translation id="1221825588892235038">Толькі вылучанае</translation>
+<translation id="1222786882236067545">Загрузіць файлы гісторыі</translation>
 <translation id="1222835797152767346">Задайце PIN-код, каб уваходзіць прасцей</translation>
 <translation id="1223484782328004593">Для работы праграмы <ph name="APP_NAME" /> патрабуецца ліцэнзія</translation>
 <translation id="1223498995510244364">Падсумаваць</translation>
@@ -1130,6 +1131,7 @@
 <translation id="1767043563165955993">Выкарыстоўваць у праграмах для Android</translation>
 <translation id="1767508543310534319">Рэха пунктуацыі</translation>
 <translation id="1768212860412467516">Адпраўце водгук пра эксперымент "<ph name="EXPERIMENT_NAME" />".</translation>
+<translation id="1768928167751703843">Праглядзець лакальныя даныя</translation>
 <translation id="1769104665586091481">Адкрыць спасылку ў новым &amp;акне</translation>
 <translation id="1769157454356586138">Не ўдалося выканаць праверку. Гэты файл заблакіраваны адміністратарам.</translation>
 <translation id="176920518817780870">Пераўтварыць групу ў папку закладак</translation>
@@ -2384,6 +2386,7 @@
 <translation id="2628258844236035475">Выдаліць хатні адрас з прапаноў аўтазапаўнення Chrome?</translation>
 <translation id="2628770867680720336">Уключэнне адладкі ADB патрабуе скіду налад Chromebook да заводскіх значэнняў. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Пачаць новы чат з Gemini</translation>
+<translation id="2629058811622993283">Таксама абагульваць аўдыя з праграмы (з усіх яе вокнаў і звязаных праграм)</translation>
 <translation id="2629227353894235473">Распрацоўка праграм для Android</translation>
 <translation id="2629437048544561682">Ачысціць палатно</translation>
 <translation id="2630703150574465936">Вы дазволілі Gemini аўтаматычна ўваходзіць на гэтых сайтах і ў праграмах з выкарыстаннем вашых уліковых запісаў</translation>
@@ -4699,6 +4702,7 @@
 <translation id="4241140145060464825">Змесціва праграмы</translation>
 <translation id="4241224519481557898">Катэгорыя</translation>
 <translation id="4242145785130247982">Выкарыстанне некалькі кліенцкіх сертыфікатаў не падтрымліваецца</translation>
+<translation id="4242245038391716252">Спампавана пашырэннем: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4242577469625748426">Не ўдалося ўсталяваць налады палітыкі на прыладу: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Ваш <ph name="BEGIN_LINK" />браўзер і профіль знаходзяцца пад кіраваннем<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
@@ -6066,6 +6070,7 @@
 <translation id="5200191131577845078">Апавяшчэнні з дамена <ph name="DOMAIN" /> дазволены</translation>
 <translation id="5200680225062692606">Функцыя Touch ID заблакіравана. Каб працягнуць, увядзіце пароль.</translation>
 <translation id="5201945335223486172">Для дамена <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{Гісторыя праглядаў з 1 файла}one{Праглядаецца гісторыя з # файла}few{Праглядаецца гісторыя з # файлаў}many{Праглядаецца гісторыя з # файлаў}other{Праглядаецца гісторыя з # файла}}</translation>
 <translation id="5203035663139409780">Файлы, якім дазволена змяняць файлы і папкі на прыладзе</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Каб паглядзець гэта пашырэнне, націсніце тут}one{Каб паглядзець гэтыя пашырэнні, націсніце тут}few{Каб паглядзець гэтыя пашырэнні, націсніце тут}many{Каб паглядзець гэтыя пашырэнні, націсніце тут}other{Каб паглядзець гэтыя пашырэнні, націсніце тут}}</translation>
 <translation id="5204282224596194174">Пароль для аднаўлення для адраса электроннай пошты <ph name="USER_EMAIL" /></translation>
@@ -7305,6 +7310,7 @@
 <translation id="6095696531220637741">Макарон</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Адкрыць у разгорнутым выглядзе</translation>
+<translation id="6096192567014958958">Вітаем, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">Назва X.500</translation>
 <translation id="6097480669505687979">Калі не вызваліць месца, могуць быць аўтаматычна выдалены карыстальнікі і даныя.</translation>
 <translation id="6097600385983390082">Галасавы пошук закрыты</translation>
@@ -8984,7 +8990,6 @@
 <translation id="7284411326658527427">Любы дададзены карыстальнік зможа персаналізаваць свой уліковы запіс і захоўваць прыватнасць даных.</translation>
 <translation id="7285008278689343502">Нацыянальны парк Гранд-Цітон</translation>
 <translation id="7286867818472074330">Выбраць ключ доступу</translation>
-<translation id="7287143125007575591">Доступ забаронены.</translation>
 <translation id="7287411021188441799">Аднавіць стандартны фон</translation>
 <translation id="7287949630503871403">Захаваныя ў праграме даныя</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> DPI</translation>
@@ -9961,6 +9966,7 @@
 <translation id="7947962633355574091">К&amp;апіраваць адрас відэа</translation>
 <translation id="7947964080535614577">Сайты звычайна паказваюць рэкламу, каб мець магчымасць прапаноўваць змесціва або паслугі бясплатна. Аднак некаторыя сайты паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="7948407723851303488">Усе старонкі дамена <ph name="DOMAIN_NAME" /></translation>
+<translation id="7949038991703929816">Не ўдалося загрузіць гісторыю. Упэўніцеся, што файлы змяшчаюць сапраўдныя журналы сродку абнаўлення.</translation>
 <translation id="7950629216186736592">Прычына: функцыя "Падтрымка браўзераў ранейшых версій" дазваляе выкарыстоўваць толькі URL-адрасы з пратаколамі http://, https:// і file://.</translation>
 <translation id="7950814699499457511">Уключана • Для гэтага пашырэння не апублікаваны меры забеспячэння прыватнасці, напрыклад звесткі пра тое, як яно збірае і выкарыстоўвае даныя</translation>
 <translation id="7951265006188088697">Каб дадаць спосабы аплаты Google Pay або кіраваць імі, перайдзіце ў свой <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
@@ -10342,6 +10348,7 @@
 <translation id="8207404892907560325">Выберыце ключ доступу</translation>
 <translation id="8207794858944505786">Віртуальная машына "<ph name="DEFAULT_VM_NAME" />" існуе, але яна не з’яўляецца сапраўднай віртуальнай машынай тыпу "<ph name="VM_TYPE" />". Звярніцеся да адміністратара.</translation>
 <translation id="8207901006380134182">У акіяне бушуюць вялізныя хвалі, на беразе стаіць цёмны лес.</translation>
+<translation id="8208043093301544621">Галоўная старонка</translation>
 <translation id="8208216423136871611">Не захоўваць</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новае апавяшчэнне}one{# новае апавяшчэнне}few{# новыя апавяшчэнні}many{# новых апавяшчэнняў}other{# новага апавяшчэння}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Ажыццяўляецца спампоўка}one{Ажыццяўляюцца спампоўкі}few{Ажыццяўляюцца спампоўкі}many{Ажыццяўляюцца спампоўкі}other{Ажыццяўляюцца спампоўкі}}</translation>

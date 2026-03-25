@@ -372,6 +372,7 @@
 <translation id="1567405528131216114">Ajouter <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Entrez la date d'expiration</translation>
 <translation id="1569694109004336106">Google Chrome essaie d'activer Windows Hello pour remplir les mots de passe.</translation>
+<translation id="1569905000953679183">Récupération de la politique d'installation de l'extension</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> po x <ph name="HEIGHT" /> po</translation>
 <translation id="1574714699824202614">Vérification du mode de paiement en cours…</translation>
 <translation id="1576277203042721907">Perspectives d'achat</translation>
@@ -2229,6 +2230,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4454620051637646665">Fermer la bannière</translation>
 <translation id="4456937135469235202">Tourisme d'aventure</translation>
 <translation id="4458013283022578512">Entrer une question</translation>
+<translation id="4458516738555515761">Récupération de la politique</translation>
 <translation id="4464826014807964867">Sites Web avec des données fournies par votre organisation</translation>
 <translation id="4466576951214254884">Prêts étudiants et financement des études</translation>
 <translation id="4467821340016922962">Pour quitter le mode plein écran et voir le téléchargement, appuyez sur |<ph name="ACCELERATOR" />|</translation>

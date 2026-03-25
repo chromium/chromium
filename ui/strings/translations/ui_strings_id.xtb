@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Notifikasi yang Belum Dibaca}other{# Notifikasi yang Belum Dibaca}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Aktifkan ekstensi berikut dalam mode Samaran:}other{Aktifkan ekstensi berikut dalam mode Samaran:}}</translation>
+<translation id="4230098358142093034">Beranda</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 bulan yang lalu}other{# bulan yang lalu}}</translation>
 <translation id="4277033906326892359">Kolom <ph name="COLUMN_NAME" /> diurutkan dari atas ke bawah</translation>
 <translation id="4289300219472526559">Mulai Berbicara</translation>

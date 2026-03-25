@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Nieznany produkt <ph name="PRODUCT_ID" /> firmy <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Plik manifestu jest nieprawidłowy</translation>
 <translation id="7217838517480956708">Administrator tego komputera wymaga zainstalowanego rozszerzenia <ph name="EXTENSION_NAME" />. Nie można go usunąć ani modyfikować.</translation>
+<translation id="7287143125007575591">Odmowa dostępu.</translation>
 <translation id="7612608473764576263">Wartość wejściowa klucza prywatnego musi mieć prawidłowy format (klucz RSA z kodowaniem PEM w formacie PKCS#8).</translation>
 <translation id="765293928828334535">Z tej strony nie można dodawać aplikacji, rozszerzeń ani skryptów użytkownika</translation>
 <translation id="7876803335449432072">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu treści. Arkusze stylów skryptów treści mogą być wczytywane tylko z obsługiwanych plików arkuszy stylów, takich jak pliki .css.</translation>

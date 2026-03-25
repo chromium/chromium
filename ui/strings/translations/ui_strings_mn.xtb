@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Уншаагүй 1 мэдэгдэл}other{Уншаагүй # мэдэгдэл}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Нууцлалтай горимд дараах өргөтгөлийг асаана уу:}other{Нууцлалтай горимд дараах өргөтгөлүүдийг асаана уу:}}</translation>
+<translation id="4230098358142093034">Нүүр хуудас</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 сарын өмнө}other{# сарын өмнө}}</translation>
 <translation id="4277033906326892359"><ph name="COLUMN_NAME" /> баганыг өсөх дарааллаар эрэмбэлсэн</translation>
 <translation id="4289300219472526559">Ярьж эхлэх</translation>

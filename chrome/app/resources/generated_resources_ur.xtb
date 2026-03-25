@@ -338,6 +338,7 @@
 <translation id="122082903575839559">سرٹیفیکیٹ دستخط الگورتھم</translation>
 <translation id="1221266967850882682">استقبالی خلاصہ</translation>
 <translation id="1221825588892235038">صرف انتخاب</translation>
+<translation id="1222786882236067545">سرگزشت کی فائلز لوڈ کریں</translation>
 <translation id="1222835797152767346">‏سائن ان کرنا آسان بنانے کیلئے ایک PIN سیٹ کریں</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> کو لائسنس کی ضرورت ہے</translation>
 <translation id="1223498995510244364">خلاصہ بیان کریں</translation>
@@ -1127,6 +1128,7 @@
 <translation id="1767043563165955993">‏Android ایپس کے ساتھ استعمال کریں</translation>
 <translation id="1767508543310534319">رموز اوقاف کی بازگشت</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> کے لئے تاثرات بھیجیں۔</translation>
+<translation id="1768928167751703843">مقامی ڈیٹا دیکھیں</translation>
 <translation id="1769104665586091481">لنک نئی &amp;ونڈو میں کھولیں</translation>
 <translation id="1769157454356586138">اسکین ناکام ہوا۔ یہ فائل آپ کے منتظم نے مسدود کر دی ہے</translation>
 <translation id="176920518817780870">گروپ کو بُک مارک فولڈر میں تبدیل کریں</translation>
@@ -2386,6 +2388,7 @@
 <translation id="2628258844236035475">‏‫Chrome آٹو فل سے اپنے گھر کا پتہ ہٹائیں؟</translation>
 <translation id="2628770867680720336">‏اس Chromebook کو فیکٹری ری سیٹ کرنے کے لیے ADB ڈیبگنگ فعال کرنا ہوگا۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">‏‫Gemini کے ساتھ نئی چیٹ شروع کریں</translation>
+<translation id="2629058811622993283">ایپ آڈیو کا بھی اشتراک کریں (اس کی تمام ونڈوز اور متعلقہ ایپس سے)</translation>
 <translation id="2629227353894235473">‏Android ایپس ڈیولپ کریں</translation>
 <translation id="2629437048544561682">کینوس صاف کریں</translation>
 <translation id="2630703150574465936">‏آپ نے Gemini کو اپنے اکاؤنٹس کا استعمال کرتے ہوئے ان سائٹس اور ایپس میں خودکار طور پر سائن ان کرنے کی اجازت دی ہے</translation>
@@ -4701,6 +4704,7 @@
 <translation id="4241140145060464825">ایپ کا مواد</translation>
 <translation id="4241224519481557898">زمرہ</translation>
 <translation id="4242145785130247982">متعدد کلائنٹ سرٹیفکیٹس تعاون یافتہ نہیں ہیں</translation>
+<translation id="4242245038391716252">‏ایکسٹینشن کے ذریعے ڈاؤن لوڈ کیا گیا: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
 <translation id="4242577469625748426">آلہ پر پالیسی کی ترتیبات انسٹال کرنے میں ناکام ہوگیا: <ph name="VALIDATION_ERROR" />۔</translation>
 <translation id="4242825475818569385">آپ کے <ph name="BEGIN_LINK" />براؤزر اور پروفائل کا نظم<ph name="END_LINK" /> <ph name="DOMAIN" /> کرتا ہے</translation>
@@ -6067,6 +6071,7 @@
 <translation id="5200191131577845078">‫<ph name="DOMAIN" /> سے اطلاعات کی اجازت ہے</translation>
 <translation id="5200680225062692606">‏ٹچ ID مقفل ہے۔ جاری رکھنے کے لیے، اپنا پاس ورڈ درج کریں۔</translation>
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> کیلئے</translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{‫1 فائل سے سرگزشت دیکھی جا رہی ہے}other{‫# فائلز سے سرگزشت دیکھی جا رہی ہے}}</translation>
 <translation id="5203035663139409780">آپ کے آلے پر فائلز یا فولڈر میں ترمیم کر سکتے ہیں</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ایکسٹینشن دیکھنے کے لیے کلک کریں}other{ایکسٹینشنز دیکھنے کے لیے کلک کریں}}</translation>
 <translation id="5204282224596194174">بازیابی پاس ورڈ برائے <ph name="USER_EMAIL" /></translation>
@@ -7305,6 +7310,7 @@
 <translation id="6095696531220637741">میکرون</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">بڑی کی ہوئی کھولیں</translation>
+<translation id="6096192567014958958">خوش آمدید، <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">‏X.500 نام</translation>
 <translation id="6097480669505687979">اگر آپ جگہ خالی نہیں کرتے ہیں تو صارفین اور ڈیٹا کو خودکار طور پر ہٹایا جا سکتا ہے۔</translation>
 <translation id="6097600385983390082">صوتی تلاش بند ہو گئی</translation>
@@ -8978,7 +8984,6 @@
 <translation id="7284411326658527427">ہر شخص اپنے اکاؤنٹ کو ذاتی نوعیت کا بنا اور ڈیٹا کو نجی رکھ سکتا ہے۔</translation>
 <translation id="7285008278689343502">گرینڈ ٹیٹن نیشنل پارک</translation>
 <translation id="7286867818472074330">پاس کی کو منتخب کریں</translation>
-<translation id="7287143125007575591">رسائی مسترد کر دی گئی۔</translation>
 <translation id="7287411021188441799">ڈیفالٹ پس منظر بحال کریں</translation>
 <translation id="7287949630503871403">ایپ میں اسٹور کردہ ڈیٹا</translation>
 <translation id="7288676996127329262">‎<ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -9955,6 +9960,7 @@
 <translation id="7947962633355574091">ویڈیو پتہ کا&amp;پی کریں</translation>
 <translation id="7947964080535614577">سائٹس عام طور پر اشتہارات دکھاتی ہیں تاکہ وہ بغیر کسی چارج کے مواد یا سروسز فراہم کر سکیں۔ لیکن کچھ سائٹس دخل انداز یا گمراہ کن اشتہارات دکھانے کے لیے جانی جاتی ہیں۔</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> کے سبھی صفحات</translation>
+<translation id="7949038991703929816">سرگزشت لوڈ کرنے میں ناکام۔ یقینی بنائیں کہ فائلز میں درست اپڈیٹر لاگز ہیں۔</translation>
 <translation id="7950629216186736592">‏وجہ: LBS صرف http://‎‏ِ، https://‎، اور file://‎ والے URLs کو سپورٹ کرتا ہے۔</translation>
 <translation id="7950814699499457511">آن ہے• اس ایکسٹینشن نے رازداری کے ضوابط کو شائع نہیں کیا ہے، جیسے کہ اس کا ڈیٹا کو اکٹھا اور استعمال کرنے کا طریقہ</translation>
 <translation id="7951265006188088697">‏Google Pay کے ادائیگی کے طریقے شامل کرنے یا ان کا نظم کرنے کے لئے اپنا <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> ملاحظہ کریں</translation>
@@ -10336,6 +10342,7 @@
 <translation id="8207404892907560325">ایک پاس کی منتخب کریں</translation>
 <translation id="8207794858944505786">‏VM "<ph name="DEFAULT_VM_NAME" />" موجود ہے، لیکن یہ VM <ph name="VM_TYPE" /> درست معلوم نہیں ہوتا ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="8207901006380134182">ایک سمندر جس میں بڑی بڑی لہریں اٹھ رہی ہیں۔ ساحل پر گھنا جنگل نظر آتا ہے۔</translation>
+<translation id="8208043093301544621">ہوم</translation>
 <translation id="8208216423136871611">محفوظ نہ کریں</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{نئی اطلاع}other{# نئی اطلاعات}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ڈاؤن لوڈ پیش رفت میں ہے}other{ڈاؤن لوڈز پیش رفت میں ہیں}}</translation>

@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">మీరు మరొక యాప్‌నకు ఎగుమతి చేయాలనుకుంటున్న ఖాతాలను ఎంచుకోండి.</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1506063256525392513">ఫోటోలను తీసి, వాటిని అప్‌లోడ్ చేయడానికి, అలాగే QR కోడ్‌లను స్కాన్ చేయడానికి ఇది మిమ్మల్ని అనుమతిస్తుంది</translation>
+<translation id="1506733063065214205">RCS MLS క్లయింట్</translation>
 <translation id="1508263560970797965">అజ్ఞాత మోడ్‌లో కొనసాగించండి</translation>
 <translation id="1509486075633541495">వెబ్‌సైట్‌కు సైన్ ఇన్ చేయండి</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించండి</translation>
@@ -477,6 +478,7 @@
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
 <translation id="2673508731173059946">కాపీ చేసిన లింక్‌కు వెళ్లండి</translation>
 <translation id="2679659833697380">మీ సమాచారాన్ని మీ డివైజ్‌లో సేవ్ చేశారు</translation>
+<translation id="2681572445246787428">డాక్యుమెంట్ సైనింగ్</translation>
 <translation id="2688535388040882469">బ్యానర్‌లు</translation>
 <translation id="2690858294534178585">కెమెరా వినియోగంలో ఉంది</translation>
 <translation id="2691653761409724435">ఆఫ్‌లైన్‌లో అందుబాటులో లేదు</translation>
@@ -907,10 +909,12 @@
 <translation id="429074084062258019">{count,plural, =1{ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను గ్రూప్‌నకు జోడించండి}}</translation>
 <translation id="4302061870579014542">పొజిషన్‌ను సెట్ చేయండి</translation>
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
+<translation id="4306349443295056740">OCSP సైనింగ్</translation>
 <translation id="4309403553630140242">మరింత సమాచారం కోసం రెండుసార్లు నొక్కండి</translation>
 <translation id="4310738531374808763">మీ మొదటి పేజీని అనుకూలంగా మార్చండి</translation>
 <translation id="4320848494125124980">ఇటీవలివి</translation>
 <translation id="4322394346347055525">ఇతర ట్యాబ్‌లను మూసివేయండి</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">నోటిఫికేషన్‌లను ఆన్ చేయండి</translation>
 <translation id="4326912346867677256">సురక్షితంగా సైన్ ఇన్ చేయడానికి "పాస్‌వర్డ్‌ను ఉపయోగించండి" ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="4327017157997423717"><ph name="PRODUCT_NAME" /> ధరను ట్రాక్ చేయండి, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1029,6 +1033,7 @@
 <translation id="4744428388659507035">మీ పరికరాలన్నింటిలో ఉన్న మీ బుక్‌మార్క్‌లను పొందడానికి, సెట్టింగ్‌లలో “బుక్‌మార్క్‌లు” ఆప్షన్‌ను ఆన్ చేయండి.</translation>
 <translation id="4746926359847517643">మీరు వాటిని హిస్టరీ నుండి ఎప్పుడైనా తిరిగి పొందవచ్చు.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} కార్డ్ దిగుమతి అయ్యింది}other{{count} కార్డ్‌లు దిగుమతి అయ్యాయి}}</translation>
+<translation id="4749924365937394956">సర్వర్ ప్రామాణీకరణ</translation>
 <translation id="4751645464639803239">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="4752348350801431746">సేఫ్టీ చెక్ నోటిఫికేషన్‌లను ఆఫ్ చేయండి…</translation>
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
@@ -1394,12 +1399,14 @@
 <translation id="598634819525651074">ప్రాంతం</translation>
 <translation id="5988097621740394599">మీ ట్యాబ్‌లలో ధర తగ్గింపు వివరాలను చూడండి.</translation>
 <translation id="5988851877894965432">URLలను Chromeలో తెరవండి</translation>
+<translation id="599343768974649785">అందరికీ తగని టెక్స్ట్</translation>
 <translation id="6006672969046233841">కొత్త ట్యాబ్</translation>
 <translation id="6011308810877101166">సెర్చ్ సూచనలను మెరుగుపరుస్తుంది</translation>
 <translation id="6012140227487808125">గుప్తీకరిస్తోంది…</translation>
 <translation id="6027619584715411062">మీ అన్ని పరికరాలలో మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని పొందడానికి సైన్ ఇన్ చేయండి.</translation>
 <translation id="6027945736510816438">మీరు <ph name="WEBSITE" /> గురించి అడిగారా?</translation>
 <translation id="6032845897905314562">కొత్త ఫీచర్</translation>
+<translation id="6037458223703682108">డిజిటల్ సిగ్నేచర్</translation>
 <translation id="6038823991892265570">Google స్టోరేజ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
@@ -1543,6 +1550,7 @@
 <translation id="6476284679642588870">పేమెంట్ ఆప్షన్‌లను నిర్వహించండి</translation>
 <translation id="6476800141292307438">పేజీని <ph name="LANGUAGE" />లోకి అనువదిస్తోంది. స్క్రీన్ దిగువ భాగానికి దగ్గర్లో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
 <translation id="647867789226964031">మీ పాస్‌వర్డ్‌లను మార్చండి</translation>
+<translation id="6480363549849064919">క్లయింట్ ప్రామాణీకరణ</translation>
 <translation id="6494931198667773526">ఈవెంట్ ముగింపు సమయం</translation>
 <translation id="6503077044568424649">ఎక్కువగా సందర్శించేవి</translation>
 <translation id="6503763061813913607">సేఫ్టీ చెక్ నోటిఫికేషన్‌లు</translation>
@@ -1588,6 +1596,7 @@
 <translation id="6619015782482868078">ఆక్వా థీమ్</translation>
 <translation id="6620279676667515405">రద్దు చేయండి</translation>
 <translation id="6625830436658400045">మీ చివరి బ్యాకప్ ఆధారంగా మీ సింక్ సెట్టింగ్‌లు రీస్టోర్ చేయబడతాయి. ఏది సింక్ చేయాలనే దాన్ని, మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌లలో<ph name="END_LINK" /> ఎంచుకోవచ్చు.</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">ఫోల్డర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6629759408545977279">దీని నుండి: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">ఆన్‌లైన్ అపాయాల నుండి సురక్షితంగా ఉండేలా ఈ అదనపు భద్రతను జోడించండి.</translation>
@@ -2151,6 +2160,7 @@
 <translation id="8614671330774943747">ట్యాబ్ స్విచర్‌కు వెళ్లండి</translation>
 <translation id="862367213447108001">ఈ సైట్‌లో ఎల్లప్పుడూ పాప్-అప్‌లను చూడండి</translation>
 <translation id="8625706492572042370">మొదటి స్క్రీన్‌ను ఎడిట్ చేయండి</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">లాక్ చేసిన అజ్ఞాత ట్యాబ్‌లు</translation>
 <translation id="8633025649649592204">ఇటీవలి యాక్టివిటీ</translation>
 <translation id="8636825310635137004">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి, సింక్‌ను ఆన్ చేయండి</translation>
@@ -2337,6 +2347,7 @@
 <translation id="942624946817804130">ఎగుమతి చేయండి</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="94870150074703282">గ్రూప్‌ను తొలగించాలా?</translation>
+<translation id="951090530321144895">CAను జారీ చేసే సంస్థ</translation>
 <translation id="952704832371081537">రద్దు చేయండి</translation>
 <translation id="95332591904104970">కనెక్టెడ్ యాప్స్</translation>
 <translation id="954667170699278022">చదవాల్సిన లిస్ట్</translation>

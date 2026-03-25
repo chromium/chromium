@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{การแจ้งเตือนที่ยังไม่อ่าน 1 รายการ}other{การแจ้งเตือนที่ยังไม่อ่าน # รายการ}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{เปิดส่วนขยายต่อไปนี้ในโหมดไม่ระบุตัวตน}other{เปิดส่วนขยายต่อไปนี้ในโหมดไม่ระบุตัวตน}}</translation>
+<translation id="4230098358142093034">Home</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 เดือนที่ผ่านมา}other{# เดือนที่ผ่านมา}}</translation>
 <translation id="4277033906326892359">คอลัมน์ <ph name="COLUMN_NAME" /> จัดเรียงจากน้อยไปมาก</translation>
 <translation id="4289300219472526559">เริ่มพูด</translation>

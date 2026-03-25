@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
 <translation id="1740650426894359238">التبديل إلى ملف شخصي آخر</translation>
 <translation id="1741219894094057085">ساعة ذكيّة</translation>
+<translation id="1742773766788162541">مسح البطاقة ضوئيًا وملء البيانات تلقائيًا</translation>
 <translation id="1743244221910283364">تجاهل التغييرات</translation>
 <translation id="1748975028205587434">اختيار الملف</translation>
 <translation id="1749733017156547309">كلمة المرور مطلوبة.</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">اطّلِع على عيّنة من المعلومات عدة مرات في اليوم لتقديم مساعدة مفيدة لك ضِمن "لوحة السياق".</translation>
 <translation id="2739887572830526131">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو حذفها إذا لم تعُد بحاجة إليها.</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
+<translation id="2750583038402718064">تم نقل "<ph name="WEBSITE_TITLE" />" إلى الموضع "<ph name="POSITION" />"</translation>
 <translation id="2755485474385016903">سيرى جميع أعضاء المجموعة التغييرات التي يتم إجراؤها</translation>
 <translation id="2755595981383829244">ستصلك الآن إشعارات عن المحتوى</translation>
 <translation id="2761788987260570878">التقاط صورة لنتيجة البحث</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475">تدير مؤسستك حساب <ph name="EMAIL" />.</translation>
 <translation id="3580448612293054698">تعديل بيانات <ph name="ENTITY_TYPE" />؟</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
+<translation id="3583726884554296148">‏يمكنك حفظ بطاقتك في حسابك على Google لملء بياناتها تلقائيًا عند إجراء عملية الشراء هذه وعمليات شراء مستقبلية في Chrome</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
 <translation id="3588820906588687999">فتح الصورة في علامة تبويب جديدة</translation>
@@ -1555,6 +1558,7 @@
 <translation id="6532106788206463496">حفظ التغييرات</translation>
 <translation id="6536759809440150308">فتح "<ph name="GROUP_TITLE" />" التي تضم <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">سرعة أكبر في الدفع باستخدام ميزة "الملء التلقائي" على جميع أجهزتك</translation>
 <translation id="6550675742724504774">خيارات</translation>
 <translation id="6550891580932862748">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. لن تتأثر إعدادات "التصفح الآمن" في منتجات Google الأخرى.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2029,6 +2033,7 @@
 <translation id="8211030355252954494">لقد تلقّيت كلمات مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="8211406090763984747">الاتصال بهذا الموقع الإلكتروني آمن
 </translation>
+<translation id="8213190397436801658">الصفحة الرئيسية</translation>
 <translation id="8214293972734702249">علامة تبويب مثبّتة، "<ph name="TAB_TITLE" />"</translation>
 <translation id="8219424187226230983">عرض نسخة بلا إنترنت في علامة تبويب جديدة</translation>
 <translation id="8221665793629393739">تذكير بإعادة زيارة الصفحة</translation>

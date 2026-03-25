@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Producto <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /> desconocido</translation>
 <translation id="7068383018033524534">El archivo de manifiesto no es válido</translation>
 <translation id="7217838517480956708">El administrador de este ordenador necesita que se instale <ph name="EXTENSION_NAME" />. No se puede eliminar ni modificar.</translation>
+<translation id="7287143125007575591">Acceso denegado</translation>
 <translation id="7612608473764576263">El valor de entrada de la clave privada debe tener un formato válido (clave RSA con formato PKCS#8 y codificada con PEM).</translation>
 <translation id="765293928828334535">No es posible añadir aplicaciones, extensiones ni secuencias de comandos de usuario desde este sitio web</translation>
 <translation id="7876803335449432072">No se ha podido cargar el archivo "<ph name="RELATIVE_PATH" />" para el script de contenido. Las hojas de estilo del script de contenido solo se pueden cargar desde archivos de hoja de estilo admitidos, como archivos .css.</translation>

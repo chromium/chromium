@@ -372,6 +372,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1567405528131216114">Voeg <ph name="TOPIC" /> by</translation>
 <translation id="1569487616857761740">Voer vervaldatum in</translation>
 <translation id="1569694109004336106">Google Chrome probeer tans om Windows Hello aan te skakel om wagwoorde in te vul.</translation>
+<translation id="1569905000953679183">Ophaling van uitbreidinginstallasiebeleid</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> dm.</translation>
 <translation id="1574714699824202614">Verifieer tans betaalmetode</translation>
 <translation id="1576277203042721907">Shopping-insigte</translation>
@@ -2229,6 +2230,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4454620051637646665">Maak banier toe</translation>
 <translation id="4456937135469235202">Avontuurreise</translation>
 <translation id="4458013283022578512">Voer ’n vraag in</translation>
+<translation id="4458516738555515761">Ophaling van beleid</translation>
 <translation id="4464826014807964867">Webwerwe met inligting van jou organisasie</translation>
 <translation id="4466576951214254884">Studentelenings en universiteitsfinansiering</translation>
 <translation id="4467821340016922962">Druk |<ph name="ACCELERATOR" />| om uit volskerm te gaan en aflaai te sien</translation>

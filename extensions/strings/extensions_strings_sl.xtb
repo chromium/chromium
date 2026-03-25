@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Neznan izdelek <ph name="PRODUCT_ID" /> dobavitelja <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Datoteka manifesta ni veljavna</translation>
 <translation id="7217838517480956708">Skrbnik tega računalnika zahteva namestitev razširitve <ph name="EXTENSION_NAME" />. Ni je mogoče odstraniti ali spremeniti.</translation>
+<translation id="7287143125007575591">Dostop zavrnjen.</translation>
 <translation id="7612608473764576263">Vrednost vnosa za zasebni ključ mora biti veljavne oblike (ključ RSA s kodiranjem PEM v obliki PKCS#8).</translation>
 <translation id="765293928828334535">Aplikacij, razširitev in uporabniških skriptov ni mogoče dodati s tega spletnega mesta</translation>
 <translation id="7876803335449432072">Datoteke »<ph name="RELATIVE_PATH" />« ni bilo mogoče naložiti za skript vsebine. Datoteke s slogi skripta vsebine je mogoče naložiti samo iz podprtih datotek s slogi, kot so datoteke .css.</translation>

@@ -66,6 +66,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /></translation>
 <translation id="7068383018033524534">Manifest fayli yaroqsiz</translation>
 <translation id="7217838517480956708">Ushbu kompyuterda “<ph name="EXTENSION_NAME" />” kengaytmasini o‘chirish yoki o‘zgartirish administrator tomonidan taqiqlangan.</translation>
+<translation id="7287143125007575591">Ruxsat berilmadi.</translation>
 <translation id="7612608473764576263">Yopiq kalit qiymati yaroqli formatda kiritilishi shart (PKCS#8-format PEM-encoded RSA kalit).</translation>
 <translation id="765293928828334535">Bu saytdan ilova, kengaytma va foydalanuvchi skripti qo‘shib bo‘lmaydi</translation>
 <translation id="7876803335449432072">Kontentni qayta ishlash skripti uchun “<ph name="RELATIVE_PATH" />” fayli yuklanmadi. Bunday skript uchun uslublar jadvalini faqatgina CSS kabi muvofiq formatdagi fayllardan yuklash mumkin.</translation>

@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">מוצר לא ידוע <ph name="PRODUCT_ID" /> מאת <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">קובץ המניספט לא חוקי</translation>
 <translation id="7217838517480956708">מנהל המערכת של מחשב זה דורש התקנת <ph name="EXTENSION_NAME" />. לא ניתן להסיר או לשנות אותו.</translation>
+<translation id="7287143125007575591">אין גישה</translation>
 <translation id="7612608473764576263">‏ערך הקלט של המפתח הפרטי חייב להיות בפורמט חוקי (מפתח RSA בפורמט PKCS#8 עם קידוד PEM).</translation>
 <translation id="765293928828334535">לא ניתן להוסיף אפליקציות, תוספים וסקריפטים של משתמש מהאתר הזה</translation>
 <translation id="7876803335449432072">‏אי אפשר לטעון את הקובץ "<ph name="RELATIVE_PATH" />" לסקריפט התוכן. אפשר לטעון גיליונות סגנונות של סקריפטים של תוכן רק מקובצי גיליון סגנונות נתמכים, כמו קובצי css.</translation>

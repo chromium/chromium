@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ulest varsel}other{# uleste varsler}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Slå på følgende utvidelse i Inkognito:}other{Slå på følgende utvidelser i Inkognito:}}</translation>
+<translation id="4230098358142093034">Startside</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{for 1 måned siden}other{for # måneder siden}}</translation>
 <translation id="4277033906326892359">Kolonnen <ph name="COLUMN_NAME" /> er sortert i stigende rekkefølge</translation>
 <translation id="4289300219472526559">Begynn å snakke</translation>

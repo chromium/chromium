@@ -338,6 +338,7 @@
 <translation id="122082903575839559">Алгоритъм за подписа на сертификата</translation>
 <translation id="1221266967850882682">Добре дошли отново</translation>
 <translation id="1221825588892235038">Само избраното</translation>
+<translation id="1222786882236067545">Зареждане на файловете с историята</translation>
 <translation id="1222835797152767346">Задайте ПИН код, за да улесните влизането в профила си</translation>
 <translation id="1223484782328004593">Изисква се лиценз за <ph name="APP_NAME" /></translation>
 <translation id="1223498995510244364">Обобщаване</translation>
@@ -1132,6 +1133,7 @@
 <translation id="1767043563165955993">Използване с приложения за Android</translation>
 <translation id="1767508543310534319">Ехо за препинателните знаци</translation>
 <translation id="1768212860412467516">Изпращане на отзиви за „<ph name="EXPERIMENT_NAME" />“.</translation>
+<translation id="1768928167751703843">Преглед на локалните данни</translation>
 <translation id="1769104665586091481">Отваряне на връзката в нов &amp;прозорец</translation>
 <translation id="1769157454356586138">Сканирането не бе успешно. Този файл е блокиран от администратора ви</translation>
 <translation id="176920518817780870">Преобразуване на групата в папка с отметки</translation>
@@ -2393,6 +2395,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2628258844236035475">Да се премахне ли домашният ви адрес от функцията на Chrome за автоматично попълване?</translation>
 <translation id="2628770867680720336">За да активирате отстраняването на грешки през ADB, трябва да възстановите фабричните настройки на този Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Започване на нов разговор с Gemini</translation>
+<translation id="2629058811622993283">Споделяне и на аудиото от приложението (от всичките му прозорци и свързаните с него приложения)</translation>
 <translation id="2629227353894235473">Разработване на приложения за Android</translation>
 <translation id="2629437048544561682">Изчистване на платното</translation>
 <translation id="2630703150574465936">Разрешили сте на Gemini да ви помага автоматично да влизате в тези сайтове и приложения чрез профилите ви</translation>
@@ -4711,6 +4714,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4241140145060464825">Съдържание на приложенията</translation>
 <translation id="4241224519481557898">Категория</translation>
 <translation id="4242145785130247982">Не се поддържа използването на няколко клиентски сертификата</translation>
+<translation id="4242245038391716252">Изтеглено от разширението: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
 <translation id="4242577469625748426">Настройките за правила не бяха инсталирани успешно на устройството: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Браузърът и потребителският ви профил<ph name="END_LINK" /> се управляват от <ph name="DOMAIN" /></translation>
@@ -6078,6 +6082,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5200191131577845078">Известията от <ph name="DOMAIN" /> са разрешени</translation>
 <translation id="5200680225062692606">Функцията Touch ID е заключена. За да продължите, въведете паролата си.</translation>
 <translation id="5201945335223486172">За <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{Показва се историята от 1 файл}other{Показва се историята от # файла}}</translation>
 <translation id="5203035663139409780">Може да редактира файловете и папките на устройството ви</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Кликнете, за да го прегледате}other{Кликнете, за да ги прегледате}}</translation>
 <translation id="5204282224596194174">Парола за възстановяване за <ph name="USER_EMAIL" /></translation>
@@ -7319,6 +7324,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6095696531220637741">Макарон</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Отваряне с увеличен изглед</translation>
+<translation id="6096192567014958958">Добре дошли, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">Име на X.500</translation>
 <translation id="6097480669505687979">Ако не освободите място, може да последва автоматично премахване на потребители и данни.</translation>
 <translation id="6097600385983390082">Гласовото търсене бе затворено</translation>
@@ -8993,7 +8999,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7284411326658527427">Всеки човек има възможност да персонализира профила си и да запази данните си частни.</translation>
 <translation id="7285008278689343502">Национален парк „Гранд Тетън“</translation>
 <translation id="7286867818472074330">Избиране на ключ за достъп</translation>
-<translation id="7287143125007575591">Достъпът е отказан.</translation>
 <translation id="7287411021188441799">Възстановяване на стандартния фон</translation>
 <translation id="7287949630503871403">Данни, съхранявани в приложението</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> точки на инч</translation>
@@ -9970,6 +9975,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7947962633355574091">К&amp;опиране на адреса на видеоклипа</translation>
 <translation id="7947964080535614577">Сайтовете обикновено показват реклами, за да могат да предоставят съдържание или услуги без парично заплащане. Някои от тях обаче показват натрапчиви или подвеждащи реклами.</translation>
 <translation id="7948407723851303488">Всички страници на <ph name="DOMAIN_NAME" /></translation>
+<translation id="7949038991703929816">Зареждането на историята не бе успешно. Уверете се, че файловете съдържат валидни регистри за инструмента за актуализации.</translation>
 <translation id="7950629216186736592">Причина: Услугите, базиращи се на местоположението, поддържат само URL адреси със схема http://, https:// и file://.</translation>
 <translation id="7950814699499457511">Включено • За това разширение не са публикувани практики за поверителност, като например как събира и използва данни</translation>
 <translation id="7951265006188088697">За да добавите или управлявате начини на плащане в Google Pay, посетете <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
@@ -10351,6 +10357,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8207404892907560325">Изберете код за достъп</translation>
 <translation id="8207794858944505786">Виртуалната машина <ph name="DEFAULT_VM_NAME" /> съществува, но изглежда, че не е валидна такава от типа „<ph name="VM_TYPE" />“. Моля, обърнете се към администратора си.</translation>
 <translation id="8207901006380134182">Голяма вълна поглъща океана, а на брега се вижда мрачна гора.</translation>
+<translation id="8208043093301544621">Начална страница</translation>
 <translation id="8208216423136871611">Без запазване</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известие}other{# нови известия}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Изтегля се файл}other{Изтеглят се файлове}}</translation>

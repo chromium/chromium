@@ -338,6 +338,7 @@
 <translation id="122082903575839559">Сертификат баталгаажуулах алгоритм</translation>
 <translation id="1221266967850882682">Тавтай морил, таны тойм</translation>
 <translation id="1221825588892235038">Зөвхөн сонгогдсон</translation>
+<translation id="1222786882236067545">Түүхийн файлуудыг ачаалах</translation>
 <translation id="1222835797152767346">Нэвтрэхэд илүү хялбар болгохын тулд ПИН тохируулна уу</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> лиценз шаарддаг</translation>
 <translation id="1223498995510244364">Хураангуйлах</translation>
@@ -1133,6 +1134,7 @@
 <translation id="1767043563165955993">Android аппуудтай ашиглах</translation>
 <translation id="1767508543310534319">Цэг таслалын дуудлага</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" />-д санал хүсэлт илгээнэ үү.</translation>
+<translation id="1768928167751703843">Дотоод өгөгдлийг харах</translation>
 <translation id="1769104665586091481">Холбоосыг шинэ цонхонд нээх</translation>
 <translation id="1769157454356586138">Скан амжилтгүй боллоо. Энэ файлыг танай администратор блоклосон</translation>
 <translation id="176920518817780870">Бүлгийг хавчуургын фолдер болгож хөрвүүлэх</translation>
@@ -2393,6 +2395,7 @@
 <translation id="2628258844236035475">Гэрийн хаягаа Chrome-н автоматаар бөглөх онцлогоос хасах уу?</translation>
 <translation id="2628770867680720336">ADB алдаа засахыг идэвхжүүлэхийн тулд энэ Chromebook-г үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini-тай шинэ чат эхлүүлэх</translation>
+<translation id="2629058811622993283">Мөн аппын аудиог хуваалцах (бүх цонх болон холбоотой аппуудаас нь)</translation>
 <translation id="2629227353894235473">Андройд аппыг хөгжүүлэх</translation>
 <translation id="2629437048544561682">Канвасыг арилгах</translation>
 <translation id="2630703150574465936">Та Gemini-д таны бүртгэлүүдийг ашиглан эдгээр сайт, аппад таныг автоматаар нэвтрүүлэхийг зөвшөөрсөн</translation>
@@ -4709,6 +4712,7 @@
 <translation id="4241140145060464825">Аппын контент</translation>
 <translation id="4241224519481557898">Ангилал</translation>
 <translation id="4242145785130247982">Олон клиентийн гэрчилгээг дэмждэггүй</translation>
+<translation id="4242245038391716252">Өргөтгөл уг файлыг татсан: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
 <translation id="4242577469625748426">Төхөөрөмж дээр холбогдох бодлогын тохиргоог суурьлуулах үйлдэл амжилтгүй болсон байна: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Таны <ph name="BEGIN_LINK" />хөтөч болон профайлыг<ph name="END_LINK" /> <ph name="DOMAIN" /> удирддаг</translation>
@@ -6076,6 +6080,7 @@
 <translation id="5200191131577845078"><ph name="DOMAIN" />-н мэдэгдлийг зөвшөөрсөн</translation>
 <translation id="5200680225062692606">Хүрэлтийн ID-г түгжсэн. Үргэлжлүүлэхийн тулд нууц үгээ оруулна уу.</translation>
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" />-д</translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{1 файлын түүхийг үзэж байна}other{# файлын түүхийг үзэж байна}}</translation>
 <translation id="5203035663139409780">Таны төхөөрөмжийн файл эсвэл фолдеруудыг засах боломжтой</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг харахын тулд товшино уу}other{Эдгээр өргөтгөлийг харахын тулд товшино уу}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" />-н сэргээх нууц үг</translation>
@@ -7316,6 +7321,7 @@
 <translation id="6095696531220637741">Макарон</translation>
 <translation id="6095984072944024315">-</translation>
 <translation id="6096047740730590436">Томоор нээ</translation>
+<translation id="6096192567014958958"><ph name="USER_NAME" /> тавтай морилно уу!</translation>
 <translation id="6096326118418049043">X.500 нэр</translation>
 <translation id="6097480669505687979">Хэрэв хангалттай багтаамж гаргахгүй бол хэрэглэгчид, өгөгдлийг автоматаар устгах болно.</translation>
 <translation id="6097600385983390082">Дуут хайлтыг хаалаа</translation>
@@ -8989,7 +8995,6 @@
 <translation id="7284411326658527427">Хүн бүр бүртгэлээ хувийн болгож, өгөгдлөө хувьдаа хадгалж болно.</translation>
 <translation id="7285008278689343502">Гранд Тетон байгалийн цогцолборт газар</translation>
 <translation id="7286867818472074330">Нэвтрэх түлхүүр сонгох</translation>
-<translation id="7287143125007575591">Хандалтыг зөвшөөрөөгүй.</translation>
 <translation id="7287411021188441799">Өгөгдмөл дэвсгэрийг сэргээх</translation>
 <translation id="7287949630503871403">Аппад хадгалсан өгөгдөл</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />х<ph name="VERTICAL_DPI" /> нэг инчэд ноогдох цэгийн тоо</translation>
@@ -9966,6 +9971,7 @@
 <translation id="7947962633355574091">Видеоны хаягийг хуулах</translation>
 <translation id="7947964080535614577">Сайтууд ихэвчлэн үнэ төлбөргүй контент харуулах эсвэл үйлчилгээ үзүүлэхийн тулд зар харуулдаг. Гэсэн хэдий ч зарим сайт төвөгтэй эсвэл хуурамч зар харуулдаг.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />-н бүх хуудас</translation>
+<translation id="7949038991703929816">Түүхийг ачаалж чадсангүй. Файлууд шинэчлэгчийн хүчинтэй лог агуулж байгаа эсэхийг баталгаажуулна уу.</translation>
 <translation id="7950629216186736592">Шалтгаан: LBS нь зөвхөн http://, https://, болон file:// гэсэн URL-уудыг дэмждэг.</translation>
 <translation id="7950814699499457511">Асаалттай • Энэ өргөтгөл өгөгдлийг хэрхэн цуглуулж, ашигладаг гэх мэт нууцлалын практикаа нийтлээгүй байна</translation>
 <translation id="7951265006188088697">Google Pay-н төлбөрийн хэрэгсэл нэмэх эсвэл удирдахын тулд <ph name="BEGIN_LINK" />Google Бүртгэлдээ<ph name="END_LINK" /> зочилно уу</translation>
@@ -10346,6 +10352,7 @@
 <translation id="8207404892907560325">Passkey сонгоно уу</translation>
 <translation id="8207794858944505786">"<ph name="DEFAULT_VM_NAME" />" VM байгаа хэдий ч хүчинтэй <ph name="VM_TYPE" /> VM биш бололтой. Администратортайгаа холбогдоно уу.</translation>
 <translation id="8207901006380134182">Эрэг дээр харанхуй ой байх ба том давлагаа далайг бүрхэж байна.</translation>
+<translation id="8208043093301544621">Нүүр хуудас</translation>
 <translation id="8208216423136871611">Бүү хадгал</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Шинэ мэдэгдэл}other{# шинэ мэдэгдэл}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Татаж байна}other{Татаж байна}}</translation>

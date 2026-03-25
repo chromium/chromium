@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">来自<ph name="VENDOR_NAME" />的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="7068383018033524534">清单文件无效</translation>
 <translation id="7217838517480956708">此计算机的管理员要求安装 <ph name="EXTENSION_NAME" />。该扩展程序无法删除或修改。</translation>
+<translation id="7287143125007575591">访问遭拒。</translation>
 <translation id="7612608473764576263">私钥的输入值必须采用有效格式（必须是采用 PKCS#8 格式且经过 PEM 编码的 RSA 密钥）。</translation>
 <translation id="765293928828334535">无法从该网站添加应用、扩展程序和用户脚本</translation>
 <translation id="7876803335449432072">无法为内容脚本加载“<ph name="RELATIVE_PATH" />”文件，内容脚本样式表只能从受支持的样式表文件（例如 .css 文件）加载。</translation>

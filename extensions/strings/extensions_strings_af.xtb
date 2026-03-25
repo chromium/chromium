@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Onbekende produk <ph name="PRODUCT_ID" /> vanaf <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Manifeslêer is ongeldig</translation>
 <translation id="7217838517480956708">Die administrateur van hierdie masjien vereis dat <ph name="EXTENSION_NAME" /> geïnstalleer word. Dit kan nie verwyder of aangepas word nie.</translation>
+<translation id="7287143125007575591">Toegang geweier.</translation>
 <translation id="7612608473764576263">Invoerwaarde vir private sleutel moet 'n geldige formaat wees (PKCS#8-formaat- PEM-geënkodeerde RSA-sleutel).</translation>
 <translation id="765293928828334535">Programme, uitbreidings en gebruikerskripte kan nie van hierdie webwerf af bygevoeg word nie</translation>
 <translation id="7876803335449432072">Kon nie die lêer “<ph name="RELATIVE_PATH" />” vir inhoudskrip laai nie – inhoudskripstylblaaie kan net gelaai word vanaf gesteunde stylbladlêers soos .css-lêers.</translation>

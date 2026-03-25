@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">与您分享</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" />（带有“移除”按钮）</translation>
 <translation id="1062407476771304334">替换</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。备份内容包含应用数据。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />您的备份内容将上传到 Google 并使用您的 Google 账号密码进行加密。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、邮件/消息、照片等数据。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />备份数据不会计入您的云端硬盘存储空间配额。<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">更换电池或为电池充电</translation>
 <translation id="1081015718268701546">尚不支持 Linux 应用。其他应用会被保存。</translation>
 <translation id="108486256082349153">移动网络设备：<ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@
 <translation id="3470502288861289375">正在复制…</translation>
 <translation id="347117769229524881">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl+Shift+空格键</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”处于开启状态时，系统会使用无线信号来源（例如 Wi-Fi 接入点和移动网络塔）的相关信息以及设备传感器（例如加速度计和陀螺仪）数据来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集您附近的设备传感器和无线信号来源的相关信息，以便为众包无线信号位置信息做出贡献。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google 会在不识别您身份的情况下，将这些信息用于以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />您随时可在设备的位置信息设置中关闭“位置信息精确度”；为此，请前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”&gt;“高级位置信息设置”。如果“位置信息精确度”处于关闭状态，则系统不会收集任何位置信息精确度数据。对于 Android 应用和服务，系统仅会使用 IP 地址（如果可用）来确定您设备的位置，这可能会影响 Google 地图等 Android 应用和服务中位置信息的可用性和精确度。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />详细了解“位置信息精确度”<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">任务栏已自动隐藏</translation>
 <translation id="3496797737329654668">现在就开始玩游戏吧</translation>
@@ -877,6 +886,9 @@
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3743775386021959186">已开启专注模式，还剩 <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">隐藏天气信息建议</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、邮件/消息、照片等数据。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />备份数据不会计入您孩子的云端硬盘存储空间配额。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">正在投屏</translation>
 <translation id="3765841382945324995">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键原为 <ph name="OLD_SHORTCUT" />，现已更新为 <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">今天修改过</translation>
@@ -1198,6 +1210,7 @@
 <translation id="4708185346211948049">下周的<ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">USB-C 数据线不支持 USB4。设备性能可能会受到限制。</translation>
 <translation id="4730374152663651037">常用应用</translation>
+<translation id="4731197594811674831">Home 键</translation>
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
 <translation id="4734965478015604180">横向</translation>
@@ -1342,6 +1355,10 @@
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5150070631291639005">隐私设置</translation>
 <translation id="5155897006997040331">朗读速度</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />这是关于您的设备及其使用情况（例如电池电量、系统和应用活动，以及错误）的一般信息。这些数据将用于改进 Android，部分汇总信息还有助于改进 Google 应用，并协助我们的合作伙伴（例如 Android 开发者）改进其应用和产品。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />关闭这项功能后，您的设备仍然可以发送基础服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />如果您已开启“其他网络与应用活动记录”设置，这些数据可能会保存到您的 Google 账号中。您可在 account.google.com 上查看和删除您的数据以及更改您的账号设置。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">电池健康度：<ph name="BATTERY_HEALTH_PERCENTAGE" />% | 充电循环次数：<ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">将桌面另存为模板</translation>
 <translation id="5168181903108465623">有可用的投放设备</translation>
@@ -1599,6 +1616,10 @@
 <translation id="5916646100036936191">新通知，共 <ph name="NOTIFICATION_COUNT" /> 条</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5920710855273935292">麦克风已静音。</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”处于开启状态时，系统会使用无线信号来源（例如 Wi-Fi 接入点和移动网络塔）的相关信息以及设备传感器（例如加速度计和陀螺仪）数据来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集此设备附近的设备传感器和无线信号来源的相关信息，以便为众包无线信号位置信息做出贡献。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google 会将从此设备收集的这些信息用于以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。这些信息不会用于识别任何个人的身份。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />您随时可在此设备的位置信息设置中关闭“位置信息精确度”；为此，请前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”&gt;“高级位置信息设置”。如果“位置信息精确度”处于关闭状态，则系统不会收集任何位置信息精确度数据。对于 Android 应用和服务，系统仅会使用 IP 地址（如果可用）来确定此设备的位置，这可能会影响 Google 地图等 Android 应用和服务中位置信息的可用性和精确度。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />详细了解“位置信息精确度”<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">根据 <ph name="MANAGER" /> 的要求更新</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5946788582095584774">“<ph name="FEATURE_NAME" />”功能已开启。</translation>
@@ -1645,6 +1666,10 @@
 <translation id="6045629311476491587">被 <ph name="APP_COUNT" /> 款应用使用过</translation>
 <translation id="6045998054441862242">开启高反差模式</translation>
 <translation id="6047696787498798094">切换到其他用户后将停止屏幕共享。要继续吗？</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />这是关于此设备及其使用情况（例如电池电量、系统和应用活动，以及错误）的一般信息。这些数据将用于改进 Android，部分汇总信息还有助于改进 Google 应用，并协助我们的合作伙伴（例如 Android 开发者）改进其应用和产品。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />关闭这项功能后，此设备仍然可以发送基础服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会保存到其 Google 账号中。如需详细了解这些设置以及如何调整它们，请访问 families.google.com。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">右键点击链接</translation>
 <translation id="6054305421211936131">使用智能卡登录</translation>
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>
@@ -1753,6 +1778,8 @@
 <translation id="639644700271529076">CAPS LOCK 已关闭</translation>
 <translation id="6406458002328242616">修改定时器。<ph name="FOCUS_DURATION" />。</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器等来源协助推测您的设备所在的位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />只需关闭您设备上的主要“位置信息”设置，即可关闭位置信息服务。您还可在位置信息设置中关闭相应设置，禁止使用 Wi-Fi、移动网络和传感器来获取位置信息。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">选择要安装的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安装更新和应用</translation>
 <translation id="6417265370957905582">Google 助理</translation>
@@ -2418,6 +2445,8 @@
 <translation id="8481187309597259238">确认 USB 权限</translation>
 <translation id="8487660088084188539">开启这些功能后，系统可能会将输入文本、文档内容和网页网址发送到 Google 服务器。系统会根据这些信息生成写作建议、总结内容、回答问题和改进产品，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="8487699605742506766">热点</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器等来源协助推测此设备所在的位置。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />只需关闭此设备上的主要“位置信息”设置，即可关闭位置信息服务。您还可在位置信息设置中关闭相应设置，禁止使用 Wi-Fi、移动网络和传感器来获取位置信息。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">下列自助服务终端应用“<ph name="UPDATED_APPS" />”已更新完毕。请重启设备，以便完成更新流程。</translation>
 <translation id="8491237443345908933">在新标签页中打开链接</translation>
 <translation id="8492573885090281069">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>

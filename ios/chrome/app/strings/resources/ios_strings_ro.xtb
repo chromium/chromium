@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Atinge de două ori pentru a instala.</translation>
 <translation id="1740650426894359238">Treci la alt profil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
+<translation id="1742773766788162541">Scanează cardul și completează automat</translation>
 <translation id="1743244221910283364">Renunță la modificări</translation>
 <translation id="1748975028205587434">Selectează fișierul</translation>
 <translation id="1749733017156547309">Este necesară o parolă</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Exemplu de ajutor complex integrat în produs pentru panoul contextual, care ar trebui să apară de mai multe ori pe zi.</translation>
 <translation id="2739887572830526131">Păstrează acest grup pentru a adăuga file mai târziu sau șterge-l dacă nu mai ai nevoie de el.</translation>
 <translation id="2747003861858887689">Câmpul anterior</translation>
+<translation id="2750583038402718064">Cardul <ph name="WEBSITE_TITLE" /> a fost mutat în poziția <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Modificările făcute sunt văzute de toți membrii grupului</translation>
 <translation id="2755595981383829244">Acum vei primi notificări despre conținut</translation>
 <translation id="2761788987260570878">Fotografiază ceea ce vrei să cauți</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gestionat de organizația ta.</translation>
 <translation id="3580448612293054698">Actualizezi <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Afișează traducerea paginilor în alte limbi</translation>
+<translation id="3583726884554296148">Salvează cardul în Contul Google pentru a completa automat datele asociate pentru această achiziție și achizițiile viitoare făcute în Chrome</translation>
 <translation id="3587482841069643663">Toate</translation>
 <translation id="3587885837929752825">Organizația ta limitează tipurile de conținut pe care îl poți salva în Contul Google.</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
@@ -1557,6 +1560,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6532106788206463496">Salvează modificările</translation>
 <translation id="6536759809440150308">Deschide <ph name="GROUP_TITLE" />, grup de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Finalizează achiziția mai rapid folosind completarea automată pe toate dispozitivele</translation>
 <translation id="6550675742724504774">Opțiuni</translation>
 <translation id="6550891580932862748">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Setările tale pentru Navigarea sigură din alte produse Google nu vor fi afectate.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8209237163365258530">Modelele Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Ai primit parole pentru <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Conexiunea este securizată</translation>
+<translation id="8213190397436801658">Pagina principală</translation>
 <translation id="8214293972734702249">Fixată, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Vezi versiunea offline într-o filă nouă</translation>
 <translation id="8221665793629393739">Mementoul tău pentru a reveni</translation>

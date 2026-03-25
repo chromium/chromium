@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Mae 1 Hysbysiad sydd heb ei Ddarllen}zero{Mae # Hysbysiad sydd heb eu Darllen}two{Mae # Hysbysiad sydd heb eu Darllen}few{Mae # Hysbysiad sydd heb eu Darllen}many{Mae # Hysbysiad sydd heb eu Darllen}other{Mae # Hysbysiad sydd heb eu Darllen}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Trowch yr estyniad canlynol ymlaen yn y modd Anhysbys:}zero{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}two{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}few{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}many{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}other{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}}</translation>
+<translation id="4230098358142093034">Cartref</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 mis yn ôl}zero{# mis yn ôl}two{# fis yn ôl}few{# mis yn ôl}many{# mis yn ôl}other{# mis yn ôl}}</translation>
 <translation id="4277033906326892359">Mae'r golofn <ph name="COLUMN_NAME" /> wedi'i threfnu mewn trefn esgynnol</translation>
 <translation id="4289300219472526559">Dechrau Siarad</translation>

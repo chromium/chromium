@@ -3016,6 +3016,13 @@ Se il valore viene impostato su false, non potranno accedere alla funzionalità.
 <translation id="2969568582351417848">Disattiva gli avvisi relativi al download basati sulle estensioni dei tipi di file per tipi di file specifici sui domini</translation>
 <translation id="2971096666394658693">Il menu contestuale includerà una voce di menu per condividere le immagini con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Se la policy viene impostata su Attivata, le applicazioni web di terze parti possono usare <ph name="DESK_API_NAME" /> per salvare e condividere <ph name="PRODUCT_OS_NAME" /> scrivanie. Se la policy viene impostata su Disattivata, l'utente non potrà salvare e condividere i dati delle scrivanie tramite l'<ph name="DESK_API_NAME" />. Se la policy non viene configurata, viene applicato lo stesso comportamento della policy disattivata. La policy verrà applicata soltanto sui dispositivi registrati.</translation>
+<translation id="2974326457745806202">Gli SharedWorker possono avere una durata estesa se l'opzione "extendedLifetime" è impostata su True nel costruttore SharedWorker.
+
+Se questa policy viene impostata su Attivata o se non viene configurata, gli SharedWorker possono avere una durata estesa.
+
+Se questa policy viene impostata su Disattivata, gli SharedWorker non possono avere una durata estesa, anche se l'opzione è impostata su True.
+
+Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.</translation>
 <translation id="2976033779241323433">Attiva la tastiera virtuale touch in base all'euristica di sistema predefinita</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
 <translation id="2979696534869541158">Forza implementazione precedente</translation>
@@ -9715,6 +9722,7 @@ Il supporto di questa impostazione delle policy terminerà con <ph name="PRODUCT
 <translation id="7216442368414164495">Consenti agli utenti di attivare i rapporti estesi di Navigazione sicura</translation>
 <translation id="7218238054592349618">Consenti l'ottimizzazione di JavaScript su questi siti</translation>
 <translation id="721970071627370558">Disattiva i report sullo stato di alimentazione del dispositivo</translation>
+<translation id="7220960206733388609">Gli SharedWorker possono avere una durata estesa.</translation>
 <translation id="7221574724100909818">Viene usata l'icona lucchetto per le connessioni sicure</translation>
 <translation id="7227348936232766462">Consenti agli utenti di includere nel loro feedback dati di debug di basso livello di tutti i tipi di dispositivi disponibili che seguono</translation>
 <translation id="7229365071755865554">Attiva il salvataggio delle password utilizzando Gestore delle password</translation>
@@ -10366,6 +10374,7 @@ Quando questa policy è attivata, il visualizzatore di PDF utilizza il renderer 
 Se questa policy viene disattivata, il visualizzatore di PDF utilizza il renderer AGG corrente.
 
 Se questa policy non viene impostata, il renderer del PDF viene scelto dal browser.</translation>
+<translation id="7704244074621846004">Abilita la durata estesa per SharedWorker</translation>
 <translation id="7707869387893611318">Consente di attivare la funzionalità Suoni di ricarica.
 
           Questa funzionalità consente di riprodurre i suoni di ricarica.
@@ -10383,6 +10392,7 @@ Se questa policy non viene impostata, il renderer del PDF viene scelto dal brows
 
       È consigliabile eseguire la migrazione dei server alle suite di crittografia ECDHE. Se non sono disponibili, assicurati che sia attiva una suite di crittografia che utilizza lo scambio di chiavi RSA.</translation>
 <translation id="7709470712369261710">Non usare i servizi Google per fornire le descrizioni immagini automatiche</translation>
+<translation id="7711003696883532277">Gli SharedWorker non possono avere una durata estesa.</translation>
 <translation id="7712109699186360774">Chiedi ogni volta che un sito vuole accedere alla fotocamera e/o al microfono</translation>
 <translation id="7712245244073542805">Stampa dalla piattaforma dal processo del browser.</translation>
 <translation id="7713608076604149344">Limitazioni dei download</translation>

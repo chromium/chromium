@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{O notificare necitită}few{# notificări necitite}other{# de notificări necitite}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Activează următoarea extensie în modul incognito:}few{Activează următoarele extensii în modul incognito:}other{Activează următoarele extensii în modul incognito:}}</translation>
+<translation id="4230098358142093034">Pagina principală</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Acum 1 lună}few{Acum # luni}other{Acum # de luni}}</translation>
 <translation id="4277033906326892359">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine crescătoare</translation>
 <translation id="4289300219472526559">Începeți să vorbiți</translation>

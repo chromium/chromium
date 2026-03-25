@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1652197001188145583">Når dette er slået til, kan websites anmode om tilladelse til at bruge NFC-enheder. Når dette er slået fra, kan websites ikke bruge NFC-enheder.</translation>
 <translation id="1660204651932907780">Tillad, at websites afspiller lyd (anbefales)</translation>
+<translation id="1676590040242013349">"Brug altid sikre forbindelser" er aktiveret.</translation>
 <translation id="1677097821151855053">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig personligt tilpassede annoncer. Gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="1679305402657584804">Websites kan anmode om tilladelse til at bruge NFC-enheder</translation>
 <translation id="1686785653877010442">Websites sender normalt notifikationer for at informere dig om de seneste nyheder eller chatbeskeder.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Bloker websites, så de ikke kan læse tekst og billeder fra udklipsholderen</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6950072572526089586">Et website, du besøger, kan gemme oplysninger om, hvad du foretager dig, så det kan fungere optimalt – f.eks. så du kan forblive logget ind på et website eller gemme varer i din indkøbskurv. Websites gemmer ofte disse oplysninger midlertidigt på din enhed.</translation>
+<translation id="6964291282260073066">"WebGPU" er deaktiveret.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Rosa tema</translation>
 <translation id="6980861169612950611">Vil du slette websitedata? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Når dette er slået til, kan websites anmode om tilladelse til at bruge virtual reality-enheder. Når dette er slået fra, kan websites ikke bruge virtual reality-enheder.</translation>
 <translation id="7282197670900591579">Citrongult tema</translation>
 <translation id="728412880473384942">Websites er hurtigere, men mindre sikre</translation>
+<translation id="7352902948037373520">Administrer i <ph name="BEGIN_LINK1" />Android-indstillingerne<ph name="END_LINK1" />
+
+Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="7366415735885268578">Tilføj et website</translation>
 <translation id="7368695150573390554">Alle offlinedata slettes</translation>
 <translation id="7369678931043226462">Feltet i bunden med tilpasning af siden Ny fane er åbnet i halv højde</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Websites opretter normalt forbindelse til USB-enheder for at kunne udskrive dokumenter eller gemme filer på en lagerenhed</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" er forældet. Geninstaller appen.</translation>
 <translation id="847433688444405067">Få samme indhold på flere enheder</translation>
+<translation id="8484556725636319115">"JavaScript-optimering" er deaktiveret. <ph name="BEGIN_LINK2" />Administrer websiteundtagelser<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="848952951823693243">Anmod altid om mobilwebsite</translation>
 <translation id="8492822722330266509">Websites kan sende pop op-vinduer og bruge omdirigeringer</translation>

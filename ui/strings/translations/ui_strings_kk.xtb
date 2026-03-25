@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 хабарландыру оқылмаған}other{# хабарландыру оқылмаған}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Инкогнито режимінде келесі кеңейтімді қосу:}other{Инкогнито режимінде келесі кеңейтімдерді қосу:}}</translation>
+<translation id="4230098358142093034">Негізгі бет</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ай бұрын}other{# ай бұрын}}</translation>
 <translation id="4277033906326892359"><ph name="COLUMN_NAME" /> бағаны өсу ретімен сұрыпталған</translation>
 <translation id="4289300219472526559">Сөйлеуді бастау</translation>

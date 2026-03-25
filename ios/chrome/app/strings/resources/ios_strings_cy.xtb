@@ -482,6 +482,7 @@
 <translation id="2691653761409724435">Nid yw ar gael all-lein</translation>
 <translation id="2697530870203420261">Llysenw annilys</translation>
 <translation id="269819437389494246">Gallwch weld y tudalennau rydych wedi ymweld â nhw neu gallwch eu dileu o'ch hanes</translation>
+<translation id="2704295676501803339">Symud i'r Chwith</translation>
 <translation id="2704606927547763573">Copïwyd</translation>
 <translation id="2708051474374549906">Amddiffyniad amser real, rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus sy'n seiliedig ar anfon eich data pori i Google</translation>
 <translation id="2709516037105925701">Awtolenwi</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Sampl o gymorth mewn cynnyrch cyfoethog ar gyfer y Panel Cyd-destunol, a ddylai ymddangos sawl gwaith y dydd.</translation>
 <translation id="2739887572830526131">Cadw'r grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu ddileu ef os nad oes ei angen arnoch fwyach.</translation>
 <translation id="2747003861858887689">Maes blaenorol</translation>
+<translation id="2750583038402718064">Wedi symud <ph name="WEBSITE_TITLE" /> i safle <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Mae'r newidiadau a wneir yn cael eu gweld gan bawb yn y grŵp</translation>
 <translation id="2755595981383829244">Byddwch nawr yn derbyn hysbysiadau cynnwys</translation>
 <translation id="2761788987260570878">Tynnwch lun o'ch chwiliad</translation>
@@ -1667,6 +1669,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6899890595581608884">Hysbysiadau gwiriad diogelwch wedi'u diffodd</translation>
 <translation id="6900532703269623216">Gwell amddiffyniad</translation>
 <translation id="6900702165119149418">Rydych wedi'ch allgofnodi</translation>
+<translation id="6903282483217634857">Symud i'r Dde</translation>
 <translation id="6903907808598579934">Troi cysoni ymlaen</translation>
 <translation id="6906448540340261898">Gwnewch yn siŵr y gallwch bob amser ddefnyddio'r cyfrineiriau yn eich Cyfrif Google</translation>
 <translation id="6908734251759299256">Diweddarwch eich porwr</translation>
@@ -2031,6 +2034,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8209237163365258530">Modelau Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Rydych wedi derbyn cyfrineiriau ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Mae'r cysylltiad yn ddiogel</translation>
+<translation id="8213190397436801658">Cartref</translation>
 <translation id="8214293972734702249">Piniwyd, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Gweld fersiwn all-lein mewn tab newydd</translation>
 <translation id="8221665793629393739">Eich atgoffwr i ailymweld</translation>

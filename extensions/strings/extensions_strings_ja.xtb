@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />）</translation>
 <translation id="7068383018033524534">マニフェスト ファイルが無効です</translation>
 <translation id="7217838517480956708">このパソコンの管理者にとって <ph name="EXTENSION_NAME" /> がインストールされている必要があります。削除や修正はできません。</translation>
+<translation id="7287143125007575591">アクセスが拒否されました。</translation>
 <translation id="7612608473764576263">秘密鍵の入力値は有効な形式でなければなりません（PKCS#8 形式の PEM エンコード RSA 鍵）。</translation>
 <translation id="765293928828334535">このウェブサイトからアプリ、拡張機能、ユーザー スクリプトを追加することはできません</translation>
 <translation id="7876803335449432072">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込めませんでした。コンテンツ スクリプトのスタイルシートは、.css ファイルなどのサポートされているスタイルシート ファイルからのみ読み込むことができます。</translation>

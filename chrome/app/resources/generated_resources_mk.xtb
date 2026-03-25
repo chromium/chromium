@@ -339,6 +339,7 @@
 <translation id="122082903575839559">Алгоритам за потпис на сертификат</translation>
 <translation id="1221266967850882682">Резиме за добредојде</translation>
 <translation id="1221825588892235038">Само избор</translation>
+<translation id="1222786882236067545">Вчитај ги датотеките со историја</translation>
 <translation id="1222835797152767346">Поставете PIN за да го олесните најавувањето</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> бара лиценца</translation>
 <translation id="1223498995510244364">Резимирање</translation>
@@ -1137,6 +1138,7 @@
 <translation id="1767043563165955993">Користи со апликации на Android</translation>
 <translation id="1767508543310534319">Ехо на интерпункција</translation>
 <translation id="1768212860412467516">Испратете повратни информации за <ph name="EXPERIMENT_NAME" />.</translation>
+<translation id="1768928167751703843">Прикажи ги локалните податоци</translation>
 <translation id="1769104665586091481">Отвори ја врската во нов &amp;прозорец</translation>
 <translation id="1769157454356586138">Скенирањето не успеа. Администраторот ја блокираше датотекава.</translation>
 <translation id="176920518817780870">Конвертирај ја групата во папка со обележувачи</translation>
@@ -2398,6 +2400,7 @@
 <translation id="2628258844236035475">Да се отстрани домашната адреса од „Автоматско пополнување на Chrome“?</translation>
 <translation id="2628770867680720336">Потребно е фабричко ресетирање на овој Chromebook за да се овозможи отстранување грешки на ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Започнете нов разговор со Gemini</translation>
+<translation id="2629058811622993283">Споделувај и аудио од апликацијата (од сите нејзини прозорци и поврзани апликации)</translation>
 <translation id="2629227353894235473">Програмирање апликации за Android</translation>
 <translation id="2629437048544561682">Исчисти платно</translation>
 <translation id="2630703150574465936">Му дозволивте на Gemini автоматски да ве најавува на овие сајтови и апликации со вашите сметки</translation>
@@ -4715,6 +4718,7 @@
 <translation id="4241140145060464825">Содржини во апликација</translation>
 <translation id="4241224519481557898">Категорија</translation>
 <translation id="4242145785130247982">Не се поддржани повеќе клиентски сертификати</translation>
+<translation id="4242245038391716252">Преземено од екстензијата: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="4242577469625748426">Не успеа да инсталира поставки за правило на уредот: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Со вашите прелистувач и профил управува<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
@@ -6082,6 +6086,7 @@
 <translation id="5200191131577845078">Известувањата се дозволени од <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">ID на допир е заклучен. За да продолжите, внесете ја лозинката.</translation>
 <translation id="5201945335223486172">За <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{Се прикажува историјата од 1 датотека}one{Се прикажува историјата од # датотека}other{Се прикажува историјата од # датотеки}}</translation>
 <translation id="5203035663139409780">Може да ги изменуваат датотеките или папките на уредот</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Кликнете за да ја видите екстензијата}one{Кликнете за да ги видите екстензииве}other{Кликнете за да ги видите екстензииве}}</translation>
 <translation id="5204282224596194174">Лозинка за враќање за <ph name="USER_EMAIL" /></translation>
@@ -7322,6 +7327,7 @@
 <translation id="6095696531220637741">Макарон</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Отвори максимизирано</translation>
+<translation id="6096192567014958958">Добре дојдовте, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">X.500 Име</translation>
 <translation id="6097480669505687979">Ако не ослободите простор, автоматски може да се отстранат корисници и податоци.</translation>
 <translation id="6097600385983390082">Гласовното пребарување е затворено</translation>
@@ -8997,7 +9003,6 @@
 <translation id="7284411326658527427">Секое лице може да ја персонализира својата сметка и да ја задржи приватноста на податоците.</translation>
 <translation id="7285008278689343502">Национален парк „Гранд Тетон“</translation>
 <translation id="7286867818472074330">Изберете криптографски клуч</translation>
-<translation id="7287143125007575591">Пристапот е одбиен.</translation>
 <translation id="7287411021188441799">Врати ја стандардната заднина</translation>
 <translation id="7287949630503871403">Податоци складирани во апликацијата</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -9974,6 +9979,7 @@
 <translation id="7947962633355574091">К&amp;опирај ја адресата на видеото</translation>
 <translation id="7947964080535614577">Сајтовите обично прикажуваат реклами за да понудат бесплатни содржини или услуги. Но, за некои сајтови е познато дека прикажуваат нападни или лажни реклами.</translation>
 <translation id="7948407723851303488">Сите страници од <ph name="DOMAIN_NAME" /></translation>
+<translation id="7949038991703929816">Историјата не можеше да се вчита. Погрижете се датотеките да содржат важечка евиденција на ажурирачот.</translation>
 <translation id="7950629216186736592">Причина: LBS поддржува само http://, https:// и file:// URL-адреси.</translation>
 <translation id="7950814699499457511">Вклучено • Екстензијава нема објавено практики за приватност, како на пример, како прибира и користи податоци</translation>
 <translation id="7951265006188088697">За да додадете или да управувате со начини на плаќање на Google Pay, посетете ја <ph name="BEGIN_LINK" />сметката на Google<ph name="END_LINK" /></translation>
@@ -10355,6 +10361,7 @@
 <translation id="8207404892907560325">Изберете криптографски клуч</translation>
 <translation id="8207794858944505786">Постои виртуелна машина „<ph name="DEFAULT_VM_NAME" />“, но се чини дека не е важечки тип виртуелна машина <ph name="VM_TYPE" />. Контактирајте со администраторот.</translation>
 <translation id="8207901006380134182">Голем бран го проголтува океанот, со мрачна шума на брегот.</translation>
+<translation id="8208043093301544621">Home</translation>
 <translation id="8208216423136871611">Не зачувувај</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известување}one{# ново известување}other{# нови известувања}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преземањето е во тек}one{Преземањата се во тек}other{Преземањата се во тек}}</translation>

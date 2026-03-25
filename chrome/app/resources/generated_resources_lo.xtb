@@ -338,6 +338,7 @@
 <translation id="122082903575839559">ຂັ້ນຕອນການ​ລົງລາຍເຊັນໃບຢັ້ງຢືນ</translation>
 <translation id="1221266967850882682">ສະຫຼຸບຕ້ອນຮັບກັບ</translation>
 <translation id="1221825588892235038">ການເລືອກເທົ່ານັ້ນ</translation>
+<translation id="1222786882236067545">ໂຫຼດໄຟລ໌ປະຫວັດ</translation>
 <translation id="1222835797152767346">ຕັ້ງຄ່າ PIN ເພື່ອໃຫ້ເຂົ້າສູ່ລະບົບໄດ້ງ່າຍຂຶ້ນ</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ຈຳເປັນຕ້ອງມີໃບອະນຸຍາດ</translation>
 <translation id="1223498995510244364">ສະຫຼຸບ</translation>
@@ -1134,6 +1135,7 @@
 <translation id="1767043563165955993">ໃຊ້ກັບແອັບ Android</translation>
 <translation id="1767508543310534319">ສຽງສະທ້ອນຂອງເຄື່ອງໝາຍວັກຕອນ</translation>
 <translation id="1768212860412467516">ສົ່ງຄຳຕິຊົມສຳລັບ <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="1768928167751703843">ເບິ່ງຂໍ້ມູນພາຍໃນເຄື່ອງ</translation>
 <translation id="1769104665586091481">ເປີດ​ລິ້ງຢູ່​ໃນໜ້າ​ຕ່າງ​ໃຫມ່</translation>
 <translation id="1769157454356586138">ສະແກນບໍ່ສຳເລັດ. ໄຟລ໌ນີ້ຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="176920518817780870">ປ່ຽນແປງກຸ່ມເປັນໂຟນເດີບຸກມາກ</translation>
@@ -2396,6 +2398,7 @@
 <translation id="2628258844236035475">ລຶບທີ່ຢູ່ເຮືອນຂອງທ່ານອອກຈາກຄຸນສົມບັດຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome ບໍ?</translation>
 <translation id="2628770867680720336">ຈຳເປັນຕ້ອງຣີເຊັດ Chromebook ເປັນຄ່າໂຮງງານເພື່ອເປີດນຳໃຊ້ການດີບັກ ADB. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">ເລີ່ມການສົນທະນາໃໝ່ກັບ Gemini</translation>
+<translation id="2629058811622993283">ແບ່ງປັນສຽງຂອງແອັບນຳ (ຈາກໜ້າຈໍທັງໝົດ ແລະ ແອັບທີ່ກ່ຽວຂ້ອງ)</translation>
 <translation id="2629227353894235473">ພັດທະນາແອັບ Android</translation>
 <translation id="2629437048544561682">ລຶບລ້າງແຄນວາສ</translation>
 <translation id="2630703150574465936">ທ່ານໄດ້ອະນຸຍາດໃຫ້ Gemini ເຂົ້າສູ່ລະບົບເວັບໄຊ ແລະ ແອັບເຫຼົ່ານີ້ໃຫ້ທ່ານໂດຍອັດຕະໂນມັດໂດຍໃຊ້ບັນຊີຂອງທ່ານ</translation>
@@ -4713,6 +4716,7 @@
 <translation id="4241140145060464825">ເນື້ອຫາແອັບ</translation>
 <translation id="4241224519481557898">ໝວດໝູ່</translation>
 <translation id="4242145785130247982">ບໍ່ຮອງຮັບຫຼາຍໃບຮັບຮອງລູກຂ່າຍ</translation>
+<translation id="4242245038391716252">ດາວໂຫຼດໂດຍສ່ວນຂະຫຍາຍ: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="4242577469625748426">ຕິດຕັ້ງການຕັ້ງຄ່ານະໂຍບາຍຢູ່ໃນເຄື່ອງນີ້ບໍ່ສໍາເລັດ: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />ໂປຣແກຣມທ່ອງເວັບ ແລະ ໂປຣໄຟລ໌ຂອງທ່ານແມ່ນຖືກຈັດການ<ph name="END_LINK" /> ໂດຍ <ph name="DOMAIN" /></translation>
@@ -6080,6 +6084,7 @@
 <translation id="5200191131577845078">ອະນຸຍາດການແຈ້ງເຕືອນຈາກ <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">Touch ID ລັອກຢູ່. ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອສືບຕໍ່.</translation>
 <translation id="5201945335223486172">ສຳລັບ <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{ກຳລັງເບິ່ງປະຫວັດຈາກ 1 ໄຟລ໌}other{ກຳລັງເບິ່ງປະຫວັດຈາກ # ໄຟລ໌}}</translation>
 <translation id="5203035663139409780">ສາມາດແກ້ໄຂໄຟລ໌ ແລະ ໂຟນເດີຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ຄລິກເພື່ອເບິ່ງສ່ວນຂະຫຍາຍ}other{ຄລິກເພື່ອເບິ່ງສ່ວນຂະຫຍາຍເຫຼົ່ານີ້}}</translation>
 <translation id="5204282224596194174">ລະຫັດຜ່ານສຳລັບການກູ້ຄືນສຳລັບ <ph name="USER_EMAIL" /></translation>
@@ -7319,6 +7324,7 @@
 <translation id="6095696531220637741">ມາກາຣອງ</translation>
 <translation id="6095984072944024315">-</translation>
 <translation id="6096047740730590436">ເປີດ​ທີ່ໄດ້ຂະຫຍາຍແລ້ວ</translation>
+<translation id="6096192567014958958">ຍິນດີຕ້ອນຮັບ, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">ຊື່ X.500</translation>
 <translation id="6097480669505687979">ຖ້າທ່ານບໍ່ຂະຫຍາຍພື້ນທີ່ຫວ່າງ, ຜູ້ໃຊ້ ແລະ ຂໍ້ມູນອາດຈະຖືກລຶບອອກໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="6097600385983390082">ປິດການຊອກຫາດ້ວຍສຽງແລ້ວ</translation>
@@ -8992,7 +8998,6 @@
 <translation id="7284411326658527427">ແຕ່ລະຄົນສາມາດປັບແຕ່ງບັນຊີຂອງເຂົາເຈົ້າ ແລະ ຮັກສາຂໍ້ມູນໄວ້ເປັນສ່ວນຕົວໄດ້.</translation>
 <translation id="7285008278689343502">ອຸທະຍານແຫ່ງຊາດ Grand Teton</translation>
 <translation id="7286867818472074330">ເລືອກກະແຈຜ່ານ</translation>
-<translation id="7287143125007575591">ການເຂົ້າເຖິງຖືກປະຕິເສດ.</translation>
 <translation id="7287411021188441799">ກູ້ຄືນພື້ນຫຼັງເລີ່ມຕົ້ນ</translation>
 <translation id="7287949630503871403">ຂໍ້ມູນທີ່ຈັດເກັບໄວ້ໃນແອັບ</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -9968,6 +9973,7 @@
 <translation id="7947962633355574091">ອັດ​ສຳ​ເນົາ​ທີ່​ຢູ່​ວິ​ດີ​ໂອ</translation>
 <translation id="7947964080535614577">ປົກກະຕິເວັບໄຊຈະສະແດງໂຄສະນາເພື່ອໃຫ້ເຂົາເຈົ້າສາມາດສະໜອງເນື້ອຫາ ຫຼື ບໍລິການໄດ້ໂດຍບໍ່ມີຄ່າໃຊ້ຈ່າຍ. ແຕ່ກໍມີບາງເວັບໄຊສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ເຮັດໃຫ້ເຂົ້າໃຈຜິດ.</translation>
 <translation id="7948407723851303488">ໜ້າທັງໝົດຂອງ <ph name="DOMAIN_NAME" /></translation>
+<translation id="7949038991703929816">ໂຫຼດປະຫວັດບໍ່ສຳເລັດ. ກວດສອບວ່າໄຟລ໌ມີບັນທຶກຕົວອັບເດດທີ່ຖືກຕ້ອງ.</translation>
 <translation id="7950629216186736592">ເຫດຜົນ: LBS ຮອງຮັບ URL ແບບ http://, https:// ແລະ file:// ເທົ່ານັ້ນ.</translation>
 <translation id="7950814699499457511">ເປີດ • ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ເຜີຍແຜ່ຂໍ້ປະຕິບັດຄວາມເປັນສ່ວນຕົວ, ເຊັ່ນ: ວິທີທີ່ມັນຮວບຮວມ ແລະ ໃຊ້ຂໍ້ມູນ</translation>
 <translation id="7951265006188088697">ເພື່ອເພີ່ມ ຫຼື ຈັດການວິທີການຈ່າຍເງິນ Google Pay, ກະລຸນາເຂົ້າຫາ <ph name="BEGIN_LINK" />ບັນຊີ Google<ph name="END_LINK" /> ຂອງທ່ານ</translation>
@@ -10349,6 +10355,7 @@
 <translation id="8207404892907560325">ເລືອກກະແຈຜ່ານ</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" ມີຢູ່, ແຕ່ປາກົດວ່າບໍ່ແມ່ນ <ph name="VM_TYPE" /> VM ທີ່ຖືກຕ້ອງ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="8207901006380134182">ຄື້ນໃຫຍ່ປົກຄຸມມະຫາສະໝຸດ, ໂດຍມີປ່າມືດໆຢູ່ແຄມຝັ່ງ.</translation>
+<translation id="8208043093301544621">ໜ້າຫຼັກ</translation>
 <translation id="8208216423136871611">ຢ່າບັນທຶກ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ການແຈ້ງເຕືອນໃໝ່}other{ການແຈ້ງເຕືອນໃໝ່ # ລາຍການ}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ການດາວໂຫຼດພວມດຳເນີນຢູ່}other{ການດາວໂຫຼດພວມດຳເນີນຢູ່}}</translation>

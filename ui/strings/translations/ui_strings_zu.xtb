@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Isaziso esingafundiwe}one{# Izaziso ezingafundiwe}other{# Izaziso ezingafundiwe}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Vula isandiso esilandelayo ku-Incognito:}one{Vula izandiso ezilandelayo ku-Incognito:}other{Vula izandiso ezilandelayo ku-Incognito:}}</translation>
+<translation id="4230098358142093034">Ekhaya</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 inyanga edlule}one{# izinyanga ezedlule}other{# izinyanga ezedlule}}</translation>
 <translation id="4277033906326892359">Ikholomu ye-<ph name="COLUMN_NAME" /> ihlungwe nge-oda enyukayo</translation>
 <translation id="4289300219472526559">Qala ukukhuluma</translation>

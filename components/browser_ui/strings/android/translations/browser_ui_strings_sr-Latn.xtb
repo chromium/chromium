@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1652197001188145583">Kada je uključeno, sajtovi mogu da traže da koriste NFC uređaje. Kada je isključeno, sajtovi ne mogu da koriste NFC uređaje.</translation>
 <translation id="1660204651932907780">Dozvoli sajtovima da puštaju zvuk (preporučeno)</translation>
+<translation id="1676590040242013349">Uključeno je podešavanje Uvek koristi bezbedne veze.</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Sajtovi mogu da traže da koriste NFC uređaje</translation>
 <translation id="1686785653877010442">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama četa.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Blokiraj sajtove tako da ne čitaju tekst i slike iz privremene memorije</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6950072572526089586">Sajt koji posećujete može da čuva informacije o tome šta radite kako bi radio na očekivani način – na primer, da biste ostali prijavljeni na sajt ili da biste sačuvali stavke u korpi za kupovinu. Sajtovi često privremeno čuvaju te informacije na uređaju.</translation>
+<translation id="6964291282260073066">WebGPU je onemogućen.</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="6980507581230208647">Roze tema</translation>
 <translation id="6980861169612950611">Želite da izbrišete podatke sajta? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Kada je uključeno, sajtovi mogu da traže da koriste uređaje virtuelne realnosti. Kada je isključeno, sajtovi ne mogu da koriste uređaje virtuelne realnosti.</translation>
 <translation id="7282197670900591579">Limun-žuta tema</translation>
 <translation id="728412880473384942">Sajtovi su brži, ali manje bezbedni</translation>
+<translation id="7352902948037373520">Upravljajte u <ph name="BEGIN_LINK1" />Android podešavanjima<ph name="END_LINK1" />
+
+Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="7366415735885268578">Dodajte sajt</translation>
 <translation id="7368695150573390554">Svi oflajn podaci će biti izbrisani</translation>
 <translation id="7369678931043226462">Prilagodite donju tabelu stranice nove kartice otvorenu do polovine ekrana</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Sajtovi se obično povezuju sa USB uređajima za potrebe funkcija poput štampanja dokumenata ili čuvanja sadržaja na memorijskim uređajima</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarela. Ponovo instalirajte aplikaciju.</translation>
 <translation id="847433688444405067">Pregledajte na više uređaja</translation>
+<translation id="8484556725636319115">JavaScript optimizator je isključen. <ph name="BEGIN_LINK2" />Upravljajte izuzecima za sajtove<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvek se zahteva mobilni sajt</translation>
 <translation id="8492822722330266509">Sajtovi mogu da prikazuju iskačuće prozore i koriste preusmeravanja</translation>

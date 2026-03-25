@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Tryck snabbt två gånger här om du vill installera.</translation>
 <translation id="1740650426894359238">Byt till en annan profil</translation>
 <translation id="1741219894094057085">Smartklocka</translation>
+<translation id="1742773766788162541">Skanna kortet och autofyll</translation>
 <translation id="1743244221910283364">Ignorera ändringar</translation>
 <translation id="1748975028205587434">Markera filen</translation>
 <translation id="1749733017156547309">Ett lösenord krävs</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">Testa detaljerad hjälp i produkten för innehållspanelen, som bör visas flera gånger om dagen.</translation>
 <translation id="2739887572830526131">Behåll gruppen om du vill lägga till flikar senare eller radera den om den inte längre behövs.</translation>
 <translation id="2747003861858887689">Föregående fält</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> har flyttats till position <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">Alla i gruppen ser ändringar som görs</translation>
 <translation id="2755595981383829244">Du får nu innehållsaviseringar</translation>
 <translation id="2761788987260570878">Ta ett foto av sökningen</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, hanteras av organisationen.</translation>
 <translation id="3580448612293054698">Vill du uppdatera <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
+<translation id="3583726884554296148">Spara kortet i Google-kontot för att autofylla det för det här köpet och framtida köp i Chrome</translation>
 <translation id="3587482841069643663">Alla</translation>
 <translation id="3587885837929752825">Din organisation begränsar vad du kan spara på Google-kontot.</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
@@ -1557,6 +1560,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6532106788206463496">Spara ändringarna</translation>
 <translation id="6536759809440150308">Öppna <ph name="GROUP_TITLE" />, en grupp på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Betala snabbare med autofyll på alla dina enheter</translation>
 <translation id="6550675742724504774">Alternativ</translation>
 <translation id="6550891580932862748">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Inställningarna för Säker webbsökning i andra produkter från Google påverkas inte.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2030,6 +2034,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" />-modeller</translation>
 <translation id="8211030355252954494">Du har fått lösenord för <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">Anslutningen är säker</translation>
+<translation id="8213190397436801658">Hem</translation>
 <translation id="8214293972734702249">Fäst, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Visa offlineversionen i en ny flik</translation>
 <translation id="8221665793629393739">Påminnelse om att besöka sidan igen</translation>

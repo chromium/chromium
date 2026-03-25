@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Manifest-Datei ist ungültig</translation>
 <translation id="7217838517480956708">Der Administrator dieses Computers schreibt die Installation von <ph name="EXTENSION_NAME" /> vor. Die Erweiterung kann nicht entfernt oder geändert werden.</translation>
+<translation id="7287143125007575591">Zugriff verweigert</translation>
 <translation id="7612608473764576263">Der Eingabewert für den privaten Schlüssel muss ein gültiges Format haben (PEM-codierter RSA-Schlüssel im PKCS#8-Format).</translation>
 <translation id="765293928828334535">Von dieser Website können keine Apps, Erweiterungen und Nutzerskripte hinzugefügt werden</translation>
 <translation id="7876803335449432072">Die Datei „<ph name="RELATIVE_PATH" />“ konnte für das Content-Script nicht geladen werden. Content-Script-Stylesheets können nur aus unterstützten Stylesheet-Dateien wie CSS-Dateien geladen werden.</translation>

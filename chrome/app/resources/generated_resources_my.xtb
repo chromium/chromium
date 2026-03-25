@@ -160,7 +160,7 @@
 <translation id="1102759278139578486">အဓိကနုတ် မှတ်ချက်ဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />ကို အမြဲတမ်း ဘာသာပြန်ရန်</translation>
 <translation id="1104098698795583187">သင်သည် ဤတဘ်အုပ်စုသုံးခွင့်ကို ချက်ချင်းဆုံးရှုံးမည်ဖြစ်ပြီး ၎င်းကို သင့်စက်အားလုံးမှ ဖျက်ပါမည်</translation>
-<translation id="1105934302947321130">Google Beam with Zoom</translation>
+<translation id="1105934302947321130">Zoom ပါသော Google Beam</translation>
 <translation id="1106270460549661906">Gemini နှင့် မမျှဝေတော့ရန်</translation>
 <translation id="1106350001632362876">သတ်မှတ်ချက်ကို တိုးရန်</translation>
 <translation id="110850812463801904">OneDrive နှင့် ကိုယ်တိုင် ချိတ်ဆက်ရန်</translation>
@@ -3600,7 +3600,7 @@
 <translation id="3473241910002674503">တက်ဘလက်မုဒ်တွင် ခလုတ်များဖြင့် ပင်မစာမျက်နှာသို့ သွားခြင်း၊ နောက်ပြန်သွားခြင်းနှင့် အက်ပ်များပြောင်းခြင်းတို့ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="3473479545200714844">မျက်နှာပြင် ပုံချဲ့ပေးသူ</translation>
 <translation id="3474218480460386727">စာလုံးအသစ်များအတွက် အက္ခရာ ၉၉ လုံးနှင့်အောက် အသုံးပြုပါ</translation>
-<translation id="3474330892505468100">Google Beam with Meet</translation>
+<translation id="3474330892505468100">Meet ပါသော Google Beam</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> အဖြစ်​ ရှေ့ဆက်ရန်</translation>
 <translation id="3477772589943384839">အသင့်အတင့် မှတ်ဉာဏ်ချွေတာမှုများ ရယူနိုင်သည်။ အချိန်အတော်ကြာပြီးနောက် သင့်တဘ်များကို အသုံးမပြုတော့ပါ။</translation>
 <translation id="347785443197175480"><ph name="HOST" />အား သင်၏ ကင်မရာ နှင့် မိုက်ခရိုဖုန်းကို ရယူသုံးမှု ဆက်ခွင့်ပြုရန်</translation>
@@ -8996,7 +8996,6 @@
 <translation id="7284411326658527427">လူတိုင်းက မိမိအကောင့်ကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ကာ ဒေတာများ သီးသန့်သိမ်းနိုင်သည်။</translation>
 <translation id="7285008278689343502">ဂရင်းတီတန် အမျိုးသားဥယျာဉ်</translation>
 <translation id="7286867818472074330">လျှို့ဝှက်ကီး ရွေးရန်</translation>
-<translation id="7287143125007575591">အသုံးပြုခွင့် မရပါ။</translation>
 <translation id="7287411021188441799">မူရင်းနောက်ခံပုံကို ပြန်ယူရန်</translation>
 <translation id="7287949630503871403">အက်ပ်တွင် သိမ်းထားသော ဒေတာ</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

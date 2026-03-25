@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Pilih akaun yang mahu anda eksport kepada apl lain.</translation>
 <translation id="1506061864768559482">Enjin carian</translation>
 <translation id="1506063256525392513">Langkah ini membolehkan anda mengambil dan memuat naik foto serta mengimbas Kod QR</translation>
+<translation id="1506733063065214205">Pelanggan RCS MLS</translation>
 <translation id="1508263560970797965">Teruskan dalam Inkognito</translation>
 <translation id="1509486075633541495">Log masuk ke laman web</translation>
 <translation id="1513858653616922153">Padam kata laluan</translation>
@@ -477,6 +478,7 @@
 <translation id="2671423594960767771">Kongsi kumpulan</translation>
 <translation id="2673508731173059946">Lawati pautan disalin</translation>
 <translation id="2679659833697380">Maklumat anda disimpan pada peranti anda</translation>
+<translation id="2681572445246787428">Penandatanganan Dokumen</translation>
 <translation id="2688535388040882469">Sepanduk</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia di luar talian</translation>
@@ -907,10 +909,12 @@
 <translation id="429074084062258019">{count,plural, =1{Tambahkan Tab pada Kumpulan}other{Tambahkan Tab pada Kumpulan}}</translation>
 <translation id="4302061870579014542">Tetapkan kedudukan</translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
+<translation id="4306349443295056740">Penandatanganan OCSP</translation>
 <translation id="4309403553630140242">Ketik dua kali untuk mendapatkan maklumat lanjut</translation>
 <translation id="4310738531374808763">Sesuaikan halaman utama anda</translation>
 <translation id="4320848494125124980">Terbaharu</translation>
 <translation id="4322394346347055525">Tutup Tab Lain</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Hidupkan pemberitahuan</translation>
 <translation id="4326912346867677256">Ketik "Gunakan Kata laluan" untuk log masuk dengan selamat.</translation>
 <translation id="4327017157997423717">Jejaki harga bagi <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1029,6 +1033,7 @@
 <translation id="4744428388659507035">Hidupkan “Penanda halaman” dalam tetapan untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
 <translation id="4746926359847517643">Anda boleh mendapatkan semula tab dalam sejarah pada bila-bila masa.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} kad diimport}other{{count} kad diimport}}</translation>
+<translation id="4749924365937394956">Pengesahan Pelayan</translation>
 <translation id="4751645464639803239">Tab Inkognito Baharu</translation>
 <translation id="4752348350801431746">Matikan pemberitahuan Semakan Keselamatan…</translation>
 <translation id="4759238208242260848">Muat turun</translation>
@@ -1394,12 +1399,14 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="598634819525651074">Kawasan</translation>
 <translation id="5988097621740394599">Lihat penurunan harga pada tab anda.</translation>
 <translation id="5988851877894965432">Buka URL dalam Chrome</translation>
+<translation id="599343768974649785">Teks Eksplisit</translation>
 <translation id="6006672969046233841">Tab Baharu</translation>
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
 <translation id="6012140227487808125">Menyulitkan...</translation>
 <translation id="6027619584715411062">Log masuk untuk mendapatkan penanda halaman, kata laluan dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="6027945736510816438">Adakah anda maksudkan <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">ciri baharu</translation>
+<translation id="6037458223703682108">Tandatangan Digital</translation>
 <translation id="6038823991892265570">Urus storan Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -1543,6 +1550,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6476284679642588870">Urus kaedah pembayaran</translation>
 <translation id="6476800141292307438">Menterjemah halaman ini kepada <ph name="LANGUAGE" />. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
 <translation id="647867789226964031">Tukar kata laluan anda</translation>
+<translation id="6480363549849064919">Pengesahan Pelanggan</translation>
 <translation id="6494931198667773526">Tamat</translation>
 <translation id="6503077044568424649">Paling kerap dilawati</translation>
 <translation id="6503763061813913607">Pemberitahuan Semakan Keselamatan</translation>
@@ -1588,6 +1596,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6619015782482868078">Tema aqua</translation>
 <translation id="6620279676667515405">Batal</translation>
 <translation id="6625830436658400045">Tetapan penyegerakan anda akan dipulihkan berdasarkan sandaran terakhir anda. Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
+<translation id="6626281667717553020">URI CPS</translation>
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6629759408545977279">Daripada: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Tambahkan lapisan perlindungan tambahan terhadap ancaman dalam talian ini.</translation>
@@ -2151,6 +2160,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8614671330774943747">Akses Penukar Tab</translation>
 <translation id="862367213447108001">Sentiasa paparkan tetingkap timbul pada laman ini</translation>
 <translation id="8625706492572042370">Edit Skrin Utama</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Tab Inkognito yang dikunci</translation>
 <translation id="8633025649649592204">Aktiviti baru-baru ini</translation>
 <translation id="8636825310635137004">Hidupkan penyegerakan untuk mendapatkan tab daripada peranti anda yang lain.</translation>
@@ -2337,6 +2347,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="942624946817804130">Eksport</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="94870150074703282">Padamkan kumpulan?</translation>
+<translation id="951090530321144895">Pengeluar CA</translation>
 <translation id="952704832371081537">Batal</translation>
 <translation id="95332591904104970">Apl disambungkan</translation>
 <translation id="954667170699278022">Senarai Bacaan</translation>

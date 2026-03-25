@@ -917,6 +917,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2400600116338235695">Boleh meminta untuk menyambung kepada port bersiri</translation>
 <translation id="2403474027143565107">Tepat</translation>
 <translation id="240450251994300576">Logo Pengepala Kedua</translation>
+<translation id="2404715426538856682">Kad kredit &amp; debit · IBAN · Kad kesetiaan</translation>
 <translation id="2404884497378469141">Cuba salin semula fail anda</translation>
 <translation id="2413155254802890957">Lama</translation>
 <translation id="2413528052993050574">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya mungkin dibatalkan. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
@@ -2169,6 +2170,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4340810192899866471">Import daripada JSON</translation>
 <translation id="4340982228985273705">Komputer ini tidak dikesan sebagai diurus perusahaan, jadi dasar hanya boleh memasang secara automatik sambungan yang dihoskan di Gedung Web Chrome. URL kemas kini Gedung Web Chrome ialah "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Taman Tema</translation>
+<translation id="4346670990181948854">Maklumat perjalanan · Kenderaan</translation>
 <translation id="4348834659292907206">Sambungan kepada <ph name="SITE" /> tidak selamat</translation>
 <translation id="4349365535725594680">Tidak dapat berkongsi kandungan sulit</translation>
 <translation id="4349810866125026513">Muat naik juga</translation>
@@ -3051,6 +3053,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5752519522101347518">Memuatkan laman web pengesahan bank</translation>
 <translation id="5753570386948603678">Padam daripada sejarah</translation>
 <translation id="5759751709240058861">Gunakan &amp; alihkan kamera anda</translation>
+<translation id="5762131895127128324">Lesen memandu · Kad pengenalan · Pasport</translation>
 <translation id="5763042198335101085">Masukkan alamat e-mel yang sah</translation>
 <translation id="5764725887548570807">Format asalan tidak sah.</translation>
 <translation id="5764920692828389743">Hantar kepada <ph name="EMAIL_ADDRESS" /></translation>
@@ -3988,6 +3991,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="7220786058474068424">Memproses</translation>
 <translation id="7221855153210829124">Tunjukkan pemberitahuan</translation>
 <translation id="722454870747268814">Tab Inkognito Baharu</translation>
+<translation id="7225676267118764980">Tukar penyedia autolengkap dan tetapan lain</translation>
 <translation id="7226892411756387078">Teks Biasa</translation>
 <translation id="7227293336683593977">Sejarah Harga</translation>
 <translation id="7228306718910595403">Status Layak EU</translation>

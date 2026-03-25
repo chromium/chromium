@@ -338,6 +338,7 @@
 <translation id="122082903575839559">Сертификат қолтаңбасының алгоритмі</translation>
 <translation id="1221266967850882682">Welcome Recap</translation>
 <translation id="1221825588892235038">Тек таңдау</translation>
+<translation id="1222786882236067545">Тарих файлдарын жүктеу</translation>
 <translation id="1222835797152767346">Аккаунтқа кіру оңай болуы үшін, PIN кодын орнатыңыз</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> үшін лицензия қажет</translation>
 <translation id="1223498995510244364">Қорытындылау</translation>
@@ -1124,6 +1125,7 @@
 <translation id="1767043563165955993">Android қолданбаларымен пайдалану</translation>
 <translation id="1767508543310534319">Тыныс белгілерін дыбыстау</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> туралы пікір жіберіңіз.</translation>
+<translation id="1768928167751703843">Жергілікті деректерді көру</translation>
 <translation id="1769104665586091481">Сілтемені &amp;жаңа терезеде ашу</translation>
 <translation id="1769157454356586138">Сканерлеу сәтсіз аяқталды. Бұл файлды әкімшіңіз блоктады.</translation>
 <translation id="176920518817780870">Топты бетбелгі қалтасына түрлендіру</translation>
@@ -2381,6 +2383,7 @@
 <translation id="2628258844236035475">Үй мекенжайын Chrome-ның автотолтыру функциясынан өшіру қажет пе?</translation>
 <translation id="2628770867680720336">ADB түзетуін қосу үшін осы Chromebook құрылғысын зауыттық күйге қайтару қажет. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini-мен жаңа чат бастау</translation>
+<translation id="2629058811622993283">Қолданбаның (барлық терезесіндегі және қатысты қолданбалардағы) аудиосын да бөлісу</translation>
 <translation id="2629227353894235473">Android қолданбаларын әзірлеу</translation>
 <translation id="2629437048544561682">Кенепті тазалау</translation>
 <translation id="2630703150574465936">Gemini-ға аккаунттарыңызды пайдаланып, осы сайттар мен қолданбаларға автоматты түрде кіруге рұқсат бердіңіз.</translation>
@@ -4696,6 +4699,7 @@
 <translation id="4241140145060464825">Қолданба контенті</translation>
 <translation id="4241224519481557898">Санаты</translation>
 <translation id="4242145785130247982">Бірнеше клиент сертификатына қолдау көрсетілмейді.</translation>
+<translation id="4242245038391716252">Кеңейтім арқылы жүктеп алынды: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Параметрлерді ашу</translation>
 <translation id="4242577469625748426">Құрылғыда саясат параметрлерін орнату әрекеті сәтсіз аяқталды: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Браузеріңіз бен профиліңізді<ph name="END_LINK" /> <ph name="DOMAIN" /> басқарады</translation>
@@ -6062,6 +6066,7 @@
 <translation id="5200191131577845078"><ph name="DOMAIN" /> хабарландыруларына рұқсат берілді</translation>
 <translation id="5200680225062692606">Touch ID құлыпталған. Жалғастыру үшін құпия сөзіңізді енгізіңіз.</translation>
 <translation id="5201945335223486172"><ph name="EXAMPLE_DOMAIN_1" /> доменіне арналған</translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{1 файлдың тарихы көрсетіліп жатыр}other{# файлдың тарихы көрсетіліп жатыр}}</translation>
 <translation id="5203035663139409780">Құрылғыңыздағы файлдарды немесе қалталарды өзгерте алады</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Кеңейтімді көру үшін басыңыз.}other{Бұл кеңейтімдерді көру үшін басыңыз.}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" /> мекенжайына арналған қалпына келтіру құпия сөзі</translation>
@@ -7298,6 +7303,7 @@
 <translation id="6095696531220637741">Макарон</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Барынша ашу</translation>
+<translation id="6096192567014958958">Қош келдіңіз, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">X.500 атауы</translation>
 <translation id="6097480669505687979">Орын босатпасаңыз, пайдаланушылар мен деректер автоматты өшірілуі мүмкін.</translation>
 <translation id="6097600385983390082">Дауыспен іздеу жабық</translation>
@@ -8971,7 +8977,6 @@
 <translation id="7284411326658527427">Әр адам өзінің аккаунтын жекелендіріп, деректерін құпия сақтай алады.</translation>
 <translation id="7285008278689343502">"Гранд-Тетон" ұлттық саябағы</translation>
 <translation id="7286867818472074330">Кіру кілтін таңдау</translation>
-<translation id="7287143125007575591">Кіруге тыйым салынған.</translation>
 <translation id="7287411021188441799">Әдепкі фонды қалпына келтіру</translation>
 <translation id="7287949630503871403">Қолданбаға сақталған деректер көлемі</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -9947,6 +9952,7 @@
 <translation id="7947962633355574091">Бейне мекенжайын к&amp;өшіру</translation>
 <translation id="7947964080535614577">Сайттар әдетте жарнамалар көрсетеді, сондықтан олар контентті немесе қызметтерді тегін ұсынады. Бірақ кейбір сайтта мезі қылатын немесе жалған ақпаратты жарнамалар кездесетіні белгілі.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> доменінің барлық беті</translation>
+<translation id="7949038991703929816">Тарих жүктелмеді. Файлдарда жаңарту қызметінің жарамды журналдары бар екеніне көз жеткізіңіз.</translation>
 <translation id="7950629216186736592">Себеп: LBS тек http://, https:// және file:// URL мекенжайларына қолдау көрсетеді.</translation>
 <translation id="7950814699499457511">Қосылған • Бұл кеңейтім пайдаланушы деректерін қалай жинап, қолданатыны сияқты құпиялық шараларын жарияламаған.</translation>
 <translation id="7951265006188088697">Google Pay төлеу әдістерін енгізу немесе басқару үшін <ph name="BEGIN_LINK" />Google аккаунты<ph name="END_LINK" /> бетіне кіріңіз.</translation>
@@ -10328,6 +10334,7 @@
 <translation id="8207404892907560325">Кіру кілтін таңдаңыз</translation>
 <translation id="8207794858944505786">"<ph name="DEFAULT_VM_NAME" />" виртуалдық компьютері бар, бірақ жарамды <ph name="VM_TYPE" /> виртуалдық компьютері болып көрінбейді. Әкімшіге хабарласыңыз.</translation>
 <translation id="8207901006380134182">Мұхитта биік толқын тулайды. Жағасында қара орман бейнеленген.</translation>
+<translation id="8208043093301544621">Негізгі бет</translation>
 <translation id="8208216423136871611">Сақтамау</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңа хабарландыру}other{# жаңа хабарландыру}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Файл жүктеп алынуда}other{Файлдар жүктеп алынуда}}</translation>

@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Fajl deklaracije je nevažeći</translation>
 <translation id="7217838517480956708">Administrator ovog uređaja traži instaliranje ekstenzije <ph name="EXTENSION_NAME" />. Uklanjanje ili izmjena nisu mogući.</translation>
+<translation id="7287143125007575591">Pristup je odbijen.</translation>
 <translation id="7612608473764576263">Ulazna vrijednost za privatni ključ mora biti važeći format (PKCS#8-format PEM-kodiran RSA ključ).</translation>
 <translation id="765293928828334535">Aplikacije, ekstenzije i korisničke skripte se ne mogu dodati s ove web lokacije.</translation>
 <translation id="7876803335449432072">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo. Stilski listovi skripti sadržaja se mogu učitati samo iz podržanih fajlova stilskih listi kao što su CSS fajlovi.</translation>

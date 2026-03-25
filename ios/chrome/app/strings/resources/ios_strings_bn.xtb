@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
 <translation id="1740650426894359238">অন্য কোনও প্রোফাইলে পাল্টান</translation>
 <translation id="1741219894094057085">স্মার্ট ওয়াচ</translation>
+<translation id="1742773766788162541">কার্ড স্ক্যান করে অটোফিল করুন</translation>
 <translation id="1743244221910283364">পরিবর্তন বাতিল করুন</translation>
 <translation id="1748975028205587434">আপনার ফাইল বেছে নিন</translation>
 <translation id="1749733017156547309">পাসওয়ার্ড দিতে হবে</translation>
@@ -492,6 +493,7 @@
 <translation id="2721190673959776287">কন্টেক্সচুয়াল প্যানেলের জন্য তথ্যপূর্ণ ইন-প্রোডাক্ট সাহায্যের নমুনা দেখুন, এটি দিনে একাধিকবার দেখানো হবে।</translation>
 <translation id="2739887572830526131">পরে ট্যাব যোগ করার জন্য এই গ্রুপ রেখে দিন অথবা এটি আপনার আর প্রয়োজন না থাকলে মুছে দিন।</translation>
 <translation id="2747003861858887689">পূর্ববর্তী ফিল্ড</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" />-কে <ph name="POSITION" />-এ সরানো হয়েছে</translation>
 <translation id="2755485474385016903">যেসব পরিবর্তন করা হয়েছে তা গ্রুপের প্রত্যেকে দেখেছেন</translation>
 <translation id="2755595981383829244">আপনি এখন কন্টেন্ট সংক্রান্ত বিজ্ঞপ্তি পাবেন</translation>
 <translation id="2761788987260570878">আপনার সার্চের একটি ফটো তুলুন</translation>
@@ -710,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> আপনার সংস্থা ম্যানেজ করে।</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> আপডেট করবেন?</translation>
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
+<translation id="3583726884554296148">এই কেনাকাটা ও Chrome-এ ভবিষ্যতে কোনও কেনাকাটা করলে তার জন্য আপনার Google অ্যাকাউন্টে কার্ড সেভ করুন যাতে সেটি অটোফিল করা যায়</translation>
 <translation id="3587482841069643663">সকল</translation>
 <translation id="3587885837929752825">আপনার প্রতিষ্ঠান এটি ম্যানেজ করে যে আপনার কাছে Google অ্যাকাউন্টে কোন ধরনের ডেটা সেভ করার অনুমতি আছে।</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
@@ -1558,6 +1561,7 @@
 <translation id="6532106788206463496">পরিবর্তন সেভ করুন</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> খুলুন, <ph name="NUMBER_OF_TABS" />-এর গ্রুপ, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">আপনার সব ডিভাইসে অটোফিল ব্যবহার করে আরও দ্রুত চেক-আউট করুন</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
 <translation id="6550891580932862748">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। Google-এর অন্য প্রোডাক্টে আপনার নিরাপদ ব্রাউজিংয়ের সেটিংস প্রভাবিত হবে না।</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2031,6 +2035,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> মডেল</translation>
 <translation id="8211030355252954494">আপনি <ph name="WEBSITE" />-এর জন্য পাসওয়ার্ড পেয়েছেন</translation>
 <translation id="8211406090763984747">কানেকশনটি নিরাপদ</translation>
+<translation id="8213190397436801658">হোম</translation>
 <translation id="8214293972734702249">পিন করা হয়েছে, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">নতুন ট্যাবে অফলাইন ভার্সন দেখুন</translation>
 <translation id="8221665793629393739">আবার ভিজিট করার রিমাইন্ডার</translation>

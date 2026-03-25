@@ -916,6 +916,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2400600116338235695">Seriyali portlarga ulanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="2403474027143565107">Aniq</translation>
 <translation id="240450251994300576">Quyi sarlavha logotipi</translation>
+<translation id="2404715426538856682">Kredit va debet kartalar · IBAN · Sodiq mijoz kartalari</translation>
 <translation id="2404884497378469141">Fayllarni qaytadan nusxalang</translation>
 <translation id="2413155254802890957">Eski</translation>
 <translation id="2413528052993050574">Bu <ph name="DOMAIN" /> serveri ekanligi tasdiqlanmadi. Uning havfsizlik sertifikati eskirgan. Server sozlamalari noto‘g‘ri moslangan yoki kimdir sizning shaxsiy ma’lumotlaringizni o‘g‘irlashga harakat qilmoqda.</translation>
@@ -2163,6 +2164,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4340810192899866471">JSON fayldan import qilish</translation>
 <translation id="4340982228985273705">Bu kompyuter korporativ boshqaruv ostida ekanligi aniqlanmadi, shuning uchun faqat Chrome internet-do‘konidagi kengaytmalar avtomatik tarzda o‘rnatilishi mumkin. Yangilash uchun URL manzili: “<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4342742994656318294">Tematik parklar</translation>
+<translation id="4346670990181948854">Sayohat axboroti · Transport vositalari</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> saytiga ulanish xavfsiz emas</translation>
 <translation id="4349365535725594680">Maxfiy kontent ulashilmadi</translation>
 <translation id="4349810866125026513">Baribir yuklash</translation>
@@ -2951,6 +2953,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5596939519753369075">2 x 3.5 in</translation>
 <translation id="5597254438174353289">Koʻk 3</translation>
+<translation id="5600044805561809264">Internetni kezish paytida ulashiladigan varaqlar haqida savol berish mumkin.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> yoki <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Qurilmalar boshqaruvi qo‘llab-quvvatlanmaydi</translation>
 <translation id="5605249000617390290">Narxlarni kuzatish haqida batafsil</translation>
@@ -3045,6 +3048,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5752519522101347518">Bank tekshiruvi sayti yuklanmoqda</translation>
 <translation id="5753570386948603678">Tarixdan oʻchirib tashlash</translation>
 <translation id="5759751709240058861">Kameradan foydalanish va siljitish</translation>
+<translation id="5762131895127128324">Haydovchilik guvohnomalari · Shaxsni tasdiqlovchi kartalar · Pasportlar</translation>
 <translation id="5763042198335101085">Email manzilini xatosiz kiriting</translation>
 <translation id="5764725887548570807">Asl format xato.</translation>
 <translation id="5764920692828389743">Kimga: <ph name="EMAIL_ADDRESS" /></translation>
@@ -3980,6 +3984,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="7220786058474068424">Amalga oshirilmoqda</translation>
 <translation id="7221855153210829124">Bildirishnomalarni ko‘rsatish</translation>
 <translation id="722454870747268814">Yangi Inkognito varaq</translation>
+<translation id="7225676267118764980">Avtomatik kiritish xizmati va boshqa sozlamalarni oʻzgartirish</translation>
 <translation id="7226892411756387078">Oddiy matn</translation>
 <translation id="7227293336683593977">Narxlar tarixi</translation>
 <translation id="7228306718910595403">YI hududida muvofiqlik holati</translation>

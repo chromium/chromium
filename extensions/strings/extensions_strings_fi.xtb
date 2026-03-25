@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Tuntematon tuote <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Luettelotiedosto on virheellinen.</translation>
 <translation id="7217838517480956708">Koneen ylläpitäjä vaatii laajennuksen <ph name="EXTENSION_NAME" /> asennusta. Sitä ei voi poistaa tai muuttaa.</translation>
+<translation id="7287143125007575591">Pääsy evätty.</translation>
 <translation id="7612608473764576263">Yksityisen avaimen syöttöarvon on oltava kelvollisessa muodossa (PEM-merkkijärjestelmää käyttävä PKCS#8-muotoinen RSA-avain).</translation>
 <translation id="765293928828334535">Sovelluksia, laajennuksia ja käyttäjien komentosarjoja ei voi lisätä tältä verkkosivustolta.</translation>
 <translation id="7876803335449432072">Tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata sisältöskriptille. Sisältöskriptin tyylisivut voidaan ladata vain tuetuista tyylisivutiedostoista, kuten .css-tiedostoista.</translation>

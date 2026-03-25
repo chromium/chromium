@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Manifestbestand is ongeldig</translation>
 <translation id="7217838517480956708">De beheerder van dit apparaat vereist dat <ph name="EXTENSION_NAME" /> is geïnstalleerd. Het kan niet worden verwijderd of gewijzigd.</translation>
+<translation id="7287143125007575591">Toegang geweigerd.</translation>
 <translation id="7612608473764576263">De invoerwaarde voor de privésleutel moet een geldige indeling hebben (PKCS#8-indeling met PEM-gecodeerde RSA-sleutel).</translation>
 <translation id="765293928828334535">Apps, extensies en gebruikersscripts kunnen niet worden toegevoegd vanaf deze website</translation>
 <translation id="7876803335449432072">Kan bestand <ph name="RELATIVE_PATH" /> niet laden voor het contentscript. Stylesheets van contentscripts kunnen alleen worden geladen vanuit ondersteunde stylesheetbestanden, zoals css-bestanden.</translation>

@@ -372,6 +372,7 @@
 <translation id="1567405528131216114"><ph name="TOPIC" /> ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1569487616857761740">ମିଆଦ ଶେଷର ତାରିଖ ଲେଖନ୍ତୁ</translation>
 <translation id="1569694109004336106">Google Chrome, ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ Windows Hello ଚାଲୁ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
+<translation id="1569905000953679183">ଏକ୍ସଟେନସନ ଇନଷ୍ଟଲ ନୀତି ଫେଚ</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ଇଞ୍ଚ</translation>
 <translation id="1574714699824202614">ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
 <translation id="1576277203042721907">ସପିଂ ଇନସାଇଟ୍ସ</translation>
@@ -916,6 +917,7 @@
 <translation id="2400600116338235695">ସିରିଅଲ୍ ପୋର୍ଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="2403474027143565107">ସଠିକ</translation>
 <translation id="240450251994300576">ଦ୍ୱିତୀୟ ହେଡର ଲୋଗୋ</translation>
+<translation id="2404715426538856682">କ୍ରେଡିଟ ଏବଂ ଡେବିଟ କାର୍ଡ · IBAN · ଲୋୟଲ୍ଟି କାର୍ଡ</translation>
 <translation id="2404884497378469141">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି କପି କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2413155254802890957">ପୁରୁଣା</translation>
 <translation id="2413528052993050574">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ପ୍ରତ୍ୟାହାର କରାଯାଇଥାଇପାରେ। ଏହା ଏକ ଭୁଲ୍ କନଫିଗ୍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
@@ -2164,6 +2166,7 @@
 <translation id="4340810192899866471">JSONରୁ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4340982228985273705">ଏହି କମ୍ପ୍ୟୁଟର୍‌କୁ ଏଣ୍ଟରପ୍ରାଇଜ୍ ପରିଚାଳିତରୂପେ ଚିହ୍ନଟ କରାଯାଇନାହିଁ, ତେଣୁ ଏହି ନୀତି କେବଳ Chrome ୱେବ୍‌ଷ୍ଟୋର୍‌ରେ ହୋଷ୍ଟ କରାଯାଇଥିବା ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକୁ ସ୍ୱଚାଳିତରୂପେ ଇନ୍‌ଷ୍ଟଲ୍ କରିପାରିବ। "<ph name="CWS_UPDATE_URL" />" ହେଉଛି Chrome ୱେବ୍‌ଷ୍ଟୋର୍ ଅପ୍‌ଡେଟ୍ URL।</translation>
 <translation id="4342742994656318294">ଥିମ ପାର୍କଗୁଡ଼ିକ</translation>
+<translation id="4346670990181948854">ଟ୍ରାଭେଲ ସୂଚନା · ଗାଡ଼ି</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> ସହ କରାଯାଇଥିବା ସଂଯୋଗ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="4349365535725594680">ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ସେୟାର କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4349810866125026513">ଯେ କୌଣସି ଉପାୟରେ ଅପଲୋଡ କରନ୍ତୁ</translation>
@@ -2226,6 +2229,7 @@
 <translation id="4454620051637646665">ବେନରକୁ ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="4456937135469235202">ଆଡଭେଞ୍ଚର ଟ୍ରାଭେଲ</translation>
 <translation id="4458013283022578512">ଏକ ପ୍ରଶ୍ନ ଲେଖନ୍ତୁ</translation>
+<translation id="4458516738555515761">ନୀତି ଫେଚ</translation>
 <translation id="4464826014807964867">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା ସୂଚନା ଥିବା ୱେବସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="4466576951214254884">ଛାତ୍ର/ଛାତ୍ରୀ ଋଣ ଏବଂ କଲେଜ ଫାଇନାନ୍ସିଂ</translation>
 <translation id="4467821340016922962">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯାଇ ଡାଉନଲୋଡ ଦେଖିବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାନ୍ତୁ</translation>
@@ -3045,6 +3049,7 @@
 <translation id="5752519522101347518">ବେଙ୍କ ଯାଞ୍ଚକରଣ ୱେବସାଇଟ ଲୋଡ ହେଉଛି</translation>
 <translation id="5753570386948603678">ଇତିହାସରୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="5759751709240058861">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର ଓ ମୁଭ୍ କରିବାକୁ</translation>
+<translation id="5762131895127128324">ଡ୍ରାଇଭିଂ ଲାଇସେନ୍ସ · ପରିଚୟ କାର୍ଡ · ପାସପୋର୍ଟ</translation>
 <translation id="5763042198335101085">ଏକ ବୈଧ ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
 <translation id="5764725887548570807">ଅବୈଧ ମୂଳ ଫର୍ମାଟ।</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />କୁ ପଠାନ୍ତୁ</translation>
@@ -3980,6 +3985,7 @@
 <translation id="7220786058474068424">ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି</translation>
 <translation id="7221855153210829124">ବିଜ୍ଞପ୍ତି ଦେଖାନ୍ତୁ</translation>
 <translation id="722454870747268814">ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
+<translation id="7225676267118764980">ଅଟୋଫିଲ ପ୍ରଦାନକାରୀ ଏବଂ ଅନ୍ୟ ସେଟିଂସକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="7226892411756387078">ସରଳ ଟେକ୍ସଟ</translation>
 <translation id="7227293336683593977">ମୂଲ୍ୟ ଇତିହାସ</translation>
 <translation id="7228306718910595403">EU କ୍ୱାଲିଫାଏଡ ସ୍ଥିତି</translation>

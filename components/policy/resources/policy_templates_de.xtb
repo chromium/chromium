@@ -2961,6 +2961,13 @@ Ist sie auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</
 <translation id="2969568582351417848">Erweiterungsbasierte Warnungen beim Herunterladen bestimmter Dateitypen von bestimmten Domains deaktivieren</translation>
 <translation id="2971096666394658693">Das Kontextmenü enthält einen Menüpunkt zum Teilen von Bildern mit <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die <ph name="DESK_API_NAME" /> verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu speichern und freizugeben. Ist die Richtlinie deaktiviert, können Nutzer keine Desktopdaten über die <ph name="DESK_API_NAME" /> speichern und freigeben. Ist die Richtlinie nicht konfiguriert, entspricht das Verhalten der Einstellung „Deaktiviert“. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
+<translation id="2974326457745806202">SharedWorker können eine verlängerte Lebensdauer haben, wenn die Option „extendedLifetime“ im SharedWorker-Konstruktor auf „true“ gesetzt ist.
+
+Ist diese Richtlinie aktiviert oder nicht konfiguriert, können SharedWorker eine verlängerte Lebensdauer haben.
+
+Ist diese Richtlinie deaktiviert, können SharedWorker keine verlängerte Lebensdauer haben, selbst wenn die Option auf „true“ gesetzt ist.
+
+Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="2976033779241323433">Touch-Bildschirmtastatur basierend auf der standardmäßigen Systemheuristik aktivieren</translation>
 <translation id="2976429807269247880">Einstellungen für das Verhalten des alten „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Cookies</translation>
 <translation id="2979696534869541158">Alte Implementierung erzwingen</translation>
@@ -9538,6 +9545,7 @@ Die Unterstützung dieser Richtlinieneinstellung wird in <ph name="PRODUCT_NAME"
 <translation id="7216442368414164495">Ermöglicht Nutzern die Aktivierung erweiterter Berichterstellung bei Verwendung von Safe Browsing</translation>
 <translation id="7218238054592349618">JavaScript-Optimierung auf diesen Websites zulassen</translation>
 <translation id="721970071627370558">Melden des Energiestatus auf Geräten deaktivieren</translation>
+<translation id="7220960206733388609">SharedWorker können eine verlängerte Lebensdauer haben.</translation>
 <translation id="7221574724100909818">Schloss-Symbol für verschlüsselte Verbindungen verwenden</translation>
 <translation id="7227348936232766462">Nutzer dürfen Low-Level-Debug-Daten von allen unten verfügbaren Gerätetypen im Nutzerfeedback einbeziehen</translation>
 <translation id="7229365071755865554">Speichern von Passwörtern im Passwortmanager aktivieren</translation>
@@ -10183,6 +10191,7 @@ Wenn diese Richtlinie aktiviert ist, verwendet der PDF-Viewer den Skia-Renderer.
 Wenn diese Richtlinie deaktiviert ist, verwendet er den aktuellen AGG-Renderer.
 
 Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser ausgewählt.</translation>
+<translation id="7704244074621846004">Verlängerte Lebensdauer für SharedWorker aktivieren</translation>
 <translation id="7707869387893611318">Dadurch wird die Funktion für Ladetöne aktiviert.
 
           Diese Funktion sorgt dafür, dass die Ladetöne abgespielt werden.
@@ -10200,6 +10209,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser 
 
       Server sollten zu ECDHE-Cipher Suites migriert werden. Wenn diese nicht verfügbar sind, prüfen Sie, ob eine Cipher Suite mit RSA-Schlüsselaustausch aktiviert ist.</translation>
 <translation id="7709470712369261710">Google-Dienste nicht zur Bereitstellung von automatischen Bildbeschreibungen verwenden</translation>
+<translation id="7711003696883532277">SharedWorker können keine verlängerte Lebensdauer haben.</translation>
 <translation id="7712109699186360774">Nachfragen, wenn eine Website auf meine Kamera bzw. mein Mikrofon zugreifen möchte</translation>
 <translation id="7712245244073542805">Drucken über die Plattform aus einem Browserprozess.</translation>
 <translation id="7713608076604149344">Download-Einschränkungen</translation>

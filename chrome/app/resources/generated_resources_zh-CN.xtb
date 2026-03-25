@@ -338,6 +338,7 @@
 <translation id="122082903575839559">证书签名算法</translation>
 <translation id="1221266967850882682">欢迎页回顾</translation>
 <translation id="1221825588892235038">仅限选定内容</translation>
+<translation id="1222786882236067545">加载历史记录文件</translation>
 <translation id="1222835797152767346">设置 PIN 码即可轻松登录</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> 必须获得许可</translation>
 <translation id="1223498995510244364">总结</translation>
@@ -390,6 +391,7 @@
 <translation id="1252987234827889034">发生个人资料错误</translation>
 <translation id="1254034280040157728">大峡谷</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
+<translation id="1254767904958485584">已创建拆分视图</translation>
 <translation id="1255095393630332248">分享标签页时，系统会将标签页的网页内容、媒体和网址发送给 Google。</translation>
 <translation id="1256143630373008432">自测失败</translation>
 <translation id="1256588359404100567">已从您之前所用设备同步了设置。</translation>
@@ -1121,6 +1123,7 @@
 <translation id="1767043563165955993">使用此账号登录 Android 应用</translation>
 <translation id="1767508543310534319">标点符号语音提示</translation>
 <translation id="1768212860412467516">针对实验“<ph name="EXPERIMENT_NAME" />”发送反馈。</translation>
+<translation id="1768928167751703843">查看本地数据</translation>
 <translation id="1769104665586091481">在新窗口中打开链接(&amp;W)</translation>
 <translation id="1769157454356586138">扫描失败。您的管理员已屏蔽此文件</translation>
 <translation id="176920518817780870">将分组转换为书签文件夹</translation>
@@ -2244,6 +2247,7 @@
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">检查是否有更新</translation>
 <translation id="2527167509808613699">各种连接</translation>
+<translation id="2528487766183344810">请解锁“<ph name="TOKEN_NAME" />”，导出客户端证书。</translation>
 <translation id="2529887123641260401">您随时可从“开关控制”设置中更改自己的设置或再次打开设置指南。</translation>
 <translation id="2530166226437958497">问题排查</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />出了点问题，无法安装 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
@@ -2374,6 +2378,7 @@
 <translation id="2628258844236035475">要从 Chrome 自动填充中移除住址吗？</translation>
 <translation id="2628770867680720336">要启用 ADB 调试，您必须将此 Chromebook 恢复出厂设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">发起与 Gemini 的新对话</translation>
+<translation id="2629058811622993283">同时分享应用音频（从其所有窗口和相关应用）</translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
 <translation id="2629437048544561682">清除画布</translation>
 <translation id="2630703150574465936">您已允许 Gemini 使用您的账号自动登录这些网站和应用</translation>
@@ -2446,6 +2451,7 @@
 <translation id="2670403088701171361">不允许网站查看您剪贴板中的文字或图片</translation>
 <translation id="2671423594960767771">共享分组</translation>
 <translation id="2671451824761031126">您的书签和设置已就绪</translation>
+<translation id="267276224968585180">Chrome 正在从命令行文件加载 flag。稳定性和安全性可能会受到影响。</translation>
 <translation id="2673135533890720193">读取您的浏览记录</translation>
 <translation id="2673848446870717676">请确保您的蓝牙设备处于配对模式且就在附近。应仅与您信任的设备配对。此 Chromebook 上的所有账号都可以看到已配对的设备。</translation>
 <translation id="2673873887296220733">将 1 个文件复制到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
@@ -2805,6 +2811,7 @@
 <translation id="2916745397441987255">搜索扩展程序</translation>
 <translation id="2918484639460781603">前往“设置”</translation>
 <translation id="2918484644467055090">该设备无法注册到您账号所属的组织，因为它已被标记为受另一组织管理。</translation>
+<translation id="2920257489056757859">该图标表示此个人资料由您的组织管理</translation>
 <translation id="2920346489891435227">在右侧视图中打开链接</translation>
 <translation id="2920852127376356161">不得处理协议</translation>
 <translation id="2921081876747860777">请设置密码，以保护您的本地数据。</translation>
@@ -3249,6 +3256,7 @@
 <translation id="3241638166094654466">每行中的单元格数：</translation>
 <translation id="3241680850019875542">选择要打包的扩展程序的根目录。要更新某个扩展程序，还需选择要再次使用的私有密钥文件。</translation>
 <translation id="3241810535741601486">此更改是永久性的，无法撤消。延长更新适用于此设备的所有用户。<ph name="LINK_START" />了解详情<ph name="LINK_END" /></translation>
+<translation id="324205398936770726">您的头像</translation>
 <translation id="3243017971870859287">读取 ChromeOS Flex 设备序列号和组件序列号</translation>
 <translation id="324366796737464147">降噪</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4457,6 +4465,7 @@
 <translation id="405181879009056822">ChromeOS 设置</translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4052913941260326985">创建二维码(&amp;Q)</translation>
+<translation id="4053028343167125998">请解锁“<ph name="TOKEN_NAME" />”，导入客户端证书。</translation>
 <translation id="4053833479432165765">将网页作为应用安装(&amp;I)…</translation>
 <translation id="4054070260844648638">对所有人可见</translation>
 <translation id="4056908315660577142">您已达到您家长为 Chrome 应用“<ph name="APP_NAME" />”设定的使用时限。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
@@ -4670,6 +4679,7 @@
 <translation id="4226303886821889519">更新程序版本：<ph name="VERSION" /></translation>
 <translation id="4228071595943929139">使用您组织的电子邮件地址</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
+<translation id="4229538146709970028">请解锁“<ph name="TOKEN_NAME" />”，使用证书向 <ph name="HOST_NAME" /> 验证身份。</translation>
 <translation id="4231053948789591973">目前已暂停投放。您可随时恢复投放或停止投放屏幕。</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
@@ -4683,6 +4693,7 @@
 <translation id="4241140145060464825">应用内容</translation>
 <translation id="4241224519481557898">类别</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
+<translation id="4242245038391716252">由以下扩展程序下载：&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4242577469625748426">无法在设备上安装策略设置：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4242825475818569385">您的<ph name="BEGIN_LINK" />浏览器和个人资料<ph name="END_LINK" />由 <ph name="DOMAIN" /> 管理</translation>
@@ -5803,6 +5814,7 @@
 <translation id="5026874946691314267">不再显示此通知</translation>
 <translation id="5027550639139316293">电子邮件证书</translation>
 <translation id="5027562294707732951">添加扩展程序</translation>
+<translation id="502811790397568978">请解锁“<ph name="TOKEN_NAME" />”，从 <ph name="HOST_NAME" /> 导入客户端证书。</translation>
 <translation id="5029287942302939687">您的密码已设置完毕</translation>
 <translation id="5029873138381728058">未能检查虚拟机</translation>
 <translation id="503155457707535043">正在下载所选应用</translation>
@@ -6003,6 +6015,7 @@
 <translation id="5172855596271336236">有 1 台受管理的打印机。</translation>
 <translation id="5173668317844998239">向您的安全密钥中添加指纹和删除其中保存的指纹</translation>
 <translation id="5174169235862638850">已将密码复制到剪贴板</translation>
+<translation id="517488401359338823">解锁安全设备</translation>
 <translation id="5177479852722101802">仍然禁止访问摄像头和麦克风</translation>
 <translation id="5178667623289523808">查找上一个</translation>
 <translation id="5180276433875360121">显示<ph name="CERT_LIST" /></translation>
@@ -6047,6 +6060,7 @@
 <translation id="5200191131577845078">允许 <ph name="DOMAIN" /> 发送通知</translation>
 <translation id="5200680225062692606">触控 ID 已锁定。要继续，请输入密码。</translation>
 <translation id="5201945335223486172">适用于 <ph name="EXAMPLE_DOMAIN_1" /></translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{正在查看 1 个文件中的历史记录}other{正在查看 # 个文件中的历史记录}}</translation>
 <translation id="5203035663139409780">可以修改您设备上的文件或文件夹</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{点击即可查看该扩展程序}other{点击即可查看这些扩展程序}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" /> 的恢复密码</translation>
@@ -7283,6 +7297,7 @@
 <translation id="6095696531220637741">马卡龙</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">以最大化模式打开</translation>
+<translation id="6096192567014958958"><ph name="USER_NAME" />，欢迎您！</translation>
 <translation id="6096326118418049043">X.500 名称</translation>
 <translation id="6097480669505687979">如果不释放空间，系统可能会自动移除用户和数据。</translation>
 <translation id="6097600385983390082">已关闭语音搜索</translation>
@@ -8198,6 +8213,7 @@
 <translation id="6755702685749429945">添加字典</translation>
 <translation id="6756643207511618722">语音引擎</translation>
 <translation id="6757431299485455321">有助于其他设备发现此热点。</translation>
+<translation id="6757615605516049275">请解锁“<ph name="TOKEN_NAME" />”。</translation>
 <translation id="6758056191028427665">让我们知道您的满意度。</translation>
 <translation id="6759193508432371551">恢复出厂设置</translation>
 <translation id="6760354150216532978">警告：此网站可以看到您所做的修改</translation>
@@ -8393,6 +8409,7 @@
 <translation id="6871644448911473373">OCSP 响应程序：<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">语言…</translation>
 <translation id="6872859537300194762"><ph name="TASK_TITLE" />\n由于其他活动，我已暂停任务。准备就绪后，您可以返回 Chrome 查看。</translation>
+<translation id="6873156759937047811">PIN 码：</translation>
 <translation id="6873571253135628430">更改网站权限</translation>
 <translation id="6876155724392614295">自行车</translation>
 <translation id="6876469544038980967">没用</translation>
@@ -8955,7 +8972,6 @@
 <translation id="7284411326658527427">每个人都可对自己的账号进行个性化设置并确保数据的私密性。</translation>
 <translation id="7285008278689343502">大提顿国家公园</translation>
 <translation id="7286867818472074330">选择通行密钥</translation>
-<translation id="7287143125007575591">访问遭拒。</translation>
 <translation id="7287411021188441799">恢复默认背景</translation>
 <translation id="7287949630503871403">应用中存储的数据量</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -9932,6 +9948,7 @@
 <translation id="7947962633355574091">复制视频地址(&amp;O)</translation>
 <translation id="7947964080535614577">网站通常会显示广告，以便能够免费提供内容或服务。但是，我们已知某些网站会展示侵扰性或误导性广告。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有网页</translation>
+<translation id="7949038991703929816">未能加载历史记录。请确保文件包含有效的更新程序日志。</translation>
 <translation id="7950629216186736592">原因：LBS 仅支持 http://、https:// 和 file:// 网址。</translation>
 <translation id="7950814699499457511">已开启 • 此扩展程序尚未发布隐私权规范，例如如何收集和使用数据</translation>
 <translation id="7951265006188088697">如要添加或管理 Google Pay 支付方式，请访问您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" /></translation>
@@ -10313,6 +10330,7 @@
 <translation id="8207404892907560325">选择一个通行密钥</translation>
 <translation id="8207794858944505786">虚拟机“<ph name="DEFAULT_VM_NAME" />”已存在，但似乎不是有效的 <ph name="VM_TYPE" /> 虚拟机。请与您的管理员联系。</translation>
 <translation id="8207901006380134182">一股巨浪仿佛要吞噬整片海洋，岸边则是一片幽暗深邃的森林。</translation>
+<translation id="8208043093301544621">首页</translation>
 <translation id="8208216423136871611">不保存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 条新通知}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{有 1 项下载正在进行中}other{有多项下载正在进行中}}</translation>
@@ -10474,6 +10492,7 @@
 <translation id="8317965619823678157">复制密码</translation>
 <translation id="8318266828739827371">使用分屏视图查看屏幕上放大的区域。使用搜索键 + Ctrl + D 可开启和关闭固定放大镜。</translation>
 <translation id="8318680582681577962">无痕模式 PDF 子框架：<ph name="SUBFRAME_SITE" /></translation>
+<translation id="8319105959731007612">进程隔离可防止其他应用篡改“<ph name="IDS_SHORT_PRODUCT_NAME" />”。</translation>
 <translation id="8319414634934645341">扩展密钥用法</translation>
 <translation id="8320212361750431956">近期活动</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -11763,6 +11782,7 @@
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理员可以使用“<ph name="APP0_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=2{管理员可以使用“<ph name="APP0_NAME" />”和“<ph name="APP1_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=3{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 1 个应用录制您的屏幕。录制开始时，您不会收到通知。}other{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 # 个应用录制您的屏幕。录制开始时，您不会收到通知。}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 账号登录</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
+<translation id="9188142767272053574">启用进程隔离</translation>
 <translation id="9189618485998894982">此应用已被屏蔽，请与开发者联系。</translation>
 <translation id="9192019773545828776">收听语音反馈，让您无需看屏幕即可使用设备。通过已连接的设备可以获得盲文反馈。使用 Ctrl + Alt + Z 可开启和关闭 ChromeVox。使用搜索键 + 向左键或向右键可进行导航。使用搜索键 + 空格键即可选择（启用）。</translation>
 <translation id="9195969368671142407">如果您所在的组织限制您将内容保存到 Google 账号，您将无法分享或加入标签页分组</translation>

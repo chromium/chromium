@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Mae'r ffeil maniffest yn annilys</translation>
 <translation id="7217838517480956708">Mae gweinyddwr y peiriant hwn yn ei gwneud yn ofynnol i osod <ph name="EXTENSION_NAME" />. Ni ellir ei dynnu na'i addasu.</translation>
+<translation id="7287143125007575591">Gwrthodwyd mynediad.</translation>
 <translation id="7612608473764576263">Rhaid i werth mewnbwn ar gyfer allwedd breifat fod yn fformat dilys (allwedd RSA PKCS # 8-fformat PEM-encoded).</translation>
 <translation id="765293928828334535">Ni ellir ychwanegu apiau, estyniadau na sgriptiau defnyddwyr o'r wefan hon</translation>
 <translation id="7876803335449432072">Methu â llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys, dim ond o ffeiliau dalennau arddull a gefnogir megis ffeiliau .css y gellir llwytho dalennau arddull sgript cynnwys.</translation>

@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Umlando</translation>
 <translation id="1652197001188145583">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi e-NFC. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi e-NFC.</translation>
 <translation id="1660204651932907780">Vumela amasayithi ukuthi adlale umsindo (kunconyiwe)</translation>
+<translation id="1676590040242013349">Okuthi "Sebenzisa njalo ukuxhuma okuvikelekile" kuvuliwe.</translation>
 <translation id="1677097821151855053">Amakhukhi nenye idatha yesayithi kusetshenziselwa ukukukhumbula, ngokwesibonelo ukungenisa ngemvume noma ukwenza izikhangiso zibe ngezakho. Ukuze uphathe amakhukhi awo wonke amasayithi, bona okuthi<ph name="BEGIN_LINK" />Amasethingi<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Amasayithi angacela ukusebenzisa amadivayisi e-NFC</translation>
 <translation id="1686785653877010442">Ngokuvamile amasayithi athumela izaziso ukukwazisa ngezindaba eziphambili noma ngemiyalezo yengxoxo</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Vimbela amasayithi kusukela ekufundeni umbhalo nezithombe kusukela kubhodi lokunamathisela</translation>
 <translation id="6945221475159498467">Khetha</translation>
 <translation id="6950072572526089586">Isayithi oyivakashelayo ikwazi ukulondoloza ulwazi olumayelana nokwenzayo ukuze isebenze ngendlela oyilindele — ngokwesibonelo, ukukugcina ungene ngemvume kusayithi noma ukulondoloza izinto kubhasikidi wakho wokuthenga. Ngokuvamile amasayithi alondoloza lolu lwazi okwesikhashana kudivayisi yakho.</translation>
+<translation id="6964291282260073066">"I-WebGPU" ivaliwe.</translation>
 <translation id="6965382102122355670">KULUNGILE</translation>
 <translation id="6980507581230208647">Itimu yeRose</translation>
 <translation id="6980861169612950611">Sula idatha yesayithi? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi ento engekho ngokoqobo. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi ento engekho ngokoqobo.</translation>
 <translation id="7282197670900591579">Itimu yeCitron</translation>
 <translation id="728412880473384942">Amasayithi ayashesha kodwa avikeleke kancane</translation>
+<translation id="7352902948037373520">Lawula <ph name="BEGIN_LINK1" />kumasethingi e-Android<ph name="END_LINK1" />
+
+Ukuvikela Okuthuthukile kulawula la masethingi eChrome:</translation>
 <translation id="7366415735885268578">Engeza isayithi</translation>
 <translation id="7368695150573390554">Noma iyiphi idatha engekho ku-inthanethi izosulwa</translation>
 <translation id="7369678931043226462">Ishidi eliphansi lekhasi lethebhu entsha yokuqamba ngokwabahlinzekelwayo livulwe ngobude obuphakathi nendawo</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Amasayithi avamise ukuxhuma amadivayisi e-USB kuzici ezifana nokuphrinta idokhumenti noma ukulondoloza kudivayisi yesitoreji</translation>
 <translation id="8473055640493819707">I-'<ph name="APP_NAME" />' iphelelwe isikhathi. Sicela ufake kabusha i-app.</translation>
 <translation id="847433688444405067">Bhrawuza kumadivayisi wonkana</translation>
+<translation id="8484556725636319115">"Isithuthukisi se-JavaScript" sivaliwe. <ph name="BEGIN_LINK2" />Lawula okuhlukile kweSayithi<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Itholakala kokungaxhunyiwe ku-inthanethi</translation>
 <translation id="848952951823693243">Njalo cela isayithi leselula</translation>
 <translation id="8492822722330266509">Amasayithi angathumela okwesikhashana aphinde asebenzise ukuqondiswa kabusha</translation>

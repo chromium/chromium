@@ -3081,6 +3081,13 @@ Si se establece como falsa, no podrán acceder a la función.</translation>
 <translation id="2969568582351417848">Inhabilitar las advertencias basadas en las extensiones de la descarga del tipo de archivo en los dominios</translation>
 <translation id="2971096666394658693">El menú contextual tendrá un elemento de menú para compartir imágenes con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Si habilitas la política, las aplicaciones web de terceros podrán usar <ph name="DESK_API_NAME" /> para guardar y compartir escritorios de <ph name="PRODUCT_OS_NAME" />. Si la inhabilitas, el usuario no podrá guardar ni compartir datos del escritorio mediante la <ph name="DESK_API_NAME" />. Si no la estableces, el comportamiento será el mismo que cuando la inhabilitas. La política solo tendrá efecto en los dispositivos inscritos.</translation>
+<translation id="2974326457745806202">Los SharedWorkers pueden tener una vida útil extendida si la opción "extendedLifetime" se establece en verdadero en el constructor de SharedWorker.
+
+Si habilitas esta política o no la estableces, los SharedWorkers pueden tener una vida útil extendida.
+
+Si inhabilitas esta política, los SharedWorkers no podrán tener una vida útil extendida, incluso si estableces la opción como verdadera.
+
+Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="2976033779241323433">Habilitar el teclado virtual táctil según la heurística predeterminada del sistema</translation>
 <translation id="2976429807269247880">Configuración del comportamiento de las cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /> heredadas</translation>
 <translation id="2979696534869541158">Forzar la implementación anterior</translation>
@@ -9985,6 +9992,7 @@ La compatibilidad con este parámetro de configuración de política finalizará
 <translation id="7216442368414164495">Permitir que los usuarios acepten informes extendidos de navegación segura</translation>
 <translation id="7218238054592349618">Permitir la optimización de JavaScript en estos sitios</translation>
 <translation id="721970071627370558">Inhabilitar los informes de estado de energía del dispositivo</translation>
+<translation id="7220960206733388609">Los SharedWorkers pueden tener una vida útil prolongada.</translation>
 <translation id="7221574724100909818">Usar el ícono de bloqueo para conexiones seguras</translation>
 <translation id="7227348936232766462">Permitir que los usuarios incluyan los datos de depuración de bajo nivel de todos los tipos de dispositivos disponibles a continuación en los comentarios de los usuarios</translation>
 <translation id="7229365071755865554">Habilitar el guardado de contraseñas en el administrador de contraseñas</translation>
@@ -10644,6 +10652,7 @@ Si habilitas esta política, el lector de PDF utilizará el renderizador Skia.
 Si la inhabilitas, el lector de PDF usará el renderizador AGG actual.
 
 Si no estableces esta política, el navegador elegirá el renderizador de PDF.</translation>
+<translation id="7704244074621846004">Habilitar la vida útil extendida para SharedWorkers</translation>
 <translation id="7707869387893611318">Habilita la función de sonidos de carga.
 
           Esta función se encarga de reproducir los sonidos de carga.
@@ -10661,6 +10670,7 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
 
       Se recomienda que los servidores migren a los conjuntos de algoritmos de cifrado ECDHE. Si no están disponibles, asegúrate de habilitar un conjunto de algoritmos de cifrado que use un intercambio de clave RSA.</translation>
 <translation id="7709470712369261710">No permite que los servicios de Google proporcionen descripciones automáticas de imágenes</translation>
+<translation id="7711003696883532277">Los SharedWorkers no pueden tener una vida útil extendida.</translation>
 <translation id="7712109699186360774">Preguntar siempre que un sitio quiera acceder a la cámara o al micrófono</translation>
 <translation id="7712245244073542805">Imprimir desde la plataforma a partir del proceso del navegador</translation>
 <translation id="7713608076604149344">Restricciones de descarga</translation>

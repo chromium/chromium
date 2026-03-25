@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Tệp kê khai không hợp lệ</translation>
 <translation id="7217838517480956708">Quản trị viên của máy này yêu cầu cài đặt <ph name="EXTENSION_NAME" />. Bạn không thể xóa hoặc sửa đổi tiện ích này.</translation>
+<translation id="7287143125007575591">Truy cập bị từ chối.</translation>
 <translation id="7612608473764576263">Giá trị đầu vào của khóa riêng tư phải có định dạng hợp lệ (khóa RSA mã hóa kiểu PEM có định dạng PKCS#8).</translation>
 <translation id="765293928828334535">Không thể thêm các ứng dụng, tiện ích và tập lệnh của người dùng từ trang web này</translation>
 <translation id="7876803335449432072">Không thể tải tệp "<ph name="RELATIVE_PATH" />" cho tập lệnh nội dung. Các biểu định kiểu tập lệnh nội dung chỉ có thể được tải từ các tệp biểu định kiểu được hỗ trợ, chẳng hạn như tệp .css.</translation>

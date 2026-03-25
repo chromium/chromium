@@ -372,6 +372,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1567405528131216114">Engadir <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Introduce unha data de vencemento</translation>
 <translation id="1569694109004336106">Google Chrome está tentando activar Windows Hello para completar contrasinais.</translation>
+<translation id="1569905000953679183">Recuperación da política de instalación de extensións</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Verificando método de pago</translation>
 <translation id="1576277203042721907">Estatísticas de compras</translation>
@@ -2229,6 +2230,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4454620051637646665">Pechar o báner</translation>
 <translation id="4456937135469235202">Viaxes de aventura</translation>
 <translation id="4458013283022578512">Escribe unha pregunta</translation>
+<translation id="4458516738555515761">Recuperación da política</translation>
 <translation id="4464826014807964867">Sitios web con información da túa organización</translation>
 <translation id="4466576951214254884">Préstamos para estudantes e financiamento de estudos universitarios</translation>
 <translation id="4467821340016922962">Para saír da pantalla completa e ver a descarga, preme |<ph name="ACCELERATOR" />|</translation>

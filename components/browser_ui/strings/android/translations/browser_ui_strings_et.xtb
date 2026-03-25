@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1652197001188145583">Kui see on sisse lülitatud, võivad saidid küsida luba NFC-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid NFC-seadmeid kasutada.</translation>
 <translation id="1660204651932907780">Saitidel lubatakse esitada heli (soovitatav)</translation>
+<translation id="1676590040242013349">„Kasuta alati turvalist ühendust“ on sisse lülitatud;</translation>
 <translation id="1677097821151855053">Küpsisefaile ja muid saidi andmeid kasutatakse teie meeldejätmiseks, näiteks selleks, et teid sisse logida või reklaame isikupärastada. Kõigi saitide küpsisefailide haldamiseks vaadake jaotist <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">Lubage saitidel küsida luba NFC-seadmete kasutamiseks</translation>
 <translation id="1686785653877010442">Saidid saadavad tavaliselt märguandeid, et teavitada teid erakorralistest uudistest või vestlussõnumitest.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Keela saitidel lugeda lõikelaual olevat teksti ja pilte</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6950072572526089586">Külastatav sait saab salvestada teavet teie tegevuste kohta, et sait toimiks ootuspäraselt – näiteks selleks, et hoida teid saidile sisselogituna või salvestada teie ostukorvis olevad üksused. Saidid salvestavad selle teabe teie seadmesse sageli ajutiselt.</translation>
+<translation id="6964291282260073066">„WebGPU“ on keelatud.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Roosiroosa teema</translation>
 <translation id="6980861169612950611">Kas kustutada saidi andmed? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Kui see on sisse lülitatud, võivad saidid küsida luba VR-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid VR-seadmeid kasutada.</translation>
 <translation id="7282197670900591579">Sidrunikollane teema</translation>
 <translation id="728412880473384942">Saidid on kiiremad, aga ebaturvalisemad</translation>
+<translation id="7352902948037373520">Hallake <ph name="BEGIN_LINK1" />Androidi seadetes<ph name="END_LINK1" />
+
+Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="7366415735885268578">Saidi lisamine</translation>
 <translation id="7368695150573390554">Kõik võrguvälised andmed kustutatakse</translation>
 <translation id="7369678931043226462">Uue vahelehe kohandamise alumine leht on avatud poolel kõrgusel</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Saidid loovad USB-seadmetega ühenduse tavaliselt teatud funktsioonide jaoks, näiteks dokumentide printimiseks või salvestusseadmele talletamiseks</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> on aegunud. Installige rakendus uuesti.</translation>
 <translation id="847433688444405067">Sirvige mitmes seadmes</translation>
+<translation id="8484556725636319115">„JavaScripti optimeerija“ on välja lülitatud. <ph name="BEGIN_LINK2" />Saidi erandite haldamine<ph name="END_LINK2" />;</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="848952951823693243">Alati taotletakse mobiilisaiti</translation>
 <translation id="8492822722330266509">Saidid saavad saata hüpikaknaid ja kasutada ümbersuunamisi</translation>

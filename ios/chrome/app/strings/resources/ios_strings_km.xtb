@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">ជ្រើសរើស​គណនី​ដែលអ្នក​ចង់នាំចេញ​ទៅកម្មវិធី​ផ្សេងទៀត។</translation>
 <translation id="1506061864768559482">ម៉ាស៊ីនស្វែងរក</translation>
 <translation id="1506063256525392513">វា​អនុញ្ញាតឱ្យ​អ្នកថតរូប និង​បង្ហោះរូបថត ក៏ដូចជាស្កេន​កូដ QR ផងដែរ</translation>
+<translation id="1506733063065214205">កម្មវិធីភ្ញៀវ RCS MLS</translation>
 <translation id="1508263560970797965">បន្តនៅក្នុង​មុខងារ​ឯកជន</translation>
 <translation id="1509486075633541495">ចូលទៅ​គេហទំព័រ</translation>
 <translation id="1513858653616922153">លុបពាក្យសម្ងាត់</translation>
@@ -477,6 +478,7 @@
 <translation id="2671423594960767771">ចែករំលែកក្រុម</translation>
 <translation id="2673508731173059946">ចូល​ទៅកាន់តំណ​ដែល​បានចម្លង</translation>
 <translation id="2679659833697380">ព័ត៌មាន​របស់អ្នក​ត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍​របស់អ្នក</translation>
+<translation id="2681572445246787428">ការចុះ​ហត្ថលេខា​លើឯកសារ</translation>
 <translation id="2688535388040882469">បដា</translation>
 <translation id="2690858294534178585">កាមេរ៉ាកំពុងត្រូវបានប្រើ</translation>
 <translation id="2691653761409724435">មិន​អាច​ប្រើ​បាន​ពេល​គ្មាន​អ៊ីនធឺណិត</translation>
@@ -907,10 +909,12 @@
 <translation id="429074084062258019">{count,plural, =1{បញ្ចូល​ផ្ទាំង​ទៅក្រុម}other{បញ្ចូល​ផ្ទាំង​ទៅក្រុម}}</translation>
 <translation id="4302061870579014542">កំណត់ទីតាំង</translation>
 <translation id="4304713468139749426">កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់</translation>
+<translation id="4306349443295056740">ការចុះ​ហត្ថលេខា OCSP</translation>
 <translation id="4309403553630140242">ចុចពីរដង ដើម្បីទទួលបាន​ព័ត៌មានបន្ថែម</translation>
 <translation id="4310738531374808763">ប្ដូរ​ទំព័រដើម​របស់អ្នក​តាមបំណង</translation>
 <translation id="4320848494125124980">ថ្មីៗ</translation>
 <translation id="4322394346347055525">បិទផ្ទាំងផ្សេងទៀត</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">បើកការជូនដំណឹង</translation>
 <translation id="4326912346867677256">ចុច "ប្រើពាក្យ​សម្ងាត់" ដើម្បីចូលគណនីដោយសុវត្ថិភាព។</translation>
 <translation id="4327017157997423717">តាមដាន​តម្លៃ​នៅលើ <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1029,6 +1033,7 @@
 <translation id="4744428388659507035">ដើម្បីទទួលបានចំណាំរបស់អ្នកនៅលើឧបករណ៍ទាំងអស់របស់អ្នក សូមបើក “ចំណាំ” នៅក្នុងការកំណត់។</translation>
 <translation id="4746926359847517643">អ្នក​អាច​យក​ផ្ទាំង​ទាំង​នោះ​មកវិញ​នៅ​ក្នុង​ប្រវត្តិ​បាន​ជា​និច្ច។</translation>
 <translation id="4749529195026091676">{count,plural, =1{បាន​នាំចូល​កាត {count}}other{បាន​នាំចូល​កាត {count}}}</translation>
+<translation id="4749924365937394956">ការផ្ទៀងផ្ទាត់​ម៉ាស៊ីនមេ</translation>
 <translation id="4751645464639803239">ផ្ទាំងឯកជនថ្មី</translation>
 <translation id="4752348350801431746">បិទការ​ជូនដំណឹងអំពីការពិនិត្យ​សុវត្ថិភាព…</translation>
 <translation id="4759238208242260848">ទាញយក</translation>
@@ -1394,12 +1399,14 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="598634819525651074">ផ្ទៃក្រឡា</translation>
 <translation id="5988097621740394599">មើលការធ្លាក់ថ្លៃ​នៅក្នុងផ្ទាំង​របស់អ្នក។</translation>
 <translation id="5988851877894965432">បើក URL នៅក្នុង Chrome</translation>
+<translation id="599343768974649785">អក្សរ​ច្បាស់លាស់</translation>
 <translation id="6006672969046233841">ផ្ទាំងថ្មី</translation>
 <translation id="6011308810877101166">កែលម្អ​ការណែនាំ​ការស្វែងរក</translation>
 <translation id="6012140227487808125">កំពុងអ៊ីនគ្រីប…</translation>
 <translation id="6027619584715411062">ចូលគណនី ដើម្បី​ទទួលបាន​ចំណាំ ពាក្យសម្ងាត់​របស់អ្នក និងអ្វីៗជាច្រើនទៀត​នៅលើឧបករណ៍​ទាំងអស់​របស់អ្នក។</translation>
 <translation id="6027945736510816438">តើ​អ្នក​ចង់​មានន័យ​ថា <ph name="WEBSITE" /> មែនទេ?</translation>
 <translation id="6032845897905314562">មុខងារថ្មី</translation>
+<translation id="6037458223703682108">ហត្ថលេខា​ឌីជីថល</translation>
 <translation id="6038823991892265570">គ្រប់គ្រងទំហំផ្ទុក Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">បិទ</translation>
@@ -1543,6 +1550,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6476284679642588870">គ្រប់គ្រង​វិធីបង់ប្រាក់</translation>
 <translation id="6476800141292307438">កំពុងបកប្រែទំព័រ​ទៅភាសា<ph name="LANGUAGE" />។ ជម្រើសមាននៅជិត​ផ្នែកខាងក្រោមបំផុតរបស់​អេក្រង់។</translation>
 <translation id="647867789226964031">ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក</translation>
+<translation id="6480363549849064919">ការផ្ទៀងផ្ទាត់​កម្មវិធីភ្ញៀវ</translation>
 <translation id="6494931198667773526">ចុងបញ្ចប់</translation>
 <translation id="6503077044568424649">ចូលទៅកាន់ច្រើនបំផុត</translation>
 <translation id="6503763061813913607">ការជូនដំណឹង​អំពី​ការពិនិត្យ​សុវត្ថិភាព</translation>
@@ -1588,6 +1596,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6619015782482868078">ទម្រង់រចនា​ពណ៌​បៃតងស្រាល</translation>
 <translation id="6620279676667515405">បោះបង់</translation>
 <translation id="6625830436658400045">ការ​កំណត់​​សមកាលកម្ម​របស់​អ្នក​នឹង​ត្រូវបាន​ស្ដារ ដោយ​ផ្អែកលើ​ការបម្រុងទុក​ចុងក្រោយ​របស់​អ្នក។ អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />បានជានិច្ច។</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">កែសម្រួលថតឯកសារ</translation>
 <translation id="6629759408545977279">ពី៖ <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">បញ្ចូល​ស្រទាប់​ការពារ​បន្ថែមនេះ​ប្រឆាំងនឹង​ការគំរាម​គំហែង​លើអ៊ីនធឺណិត។</translation>
@@ -2151,6 +2160,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8614671330774943747">ចូល​ទៅកាន់​មុខងារប្ដូរផ្ទាំង</translation>
 <translation id="862367213447108001">បង្ហាញ​ផ្ទាំងលោតឡើង​នៅលើ​គេហទំព័រនេះ​ជានិច្ច</translation>
 <translation id="8625706492572042370">កែអេក្រង់ដើម</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">បាន​ចាក់សោ​ផ្ទាំងឯកជន</translation>
 <translation id="8633025649649592204">សកម្មភាព​ថ្មីៗ</translation>
 <translation id="8636825310635137004">ដើម្បីទទួលបានផ្ទាំងរបស់អ្នកពីឧបករណ៍ផ្សេងទៀតរបស់អ្នក សូមបើកការធ្វើសមកាលកម្ម</translation>
@@ -2337,6 +2347,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="942624946817804130">Export</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="94870150074703282">លុបក្រុមឬ?</translation>
+<translation id="951090530321144895">ស្ថាប័ន​ចេញ CA</translation>
 <translation id="952704832371081537">បោះបង់</translation>
 <translation id="95332591904104970">កម្មវិធី​ដែល​បាន​ភ្ជាប់</translation>
 <translation id="954667170699278022">បញ្ជីអាន</translation>

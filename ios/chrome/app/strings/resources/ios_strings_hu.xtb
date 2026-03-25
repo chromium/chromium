@@ -493,6 +493,7 @@
 <translation id="2721190673959776287">Terméken belüli kiterjedt súgó mintája a kontextus szerinti panelhez, amely naponta többször is megjelenik.</translation>
 <translation id="2739887572830526131">Tartsa meg ezt a csoportot, ha később szeretne hozzáadni lapokat, vagy törölje, ha már nem lesz rá szüksége.</translation>
 <translation id="2747003861858887689">Előző mező</translation>
+<translation id="2750583038402718064"><ph name="WEBSITE_TITLE" /> webhely áthelyezve ebbe a pozícióba: <ph name="POSITION" /></translation>
 <translation id="2755485474385016903">A módosításokat a csoport minden tagja látja</translation>
 <translation id="2755595981383829244">Mostantól kapni fog tartalomértesítéseket</translation>
 <translation id="2761788987260570878">Készítsen fotót a keresésről.</translation>
@@ -2033,6 +2034,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" />-modellek</translation>
 <translation id="8211030355252954494">Ön jelszavakat kapott a következőhöz: <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
+<translation id="8213190397436801658">Otthon</translation>
 <translation id="8214293972734702249">Kitűzve, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Offline verzió megtekintése új lapon</translation>
 <translation id="8221665793629393739">Emlékeztető visszatérésre</translation>

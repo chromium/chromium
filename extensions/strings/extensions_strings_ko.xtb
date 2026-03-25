@@ -66,6 +66,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" />의 알 수 없는 제품 <ph name="PRODUCT_ID" /></translation>
 <translation id="7068383018033524534">매니페스트 파일이 잘못되었습니다</translation>
 <translation id="7217838517480956708">이 기기를 설치할 때 관리자가 <ph name="EXTENSION_NAME" />을(를) 요구합니다. 삭제 또는 수정할 수 없습니다.</translation>
+<translation id="7287143125007575591">액세스가 거부되었습니다.</translation>
 <translation id="7612608473764576263">비공개 키 입력 값이 유효한 형식이어야 합니다(PKCS#8 형식 PEM 인코딩된 RSA 키).</translation>
 <translation id="765293928828334535">이 웹사이트에서 앱, 확장 프로그램, 사용자 스크립트 등을 추가할 수 없습니다</translation>
 <translation id="7876803335449432072">콘텐츠 스크립트용 파일('<ph name="RELATIVE_PATH" />')을 로드할 수 없습니다. 콘텐츠 스크립트 스타일 시트는 .css 파일과 같이 지원되는 스타일 시트 파일에서만 로드할 수 있습니다.</translation>

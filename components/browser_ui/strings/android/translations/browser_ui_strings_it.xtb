@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1652197001188145583">Quando l'opzione è attiva, i siti possono chiedere di usare i dispositivi NFC. Quando l'opzione è disattivata, i siti non possono utilizzare i dispositivi NFC.</translation>
 <translation id="1660204651932907780">Consenti ai siti di riprodurre l'audio (opzione consigliata)</translation>
+<translation id="1676590040242013349">L'opzione "Utilizza sempre connessioni sicure" è attiva.</translation>
 <translation id="1677097821151855053">I cookie e altri dati dei siti vengono utilizzati per ricordare attività e informazioni dell'utente, ad esempio per eseguire l'accesso o per personalizzare gli annunci. Per gestire i cookie per tutti i siti, consulta le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">I siti possono chiedere di utilizzare i dispositivi NFC</translation>
 <translation id="1686785653877010442">In genere, i siti inviano delle notifiche per comunicarti le ultime notizie o se hai ricevuto nuovi messaggi di chat</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Impedisci ai siti di leggere testo e immagini negli appunti</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6950072572526089586">Un sito che visiti può salvare informazioni su ciò che stai facendo affinché possa funzionare come previsto, ad esempio per mantenere l'accesso al sito o salvare gli articoli nel tuo carrello degli acquisti. Spesso i siti salvano temporaneamente queste informazioni sul dispositivo</translation>
+<translation id="6964291282260073066">"WebGPU" è disattivato.</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6980861169612950611">Vuoi eliminare i dati del sito? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Quando l'opzione è attiva, i siti possono chiedere di usare i dispositivi per realtà virtuale. Quando l'opzione è disattivata, i siti non possono usare i dispositivi per realtà virtuale.</translation>
 <translation id="7282197670900591579">Tema cedro</translation>
 <translation id="728412880473384942">I siti sono più veloci, ma meno sicuri</translation>
+<translation id="7352902948037373520">Gestisci nelle <ph name="BEGIN_LINK1" />Impostazioni Android<ph name="END_LINK1" />
+
+La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="7366415735885268578">Aggiungi un sito</translation>
 <translation id="7368695150573390554">I dati offline verranno eliminati</translation>
 <translation id="7369678931043226462">Riquadro inferiore di Personalizza la pagina Nuova scheda aperto nella parte inferiore dello schermo</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">In genere, i siti si connettono a dispositivi USB per funzionalità come la stampa di un documento o il salvataggio su un dispositivo di archiviazione</translation>
 <translation id="8473055640493819707">L'app "<ph name="APP_NAME" />" è obsoleta. Reinstalla l'app.</translation>
 <translation id="847433688444405067">Naviga su più dispositivi</translation>
+<translation id="8484556725636319115">Lo "Strumento di ottimizzazione di JavaScript" è disattivato. <ph name="BEGIN_LINK2" />Gestisci le eccezioni del sito<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="848952951823693243">Richiedi sempre sito mobile</translation>
 <translation id="8492822722330266509">I siti possono inviare popup e usare reindirizzamenti</translation>

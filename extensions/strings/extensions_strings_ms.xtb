@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Produk <ph name="PRODUCT_ID" /> daripada <ph name="VENDOR_NAME" /> tidak diketahui</translation>
 <translation id="7068383018033524534">Fail manifes tidak sah</translation>
 <translation id="7217838517480956708">Pentadbir mesin ini memerlukan <ph name="EXTENSION_NAME" /> dipasang. Sambungan ini tidak boleh dialih keluar atau diubah suai.</translation>
+<translation id="7287143125007575591">Akses ditolak.</translation>
 <translation id="7612608473764576263">Nilai input untuk kunci persendirian mestilah dalam format yang sah (Kunci RSA terkod PEM format PKCS#8).</translation>
 <translation id="765293928828334535">Apl, sambungan dan skrip pengguna tidak boleh ditambahkan daripada laman web ini</translation>
 <translation id="7876803335449432072">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan. Helaian gaya skrip kandungan hanya boleh dimuatkan daripada fail helaian gaya yang disokong seperti fail .css.</translation>

@@ -372,6 +372,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1567405528131216114">Adicionar <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Introduza a data de validade</translation>
 <translation id="1569694109004336106">O Google Chrome está a tentar ativar o Windows Hello para preencher palavras-passe.</translation>
+<translation id="1569905000953679183">Obtenção de políticas de instalação de extensões</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.</translation>
 <translation id="1574714699824202614">A validar o método de pagamento</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
@@ -916,6 +917,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2400600116338235695">Pode solicitar a ligação a portas de série</translation>
 <translation id="2403474027143565107">Exata</translation>
 <translation id="240450251994300576">Logótipo do cabeçalho secundário</translation>
+<translation id="2404715426538856682">Cartões de crédito e débito · IBANs · Cartões de fidelidade</translation>
 <translation id="2404884497378469141">Tente copiar os ficheiros novamente</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ser revogado. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
@@ -2167,6 +2169,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4340810192899866471">Importar de JSON</translation>
 <translation id="4340982228985273705">Este computador não é detetado como sendo gerido pela empresa, por isso, a política apenas pode instalar automaticamente extensões alojadas na Web Store do Chrome. O URL de atualização da Web Store do Chrome é "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Parques temáticos</translation>
+<translation id="4346670990181948854">Informações de viagens · Veículos</translation>
 <translation id="4348834659292907206">A ligação para <ph name="SITE" /> não é segura</translation>
 <translation id="4349365535725594680">Não é possível partilhar o conteúdo confidencial</translation>
 <translation id="4349810866125026513">Carregar mesmo assim</translation>
@@ -2229,6 +2232,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4454620051637646665">Ignorar faixa</translation>
 <translation id="4456937135469235202">Viagens de aventura</translation>
 <translation id="4458013283022578512">Introduza uma pergunta</translation>
+<translation id="4458516738555515761">Obtenção de políticas</translation>
 <translation id="4464826014807964867">Websites com informações sobre a sua entidade</translation>
 <translation id="4466576951214254884">Empréstimos de estudante e financiamento universitário</translation>
 <translation id="4467821340016922962">Para sair do modo de ecrã inteiro e ver a transferência, prima |<ph name="ACCELERATOR" />|</translation>
@@ -3048,6 +3052,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5752519522101347518">A carregar o Website de validação bancária</translation>
 <translation id="5753570386948603678">Eliminar do histórico</translation>
 <translation id="5759751709240058861">Usar e mover a sua câmara</translation>
+<translation id="5762131895127128324">Cartas de condução · Cartões de identificação · Passaportes</translation>
 <translation id="5763042198335101085">Introduza um endereço de email válido</translation>
 <translation id="5764725887548570807">Formato de origem inválido.</translation>
 <translation id="5764920692828389743">Enviar para <ph name="EMAIL_ADDRESS" /></translation>
@@ -3985,6 +3990,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="7220786058474068424">A processar</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
 <translation id="722454870747268814">Novo separador anónimo</translation>
+<translation id="7225676267118764980">Altere o fornecedor de preenchimento automático e outras definições</translation>
 <translation id="7226892411756387078">Texto simples</translation>
 <translation id="7227293336683593977">Histórico de preços</translation>
 <translation id="7228306718910595403">Estado de qualificação da UE</translation>

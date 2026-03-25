@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{읽지 않은 알림 1개}other{읽지 않은 알림 #개}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{시크릿 모드에서 다음 확장 프로그램을 사용 설정합니다.}other{시크릿 모드에서 다음 확장 프로그램을 사용 설정합니다.}}</translation>
+<translation id="4230098358142093034">홈</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1개월 전}other{#개월 전}}</translation>
 <translation id="4277033906326892359"><ph name="COLUMN_NAME" /> 열은 오름차순으로 정렬되어 있습니다.</translation>
 <translation id="4289300219472526559">말하기 시작</translation>

@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 نہ پڑھی ہوئی اطلاع}other{# نہ پڑھی ہوئی اطلاعات}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{پوشیدگی وضع میں درج ذیل ایکسٹینشن کو آن کریں:}other{پوشیدگی وضع میں درج ذیل ایکسٹینشنز کو آن کریں:}}</translation>
+<translation id="4230098358142093034">ہوم</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 مہینہ پہلے}other{# مہینے پہلے}}</translation>
 <translation id="4277033906326892359">کالم <ph name="COLUMN_NAME" /> کو صعودی ترتیب میں ترتیب دیا گیا</translation>
 <translation id="4289300219472526559">بولنا شروع کریں</translation>

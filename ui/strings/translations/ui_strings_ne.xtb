@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{१ नपढिएको सूचना}other{# नपढिएका सूचनाहरू}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{इन्कोग्निटो मोडमा निम्न एक्स्टेन्सन अन गर्नुहोस्:}other{इन्कोग्निटो मोडमा निम्न एक्स्टेन्सनहरू अन गर्नुहोस्:}}</translation>
+<translation id="4230098358142093034">होम</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{१ महिना अघि}other{# महिना अघि}}</translation>
 <translation id="4277033906326892359"><ph name="COLUMN_NAME" /> नामक कोलम बढ्दो क्रममा क्रमबद्ध गरियो</translation>
 <translation id="4289300219472526559">बोल्न सुरु गर्नुहोस्</translation>

@@ -412,6 +412,22 @@ Para ver mais informações sobre contextos seguros, consulte Secure Contexts (h
 <translation id="1317158052518324525">Não permitir o preenchimento automático aprimorado.</translation>
 <translation id="1317658068839330898">Não permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web</translation>
 <translation id="1318233005302276244">Permite que os usuários rastreiem encomendas no Chrome.</translation>
+<translation id="1321747583289636863">Se a política for definida, o número máximo de conexões simultâneas ao servidor proxy será especificado para solicitações WebSocket.
+
+Para modificar o limite de solicitações que não são WebSocket, consulte <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Se a política não for definida, será usado o valor padrão 32.
+
+Alguns apps da web são conhecidos por consumir muitas conexões com GETs irresponsivos, então definir um valor inferior a 32 pode gerar travamentos na rede do navegador caso haja muitos apps da web com conexões abertas desse tipo.
+Alguns servidores proxy não podem administrar muitas conexões simultâneas por cliente, o que pode ser resolvido com a definição de um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (32) fica sob sua responsabilidade.
+
+O valor deve ser igual ou inferior a 256.
+Se você definir um número acima desse limite, o valor 256 será usado.
+A definição de valores acima do padrão (32) fica sob sua responsabilidade.</translation>
 <translation id="1323501563951768821">As configurações F12 usam o atalho que contém a tecla modificadora Shift</translation>
 <translation id="1325547947664414578">Quando um usuário alterna entre os dispositivos <ph name="PRODUCT_OS_NAME" />, o serviço <ph name="PRODUCT_NAME" /> abre as janelas do navegador e de apps do dispositivo anterior.
 Se a política for ativada, as janelas do navegador e de apps do último dispositivo <ph name="PRODUCT_OS_NAME" /> usado pelo usuário atual serão abertas automaticamente após o login.
@@ -5052,6 +5068,7 @@ Se a política for ativada ou não for definida, as senhas não descriptografáv
 Se a política for desativada, os dados do gerenciador de senhas dos usuários vão continuar intactos, mas a funcionalidade será interrompida.
 
 Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4321788213579606602">O número máximo de conexões simultâneas com o servidor proxy para solicitações que não são WebSocket.</translation>
 <translation id="4322842393287974810">Permitir que o aplicativo de quiosque aberto automaticamente com zero de atraso controle a versão do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Ativar atestado remoto para proteção de conteúdo</translation>
 <translation id="4325690621216251241">Adicionar um botão de logout à bandeja do sistema</translation>
@@ -7911,6 +7928,7 @@ Se o valor for "false", os usuários não poderão acessar o recurso.</translati
 <translation id="6075316301208933536">Se a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> for definida como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> personalizará quando o carregamento da bateria será interrompido, com base na porcentagem de carga da bateria. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> precisa ficar pelo menos 5% abaixo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Se a política não for definida, o modo de carregamento da bateria <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> será aplicado.</translation>
+<translation id="6080808146443476891">O número máximo de conexões simultâneas com o servidor proxy para solicitações WebSocket.</translation>
 <translation id="6082161804984853051">Com a definição da política, o <ph name="PRODUCT_NAME" /> usará o diretório fornecido para o armazenamento de arquivos em cache, independentemente de o usuário ter especificado ou não a sinalização "--disk-cache-dir".
 
       Se ela não for definida, o <ph name="PRODUCT_NAME" /> usará o diretório de cache padrão, mas os usuários poderão mudar isso com a sinalização da linha de comando "--disk-cache-dir".
@@ -11490,6 +11508,22 @@ O recurso estará disponível apenas no canal Canary.
 
 Se a política for ativada ou deixada sem definição, a página ficará acessível.
 Se a política for desativada, a página será bloqueada.</translation>
+<translation id="8264002158987842436">Se a política for definida, o número máximo de conexões simultâneas ao servidor proxy será especificado para solicitações que não são WebSocket.
+
+Para modificar o limite de solicitações WebSocket, consulte <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Se a política não for definida, será usado o valor padrão 32.
+
+Alguns apps da web são conhecidos por consumir muitas conexões com GETs irresponsivos, então definir um valor inferior a 32 pode gerar travamentos na rede do navegador caso haja muitos apps da web com conexões abertas desse tipo.
+Alguns servidores proxy não podem administrar muitas conexões simultâneas por cliente, o que pode ser resolvido com a definição de um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (32) fica sob sua responsabilidade.
+
+O valor deve ser igual ou inferior a 256 (99 para <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
+Se você definir um número acima desse limite, o valor 256 será usado (99 para <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
+A definição de valores acima do padrão (32) fica sob sua responsabilidade.</translation>
 <translation id="8266778278542911985">Se a política for definida como 3, os sites poderão solicitar acesso a portas seriais. Se for definida como 2, os sites não poderão acessar portas seriais.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>

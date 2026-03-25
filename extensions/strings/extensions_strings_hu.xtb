@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő forgalmazótól: <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">A jegyzékfájl érvénytelen</translation>
 <translation id="7217838517480956708">Az eszköz rendszergazdája megköveteli, hogy a(z) <ph name="EXTENSION_NAME" /> telepítve legyen. A bővítményt nem lehet eltávolítani vagy módosítani.</translation>
+<translation id="7287143125007575591">Hozzáférés megtagadva.</translation>
 <translation id="7612608473764576263">A privát kulcs beviteli értékét érvényes formátumban kell megadnia (PKCS#8 formátumú, PEM-kódolású RSA-kulcs).</translation>
 <translation id="765293928828334535">Erről a webhelyről nem lehet alkalmazásokat, bővítményeket és felhasználói szkripteket hozzáadni</translation>
 <translation id="7876803335449432072">A(z) „<ph name="RELATIVE_PATH" />” fájlt nem sikerült betölteni a tartalomszkripthez. A tartalomszkriptek stíluslapjait csak támogatott stíluslapfájlokból (például .css fájlokból) lehet betölteni.</translation>

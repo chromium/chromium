@@ -341,6 +341,7 @@
 <translation id="122082903575839559">Алгоритм подписи сертификатов</translation>
 <translation id="1221266967850882682">Двигаемся дальше?</translation>
 <translation id="1221825588892235038">Только выбранные</translation>
+<translation id="1222786882236067545">Загрузить файлы истории</translation>
 <translation id="1222835797152767346">Чтобы входить в аккаунт было проще, установите PIN-код</translation>
 <translation id="1223484782328004593">Требуется лицензия для <ph name="APP_NAME" /></translation>
 <translation id="1223498995510244364">Обобщить</translation>
@@ -1129,6 +1130,7 @@
 <translation id="1767043563165955993">Использовать в приложениях для Android</translation>
 <translation id="1767508543310534319">Озвучивание знаков пунктуации</translation>
 <translation id="1768212860412467516">Оставьте отзыв об эксперименте "<ph name="EXPERIMENT_NAME" />".</translation>
+<translation id="1768928167751703843">Локальные данные</translation>
 <translation id="1769104665586091481">Открыть ссылку в новом окне</translation>
 <translation id="1769157454356586138">Не удалось выполнить сканирование. Этот файл заблокирован администратором.</translation>
 <translation id="176920518817780870">Преобразовать группу закладок в папку</translation>
@@ -2386,6 +2388,7 @@
 <translation id="2628258844236035475">Удалить ваш домашний адрес из данных для автозаполнения в Chrome?</translation>
 <translation id="2628770867680720336">Чтобы включить отладку с ADB, нужно сбросить настройки этого устройства Chromebook до заводских. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Начать новый чат с Gemini</translation>
+<translation id="2629058811622993283">Также транслировать звук приложения (со всех окон и связанных приложений)</translation>
 <translation id="2629227353894235473">Разработка приложений для Android</translation>
 <translation id="2629437048544561682">Очистить холст</translation>
 <translation id="2630703150574465936">Вы разрешили Gemini автоматически входить в эти приложения и на эти сайты, используя ваши аккаунты.</translation>
@@ -4703,6 +4706,7 @@
 <translation id="4241140145060464825">Контент приложения</translation>
 <translation id="4241224519481557898">Часть речи</translation>
 <translation id="4242145785130247982">Использование нескольких сертификатов клиента не поддерживается.</translation>
+<translation id="4242245038391716252">Скачано с помощью расширения &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4242577469625748426">Не удалось применить к устройству настройки политики: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385">Вашим <ph name="BEGIN_LINK" />браузером и профилем управляет<ph name="END_LINK" /> <ph name="DOMAIN" />.</translation>
@@ -6069,6 +6073,7 @@
 <translation id="5200191131577845078">Уведомления от <ph name="DOMAIN" /> разрешены</translation>
 <translation id="5200680225062692606">Вход по Touch ID заблокирован. Чтобы продолжить, введите пароль.</translation>
 <translation id="5201945335223486172">Для <ph name="EXAMPLE_DOMAIN_1" />.</translation>
+<translation id="5202290165471714103">{NUM_EVENTS,plural, =1{Просмотр истории из 1 файла}one{Просмотр истории из # файла}few{Просмотр истории из # файлов}many{Просмотр истории из # файлов}other{Просмотр истории из # файла}}</translation>
 <translation id="5203035663139409780">Сайты, которым разрешено изменять файлы и папки на устройстве</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Нажмите, чтобы посмотреть его.}one{Нажмите, чтобы посмотреть их.}few{Нажмите, чтобы посмотреть их.}many{Нажмите, чтобы посмотреть их.}other{Нажмите, чтобы посмотреть их.}}</translation>
 <translation id="5204282224596194174">Восстановить пароль для пользователя <ph name="USER_EMAIL" /></translation>
@@ -7309,6 +7314,7 @@
 <translation id="6095696531220637741">Макарон</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Развернуть</translation>
+<translation id="6096192567014958958">Добро пожаловать, <ph name="USER_NAME" />!</translation>
 <translation id="6096326118418049043">Имя X.500</translation>
 <translation id="6097480669505687979">Если вы не освободите пространство, пользователи и их данные могут быть удалены автоматически.</translation>
 <translation id="6097600385983390082">Оверлей голосового поиска закрыт</translation>
@@ -8989,7 +8995,6 @@
 <translation id="7284411326658527427">У каждого пользователя будет возможность персонализировать свой аккаунт и обеспечивать конфиденциальность данных.</translation>
 <translation id="7285008278689343502">Национальный парк Гранд-Титон</translation>
 <translation id="7286867818472074330">Выбрать ключ доступа</translation>
-<translation id="7287143125007575591">Доступ запрещен.</translation>
 <translation id="7287411021188441799">Восстановить фон по умолчанию</translation>
 <translation id="7287949630503871403">Размер данных приложения</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
@@ -9965,6 +9970,7 @@
 <translation id="7947962633355574091">&amp;Копировать URL видео</translation>
 <translation id="7947964080535614577">Обычно сайты показывают рекламу, чтобы зарабатывать на ней и иметь возможность бесплатно предоставлять свой контент или сервисы. Однако на некоторых страницах используется навязчивая или вводящая в заблуждение реклама.</translation>
 <translation id="7948407723851303488">Все страницы <ph name="DOMAIN_NAME" />.</translation>
+<translation id="7949038991703929816">Не удалось загрузить историю. Убедитесь, что файлы содержат действительные журналы обновлений.</translation>
 <translation id="7950629216186736592">Причина: функция поддержки альтернативного браузера позволяет использовать только URL с протоколами HTTP, HTTPS и FILE.</translation>
 <translation id="7950814699499457511">Включено • Для этого расширения не опубликованы меры по обеспечению конфиденциальности, например сведения о том, как оно собирает и использует данные.</translation>
 <translation id="7951265006188088697">Добавить способы оплаты в Google Pay и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
@@ -10346,6 +10352,7 @@
 <translation id="8207404892907560325">Выберите ключ доступа</translation>
 <translation id="8207794858944505786">Виртуальная машина "<ph name="DEFAULT_VM_NAME" />" существует, но не поддерживается. Необходимый тип виртуальной машины – <ph name="VM_TYPE" />. Обратитесь к администратору.</translation>
 <translation id="8207901006380134182">Океан с большой набегающей волной. На заднем плане виден берег, покрытый темным лесом.</translation>
+<translation id="8208043093301544621">Домашняя страница</translation>
 <translation id="8208216423136871611">Не сохранять</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новое уведомление}one{# новое уведомление}few{# новых уведомления}many{# новых уведомлений}other{# нового уведомления}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Выполняется скачивание}one{Выполняется скачивание}few{Выполняется скачивание}many{Выполняется скачивание}other{Выполняется скачивание}}</translation>

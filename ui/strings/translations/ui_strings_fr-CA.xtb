@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notification non lue}one{# notification non lue}other{# notifications non lues}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Activez l'extension suivante en mode navigation privée :}one{Activez l'extension suivante en mode navigation privée :}other{Activez les extensions suivantes en navigation privée :}}</translation>
+<translation id="4230098358142093034">Domicile</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Il y a un mois}one{Il y a # mois}other{Il y a # mois}}</translation>
 <translation id="4277033906326892359">La colonne <ph name="COLUMN_NAME" /> est triée en ordre croissant</translation>
 <translation id="4289300219472526559">Commencer la lecture</translation>

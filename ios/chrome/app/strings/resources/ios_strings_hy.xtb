@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Կրկնակի հպեք՝ տեղադրելու համար:</translation>
 <translation id="1740650426894359238">Անցնել այլ պրոֆիլ</translation>
 <translation id="1741219894094057085">Խելացի ժամացույց</translation>
+<translation id="1742773766788162541">Սկանավորել քարտը և ավտոմատ լրացնել</translation>
 <translation id="1743244221910283364">Չպահպանել փոփոխությունները</translation>
 <translation id="1748975028205587434">Ընտրել ֆայլը</translation>
 <translation id="1749733017156547309">Պահանջվում է նշել գաղտնաբառ</translation>
@@ -711,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, կառավարվում է ձեր կազմակերպության կողմից։</translation>
 <translation id="3580448612293054698">Թարմացնե՞լ <ph name="ENTITY_TYPE" /></translation>
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
+<translation id="3583726884554296148">Պահեք ձեր քարտը Google հաշվում, որպեսզի այն ավտոմատ լրացվի այս և հետագա գնումների ժամանակ, որոնք կկատարեք Chrome-ում</translation>
 <translation id="3587482841069643663">Բոլորը</translation>
 <translation id="3587885837929752825">Ձեր կազմակերպությունը սահմանափակել է տվյալները, որոնք կարող եք պահել ձեր Google հաշվում։</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
@@ -1558,6 +1560,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6532106788206463496">Պահել փոփոխությունները</translation>
 <translation id="6536759809440150308">Բացել <ph name="GROUP_TITLE" /> խումբը, պարունակում է <ph name="NUMBER_OF_TABS" /> ներդիր, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Վճարեք ավելի արագ ինքնալրացման շնորհիվ ձեր բոլոր սարքերում</translation>
 <translation id="6550675742724504774">Ընտրանքներ</translation>
 <translation id="6550891580932862748">Չի պաշտպանում վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից։ Google-ի այլ պրոդուկտներում Ապահով դիտարկման կարգավորումները չեն փոխվի։</translation>
 <translation id="6556501700899673703">Lexend</translation>

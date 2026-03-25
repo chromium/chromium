@@ -209,6 +209,7 @@
 <translation id="1740468249224277719">Πατήστε δύο φορές για εγκατάσταση.</translation>
 <translation id="1740650426894359238">Εναλλαγή σε άλλο προφίλ</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
+<translation id="1742773766788162541">Σάρωση κάρτας και αυτόματη συμπλήρωση</translation>
 <translation id="1743244221910283364">Απόρριψη αλλαγών</translation>
 <translation id="1748975028205587434">Επιλογή αρχείου</translation>
 <translation id="1749733017156547309">Απαιτείται κωδικός πρόσβασης</translation>
@@ -711,6 +712,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας.</translation>
 <translation id="3580448612293054698">Ενημέρωση <ph name="ENTITY_TYPE" />;</translation>
 <translation id="3581564640715911333">Προσφορά για μετάφραση σελίδων σε άλλες γλώσσες</translation>
+<translation id="3583726884554296148">Αποθηκεύστε την κάρτα σας στον Λογαριασμό σας Google, για αυτόματη συμπλήρωσή της τόσο για αυτή την αγορά όσο και για μελλοντικές αγορές που πραγματοποιούνται στο Chrome</translation>
 <translation id="3587482841069643663">Όλες</translation>
 <translation id="3587885837929752825">Ο οργανισμός σας περιορίζει το περιεχόμενο που μπορείτε να αποθηκεύσετε στον Λογαριασμό σας Google.</translation>
 <translation id="3588820906588687999">Άνοιγμα εικόνας σε νέα καρτέλα</translation>
@@ -1559,6 +1561,7 @@
 <translation id="6532106788206463496">Αποθήκευση αλλαγών</translation>
 <translation id="6536759809440150308">Άνοιγμα ομάδας <ph name="GROUP_TITLE" />, ομάδα <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
+<translation id="6543899060872618437">Ολοκληρώστε τις αγορές σας πιο γρήγορα με την αυτόματη συμπλήρωση σε όλες τις συσκευές</translation>
 <translation id="6550675742724504774">Επιλογές</translation>
 <translation id="6550891580932862748">Δεν σας προστατεύει από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις. Οι ρυθμίσεις Ασφαλούς περιήγησης σε άλλα προϊόντα της Google δεν θα επηρεαστούν.</translation>
 <translation id="6556501700899673703">Lexend</translation>

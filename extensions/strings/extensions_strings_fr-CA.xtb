@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Produit inconnu <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Le fichier de configuration n'est pas valide</translation>
 <translation id="7217838517480956708">L'administrateur de cet ordinateur exige que l'extension <ph name="EXTENSION_NAME" /> soit installée. Celle-ci ne peut pas être supprimée ni modifiée.</translation>
+<translation id="7287143125007575591">Accès refusé.</translation>
 <translation id="7612608473764576263">La valeur d'entrée pour la clé privée doit être dans un format valide (clé RSA au format PEM chiffré PKCS #8).</translation>
 <translation id="765293928828334535">Les applications, les extensions et les scripts d'utilisateur ne peuvent pas être ajoutés à partir de ce site Web</translation>
 <translation id="7876803335449432072">Impossible de charger le fichier « <ph name="RELATIVE_PATH" /> » pour le script de contenu; les feuilles de style de script de contenu ne peuvent être chargées qu'à partir de fichiers de feuille de style pris en charge tels que les fichiers .css.</translation>

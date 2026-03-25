@@ -110,6 +110,7 @@
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Ein ólesin tilkynning}one{# ólesin tilkynning}other{# ólesnar tilkynningar}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Kveiktu á eftirfarandi viðbót í huliðsstillingu:}one{Kveiktu á eftirfarandi viðbótum í huliðsstillingu:}other{Kveiktu á eftirfarandi viðbótum í huliðsstillingu:}}</translation>
+<translation id="4230098358142093034">Heim</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Fyrir einum mánuði}one{Fyrir # mánuði}other{Fyrir # mánuðum}}</translation>
 <translation id="4277033906326892359">Dálknum <ph name="COLUMN_NAME" /> raðað í hækkandi röð</translation>
 <translation id="4289300219472526559">Byrja að tala</translation>

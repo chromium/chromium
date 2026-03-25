@@ -66,6 +66,7 @@
 <translation id="7003844668372540529">Ukendt produkt, <ph name="PRODUCT_ID" />, fra <ph name="VENDOR_NAME" /></translation>
 <translation id="7068383018033524534">Manifestfilen er ugyldig</translation>
 <translation id="7217838517480956708">Administratoren af denne computer kræver, at <ph name="EXTENSION_NAME" /> skal installeres. Den kan ikke fjernes eller ændres.</translation>
+<translation id="7287143125007575591">Adgang nægtet.</translation>
 <translation id="7612608473764576263">Den indtastede værdi for den private nøgle skal være et gyldigt format (PEM-kodet RSA-nøgle i PKCS#8-format).</translation>
 <translation id="765293928828334535">Apps, udvidelser og brugerscripts kan ikke tilføjes fra dette website</translation>
 <translation id="7876803335449432072">Filen "<ph name="RELATIVE_PATH" />" til indholdsscript kunne ikke indlæses. Indholdsscripts med stylesheets kan kun indlæses fra understøttede stylesheetfiler, f.eks. .css-filer.</translation>
