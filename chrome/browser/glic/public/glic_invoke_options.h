@@ -47,6 +47,8 @@ enum class GlicInvokeError {
   kTabClosed,
   // The instance was destroyed before the invocation could complete.
   kInstanceDestroyed,
+  // The instance is already handling an invocation.
+  kInvokeInProgress,
 };
 
 // Configuration options for invoking Glic.

@@ -324,7 +324,10 @@ void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
   }
 
   if (invoke_handlers_.contains(instance)) {
-    // TODO(crbug.com/483387751): Don't just fail silently here.
+    if (options.on_error) {
+      std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
+    }
+    // TODO(crbug.com/483387751): Show default toast here once implemented.
     return;
   }
 
