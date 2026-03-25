@@ -94,6 +94,7 @@ class MockObserver : public SkillsService::Observer {
                SkillsService::UpdateSource update_source,
                bool is_position_changed));
   MOCK_METHOD(void, OnStatusChanged, ());
+  MOCK_METHOD(bool, Require1PSkillRefresh, (), (override));
 };
 
 class SkillsServiceImplTest : public testing::Test {
@@ -274,6 +275,30 @@ TEST_F(SkillsServiceImplTest, GetSkillById) {
 
   const Skill* null_skill = service().GetSkillById("non_existent_id");
   EXPECT_EQ(nullptr, null_skill);
+}
+
+TEST_F(SkillsServiceImplTest, GetSkillById_FirstPartySkill) {
+  InitService();
+
+  skills::proto::Skill proto_skill;
+  proto_skill.set_id("1p_skill_id");
+  proto_skill.set_name("1P Skill Name");
+  proto_skill.set_icon("1P Skill Icon");
+  proto_skill.set_prompt("1P Skill Prompt");
+  proto_skill.set_description("1P Skill Description");
+
+  auto skills_map = std::make_unique<SkillsService::SkillsMap>();
+  skills_map->insert({"1p_skill_id", proto_skill});
+
+  service().Handle1pSkillsMap(std::move(skills_map));
+
+  const Skill* skill = service().GetSkillById("1p_skill_id");
+  ASSERT_NE(nullptr, skill);
+  EXPECT_EQ("1P Skill Name", skill->name);
+  EXPECT_EQ("1P Skill Icon", skill->icon);
+  EXPECT_EQ("1P Skill Prompt", skill->prompt);
+  EXPECT_EQ("1P Skill Description", skill->description);
+  EXPECT_EQ(sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY, skill->source);
 }
 
 TEST_F(SkillsServiceImplTest, AddSkill) {
@@ -463,6 +488,7 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Success) {
       });
 
   mock_service.FetchDiscoverySkills();
+
   run_loop.Run();
 }
 
@@ -483,6 +509,7 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Failure) {
       });
 
   mock_service.FetchDiscoverySkills();
+
   run_loop.Run();
 }
 

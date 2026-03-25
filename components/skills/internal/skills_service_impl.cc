@@ -24,6 +24,12 @@
 
 namespace skills {
 
+namespace {
+// Minimum time between discovery skills refreshes.
+constexpr base::TimeDelta kMinimumTimeBetweenDiscoverySkillsRefresh =
+    base::Hours(2);
+}  // namespace
+
 SkillsServiceImpl::SkillsServiceImpl(
     optimization_guide::OptimizationGuideDecider* optimization_guide,
     version_info::Channel channel,
@@ -45,6 +51,10 @@ SkillsServiceImpl::SkillsServiceImpl(
   }
   skills_downloader_ =
       std::make_unique<SkillsDownloader>(std::move(url_loader_factory));
+
+  discovery_skills_refresh_timer_.Start(
+      FROM_HERE, kMinimumTimeBetweenDiscoverySkillsRefresh, this,
+      &SkillsServiceImpl::RefreshDiscoverySkills);
 }
 
 SkillsServiceImpl::~SkillsServiceImpl() = default;
@@ -153,6 +163,14 @@ void SkillsServiceImpl::DeleteSkill(std::string_view skill_id,
 }
 
 const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
+  // A skill can be either a 1st party skill, or a user generated skill.
+  // First, Attempt to retrieve the skill from the definitive list of 1P
+  // skills.
+  auto it = first_party_skill_objects_map_.find(skill_id);
+  if (it != first_party_skill_objects_map_.end()) {
+    return &it->second;
+  }
+
   std::optional<size_t> skill_position = GetSkillPosition(skill_id);
   if (!skill_position.has_value()) {
     return nullptr;
@@ -258,12 +276,22 @@ void SkillsServiceImpl::FetchDiscoverySkills() {
 
 void SkillsServiceImpl::Handle1pSkillsMap(
     std::unique_ptr<SkillsMap> skills_map) {
+  last_discovery_skills_fetch_time_ = base::Time::Now();
   SkillsMap* notification_ptr = nullptr;
   // If skills_map is null, this means we don't have an updated value so we
   // shouldn't modify the stored 1p map.
   if (skills_map) {
     first_party_skills_map_.swap(*skills_map);
     notification_ptr = &first_party_skills_map_;
+
+    first_party_skill_objects_map_.clear();
+    first_party_skill_objects_map_.reserve(first_party_skills_map_.size());
+    for (const auto& [id, proto_skill] : first_party_skills_map_) {
+      Skill skill(id, proto_skill.name(), proto_skill.icon(),
+                  proto_skill.prompt(), proto_skill.description(),
+                  sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
+      first_party_skill_objects_map_.insert({id, std::move(skill)});
+    }
   }
 
   for (Observer& observer : observers_) {
@@ -330,6 +358,40 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
     const bool is_position_changed =
         old_position != GetSkillPosition(skill->id);
     NotifySkillChanged(skill->id, update_source, is_position_changed);
+  }
+}
+
+void SkillsServiceImpl::NotifyPanelWillOpen() {
+  RefreshDiscoverySkills();
+}
+
+void SkillsServiceImpl::RefreshDiscoverySkills() {
+  if (base::Time::Now() - last_discovery_skills_fetch_time_ <
+      kMinimumTimeBetweenDiscoverySkillsRefresh) {
+    // If the discovery skills have been fetched recently, do not refresh them
+    // again.
+    return;
+  }
+
+  // Check if any observers require a refresh of discovery skills.
+  // Note: call to FetchDiscoverySkills needs to be made outside of traversal
+  // of the observers list. Otherwise, if FetchDiscoverySkills returns too quickly,
+  // Handle1pSkillsMap will be called, triggering another traversal of
+  // observers list. The observers list is configured so that it can only be
+  // traverse once at a time. This race condition would cause a crash.
+  bool requires_refresh = false;
+  for (Observer& observer : observers_) {
+    // If there are no glic panels currently open and needs to display
+    // 1P skills, do not fetch discovery skills. This avoids unnecessary
+    // fetches.
+    if (observer.Require1PSkillRefresh()) {
+      requires_refresh = true;
+      break;
+    }
+  }
+
+  if (requires_refresh) {
+    FetchDiscoverySkills();
   }
 }
 

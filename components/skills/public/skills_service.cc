@@ -6,6 +6,10 @@
 
 namespace skills {
 
+bool SkillsService::Observer::Require1PSkillRefresh() {
+  return false;
+}
+
 SkillsService::SkillsService() = default;
 
 SkillsService::~SkillsService() = default;

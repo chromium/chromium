@@ -363,6 +363,10 @@ void SkillsSyncBridge::OnSkillUpdated(std::string_view skill_id,
                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
+bool SkillsSyncBridge::Require1PSkillRefresh() {
+  return false;
+}
+
 void SkillsSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {

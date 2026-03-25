@@ -6,6 +6,7 @@ source_set("internal") {
   visibility = [
     ":*",
     "//chrome/browser/skills",
+    "//chrome/browser/skills:interactive_ui_tests",
     "//chrome/test:interactive_ui_tests",
     "//components/skills/content",
   ]

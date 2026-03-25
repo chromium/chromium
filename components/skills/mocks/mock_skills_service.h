@@ -50,6 +50,7 @@ class MockSkillsService : public SkillsService {
   MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (const));
   MOCK_METHOD(void, DeleteSkill, (std::string_view, UpdateSource));
   MOCK_METHOD(void, FetchDiscoverySkills, ());
+  MOCK_METHOD(void, RefreshDiscoverySkills, ());
   MOCK_METHOD(void, Handle1pSkillsMap, (std::unique_ptr<SkillsMap>));
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));
@@ -61,6 +62,7 @@ class MockSkillsService : public SkillsService {
   MOCK_METHOD(void,
               NotifyTemporarySkillDisplayChanged,
               (std::string_view, DisplayState));
+  MOCK_METHOD(void, NotifyPanelWillOpen, ());
 };
 
 }  // namespace skills

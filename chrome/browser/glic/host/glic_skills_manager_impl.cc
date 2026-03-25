@@ -10,18 +10,21 @@
 #include "chrome/browser/skills/skills_dialog_launcher.h"
 #include "chrome/browser/skills/skills_update_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/base_window.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/skills/skills_dialog_launcher.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_update_observer.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/skills/features.h"
+#include "components/skills/public/skills_service.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace glic {
@@ -47,7 +50,7 @@ void GlicSkillsManagerImpl::UpdateSkillPreviews(
   auto* focused_tab = host_->sharing_manager().GetFocusedTabData().focus();
   if (!focused_tab) {
     host_->NotifyContextualSkillsChanged({});
-    contextual_skills_.clear();
+    contextual_skill_previews_.clear();
     return;
   }
   if (updated_tab && focused_tab != *updated_tab) {
@@ -58,15 +61,16 @@ void GlicSkillsManagerImpl::UpdateSkillPreviews(
   if (!observer) {
     return;
   }
-  auto new_contextual_skills = observer->GetContextualSkills();
-  if (mojo::Equals(contextual_skills_, new_contextual_skills)) {
+  auto new_skill_previews = observer->GetContextualSkillPreviews();
+
+  if (mojo::Equals(contextual_skill_previews_, new_skill_previews)) {
     return;
   }
-  contextual_skills_ = std::move(new_contextual_skills);
+  contextual_skill_previews_ = std::move(new_skill_previews);
 
   std::vector<mojom::SkillPreviewPtr> skill_previews;
-  for (const auto& skill : contextual_skills_) {
-    skill_previews.push_back(skill->preview.Clone());
+  for (const auto& preview : contextual_skill_previews_) {
+    skill_previews.push_back(preview.Clone());
   }
   host_->NotifyContextualSkillsChanged(std::move(skill_previews));
 #endif
@@ -169,14 +173,15 @@ void GlicSkillsManagerImpl::WebUiStateChanged(mojom::WebUiState state) {
   }
 }
 
-glic::mojom::SkillPtr GlicSkillsManagerImpl::GetContextualSkill(
-    std::string_view skill_id) {
-  for (const auto& skill : contextual_skills_) {
-    if (skill->preview->id == skill_id) {
-      return skill.Clone();
-    }
+void GlicSkillsManagerImpl::NotifyPanelOpenedOrActivated() {
+  // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only
+  // restrictions from Skills backend.
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+  if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+    skills::SkillsServiceFactory::GetForProfile(host_->profile())
+        ->RefreshDiscoverySkills();
   }
-  return nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace glic

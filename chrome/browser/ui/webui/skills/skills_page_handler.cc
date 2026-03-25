@@ -167,6 +167,10 @@ void SkillsPageHandler::OnSkillsServiceShuttingDown() {
   service_observation_.Reset();
 }
 
+bool SkillsPageHandler::Require1PSkillRefresh() {
+  return true;
+}
+
 void SkillsPageHandler::Request1PSkills() {
   // If there is a download already running then don't process a new request.
   if (Is1PDownloadTimerRunning()) {

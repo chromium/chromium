@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
 #include "components/skills/internal/skills_downloader.h"
@@ -76,6 +77,7 @@ class SkillsServiceImpl : public SkillsService {
   void DeleteSkill(std::string_view skill_id,
                    UpdateSource update_source) override;
   const Skill* GetSkillById(std::string_view skill_id) const override;
+  void RefreshDiscoverySkills() override;
   void FetchDiscoverySkills() override;
   void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) override;
   const SkillsMap& Get1PSkills() const override;
@@ -88,6 +90,7 @@ class SkillsServiceImpl : public SkillsService {
   void SetServiceStatusForTesting(ServiceStatus status) override;
   void NotifyTemporarySkillDisplayChanged(std::string_view skill_id,
                                           DisplayState display_state) override;
+  void NotifyPanelWillOpen() override;
 
  private:
   void NotifySkillChanged(std::string_view skill_id,
@@ -125,8 +128,11 @@ class SkillsServiceImpl : public SkillsService {
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;
 
-  // The map of loaded 1p discovery skills.
+  // The map of loaded 1p discovery skill protos.
   SkillsMap first_party_skills_map_;
+
+  // The map of loaded 1p discovery skill objects.
+  SkillObjectsMap first_party_skill_objects_map_;
 
   // The list of observers to be notified on changes.
   base::ObserverList<Observer,
@@ -143,6 +149,12 @@ class SkillsServiceImpl : public SkillsService {
   // Service status for testing purposes which overrides the actual service
   // status.
   std::optional<ServiceStatus> service_status_for_testing_;
+
+  // A timer for periodically fetching discovery skills.
+  base::RepeatingTimer discovery_skills_refresh_timer_;
+
+  // The last time the discovery skills were fetched.
+  base::Time last_discovery_skills_fetch_time_;
 
   // Weak pointer factory for posting tasks.
   base::WeakPtrFactory<SkillsServiceImpl> weak_ptr_factory_{this};

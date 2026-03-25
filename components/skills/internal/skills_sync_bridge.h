@@ -64,6 +64,7 @@ class SkillsSyncBridge : public syncer::DataTypeSyncBridge,
   void OnSkillUpdated(std::string_view skill_id,
                       SkillsService::UpdateSource update_source,
                       bool is_position_changed) override;
+  bool Require1PSkillRefresh() override;
 
  private:
   // Loads the data already stored in the DataTypeStore.

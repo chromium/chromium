@@ -114,6 +114,8 @@ class SkillsServiceChecker : public StatusChangeChecker,
     CheckExitCondition();
   }
 
+  bool Require1PSkillRefresh() override { return false; }
+
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for skills to match. ";

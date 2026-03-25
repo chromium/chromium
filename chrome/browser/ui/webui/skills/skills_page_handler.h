@@ -65,6 +65,7 @@ class SkillsPageHandler : public skills::mojom::PageHandler,
   void OnTemporarySkillDisplay(
       std::string_view skill_id,
       SkillsService::DisplayState display_state) override;
+  bool Require1PSkillRefresh() override;
 
   bool Is1PDownloadTimerRunning() const {
     return first_party_download_timer_.IsRunning();
