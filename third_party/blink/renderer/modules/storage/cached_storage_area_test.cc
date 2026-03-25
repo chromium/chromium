@@ -142,7 +142,7 @@ class CachedStorageAreaTest : public testing::Test {
   FakeAreaSource::Event Event(const String& key,
                               const String& old_value,
                               const String& new_value) {
-    return FakeAreaSource::Event{key, old_value, new_value, ""};
+    return FakeAreaSource::Event{key, old_value, new_value, NullUrl()};
   }
 
   void InjectKeyValue(const String& key, const String& value) {

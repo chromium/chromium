@@ -215,7 +215,7 @@ KURL StorageArea::GetPageUrl() const {
 bool StorageArea::EnqueueStorageEvent(const String& key,
                                       const String& old_value,
                                       const String& new_value,
-                                      const String& url) {
+                                      const KURL& url) {
   if (!should_enqueue_events_)
     return true;
   if (!DomWindow())

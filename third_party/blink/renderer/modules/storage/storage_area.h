@@ -87,7 +87,7 @@ class StorageArea final : public ScriptWrappable,
   bool EnqueueStorageEvent(const String& key,
                            const String& old_value,
                            const String& new_value,
-                           const String& url) override;
+                           const KURL& url) override;
 
   blink::WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
       const char* name,

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -52,7 +53,7 @@ class MODULES_EXPORT CachedStorageArea
     virtual bool EnqueueStorageEvent(const String& key,
                                      const String& old_value,
                                      const String& new_value,
-                                     const String& url) = 0;
+                                     const KURL& url) = 0;
     virtual blink::WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
         const char* name,
         WebScopedVirtualTimePauser::VirtualTaskDuration duration) = 0;
@@ -187,7 +188,7 @@ class MODULES_EXPORT CachedStorageArea
   void EnqueueStorageEvent(const String& key,
                            const String& old_value,
                            const String& new_value,
-                           const String& url,
+                           const KURL& url,
                            const base::Token& source_id);
 
   static String Uint8VectorToString(const Vector<uint8_t>& input,
