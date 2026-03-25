@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks;
@@ -144,6 +145,7 @@ class LocationBarMediator
     private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
     private static final int WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
     private static final int WIDTH_CHANGE_ANIMATION_DELAY_MS = 75;
+    public static final int POPOVER_FADE_DURATION_MS = 150;
     private @Nullable Boolean mIsLensOnOmniboxEnabled;
 
     /** Uma methods for omnibox. */
@@ -1030,6 +1032,8 @@ class LocationBarMediator
                     if (mAutocompleteCoordinator == null) return;
                     mAutocompleteCoordinator.beginInput(session);
                     mFuseboxCoordinator.beginInput(session);
+                    // Trigger animation now that we have an up-to-date value for the fusebox state.
+                    setupSuggestionsListShowAnimation();
                     setAttachmentModelList(session.getFuseboxAttachmentModelList());
                 });
 
@@ -1046,6 +1050,29 @@ class LocationBarMediator
         if (mCurrentInput.isInCacheableContext() && mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.serveCachedZeroSuggest(mCurrentInput);
         }
+    }
+
+    private void setupSuggestionsListShowAnimation() {
+        if (mAutocompleteCoordinator == null) return;
+        @Nullable Animator autocompleteAnimator =
+                mAutocompleteCoordinator.setupSuggestionsListShowAnimation();
+        if (autocompleteAnimator == null) return;
+        mLocationBarLayout.setAlpha(0.0f);
+        ObjectAnimator alphaAnimator =
+                ObjectAnimator.ofFloat(mLocationBarLayout, View.ALPHA, 0.0f, 1.0f);
+        alphaAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        mLocationBarLayout.setAlpha(1.0f);
+                    }
+                });
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(alphaAnimator, autocompleteAnimator);
+        animatorSet.setDuration(POPOVER_FADE_DURATION_MS);
+        animatorSet.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        animatorSet.start();
     }
 
     /** Ends the current Omnibox input session. */

@@ -126,6 +126,10 @@ public class UnsyncedSuggestionsListAnimationDriver
     @Override
     public void onAnimationRepeat(Animator animator) {}
 
+    public boolean isRunning() {
+        return mAnimator != null && mAnimator.isRunning();
+    }
+
     private int getStartingVerticalOffset() {
         if (mIsToolbarBottomAnchoredSupplier.getAsBoolean()) {
             return mContext.getResources()

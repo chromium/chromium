@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 
 import org.junit.AfterClass;
@@ -111,6 +112,7 @@ public class OmniboxPTTest {
         enteredText = enteredText.simulateAutocomplete("omium");
         enteredText.clickDelete();
 
+        Espresso.closeSoftKeyboard();
         omnibox.pressBackTo().exitFacility();
     }
 }
