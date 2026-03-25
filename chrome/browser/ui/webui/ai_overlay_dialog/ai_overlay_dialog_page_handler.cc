@@ -54,20 +54,32 @@ void AiOverlayDialogPageHandler::GetMockAudioData(
       std::move(callback));
 }
 
-void AiOverlayDialogPageHandler::InvalidatePageContext() {
-  VLOG(1) << "Invalidate Page Context";
-  page_->InvalidatePageContext();
+void AiOverlayDialogPageHandler::DidChangePage(
+    const GURL& url,
+    const std::optional<std::u16string>& title,
+    const std::optional<std::string>& content) {
+  VLOG(1) << "Did Change Page";
+  VLOG(1) << "\tURL: " << url.spec();
+  if (title.has_value()) {
+    VLOG(1) << "\tTitle: " << base::UTF16ToUTF8(title.value());
+  }
+  if (content.has_value()) {
+    VLOG(1) << "\tContent: " << content.value().substr(0, 200) << "...";
+  }
+
+  page_->DidChangePage(
+      url.spec(),
+      title.has_value() ? std::make_optional(base::UTF16ToUTF8(title.value()))
+                        : std::nullopt,
+      content);
 }
 
 void AiOverlayDialogPageHandler::UpdateCurrentPageContext(
-    const GURL& url,
     const std::u16string& title,
     const std::string& content) {
   VLOG(1) << "Update Current Page Context";
-  VLOG(1) << "\tURL: " << url.spec();
   VLOG(1) << "\tTitle: " << base::UTF16ToUTF8(title);
   VLOG(1) << "\tContent: " << content.substr(0, 200) << "...";
 
-  page_->UpdateCurrentPageContext(url.spec(), base::UTF16ToUTF8(title),
-                                  content);
+  page_->UpdateCurrentPageContext(base::UTF16ToUTF8(title), content);
 }

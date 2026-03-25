@@ -4,8 +4,8 @@
 
 export interface PageContext {
   url: string;
-  title: string;
-  content: string;
+  title: string|null;
+  content: string|null;
 }
 
 /**
@@ -29,10 +29,15 @@ export class PageContextManager {
     return this.isStale;
   }
 
-  updateCurrentPageContext(url: string, title: string, content: string) {
+  updateCurrentPageContext(title: string, content: string) {
     console.info(
-        'PageContextManager: Update', url, title, content.substring(0, 200));
-    this.context = {url, title, content};
+        'PageContextManager: Update', title, content.substring(0, 200));
+    if (this.context) {
+      this.context.title = title;
+      this.context.content = content;
+    } else {
+      console.warn('updateCurrentPageContext called without context');
+    }
     this.isStale = false;
 
     if (this.onDidUpdatePageContent) {
@@ -40,8 +45,11 @@ export class PageContextManager {
     }
   }
 
-  invalidatePageContext() {
-    console.info('PageContextManager: Invalidate');
-    this.isStale = true;
+  didChangePage(url: string, title: string|null, content: string|null) {
+    console.info(
+        'PageContextManager: didChangePage', url, title,
+        content?.substring(0, 200));
+    this.context = {url, title, content};
+    this.isStale = content === null;
   }
 }

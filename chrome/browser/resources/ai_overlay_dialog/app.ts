@@ -101,10 +101,17 @@ export class AppElement extends CrLitElement {
 
     // Start listening for page context updates immediately to ensure we catch
     // any initial updates before the Conversation is initialized.
-    const pageContextListenerId =
+    const didChangePageId = this.pageCallbackRouter.didChangePage.addListener(
+        (url: string, title: string|null, content: string|null) =>
+            this.initialPageContext = {url, title, content});
+    const updateContextId =
         this.pageCallbackRouter.updateCurrentPageContext.addListener(
-            (url: string, title: string, content: string) =>
-                this.initialPageContext = {url, title, content});
+            (title: string, content: string) => {
+              if (this.initialPageContext) {
+                this.initialPageContext.title = title;
+                this.initialPageContext.content = content;
+              }
+            });
 
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
@@ -123,7 +130,8 @@ export class AppElement extends CrLitElement {
 
       // Now that the conversation is initialized, we can stop listening for the
       // initial page context.
-      this.pageCallbackRouter.removeListener(pageContextListenerId);
+      this.pageCallbackRouter.removeListener(didChangePageId);
+      this.pageCallbackRouter.removeListener(updateContextId);
       this.initialPageContext = undefined;
 
       if (this.queueStateChange) {

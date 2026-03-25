@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 export function buildSystemInstruction(
-    persona: string, title: string, url: string, pageContent?: string): string {
+    persona: string, url: string, title?: string,
+    pageContent?: string): string {
   let instruction = `${persona}
 
 ## Current Page
-[${title}](${url})
+[${title ?? '<N/A>'}](${url})
 
 You are a helpful assistant in a Chrome overlay. Keep responses brief and
 conversational.`;

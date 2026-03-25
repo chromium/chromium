@@ -27,10 +27,12 @@ interface PageHandler {
 
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.
 interface Page {
-  // Called whenever the page context has become stale (e.g. a new tab has been
-  // focused, or the current page has navigated).
-  InvalidatePageContext();
+  // Called whenever the page has changed (e.g. a new tab has been focused, or
+  // the current page has navigated). The provided URL is passed as a string
+  // since it's only ever used as page context for a prompt; it's never parsed
+  // or navigated.
+  DidChangePage(string url, string? title, string? content);
 
   // Passes context about the current page to the app.
-  UpdateCurrentPageContext(string url, string page_title, string page_content);
+  UpdateCurrentPageContext(string page_title, string page_content);
 };

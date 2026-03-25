@@ -28,7 +28,8 @@ PageContextMonitor::PageContextMonitor(BrowserWindowInterface& window,
 PageContextMonitor::~PageContextMonitor() = default;
 
 void PageContextMonitor::PrimaryPageChanged(content::Page& page) {
-  page_handler_->InvalidatePageContext();
+  page_handler_->DidChangePage(web_contents()->GetLastCommittedURL(),
+                               web_contents()->GetTitle(), std::nullopt);
   StartNewFetch();
 }
 
@@ -47,7 +48,8 @@ void PageContextMonitor::OnActiveTabChanged(BrowserWindowInterface* window) {
   }
 
   Observe(active_tab->GetContents());
-  page_handler_->InvalidatePageContext();
+  page_handler_->DidChangePage(web_contents()->GetLastCommittedURL(),
+                               web_contents()->GetTitle(), std::nullopt);
   StartNewFetch();
 }
 
@@ -101,8 +103,7 @@ void PageContextMonitor::OnFetchComplete(
     std::string markdown_content_truncated =
         markdown_content.substr(0, kTruncateThresholdBytes);
 
-    page_handler_->UpdateCurrentPageContext(
-        web_contents()->GetLastCommittedURL(), web_contents()->GetTitle(),
-        markdown_content_truncated);
+    page_handler_->UpdateCurrentPageContext(web_contents()->GetTitle(),
+                                            markdown_content_truncated);
   }
 }

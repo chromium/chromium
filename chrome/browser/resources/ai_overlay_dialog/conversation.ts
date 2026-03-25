@@ -48,17 +48,17 @@ export class Conversation implements ApiSessionDelegate {
     this.uiDelegate = uiDelegate;
 
     if (initialPageContext) {
-      this.pageContextManager.updateCurrentPageContext(
+      this.pageContextManager.didChangePage(
           initialPageContext.url, initialPageContext.title,
           initialPageContext.content);
     }
 
-    router.invalidatePageContext.addListener(
-        () => this.pageContextManager.invalidatePageContext());
+    router.didChangePage.addListener(
+        (url: string, title: string|null, content: string|null) =>
+            this.pageContextManager.didChangePage(url, title, content));
     router.updateCurrentPageContext.addListener(
-        (url: string, title: string, content: string) =>
-            this.pageContextManager.updateCurrentPageContext(
-                url, title, content));
+        (title: string, content: string) =>
+            this.pageContextManager.updateCurrentPageContext(title, content));
   }
 
   get connected(): boolean {
@@ -165,12 +165,10 @@ export class Conversation implements ApiSessionDelegate {
   private createNewApiSession() {
     assert(!this.session);
 
-    // TODO(bokan): We should aim to always have an up-to-date URL and title
-    // if content is stale.
     const context = this.pageContextManager.pageContext;
     const systemInstruction = buildSystemInstruction(
-        'You are a helpful assistant.', context?.title || '',
-        context?.url || '', context?.content);
+        'You are a helpful assistant.', context?.title ?? '',
+        context?.url || '', context?.content ?? undefined);
 
     this.session = new ApiSession(this.apiKey, systemInstruction, this);
     this.session.connect();

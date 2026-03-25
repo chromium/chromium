@@ -24,9 +24,10 @@ class AiOverlayDialogPageHandler
   void GetApiKey(GetApiKeyCallback callback) override;
   void GetMockAudioData(GetMockAudioDataCallback callback) override;
 
-  void InvalidatePageContext();
-  void UpdateCurrentPageContext(const GURL& url,
-                                const std::u16string& title,
+  void DidChangePage(const GURL& url,
+                     const std::optional<std::u16string>& title,
+                     const std::optional<std::string>& content);
+  void UpdateCurrentPageContext(const std::u16string& title,
                                 const std::string& content);
 
  private:
