@@ -137,6 +137,15 @@ IN_PROC_BROWSER_TEST_F(ChromeLocationBarModelDelegateTest, IsNewTabPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeLocationBarModelDelegateTest,
+                       IsNewTabPageURLWithFragment) {
+  EXPECT_TRUE(delegate()->IsNewTabPageURL(GURL("chrome://newtab")));
+
+  // Verify that fragments don't prevent matching.
+  EXPECT_TRUE(
+      delegate()->IsNewTabPageURL(GURL("chrome://newtab/#mostvisited")));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeLocationBarModelDelegateTest,
                        CertErrorPreventsElision) {
   EXPECT_FALSE(delegate()->ShouldPreventElision());
   delegate()->set_cert_status(net::CERT_STATUS_REVOKED);
