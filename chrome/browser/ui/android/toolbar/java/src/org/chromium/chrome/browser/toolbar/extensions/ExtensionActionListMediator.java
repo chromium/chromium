@@ -413,7 +413,17 @@ class ExtensionActionListMediator implements Destroyable {
             closeContextMenu();
             return;
         }
-        mExtensionsToolbarBridge.executeUserAction(actionId, InvocationSource.TOOLBAR_BUTTON);
+        executeUserAction(actionId, InvocationSource.TOOLBAR_BUTTON);
+    }
+
+    /**
+     * Executes the given action.
+     *
+     * @param actionId The ID of the action to execute.
+     * @param source How this execution was triggered.
+     */
+    public void executeUserAction(String actionId, @InvocationSource int source) {
+        mExtensionsToolbarBridge.executeUserAction(actionId, source);
     }
 
     /**

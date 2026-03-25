@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonPrope
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
+import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
@@ -133,22 +134,14 @@ public class ExtensionActionListCoordinator implements Destroyable {
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
-    /** Performs a click on the button for the given action. */
-    public void click(String actionId) {
-        mMediator.requestActionVisibility(
-                actionId,
-                () -> {
-                    View view = getButtonViewForId(actionId);
-
-                    // We expect the view to exist at this point, but we shouldn't rely on {@link
-                    // RecyclerView}.
-                    if (view == null) {
-                        mMediator.undoPopout();
-                        return;
-                    }
-
-                    view.performClick();
-                });
+    /**
+     * Executes the given action.
+     *
+     * @param actionId The ID of the action to execute.
+     * @param source How this execution was triggered.
+     */
+    public void executeUserAction(String actionId, @InvocationSource int source) {
+        mMediator.executeUserAction(actionId, source);
     }
 
     @Nullable
