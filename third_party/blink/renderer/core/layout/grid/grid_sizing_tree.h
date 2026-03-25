@@ -225,6 +225,10 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
     return SizingTree().GetGridItems(subtree_root_);
   }
 
+  GridItems& GetVirtualItems() const {
+    return SizingTree().GetVirtualItems(subtree_root_);
+  }
+
   GridLayoutData& LayoutData() const {
     return SizingTree().LayoutData(subtree_root_);
   }

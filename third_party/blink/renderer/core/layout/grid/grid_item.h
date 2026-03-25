@@ -230,6 +230,28 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
         .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
   }
 
+  // Returns the track direction in this subgrid's coordinate system relative
+  // to its parent grid's `track_direction`.
+  GridTrackSizingDirection RelativeDirectionInSubgrid(
+      GridTrackSizingDirection track_direction) const {
+    DCHECK(IsSubgrid());
+    const bool is_for_columns =
+        is_parallel_with_root_grid == (track_direction == kForColumns);
+    return is_for_columns ? kForColumns : kForRows;
+  }
+
+  // Returns the relative direction this subgrid's coordinate system. If
+  // `opt_track_direction` has no value, returns std::nullopt.
+  std::optional<GridTrackSizingDirection> RelativeDirectionFilterInSubgrid(
+      const std::optional<GridTrackSizingDirection>& opt_track_direction)
+      const {
+    DCHECK(IsSubgrid());
+    if (opt_track_direction) {
+      return RelativeDirectionInSubgrid(*opt_track_direction);
+    }
+    return std::nullopt;
+  }
+
   void EncompassContributionSize(MinMaxSizes sizes) {
     if (contribution_sizes) {
       contribution_sizes->min_max_contribution.Encompass(sizes);

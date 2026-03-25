@@ -1039,31 +1039,6 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
   }
 }
 
-namespace {
-
-GridTrackSizingDirection RelativeDirectionInSubgrid(
-    GridTrackSizingDirection track_direction,
-    const GridItemData& subgrid_data) {
-  DCHECK(subgrid_data.IsSubgrid());
-
-  const bool is_for_columns = subgrid_data.is_parallel_with_root_grid ==
-                              (track_direction == kForColumns);
-  return is_for_columns ? kForColumns : kForRows;
-}
-
-std::optional<GridTrackSizingDirection> RelativeDirectionFilterInSubgrid(
-    const std::optional<GridTrackSizingDirection>& opt_track_direction,
-    const GridItemData& subgrid_data) {
-  DCHECK(subgrid_data.IsSubgrid());
-
-  if (opt_track_direction) {
-    return RelativeDirectionInSubgrid(*opt_track_direction, subgrid_data);
-  }
-  return std::nullopt;
-}
-
-}  // namespace
-
 void GridLayoutAlgorithm::InitializeTrackSizes(
     const GridSizingSubtree& sizing_subtree,
     const SubgriddedItemData& opt_subgrid_data,
@@ -1122,17 +1097,8 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
     InitAndCacheTrackSizes(kForRows);
   }
 
-  ForEachSubgrid(
-      sizing_subtree, *this,
-      [&](const GridLayoutAlgorithm& subgrid_algorithm,
-          const GridSizingSubtree& subgrid_subtree,
-          const SubgriddedItemData& subgrid_data) {
-        subgrid_algorithm.InitializeTrackSizes(
-            subgrid_subtree, subgrid_data,
-            RelativeDirectionFilterInSubgrid(opt_track_direction,
-                                             *subgrid_data));
-      },
-      /* should_compute_min_max_sizes */ false);
+  InitializeTrackSizesForEachSubgrid(sizing_subtree, *this,
+                                     opt_track_direction);
 }
 
 void GridLayoutAlgorithm::InitializeTrackSizes(
@@ -1227,7 +1193,7 @@ void GridLayoutAlgorithm::ComputeUsedTrackSizes(
     DCHECK(grid_item.IsSubgrid());
 
     const bool is_for_columns_in_subgrid =
-        RelativeDirectionInSubgrid(track_direction, grid_item) == kForColumns;
+        grid_item.RelativeDirectionInSubgrid(track_direction) == kForColumns;
 
     const auto& subgrid_layout_data =
         sizing_subtree.SubgridSizingSubtree(grid_item).LayoutData();
@@ -1331,7 +1297,7 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
           const SubgriddedItemData& subgrid_data) {
         subgrid_algorithm.CompleteTrackSizingAlgorithm(
             subgrid_subtree, subgrid_data,
-            RelativeDirectionInSubgrid(track_direction, *subgrid_data),
+            subgrid_data->RelativeDirectionInSubgrid(track_direction),
             sizing_constraint, opt_needs_additional_pass);
       });
 }
@@ -1367,7 +1333,7 @@ bool ValidateMinMaxSizesCache(const GridNode& grid_node,
       DCHECK(next_subgrid_subtree);
       should_invalidate_min_max_sizes_cache |= ValidateMinMaxSizesCache(
           To<GridNode>(grid_item.node), next_subgrid_subtree,
-          RelativeDirectionInSubgrid(track_direction, grid_item));
+          grid_item.RelativeDirectionInSubgrid(track_direction));
       next_subgrid_subtree = next_subgrid_subtree.NextSibling();
     }
   }
@@ -1452,16 +1418,16 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
     ComputeOrRecreateBaselines(kForRows);
   }
 
-  ForEachSubgrid(sizing_subtree, *this,
-                 [&](const GridLayoutAlgorithm& subgrid_algorithm,
-                     const GridSizingSubtree& subgrid_subtree,
-                     const SubgriddedItemData& subgrid_data) {
-                   subgrid_algorithm.ComputeBaselineAlignment(
-                       layout_tree, subgrid_subtree, subgrid_data,
-                       RelativeDirectionFilterInSubgrid(opt_track_direction,
-                                                        *subgrid_data),
-                       sizing_constraint);
-                 });
+  ForEachSubgrid(
+      sizing_subtree, *this,
+      [&](const GridLayoutAlgorithm& subgrid_algorithm,
+          const GridSizingSubtree& subgrid_subtree,
+          const SubgriddedItemData& subgrid_data) {
+        subgrid_algorithm.ComputeBaselineAlignment(
+            layout_tree, subgrid_subtree, subgrid_data,
+            subgrid_data->RelativeDirectionFilterInSubgrid(opt_track_direction),
+            sizing_constraint);
+      });
 }
 
 void GridLayoutAlgorithm::CompleteFinalBaselineAlignment(

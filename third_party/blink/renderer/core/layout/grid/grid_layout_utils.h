@@ -319,6 +319,26 @@ void AppendSubgriddedItems(const NodeType& node, GridItems* grid_items) {
   }
 }
 
+// Iterates over subgrids in `sizing_subtree` and initializes their track sizes.
+template <typename LayoutAlgorithmType>
+void InitializeTrackSizesForEachSubgrid(
+    const GridSizingSubtree& sizing_subtree,
+    const LayoutAlgorithmType& algorithm,
+    const std::optional<GridTrackSizingDirection>& opt_track_direction) {
+  // TODO(almaher): Support grid-lanes subgrids as well.
+  ForEachSubgrid(
+      sizing_subtree, algorithm,
+      [&](const GridLayoutAlgorithm& subgrid_algorithm,
+          const GridSizingSubtree& subgrid_subtree,
+          const SubgriddedItemData& subgrid_data) {
+        subgrid_algorithm.InitializeTrackSizes(
+            subgrid_subtree, subgrid_data,
+            subgrid_data->RelativeDirectionFilterInSubgrid(
+                opt_track_direction));
+      },
+      /*should_compute_min_max_sizes=*/false);
+}
+
 // Returns the synthesized logical baseline for a grid item. This is used when
 // computing min/max content contributions without a full layout result.
 LayoutUnit GetSynthesizedLogicalBaseline(

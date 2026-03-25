@@ -1342,24 +1342,23 @@ void GridLanesLayoutAlgorithm::BuildSizingCollection(
           /*should_store_collapsed_track_indexes=*/true));
 }
 
-// TODO(almaher): This should eventually take a GridSizingSubtree instead of
-// GridSizingTree and be done for each layer of subgrid.
 void GridLanesLayoutAlgorithm::InitializeTrackSizes(
-    GridSizingTree* sizing_tree) const {
+    const GridSizingSubtree& sizing_subtree,
+    const SubgriddedItemData& opt_subgrid_data) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
-  auto& layout_data = sizing_tree->LayoutData();
+  auto& layout_data = sizing_subtree.LayoutData();
 
-  InitializeTrackCollection(kNoSubgriddedItemData, style, GetConstraintSpace(),
-                            BorderScrollbarPadding(),
-                            grid_lanes_available_size_, grid_axis_direction,
-                            &layout_data);
+  InitializeTrackCollection(
+      opt_subgrid_data, style, GetConstraintSpace(), BorderScrollbarPadding(),
+      grid_lanes_available_size_, grid_axis_direction, &layout_data);
 
-  // TODO(almaher): For subgrid, we will want to get the tracks the parent.
+  // TODO(almaher): For grid-lanes subgrids, we will want to get the tracks from
+  // the parent.
   auto& track_collection = layout_data.SizingCollection(grid_axis_direction);
   if (track_collection.HasNonDefiniteTrack()) {
     GridTrackSizingAlgorithm::CacheGridItemsProperties(
-        track_collection, &sizing_tree->GetVirtualItems());
+        track_collection, &sizing_subtree.GetVirtualItems());
 
     track_collection.CacheInitializedSetsGeometry(
         (grid_axis_direction == kForColumns)
@@ -1376,7 +1375,29 @@ void GridLanesLayoutAlgorithm::InitializeTrackSizes(
                                           first_set_geometry.gutter_size);
   }
 
-  // TODO(almaher): Do this for each subgrid (similar to grid).
+  // Compute set indices for subgrid items so that `ForEachSubgrid` can create
+  // constraint spaces for them. Unlike grid, grid-lanes caches properties for
+  // virtual items (not grid items), so subgrid set indices aren't computed
+  // ahead of time.
+  //
+  // TODO(almaher): The position for these is not known at this point - for
+  // every subgrid with an indefinite position, it will get set to the beginning
+  // of the grid lanes container. We will eventually re-run layout if needed
+  // to get the correct position.
+  for (auto& grid_item : sizing_subtree.GetGridItems()) {
+    if (grid_item.IsSubgrid()) {
+      Node().ComputeSetIndicesForSubgrid(grid_item, layout_data);
+    }
+  }
+
+  InitializeTrackSizesForEachSubgrid(sizing_subtree, *this,
+                                     grid_axis_direction);
+}
+
+void GridLanesLayoutAlgorithm::InitializeTrackSizes(
+    GridSizingTree* sizing_tree) const {
+  InitializeTrackSizes(GridSizingSubtree(sizing_tree),
+                       /*opt_subgrid_data=*/kNoSubgriddedItemData);
 }
 
 // TODO(almaher): This should eventually take a GridSizingSubtree instead of

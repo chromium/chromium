@@ -19,6 +19,7 @@ class GridItems;
 class GridLayoutData;
 class GridLineResolver;
 class GridSizingTrackCollection;
+class GridSizingSubtree;
 class GridSizingTree;
 class GridLanesRunningPositions;
 class SubgriddedItemData;
@@ -144,7 +145,11 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
                            LayoutUnit block_size,
                            HeapVector<Member<LayoutBox>>& oof_children);
 
-  // Initializes track sizes for the grid axis stored in `sizing_tree`.
+  // Initializes the track sizes of a grid-lanes sizing subtree.
+  void InitializeTrackSizes(const GridSizingSubtree& sizing_subtree,
+                            const SubgriddedItemData& opt_subgrid_data) const;
+
+  // Helper that calls the method above for the entire grid sizing tree.
   void InitializeTrackSizes(GridSizingTree* sizing_tree) const;
 
   // Creates a sizing tree based on the given `sizing_constraint` and
