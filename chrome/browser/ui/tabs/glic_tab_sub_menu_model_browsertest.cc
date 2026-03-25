@@ -302,15 +302,14 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, SwitchToRecentConversation) {
   // Create 5 conversations by adding 5 tabs and activating the side panel for
   // each tab.
   for (int i = 1; i <= 5; ++i) {
-    ASSERT_TRUE(
-        AddTabAtIndex(i, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+    ASSERT_TRUE(AddTabAtIndex(i, GURL("about:blank"),
+                              ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
     tab_strip_model->ActivateTabAt(i);
     tabs::TabInterface* current_tab = tab_strip_model->GetTabAtIndex(i);
 
     glic_instance_coordinator->Toggle(
         browser(),
-        /*prevent_close=*/false,
-        glic::mojom::InvocationSource::kTopChromeButton,
+        /*prevent_close=*/true, glic::mojom::InvocationSource::kTopChromeButton,
         /*prompt_suggestion=*/std::nullopt,
         /*auto_send=*/false,
         /*conversation_id=*/std::nullopt);

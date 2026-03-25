@@ -632,6 +632,53 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   }
 }
 
+// Glic floaty is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       WebClientLinkClickDaisyChainingFromFloaty) {
+  // Open floaty
+  GlicInstanceImpl* instance = OpenGlicForActiveTabAndDetach();
+  ASSERT_TRUE(instance);
+  ASSERT_TRUE(instance->IsDetached());
+
+  // In order to really test this, the active tab needs to be one that's not
+  // bound to the floaty instance. We can just create a new tab.
+  tabs::TabInterface* unbound_tab = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_FALSE(coordinator().GetInstanceForTab(unbound_tab));
+
+  // Case 1: Create Foreground Tab
+  {
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    instance->CreateTab(GetSimpleTestUrl(),
+                        /*open_in_background=*/false,
+                        /*window_id=*/std::nullopt, base::DoNothing());
+    tabs::TabInterface* tab2 = waiter.Wait();
+
+    // The newly created tab should be bound to the floaty instance.
+    EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab2));
+    EXPECT_TRUE(instance->IsDetached());
+    EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab2);
+  }
+
+  // Case 2: Create Background Tab
+  {
+    GetTabListInterface()->ActivateTab(unbound_tab->GetHandle());
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    instance->CreateTab(GetSimpleTestUrl(),
+                        /*open_in_background=*/true,
+                        /*window_id=*/std::nullopt, base::DoNothing());
+    tabs::TabInterface* tab3 = waiter.Wait();
+
+    // It should be bound to the new tab, but the side panel shouldn't open.
+    // Instead the floating UI remains detached.
+    EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab3));
+    EXPECT_TRUE(instance->IsDetached());
+    // Active tab should still be previously active tab
+    EXPECT_NE(GetTabListInterface()->GetActiveTab(), tab3);
+  }
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        ActiveEmbedderFollowsActiveTab) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();

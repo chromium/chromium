@@ -417,6 +417,10 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::OneShotTimer remove_blank_instance_timer_;
 
+  // True during the synchronous execution of `CreateTab()`, which is called
+  // when the user clicks a link inside the Glic panel.
+  bool is_creating_tab_from_glic_panel_link_click_ = false;
+
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
 

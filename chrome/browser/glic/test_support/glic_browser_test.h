@@ -142,6 +142,24 @@ class GlicBrowserTestMixin : public T {
     return instance;
   }
 
+  // Opens the Glic UI on the active tab and detaches it.
+  [[nodiscard]] GlicInstanceImpl* OpenGlicForActiveTabAndDetach() {
+    GlicInstanceImpl* instance = OpenGlicForActiveTab();
+    if (!instance) {
+      return nullptr;
+    }
+    if (instance->IsDetached()) {
+      return instance;
+    }
+    instance->Detach(*T::GetTabListInterface()->GetActiveTab());
+    bool success = RunUntil([instance]() { return instance->IsDetached(); },
+                            "Failed to wait for Glic to detach");
+    if (!success) {
+      return nullptr;
+    }
+    return instance;
+  }
+
   // Waits for the Glic UI to be open and visible. Defaults to the only glic
   // instance, but can be specified. Returns the opened instance or nullptr if
   // it fails to open.

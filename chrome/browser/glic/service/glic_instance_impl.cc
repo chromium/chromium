@@ -188,6 +188,13 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
 
 void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
                                             tabs::TabInterface* target_tab) {
+  // Ideally we would like to unify this daisy chaining logic with what is in
+  // `CreateTab`, but doing so would require a more involved plumbing change in
+  // order to play nicely with detached mode.
+  if (is_creating_tab_from_glic_panel_link_click_) {
+    return;
+  }
+
   auto* glic_embedder = GetEmbedderForTab(source_tab);
 
   if (base::FeatureList::IsEnabled(kGlicRemoveDaisyChainingWhenFreShowing)) {
@@ -525,6 +532,8 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
 
   bool is_onboarding = IsTrustFirstOnboardingPending(profile_);
 
+  base::AutoReset<bool> auto_reset(&is_creating_tab_from_glic_panel_link_click_,
+                                   true);
   tabs::TabInterface* created_tab = service_->CreateTab(
       url, open_in_background || is_onboarding, window_id, std::move(callback));
 
