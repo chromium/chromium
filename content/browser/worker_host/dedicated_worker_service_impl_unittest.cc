@@ -50,12 +50,10 @@ class MockDedicatedWorker
         GURL(), std::nullopt, std::nullopt, base::UnguessableToken::Create(),
         net::NetworkAnonymizationKey());
 
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
-            worker_process_id.GetUnsafeValue(),
-            /*creator=*/render_frame_host_id, render_frame_host_id,
-            blink::StorageKey::CreateFirstParty(origin),
+            worker_process_id, /*creator=*/render_frame_host_id,
+            render_frame_host_id, blink::StorageKey::CreateFirstParty(origin),
             net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
             network::mojom::ClientSecurityState::New(),
             PolicyContainerPolicies(), coep_reporter->GetWeakPtr(),

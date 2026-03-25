@@ -840,7 +840,7 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
-          worker_process_host_->GetDeprecatedID(), /*creator=*/token_,
+          worker_process_host_->GetID(), /*creator=*/token_,
           ancestor_render_frame_host_id_, GetStorageKey(), isolation_info_,
           worker_client_security_state_->Clone(), creator_policies_,
           creator_coep_reporter, network_restrictions_id_),

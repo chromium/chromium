@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
@@ -38,7 +39,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   // `creator_network_restrictions_id` specifies the network restrictions of
   // the creator as per its connection allowlists.
   DedicatedWorkerHostFactoryImpl(
-      int worker_process_id,
+      ChildProcessId worker_process_id,
       DedicatedWorkerCreator creator,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const blink::StorageKey& creator_storage_key,
@@ -70,7 +71,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
 
  private:
   // The ID of the RenderProcessHost where the worker will live.
-  const int worker_process_id_;
+  const ChildProcessId worker_process_id_;
 
   // See comments on the corresponding members of DedicatedWorkerHost.
   const DedicatedWorkerCreator creator_;

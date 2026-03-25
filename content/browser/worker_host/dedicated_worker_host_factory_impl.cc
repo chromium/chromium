@@ -45,7 +45,7 @@ DedicatedWorkerServiceImpl* GetDedicatedWorkerServiceImplForRenderProcessHost(
 }  // namespace
 
 DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     DedicatedWorkerCreator creator,
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
     const blink::StorageKey& creator_storage_key,
