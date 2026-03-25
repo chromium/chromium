@@ -80,12 +80,6 @@ WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
 WebUIContentsContainerImpl::~WebUIContentsContainerImpl() {
   Observe(nullptr);
   web_contents_->ClosePage();
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  if (!glic_profile_manager) {
-    return;
-  }
-  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
-  glic_profile_manager->OnUnloadingClientForService(glic_service);
 }
 
 void WebUIContentsContainerImpl::AttachToHost(Host* host) {

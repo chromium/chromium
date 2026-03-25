@@ -61,21 +61,12 @@ class GlicProfileManager : public ProfileManagerObserver,
   // Called by GlobalFeatures.
   void Shutdown();
 
-  // Called when the web client for the GlicWindowController or the FRE
-  // controller will be torn down.
-  void OnLoadingClientForService(GlicKeyedService* glic);
-
-  // Called by GlicWindowController and the GlicFreController when their
-  // respective web clients are being torn down.
-  void OnUnloadingClientForService(GlicKeyedService* glic);
-
   // Callback will be invoked with kSuccess if the given profile should be
   // considered for preloading.
   using ShouldPreloadCallback =
       base::OnceCallback<void(GlicPrewarmingChecksResult)>;
   void ShouldPreloadForProfile(Profile* profile,
                                ShouldPreloadCallback callback);
-
 
   // Returns the active Glic service, nullptr if there is none.
   GlicKeyedService* GetLastActiveGlic() const;
@@ -128,11 +119,10 @@ class GlicProfileManager : public ProfileManagerObserver,
   void CanPreloadForProfile(Profile* profile, ShouldPreloadCallback callback);
 
   bool IsLastActiveGlicProfile(Profile* profile) const;
-  bool IsLastLoadedGlicProfile(Profile* profile) const;
 
   base::ObserverList<Observer> observers_;
   base::WeakPtr<GlicKeyedService> last_active_glic_;
-  base::WeakPtr<GlicKeyedService> last_loaded_glic_;
+
   // Used in GlicMultiInstance to track the GlicKeyedService of the current
   // detached glic, if any.
   base::WeakPtr<GlicKeyedService> current_detached_glic_;
@@ -140,9 +130,6 @@ class GlicProfileManager : public ProfileManagerObserver,
 
   base::MemoryPressureListenerRegistration
       memory_pressure_listener_registration_;
-
-  base::MemoryPressureLevel memory_pressure_level_ =
-      base::MEMORY_PRESSURE_LEVEL_NONE;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};

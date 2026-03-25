@@ -186,24 +186,6 @@ void GlicProfileManager::Shutdown() {
   g_browser_process->profile_manager()->RemoveObserver(this);
 }
 
-void GlicProfileManager::OnLoadingClientForService(GlicKeyedService* glic) {
-  if (base::FeatureList::IsEnabled(features::kGlicWarmMultiple)) {
-    return;
-  }
-
-  if (glic) {
-    last_loaded_glic_ = glic->GetWeakPtr();
-  } else {
-    last_loaded_glic_.reset();
-  }
-}
-
-void GlicProfileManager::OnUnloadingClientForService(GlicKeyedService* glic) {
-  if (last_loaded_glic_ && last_loaded_glic_.get() == glic) {
-    last_loaded_glic_.reset();
-  }
-}
-
 void GlicProfileManager::ShouldPreloadForProfile(
     Profile* profile,
     ShouldPreloadCallback callback) {
@@ -235,7 +217,6 @@ void GlicProfileManager::ShouldPreloadForProfile(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
-
 
 GlicKeyedService* GlicProfileManager::GetLastActiveGlic() const {
   return last_active_glic_.get();
@@ -354,9 +335,7 @@ void GlicProfileManager::OnProfileWillBeDestroyed(Profile* profile) {
   profile_observations_.RemoveObservation(profile);
 }
 
-void GlicProfileManager::OnMemoryPressure(base::MemoryPressureLevel level) {
-  memory_pressure_level_ = level;
-}
+void GlicProfileManager::OnMemoryPressure(base::MemoryPressureLevel level) {}
 
 // static
 void GlicProfileManager::SetPrewarmingEnabledForTesting(bool enabled) {
@@ -376,7 +355,7 @@ void GlicProfileManager::ForceConnectionTypeForTesting(
 }
 
 bool GlicProfileManager::IsUnderMemoryPressure() const {
-  return memory_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_NONE;
+  return memory_pressure_level() != base::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
 void GlicProfileManager::CanPreloadForProfile(Profile* profile,
@@ -404,16 +383,11 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   if (!enablement.IsEnabled()) {
     return produce_result(GlicPrewarmingChecksResult::kProfileNotEnabledOther);
   }
-  if (last_loaded_glic_ && last_loaded_glic_->profile() == profile) {
-    return produce_result(GlicPrewarmingChecksResult::kProfileIsLastLoaded);
-  }
+
   if (last_active_glic_ && last_active_glic_->profile() == profile) {
     return produce_result(GlicPrewarmingChecksResult::kProfileIsLastActive);
   }
-  if (!base::FeatureList::IsEnabled(features::kGlicWarmMultiple) &&
-      IsShowing()) {
-    return produce_result(GlicPrewarmingChecksResult::kBlockedByShownGlic);
-  }
+
   if (IsUnderMemoryPressure()) {
     return produce_result(GlicPrewarmingChecksResult::kUnderMemoryPressure);
   }
@@ -422,14 +396,14 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
         GlicPrewarmingChecksResult::kPrewarmingDisabledForTesting);
   }
 
-  auto on_got_connection_type = [](ShouldPreloadCallback callback,
-                                   net::NetworkChangeNotifier::ConnectionType
-                                       type) {
-    std::move(callback).Run(
-        network::NetworkConnectionTracker::IsConnectionCellular(type)
-            ? GlicPrewarmingChecksResult::kCellularConnection
-            : GlicPrewarmingChecksResult::kSuccess);
-  };
+  auto on_got_connection_type =
+      [](ShouldPreloadCallback callback,
+         net::NetworkChangeNotifier::ConnectionType type) {
+        std::move(callback).Run(
+            network::NetworkConnectionTracker::IsConnectionCellular(type)
+                ? GlicPrewarmingChecksResult::kCellularConnection
+                : GlicPrewarmingChecksResult::kSuccess);
+      };
   auto callbacks = base::SplitOnceCallback(std::move(callback));
 
   // Attempt to synchronously query the connection type.

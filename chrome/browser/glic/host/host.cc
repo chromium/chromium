@@ -299,8 +299,6 @@ void Host::CreateContents(bool initially_hidden) {
                                                              initially_hidden);
   }
   contents_->AttachToHost(this);
-  glic::GlicProfileManager::GetInstance()->OnLoadingClientForService(
-      &glic_service());
 
   metrics_.StartRecording();
 }

@@ -338,14 +338,7 @@ void GlicFreController::DismissFre(mojom::FreWebUiState panel) {
   web_contents_ = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
   source_browser_ = nullptr;
-  if (fre_view_ || fre_widget_) {
-    auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
-    glic::GlicProfileManager* glic_profile_manager =
-        glic::GlicProfileManager::GetInstance();
-    if (glic_profile_manager) {
-      glic_profile_manager->OnUnloadingClientForService(service);
-    }
-  }
+
   if (fre_widget_) {
     base::UmaHistogramEnumeration("Glic.FreModalWebUiState.FinishState2",
                                   webui_state_);
@@ -550,8 +543,6 @@ void GlicFreController::CreateView() {
   fre_view_ = std::make_unique<GlicFreDialogView>(profile_, this);
   web_contents_ = fre_view_->web_contents();
   web_contents_->Resize(gfx::Rect(GetFreInitialSize()));
-  auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
-  GlicProfileManager::GetInstance()->OnLoadingClientForService(service);
 }
 #endif
 
