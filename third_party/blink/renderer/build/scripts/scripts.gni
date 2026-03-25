@@ -81,7 +81,17 @@ if (host_os == "win") {
   # TODO: crbug.com/431264806 - Switch to CIPD package.
   gperf_exe = "//third_party/gperf/bin/gperf.exe"
 } else if (is_ios) {
-  gperf_exe = "$ios_toolchains_path/usr/bin/gperf"
+  # $ios_toolchains_path is a source absolute path under $root_build_dir.
+  # GN complains since there is no target that generates it.
+  # This is a workaround to get a system absolute path for the SDK binary dir.
+  find_sdk_lines = exec_script("//build/mac/find_sdk.py",
+                               [
+                                 "--print_bin_path",
+                                 "",
+                               ],
+                               "list lines")
+  sdk_bin_path = find_sdk_lines[0]
+  gperf_exe = "$sdk_bin_path/gperf"
 } else if (host_os == "mac") {
   # TODO(thakis): This should probably run in the host toolchain and check
   # is_mac instead of checking host_os.
@@ -261,14 +271,8 @@ template("css_properties") {
       "--gperf",
       rebase_path(gperf_exe, root_build_dir),
     ]
+    sources = [ gperf_exe ]
 
-    # TODO: crbug.com/495245892 - Fix $ios_toolchains_path.
-    # On iOS, gperf is provided by the Xcode toolchain, which is symlinked
-    # from $root_build_dir/sdk/xcode_links. GN interprts it as a generated file
-    # and fails with `no targets in the build generate that file` error.
-    if (!is_ios) {
-      sources = [ gperf_exe ]
-    }
     outputs = invoker.outputs
   }
 }

@@ -167,4 +167,6 @@ exec_script_allowlist =
 
       "//tools/grit/grit_rule.gni",
       "//tools/gritsettings/BUILD.gn",
+
+      "//third_party/blink/renderer/build/scripts/scripts.gni",
     ]

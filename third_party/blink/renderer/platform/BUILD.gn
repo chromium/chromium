@@ -104,9 +104,7 @@ blink_python_runner("runtime_feature_state_override_context") {
 
 blink_python_runner("color_data") {
   script = "../build/scripts/gperf.py"
-  if (!is_ios) {
-    sources = [ gperf_exe ]
-  }
+  sources = [ gperf_exe ]
 
   color_data_gperf = "color_data.gperf"
   inputs = [
