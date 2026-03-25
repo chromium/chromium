@@ -335,8 +335,8 @@ bool HasPort(const std::string& original_text,
                                      url::ParserMode::kSpecialURL)) {
     ++port_end;
   }
-  std::string_view port_piece(UNSAFE_TODO(original_text.data() + port_start),
-                              port_end - port_start);
+  std::string_view port_piece =
+      std::string_view(original_text).substr(port_start, port_end - port_start);
   if (port_piece.empty()) {
     return false;
   }
