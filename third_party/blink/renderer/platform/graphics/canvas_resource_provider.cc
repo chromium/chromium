@@ -1136,10 +1136,6 @@ void Canvas2DResourceProviderSharedImage::RasterRecord(
 void CanvasNon2DResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
-    if (!is_software_) {
-      cached_snapshot_.reset();
-      EnsureWriteAccess();
-    }
     UnacceleratedRasterRecord(std::move(last_recording));
     return;
   }
