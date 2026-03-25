@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -204,7 +205,11 @@ class KeyPrefix {
 
   std::string DebugString();
 
-  Type type() const;
+  // The KeyPrefix for any record stored in the DB should always evaluate to
+  // some `type`, but ones that are just used for range bounds and therefore not
+  // stored (such as that for `BlobEntryKey::EncodeStopKeyForOrigin()`) may not
+  // have a valid type.
+  std::optional<Type> MaybeType() const;
 
   int64_t database_id_;
   int64_t object_store_id_;
@@ -212,12 +217,6 @@ class KeyPrefix {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(IndexedDBLevelDBCodingTest, Empty);
-
-  // Special constructor for CreateWithSpecialIndex()
-  KeyPrefix(enum Type,
-            int64_t database_id,
-            int64_t object_store_id,
-            int64_t index_id);
 
   CONTENT_EXPORT static std::string EncodeInternal(int64_t database_id,
                                                    int64_t object_store_id,
@@ -270,7 +269,6 @@ class DatabaseFreeListKey {
   static bool Decode(std::string_view* slice, DatabaseFreeListKey* result);
   CONTENT_EXPORT static std::string Encode(int64_t database_id);
   static CONTENT_EXPORT std::string EncodeMaxKey();
-  int64_t DatabaseId() const;
   int Compare(const DatabaseFreeListKey& other) const;
   std::string DebugString() const;
 
@@ -388,7 +386,6 @@ class ObjectStoreFreeListKey {
   CONTENT_EXPORT static std::string Encode(int64_t database_id,
                                            int64_t object_store_id);
   CONTENT_EXPORT static std::string EncodeMaxKey(int64_t database_id);
-  int64_t ObjectStoreId() const;
   int Compare(const ObjectStoreFreeListKey& other);
   std::string DebugString() const;
 
@@ -406,8 +403,6 @@ class IndexFreeListKey {
   CONTENT_EXPORT static std::string EncodeMaxKey(int64_t database_id,
                                                  int64_t object_store_id);
   int Compare(const IndexFreeListKey& other);
-  int64_t ObjectStoreId() const;
-  int64_t IndexId() const;
   std::string DebugString() const;
 
  private:
