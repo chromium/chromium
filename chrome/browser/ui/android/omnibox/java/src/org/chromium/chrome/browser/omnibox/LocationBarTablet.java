@@ -565,7 +565,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void adjustBackgroundForSuggestions() {
-        if (mFuseboxState == FuseboxState.DISABLED) return;
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
         GradientDrawable outerRect =
                 (GradientDrawable)
@@ -576,9 +575,9 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 resources.getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
         float cornerRadius =
                 resources.getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
-        if (mHasSuggestions) {
+        if (mHasSuggestions || mFuseboxState == FuseboxState.DISABLED) {
             // Remove the extra padding and un-round the corners of the outer rect since we're now
-            // bleeding into the suggestions dropdown.
+            // bleeding into the suggestions dropdown or are in steady state.
             layoutParams.bottomMargin = 0;
             outerRect.setCornerRadii(
                     new float[] {

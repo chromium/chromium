@@ -247,7 +247,8 @@ public class LocationBarTabletUnitTest {
         assertEquals(inset, background.getLayerInsetBottom(glifLayerIndex));
         assertEquals(inset, mLocationBarTablet.getPaddingBottom());
 
-        mLocationBarTablet.onSuggestionsChanged(true);
+        // mLocationBarTablet.onSuggestionsChanged(true);
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
         assertEquals(0, layoutParams.bottomMargin);
         assertArrayEquals(
                 new float[] {cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0},
