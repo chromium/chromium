@@ -112,7 +112,7 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
   // events on creation.
   if (tracker->HasNothingToAssociate()) {
     StorageCollectionSynchronizer synchronizer(collection_, service_);
-    synchronizer.FullSave();
+    synchronizer.FullSave(base::NullCallback());
   } else {
     tracker->AssociateCollection(collection_);
     PreRestoreChangesCrawler crawler(

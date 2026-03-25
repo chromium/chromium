@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
@@ -39,7 +40,7 @@ class StorageCollectionSynchronizer {
       const StorageCollectionSynchronizer&) = delete;
 
   // Saves the entire collection and its descendants to the service.
-  void FullSave();
+  void FullSave(base::OnceClosure callback);
 
   // Cancels the restoration process.
   void CancelRestore();

@@ -50,8 +50,11 @@ StorageCollectionSynchronizer::StorageCollectionSynchronizer(
     TabStateStorageService* service)
     : collection_(collection), service_(service) {}
 
-void StorageCollectionSynchronizer::FullSave() {
+void StorageCollectionSynchronizer::FullSave(base::OnceClosure callback) {
   auto batch = service_->CreateScopedBatch();
+  if (!callback.is_null()) {
+    batch.AddCallback(std::move(callback));
+  }
   service_->Save(collection_);
   CollectionSaveCrawler crawler(service_);
   DirectChildWalker walker(collection_, &crawler);

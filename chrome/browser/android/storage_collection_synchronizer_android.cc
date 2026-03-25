@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/storage_collection_synchronizer_android.h"
 
+#include "base/android/callback_android.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/collection_storage_observer_factory_android.h"
 #include "chrome/browser/android/storage_restore_orchestrator_factory_android.h"
@@ -27,8 +28,10 @@ StorageCollectionSynchronizerAndroid::StorageCollectionSynchronizerAndroid(
 StorageCollectionSynchronizerAndroid::~StorageCollectionSynchronizerAndroid() =
     default;
 
-void StorageCollectionSynchronizerAndroid::FullSave(JNIEnv* env) {
-  synchronizer_.FullSave();
+void StorageCollectionSynchronizerAndroid::FullSave(
+    JNIEnv* env,
+    base::OnceClosure callback) {
+  synchronizer_.FullSave(std::move(callback));
 }
 
 void StorageCollectionSynchronizerAndroid::CancelRestore(JNIEnv* env) {

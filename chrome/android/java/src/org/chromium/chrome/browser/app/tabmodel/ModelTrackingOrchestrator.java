@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.crea
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.TaskTraits;
@@ -402,7 +403,8 @@ public class ModelTrackingOrchestrator {
 
         try (ScopedStorageBatch ignored = createBatch(profile)) {
             var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);
-            getSynchronizer(profileAndCollection, incognito).fullSave();
+            getSynchronizer(profileAndCollection, incognito)
+                    .fullSave(CallbackUtils.emptyRunnable());
         }
 
         initializeTrackingSuite(incognito);
