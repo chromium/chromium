@@ -30,7 +30,8 @@ class PLATFORM_EXPORT GraphicsContext3DUtils {
                              context_provider_wrapper)
       : context_provider_wrapper_(std::move(context_provider_wrapper)) {}
 
-  bool Accelerated2DCanvasFeatureEnabled();
+  static bool Accelerated2DCanvasFeatureEnabled(
+      WebGraphicsContext3DProviderWrapper*);
 
   // Needs to be static as its caller CreateSharedImageProviderBase is static.
   static bool IsScanoutSupportedForCanvasWithFormat(

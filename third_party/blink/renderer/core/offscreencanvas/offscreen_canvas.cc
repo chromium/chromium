@@ -520,10 +520,8 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
 }
 
 bool OffscreenCanvas::ShouldAccelerate2dContext() const {
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
-  return context_provider_wrapper &&
-         context_provider_wrapper->Utils()->Accelerated2DCanvasFeatureEnabled();
+  return GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled(
+      SharedGpuContext::ContextProviderWrapper().get());
 }
 
 UkmParameters OffscreenCanvas::GetUkmParameters() {

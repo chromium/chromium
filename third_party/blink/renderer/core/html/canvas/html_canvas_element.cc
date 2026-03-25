@@ -1556,13 +1556,8 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
 
   // Avoid creating |contextProvider| until we're sure we want to try use it,
   // since it costs us GPU memory.
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
-  if (!context_provider_wrapper) {
-    return false;
-  }
-
-  return context_provider_wrapper->Utils()->Accelerated2DCanvasFeatureEnabled();
+  return GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled(
+      SharedGpuContext::ContextProviderWrapper().get());
 }
 
 bool HTMLCanvasElement::CanStartSelection() const {

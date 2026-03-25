@@ -13,7 +13,8 @@
 
 namespace blink {
 
-bool GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled() {
+bool GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled(
+    WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
   // Don't use accelerated canvas if compositor is in software mode.
   if (!SharedGpuContext::IsGpuCompositingEnabled())
     return false;
@@ -21,9 +22,11 @@ bool GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled() {
   if (!RuntimeEnabledFeatures::Accelerated2dCanvasEnabled())
     return false;
 
-  DCHECK(context_provider_wrapper_);
+  if (!context_provider_wrapper) {
+    return false;
+  }
   const gpu::GpuFeatureInfo& gpu_feature_info =
-      context_provider_wrapper_->ContextProvider().GetGpuFeatureInfo();
+      context_provider_wrapper->ContextProvider().GetGpuFeatureInfo();
   return gpu::kGpuFeatureStatusEnabled ==
          gpu_feature_info
              .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS];
