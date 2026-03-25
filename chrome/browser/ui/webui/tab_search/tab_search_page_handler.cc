@@ -38,6 +38,8 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
@@ -51,6 +53,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/browser_apis/tab_strip/types/node_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -185,14 +188,14 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // TabSearchPageHandler object, causing it to be immediately destroyed. Ensure
   // that no further actions are performed following the call to
   // CloseWebContentsAt(). See (https://crbug.com/1175507).
-  TabStripModel* const tab_strip_model =
-      details->tab->GetBrowserWindowInterface()->GetTabStripModel();
-  CHECK(tab_strip_model);
-  const int index = details->GetIndex();
+  tabs_api::TabStripService* const service =
+      GetTabStripService(details->tab->GetBrowserWindowInterface());
+  CHECK(service);
+  auto node_id = tabs_api::NodeId::FromTabHandle(details->tab->GetHandle());
   // Don't dangle a tabs::TabInterface* in `details`.
   details.reset();
-  tab_strip_model->CloseWebContentsAt(
-      index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  const auto result = service->CloseNodes({node_id});
+  DCHECK(result.has_value());
   // Do not add code past this point.
 }
 
@@ -280,8 +283,12 @@ void TabSearchPageHandler::SwitchToTab(
   Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
       tab_search_prefs::kTabSearchUsed, true);
 
-  details->tab->GetBrowserWindowInterface()->GetTabStripModel()->ActivateTabAt(
-      details->GetIndex());
+  tabs_api::TabStripService* const service =
+      GetTabStripService(details->tab->GetBrowserWindowInterface());
+  const auto result = service->ActivateTab(
+      tabs_api::NodeId::FromTabHandle(details->tab->GetHandle()));
+  DCHECK(result.has_value());
+
   // Tab search shows tabs from other windows in the profile. So if a user
   // selects a tab in another window, we need to manually activate it so
   // that we can bring that window to the foreground.
@@ -315,16 +322,12 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
 }
 
 void TabSearchPageHandler::ReplaceActiveSplitTab(int32_t replacement_tab_id) {
-  std::optional<split_tabs::SplitTabId> split_id =
-      browser_->GetActiveTabInterface()->GetSplit();
-  if (split_id.has_value()) {
-    const tabs::TabInterface* replacement_tab =
-        tabs::TabHandle(replacement_tab_id).Get();
-    const int32_t replacement_index =
-        browser_->tab_strip_model()->GetIndexOfTab(replacement_tab);
-    browser_->tab_strip_model()->UpdateTabInSplit(
-        browser_->tab_strip_model()->GetActiveTab(), replacement_index,
-        TabStripModel::SplitUpdateType::kReplace);
+  tabs::TabInterface* const active_tab = browser_->GetActiveTabInterface();
+  if (active_tab->GetSplit().has_value()) {
+    const auto result = GetTabStripService(browser_)->ReplaceTabInSplit(
+        tabs_api::NodeId::FromTabHandle(active_tab->GetHandle()),
+        tabs_api::NodeId::FromTabHandle(tabs::TabHandle(replacement_tab_id)));
+    DCHECK(result.has_value());
   }
 }
 
@@ -676,6 +679,13 @@ TabSearchPageHandler::GetRecentlyClosedTab(sessions::tab_restore::Tab* tab,
   }
 
   return recently_closed_tab;
+}
+
+tabs_api::TabStripService* TabSearchPageHandler::GetTabStripService(
+    BrowserWindowInterface* browser) const {
+  return browser->GetFeatures()
+      .tab_strip_service_feature()
+      ->GetTabStripService();
 }
 
 void TabSearchPageHandler::OnTabStripModelChanged(
