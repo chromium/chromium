@@ -204,6 +204,25 @@ source_set("test_support") {
   }
 }
 
+source_set("content_analysis_browser_test_base") {
+  testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
+  sources = [
+    "content_analysis_browser_test_base.cc",
+    "content_analysis_browser_test_base.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/common/proto:connectors_proto_extras",
+    "//components/enterprise/connectors/core",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
