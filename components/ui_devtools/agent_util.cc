@@ -31,6 +31,12 @@ const char kChromiumCodeSearchSrcURL[] =
     "https://cs.chromium.org/chromium/src/";
 
 bool GetSourceCode(std::string path, std::string* source_code) {
+  // Prevent directory traversal. This has been a security concern since
+  // this function can otherwise be used to read arbitrary files on the disk.
+  if (path.find("..") != std::string::npos) {
+    return false;
+  }
+
   base::FilePath src_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir);
   src_dir = src_dir.AppendASCII(path);
