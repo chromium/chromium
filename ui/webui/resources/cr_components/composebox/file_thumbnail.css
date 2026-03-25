@@ -138,6 +138,14 @@
   width: var(--pdf-icon-size, 100%);
 }
 
+.document-icon {
+  background-color: var(--color-composebox-background);
+  box-sizing: border-box;
+  color: var(--color-composebox-document-chip-icon);
+  height: var(--document-icon-size, 100%);
+  width: var(--document-icon-size, 100%);
+}
+
 .injected-input-icon {
   box-sizing: border-box;
   color: var(--aim-icon-color);

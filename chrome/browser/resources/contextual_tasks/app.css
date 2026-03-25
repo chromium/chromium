@@ -12,6 +12,7 @@
   --color-composebox-cancel-button: rgba(10,10,10, 1);
   --color-composebox-context-menu-checkbox-override: rgba(11, 87, 208, 1);
   --color-composebox-context-menu-text: rgba(31, 31, 31, 1);
+  --color-composebox-document-chip-icon: rgba(86, 89, 94, 1);
   /* The top border of matches/tab suggestions dropdown in context menu. */
   --color-composebox-file-carousel-divider: rgba(210, 225, 252, 1);
   --color-composebox-file-carousel-remove-gradient-end: rgba(0, 0, 0, 0.2);
@@ -185,6 +186,7 @@
   --color-composebox-cancel-button: rgba(191, 191, 191, 1);
   --color-composebox-context-menu-checkbox-override: rgba(168, 199, 250, 1);
   --color-composebox-context-menu-text: rgba(227, 227, 227, 1);
+  --color-composebox-document-chip-icon: rgba(173, 175, 184, 1);
   --color-composebox-file-carousel-divider: rgba(94, 94, 94, 1);
   --color-composebox-file-carousel-remove-gradient-end: rgba(100, 100, 100, 0.2);
   --color-composebox-file-carousel-remove-gradient-start: rgba(100, 100, 100, 0.2);

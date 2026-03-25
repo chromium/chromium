@@ -4,6 +4,7 @@
 
 import {ComposeboxFileThumbnailElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -63,17 +64,50 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
         (thumbnail as HTMLImageElement).src, fileThumbnailElement.file.dataUrl);
   });
 
-  test('display pdf file', async () => {
+  test('display document file (flag disabled)', async () => {
+    loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: false});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    document.body.appendChild(fileThumbnailElement);
+
     // Arrange.
     fileThumbnailElement.file = createComposeboxFile(0);
     await microtasksFinished();
 
-    // Assert one image file.
-    const thumbnail =
-        fileThumbnailElement.shadowRoot.querySelector('#pdfTitle');
-    assertTrue(!!thumbnail);
-    assertEquals(thumbnail.tagName, 'P');
-    assertEquals(thumbnail.textContent, fileThumbnailElement.file.name);
+    // Assert one document file.
+    const title =
+        fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
+    assertTrue(!!title);
+    assertEquals(title.tagName, 'P');
+    assertEquals(title.textContent, fileThumbnailElement.file.name);
+
+    // Assert pdf icon is shown.
+    const icon = fileThumbnailElement.shadowRoot.querySelector('.pdf-icon');
+    assertTrue(!!icon);
+    assertEquals((icon as any).icon, 'thumbnail:pdf');
+  });
+
+  test('display document file (flag enabled)', async () => {
+    loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    document.body.appendChild(fileThumbnailElement);
+
+    // Arrange.
+    fileThumbnailElement.file = createComposeboxFile(0);
+    await microtasksFinished();
+
+    // Assert one document file.
+    const title =
+        fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
+    assertTrue(!!title);
+    assertEquals(title.tagName, 'P');
+    assertEquals(title.textContent, fileThumbnailElement.file.name);
+
+    // Assert document icon is shown.
+    const icon = fileThumbnailElement.shadowRoot.querySelector('.document-icon');
+    assertTrue(!!icon);
+    assertEquals((icon as any).icon, 'thumbnail:document');
   });
 
   test('display tab file', async () => {
@@ -130,7 +164,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertEquals(null, removeButton);
   });
 
-  test('clicking pdf delete button sends event', async () => {
+  test('clicking document delete button sends event', async () => {
     // Arrange.
     fileThumbnailElement.file = createComposeboxFile(0);
     await microtasksFinished();
@@ -139,22 +173,22 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     const deleteEventPromise =
         eventToPromise('delete-file', fileThumbnailElement) as
         Promise<CustomEvent>;
-    assertTrue(!!fileThumbnailElement.$.removePdfButton);
-    fileThumbnailElement.$.removePdfButton.click();
+    assertTrue(!!fileThumbnailElement.$.removeDocumentButton);
+    fileThumbnailElement.$.removeDocumentButton.click();
 
     // Assert.
     const deleteEvent = await deleteEventPromise;
     assertEquals(deleteEvent.detail.uuid, '0');
   });
 
-  test('hides pdf delete button when not deletable', async () => {
+  test('hides document delete button when not deletable', async () => {
     // Arrange.
     fileThumbnailElement.file = createComposeboxFile(0, {isDeletable: false});
     await microtasksFinished();
 
     // Assert.
     const removeButton =
-        fileThumbnailElement.shadowRoot.querySelector('#removePdfButton');
+        fileThumbnailElement.shadowRoot.querySelector('#removeDocumentButton');
     assertEquals(null, removeButton);
   });
 
