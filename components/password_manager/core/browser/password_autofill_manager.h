@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -89,6 +90,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   bool RemoveSuggestion(const autofill::Suggestion& suggestion) override;
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
+  void OnTabSelected(autofill::TabbedPaneTabType tab_type) override;
 
   // Invoked when a password mapping is added.
   void OnAddPasswordFillData(const autofill::PasswordFormFillData& fill_data);

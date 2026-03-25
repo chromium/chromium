@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
@@ -57,6 +59,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -864,7 +867,8 @@ bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
 }
 
 void PopupViewViews::TabSelectedAt(int index) {
-  controller_->SetFilter(SuggestionTabIndex(index));
+  CHECK_LT(base::checked_cast<size_t>(index), tabbed_pane_config_->tabs.size());
+  controller_->OnTabSelected(index, tabbed_pane_config_->tabs[index].type);
 }
 
 void PopupViewViews::SetSelectedCell(

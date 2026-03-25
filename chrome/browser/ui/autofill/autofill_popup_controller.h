@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 
 namespace input {
 struct NativeWebKeyboardEvent;
@@ -112,6 +113,12 @@ class AutofillPopupController : public AutofillSuggestionController {
   // visible is up to the view's implementation. To avoid timer specific issues,
   // this method should return `false` in the test environment.
   virtual bool IsViewVisibilityAcceptingThresholdEnabled() const = 0;
+
+  // Called when a tabbed pane's tab is selected in the autofill dropdown.
+  // `tab_index` and `tabbed_pane_tab_type` represent the index and the type of
+  // the tab selected, respectively.
+  virtual void OnTabSelected(int tab_index,
+                             TabbedPaneTabType tabbed_pane_tab_type) = 0;
 
   virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
 };

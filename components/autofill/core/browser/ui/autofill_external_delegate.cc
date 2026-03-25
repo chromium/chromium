@@ -74,6 +74,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -1002,7 +1003,10 @@ void AutofillExternalDelegate::DidEndTextFieldEditing() {
       SuggestionHidingReason::kEndEditing);
 }
 
-void AutofillExternalDelegate::OnPayLaterTabOpened() {
+void AutofillExternalDelegate::OnTabSelected(TabbedPaneTabType tab_type) {
+  if (tab_type != TabbedPaneTabType::kPayLater) {
+    return;
+  }
   manager_->GetPaymentsBnplManager()->OnUserDecisionToUseBnpl(
       std::nullopt, base::BindOnce(
                         [](base::WeakPtr<AutofillExternalDelegate> delegate,

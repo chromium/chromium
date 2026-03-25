@@ -447,6 +447,12 @@ autofill::FillingProduct PasswordAutofillManager::GetMainFillingProduct()
   return autofill::FillingProduct::kPassword;
 }
 
+void PasswordAutofillManager::OnTabSelected(
+    autofill::TabbedPaneTabType tab_type) {
+  // Tabbed panes do not currently exist for passwords.
+  NOTREACHED();
+}
+
 void PasswordAutofillManager::OnAddPasswordFillData(
     const autofill::PasswordFormFillData& fill_data) {
   if (!autofill::IsValidPasswordFormFillData(fill_data)) {

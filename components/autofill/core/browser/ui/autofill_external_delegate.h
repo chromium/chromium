@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -87,6 +88,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // suggestion that has a filling product that is not none.
   FillingProduct GetMainFillingProduct() const override;
 
+  void OnTabSelected(TabbedPaneTabType tab_type) override;
+
   // Called when the renderer posts an Autofill query to the browser. We might
   // not want to display the warning if a website has disabled Autocomplete
   // because they have their own popup, and showing our popup on to of theirs
@@ -121,9 +124,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Informs the delegate that the text field editing has ended. This is
   // used to help record the metrics of when a new popup is shown.
   void DidEndTextFieldEditing();
-
-  // Triggered when the pay later tab is opened in the autofill dropdown.
-  void OnPayLaterTabOpened();
 
   const FormData& query_form() const { return query_form_; }
 

@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -72,7 +73,6 @@ class MockAutofillPopupController : public AutofillPopupController {
               GetSuggestionFilterMatches,
               (),
               (const override));
-
   int GetLineCount() const override { return suggestions_.size(); }
 
   const autofill::Suggestion& GetSuggestionAt(int row) const override {
@@ -116,6 +116,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               (override));
   MOCK_METHOD(void, SetFilter, (std::optional<SuggestionFilter>), (override));
   MOCK_METHOD(void, OnPopupPainted, (), (override));
+  MOCK_METHOD(void, OnTabSelected, (int, TabbedPaneTabType), (override));
   MOCK_METHOD(bool,
               HandleKeyPressEvent,
               (const input::NativeWebKeyboardEvent& event),

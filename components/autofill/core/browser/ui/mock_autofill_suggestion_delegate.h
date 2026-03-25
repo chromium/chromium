@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -46,7 +47,8 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
               (override));
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
-  MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const, override));
+  MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const override));
+  MOCK_METHOD(void, OnTabSelected, (TabbedPaneTabType tab_type), (override));
 
   base::WeakPtr<MockAutofillSuggestionDelegate> GetWeakPtr();
 

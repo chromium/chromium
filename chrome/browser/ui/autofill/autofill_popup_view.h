@@ -12,6 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/input/native_web_keyboard_event.h"
 
@@ -34,14 +35,9 @@ class AutofillPopupView {
 
   // Configuration for displaying a tabbed pane within the Autofill popup.
   struct TabbedPaneConfig {
-    enum class TabType {
-      kPayNow = 0,
-      kPayLater = 1,
-    };
-
     // Represents a single tab to be rendered in the tabbed pane.
     struct Tab {
-      TabType type;
+      TabbedPaneTabType type;
       std::u16string title;
     };
 

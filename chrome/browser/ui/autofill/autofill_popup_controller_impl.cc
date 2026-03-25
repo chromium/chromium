@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -297,9 +298,9 @@ void AutofillPopupControllerImpl::Show(
         controller_common_.show_tabbed_popup
             ? std::make_optional<AutofillPopupView::TabbedPaneConfig>(
                   std::vector<AutofillPopupView::TabbedPaneConfig::Tab>{
-                      {AutofillPopupView::TabbedPaneConfig::TabType::kPayNow,
+                      {TabbedPaneTabType::kPayNow,
                        l10n_util::GetStringUTF16(IDS_AUTOFILL_PAY_NOW)},
-                      {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
+                      {TabbedPaneTabType::kPayLater,
                        l10n_util::GetStringUTF16(IDS_AUTOFILL_PAY_LATER)}})
             : std::nullopt;
     view_ = has_parent
@@ -1007,6 +1008,15 @@ void AutofillPopupControllerImpl::OnPopupPainted() {
   if (!barrier_for_accepting_) {
     barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
         kIgnoreEarlyClicksOnSuggestionsDuration);
+  }
+}
+
+void AutofillPopupControllerImpl::OnTabSelected(
+    int tab_index,
+    TabbedPaneTabType tabbed_pane_tab_type) {
+  SetFilter(SuggestionTabIndex(tab_index));
+  if (delegate_) {
+    delegate_->OnTabSelected(tabbed_pane_tab_type);
   }
 }
 

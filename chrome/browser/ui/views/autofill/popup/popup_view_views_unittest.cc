@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -1273,9 +1274,8 @@ TEST_F(PopupViewViewsTest, PageUpDownForSelectableCells) {
 
 TEST_F(PopupViewViewsTest, Show_A11yAnnouncesCurrentTab) {
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
-      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
-       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
-        u"Pay Later Test"}});
+      {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
+       {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
 
   controller().set_suggestions({SuggestionType::kCreditCardEntry});
   CreateView(/*widget_params=*/std::nullopt, /*search_bar_config=*/std::nullopt,
@@ -1292,9 +1292,8 @@ TEST_F(PopupViewViewsTest, Show_A11yAnnouncesCurrentTab) {
 
 TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesCurrentTab) {
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
-      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
-       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
-        u"Pay Later Test"}});
+      {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
+       {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
 
   CreateAndShowView({SuggestionType::kCreditCardEntry},
                     /*widget_params=*/std::nullopt,
@@ -1311,9 +1310,8 @@ TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesCurrentTab) {
 
 TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs) {
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
-      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
-       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
-        u"Pay Later Test"}});
+      {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
+       {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
 
   CreateAndShowView({SuggestionType::kCreditCardEntry},
                     /*widget_params=*/std::nullopt,
@@ -1321,9 +1319,7 @@ TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs) {
                     std::move(tabbed_pane_config));
 
   // Pressing right should navigate to the next tab.
-  EXPECT_CALL(controller(),
-              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
-                  SuggestionTabIndex(1)))));
+  EXPECT_CALL(controller(), OnTabSelected(1, TabbedPaneTabType::kPayLater));
   SimulateKeyPress(ui::VKEY_RIGHT);
 
   // Pressing right again should do nothing because we are at the last tab.
@@ -1331,9 +1327,7 @@ TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs) {
   SimulateKeyPress(ui::VKEY_RIGHT);
 
   // Pressing left should navigate back to the previous tab.
-  EXPECT_CALL(controller(),
-              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
-                  SuggestionTabIndex(0)))));
+  EXPECT_CALL(controller(), OnTabSelected(0, TabbedPaneTabType::kPayNow));
   SimulateKeyPress(ui::VKEY_LEFT);
 }
 
@@ -1341,9 +1335,8 @@ TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs_RTL) {
   base::i18n::SetRTLForTesting(true);
 
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
-      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
-       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
-        u"Pay Later Test"}});
+      {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
+       {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
 
   CreateAndShowView({SuggestionType::kCreditCardEntry},
                     /*widget_params=*/std::nullopt,
@@ -1351,9 +1344,7 @@ TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs_RTL) {
                     std::move(tabbed_pane_config));
 
   // In RTL, pressing left should navigate to the next tab.
-  EXPECT_CALL(controller(),
-              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
-                  SuggestionTabIndex(1)))));
+  EXPECT_CALL(controller(), OnTabSelected(1, TabbedPaneTabType::kPayLater));
   SimulateKeyPress(ui::VKEY_LEFT);
 
   // Pressing left again should do nothing because we are at the last tab.
@@ -1361,9 +1352,7 @@ TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs_RTL) {
   SimulateKeyPress(ui::VKEY_LEFT);
 
   // In RTL, pressing right should navigate to the previous tab.
-  EXPECT_CALL(controller(),
-              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
-                  SuggestionTabIndex(0)))));
+  EXPECT_CALL(controller(), OnTabSelected(0, TabbedPaneTabType::kPayNow));
   SimulateKeyPress(ui::VKEY_RIGHT);
 
   base::i18n::SetRTLForTesting(false);
@@ -2560,9 +2549,8 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
 
 TEST_F(PopupViewViewsTest, TabbedPane_ConfigPassedThroughAndRendered) {
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
-      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
-       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
-        u"Pay Later Test"}});
+      {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
+       {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
 
   CreateAndShowView({SuggestionType::kCreditCardEntry},
                     /*widget_params=*/std::nullopt,
@@ -2585,9 +2573,8 @@ TEST_F(PopupViewViewsTest, TabbedPane_ConfigPassedThroughAndRendered) {
 
 TEST_F(PopupViewViewsTest, TabbedPane_SuggestionFilteredForInitialShow) {
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
-      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now Test"},
-       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
-        u"Pay Later Test"}});
+      {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
+       {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
 
   EXPECT_CALL(controller(),
               SetFilter(Eq(AutofillPopupController::SuggestionFilter(
@@ -2601,9 +2588,8 @@ TEST_F(PopupViewViewsTest, TabbedPane_SuggestionFilteredForInitialShow) {
 
 TEST_F(PopupViewViewsTest, TabbedPane_InitialWidthMaintainedWhenSwitchingTabs) {
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
-      {{AutofillPopupView::TabbedPaneConfig::TabType::kPayNow, u"Pay Now"},
-       {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
-        u"Pay Later"}});
+      {{TabbedPaneTabType::kPayNow, u"Pay Now"},
+       {TabbedPaneTabType::kPayLater, u"Pay Later"}});
 
   CreateAndShowView({SuggestionType::kCreditCardEntry},
                     /*widget_params=*/std::nullopt,
@@ -2838,14 +2824,6 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
   EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kUserAborted));
   event.windows_key_code = ui::VKEY_ESCAPE;
   EXPECT_TRUE(test_api(view()).HandleKeyPressEvent(event));
-}
-
-TEST_F(PopupViewViewsTest, TabSelectionUpdatesSuggestionFilter) {
-  CreateAndShowView();
-  EXPECT_CALL(controller(),
-              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
-                  SuggestionTabIndex(3)))));
-  view().TabSelectedAt(3);
 }
 
 }  // namespace

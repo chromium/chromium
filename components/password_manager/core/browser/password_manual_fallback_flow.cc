@@ -356,6 +356,12 @@ autofill::FillingProduct PasswordManualFallbackFlow::GetMainFillingProduct()
   return autofill::FillingProduct::kPassword;
 }
 
+void PasswordManualFallbackFlow::OnTabSelected(
+    autofill::TabbedPaneTabType tab_type) {
+  // Tabbed panes do not currently exist for passwords.
+  NOTREACHED();
+}
+
 void PasswordManualFallbackFlow::RunFlowImpl(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {

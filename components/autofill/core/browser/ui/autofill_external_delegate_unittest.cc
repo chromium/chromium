@@ -75,6 +75,7 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/aliases.h"
@@ -1025,7 +1026,7 @@ TEST_F(AutofillExternalDelegateTest,
                                           SuggestionPosition{.row = 0});
 }
 
-// Tests that `show_tabbed_popup` is false when the main filling
+// Tests that `show_tabbed_popup` is not present when the main filling
 // product is not a credit card (e.g., an Address field).
 TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_NotCreditCard) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1064,7 +1065,7 @@ TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_NotCreditCard) {
                         {Suggestion(SuggestionType::kAddressEntry)});
 }
 
-// Tests that `show_tabbed_popup` is true when the main filling
+// Tests that `show_tabbed_popup` is `kBnpl` when the main filling
 // product is a credit card and the field is a credit card number field.
 TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_EligibleFieldType) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1104,7 +1105,7 @@ TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_EligibleFieldType) {
                         {Suggestion(SuggestionType::kCreditCardEntry)});
 }
 
-// Tests that `show_tabbed_popup` is false when the main filling
+// Tests that `show_tabbed_popup` is not present when the main filling
 // product is a credit card but the heuristic type of the field doesn't
 // trigger BNPL suggestions (e.g., CVC fields).
 TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_IneligibleFieldType_Cvc) {
@@ -1145,7 +1146,7 @@ TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_IneligibleFieldType_Cvc) {
                         {Suggestion(SuggestionType::kCreditCardEntry)});
 }
 
-// Tests that `show_tabbed_popup` is false when the flag
+// Tests that `show_tabbed_popup` is not present when the flag
 // `kAutofillEnablePayNowPayLaterTabs` is disabled.
 TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1186,7 +1187,7 @@ TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_FeatureDisabled) {
 
 // Ensures the BNPL Manager is notified of the user deciding to use BNPL when a
 // pay later tab is opened.
-TEST_F(AutofillExternalDelegateTest, OnPayLaterTabOpened) {
+TEST_F(AutofillExternalDelegateTest, OnTabSelected_PayLater) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
@@ -1207,7 +1208,7 @@ TEST_F(AutofillExternalDelegateTest, OnPayLaterTabOpened) {
         captured_fill_callback = std::move(callback);
       });
 
-  external_delegate().OnPayLaterTabOpened();
+  external_delegate().OnTabSelected(TabbedPaneTabType::kPayLater);
 
   ASSERT_FALSE(captured_fill_callback.is_null());
 
@@ -1226,6 +1227,26 @@ TEST_F(AutofillExternalDelegateTest, OnPayLaterTabOpened) {
 
   std::move(captured_fill_callback).Run(test_card);
 }
+
+TEST_F(AutofillExternalDelegateTest, OnTabSelected_PayNow) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnUserDecisionToUseBnpl(
+                  /*final_checkout_amount=*/testing::Eq(std::nullopt),
+                  /*on_bnpl_vcn_fetched_callback=*/testing::_))
+      .Times(0);
+
+  external_delegate().OnTabSelected(TabbedPaneTabType::kPayNow);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace password_manager {
@@ -79,6 +80,10 @@ class AutofillSuggestionDelegate {
   // Returns the main filling product the popup being shown, which is a function
   // of the list of suggestions being shown.
   virtual FillingProduct GetMainFillingProduct() const = 0;
+
+  // Called when `tab_type` is opened in the tabbed pane config of the autofill
+  // dropdown.
+  virtual void OnTabSelected(TabbedPaneTabType tab_type) = 0;
 };
 
 }  // namespace autofill
