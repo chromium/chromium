@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_GRAPHICS_CONTEXT_3D_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_GRAPHICS_CONTEXT_3D_UTILS_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -21,15 +20,9 @@ namespace blink {
 class WebGraphicsContext3DProviderWrapper;
 
 class PLATFORM_EXPORT GraphicsContext3DUtils {
-  USING_FAST_MALLOC(GraphicsContext3DUtils);
+  STATIC_ONLY(GraphicsContext3DUtils);
 
  public:
-  // The constructor takes a weak ref to the wrapper because it internally
-  // it generates callbacks that may outlive the wrapper.
-  GraphicsContext3DUtils(base::WeakPtr<WebGraphicsContext3DProviderWrapper>&&
-                             context_provider_wrapper)
-      : context_provider_wrapper_(std::move(context_provider_wrapper)) {}
-
   static bool Accelerated2DCanvasFeatureEnabled(
       WebGraphicsContext3DProviderWrapper*);
 
@@ -37,9 +30,6 @@ class PLATFORM_EXPORT GraphicsContext3DUtils {
   static bool IsScanoutSupportedForCanvasWithFormat(
       viz::SharedImageFormat format,
       const gpu::Capabilities& capabilities);
-
- private:
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 };
 
 }  // namespace blink
