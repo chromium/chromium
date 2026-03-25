@@ -228,6 +228,13 @@ bool Vp8Parser::ParseFrameHeader(Vp8FrameHeader* fhdr) {
       return false;
   }
 
+  if (fhdr->first_part_size < (bd_.BitOffset() + 7) / 8) {
+    // If a video is created in such a way that the `first_part_size` field in
+    // the bitstream is smaller than the macroblock_bit_offset/8, the frame is
+    // not valid. Calculating the partition size becomes impossible.
+    return false;
+  }
+
   fhdr->macroblock_bit_offset = bd_.BitOffset();
   fhdr->bool_dec_range = bd_.GetRange();
   fhdr->bool_dec_value = bd_.GetBottom();
