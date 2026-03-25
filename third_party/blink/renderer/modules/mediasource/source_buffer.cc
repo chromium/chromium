@@ -1579,7 +1579,7 @@ bool SourceBuffer::InitializationSegmentReceived(
     //   segment.
     if (tracks_match_first_init_segment && new_audio_tracks.size() > 1) {
       for (wtf_size_t i = 0; i < new_audio_tracks.size(); ++i) {
-        const String& new_track_id = new_video_tracks[i].id;
+        const String& new_track_id = new_audio_tracks[i].id;
         if (new_track_id !=
             String(audioTracks().AnonymousIndexedGetter(i)->id())) {
           tracks_match_first_init_segment = false;
