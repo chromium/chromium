@@ -168,10 +168,6 @@ base::TimeDelta GetPromoControllerPollingInterval() {
   return kDefaultPollingInterval;
 }
 
-base::TimeDelta GetNtpSetupListSnoozeTime() {
-  return GetNtpBrowserPromosSnoozedHideDuration();
-}
-
 BASE_FEATURE(kEnableNtpBrowserPromos, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_ENUM_PARAM(NtpBrowserPromoType,
@@ -224,10 +220,6 @@ int GetNtpBrowserPromoMaxTopSpotSessions() {
 
 base::TimeDelta GetNtpBrowserPromoClickedHideDuration() {
   return kNtpBrowserPromoClickedHideDuration.Get();
-}
-
-base::TimeDelta GetNtpBrowserPromosSnoozedHideDuration() {
-  return kNtpBrowserPromosSnoozedHideDuration.Get();
 }
 
 std::ostream& operator<<(std::ostream& os, NtpBrowserPromoType promo_type) {

@@ -978,7 +978,6 @@ void UserEducationInternalsPageHandlerImpl::GetNtpPromoPreferences(
 
   auto* const storage_service = GetStorageService(profile_);
   if (storage_service) {
-    const base::Time now = storage_service->GetCurrentTime();
     const auto preferences = storage_service->ReadNtpPromoPreferences();
 
     const auto mode = user_education::features::GetNtpBrowserPromoType();
@@ -994,13 +993,6 @@ void UserEducationInternalsPageHandlerImpl::GetNtpPromoPreferences(
     data.emplace_back(FormatDemoPageData("NTP promo mode", state));
     data.emplace_back(
         FormatDemoPageData("NTP promos disabled?", preferences.disabled));
-    const auto snoozed_until =
-        preferences.last_snoozed +
-        user_education::features::GetNtpSetupListSnoozeTime();
-    if (now < snoozed_until) {
-      data.emplace_back(
-          FormatDemoPageData("NTP promos snoozed until", snoozed_until));
-    }
   }
 
   return std::move(callback).Run(std::move(data));

@@ -304,21 +304,6 @@ TEST_F(NtpPromoControllerTest, HasShowablePromo) {
   EXPECT_TRUE(controller().HasShowablePromo(nullptr));
 }
 
-TEST_F(NtpPromoControllerTest, SetAllPromosSnoozed) {
-  CreateController();
-  controller().SetAllPromosSnoozed(true);
-  EXPECT_EQ(storage_service_.ReadNtpPromoPreferences().last_snoozed,
-            storage_service_.GetCurrentTime());
-}
-
-TEST_F(NtpPromoControllerTest, SetAllPromosSnoozedUnsnoozed) {
-  CreateController();
-  controller().SetAllPromosSnoozed(true);
-  controller().SetAllPromosSnoozed(false);
-  EXPECT_EQ(storage_service_.ReadNtpPromoPreferences().last_snoozed,
-            base::Time());
-}
-
 TEST_F(NtpPromoControllerTest, SetAllPromosDisabled) {
   CreateController();
   controller().SetAllPromosDisabled(true);
@@ -326,61 +311,11 @@ TEST_F(NtpPromoControllerTest, SetAllPromosDisabled) {
   EXPECT_TRUE(prefs.disabled);
 }
 
-TEST_F(NtpPromoControllerTest, SetAllPromosDisabledClearsSnoozedState) {
-  CreateController();
-  controller().SetAllPromosSnoozed(true);
-  controller().SetAllPromosDisabled(true);
-  const auto prefs = storage_service_.ReadNtpPromoPreferences();
-  EXPECT_EQ(base::Time(), prefs.last_snoozed);
-}
-
-TEST_F(NtpPromoControllerTest, SetAllPromosUndisabledClearsSnoozedState) {
-  CreateController();
-  controller().SetAllPromosDisabled(true);
-  controller().SetAllPromosSnoozed(true);
-  controller().SetAllPromosDisabled(false);
-  const auto prefs = storage_service_.ReadNtpPromoPreferences();
-  EXPECT_EQ(base::Time(), prefs.last_snoozed);
-}
-
 TEST_F(NtpPromoControllerTest, SetAllPromosDisabledUndisabled) {
   CreateController();
   controller().SetAllPromosDisabled(true);
   controller().SetAllPromosDisabled(false);
   EXPECT_FALSE(storage_service_.ReadNtpPromoPreferences().disabled);
-}
-
-TEST_F(NtpPromoControllerTest, SnoozeBlocksPromos) {
-  CreateController();
-  RegisterPromo(kPromoId, kEligible);
-  controller().SetAllPromosSnoozed(true);
-  EXPECT_FALSE(controller().HasShowablePromo(nullptr));
-  const auto showable = controller().GenerateShowablePromo(nullptr);
-  EXPECT_FALSE(ShowsPromo());
-}
-
-TEST_F(NtpPromoControllerTest, UnsnoozeRestoresPromos) {
-  CreateController();
-  RegisterPromo(kPromoId, kEligible);
-  controller().SetAllPromosSnoozed(true);
-  controller().SetAllPromosSnoozed(false);
-  EXPECT_TRUE(controller().HasShowablePromo(nullptr));
-  const auto showable = controller().GenerateShowablePromo(nullptr);
-  ASSERT_TRUE(ShowsPromo());
-  EXPECT_EQ(showable.promo->id, kPromoId);
-}
-
-TEST_F(NtpPromoControllerTest, SnoozeExpiresRestoresPromos) {
-  auto params = GetNtpPromoControllerParams();
-  CreateController(params);
-  RegisterPromo(kPromoId, kEligible);
-  controller().SetAllPromosSnoozed(true);
-  task_environment_.FastForwardBy(params.promos_snoozed_hide_duration +
-                                  base::Minutes(1));
-  EXPECT_TRUE(controller().HasShowablePromo(nullptr));
-  auto showable = controller().GenerateShowablePromo(nullptr);
-  ASSERT_TRUE(ShowsPromo());
-  EXPECT_EQ(showable.promo->id, kPromoId);
 }
 
 TEST_F(NtpPromoControllerTest, DisableBlocksPromos) {

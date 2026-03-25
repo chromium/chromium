@@ -56,8 +56,6 @@ NtpPromoControllerParams GetNtpPromoControllerParams() {
       features::GetNtpBrowserPromoMaxTopSpotSessions();
   params.clicked_hide_duration =
       features::GetNtpBrowserPromoClickedHideDuration();
-  params.promos_snoozed_hide_duration =
-      features::GetNtpBrowserPromosSnoozedHideDuration();
   params.suppress_list = features::GetNtpBrowserPromoSuppressList();
   return params;
 }
@@ -210,16 +208,8 @@ void NtpPromoController::OnPromoClicked(
   LogPromoClicked(id);
 }
 
-void NtpPromoController::SetAllPromosSnoozed(bool snooze) {
-  NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
-  prefs.last_snoozed =
-      snooze ? storage_service_->GetCurrentTime() : base::Time();
-  storage_service_->SaveNtpPromoPreferences(prefs);
-}
-
 void NtpPromoController::SetAllPromosDisabled(bool disabled) {
   NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
-  prefs.last_snoozed = base::Time();
   prefs.disabled = disabled;
   storage_service_->SaveNtpPromoPreferences(prefs);
 }
@@ -240,10 +230,7 @@ NtpPromoIdentifier NtpPromoController::GetMostRecentTopSpotPromo() {
 
 bool NtpPromoController::ArePromosBlocked() const {
   NtpPromoPreferences prefs = storage_service_->ReadNtpPromoPreferences();
-  return prefs.disabled ||
-         (!prefs.last_snoozed.is_null() &&
-          storage_service_->GetCurrentTime() <
-              prefs.last_snoozed + params_.promos_snoozed_hide_duration);
+  return prefs.disabled;
 }
 
 // Decides whether a promo should be shown or not, based on the supplied

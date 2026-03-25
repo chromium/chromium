@@ -458,7 +458,6 @@ TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoDataReset) {
 TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoPreferences) {
   user_education::NtpPromoPreferences prefs;
   prefs.disabled = true;
-  prefs.last_snoozed = base::Time::FromSecondsSinceUnixEpoch(1);
   service().SaveNtpPromoPreferences(prefs);
   EXPECT_EQ(prefs, service().ReadNtpPromoPreferences());
 }
@@ -471,7 +470,6 @@ TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoPreferencesNotPresent) {
 TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoPreferencesReset) {
   user_education::NtpPromoPreferences prefs;
   prefs.disabled = true;
-  prefs.last_snoozed = base::Time::FromSecondsSinceUnixEpoch(1);
   service().SaveNtpPromoPreferences(prefs);
   service().ResetNtpPromoPreferences();
   prefs = user_education::NtpPromoPreferences();

@@ -595,10 +595,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       "fileSuggestionDismissHours",
       base::NumberToString(DriveService::kDismissDuration.InHours()));
   source->AddString(
-      "setupListModuleDismissDays",
-      base::NumberToString(
-          user_education::features::GetNtpSetupListSnoozeTime().InDays()));
-  source->AddString(
       "tabGroupsModuleDismissHours",
       base::NumberToString(
           ntp_features::kNtpTabGroupsModuleWindowEndDeltaParam.Get()

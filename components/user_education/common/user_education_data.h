@@ -188,9 +188,6 @@ struct NtpPromoPreferences {
 
   bool operator<=>(const NtpPromoPreferences& other) const = default;
 
-  // Snooze timer.
-  base::Time last_snoozed;
-
   // Whether all promos are disabled.
   bool disabled = false;
 };

@@ -68,9 +68,6 @@ struct NtpPromoControllerParams {
   // How long a promo is hidden after being clicked.
   base::TimeDelta clicked_hide_duration;
 
-  // How long all promos are hidden after being snoozed.
-  base::TimeDelta promos_snoozed_hide_duration;
-
   // A list of promo IDs to suppress.
   // TODO(crbug.com/427784414): Hook up this setting.
   std::vector<NtpPromoIdentifier> suppress_list;
@@ -91,15 +88,13 @@ class NtpPromoController {
                      const NtpPromoControllerParams& params);
 
   // Determines if there is a showable promo. This may return false if
-  // promos are snoozed or disabled, or if there are no eligible promos to show.
+  // promos are disabled, or if there are no eligible promos to show.
   virtual bool HasShowablePromo(
       const user_education::UserEducationContextPtr& context);
 
   // Provides a showable promo, intended to be displayed by the NTP.
-  // May update prefs as a side effect.
-  //
-  // If promos are snoozed or disabled, or there are no eligible promos, an
-  // empty struct is returned.
+  // May update prefs as a side effect. If promos are disabled, or
+  // there are no eligible promos, an empty struct is returned.
   virtual NtpShowablePromos GenerateShowablePromo(
       const user_education::UserEducationContextPtr& context);
 
@@ -110,10 +105,6 @@ class NtpPromoController {
   virtual void OnPromoClicked(
       NtpPromoIdentifier id,
       const user_education::UserEducationContextPtr& context);
-
-  // Sets or resets the snoozed state. Snooze, when set, will last for a fixed
-  // period of time.
-  virtual void SetAllPromosSnoozed(bool snooze);
 
   // Sets or resets the disabled state. Disable, when set, will last
   // indefinitely.
@@ -131,7 +122,7 @@ class NtpPromoController {
   // Returns an empty string if there is no recorded top-spot promo.
   NtpPromoIdentifier GetMostRecentTopSpotPromo();
 
-  // Returns whether promos are disabled or snoozed.
+  // Returns whether promos are disabled for any reason.
   bool ArePromosBlocked() const;
 
   // Determines whether an individual promo should be shown.

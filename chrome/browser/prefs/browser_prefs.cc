@@ -1015,6 +1015,10 @@ constexpr char kTabOrganizationModelStrategy[] =
 // Deprecated 03/2026.
 constexpr char kNtpContextMenuClickCount[] = "ntp.context_menu_click_count";
 
+// Deprecated 03/2026.
+constexpr char kNtpPromoPrefLastSnoozed[] =
+    "in_product_help.ntp_promos.last_snoozed";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1418,6 +1422,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2026.
   registry->RegisterIntegerPref(kNtpContextMenuClickCount, 0);
+
+  // Deprecated 03/2026.
+  registry->RegisterTimePref(kNtpPromoPrefLastSnoozed, base::Time());
 }
 
 }  // namespace
@@ -2743,6 +2750,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 03/2026.
   privacy_sandbox::ClearAdPrivacyPrefs(profile_prefs);
+
+  // Added 03/2026.
+  profile_prefs->ClearPref(kNtpPromoPrefLastSnoozed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
