@@ -72,7 +72,7 @@ void Emf::Close() {
   emf_ = nullptr;
 }
 
-bool Emf::InitToFile(const base::FilePath& metafile_path) {
+bool Emf::InitToFileForTesting(const base::FilePath& metafile_path) {
   DCHECK(!emf_ && !hdc_);
   hdc_ = CreateEnhMetaFile(nullptr, metafile_path.value().c_str(), nullptr,
                            nullptr);

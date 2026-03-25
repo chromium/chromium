@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Emf : public Metafile {
 
   // Generates a new metafile that will record every GDI command, and will
   // be saved to `metafile_path`.
-  bool InitToFile(const base::FilePath& metafile_path);
+  bool InitToFileForTesting(const base::FilePath& metafile_path);
 
   // Initializes the Emf with the data in `metafile_path`.
   bool InitFromFile(const base::FilePath& metafile_path);

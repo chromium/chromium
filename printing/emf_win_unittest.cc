@@ -186,23 +186,23 @@ TEST(EmfTest, FileBackedEmf) {
   base::FilePath metafile_path;
   EXPECT_TRUE(base::CreateTemporaryFileInDir(scratch_metafile_dir.GetPath(),
                                              &metafile_path));
-  uint32_t size;
   std::vector<char> data;
   {
     Emf emf;
-    EXPECT_TRUE(emf.InitToFile(metafile_path));
+    EXPECT_TRUE(emf.InitToFileForTesting(metafile_path));
     EXPECT_TRUE(emf.context());
     // An empty EMF is invalid, so we put at least a rectangle in it.
     ::Rectangle(emf.context(), 10, 10, 190, 190);
     EXPECT_TRUE(emf.FinishDocument());
-    size = emf.GetDataSize();
+    uint32_t size = emf.GetDataSize();
     EXPECT_GT(size, EMF_HEADER_SIZE);
     EXPECT_TRUE(emf.GetDataAsVector(&data));
     EXPECT_EQ(data.size(), size);
   }
   std::optional<int64_t> file_size = base::GetFileSize(metafile_path);
   ASSERT_TRUE(file_size.has_value());
-  EXPECT_EQ(size, file_size.value());
+  ASSERT_GT(file_size.value(), 0);
+  EXPECT_EQ(data.size(), static_cast<uint64_t>(file_size.value()));
 
   // Playback the data.
   HDC hdc = CreateCompatibleDC(nullptr);
