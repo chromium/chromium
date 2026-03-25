@@ -16,8 +16,7 @@
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
-#include "components/optimization_guide/proto/edu_classifier_metadata.pb.h"
-#include "components/page_content_annotations/core/edu_classifier_model_handler.h"
+#include "components/optimization_guide/proto/category_classifier_metadata.pb.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
@@ -137,11 +136,12 @@ TEST_F(OnDeviceCategoryClassifierTest, ExecutesIfVersionsMatch) {
       /*model_version=*/1, /*output_size=*/768));
 
   // Update model with metadata.
-  optimization_guide::proto::EduClassifierMetadata metadata;
+  optimization_guide::proto::CategoryClassifierMetadata metadata;
   metadata.set_required_embedder_version(1);
   optimization_guide::proto::Any any;
   any.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.EduClassifierMetadata");
+      "type.googleapis.com/"
+      "optimization_guide.proto.CategoryClassifierMetadata");
   metadata.SerializeToString(any.mutable_value());
 
   auto model_info =
@@ -174,11 +174,12 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfVersionsMismatch) {
       /*model_version=*/2, /*output_size=*/768));
 
   // Update model with metadata for version 1.
-  optimization_guide::proto::EduClassifierMetadata metadata;
+  optimization_guide::proto::CategoryClassifierMetadata metadata;
   metadata.set_required_embedder_version(1);
   optimization_guide::proto::Any any;
   any.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.EduClassifierMetadata");
+      "type.googleapis.com/"
+      "optimization_guide.proto.CategoryClassifierMetadata");
   metadata.SerializeToString(any.mutable_value());
 
   auto model_info =

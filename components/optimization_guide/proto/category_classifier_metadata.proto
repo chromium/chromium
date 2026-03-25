@@ -8,10 +8,10 @@ package optimization_guide.proto;
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
-option java_outer_classname = "EduClassifierMetadataProto";
+option java_outer_classname = "CategoryClassifierMetadataProto";
 
-// Metadata for the EDU classifier model.
-message EduClassifierMetadata {
+// Metadata for the category classifier model.
+message CategoryClassifierMetadata {
   // The version of the embedder model that this classifier model was trained
   // on.
   int64 required_embedder_version = 1;

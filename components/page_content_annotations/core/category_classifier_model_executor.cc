@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_content_annotations/core/edu_classifier_model_executor.h"
+#include "components/page_content_annotations/core/category_classifier_model_executor.h"
 
 #include <optional>
 #include <vector>
@@ -11,10 +11,10 @@
 
 namespace page_content_annotations {
 
-EduClassifierModelExecutor::EduClassifierModelExecutor() = default;
-EduClassifierModelExecutor::~EduClassifierModelExecutor() = default;
+CategoryClassifierModelExecutor::CategoryClassifierModelExecutor() = default;
+CategoryClassifierModelExecutor::~CategoryClassifierModelExecutor() = default;
 
-bool EduClassifierModelExecutor::Preprocess(
+bool CategoryClassifierModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     ModelInput input) {
   if (input_tensors.size() != 1u) {
@@ -28,8 +28,8 @@ bool EduClassifierModelExecutor::Preprocess(
       .ok();
 }
 
-std::optional<EduClassifierModelExecutor::ModelOutput>
-EduClassifierModelExecutor::Postprocess(
+std::optional<CategoryClassifierModelExecutor::ModelOutput>
+CategoryClassifierModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   if (output_tensors.size() != 1u) {
     return std::nullopt;

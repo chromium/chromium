@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_EDU_CLASSIFIER_MODEL_EXECUTOR_H_
-#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_EDU_CLASSIFIER_MODEL_EXECUTOR_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_CATEGORY_CLASSIFIER_MODEL_EXECUTOR_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_CATEGORY_CLASSIFIER_MODEL_EXECUTOR_H_
 
 #include <optional>
 #include <vector>
@@ -17,20 +17,21 @@ namespace page_content_annotations {
 // 1, which represents the probability for the match candidate to be clicked.
 // Preprocesses input float vectors for model executor. Postprocesses model
 // executor output as float vectors.
-class EduClassifierModelExecutor
+class CategoryClassifierModelExecutor
     : public optimization_guide::BaseModelExecutor<float,
                                                    const std::vector<float>&> {
  public:
   using ModelInput = const std::vector<float>&;
   using ModelOutput = float;
 
-  EduClassifierModelExecutor();
-  ~EduClassifierModelExecutor() override;
+  CategoryClassifierModelExecutor();
+  ~CategoryClassifierModelExecutor() override;
 
   // Disallow copy/assign.
-  EduClassifierModelExecutor(const EduClassifierModelExecutor&) = delete;
-  EduClassifierModelExecutor& operator=(const EduClassifierModelExecutor&) =
+  CategoryClassifierModelExecutor(const CategoryClassifierModelExecutor&) =
       delete;
+  CategoryClassifierModelExecutor& operator=(
+      const CategoryClassifierModelExecutor&) = delete;
 
  protected:
   // optimization_guide::BaseModelExecutor:
@@ -42,4 +43,4 @@ class EduClassifierModelExecutor
 
 }  // namespace page_content_annotations
 
-#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_EDU_CLASSIFIER_MODEL_EXECUTOR_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_CATEGORY_CLASSIFIER_MODEL_EXECUTOR_H_

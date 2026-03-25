@@ -12,7 +12,6 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/category_classifier_model_handler.h"
-#include "components/page_content_annotations/core/edu_classifier_model_handler.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "url/gurl.h"
 
@@ -40,7 +39,8 @@ OnDeviceCategoryClassifier::OnDeviceCategoryClassifier(
     embedder_metadata_observation_.Observe(embedder_metadata_provider);
   }
   category_classifier_model_handlers_[CategoryType::kEducation] =
-      std::make_unique<EduClassifierModelHandler>(
+      std::make_unique<CategoryClassifierModelHandler>(
+          optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
           optimization_guide_model_provider_,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));

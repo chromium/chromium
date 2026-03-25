@@ -19,11 +19,10 @@ component("features") {
 
 static_library("core") {
   sources = [
+    "category_classifier_model_executor.cc",
+    "category_classifier_model_executor.h",
+    "category_classifier_model_handler.cc",
     "category_classifier_model_handler.h",
-    "edu_classifier_model_executor.cc",
-    "edu_classifier_model_executor.h",
-    "edu_classifier_model_handler.cc",
-    "edu_classifier_model_handler.h",
     "on_device_category_classifier.cc",
     "on_device_category_classifier.h",
     "page_category_classifier_bridge.h",
@@ -104,7 +103,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "edu_classifier_model_handler_unittest.cc",
+    "category_classifier_model_handler_unittest.cc",
     "on_device_category_classifier_unittest.cc",
     "page_content_annotation_job_executor_unittest.cc",
     "page_content_annotation_job_unittest.cc",
