@@ -356,6 +356,41 @@ TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsNotBold) {
           gfx::Range(kLinkOffset, kLinkOffset + kLinkText.length()), _));
 }
 
+TEST_F(BnplUtilTest,
+       GetSortedBnplIssuerContext_SortsTemporarilyEligibleAsEligible) {
+  BnplIssuer issuer_affirm = test::GetTestLinkedBnplIssuer();
+  BnplIssuer issuer_zip = test::GetTestUnlinkedBnplIssuer();
+
+  ON_CALL(
+      static_cast<MockPaymentsDataManager&>(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      GetBnplIssuers)
+      .WillByDefault(
+          Return(std::vector<BnplIssuer>{issuer_affirm, issuer_zip}));
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer(IssuerId::kBnplAffirm, _))
+      .WillByDefault(Return(false));
+
+  std::vector<BnplIssuerContext> contexts = GetSortedBnplIssuerContext(
+      autofill_client(), /*checkout_amount=*/std::nullopt,
+      /*amount_extraction_error=*/std::nullopt);
+
+  ASSERT_EQ(contexts.size(), 2U);
+  // kBnplAffirm is not eligible for merchant url. kBnplZip is temporarily
+  // eligible. kBnplZip should be sorted first, even if it is unlinked and
+  // kBnplAffirm is linked.
+  EXPECT_EQ(contexts[0].issuer.issuer_id(), IssuerId::kBnplZip);
+  EXPECT_EQ(contexts[0].eligibility,
+            BnplIssuerEligibilityForPage::
+                kTemporarilyEligibleCheckoutAmountNotYetKnown);
+  EXPECT_EQ(contexts[1].issuer.issuer_id(), IssuerId::kBnplAffirm);
+  EXPECT_EQ(
+      contexts[1].eligibility,
+      BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant);
+}
+
 // Verify that if the triggering field is CVC, the BNPL option should not be
 // appended.
 TEST_F(BnplUtilTest, ShouldShowBnplSuggestions_IsCvcField) {

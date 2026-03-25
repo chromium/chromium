@@ -185,10 +185,10 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
         // `lhs`.
         // Note: Boolean value `false` is less than boolean value `true`.
         return std::forward_as_tuple(
-                   rhs.eligibility == BnplIssuerEligibilityForPage::kIsEligible,
+                   rhs.IsEligible(),
                    rhs.issuer.payment_instrument().has_value()) >
                std::forward_as_tuple(
-                   lhs.eligibility == BnplIssuerEligibilityForPage::kIsEligible,
+                   lhs.IsEligible(),
                    lhs.issuer.payment_instrument().has_value());
       });
 
