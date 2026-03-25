@@ -580,7 +580,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 // Fetches ManagedAccountsSigninRestriction policy, if needed.
 - (void)fetchProfileSeparationPoliciesIfNeededStep {
   if (!ShouldShowManagedConfirmationForHostedDomain(
-          _identityToSignInHostedDomain, _accessPoint, _identityToSignIn.gaiaId,
+          _identityToSignInHostedDomain, _identityToSignIn.gaiaId,
           [self prefs])) {
     // The managed confirmation dialog can be skipped, therefore, there is no
     // need to fetch the policy.
@@ -604,7 +604,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 // Shows a confirmation dialog for signing in to an account managed.
 - (void)showManagedConfirmationIfNeededStep {
   if (!ShouldShowManagedConfirmationForHostedDomain(
-          _identityToSignInHostedDomain, _accessPoint, _identityToSignIn.gaiaId,
+          _identityToSignInHostedDomain, _identityToSignIn.gaiaId,
           [self prefs])) {
     [self continueFlow];
     return;

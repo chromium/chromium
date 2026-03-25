@@ -259,7 +259,6 @@ bool HasMachineLevelPolicies() {
 
 BOOL ShouldShowManagedConfirmationForHostedDomain(
     NSString* hosted_domain,
-    signin_metrics::AccessPoint access_point,
     const GaiaId& gaia_id,
     PrefService* prefs) {
   if ([hosted_domain length] == 0) {

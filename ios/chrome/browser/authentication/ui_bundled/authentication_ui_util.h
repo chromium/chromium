@@ -108,7 +108,6 @@ AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
 // hosted domain.
 BOOL ShouldShowManagedConfirmationForHostedDomain(
     NSString* hosted_domain,
-    signin_metrics::AccessPoint access_point,
     const GaiaId& gaia_ID,
     PrefService* prefs);
 
