@@ -885,24 +885,4 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(1, testProxy.metrics.count(metricName, 0));
     assertEquals(1, testProxy.metrics.count(metricName, true));
   });
-
-  test('recent tab chip click records user action', async () => {
-    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
-    const recentTabChip =
-        document.createElement('composebox-recent-tab-chip') as any;
-    recentTabChip.recentTab = {
-      tabId: 1,
-      title: 'Sample Tab',
-      url: 'https://example.com',
-    };
-    document.body.appendChild(recentTabChip);
-    await microtasksFinished();
-
-    const button = recentTabChip.shadowRoot!.querySelector('#recentTabButton');
-    assertTrue(!!button);
-    (button as HTMLElement).click();
-
-    const metricName = 'ContextualSearch.RecentTabChipClick.NewTabPage';
-    assertEquals(1, testProxy.metrics.count(metricName, 0));
-  });
 });

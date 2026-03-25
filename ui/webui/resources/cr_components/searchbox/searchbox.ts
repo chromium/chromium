@@ -8,14 +8,12 @@ import './searchbox_icon.js';
 import './searchbox_thumbnail.js';
 import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import '//resources/cr_components/composebox/recent_tab_chip.js';
 import '//resources/cr_components/search/animated_glow.js';
 import './searchbox_input.js';
 
 import type {ComposeboxState, ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import {GlifAnimationState, recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import type {RecentTabChipElement} from '//resources/cr_components/composebox/recent_tab_chip.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
@@ -27,7 +25,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './searchbox.css.js';
@@ -249,7 +247,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
       tabSuggestions_: {type: Array},
-      recentTabForChip_: {type: Object},
       inputState_: {type: Object},
       isDraggingFile: {
         reflect: true,
@@ -307,7 +304,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected accessor isThumbnailDeletable_: boolean = false;
   private accessor useWebkitSearchIcons_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
-  protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor inputState_: InputState|null = null;
 
   private pageHandler_: PageHandlerInterface;
@@ -389,15 +385,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
     if (changedPrivateProperties.has('thumbnailUrl_')) {
       this.showThumbnail = !!this.thumbnailUrl_;
-    }
-
-    if (changedPrivateProperties.has('tabSuggestions_')) {
-      this.recentTabForChip_ =
-          this.tabSuggestions_.find(tab => tab.showInCurrentTabChip) || null;
-      if (!this.recentTabForChip_) {
-        this.recentTabForChip_ =
-            this.tabSuggestions_.find(tab => tab.showInPreviousTabChip) || null;
-      }
     }
   }
 
@@ -517,10 +504,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected onInputFocus_() {
     this.pageHandler_.onFocusChanged(true);
     this.placeholderCycler_?.stop();
-    if (this.ntpRealboxNextEnabled) {
-      // Refresh tab suggestions to ensure the recent tab chip is up to date.
-      this.refreshTabSuggestions_(/*forceRefresh=*/ true);
-    }
   }
 
   protected onInputTextUpdated_(
@@ -665,10 +648,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
-    // Only refresh tab suggestions if the context menu is opened or the recent
-    // tab chip is visible.
-    const requiresRefresh =
-        forceRefresh || this.contextMenuOpened_ || this.recentTabChipVisible_();
+    // Only refresh tab suggestions if the context menu is opened.
+    const requiresRefresh = forceRefresh || this.contextMenuOpened_;
     if (!requiresRefresh) {
       return;
     }
@@ -816,33 +797,12 @@ export class SearchboxElement extends SearchboxElementBase implements
         this.result.matches.length > 0;
   }
 
-  protected computeShowRecentTabChip_(): boolean {
-    // composeboxShowRecentTabChip is unavailable in the WebUI Browser.
-    const recentTabChipEnabled =
-        loadTimeData.valueExists('composeboxShowRecentTabChip') &&
-        loadTimeData.getBoolean('composeboxShowRecentTabChip');
-    const isBrowserTabAllowed = !this.showModelPicker_ ||
-        (!!this.inputState_ &&
-         this.inputState_.allowedInputTypes.includes(InputType.kBrowserTab));
-    return recentTabChipEnabled && !!this.recentTabForChip_ &&
-        this.dropdownIsVisible && this.isInputEmpty() && isBrowserTabAllowed;
-  }
-
   protected computePlaceholderText_(placeholderText: string): string {
     if (placeholderText) {
       return placeholderText;
     }
     return this.showThumbnail ? this.i18n('searchBoxHintMultimodal') :
                                 this.i18n('searchBoxHint');
-  }
-
-  private recentTabChipVisible_() {
-    if (!this.ntpRealboxNextEnabled) {
-      return false;
-    }
-    const recentTabChip = this.shadowRoot.querySelector<RecentTabChipElement>(
-        'composebox-recent-tab-chip');
-    return !!recentTabChip;
   }
 
   protected getThumbnailTabindex_(): string {

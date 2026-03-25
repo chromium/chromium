@@ -1590,10 +1590,8 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
 const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
     {
         {"NtpComposeboxMaxNumFiles", "1"},
-        {"NtpComposeboxShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
-    {"NtpComposeboxShowRecentTabChip", "true"},
     {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
 };
 

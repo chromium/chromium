@@ -6,7 +6,6 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -73,7 +72,6 @@ suite('NewTabPageRealboxTabsTest', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      composeboxShowRecentTabChip: true,
       contextualMenuUsePecApi: true,
       isLensSearchbox: false,
       reportMetrics: true,
@@ -116,14 +114,12 @@ suite('NewTabPageRealboxTabsTest', () => {
         tabId: 1,
         title: 'Sample Tab 1',
         url: 'https://example.com/1',
-        showInRecentTabChip: true,
         lastActive: {internalValue: BigInt(1)},
       },
       {
         tabId: 2,
         title: 'Sample Tab 2',
         url: 'https://example.com/2',
-        showInRecentTabChip: true,
         lastActive: {internalValue: BigInt(2)},
       },
     ];
@@ -145,81 +141,6 @@ suite('NewTabPageRealboxTabsTest', () => {
     testProxy.callbackRouterRemote.onTabStripChanged();
     await microtasksFinished();
     assertEquals(testProxy.handler.getCallCount('getRecentTabs'), 0);
-  });
-
-  test('recent tab chip visibility depends on allowed input types', async () => {
-    const sampleTabs = [
-      {
-        tabId: 1,
-        title: 'Sample Tab 1',
-        url: 'https://example.com/1',
-        showInCurrentTabChip: true,
-        lastActive: {internalValue: BigInt(1)},
-      },
-    ];
-    testProxy.handler.setResultFor(
-        'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
-
-    // Case 1: Browser tab allowed
-    testProxy.handler.setResultFor('getInputState', {
-      state: createInputState({
-        allowedInputTypes: [InputType.kBrowserTab],
-      }),
-    });
-
-    realbox = await createAndAppendRealbox(
-        {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
-
-    realbox.$.input.focus();
-    await microtasksFinished();
-    realbox.$.input.inputElement.dispatchEvent(
-        new MouseEvent('mousedown', {button: 0}));
-    await testProxy.handler.whenCalled('getRecentTabs');
-
-    // Show dropdown (required for chip visibility)
-    const matches = [createSearchMatchForTesting()];
-    testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: '',
-          matches: matches,
-        }));
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    let chipContainer =
-        realbox.shadowRoot.querySelector('#recentTabChipContainer');
-    assertTrue(!!chipContainer);
-
-    // Case 2: Browser tab NOT allowed
-    testProxy.handler.reset();
-    testProxy.handler.setResultFor(
-        'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
-    testProxy.handler.setResultFor('getInputState', {
-      state: createInputState({
-        allowedInputTypes: [],  // No browser tab
-      }),
-    });
-
-    realbox = await createAndAppendRealbox(
-        {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
-
-    realbox.$.input.focus();
-    await microtasksFinished();
-    realbox.$.input.inputElement.dispatchEvent(
-        new MouseEvent('mousedown', {button: 0}));
-    await testProxy.handler.whenCalled('getRecentTabs');
-
-    testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: '',
-          matches: matches,
-        }));
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    chipContainer =
-        realbox.shadowRoot.querySelector('#recentTabChipContainer');
-    assertFalse(!!chipContainer);
   });
 });
 

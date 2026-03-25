@@ -8,7 +8,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchboxElement} from './searchbox.js';
 import {getHtml as getContextualEntrypointHtml} from './searchbox_contextual_entrypoint.html.js';
-import {getHtml as getRecentTabChipHtml} from './searchbox_recent_tab_chip.html.js';
 import {getHtml as getDropdownHtml} from './searchbox_searchbox_dropdown.html.js';
 
 export function getHtml(this: SearchboxElement) {
@@ -84,7 +83,6 @@ export function getHtml(this: SearchboxElement) {
     ${this.useCompactLayout_() ? html`
       <div class="dropdownContainer">
         ${getDropdownHtml.bind(this)()}
-        ${getRecentTabChipHtml.bind(this)()}
       </div>
     ` : html`
       <div id="inputInnerBottomContainer">
