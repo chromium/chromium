@@ -156,7 +156,8 @@ AutofillCountry::address_format_extensions() const {
       {{.type = FieldType::ADDRESS_HOME_STATE,
         .label_id = IDS_LIBADDRESSINPUT_STATE,
         .placed_after = FieldType::ADDRESS_HOME_CITY,
-        .separator_before_label = " "}}};
+        .separator_before_label = "\n",
+        .large_sized = true}}};
   static constexpr std::array<AddressFormatExtension, 1> jp_extensions{
       {{.type = FieldType::ALTERNATIVE_FULL_NAME,
         .label_id = IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_JAPANESE_ALTERNATIVE_NAME,
