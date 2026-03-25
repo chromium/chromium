@@ -43,9 +43,10 @@ if (!defined(experimental_linker_path) || !is_a_target_toolchain) {
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
-  # Tentatively used on iOS.
+  # Tentatively used on iOS, except in arm64e mode (not yet supported by lld).
   # The default linker everywhere else.
-  use_lld = is_clang && current_os != "zos" && experimental_linker_path == ""
+  use_lld = is_clang && current_os != "zos" && experimental_linker_path == "" &&
+            !(is_ios && current_cpu == "arm64e")
 
   # If false, build using C++20; otherwise, build using C++23.
   use_cxx23 = true

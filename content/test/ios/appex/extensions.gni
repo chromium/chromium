@@ -51,7 +51,6 @@ template("browserkit_extension") {
     deps = [
       "//content/app/ios/appex:${_process_target}",
       "//content/public/app",
-      "//content/public/app",
       "//content/public/common",
       "//content/shell:content_shell_app",
       "//content/shell:content_shell_lib",
@@ -64,8 +63,10 @@ template("browserkit_extension") {
       ldflags = []
     }
 
+    if (use_lld) {
+      ldflags += [ "-Wl,--ignore-auto-link-option=CoreAudioTypes" ]
+    }
     ldflags += [
-      "-Wl,--ignore-auto-link-option=CoreAudioTypes",
       "-Wl,-no_application_extension",
       "-Wl,-rpath,@executable_path/../../Frameworks",
     ]

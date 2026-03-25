@@ -56,8 +56,10 @@ template("browserkit_extension") {
       ldflags = []
     }
 
+    if (use_lld) {
+      ldflags += [ "-Wl,--ignore-auto-link-option=CoreAudioTypes" ]
+    }
     ldflags += [
-      "-Wl,--ignore-auto-link-option=CoreAudioTypes",
       "-Wl,-no_application_extension",
       "-Wl,-rpath,@executable_path/../../Frameworks",
     ]
