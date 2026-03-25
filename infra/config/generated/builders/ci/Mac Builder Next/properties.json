@@ -19,7 +19,7 @@
                 "apply_configs": [
                   "mb"
                 ],
-                "build_config": "Debug",
+                "build_config": "Release",
                 "config": "chromium",
                 "target_arch": "arm",
                 "target_bits": 64,

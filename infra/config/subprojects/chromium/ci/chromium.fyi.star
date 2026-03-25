@@ -2196,7 +2196,7 @@ fyi_mac_builder(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
-            build_config = builder_config.build_config.DEBUG,
+            build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
@@ -2206,10 +2206,9 @@ fyi_mac_builder(
         configs = [
             "arm64",
             "gpu_tests",
-            "debug_static_builder",
+            "release_builder",
             "remoteexec",
-            "dcheck_off",
-            "shared",
+            "minimal_symbols",
             "mac",
         ],
     ),
