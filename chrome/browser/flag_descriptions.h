@@ -5049,16 +5049,6 @@ inline constexpr char kAndroidCaretBrowsingName[] = "Enable Caret Browsing.";
 inline constexpr char kAndroidCaretBrowsingDescription[] =
     "Allows users to interact with a webpage using a keyboard.";
 
-inline constexpr char kAndroidComposeplateName[] =
-    "Enable composeplate on New Tab Page";
-inline constexpr char kAndroidComposeplateDescription[] =
-    "Show a composeplate on New Tab Page.";
-
-inline constexpr char kAndroidComposeplateLFFName[] =
-    "Enable composeplate button on New Tab Page for large form factors";
-inline constexpr char kAndroidComposeplateLFFDescription[] =
-    "Show a composeplate button on New Tab Page for large form factors.";
-
 inline constexpr char kAndroidContextMenuDuplicateTabsName[] =
     "Android context menu duplicate tabs";
 inline constexpr char kAndroidContextMenuDuplicateTabsDescription[] =

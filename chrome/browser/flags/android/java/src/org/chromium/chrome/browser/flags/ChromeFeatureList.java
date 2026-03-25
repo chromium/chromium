@@ -185,8 +185,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_BOOKMARK_BAR_FAST_FOLLOW = "AndroidBookmarkBarFastFollow";
     public static final String ANDROID_BOTTOM_BAR = "AndroidBottomBar";
     public static final String ANDROID_BOTTOM_TOOLBAR_V2 = "AndroidBottomToolbarV2";
-    public static final String ANDROID_COMPOSEPLATE = "AndroidComposeplate";
-    public static final String ANDROID_COMPOSEPLATE_LFF = "AndroidComposeplateLFF";
     public static final String ANDROID_CONTEXT_MENU_DUPLICATE_TABS =
             "AndroidContextMenuDuplicateTabs";
     public static final String ANDROID_DATA_IMPORTER_SERVICE = "AndroidDataImporterService";
@@ -754,9 +752,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_BOTTOM_BAR, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidBottomToolbarV2 =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR_V2, false, true);
-    public static final CachedFlag sAndroidComposeplate = newCachedFlag(ANDROID_COMPOSEPLATE, true);
-    public static final CachedFlag sAndroidComposeplateLFF =
-            newCachedFlag(ANDROID_COMPOSEPLATE_LFF, /* defaultValue= */ true);
     public static final CachedFlag sAndroidDataImporterService =
             newCachedFlag(ANDROID_DATA_IMPORTER_SERVICE, true);
     public static final CachedFlag sAndroidDesktopDensity =
@@ -1194,8 +1189,6 @@ public abstract class ChromeFeatureList {
                     sAndroidAutoMintedTwa,
                     sAndroidBottomBar,
                     sAndroidBottomToolbarV2,
-                    sAndroidComposeplate,
-                    sAndroidComposeplateLFF,
                     sAndroidDataImporterService,
                     sAndroidDesktopDensity,
                     sAndroidElegantTextHeight,
@@ -1502,9 +1495,6 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_home_button_in_toolbar", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowBottomBarOnGts =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_bottom_bar_on_gts", false);
-
-    public static final BooleanCachedFeatureParam sAndroidComposeplateSkipLocaleCheck =
-            newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "skip_locale_check", false);
 
     public static final BooleanCachedFeatureParam
             sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox =
@@ -1821,7 +1811,6 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarShowBottomBarOnGts,
                     sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox,
                     sAndroidBottomToolbarV2ReverseOrderSuggestionsList,
-                    sAndroidComposeplateSkipLocaleCheck,
                     sAndroidThemeModuleForceDependencies,
                     sAndroidThemeResourceProviderForceLight,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,

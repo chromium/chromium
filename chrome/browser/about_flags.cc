@@ -2715,12 +2715,6 @@ const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
      kNewTabPageCustomizationV2_ShowLogoAndSearchBox, nullptr},
     {"Enable logs", kNewTabPageCustomizationV2_EnableLogs, nullptr}};
 
-const FeatureEntry::FeatureParam kAndroidComposeplate_SkipLocaleCheck[] = {
-    {"skip_locale_check", "true"}};
-
-const FeatureEntry::FeatureVariation kAndroidComposeplateVariations[] = {
-    {"Skip locale check", kAndroidComposeplate_SkipLocaleCheck, nullptr}};
-
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck[] = {
         {"multi_data_source_skip_device_check", "true"}};
@@ -6477,16 +6471,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kNewTabPageCustomizationV2,
                                     kNewTabPageCustomizationV2Variations,
                                     "NewTabPageCustomizationV2")},
-
-    {"android-composeplate", flag_descriptions::kAndroidComposeplateName,
-     flag_descriptions::kAndroidComposeplateDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidComposeplate,
-                                    kAndroidComposeplateVariations,
-                                    "AndroidComposeplate")},
-
-    {"android-composeplate-lff", flag_descriptions::kAndroidComposeplateLFFName,
-     flag_descriptions::kAndroidComposeplateLFFDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidComposeplateLFF)},
 
     {"new-tab-page-customization-for-mvt",
      flag_descriptions::kNewTabPageCustomizationForMvtName,

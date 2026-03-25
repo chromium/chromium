@@ -17,20 +17,9 @@
 static bool JNI_ComposeplateUtils_IsAimEntrypointEligible(JNIEnv* env,
                                                           Profile* profile) {
   DCHECK(profile);
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      AimEligibilityServiceFactory::GetForProfile(profile),
-      chrome::android::kAndroidComposeplateAllLocales,
-      chrome::android::kAndroidComposeplate);
-}
-
-// static
-static bool JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(JNIEnv* env,
-                                                             Profile* profile) {
-  DCHECK(profile);
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      AimEligibilityServiceFactory::GetForProfile(profile),
-      chrome::android::kAndroidComposeplateLFFAllLocales,
-      chrome::android::kAndroidComposeplateLFF);
+  AimEligibilityService* aim_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  return aim_service != nullptr && aim_service->IsAimEligible();
 }
 
 // static

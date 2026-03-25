@@ -21,7 +21,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -35,17 +34,12 @@ public class ComposeplateUtils {
     /**
      * Returns whether the composeplate can be enabled.
      *
-     * @param isTablet Whether the device is a tablet.
      * @param profile The current profile.
      */
-    public static boolean isComposeplateEnabled(boolean isTablet, Profile profile) {
+    public static boolean isComposeplateEnabled(Profile profile) {
         if (sIsEnabledForTesting) return true;
-        if (!ComposeplateUtilsJni.get().isAimEntrypointEligible(profile)) return false;
 
-        if (!isTablet) return true;
-
-        return ChromeFeatureList.sAndroidComposeplateLFF.isEnabled()
-                && ComposeplateUtilsJni.get().isAimEntrypointLFFEligible(profile);
+        return ComposeplateUtilsJni.get().isAimEntrypointEligible(profile);
     }
 
     /**
@@ -125,8 +119,6 @@ public class ComposeplateUtils {
     @VisibleForTesting
     public interface Natives {
         boolean isAimEntrypointEligible(@JniType("Profile*") Profile profile);
-
-        boolean isAimEntrypointLFFEligible(@JniType("Profile*") Profile profile);
 
         boolean isEnabledByPolicy(@JniType("Profile*") Profile profile);
     }

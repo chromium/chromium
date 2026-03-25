@@ -433,7 +433,7 @@ public class NewTabPageCoordinator {
     }
 
     private void initializeComposeplateFlags(Profile profile) {
-        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
+        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(profile);
         mIsComposeplatePolicyEnabled =
                 mIsComposeplateEnabled && ComposeplateUtils.isEnabledByPolicy(profile);
     }

@@ -314,8 +314,7 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
 
     private void setUpSearchBox(PropertyModel propertyModel, Profile profile) {
         Resources resources = mActivity.getResources();
-        boolean showSearchBoxTall =
-                ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, profile);
+        boolean showSearchBoxTall = ComposeplateUtils.isComposeplateEnabled(profile);
 
         propertyModel.set(
                 SEARCH_BOX_HEIGHT,
