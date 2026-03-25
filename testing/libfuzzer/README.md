@@ -65,7 +65,8 @@ JSON or XML parsers.
     (GN), sanitizer configurations, platform support, and ClusterFuzz options.
 
 *   [Blackbox fuzzing] - Fuzz large, slow, or non-deterministic targets without
-    coverage guidance.
+    coverage guidance. To learn how to generate and view a code
+    coverage report for your blackbox fuzzer, see [Local Code Coverage for blackbox fuzzers]
 
 ## Getting help
 
@@ -99,3 +100,4 @@ If you have questions or encounter issues,
 [libFuzzer]: http://llvm.org/docs/LibFuzzer.html
 [libFuzzer Integration Details]: libFuzzer_integration.md
 [libFuzzer technical references]: reference.md
+[Local Code Coverage for blackbox fuzzers]: blackbox_coverage.md
