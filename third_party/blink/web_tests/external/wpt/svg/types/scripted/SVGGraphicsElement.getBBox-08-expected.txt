@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] image with zero width
+  assert_equals: x expected 0 but got 10
+[FAIL] image with zero height
+  assert_equals: x expected 0 but got 10
+[FAIL] image with zero width and height
+  assert_equals: x expected 0 but got 10
+[FAIL] image with no width/height attributes
+  assert_equals: x expected 0 but got 10
+[FAIL] foreignObject with zero width
+  assert_equals: x expected 0 but got 10
+[FAIL] foreignObject with zero height
+  assert_equals: x expected 0 but got 10
+[FAIL] foreignObject with zero width and height
+  assert_equals: x expected 0 but got 10
+[FAIL] foreignObject with no width/height attributes
+  assert_equals: x expected 0 but got 10
+[FAIL] rect with negative width and scale(2) (not rendered)
+  assert_equals: height expected 0 but got 10
+[FAIL] zero-dim rect inside rotated group (not rendered)
+  assert_equals: x expected 0 but got 10
+[FAIL] zero-width rect with scale(3) (not rendered)
+  assert_equals: x expected 0 but got 10
+[FAIL] zero-radius circle with translate (not rendered)
+  assert_equals: x expected 0 but got 10
+Harness: the test ran to completion.
+

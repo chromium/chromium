@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] rect with zero width
+  assert_equals: x expected 0 but got 10
+[FAIL] rect with zero height
+  assert_equals: x expected 0 but got 10
+[FAIL] rect with zero width and height
+  assert_equals: x expected 0 but got 10
+[FAIL] rect with no width/height attributes (default auto resolves to 0)
+  assert_equals: x expected 0 but got 10
+[FAIL] circle with zero radius
+  assert_equals: x expected 0 but got 10
+[FAIL] circle with no r attribute (default 0)
+  assert_equals: x expected 0 but got 10
+[FAIL] ellipse with zero rx (not rendered)
+  assert_equals: x expected 0 but got 10
+[FAIL] ellipse with zero ry (not rendered)
+  assert_equals: x expected 0 but got -20
+[FAIL] ellipse with zero rx and ry
+  assert_equals: x expected 0 but got 10
+[FAIL] rect with both width and height negative
+  assert_equals: x expected 0 but got 10
+[FAIL] ellipse with both rx and ry negative
+  assert_equals: x expected 0 but got 10
+[FAIL] getBBox on rect inside defs does not throw and returns zero bbox
+  assert_equals: x expected 0 but got 10
+[FAIL] getBBox on circle inside defs does not throw and returns zero bbox
+  assert_equals: x expected 0 but got 25
+[FAIL] getBBox on rect inside group inside defs does not throw and returns zero bbox
+  assert_equals: width expected 0 but got 30
+[FAIL] getBBox on rect inside clipPath does not throw and returns zero bbox
+  assert_equals: width expected 0 but got 80
+[FAIL] getBBox on rect inside mask does not throw and returns zero bbox
+  assert_equals: width expected 0 but got 60
+Harness: the test ran to completion.
+
