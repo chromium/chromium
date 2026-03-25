@@ -1496,7 +1496,7 @@ String StylePropertySerializer::FontVariantValue() const {
 
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantLigatures(),
                                      result);
-  if (result.ToString() == "none") {
+  if (result == "none") {
     is_variant_ligatures_none = true;
   }
   const unsigned variant_ligatures_result_length = result.length();

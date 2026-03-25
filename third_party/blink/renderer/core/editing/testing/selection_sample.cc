@@ -184,7 +184,7 @@ class Serializer final {
 
   std::string Serialize(const ContainerNode& root) {
     SerializeChildren(root);
-    return builder_.ToString().Utf8();
+    return StringView(builder_).Utf8();
   }
 
  private:

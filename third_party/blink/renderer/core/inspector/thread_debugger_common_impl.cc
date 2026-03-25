@@ -674,7 +674,7 @@ ThreadDebuggerCommonImpl::descriptionForValueSubtype(
     }
     DCHECK(description.length());
 
-    return ToV8InspectorStringBuffer(description.ToString());
+    return ToV8InspectorStringBuffer(description);
   }
   return nullptr;
 }

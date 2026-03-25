@@ -88,7 +88,7 @@ DOMFileSystem* DOMFileSystem::CreateIsolatedFileSystem(
 
   return MakeGarbageCollected<DOMFileSystem>(
       context, filesystem_name.ToString(),
-      mojom::blink::FileSystemType::kIsolated, KURL(root_url.ToString()));
+      mojom::blink::FileSystemType::kIsolated, KURL(root_url));
 }
 
 DOMFileSystem::DOMFileSystem(ExecutionContext* context,

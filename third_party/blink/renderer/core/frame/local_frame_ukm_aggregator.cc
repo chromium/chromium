@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace {
@@ -212,24 +212,21 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator()
     absolute_record.reset();
     absolute_record.pre_fcp_aggregate = 0;
     if (metric_data.has_uma) {
-      StringBuilder pre_fcp_uma_name;
-      pre_fcp_uma_name.Append(metric_data.name);
-      pre_fcp_uma_name.Append(uma_prefcp_postscript);
+      const std::string pre_fcp_uma_name =
+          base::StrCat({metric_data.name, uma_prefcp_postscript});
       absolute_record.pre_fcp_uma_counter =
-          std::make_unique<CustomCountHistogram>(
-              pre_fcp_uma_name.ToString().Utf8().c_str(), 1, 10000000, 50);
-      StringBuilder post_fcp_uma_name;
-      post_fcp_uma_name.Append(metric_data.name);
-      post_fcp_uma_name.Append(uma_postfcp_postscript);
+          std::make_unique<CustomCountHistogram>(pre_fcp_uma_name.c_str(), 1,
+                                                 10000000, 50);
+      const std::string post_fcp_uma_name =
+          base::StrCat({metric_data.name, uma_postfcp_postscript});
       absolute_record.post_fcp_uma_counter =
-          std::make_unique<CustomCountHistogram>(
-              post_fcp_uma_name.ToString().Utf8().c_str(), 1, 10000000, 50);
-      StringBuilder aggregated_uma_name;
-      aggregated_uma_name.Append(metric_data.name);
-      aggregated_uma_name.Append(uma_pre_fcp_aggregated_postscript);
+          std::make_unique<CustomCountHistogram>(post_fcp_uma_name.c_str(), 1,
+                                                 10000000, 50);
+      const std::string aggregated_uma_name =
+          base::StrCat({metric_data.name, uma_pre_fcp_aggregated_postscript});
       absolute_record.uma_aggregate_counter =
-          std::make_unique<CustomCountHistogram>(
-              aggregated_uma_name.ToString().Utf8().c_str(), 1, 10000000, 50);
+          std::make_unique<CustomCountHistogram>(aggregated_uma_name.c_str(), 1,
+                                                 10000000, 50);
     }
 
     metric_index++;

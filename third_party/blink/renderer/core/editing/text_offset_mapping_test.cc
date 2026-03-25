@@ -34,7 +34,7 @@ class TextOffsetMappingTest : public EditingTestBase {
     builder.Append(text.subview(0, offset));
     builder.Append('|');
     builder.Append(text.subview(offset));
-    return builder.ToString().Utf8();
+    return StringView(builder).Utf8();
   }
 
   std::string GetRange(const std::string& selection_text) {

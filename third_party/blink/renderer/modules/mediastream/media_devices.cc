@@ -146,8 +146,8 @@ void LogDevicesEnumerated(
       "DevicesEnumerated({audio_inputs=%zu}, {video_inputs=%zu}, "
       "{audio_outputs=%zu}, {audio_capabilities=%s}, {video_capabilities=%s})",
       num_audio_inputs, num_video_inputs, num_audio_outputs,
-      audio_caps_builder.ToString().Utf8().c_str(),
-      video_caps_builder.ToString().Utf8().c_str()));
+      StringView(audio_caps_builder).Utf8().c_str(),
+      StringView(video_caps_builder).Utf8().c_str()));
 }
 
 template <typename IDLResolvedType>

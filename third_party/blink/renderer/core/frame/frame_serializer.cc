@@ -881,7 +881,7 @@ function main(metadata) {
     builder.Append("})();");
     resource_serializer_->AddToResources(SerializedResource(
         script_url, "text/javascript",
-        SharedBuffer::Create(builder.ToString().RawByteSpan())));
+        SharedBuffer::Create(StringView(builder).RawByteSpan())));
   }
 
   // Add `sheet` as a new resource and emit a <link> element to load it.

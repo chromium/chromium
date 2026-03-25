@@ -160,8 +160,8 @@ std::string GetTrackSourceLogString(blink::MediaStreamAudioSource* source) {
     builder.AppendFormat(", group_id: %s", device.group_id.value().c_str());
   }
   builder.AppendFormat(", name: %s", device.name.c_str());
-  builder.Append(String("]})"));
-  return builder.ToString().Utf8();
+  builder.Append("]})");
+  return StringView(builder).Utf8();
 }
 
 std::string GetOnTrackStartedLogString(

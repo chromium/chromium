@@ -54,7 +54,7 @@ class AXSelectionSerializer final {
       return {};
     SerializeSubtree(subtree);
     DCHECK_EQ(tree_level_, 0);
-    return builder_.ToString().Utf8();
+    return StringView(builder_).Utf8();
   }
 
  private:
