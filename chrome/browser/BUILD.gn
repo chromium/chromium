@@ -8683,6 +8683,7 @@ static_library("test_support") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/settings:unit_tests",
     "//chrome/browser/autofill:test_support_ui",
+    "//chrome/browser/bookmarks:browser_tests",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/search_engine_choice:browser_tests",
     "//chrome/browser/ui/bookmarks:browser_tests",

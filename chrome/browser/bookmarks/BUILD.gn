@@ -162,3 +162,24 @@ source_set("unit_tests") {
     ]
   }
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "encrypted_bookmark_browsertest.cc" ]
+
+  deps = [
+    ":bookmarks",
+    "//base/test:test_support",
+    "//chrome/browser:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/sync_bookmarks",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+  ]
+}

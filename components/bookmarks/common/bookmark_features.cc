@@ -123,4 +123,8 @@ std::string GetBookmarkEncryptionStageNameForTesting(  // IN-TEST
   NOTREACHED();
 }
 
+BookmarkEncryptionStage GetCurrentBookmarkEncryptionStageForTesting() {
+  return GetBookmarkEncryptionStage();
+}
+
 }  // namespace bookmarks

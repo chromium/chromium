@@ -2588,6 +2588,7 @@ if (!is_android) {
       "//chrome/browser/bluetooth:browser_tests",
       "//chrome/browser/bluetooth:test_support",
       "//chrome/browser/bookmarks",
+      "//chrome/browser/bookmarks:browser_tests",
       "//chrome/browser/bookmarks:test_support",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",

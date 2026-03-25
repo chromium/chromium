@@ -65,6 +65,10 @@ enum class BookmarkEncryptionStage {
 std::string GetBookmarkEncryptionStageNameForTesting(
     BookmarkEncryptionStage stage);
 
+// Return the name of the given bookmark encryption stage that should be used to
+// initialize kBookmarkEncryptionStageParam in tests.
+BookmarkEncryptionStage GetCurrentBookmarkEncryptionStageForTesting();
+
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_COMMON_BOOKMARK_FEATURES_H_
