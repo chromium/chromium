@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
@@ -65,6 +66,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -548,6 +551,20 @@ void BrowserTabStripController::OnDropIndexUpdate(
 
 void BrowserTabStripController::CreateNewTab(NewTabTypes context) {
   chrome::NewTab(browser_view_->browser(), context);
+}
+
+void BrowserTabStripController::CreateNewTabWithLocation(
+    const std::u16string& location) {
+  // Use autocomplete to clean up the text, going so far as to turn it into
+  // a search query if necessary.
+  AutocompleteMatch match;
+  AutocompleteClassifierFactory::GetForProfile(
+      GetBrowserWindowInterface()->GetProfile())
+      ->Classify(location, false, false, metrics::OmniboxEventProto::BLANK,
+                 &match, nullptr);
+  if (match.destination_url.is_valid()) {
+    model_->delegate()->AddTabAt(match.destination_url, -1, true);
+  }
 }
 
 void BrowserTabStripController::OnStartedDragging() {

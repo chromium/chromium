@@ -324,6 +324,14 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
     new_tab_button_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
+
+#if BUILDFLAG(IS_LINUX)
+    // On Linux, middle-clicking the New Tab Button triggers
+    // paste and navigate, either to URLs or to search queries.
+    new_tab_button_->SetTriggerableEventFlags(
+        new_tab_button_->GetTriggerableEventFlags() |
+        ui::EF_MIDDLE_MOUSE_BUTTON);
+#endif
   }
 
   reserved_grab_handle_space_ =

@@ -33813,6 +33813,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabButton_PasteAndNavigate">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User middle-clicked on the new tab button, causing the selection to be
+    pasted and navigated to in a new tab. (Linux only.)
+  </description>
+</action>
+
 <action name="NewTabPage.Carts.AcceptDiscountConsent">
   <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>

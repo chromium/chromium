@@ -86,6 +86,8 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_alert.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -1185,6 +1187,22 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
     // normal fade-in.
     if (hover_card_controller_) {
       hover_card_controller_->PreventImmediateReshow();
+    }
+
+    const ui::MouseEvent& mouse = static_cast<const ui::MouseEvent&>(event);
+    if (mouse.IsOnlyMiddleMouseButton()) {
+      if (ui::Clipboard::IsSupportedClipboardBuffer(
+              ui::ClipboardBuffer::kSelection)) {
+        ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+        CHECK(clipboard)
+            << "Clipboard instance is not available, cannot proceed with "
+               "middle mouse button action.";
+        clipboard->ReadText(ui::ClipboardBuffer::kSelection,
+                            /* data_dst = */ std::nullopt,
+                            base::BindOnce(&TabStrip::OnMiddleClickReadText,
+                                           weak_ptr_factory_.GetWeakPtr()));
+      }
+      return;
     }
   }
   controller_->CreateNewTab(NewTabTypes::kNewTabButton);
@@ -2455,6 +2473,14 @@ void TabStrip::OnTouchUiChanged() {
 
   tab_container_->CompleteAnimationAndLayout();
   PreferredSizeChanged();
+}
+
+void TabStrip::OnMiddleClickReadText(std::u16string text) {
+  if (!text.empty()) {
+    base::RecordAction(
+        base::UserMetricsAction("NewTabButton_PasteAndNavigate"));
+    controller_->CreateNewTabWithLocation(text);
+  }
 }
 
 void TabStrip::AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id) {
