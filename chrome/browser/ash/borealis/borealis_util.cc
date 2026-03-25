@@ -177,7 +177,7 @@ bool IsExternalURLAllowed(const GURL& url) {
     return false;
   }
   for (auto& allowed_url : kURLAllowlistRegex) {
-    if (re2::RE2::FullMatch(url.GetContent(), *allowed_url)) {
+    if (re2::RE2::FullMatch(url.GetContentPiece(), *allowed_url)) {
       return true;
     }
   }

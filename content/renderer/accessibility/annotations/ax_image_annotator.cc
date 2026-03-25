@@ -595,7 +595,7 @@ std::string AXImageAnnotator::GenerateImageSourceId(
 
   // If |image_url| is not publicly reachable, return a hash of |image_url|.
   // Scheme could be "data", "javascript", "ftp", "file", etc.
-  const std::string& content = image_url.GetContent();
+  std::string_view content = image_url.GetContentPiece();
   if (content.empty())
     return std::string();
   return base::Base64Encode(crypto::SHA256HashString(content));

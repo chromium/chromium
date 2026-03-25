@@ -71,7 +71,7 @@ std::optional<std::string> ExtractPhoneNumber(
 
 // Unescapes and returns the URL contents.
 std::string GetUnescapedURLContent(const GURL& url) {
-  return url::DecodeUrlEscapeSequences(url.GetContent(),
+  return url::DecodeUrlEscapeSequences(url.GetContentPiece(),
                                        url::DecodeUrlMode::kUtf8OrIsomorphic);
 }
 

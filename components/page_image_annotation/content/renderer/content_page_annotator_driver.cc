@@ -98,7 +98,7 @@ std::string ContentPageAnnotatorDriver::GenerateSourceId(
   // Assign a source ID: either the URL of this image (if it can be resolved) or
   // a hash of its data URI.
   if (src_url.SchemeIs("data")) {
-    const std::string& content = src_url.GetContent();
+    std::string_view content = src_url.GetContentPiece();
 
     if (!content.empty()) {
       // We use SHA256 since it has comparable (<2x) speed to e.g. crc32, but

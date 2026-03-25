@@ -1021,7 +1021,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
 
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_click_to_call_message()->set_phone_number(
-      phone_number.GetContent());
+      phone_number.GetContentPiece());
   EXPECT_CALL(*sharing_service,
               SendMessageToDevice(
                   Property(&SharingTargetDeviceInfo::guid, device_guid),

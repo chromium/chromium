@@ -1235,7 +1235,7 @@ void VerdictCacheManager::CacheArtificialRealTimeUrlVerdict(
   }
   threat_info->set_cache_duration_sec(3000);
   threat_info->set_cache_expression_using_match_type(
-      artificial_url.GetContent());
+      artificial_url.GetContentPiece());
   threat_info->set_cache_expression_match_type(
       RTLookupResponse::ThreatInfo::EXACT_MATCH);
   RemoveContentSettingsOnURLsDeleted(/*all_history=*/false,
@@ -1264,7 +1264,7 @@ void VerdictCacheManager::CacheArtificialUnsafePhishGuardVerdictFromSwitch() {
 
   LoginReputationClientResponse verdict;
   verdict.set_verdict_type(LoginReputationClientResponse::PHISHING);
-  verdict.set_cache_expression(artificial_unsafe_url.GetContent());
+  verdict.set_cache_expression(artificial_unsafe_url.GetContentPiece());
   verdict.set_cache_duration_sec(3000);
   CachePhishGuardVerdict(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                          reused_password_account_type, verdict,

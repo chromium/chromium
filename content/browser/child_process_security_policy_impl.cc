@@ -201,7 +201,7 @@ bool IsMalformedBlobUrl(const GURL& url) {
   // it's a normal blob URL.
   std::string canonical_origin = url::Origin::Create(url).Serialize();
   canonical_origin.append(1, '/');
-  if (base::StartsWith(url.GetContent(), canonical_origin,
+  if (base::StartsWith(url.GetContentPiece(), canonical_origin,
                        base::CompareCase::INSENSITIVE_ASCII)) {
     return false;
   }

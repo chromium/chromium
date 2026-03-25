@@ -4,12 +4,14 @@
 
 #include "ios/net/url_test_util.h"
 
+#include "base/strings/strcat.h"
 #include "url/gurl.h"
 
 namespace net {
 
 std::string GetContentAndFragmentForUrl(const GURL& url) {
-  return url.GetContent() + (url.has_ref() ? "#" + url.GetRef() : "");
+  return base::StrCat(
+      {url.GetContentPiece(), url.has_ref() ? "#" : "", url.ref()});
 }
 
 }  // namespace net

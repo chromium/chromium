@@ -851,7 +851,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
 
   // Check that there is a serialized nonce in the site URL. The nonce is
   // different each time, but has length 32.
-  EXPECT_EQ(32u, site_url.GetContent().length());
+  EXPECT_EQ(32u, site_url.GetContentPiece().length());
   EXPECT_FALSE(site_url.EqualsIgnoringRef(test_url));
   EXPECT_FALSE(site_url.has_host());
   test_url = GURL("data:text/html,foo#bar");

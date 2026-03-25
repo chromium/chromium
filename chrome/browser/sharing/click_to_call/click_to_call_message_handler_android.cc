@@ -34,7 +34,7 @@ void ClickToCallMessageHandler::OnMessage(
   std::string phone_number = message.click_to_call_message().phone_number();
   GURL phone_url(base::StrCat({"tel:", phone_number}));
   bool is_valid_phone_number = IsUrlSafeForClickToCall(phone_url) &&
-                               phone_url.GetContent() == phone_number;
+                               phone_url.GetContentPiece() == phone_number;
 
   // This can happen if a user on an older version of Chrome on their desktop
   // clicks on a tel link that contains url-escaped unsafe characters like #.

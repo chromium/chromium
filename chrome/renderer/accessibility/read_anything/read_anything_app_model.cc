@@ -452,8 +452,8 @@ void ReadAnythingAppModel::SetTreeInfoUrlInformation(
   // A Google Docs URL is in the form of "https://docs.google.com/document*" or
   // "https://docs.sandbox.google.com/document*".
   const GURL url(root->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
-  tree_info.is_reload =
-      !previous_tree_url_.empty() && (previous_tree_url_ == url.GetContent());
+  tree_info.is_reload = !previous_tree_url_.empty() &&
+                        (previous_tree_url_ == url.GetContentPiece());
 
   tree_info.is_docs = url.SchemeIsHTTPOrHTTPS() &&
                       (url.DomainIs("docs.google.com") ||
