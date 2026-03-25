@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h"
 #include "gpu/command_buffer/service/context_state.h"
@@ -664,12 +665,17 @@ void convertToRGBFloat(base::span<const uint8_t> source,
 }
 
 // Prepare the image data to be uploaded to a texture in pixel unpack buffer.
-void PrepareUnpackBuffer(base::span<const GLuint> buffer,
+bool PrepareUnpackBuffer(base::span<const GLuint> buffer,
                          GLenum format,
                          GLenum type,
                          GLsizei width,
                          GLsizei height) {
-  uint32_t pixel_num = width * height;
+  base::CheckedNumeric<uint32_t> checked_pixel_num = width;
+  checked_pixel_num *= height;
+  uint32_t pixel_num;
+  if (!checked_pixel_num.AssignIfValid(&pixel_num)) {
+    return false;
+  }
 
   // Result of glReadPixels with format == GL_RGB and type == GL_UNSIGNED_BYTE
   // from read framebuffer in RGBA format is not correct on desktop core
@@ -677,17 +683,27 @@ void PrepareUnpackBuffer(base::span<const GLuint> buffer,
   if (format == GL_RGBA && type == GL_UNSIGNED_BYTE) {
     uint32_t bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
+    base::CheckedNumeric<uint32_t> checked_buf_size = checked_pixel_num;
+    checked_buf_size *= bytes_per_group;
+    uint32_t buf_size;
+    if (!checked_buf_size.AssignIfValid(&buf_size)) {
+      return false;
+    }
     glBindBuffer(GL_PIXEL_PACK_BUFFER, buffer[0]);
-    glBufferData(GL_PIXEL_PACK_BUFFER, pixel_num * bytes_per_group, 0,
-                 GL_STATIC_READ);
+    glBufferData(GL_PIXEL_PACK_BUFFER, buf_size, 0, GL_STATIC_READ);
     glReadPixels(0, 0, width, height, format, type, 0);
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[0]);
-    return;
+    return true;
   }
 
-  uint32_t bytes_per_group =
+  uint32_t rgba_bytes_per_group =
       gpu::gles2::GLES2Util::ComputeImageGroupSize(GL_RGBA, GL_UNSIGNED_BYTE);
-  uint32_t buf_size = pixel_num * bytes_per_group;
+  base::CheckedNumeric<uint32_t> checked_rgba_buf_size = checked_pixel_num;
+  checked_rgba_buf_size *= rgba_bytes_per_group;
+  uint32_t rgba_buf_size;
+  if (!checked_rgba_buf_size.AssignIfValid(&rgba_buf_size)) {
+    return false;
+  }
 
   if (format == GL_RGB && type == GL_FLOAT) {
 #if BUILDFLAG(IS_ANDROID)
@@ -699,22 +715,33 @@ void PrepareUnpackBuffer(base::span<const GLuint> buffer,
     glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
     auto data = base::HeapArray<float>::Uninit(pixel_num * 3);
     convertToRGBFloat(pixels, data, pixel_num);
-    bytes_per_group =
+    uint32_t bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
-    buf_size = pixel_num * bytes_per_group;
+    base::CheckedNumeric<uint32_t> checked_buf_size = checked_pixel_num;
+    checked_buf_size *= bytes_per_group;
+    uint32_t buf_size;
+    if (!checked_buf_size.AssignIfValid(&buf_size)) {
+      return false;
+    }
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
     glBufferData(GL_PIXEL_UNPACK_BUFFER, buf_size, data.data(), GL_STATIC_DRAW);
 #else
     glBindBuffer(GL_PIXEL_PACK_BUFFER, buffer[0]);
-    glBufferData(GL_PIXEL_PACK_BUFFER, buf_size, 0, GL_STATIC_READ);
+    glBufferData(GL_PIXEL_PACK_BUFFER, rgba_buf_size, 0, GL_STATIC_READ);
     glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    void* pixels =
-        glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, buf_size, GL_MAP_READ_BIT);
+    void* pixels = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, rgba_buf_size,
+                                    GL_MAP_READ_BIT);
 
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
-    bytes_per_group =
+    uint32_t bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
-    buf_size = pixel_num * bytes_per_group;
+    base::CheckedNumeric<uint32_t> checked_buf_size = checked_pixel_num;
+    checked_buf_size *= bytes_per_group;
+    uint32_t buf_size;
+    if (!checked_buf_size.AssignIfValid(&buf_size)) {
+      glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+      return false;
+    }
     glBufferData(GL_PIXEL_UNPACK_BUFFER, buf_size, 0, GL_STATIC_DRAW);
     void* data =
         glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, buf_size, GL_MAP_WRITE_BIT);
@@ -724,14 +751,14 @@ void PrepareUnpackBuffer(base::span<const GLuint> buffer,
     glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 #endif
-    return;
+    return true;
   }
 
   if (format == GL_RGB && type == GL_UNSIGNED_BYTE) {
     glBindBuffer(GL_PIXEL_PACK_BUFFER, buffer[0]);
-    glBufferData(GL_PIXEL_PACK_BUFFER, buf_size, 0, GL_DYNAMIC_DRAW);
+    glBufferData(GL_PIXEL_PACK_BUFFER, rgba_buf_size, 0, GL_DYNAMIC_DRAW);
     glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    void* pixels = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, buf_size,
+    void* pixels = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, rgba_buf_size,
                                     GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
     void* data = pixels;
     convertToRGB(UNSAFE_BUFFERS(
@@ -739,7 +766,7 @@ void PrepareUnpackBuffer(base::span<const GLuint> buffer,
         base::span(static_cast<uint8_t*>(data), pixel_num * 3)), pixel_num);
     glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[0]);
-    return;
+    return true;
   }
 
   NOTREACHED();
@@ -804,7 +831,16 @@ void DoReadbackAndTexImage(TexImageCommandType command_type,
     uint32_t buffer_num = format == GL_RGB && type == GL_FLOAT ? 2 : 1;
     GLuint buffer[2] = {0u};
     glGenBuffersARB(buffer_num, buffer);
-    PrepareUnpackBuffer(buffer, format, type, width, height);
+    if (!PrepareUnpackBuffer(buffer, format, type, width, height)) {
+      glDeleteBuffersARB(buffer_num, buffer);
+      decoder->RestoreTextureState(source_id);
+      decoder->RestoreTextureState(dest_id);
+      decoder->RestoreTextureUnitBindings(0);
+      decoder->RestoreActiveTexture();
+      decoder->RestoreFramebufferBindings();
+      decoder->RestoreBufferBindings();
+      return;
+    }
 
     if (command_type == kTexImage) {
       glTexImage2D(dest_target, dest_level, dest_internal_format, width, height,

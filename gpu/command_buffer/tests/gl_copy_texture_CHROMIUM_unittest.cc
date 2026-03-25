@@ -841,6 +841,44 @@ TEST_P(GLCopyTextureCHROMIUMES3Test, BigTexture) {
   RunCopyTexture(GL_TEXTURE_2D, copy_type, src_format, 0, dest_format, 0, true);
 }
 
+TEST_P(GLCopyTextureCHROMIUMES3Test, CopyTextureOverflow) {
+  if (ShouldSkipTest()) {
+    GTEST_SKIP();
+  }
+  CopyType copy_type = GetParam();
+  if (copy_type == TexImage) {
+    // This test only works for sub-image copies because GL_RGB9_E5 is
+    // not a valid input to glCopyTextureCHROMIUM.
+    GTEST_SKIP();
+  }
+
+  // This test requires a large amount of memory and specifically triggers
+  // an overflow in the validating command decoder.
+  GLsizei width = 19000;
+  GLsizei height = 19000;
+
+  GLuint textures[2];
+  glGenTextures(2, textures);
+
+  glBindTexture(GL_TEXTURE_2D, textures[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, nullptr);
+
+  glBindTexture(GL_TEXTURE_2D, textures[1]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB9_E5, width, height, 0, GL_RGB, GL_FLOAT,
+               nullptr);
+
+  glCopySubTextureCHROMIUM(textures[0], 0, GL_TEXTURE_2D, textures[1], 0, 0, 0,
+                           0, 0, width, height, false, false, false);
+
+  // We don't care about GL errors, just that it doesn't crash the GPU process.
+  // Clear any GL errors so they don't fail subsequent tests.
+  while (glGetError() != GL_NO_ERROR) {
+  }
+
+  glDeleteTextures(2, textures);
+}
+
 TEST_P(GLCopyTextureCHROMIUMES3Test, FormatCombinationsFromLuminance) {
   TestFormatCombinations({
       {GL_LUMINANCE, GL_LUMINANCE, GL_UNSIGNED_BYTE},
