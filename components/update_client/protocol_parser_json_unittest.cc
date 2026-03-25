@@ -10,7 +10,7 @@
 
 namespace update_client {
 
-const char* kJSONValid = R"()]}'
+static constexpr char kJSONValid[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -32,7 +32,7 @@ const char* kJSONValid = R"()]}'
    ]
   }})";
 
-const char* kJSONHash = R"()]}'
+static constexpr char kJSONHash[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -56,7 +56,7 @@ const char* kJSONHash = R"()]}'
    ]
   }})";
 
-const char* kJSONInvalidSizes = R"()]}'
+static constexpr char kJSONInvalidSizes[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -93,28 +93,7 @@ const char* kJSONInvalidSizes = R"()]}'
    ]
   }})";
 
-const char* kJSONInvalidMissingUrl = R"()]}'
-  {"response":{
-   "protocol":"4.0",
-   "apps":[
-    {"appid":"12345",
-     "status":"ok",
-     "updatecheck":{
-      "status":"ok",
-      "nextversion":"1.2.3.4",
-      "pipelines":[
-       {"operations":[
-        {"type": "download",
-         "out": {"sha256": "1234"}}
-        {"type": "crx3",
-         "in": {"sha256": "1234"}}]}
-      ]
-     }
-    }
-   ]
-  }})";
-
-const char* kJSONInvalidMissingUpdateCheck = R"()]}'
+static constexpr char kJSONInvalidMissingUpdateCheck[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -125,7 +104,7 @@ const char* kJSONInvalidMissingUpdateCheck = R"()]}'
   }})";
 
 // `updatecheck` is supposed to be a dictionary. It is a list here.
-const char* kJSONInvalidUpdateCheck = R"()]}'
+static constexpr char kJSONInvalidUpdateCheck[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -137,7 +116,7 @@ const char* kJSONInvalidUpdateCheck = R"()]}'
    ]
   }})";
 
-const char* kJSONMissingAppId = R"()]}'
+static constexpr char kJSONMissingAppId[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -157,7 +136,7 @@ const char* kJSONMissingAppId = R"()]}'
    ]
   }})";
 
-const char* kJSONInvalidCodebase = R"()]}'
+static constexpr char kJSONInvalidCodebase[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -178,7 +157,7 @@ const char* kJSONInvalidCodebase = R"()]}'
    ]
   }})";
 
-const char* kJSONMissingVersion = R"()]}'
+static constexpr char kJSONMissingVersion[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -198,7 +177,7 @@ const char* kJSONMissingVersion = R"()]}'
    ]
   }})";
 
-const char* kJSONInvalidVersion = R"()]}'
+static constexpr char kJSONInvalidVersion[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -220,7 +199,7 @@ const char* kJSONInvalidVersion = R"()]}'
   }})";
 
 // Includes a <daystart> tag.
-const char* kJSONWithDaystart = R"()]}'
+static constexpr char kJSONWithDaystart[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "daystart":{"elapsed_days":456},
@@ -243,7 +222,7 @@ const char* kJSONWithDaystart = R"()]}'
   }})";
 
 // Indicates no updates available.
-const char* kJSONNoUpdate = R"()]}'
+static constexpr char kJSONNoUpdate[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -257,7 +236,7 @@ const char* kJSONNoUpdate = R"()]}'
   }})";
 
 // Includes two app objects, one app with an error.
-const char* kJSONTwoAppsOneError = R"()]}'
+static constexpr char kJSONTwoAppsOneError[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -282,7 +261,7 @@ const char* kJSONTwoAppsOneError = R"()]}'
   }})";
 
 // Includes two <app> tags, both of which set the cohort.
-const char* kJSONTwoAppsSetCohort = R"()]}'
+static constexpr char kJSONTwoAppsSetCohort[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -313,7 +292,7 @@ const char* kJSONTwoAppsSetCohort = R"()]}'
   }})";
 
 // Includes a run action for an update check with status='ok'.
-const char* kJSONUpdateCheckStatusOkWithRunAction = R"()]}'
+static constexpr char kJSONUpdateCheckStatusOkWithRunAction[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -337,7 +316,7 @@ const char* kJSONUpdateCheckStatusOkWithRunAction = R"()]}'
   }})";
 
 // Includes nine app objects with status different than 'ok'.
-const char* kJSONAppsStatusError = R"()]}'
+static constexpr char kJSONAppsStatusError[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -355,7 +334,7 @@ const char* kJSONAppsStatusError = R"()]}'
 
 // Includes a manifest |run| value for an update check with status='ok'. Also
 // includes install data in the `data` element.
-const char* kJSONManifestRun = R"()]}'
+static constexpr char kJSONManifestRun[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[
@@ -386,7 +365,7 @@ const char* kJSONManifestRun = R"()]}'
   }})";
 
 // Includes two custom response attributes in the update_check.
-const char* kJSONCustomAttributes = R"()]}'
+static constexpr char kJSONCustomAttributes[] = R"()]}'
   {"response":{
    "protocol":"4.0",
    "apps":[

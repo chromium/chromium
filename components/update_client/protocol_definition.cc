@@ -10,8 +10,6 @@
 
 namespace update_client::protocol_request {
 
-const char kProtocolVersion[] = "4.0";
-
 OS::OS() = default;
 OS::OS(OS&&) = default;
 OS& OS::operator=(OS&&) = default;

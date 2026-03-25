@@ -18,11 +18,6 @@
 
 namespace update_client {
 
-namespace switches {
-const char kComponentUpdaterCompatProtocols[] =
-    "component-updater-compat-protocols";
-}  // namespace switches
-
 std::string ProtocolSerializerJSON::Serialize(
     const protocol_request::Request& request) const {
   base::DictValue root_node;

@@ -52,17 +52,13 @@
 
 namespace update_client {
 
-const char kArchAmd64[] = "x86_64";
-const char kArchIntel[] = "x86";
-const char kArchArm64[] = "arm64";
-
 #if BUILDFLAG(IS_CHROMEOS)
 // In ChromeOS, /tmp is a ramfs drive that can be too small
 // for large downloads like Gemini Nano2v3. A larger tmpfiles.d
 // mount has been created (see https://crrev.com/c/6810025) as a
 // scratch space with access to the full stateful partition to
 // handle these larger downloads.
-const char kTempDir[] = "/var/lib/odml/chrome_component_updater";
+constexpr char kTempDir[] = "/var/lib/odml/chrome_component_updater";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsHttpServerError(int status_code) {
@@ -119,7 +115,7 @@ bool VerifyFileHash256(const base::FilePath& filepath,
 }
 
 bool IsValidBrand(const std::string& brand) {
-  const size_t kMaxBrandSize = 4;
+  static constexpr size_t kMaxBrandSize = 4;
   return brand.empty() ||
          (brand.size() == kMaxBrandSize &&
           std::ranges::all_of(brand, &base::IsAsciiAlpha<char>));

@@ -156,8 +156,8 @@ int GetHttpStatusFromBitsError(HRESULT error) {
   // BITS errors are defined in bitsmsg.h. Although not documented, it is
   // clear that all errors corresponding to http status code have the high
   // word equal to 0x8019 and the low word equal to the http status code.
-  const int kHttpStatusFirst = 100;  // Continue.
-  const int kHttpStatusLast = 505;   // Version not supported.
+  static constexpr int kHttpStatusFirst = 100;  // Continue.
+  static constexpr int kHttpStatusLast = 505;   // Version not supported.
   bool is_valid = HIWORD(error) == 0x8019 &&
                   LOWORD(error) >= kHttpStatusFirst &&
                   LOWORD(error) <= kHttpStatusLast;
@@ -252,7 +252,7 @@ HRESULT GetJobByteCount(const Microsoft::WRL::ComPtr<IBackgroundCopyJob>& job,
     return hr;
   }
 
-  const uint64_t kMaxNumBytes =
+  static constexpr uint64_t kMaxNumBytes =
       static_cast<uint64_t>(std::numeric_limits<int64_t>::max());
   if (job_progress.BytesTransferred <= kMaxNumBytes) {
     *downloaded_bytes = job_progress.BytesTransferred;
@@ -806,7 +806,7 @@ HRESULT BackgroundDownloader::InitializeNewJob(
     return hr;
   }
 
-  const int kSecondsDay = 60 * 60 * 24;
+  static constexpr int kSecondsDay = 60 * 60 * 24;
   hr = job->SetNoProgressTimeout(kSecondsDay * kSetNoProgressTimeoutDays);
   if (FAILED(hr)) {
     return hr;

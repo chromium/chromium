@@ -620,13 +620,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckRequiresEncryptionError) {
 // Tests that the PersistedData will get correctly update and reserialize
 // the elapsed_days value.
 TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
-  const char* filename = "updatecheck_reply_4.json";
+  static constexpr char kFilename[] = "updatecheck_reply_4.json";
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      GetTestFilePath(filename)));
+      GetTestFilePath(kFilename)));
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      GetTestFilePath(filename)));
+      GetTestFilePath(kFilename)));
 
   update_checker_ = UpdateChecker::Create(config_);
 
@@ -665,16 +665,16 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
-  const char* filename = "updatecheck_reply_4.json";
+  static constexpr char kFilename[] = "updatecheck_reply_4.json";
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      GetTestFilePath(filename)));
+      GetTestFilePath(kFilename)));
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      GetTestFilePath(filename)));
+      GetTestFilePath(kFilename)));
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      GetTestFilePath(filename)));
+      GetTestFilePath(kFilename)));
 
   update_checker_ = UpdateChecker::Create(config_);
 

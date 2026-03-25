@@ -13,10 +13,10 @@
 
 namespace update_client {
 
-const int kDateFirstTime = -1;
-const int kDaysFirstTime = -1;
-const int kDateUnknown = -2;
-const int kDaysUnknown = -2;
+inline constexpr int kDateFirstTime = -1;
+inline constexpr int kDaysFirstTime = -1;
+inline constexpr int kDateUnknown = -2;
+inline constexpr int kDaysUnknown = -2;
 
 // This is an interface that injects certain update information (active, days
 // since ...) into the update engine of the update client.

@@ -20,7 +20,7 @@ namespace update_client {
 
 namespace {
 
-const char kUnknown[] = "unknown";
+constexpr char kUnknown[] = "unknown";
 
 // The request extra information is the OS and architecture, this helps
 // the server select the right package to be delivered.
@@ -69,15 +69,15 @@ constexpr std::string_view kArch =
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kChrome[] = "chrome";
-const char kCrx[] = "chromecrx";
-const char kWebView[] = "googleandroidwebview";
-const char kIOsWebView[] = "googleioswebview";
+constexpr char kChrome[] = "chrome";
+constexpr char kCrx[] = "chromecrx";
+constexpr char kWebView[] = "googleandroidwebview";
+constexpr char kIOsWebView[] = "googleioswebview";
 #else
-const char kChrome[] = "chromium";
-const char kCrx[] = "chromiumcrx";
-const char kWebView[] = "androidwebview";
-const char kIOsWebView[] = "ioswebview";
+constexpr char kChrome[] = "chromium";
+constexpr char kCrx[] = "chromiumcrx";
+constexpr char kWebView[] = "androidwebview";
+constexpr char kIOsWebView[] = "ioswebview";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 UpdateQueryParamsDelegate* g_delegate = nullptr;

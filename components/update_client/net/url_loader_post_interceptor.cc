@@ -5,6 +5,7 @@
 #include "components/update_client/net/url_loader_post_interceptor.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -13,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "components/update_client/test_configurator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -21,15 +21,13 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace update_client {
 
 URLLoaderPostInterceptor::URLLoaderPostInterceptor(
     network::TestURLLoaderFactory* url_loader_factory)
     : url_loader_factory_(url_loader_factory) {
-  filtered_urls_.push_back(
-      GURL(base::StringPrintf("%s://%s%s", POST_INTERCEPT_SCHEME,
-                              POST_INTERCEPT_HOSTNAME, POST_INTERCEPT_PATH)));
   InitializeWithInterceptor();
 }
 

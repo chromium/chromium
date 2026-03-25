@@ -16,11 +16,10 @@
 #include "components/update_client/crx_downloader.h"
 
 namespace update_client {
-namespace {
+
 // TODO(crbug.com/40285933): The session identifier might need to be more
 // complex to accommodate multiple Chrome processes.
 inline constexpr char kDefaultBackgroundSessionId[] = "CrxDownloader";
-}  // namespace
 
 class BackgroundDownloaderSharedSession
     : public base::RefCountedThreadSafe<BackgroundDownloaderSharedSession> {

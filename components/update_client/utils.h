@@ -25,9 +25,9 @@ namespace update_client {
 
 struct CrxComponent;
 
-extern const char kArchAmd64[];
-extern const char kArchIntel[];
-extern const char kArchArm64[];
+inline constexpr char kArchAmd64[] = "x86_64";
+inline constexpr char kArchIntel[] = "x86";
+inline constexpr char kArchArm64[] = "arm64";
 
 // Defines a name-value pair that represents an installer attribute.
 // Installer attributes are component-specific metadata, which may be serialized

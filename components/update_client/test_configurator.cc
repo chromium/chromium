@@ -9,12 +9,14 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -36,16 +38,12 @@
 #include "url/gurl.h"
 
 namespace update_client {
-
 namespace {
-
 std::vector<GURL> MakeDefaultUrls() {
-  std::vector<GURL> urls;
-  urls.push_back(GURL(POST_INTERCEPT_SCHEME
-                      "://" POST_INTERCEPT_HOSTNAME POST_INTERCEPT_PATH));
-  return urls;
+  return std::vector<GURL>{
+      GURL(base::StringPrintf("%s://%s%s", kPostInterceptScheme,
+                              kPostInterceptHostname, kPostInterceptPath))};
 }
-
 }  // namespace
 
 TestConfigurator::TestConfigurator(PrefService* pref_service)

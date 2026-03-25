@@ -21,7 +21,7 @@ namespace update_client::protocol_request {
 // The protocol versions so far are:
 // * Version 3.1: it changes how the run actions are serialized.
 // * Version 3.0: it is the version implemented by the desktop updaters.
-extern const char kProtocolVersion[];
+inline constexpr char kProtocolVersion[] = "4.0";
 
 // Due to implementation constraints of the JSON parser and serializer,
 // precision of integer numbers greater than 2^53 is lost.

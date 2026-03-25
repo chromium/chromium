@@ -23,10 +23,13 @@ class PrefRegistrySimple;
 
 namespace update_client {
 
-extern const char kPersistedDataPreference[];
-extern const char kLastUpdateCheckErrorPreference[];
-extern const char kLastUpdateCheckErrorCategoryPreference[];
-extern const char kLastUpdateCheckErrorExtraCode1Preference[];
+inline constexpr char kPersistedDataPreference[] = "updateclientdata";
+inline constexpr char kLastUpdateCheckErrorPreference[] =
+    "updateclientlastupdatecheckerror";
+inline constexpr char kLastUpdateCheckErrorCategoryPreference[] =
+    "updateclientlastupdatecheckerrorcategory";
+inline constexpr char kLastUpdateCheckErrorExtraCode1Preference[] =
+    "updateclientlastupdatecheckerrorextracode1";
 
 class ActivityDataService;
 struct CategorizedError;
