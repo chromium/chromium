@@ -131,6 +131,7 @@ AccountSettingSyncBridge::ApplyIncrementalSyncChanges(
       std::move(batch),
       base::BindOnce(&AccountSettingSyncBridge::ReportErrorIfSet,
                      weak_factory_.GetWeakPtr()));
+  observers_.Notify(&Observer::OnDataUpdated);
   return std::nullopt;
 }
 
@@ -140,6 +141,7 @@ void AccountSettingSyncBridge::ApplyDisableSyncChanges(
   store_->DeleteAllDataAndMetadata(base::BindOnce(
       &AccountSettingSyncBridge::ReportErrorIfSet, weak_factory_.GetWeakPtr()));
   settings_.clear();
+  observers_.Notify(&Observer::OnDataUpdated);
 }
 
 std::unique_ptr<syncer::DataBatch> AccountSettingSyncBridge::GetDataForCommit(

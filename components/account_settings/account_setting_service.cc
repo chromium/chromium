@@ -69,4 +69,8 @@ void AccountSettingService::OnDataLoadedFromDisk() {
                             IsWalletPrivacyContextualSurfacingEnabled());
 }
 
+void AccountSettingService::OnDataUpdated() {
+  // TODO(crbug.com/494149753): Implement.
+}
+
 }  // namespace account_settings

@@ -40,6 +40,7 @@ class AccountSettingService : public KeyedService,
  private:
   // AccountSettingSyncBridge::Observer:
   void OnDataLoadedFromDisk() override;
+  void OnDataUpdated() override;
 
   std::unique_ptr<AccountSettingSyncBridge> sync_bridge_;
 

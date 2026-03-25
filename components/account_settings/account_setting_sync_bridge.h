@@ -22,6 +22,9 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
     // Called when the bridge finishes loading the initial data from `store_`
     // and into `settings_`.
     virtual void OnDataLoadedFromDisk() = 0;
+
+    // Called when data changes in `store_`.
+    virtual void OnDataUpdated() = 0;
   };
 
   explicit AccountSettingSyncBridge(
