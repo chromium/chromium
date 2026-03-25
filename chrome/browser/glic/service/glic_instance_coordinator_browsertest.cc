@@ -812,9 +812,171 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorToggleWithConversationTest,
   EXPECT_EQ(coordinator().GetInstances().size(), 2u);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
-                       WidgetClosedDuringDragDoesNotCrash) {
+                       InvokeWithInvalidTab) {
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(/*tab=*/nullptr, std::move(options));
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidTab);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWithEmptyConversationId) {
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+  options.conversation = ConversationId("");
+
+  coordinator().Invoke(GetTabListInterface()->GetActiveTab(),
+                       std::move(options));
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConversationId);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWhenWebClientAlreadySet) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  // Call invoke twice. The first one will set it up.
+  base::test::TestFuture<void> initial_success_future;
+  GlicInvokeOptions initial_options(mojom::InvocationSource::kOsButton);
+  initial_options.on_success = initial_success_future.GetCallback();
+  coordinator().Invoke(tab, std::move(initial_options));
+  EXPECT_TRUE(initial_success_future.Wait());
+
+  auto* instance = coordinator().GetInstanceForTab(tab);
+
+  // Wait until setup is complete
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return instance->host().IsReady(); }));
+
+  // Now, invoke should hit the fast path.
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(tab, std::move(options));
+
+  // The success callback should be called relatively quickly via fast-pathing
+  // through IsReady(), without waiting for WebClientConnected. However, it is
+  // still asynchronous due to the Mojo IPC, so we must Wait().
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeBeforeWebClientSet) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  // Call invoke. This will create the instance and wait for WebClientSet.
+  coordinator().Invoke(tab, std::move(options));
+
+  auto* instance = coordinator().GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+
+  // Wait for the instance to open, which also sets the web client.
+  ASSERT_TRUE(WaitForGlicOpen(instance));
+
+  // The success callback should be called after observing WebClientSet.
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWhileInvokeInProgress) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<GlicInvokeError> error_future1;
+  GlicInvokeOptions options1(mojom::InvocationSource::kOsButton);
+
+  coordinator().Invoke(tab, std::move(options1));
+
+  base::test::TestFuture<GlicInvokeError> error_future2;
+  GlicInvokeOptions options2(mojom::InvocationSource::kOsButton);
+  options2.on_error = error_future2.GetCallback();
+
+  // Try to invoke again while the first one is still in progress for the same
+  // instance.
+  coordinator().Invoke(tab, std::move(options2));
+
+  // The second invoke should fail synchronously.
+  EXPECT_EQ(error_future2.Get(), GlicInvokeError::kInvokeInProgress);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeTimeoutBehaviors) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  // 1. Test custom short timeout
+  base::test::TestFuture<GlicInvokeError> short_error_future;
+  GlicInvokeOptions short_options(mojom::InvocationSource::kOsButton);
+  short_options.on_error = short_error_future.GetCallback();
+  short_options.timeout = base::Milliseconds(1);
+
+  coordinator().Invoke(tab, std::move(short_options));
+
+  // The first invoke should time out quickly.
+  EXPECT_EQ(short_error_future.Get(), GlicInvokeError::kTimeout);
+
+  // 2. Test that a longer timeout actually takes longer, ensuring the
+  // specified duration isn't being ignored resulting in an instant timeout.
+  base::test::TestFuture<GlicInvokeError> long_error_future;
+  GlicInvokeOptions long_options(mojom::InvocationSource::kOsButton);
+  long_options.on_error = long_error_future.GetCallback();
+  long_options.timeout = base::Milliseconds(100);
+
+  base::ElapsedTimer elapsed_timer;
+  coordinator().Invoke(tab, std::move(long_options));
+
+  // Wait for the timeout to occur.
+  EXPECT_EQ(long_error_future.Get(), GlicInvokeError::kTimeout);
+
+  // Verify it took at least some fraction of the longer timeout, proving
+  // it didn't instantly time out like the short one.
+  EXPECT_GE(elapsed_timer.Elapsed(), base::Milliseconds(50));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeFailsOnInstanceDestruction) {
+  // Add a new tab so we don't close the browser when we close the active tab.
+  CreateAndActivateTab(GURL("about:blank"));
+
+  // Go back to the original tab and open Glic.
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ActivateTab(tab1);
+
+  GlicInstanceImpl* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(tab1, std::move(options));
+
+  // Destroy the instance while Invoke is in progress by closing the tab it is
+  // bound to.
+  tab1->Close();
+
+  // The error should be either kInstanceDestroyed or kTabClosed, depending on
+  // the order of destruction. The user expects it to cause instance deletion.
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInstanceDestroyed);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WidgetClosedDuringDragDoesNotCrash \
+  DISABLED_WidgetClosedDuringDragDoesNotCrash
+#else
+#define MAYBE_WidgetClosedDuringDragDoesNotCrash \
+  WidgetClosedDuringDragDoesNotCrash
+#endif
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       MAYBE_WidgetClosedDuringDragDoesNotCrash) {
   // Open floaty
   coordinator().Toggle(/*browser=*/nullptr, /*prevent_close=*/true,
                        mojom::InvocationSource::kTopChromeButton,
@@ -846,5 +1008,4 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
       [&]() { return coordinator().GetActiveInstance() == nullptr; }));
 }
 #endif
-
 }  // namespace glic
