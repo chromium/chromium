@@ -38,6 +38,7 @@ namespace {
 const char kTestEmail[] = "test@example.com";
 const char kTestHost[] = "www.google.com";
 const char kTestSubHost[] = "sub.google.com";
+const char kDenylistHost[] = "lh3.google.com";
 
 }  // namespace
 
@@ -104,6 +105,7 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule(kTestHost, "127.0.0.1");
     host_resolver()->AddRule(kTestSubHost, "127.0.0.1");
+    host_resolver()->AddRule(kDenylistHost, "127.0.0.1");
     https_server_.StartAcceptingConnections();
 
     // Sign in.
@@ -152,7 +154,8 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
       }
 
       if (!auth_header_value.empty() || !ua_header_value.empty() ||
-          request.relative_url.find("onegoogle") != std::string::npos) {
+          request.relative_url.find("onegoogle") != std::string::npos ||
+          request.relative_url.find("denylist") != std::string::npos) {
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE,
             base::BindOnce(
@@ -502,6 +505,46 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   run_loop.Run();
 
   // Verify the header.
+  EXPECT_TRUE(captured_auth_header_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
+                       DenylistUrlDoesNotHaveAuthToken) {
+  base::RunLoop run_loop;
+  header_capture_quit_closure_ = run_loop.QuitClosure();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  content::WebContents* web_ui_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  std::string script = content::JsReplace(
+      R"(
+        (async () => {
+          let app = document.querySelector('contextual-tasks-app');
+          while (!app) {
+            await new Promise(r => setTimeout(r, 100));
+            app = document.querySelector('contextual-tasks-app');
+          }
+          while (!app.shadowRoot) {
+            await new Promise(r => setTimeout(r, 100));
+          }
+          let webview = app.shadowRoot.querySelector('#threadFrame');
+          while (!webview) {
+            await new Promise(r => setTimeout(r, 100));
+            webview = app.shadowRoot.querySelector('#threadFrame');
+          }
+          webview.src = $1;
+        })();
+      )",
+      https_server_.GetURL(kDenylistHost, "/denylist/echoheader?Authorization")
+          .spec());
+
+  EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
+
+  run_loop.Run();
+
   EXPECT_TRUE(captured_auth_header_.empty());
 }
 

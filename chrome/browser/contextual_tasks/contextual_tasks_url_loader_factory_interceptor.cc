@@ -44,6 +44,10 @@ const char* const kAuthTokenAllowList[] = {
     "googlers.com",  // For local servers.
 };
 
+const char* const kAuthTokenDenyList[] = {
+    "lh3.google.com",
+};
+
 const char kAuthorizationHeader[] = "Authorization";
 const char kBearerPrefix[] = "Bearer ";
 const char kOneGoogleIdentifier[] = "onegoogle";
@@ -53,6 +57,13 @@ bool ShouldAddAuthHeader(const GURL& url) {
   // OAuth. Attaching an OAuth token can result in 403 errors.
   if (url.spec().contains(kOneGoogleIdentifier)) {
     return false;
+  }
+
+  // Don't add the Authorization header to any domain in the deny list.
+  for (const char* domain : kAuthTokenDenyList) {
+    if (url.DomainIs(domain)) {
+      return false;
+    }
   }
 
   // Only add the Authorization header to domains in the allow list.
