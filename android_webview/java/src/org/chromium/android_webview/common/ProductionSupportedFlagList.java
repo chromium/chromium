@@ -1262,10 +1262,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT,
                 "Enables content restriction support in WebView."),
         Flag.baseFeature(
-                "CancelPendingCallbacksBeforeFetchRestart",
-                "The flag for ServiceWorkerSubresourceLoader. If enabled, the loader cancels"
-                        + " pending callbacks before restarting a fetch."),
-        Flag.baseFeature(
                 BaseFeatures.REBINDING_CHILD_SERVICE_CONNECTION_CONTROLLER,
                 "Use a single connection and rebindService() to manage the binding to a child"
                         + " process service."),
