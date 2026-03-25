@@ -30,6 +30,7 @@ namespace gpu {
 
 namespace gles2 {
 class QueryTracker;
+class GLES2ImplementationTest;
 }
 
 class CommandBufferHelper;
@@ -152,6 +153,8 @@ class GLES2_IMPL_EXPORT ImplementationBase
   virtual void SetGLError(GLenum error,
                           const char* function_name,
                           const char* msg) = 0;
+
+  friend class gles2::GLES2ImplementationTest;
 
   raw_ptr<CommandBufferHelper> helper_;
 

@@ -436,6 +436,12 @@ class GLES2ImplementationTest : public testing::Test {
     return gl_->max_extra_transfer_buffer_size_ > 0;
   }
 
+  void SetQueryProcessCount(QueryTracker::Query* q, int32_t count) {
+    q->info_.sync->process_count = count;
+  }
+
+  MappedMemoryManager* mapped_memory() { return gl_->mapped_memory_.get(); }
+
   static SharedMemoryLimits SharedMemoryLimitsForTesting() {
     SharedMemoryLimits limits;
     limits.command_buffer_size = kCommandBufferSizeBytes;
@@ -3920,6 +3926,232 @@ TEST_F(GLES2ImplementationTest, BindSampler) {
   gl_->GenSamplers(1, &expected.id);
   gl_->BindSampler(1, expected.id);
   UNSAFE_TODO(EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected))));
+}
+
+// Test that UnmapBuffer on a readback buffer with a non-zero offset
+// doesn't erroneously free adjacent blocks in FencedAllocator.
+// This is a regression test for a use-after-free bug.
+TEST_F(GLES2ImplementationTest, UnmapBufferWithOffsetFreesCorrectBlock) {
+  // Create two readback buffers.
+  std::array<GLuint, 2> buffers;
+  gl_->GenBuffers(buffers.size(), buffers.data());
+
+  const GLsizeiptr kBufferSize = 64;
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+  gl_->BufferData(GL_ARRAY_BUFFER, kBufferSize, nullptr, GL_STREAM_READ);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+  gl_->BufferData(GL_ARRAY_BUFFER, kBufferSize, nullptr, GL_STREAM_READ);
+
+  // Trigger shadow copy allocation by starting a readback query.
+  GLuint query;
+  gl_->GenQueriesEXT(1, &query);
+
+  // We need to satisfy the expectations for BeginQueryEXT
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(testing::AnyNumber());
+
+  gl_->BeginQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM, query);
+  gl_->EndQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM);
+
+  // Simulate query completion to update tracker serials.
+  QueryTracker::Query* q = GetQuery(query);
+  ASSERT_TRUE(q);
+  // Mark as processed by service
+  SetQueryProcessCount(q, q->submit_count());
+  // Trigger callback
+  bool flush_if_pending = false;
+  EXPECT_TRUE(q->CheckResultsAvailable(helper_, flush_if_pending));
+
+  // Map buffer 1 at offset 0.
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+  void* addr2 = gl_->MapBufferRange(GL_ARRAY_BUFFER, 0, 1, GL_MAP_READ_BIT);
+  ASSERT_TRUE(addr2);
+
+  // Map buffer 0 with non-zero offset.
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+  const GLintptr kOffset = 16;
+  void* addr1_with_offset =
+      gl_->MapBufferRange(GL_ARRAY_BUFFER, kOffset, 1, GL_MAP_READ_BIT);
+  ASSERT_TRUE(addr1_with_offset);
+
+  // Unmap buffer 0.
+  // If the bug exists, this will erroneously free the block for buffer 1
+  // because it calls FreePendingToken with addr1_with_offset, and
+  // FencedAllocator::GetBlockByOffset(16) will resolve to the next block
+  // (buffer 1).
+  gl_->UnmapBuffer(GL_ARRAY_BUFFER);
+
+  // Check if buffer 1's shadow memory was incorrectly freed.
+  int32_t token = 0;
+  FencedAllocator::State state2 =
+      mapped_memory()->GetPointerStatusForTest(addr2, &token);
+  EXPECT_EQ(FencedAllocator::IN_USE, state2);
+
+  // Clean up buffer 1
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+  gl_->UnmapBuffer(GL_ARRAY_BUFFER);
+}
+
+// Test that deleting a buffer or clearing the mapping map correctly handles
+// shadow buffers without triggering misaligned frees.
+TEST_F(GLES2ImplementationTest, ReadbackShadowMixedCleanup) {
+  std::array<GLuint, 3> buffers;
+  gl_->GenBuffers(buffers.size(), buffers.data());
+
+  // Setup shadow buffers for all 3
+  for (auto buffer : buffers) {
+    gl_->BindBuffer(GL_ARRAY_BUFFER, buffer);
+    gl_->BufferData(GL_ARRAY_BUFFER, 64, nullptr, GL_STREAM_READ);
+  }
+
+  // Trigger shadow allocation
+  GLuint query;
+  gl_->GenQueriesEXT(1, &query);
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(testing::AnyNumber());
+  gl_->BeginQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM, query);
+  gl_->EndQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM);
+  QueryTracker::Query* q = GetQuery(query);
+  SetQueryProcessCount(q, q->submit_count());
+  bool flush_if_pending = false;
+  EXPECT_TRUE(q->CheckResultsAvailable(helper_, flush_if_pending));
+
+  // Create mixed mappings
+  // Buffer 0: Shadow, Offset 16
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+  void* addr0 = gl_->MapBufferRange(GL_ARRAY_BUFFER, 16, 1, GL_MAP_READ_BIT);
+  ASSERT_TRUE(addr0);
+
+  // Buffer 1: Shadow, Offset 0
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+  void* addr1 = gl_->MapBufferRange(GL_ARRAY_BUFFER, 0, 1, GL_MAP_READ_BIT);
+  ASSERT_TRUE(addr1);
+
+  // Buffer 2: Shadow, Offset 32
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[2]);
+  void* addr2 = gl_->MapBufferRange(GL_ARRAY_BUFFER, 32, 1, GL_MAP_READ_BIT);
+  ASSERT_TRUE(addr2);
+
+  // Test unmapping a shadow-mapped buffer with offset
+  // This calls RemoveMappedBufferRangeById(buffers[0]) via UnmapBuffer
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+  gl_->UnmapBuffer(GL_ARRAY_BUFFER);
+
+  // Test unmapping remaining shadow-mapped buffers
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+  gl_->UnmapBuffer(GL_ARRAY_BUFFER);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffers[2]);
+  gl_->UnmapBuffer(GL_ARRAY_BUFFER);
+}
+
+// Test that ClearMappedBufferRangeMap correctly handles shadow-mapped buffers.
+TEST_F(GLES2ImplementationTest, ClearMappedBufferRangeMapShadow) {
+  GLuint buffer;
+  gl_->GenBuffers(1, &buffer);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer);
+  gl_->BufferData(GL_ARRAY_BUFFER, 64, nullptr, GL_STREAM_READ);
+
+  GLuint query;
+  gl_->GenQueriesEXT(1, &query);
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(testing::AnyNumber());
+  gl_->BeginQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM, query);
+  gl_->EndQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM);
+
+  // Simulate query completion
+  QueryTracker::Query* q = GetQuery(query);
+  ASSERT_TRUE(q);
+  SetQueryProcessCount(q, q->submit_count());
+  bool flush_if_pending = false;
+  EXPECT_TRUE(q->CheckResultsAvailable(helper_, flush_if_pending));
+
+  void* addr = gl_->MapBufferRange(GL_ARRAY_BUFFER, 0, 1, GL_MAP_READ_BIT);
+  ASSERT_TRUE(addr);
+}
+
+// Test that ClearMappedBufferMap correctly cleans up buffers mapped via
+// MapBufferSubDataCHROMIUM.
+TEST_F(GLES2ImplementationTest, ClearMappedBufferMap) {
+  GLuint buffer;
+  gl_->GenBuffers(1, &buffer);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer);
+  gl_->BufferData(GL_ARRAY_BUFFER, 64, nullptr, GL_STATIC_DRAW);
+
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(testing::AnyNumber());
+  void* addr =
+      gl_->MapBufferSubDataCHROMIUM(GL_ARRAY_BUFFER, 0, 1, GL_WRITE_ONLY);
+  ASSERT_TRUE(addr);
+}
+
+// Test that AllocateShadowCopiesForReadback skips buffers that have been
+// deleted while in the unfenced list.
+TEST_F(GLES2ImplementationTest, AllocateShadowCopiesForReadbackNullBuffer) {
+  GLuint buffer;
+  gl_->GenBuffers(1, &buffer);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer);
+  gl_->BufferData(GL_ARRAY_BUFFER, 64, nullptr, GL_STREAM_READ);
+
+  gl_->DeleteBuffers(1, &buffer);
+
+  GLuint query;
+  gl_->GenQueriesEXT(1, &query);
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(testing::AnyNumber());
+  gl_->BeginQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM, query);
+  // Prior to the fix, this would crash in AllocateShadowCopiesForReadback
+  // because it would dereference a null WeakPtr for the deleted buffer.
+}
+
+// Test that AllocateShadowCopiesForReadback correctly handles shadow buffer
+// allocation failures.
+TEST_F(GLES2ImplementationTest, AllocateShadowCopiesForReadbackAllocFail) {
+  GLuint buffer;
+  gl_->GenBuffers(1, &buffer);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer);
+  gl_->BufferData(GL_ARRAY_BUFFER, 64, nullptr, GL_STREAM_READ);
+
+  mapped_memory()->set_max_allocated_bytes(0);
+
+  GLuint query;
+  gl_->GenQueriesEXT(1, &query);
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(testing::AnyNumber());
+  gl_->BeginQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM, query);
+  // Prior to the fix, this would incorrectly attempt to issue a shadow
+  // allocation command with an invalid shared memory ID (-1).
+}
+
+// Test that AllocateShadowCopiesForReadback issues a performance warning if a
+// READ-usage buffer is written to again while a shadow copy is already
+// allocated.
+TEST_F(GLES2ImplementationTest,
+       AllocateShadowCopiesForReadbackAlreadyAllocated) {
+  GLuint buffer;
+  gl_->GenBuffers(1, &buffer);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer);
+  gl_->BufferData(GL_ARRAY_BUFFER, 64, nullptr, GL_STREAM_READ);
+
+  // Trigger first allocation
+  GLuint query1;
+  gl_->GenQueriesEXT(1, &query1);
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(testing::AnyNumber());
+  gl_->BeginQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM, query1);
+  gl_->EndQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM);
+
+  // Write again, adding back to unfenced list
+  const char data = 'a';
+  gl_->BufferSubData(GL_ARRAY_BUFFER, 0, 1, &data);
+
+  // Capture warning
+  std::string last_error;
+  gl_->SetErrorMessageCallback(
+      base::BindRepeating([](std::string* error, const char* message,
+                             int32_t id) { *error = message; },
+                          &last_error));
+
+  // Trigger second allocation
+  GLuint query2;
+  gl_->GenQueriesEXT(1, &query2);
+  gl_->BeginQueryEXT(GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM, query2);
+
+  EXPECT_THAT(last_error,
+              testing::HasSubstr("READ-usage buffer was written, then fenced, "
+                                 "but written again"));
 }
 
 #include "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h"
