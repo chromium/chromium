@@ -1304,11 +1304,14 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
 
   base::TimeTicks current_time = base::TimeTicks::Now();
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(50), 1, current_time + base::Milliseconds(1000)));
+      base::Milliseconds(50), 1, current_time + base::Milliseconds(1000),
+      current_time + base::Milliseconds(1030)));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(100), 2, current_time + base::Milliseconds(2000)));
+      base::Milliseconds(100), 2, current_time + base::Milliseconds(2000),
+      current_time + base::Milliseconds(2044)));
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(150), 3, current_time + base::Milliseconds(3000)));
+      base::Milliseconds(150), 3, current_time + base::Milliseconds(3000),
+      current_time + base::Milliseconds(3050)));
 
   tester()->SimulateEventTimingUpdate(event_timings);
 
@@ -1347,7 +1350,8 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   std::vector<page_load_metrics::mojom::EventTimingPtr> event_timings;
 
   event_timings.emplace_back(page_load_metrics::mojom::EventTiming::New(
-      base::Milliseconds(50), 1, base::TimeTicks::Now()));
+      base::Milliseconds(50), 1, base::TimeTicks::Now(),
+      base::TimeTicks::Now()));
 
   tester()->SimulateEventTimingUpdate(event_timings);
 

@@ -387,6 +387,7 @@ PageResourceDataUse* PageTimingMetricsSender::FindOrInsertPageResourceDataUse(
 void PageTimingMetricsSender::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
     base::TimeTicks max_event_queued_main_thread,
+    base::TimeTicks max_event_processing_start,
     base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
     uint64_t interaction_offset) {
@@ -396,8 +397,9 @@ void PageTimingMetricsSender::DidObserveUserInteraction(
       max_event_start, max_event_queued_main_thread, max_event_commit_finish,
       max_event_end);
   base::TimeDelta duration = max_event_end - max_event_start;
-  event_timings_.push_back(
-      mojom::EventTiming::New(duration, interaction_offset, max_event_start));
+  event_timings_.push_back(mojom::EventTiming::New(duration, interaction_offset,
+                                                   max_event_start,
+                                                   max_event_processing_start));
   EnsureSendTimer();
 }
 }  // namespace page_load_metrics

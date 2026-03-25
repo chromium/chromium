@@ -572,6 +572,9 @@ struct EventTiming {
   uint64 interaction_id;
   // The time the interaction occurred.
   mojo_base.mojom.TimeTicks start_time;
+  // The time the processing on the main thread started; used for
+  // determining to which soft navigation this measurement should be attributed.
+  mojo_base.mojom.TimeTicks processing_start;
 };
 
 // Sent from renderer to browser process when the PageLoadTiming for the

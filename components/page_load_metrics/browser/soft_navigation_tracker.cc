@@ -124,7 +124,7 @@ struct InteractionToNextPaintAdapter {
   using Calculator = InteractionToNextPaintCalculator;
   static bool ShouldProcess(base::TimeTicks limit,
                             const mojom::EventTimingPtr& measurement) {
-    return limit.is_null() || measurement->start_time <= limit;
+    return limit.is_null() || measurement->processing_start <= limit;
   }
   static void AddNewMeasurements(
       InteractionToNextPaintCalculator* calculator,

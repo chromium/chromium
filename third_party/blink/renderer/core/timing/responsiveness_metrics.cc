@@ -611,6 +611,8 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
     const PerformanceEventTiming& entry) {
   const auto* reporting_info = entry.GetEventTimingReportingInfo();
   base::TimeTicks event_start = reporting_info->creation_time;
+  base::TimeTicks event_processing_start =
+      reporting_info->processing_start_time;
   base::TimeTicks event_end = entry.GetEndTime();
   base::TimeTicks event_queued_main_thread =
       reporting_info->enqueued_to_main_thread_time;
@@ -622,8 +624,8 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
   if (!event_start.is_null() && duration.InMilliseconds() >= 0) {
     if (window->GetFrame()) {
       window->GetFrame()->Client()->DidObserveUserInteraction(
-          event_start, event_queued_main_thread, event_commit_finish, event_end,
-          interaction_offset);
+          event_start, event_queued_main_thread, event_processing_start,
+          event_commit_finish, event_end, interaction_offset);
     }
   }
 

@@ -128,9 +128,11 @@ void FakePageTimingSender::PageTimingValidator::
 void FakePageTimingSender::PageTimingValidator::UpdateExpectedInteractionTiming(
     const base::TimeDelta interaction_duration,
     uint64_t interaction_offset,
-    const base::TimeTicks interaction_time) {
-  expected_event_timings_.push_back(mojom::EventTiming::New(
-      interaction_duration, interaction_offset, interaction_time));
+    const base::TimeTicks interaction_time,
+    const base::TimeTicks processing_start) {
+  expected_event_timings_.push_back(
+      mojom::EventTiming::New(interaction_duration, interaction_offset,
+                              interaction_time, processing_start));
 }
 void FakePageTimingSender::PageTimingValidator::
     VerifyExpectedInteractionTiming() const {
@@ -245,7 +247,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   for (const mojom::EventTimingPtr& user_interaction : event_timings) {
     actual_event_timings_.emplace_back(mojom::EventTiming::New(
         user_interaction->duration, user_interaction->interaction_id,
-        user_interaction->start_time));
+        user_interaction->start_time, user_interaction->processing_start));
   }
 
   actual_subresource_load_metrics_ = subresource_load_metrics;

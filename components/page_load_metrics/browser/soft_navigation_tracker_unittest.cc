@@ -191,21 +191,25 @@ TEST(SoftNavigationTrackerTest,
   std::vector<mojom::EventTimingPtr> latencies;
   // Before the first soft navigation, there are two user interactions.
   latencies.push_back(mojom::EventTiming::New());
-  latencies.back()->start_time = base::TimeTicks() + base::Milliseconds(50);
+  latencies.back()->processing_start =
+      base::TimeTicks() + base::Milliseconds(50);
   latencies.back()->duration = base::Milliseconds(10);
   latencies.back()->interaction_id = 1;
   latencies.push_back(mojom::EventTiming::New());
-  latencies.back()->start_time = base::TimeTicks() + base::Milliseconds(80);
+  latencies.back()->processing_start =
+      base::TimeTicks() + base::Milliseconds(80);
   latencies.back()->duration = base::Milliseconds(20);
   latencies.back()->interaction_id = 2;
   // After the first soft navigation, there is one user interaction.
   latencies.push_back(mojom::EventTiming::New());
-  latencies.back()->start_time = base::TimeTicks() + base::Milliseconds(150);
+  latencies.back()->processing_start =
+      base::TimeTicks() + base::Milliseconds(150);
   latencies.back()->duration = base::Milliseconds(30);
   latencies.back()->interaction_id = 3;
   // After the second soft navigation, there is another user interaction.
   latencies.push_back(mojom::EventTiming::New());
-  latencies.back()->start_time = base::TimeTicks() + base::Milliseconds(250);
+  latencies.back()->processing_start =
+      base::TimeTicks() + base::Milliseconds(250);
   latencies.back()->duration = base::Milliseconds(20);
   latencies.back()->interaction_id = 4;
 
@@ -436,7 +440,8 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
 
   std::vector<mojom::EventTimingPtr> events_1;
   events_1.push_back(mojom::EventTiming::New());
-  events_1.back()->start_time = base::TimeTicks() + base::Milliseconds(50);
+  events_1.back()->processing_start =
+      base::TimeTicks() + base::Milliseconds(50);
   events_1.back()->duration = base::Milliseconds(10);
   events_1.back()->interaction_id = 1;
 
@@ -456,7 +461,8 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
   // Event at 150ms.
   std::vector<mojom::EventTimingPtr> events_2;
   events_2.push_back(mojom::EventTiming::New());
-  events_2.back()->start_time = base::TimeTicks() + base::Milliseconds(150);
+  events_2.back()->processing_start =
+      base::TimeTicks() + base::Milliseconds(150);
   events_2.back()->duration = base::Milliseconds(20);
   events_2.back()->interaction_id = 2;
 
@@ -481,11 +487,13 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
 
   std::vector<mojom::EventTimingPtr> events_3;
   events_3.push_back(mojom::EventTiming::New());
-  events_3.back()->start_time = base::TimeTicks() + base::Milliseconds(180);
+  events_3.back()->processing_start =
+      base::TimeTicks() + base::Milliseconds(180);
   events_3.back()->duration = base::Milliseconds(30);
   events_3.back()->interaction_id = 3;
   events_3.push_back(mojom::EventTiming::New());
-  events_3.back()->start_time = base::TimeTicks() + base::Milliseconds(250);
+  events_3.back()->processing_start =
+      base::TimeTicks() + base::Milliseconds(250);
   events_3.back()->duration = base::Milliseconds(40);
   events_3.back()->interaction_id = 4;
 

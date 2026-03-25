@@ -87,7 +87,8 @@ class FakePageTimingSender : public PageTimingSender {
     void UpdateExpectedInteractionTiming(
         const base::TimeDelta interaction_duration,
         uint64_t interaction_offset,
-        const base::TimeTicks interaction_time);
+        const base::TimeTicks interaction_time,
+        const base::TimeTicks processing_start);
 
     void UpdateExpectedSubresourceLoadMetrics(
         const blink::SubresourceLoadMetrics& subresource_load_metrics);

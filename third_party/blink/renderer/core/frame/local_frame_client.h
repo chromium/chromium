@@ -224,6 +224,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidObserveUserInteraction(
       base::TimeTicks max_event_start,
       base::TimeTicks max_event_queued_main_thread,
+      base::TimeTicks max_event_processing_start,
       base::TimeTicks max_event_commit_finish,
       base::TimeTicks max_event_end,
       uint64_t interaction_offset) {}
