@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.testservice.IAccessibilityTestHelperService;
 import org.chromium.ui.accessibility.testservice.WaitForEventParams;
@@ -358,6 +359,73 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 """
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
   TextView text:"Some selected text" viewIdResName:"p1" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="paragraph"] extendedSelectionStart:5 extendedSelectionEnd:13
+""";
+        Assert.assertEquals("Tree dump does not match expected value", expectedDump, treeDump);
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @EnableFeatures({
+        ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN,
+        ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION
+    })
+    public void testSelectionInContentEditable() throws Throwable {
+        Assume.assumeTrue(
+                "Requires Android 16 QPR2 (36.1) or higher",
+                Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1);
+
+        // Load a page with a contenteditable containing a line break and a link.
+        String html =
+                """
+                <html><body><div contenteditable>
+                Line one<br>
+                <a id='link' href='#'>Link text</a> node
+                </div></body></html>
+                """;
+        String url = UrlUtils.encodeHtmlDataUri(html);
+        mActivityTestRule.launchContentShellWithUrl(url);
+
+        // Wait for the page to load.
+        getAccessibilityHelperService()
+                .waitForEvent(
+                        new WaitForEventParamsBuilder()
+                                .setEventType(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+                                .setClassName("android.webkit.WebView")
+                                .build());
+
+        // Set selection in the contenteditable via JS.
+        mActivityTestRule.executeJSAndGetResult(
+                """
+                const link = document.getElementById('link');
+                const range = document.createRange();
+                range.selectNodeContents(link);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                """);
+
+        boolean selectionReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                new WaitForEventParamsBuilder()
+                                        .setEventType(
+                                                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED)
+                                        .setClassName("android.webkit.WebView")
+                                        .build());
+        Assert.assertTrue("Service did not receive selection change event", selectionReceived);
+
+        String treeDump = getAccessibilityHelperService().dumpWebContentsAccessibilityTree();
+
+        String expectedDump =
+"""
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+  EditText text:"Line one\\nLink text node" clickable editable focusable focused multiLine textSelectionStart:9 textSelectionEnd:10 actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="genericContainer", clickableScore="200"] extendedSelectionStart:9 extendedSelectionEnd:10
+    TextView text:"Line one" editable actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="staticText", clickableScore="100"]
+    View text:"\\n" editable actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="lineBreak", clickableScore="100"]
+    View text:"null" contentDescription:"Link text" viewIdResName:"link" clickable editable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="data:text/html;utf-8,%3Chtml%3E%3Cbody%3E%3Cdiv%20contenteditable%3E%0ALine%20one%3Cbr%3E%0A%3Ca%20id%3D%27link%27%20href%3D%27%23%27%3ELink%20text%3C%2Fa%3E%20node%0A%3C%2Fdiv%3E%3C%2Fbody%3E%3C%2Fhtml%3E%0A#"]
+      TextView text:"Link text" editable actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="staticText", clickableScore="100"] extendedSelectionStart:0 extendedSelectionEnd:9
+    TextView text:" node" editable actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="staticText", clickableScore="100"]
 """;
         Assert.assertEquals("Tree dump does not match expected value", expectedDump, treeDump);
     }

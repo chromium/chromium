@@ -1733,6 +1733,16 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({
+        ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN,
+        ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION
+    })
+    public void test_selectionInContenteditable() {
+        performHtmlTest("selection-in-contenteditable.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_continuations() {
         performHtmlTest("continuations.html");
     }

@@ -10,6 +10,10 @@ import android.os.IBinder;
 
 import org.chromium.base.Log;
 
+/**
+ * Helper service to provide a bridge between instrumentation tests and the
+ * AccessibilityTestService.
+ */
 public class AccessibilityTestHelperService extends Service {
     private static final String TAG = "A11yTestHelperSvc";
 

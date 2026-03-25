@@ -5574,6 +5574,8 @@ data/accessibility/html/selection-container-expected-mac.txt
 data/accessibility/html/selection-container-expected-uia-win.txt
 data/accessibility/html/selection-container-expected-win.txt
 data/accessibility/html/selection-container.html
+data/accessibility/html/selection-in-contenteditable-expected-android-external.txt
+data/accessibility/html/selection-in-contenteditable.html
 data/accessibility/html/sfx.mp3
 data/accessibility/html/shadow-dom-first-child-expected-blink.txt
 data/accessibility/html/shadow-dom-first-child.html

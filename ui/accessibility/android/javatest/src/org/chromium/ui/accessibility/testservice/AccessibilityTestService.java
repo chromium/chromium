@@ -212,14 +212,20 @@ public class AccessibilityTestService extends AccessibilityService {
         builder.append(AccessibilityNodeInfoCompatDumper.toString(node));
 
         // Append extended selection information if available by checking ancestors.
+        // Note that we can't stop at the first found selection, as content editables that are
+        // exposing their subtrees may find a selection at the edit text field (root of the content
+        // editable), and another one at the root of the web area (the one expected). The text
+        // editable always reports a selection for backwards compatibility.
         AccessibilityNodeInfoCompat ancestor = node;
         while (ancestor != null) {
             AccessibilityNodeInfoCompat.SelectionCompat selection = ancestor.getSelection();
             if (selection != null) {
                 AccessibilityNodeInfoCompat.SelectionPositionCompat start = selection.getStart();
+                boolean addedSelectionInfo = false;
                 if (start != null) {
                     if (node.equals(start.getNode())) {
                         builder.append(" extendedSelectionStart:").append(start.getOffset());
+                        addedSelectionInfo = true;
                     }
                 }
 
@@ -227,11 +233,16 @@ public class AccessibilityTestService extends AccessibilityService {
                 if (end != null) {
                     if (node.equals(end.getNode())) {
                         builder.append(" extendedSelectionEnd:").append(end.getOffset());
+                        addedSelectionInfo = true;
                     }
                 }
 
-                if (start != null || end != null) {
-                    break; // Found selection on this ancestor
+                if (addedSelectionInfo) {
+                    // Continue checking ancestors even if we found a selection, as multiple
+                    // nodes might report selection for the same target (e.g. EditText and Root).
+                    // However, if that selection was the one that pointed to the current node, it
+                    // is safe to exit early.
+                    break;
                 }
             }
             AccessibilityNodeInfoCompat parent = ancestor.getParent();
