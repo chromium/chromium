@@ -18,9 +18,6 @@ namespace {
 
 using SearchApiTest = ExtensionApiTest;
 
-// TODO(crbug.com/434262354):Enable this test once chrome.tabs(create, query,
-// onUpdated, etc.) is supported on desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test various scenarios, such as the use of input different parameters.
 // Disabled due to flakes on Mac and Win testers; see
 // https://crbug.com/394345948.
@@ -58,7 +55,6 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, IncognitoSplit) {
                                {.allow_in_incognito = true}))
       << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 }  // namespace extensions

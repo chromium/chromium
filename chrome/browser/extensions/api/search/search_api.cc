@@ -9,25 +9,27 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/extensions/api/search.h"
 #include "components/search_engines/util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#else
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#else
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 using tabs::TabModel;
 #endif
 
@@ -35,19 +37,28 @@ namespace extensions {
 
 namespace {
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-content::WebContents* GetActiveWebContents() {
-  for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->IsActiveModel()) {
-      content::WebContents* web_contents = tab_model->GetActiveWebContents();
-      if (web_contents) {
-        return web_contents;
-      }
-    }
+#if BUILDFLAG(IS_ANDROID)
+// Returns the TabModel for the last active window owned by `profile` (and
+// optionally its incognito profile). Returns null on failure.
+TabModel* GetLastActiveTabModel(Profile* profile, bool include_incognito) {
+  // Find the last active browser for the current profile.
+  BrowserWindowInterface* browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* bwi) {
+        if (bwi->GetProfile() == profile ||
+            (include_incognito && bwi->GetProfile()->GetOriginalProfile() ==
+                                      profile->GetOriginalProfile())) {
+          browser = bwi;
+          return false;
+        }
+        return true;  // Keep iterating.
+      });
+  if (browser) {
+    return static_cast<TabModel*>(TabListInterface::From(browser));
   }
   return nullptr;
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -94,7 +105,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
     // If the extension called the API from a tab, we can use that tab -
     // find the associated browser or tab model.
     web_contents = GetSenderWebContents();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
     BrowserWindowInterface* browser = nullptr;
     if (web_contents) {
       browser = chrome::FindBrowserWithTab(web_contents);
@@ -112,16 +123,21 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
     }
 #else
     TabModel* tab_model = nullptr;
+    // If the extension called the API from a tab, use that tab model.
     if (web_contents) {
       tab_model = TabModelList::GetTabModelForWebContents(web_contents);
     }
-    // Failed to find the tab model making the API call. fall back to the last
-    // active tab.
+    // If the extension called the API from a service worker, fall back to the
+    // last active browser's tab model.
     if (!tab_model) {
-      return RespondNow(Error("No active browser."));
+      tab_model =
+          GetLastActiveTabModel(profile, include_incognito_information());
+      if (!tab_model) {
+        return RespondNow(Error("No active browser."));
+      }
+      web_contents = tab_model->GetActiveWebContents();
     }
-    web_contents = GetActiveWebContents();
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   // GURL for default search provider.
@@ -148,8 +164,15 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
                                       web_contents, url);
       break;
     case Disposition::kNewWindow:
+      // TODO(crbug.com/477944342): Desktop Android does not yet support
+      // navigating to a new window with an existing web contents.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
                                       web_contents, url);
+#else
+      ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      web_contents, url);
+#endif
       break;
   }
 
