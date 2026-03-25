@@ -204,6 +204,15 @@ bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
     return false;
   }
 
+  // TODO(crbug.com/493534965): Evaluate sandbox restrictions. In the meantime,
+  // disallow in all sandboxed contexts (iframes and top level documents).
+  if (navigator->DomWindow()->GetSandboxFlags() !=
+      network::mojom::blink::WebSandboxFlags::kNone) {
+    exception_state.ThrowSecurityError(
+        "API is not allowed in sandboxed contexts.");
+    return false;
+  }
+
   if (!navigator->DomWindow()->GetFrame()->IsMainFrame() ||
       navigator->DomWindow()->GetFrame()->GetPage()->IsPrerendering() ||
       navigator->DomWindow()->GetFrame()->IsInFencedFrameTree()) {

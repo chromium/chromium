@@ -743,6 +743,7 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/modules/permissions:unit_tests",
     "//third_party/blink/renderer/modules/storage:unit_tests",
     "//third_party/blink/renderer/modules/storage_access:unit_tests",
+    "//third_party/blink/renderer/modules/web_install:unit_tests",
     "//third_party/blink/renderer/modules/webcodecs:unit_tests",
     "//third_party/blink/renderer/modules/webgpu:unit_tests",
     "//third_party/blink/renderer/modules/webtransport:unit_tests",

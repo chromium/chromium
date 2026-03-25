@@ -1278,10 +1278,10 @@ TEST_F(HTMLCapabilityElementBaseFencedFrameTest, NotAllowedInFencedFrame) {
   }
 }
 
-class HTMLInstallElementSubframeTest : public HTMLCapabilityElementBaseSimTest {
+class HTMLInstallElementSimTest : public HTMLCapabilityElementBaseSimTest {
  public:
-  HTMLInstallElementSubframeTest() = default;
-  ~HTMLInstallElementSubframeTest() override = default;
+  HTMLInstallElementSimTest() = default;
+  ~HTMLInstallElementSimTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -1289,7 +1289,7 @@ class HTMLInstallElementSubframeTest : public HTMLCapabilityElementBaseSimTest {
   ScopedInstallElementForTest scoped_install_feature_{true};
 };
 
-TEST_F(HTMLInstallElementSubframeTest, InstallNotAllowedInSameOriginSubframe) {
+TEST_F(HTMLInstallElementSimTest, InstallNotAllowedInSameOriginSubframe) {
   SimRequest main_resource("https://example.test", "text/html");
   LoadURL("https://example.test");
   SimRequest iframe_resource("https://example.test/foo.html", "text/html");
@@ -1318,7 +1318,7 @@ TEST_F(HTMLInstallElementSubframeTest, InstallNotAllowedInSameOriginSubframe) {
   permission_service()->set_pepc_registered_callback(base::NullCallback());
 }
 
-TEST_F(HTMLInstallElementSubframeTest, InstallNotAllowedInCrossOriginSubframe) {
+TEST_F(HTMLInstallElementSimTest, InstallNotAllowedInCrossOriginSubframe) {
   SimRequest::Params params;
   params.response_http_headers = {
       {"content-security-policy",
@@ -1348,6 +1348,59 @@ TEST_F(HTMLInstallElementSubframeTest, InstallNotAllowedInCrossOriginSubframe) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return !install_element->isValid(); }));
   EXPECT_EQ(install_element->invalidReason(), "illegal_subframe");
+
+  permission_service()->set_pepc_registered_callback(base::NullCallback());
+}
+
+TEST_F(HTMLInstallElementSimTest, InstallNotAllowedInSandboxedIframe) {
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  SimRequest iframe_resource("https://example.test/foo.html", "text/html");
+  main_resource.Complete(R"(
+    <body>
+      <iframe src='https://example.test/foo.html'
+        sandbox="allow-scripts allow-same-origin"
+        allow="web-app-installation *">
+      </iframe>
+    </body>
+  )");
+  iframe_resource.Finish();
+
+  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto* child_doc = child_frame->GetFrame()->GetDocument();
+
+  auto* install_element = CreatePermissionElement(*child_doc, "install");
+  // PEPC registration should NOT be called for <install> in sandboxed iframes.
+  permission_service()->set_pepc_registered_callback(
+      BindOnce(&NotReachedForPEPCRegistered));
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !install_element->isValid(); }));
+  EXPECT_EQ(install_element->invalidReason(), "illegal_sandbox");
+
+  permission_service()->set_pepc_registered_callback(base::NullCallback());
+}
+
+TEST_F(HTMLInstallElementSimTest, InstallNotAllowedInSandboxedMainDocument) {
+  SimRequest::Params params;
+  params.response_http_headers = {
+      {"content-security-policy", "sandbox allow-same-origin allow-scripts"}};
+  SimRequest main_resource("https://example.test", "text/html", params);
+  LoadURL("https://example.test");
+  main_resource.Complete(R"(
+    <body>
+    </body>
+  )");
+
+  auto* install_element = CreatePermissionElement(GetDocument(), "install");
+  // PEPC registration should NOT be called for <install> in sandboxed
+  // documents.
+  permission_service()->set_pepc_registered_callback(
+      BindOnce(&NotReachedForPEPCRegistered));
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !install_element->isValid(); }));
+  EXPECT_EQ(install_element->invalidReason(), "illegal_sandbox");
 
   permission_service()->set_pepc_registered_callback(base::NullCallback());
 }
