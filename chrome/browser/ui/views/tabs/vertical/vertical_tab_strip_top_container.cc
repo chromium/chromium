@@ -25,6 +25,10 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+constexpr int kRegionVerticalPadding = 5;
+}
+
 VerticalTabStripTopContainer::VerticalTabStripTopContainer(
     tabs::VerticalTabStripStateController* state_controller,
     actions::ActionItem* root_action_item,
@@ -107,9 +111,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                         unfocus_button_->GetVisible(), bounds);
       host_size.SetToMax(gfx::Size(bounds.right(), 0));
 
-      current_y +=
-          pref_size.height() +
-          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
+      current_y += pref_size.height();
     }
 
     if (collapse_button_ && collapse_button_->GetVisible()) {
@@ -120,23 +122,34 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                         collapse_button_->GetVisible(), bounds);
       host_size.SetToMax(gfx::Size(bounds.right(), 0));
 
-      current_y +=
-          pref_size.height() +
-          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
+      current_y += pref_size.height();
     }
 
     if (combo_button_) {
-      const gfx::Size pref_size = combo_button_->GetPreferredSizeForOrientation(
-          combo_button_orientation_);
-      gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
-                       current_y, pref_size.width(), pref_size.height());
-      layout.child_layouts.emplace_back(combo_button_.get(),
-                                        combo_button_->GetVisible(), bounds);
-      host_size.SetToMax(gfx::Size(bounds.right(), 0));
+      // In the case that neither of the combo button components are visible, we
+      // do not want to add any extra padding to the top container.
+      bool start_button_visible = combo_button_->start_button() &&
+                                  combo_button_->start_button()->GetVisible();
+      bool end_button_visible = combo_button_->end_button() &&
+                                combo_button_->end_button()->GetVisible();
+      if (start_button_visible || end_button_visible) {
+        current_y += GetLayoutConstant(
+            LayoutConstant::kVerticalTabStripCollapsedPadding);
 
-      current_y += pref_size.height() +
-                   GetLayoutConstant(
-                       LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding);
+        const gfx::Size pref_size =
+            combo_button_->GetPreferredSizeForOrientation(
+                combo_button_orientation_);
+        gfx::Rect bounds(
+            std::max(0, (host_size.width() - pref_size.width()) / 2), current_y,
+            pref_size.width(), pref_size.height());
+        layout.child_layouts.emplace_back(combo_button_.get(),
+                                          combo_button_->GetVisible(), bounds);
+        host_size.SetToMax(gfx::Size(bounds.right(), 0));
+
+        current_y += pref_size.height() + kRegionVerticalPadding;
+      } else if (caption_button_width_ != 0) {
+        current_y += kRegionVerticalPadding;
+      }
     }
 
     host_size.SetToMax(gfx::Size(0, current_y));
@@ -155,7 +168,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // caption buttons, shift them below.
     const bool wrapped_due_to_overflow =
         size_bounds.width().is_bounded() && caption_button_width_ > 0 &&
-        GetPreferredWidth() + caption_button_width_ > available_width;
+        GetPreferredWidth() + caption_button_width_ >= available_width;
 
     int y_baseline = host_size.height() / 2;
     // If there is not enough space for all of the buttons to be on the same
