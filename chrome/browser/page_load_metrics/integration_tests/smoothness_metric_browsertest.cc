@@ -14,7 +14,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 using ukm::builders::Graphics_Smoothness_FrameSequence;
-using ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames;
 
 namespace {
 
