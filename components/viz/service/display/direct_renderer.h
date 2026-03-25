@@ -180,8 +180,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // Puts the draw time wall in trace file relative to the |ready_timestamp|.
   virtual void AddCompositeTimeTraces(base::TimeTicks ready_timestamp);
 
-  // Returns the current frame buffer damage.
-  virtual gfx::Rect GetCurrentFramebufferDamage() const;
+  // Returns the current frame buffer damage for a specific render pass.
+  virtual gfx::Rect GetCurrentFramebufferDamage(
+      const AggregatedRenderPassId& render_pass_id) const;
 
   // Reshapes the output surface.
   virtual void Reshape(const OutputSurface::ReshapeParams& reshape_params);
@@ -395,6 +396,14 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       std::unique_ptr<DelegatedInkPointRendererSkia> renderer) {}
 
  private:
+  // Expands the damage rect to include child render passes with pixel-moving
+  // filters (backdrop or foreground) that intersect with the damage rect.
+  // This is used by ComputeScissorRectForRenderPass for both root and non-root
+  // render passes.
+  void ExpandDamageForPixelMovingFilters(
+      const AggregatedRenderPass* render_pass,
+      gfx::Rect& damage_rect) const;
+
   // Update the damage rect of the render pass that will contain the drawn ink
   // trail, or had drawn the ink trail in the previous frame.
   void AddInkDamageToRenderPass(const AggregatedRenderPass* render_pass,
