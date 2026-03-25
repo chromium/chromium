@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,29 +12,47 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.TabStateStore.TabStateStoreCleaner;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabPersistentStoreImplCleaner;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+
+import java.util.Collections;
 
 /** Unit tests for {@link PersistentStoreCleaner}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
+@EnableFeatures({
+    ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE,
+    ChromeFeatureList.SCHEDULE_WINDOW_CLEANING
+})
 public class PersistentStoreCleanerUnitTest {
+    private static final int ARCHIVED_TAB_ID = 10;
+    private static final int TAB_ID = 11;
+    private static final int CUSTOM_TAB_ID = 12;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModelOrchestrator mOrchestrator;
@@ -42,6 +61,20 @@ public class PersistentStoreCleanerUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabPersistentStoreImplCleaner mLegacyStoreCleaner;
     @Mock private TabStateStoreCleaner mTabStateStoreCleaner;
+
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private TabWindowManager mTabWindowManager;
+    @Mock private TabModelSelector mArchivedTabModelSelector;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModelSelector mCustomTabModelSelector;
+    @Mock private TabModel mArchivedTabModel;
+    @Mock private Tab mArchivedTab;
+    @Mock private Tab mTab;
+    @Mock private TabModel mCustomTabModel;
+    @Mock private Tab mCustomTab;
+
+    @Captor private ArgumentCaptor<TabWindowManager.Observer> mObserverCaptor;
+    @Captor private ArgumentCaptor<int[]> mTabIdsCaptor;
 
     @Before
     public void setUp() {
@@ -52,6 +85,108 @@ public class PersistentStoreCleanerUnitTest {
         PersistentStoreCleaner.setTabPersistentStoreImplCleanerForTesting(
                 () -> mLegacyStoreCleaner);
         PersistentStoreCleaner.setTabStateStoreCleanerForTesting(() -> mTabStateStoreCleaner);
+
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+
+        when(mTabContentManager.isDestroyed()).thenReturn(false);
+
+        when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(mArchivedTabModelSelector);
+        when(mTabWindowManager.getAllTabModelSelectors())
+                .thenReturn(Collections.singletonList(mTabModelSelector));
+        when(mTabWindowManager.getCustomTabsTabModelSelectors())
+                .thenReturn(Collections.singletonList(mCustomTabModelSelector));
+
+        when(mTabWindowManager.getWindowIdForSelector(mTabModelSelector)).thenReturn(1);
+        when(mTabWindowManager.getTaskIdForCustomTab(mCustomTabModelSelector)).thenReturn(2);
+
+        when(mArchivedTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mCustomTabModelSelector.isTabStateInitialized()).thenReturn(true);
+
+        when(mArchivedTabModelSelector.getModels())
+                .thenReturn(Collections.singletonList(mArchivedTabModel));
+        when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
+        when(mCustomTabModelSelector.getModels())
+                .thenReturn(Collections.singletonList(mCustomTabModel));
+
+        when(mArchivedTab.getId()).thenReturn(ARCHIVED_TAB_ID);
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mCustomTab.getId()).thenReturn(CUSTOM_TAB_ID);
+
+        when(mArchivedTabModel.iterator())
+                .thenReturn(Collections.singletonList(mArchivedTab).iterator());
+        when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
+        when(mCustomTabModel.iterator())
+                .thenReturn(Collections.singletonList(mCustomTab).iterator());
+    }
+
+    @After
+    public void tearDown() {
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+    }
+
+    @Test
+    public void testScheduleCleanUnusedData_AllInitialized() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+
+        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
+        assertArrayEquals(
+                new int[] {ARCHIVED_TAB_ID, TAB_ID, CUSTOM_TAB_ID}, mTabIdsCaptor.getValue());
+    }
+
+    @Test
+    public void testScheduleCleanUnusedData_NotAllInitialized() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+
+        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+
+        verify(mTabWindowManager).addObserver(mObserverCaptor.capture());
+        mObserverCaptor.getValue().onAllTabModelStateInitialized();
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
+        assertArrayEquals(
+                new int[] {ARCHIVED_TAB_ID, TAB_ID, CUSTOM_TAB_ID}, mTabIdsCaptor.getValue());
+    }
+
+    @Test
+    public void testCleanUnusedWindows_ManagerDestroyed() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabContentManager.isDestroyed()).thenReturn(true);
+
+        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+    }
+
+    @Test
+    public void testCleanUnusedWindows_ArchivedSelectorNull() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);
+
+        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+    }
+
+    @Test
+    public void testCleanUnusedWindows_SelectorsNotInitialized() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
     }
 
     @Test

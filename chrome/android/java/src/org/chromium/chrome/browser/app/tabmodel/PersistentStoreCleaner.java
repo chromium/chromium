@@ -4,21 +4,37 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.chromium.base.ThreadUtils.assertOnUiThread;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.TabStateStore.TabStateStoreCleaner;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabPersistentStoreImplCleaner;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -26,6 +42,21 @@ import java.util.function.Supplier;
 /** Cleaner that allows a window to clean up persisted state for another window. */
 @NullMarked
 public class PersistentStoreCleaner {
+    /** Dependencies for cleaning unused data for a specific profile. */
+    private static class ProfileScopedUnusedDataDeps {
+        public final Profile mProfile;
+        public final Set<TabContentManager> mTabContentManagers = new HashSet<>();
+
+        public @Nullable Runnable mCleanupRunnable;
+
+        public ProfileScopedUnusedDataDeps(Profile profile) {
+            mProfile = profile;
+        }
+    }
+
+    private static final Map<Profile, ProfileScopedUnusedDataDeps> sProfileScopedUnusedDataDeps =
+            new HashMap<>();
+
     private static Supplier<TabStateStoreCleaner> sTabStateStoreCleaner = TabStateStoreCleaner::new;
     private static Supplier<TabPersistentStoreImplCleaner> sLegacyCleaner =
             TabPersistentStoreImplCleaner::new;
@@ -148,5 +179,130 @@ public class PersistentStoreCleaner {
             Supplier<TabPersistentStoreImplCleaner> cleanerFactory) {
         sLegacyCleaner = cleanerFactory;
         ResettersForTesting.register(() -> sLegacyCleaner = TabPersistentStoreImplCleaner::new);
+    }
+
+    /**
+     * Schedules the cleaning of unused windows and tab data.
+     *
+     * @param profile The original profile to which the tabs belong to.
+     * @param manager Manages tab thumbnails.
+     */
+    public static void scheduleCleanUnusedData(Profile profile, TabContentManager manager) {
+        if (!ChromeFeatureList.sScheduleWindowCleaning.isEnabled()) return;
+        assert !profile.isOffTheRecord();
+
+        ProfileScopedUnusedDataDeps deps = sProfileScopedUnusedDataDeps.get(profile);
+        if (deps == null) {
+            deps = new ProfileScopedUnusedDataDeps(profile);
+            sProfileScopedUnusedDataDeps.put(profile, deps);
+        }
+        deps.mTabContentManagers.add(manager);
+
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
+        if (tabWindowManager.isAllTabStateInitialized()) {
+            maybeCleanUnusedWindows(profile);
+        } else {
+            tabWindowManager.addObserver(
+                    new TabWindowManager.Observer() {
+                        @Override
+                        public void onAllTabModelStateInitialized() {
+                            maybeCleanUnusedWindows(profile);
+                            tabWindowManager.removeObserver(this);
+                        }
+                    });
+        }
+    }
+
+    /** Schedules the cleaning of unused windows if a cleanup task is not already scheduled. */
+    private static void maybeCleanUnusedWindows(Profile profile) {
+        assertOnUiThread();
+
+        ProfileScopedUnusedDataDeps deps = sProfileScopedUnusedDataDeps.get(profile);
+        if (deps == null) return;
+
+        deps.mCleanupRunnable =
+                () -> {
+                    sProfileScopedUnusedDataDeps.remove(profile);
+                    cleanUnusedWindows(deps);
+                };
+
+        PostTask.postTask(TaskTraits.UI_DEFAULT, deps.mCleanupRunnable);
+    }
+
+    private static void cleanUnusedWindows(ProfileScopedUnusedDataDeps deps) {
+        TabContentManager validManager = null;
+        for (TabContentManager manager : deps.mTabContentManagers) {
+            if (!manager.isDestroyed()) {
+                validManager = manager;
+                break;
+            }
+        }
+
+        if (validManager == null) {
+            deps.mTabContentManagers.clear();
+            return;
+        }
+
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
+        List<String> windowTags = new ArrayList<>();
+        List<TabModelSelector> selectors = new ArrayList<>();
+
+        TabModelSelector archivedTabModelSelector = tabWindowManager.getArchivedTabModelSelector();
+        if (archivedTabModelSelector == null) {
+            deps.mTabContentManagers.clear();
+            return;
+        }
+        selectors.add(archivedTabModelSelector);
+        windowTags.add(ARCHIVED_WINDOW_TAG);
+
+        for (TabModelSelector selector : tabWindowManager.getAllTabModelSelectors()) {
+            selectors.add(selector);
+            int windowId = tabWindowManager.getWindowIdForSelector(selector);
+            windowTags.add(String.valueOf(windowId));
+        }
+
+        for (TabModelSelector selector : tabWindowManager.getCustomTabsTabModelSelectors()) {
+            selectors.add(selector);
+            int taskId = tabWindowManager.getTaskIdForCustomTab(selector);
+            windowTags.add(String.valueOf(taskId));
+        }
+
+        // Retry once selectors are fully initialized.
+        assert !selectors.isEmpty();
+        for (TabModelSelector selector : selectors) {
+            if (!selector.isTabStateInitialized()) {
+                TabModelUtils.runOnTabStateInitialized(
+                        () -> maybeCleanUnusedWindows(deps.mProfile),
+                        selectors.toArray(new TabModelSelector[0]));
+                return;
+            }
+        }
+
+        List<@TabId Integer> tabIds = new ArrayList<>();
+        for (TabModelSelector selector : selectors) {
+            for (TabModel tabModel : selector.getModels()) {
+                for (Tab tab : tabModel) {
+                    tabIds.add(tab.getId());
+                }
+            }
+        }
+
+        deleteAllTabDataExceptFor(validManager, tabIds);
+        deleteAllWindowsExceptFor(windowTags);
+
+        sProfileScopedUnusedDataDeps.remove(deps.mProfile);
+    }
+
+    private static void deleteAllTabDataExceptFor(TabContentManager manager, List<Integer> tabIds) {
+        int[] tabIdsArray = new int[tabIds.size()];
+        for (int i = 0; i < tabIds.size(); i++) {
+            tabIdsArray[i] = tabIds.get(i);
+        }
+        manager.removeAllTabThumbnailsExceptForIds(tabIdsArray);
+    }
+
+    private static void deleteAllWindowsExceptFor(List<String> windowTags) {
+        // TODO(crbug.com/479562321): Implement this.
+        windowTags.clear();
     }
 }

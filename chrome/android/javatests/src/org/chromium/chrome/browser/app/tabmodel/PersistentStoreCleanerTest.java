@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Holder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -28,9 +29,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
@@ -45,7 +49,10 @@ import java.io.File;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
+@EnableFeatures({
+    ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE,
+    ChromeFeatureList.SCHEDULE_WINDOW_CLEANING
+})
 public class PersistentStoreCleanerTest {
     private static final int WINDOW_ID = 0;
     private static final String WINDOW_TAG = "0";
@@ -105,6 +112,44 @@ public class PersistentStoreCleanerTest {
         CriteriaHelper.pollInstrumentationThread(() -> !legacyMetadataFile.exists());
         StorageLoadedData finalData = loadAllDataSync(WINDOW_TAG, false);
         assertEquals(0, finalData.getLoadedTabStates().length);
+    }
+
+    @Test
+    @MediumTest
+    public void cleanUnusedWindowsRemovesThumbnails() throws Exception {
+        startActivityAndInitialize();
+
+        Tab tab = runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getActivityTab());
+        @TabId int existingTabId = tab.getId();
+        @TabId int nonExistingTabId = 99999;
+
+        TabContentManager tabContentManager =
+                runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getTabContentManager());
+
+        // Cache a thumbnail for the existing tab.
+        runOnUiThreadBlocking(
+                () -> {
+                    tabContentManager.cacheTabThumbnailWithCallback(
+                            tab, false, CallbackUtils.emptyCallback());
+                });
+
+        File existingTabFile = TabContentManager.getTabThumbnailFileJpeg(existingTabId);
+        CriteriaHelper.pollInstrumentationThread(existingTabFile::exists);
+
+        // Create a fake thumbnail file for a non-existing tab.
+        File nonExistingTabFile = TabContentManager.getTabThumbnailFileJpeg(nonExistingTabId);
+        assertTrue(nonExistingTabFile.createNewFile());
+        assertTrue(nonExistingTabFile.exists());
+
+        runOnUiThreadBlocking(
+                () ->
+                        PersistentStoreCleaner.scheduleCleanUnusedData(
+                                getProfile(), tabContentManager));
+        CriteriaHelper.pollInstrumentationThread(() -> !nonExistingTabFile.exists());
+
+        // Retrieve the cached thumbnail for the existing tab to ensure it wasn't deleted.
+        existingTabFile = TabContentManager.getTabThumbnailFileJpeg(existingTabId);
+        assertTrue(existingTabFile.exists());
     }
 
     @Test
@@ -198,5 +243,13 @@ public class PersistentStoreCleanerTest {
         mLoadedData = holder.get();
         assertNotNull(mLoadedData);
         return mLoadedData;
+    }
+
+    private Profile getProfile() {
+        return mActivityTestRule
+                .getActivity()
+                .getProfileProviderSupplier()
+                .get()
+                .getOriginalProfile();
     }
 }
