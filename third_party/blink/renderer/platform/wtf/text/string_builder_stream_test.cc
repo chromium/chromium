@@ -8,59 +8,45 @@
 
 namespace blink {
 
-namespace {
-
-void ExpectBuilderContent(const StringView& expected,
-                          const StringBuilder& builder) {
-  // Not using builder.toString() because it changes internal state of builder.
-  if (builder.Is8Bit()) {
-    EXPECT_EQ(expected, String(builder.Span8()));
-  } else {
-    EXPECT_EQ(expected, String(builder.Span16()));
-  }
-}
-
-}  // namespace
-
 TEST(StringBuilderStreamTest, CharacterOverloads) {
   {
     StringBuilder builder;
-    ExpectBuilderContent("a ", builder << 'a' << ' ');
+    EXPECT_EQ("a ", StringView(builder << 'a' << ' '));
   }
   {
     StringBuilder builder;
-    ExpectBuilderContent("A", builder << static_cast<UChar>(65));
+    EXPECT_EQ("A", StringView(builder << static_cast<UChar>(65)));
   }
 }
 
 TEST(StringBuilderStreamTest, StringOverloads) {
   StringBuilder builder;
-  ExpectBuilderContent("abcdefghi",
-                       builder << "abc" << String("def") << std::string("ghi"));
+  EXPECT_EQ("abcdefghi", StringView(builder << "abc" << String("def")
+                                            << std::string("ghi")));
 }
 
 TEST(StringBuilderStreamTest, NumberOverloads) {
   {
     StringBuilder builder;
-    ExpectBuilderContent("123", builder << 123);
+    EXPECT_EQ("123", StringView(builder << 123));
   }
   {
     StringBuilder builder;
-    ExpectBuilderContent("45.6", builder << 45.6f);
+    EXPECT_EQ("45.6", StringView(builder << 45.6f));
   }
   {
     StringBuilder builder;
-    ExpectBuilderContent("-1", builder << -1);
+    EXPECT_EQ("-1", StringView(builder << -1));
   }
   {
     StringBuilder builder;
-    ExpectBuilderContent("65535", builder << static_cast<uint16_t>(65535));
+    EXPECT_EQ("65535", StringView(builder << static_cast<uint16_t>(65535)));
   }
   {
     // LChar (uint8_t) and UChar32 (int32_t) are treated as numbers.
     StringBuilder builder;
-    ExpectBuilderContent("65999", builder << static_cast<LChar>(65)
-                                          << static_cast<UChar32>(999));
+    EXPECT_EQ("65999", StringView(builder << static_cast<LChar>(65)
+                                          << static_cast<UChar32>(999)));
   }
 }
 
@@ -69,13 +55,13 @@ TEST(StringBuilderStreamTest, VectorOverload) {
   StringBuilder builder;
   // `int` is `UChar32`, so AppendNumber() is not used.
   // Maybe this is not an expected behavior.
-  ExpectBuilderContent(u"[\u0001, \u0002, \u0003]", builder << vector);
+  EXPECT_EQ(u"[\u0001, \u0002, \u0003]", StringView(builder << vector));
 
   Vector<char> char_vector = {'a', 'b', 'c'};
   Vector<UChar> uchar_vector = {0x3000, 0xFFFF};
   StringBuilder builder2;
-  ExpectBuilderContent(u"[a, b, c][\u3000, \uFFFF]",
-                       builder2 << char_vector << uchar_vector);
+  EXPECT_EQ(u"[a, b, c][\u3000, \uFFFF]",
+            StringView(builder2 << char_vector << uchar_vector));
 }
 
 }  // namespace blink

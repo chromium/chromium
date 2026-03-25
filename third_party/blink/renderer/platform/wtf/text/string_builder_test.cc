@@ -40,15 +40,6 @@ namespace blink {
 
 namespace {
 
-void ExpectBuilderContent(const String& expected,
-                          const StringBuilder& builder) {
-  // Not using builder.toString() because it changes internal state of builder.
-  if (builder.Is8Bit())
-    EXPECT_EQ(expected, String(builder.Span8()));
-  else
-    EXPECT_EQ(expected, String(builder.Span16()));
-}
-
 void ExpectEmpty(const StringBuilder& builder) {
   EXPECT_EQ(0U, builder.length());
   EXPECT_TRUE(builder.empty());
@@ -65,24 +56,25 @@ TEST(StringBuilderTest, DefaultConstructor) {
 TEST(StringBuilderTest, Append) {
   StringBuilder builder;
   builder.Append(String("0123456789"));
-  ExpectBuilderContent("0123456789", builder);
+  EXPECT_EQ(String("0123456789"), StringView(builder));
   builder.Append("abcd");
-  ExpectBuilderContent("0123456789abcd", builder);
+  EXPECT_EQ(String("0123456789abcd"), StringView(builder));
   builder.Append(base::byte_span_from_cstring("efgh").first(3u));
-  ExpectBuilderContent("0123456789abcdefg", builder);
+  EXPECT_EQ(String("0123456789abcdefg"), StringView(builder));
   builder.Append("");
-  ExpectBuilderContent("0123456789abcdefg", builder);
+  EXPECT_EQ(String("0123456789abcdefg"), StringView(builder));
   builder.Append('#');
-  ExpectBuilderContent("0123456789abcdefg#", builder);
+  EXPECT_EQ(String("0123456789abcdefg#"), StringView(builder));
 
   builder.ToString();  // Test after reifyString().
   StringBuilder builder1;
   builder.Append("");
-  ExpectBuilderContent("0123456789abcdefg#", builder);
+  EXPECT_EQ(String("0123456789abcdefg#"), StringView(builder));
   builder1.Append(builder.Span8());
   builder1.Append("XYZ");
   builder.Append(builder1.Span8());
-  ExpectBuilderContent("0123456789abcdefg#0123456789abcdefg#XYZ", builder);
+  EXPECT_EQ(String("0123456789abcdefg#0123456789abcdefg#XYZ"),
+            StringView(builder));
 
   StringBuilder builder2;
   builder2.ReserveCapacity(100);
@@ -93,7 +85,7 @@ TEST(StringBuilderTest, Append) {
 
   StringBuilder builder3;
   builder3.Append("xyz", 1, 2);
-  ExpectBuilderContent("yz", builder3);
+  EXPECT_EQ(String("yz"), StringView(builder3));
 
   StringBuilder builder4;
   builder4.Append("abc", 5, 3);
@@ -101,13 +93,13 @@ TEST(StringBuilderTest, Append) {
 
   StringBuilder builder5;
   builder5.Append(StringView(StringView("def"), 1, 1));
-  ExpectBuilderContent("e", builder5);
+  EXPECT_EQ(String("e"), StringView(builder5));
 
   // append() has special code paths for String backed StringView instead of
   // just char* backed ones.
   StringBuilder builder6;
   builder6.Append(String("ghi"), 1, 2);
-  ExpectBuilderContent("hi", builder6);
+  EXPECT_EQ(String("hi"), StringView(builder6));
 
   // Test appending UChar32 characters to StringBuilder.
   StringBuilder builder_for_u_char32_append;
@@ -120,8 +112,8 @@ TEST(StringBuilderTest, Append) {
   EXPECT_EQ(3U, builder_for_u_char32_append.length());
   const UChar result_array[] = {U16_LEAD(fraktur_a_char),
                                 U16_TRAIL(fraktur_a_char), 'A'};
-  ExpectBuilderContent(String(base::span(result_array)),
-                       builder_for_u_char32_append);
+  EXPECT_EQ(StringView(base::span(result_array)),
+            StringView(builder_for_u_char32_append));
 }
 
 TEST(StringBuilderTest, AppendSpan) {
@@ -257,15 +249,15 @@ TEST(StringBuilderTest, Resize) {
   builder.Append("0123456789");
   builder.Resize(10);
   EXPECT_EQ(10U, builder.length());
-  ExpectBuilderContent("0123456789", builder);
+  EXPECT_EQ("0123456789", StringView(builder));
   builder.Resize(8);
   EXPECT_EQ(8U, builder.length());
-  ExpectBuilderContent("01234567", builder);
+  EXPECT_EQ("01234567", StringView(builder));
 
   builder.ToString();
   builder.Resize(7);
   EXPECT_EQ(7U, builder.length());
-  ExpectBuilderContent("0123456", builder);
+  EXPECT_EQ("0123456", StringView(builder));
   builder.Resize(0);
   ExpectEmpty(builder);
 }
@@ -275,10 +267,10 @@ TEST(StringBuilderTest, Erase) {
   builder.Append(String("01234"));
   // Erase from String.
   builder.erase(3);
-  ExpectBuilderContent("0124", builder);
+  EXPECT_EQ("0124", StringView(builder));
   // Erase from buffer.
   builder.erase(1);
-  ExpectBuilderContent("024", builder);
+  EXPECT_EQ("024", StringView(builder));
 }
 
 TEST(StringBuilderTest, Erase16) {
@@ -286,17 +278,17 @@ TEST(StringBuilderTest, Erase16) {
   builder.Append(String(u"\uFF10\uFF11\uFF12\uFF13\uFF14"));
   // Erase from String.
   builder.erase(3);
-  ExpectBuilderContent(u"\uFF10\uFF11\uFF12\uFF14", builder);
+  EXPECT_EQ(u"\uFF10\uFF11\uFF12\uFF14", StringView(builder));
   // Erase from buffer.
   builder.erase(1);
-  ExpectBuilderContent(u"\uFF10\uFF12\uFF14", builder);
+  EXPECT_EQ(u"\uFF10\uFF12\uFF14", StringView(builder));
 }
 
 TEST(StringBuilderTest, EraseLast) {
   StringBuilder builder;
   builder.Append("01234");
   builder.erase(4);
-  ExpectBuilderContent("0123", builder);
+  EXPECT_EQ("0123", StringView(builder));
 }
 
 TEST(StringBuilderTest, Equal) {
