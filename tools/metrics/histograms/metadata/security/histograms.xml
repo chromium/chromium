@@ -758,6 +758,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Security.PopupBypassAllowedType" enum="PopupBypassType"
+    expires_after="2026-12-31">
+  <owner>evasu@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the type of extension-related context that successfully bypassed the
+    popup blocker when creating a new window without transient user activation.
+    Recorded whenever ChromeContentBrowserClient::IsPopupBypassAllowed returns
+    true.
+  </summary>
+</histogram>
+
+<histogram name="Security.PopupBypassDeniedByContentEmbedder" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>evasu@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records whether a popup without transient user activation was denied (true)
+    or allowed via bypass (false) by the browser process. Recorded when
+    RenderFrameHostImpl::CreateNewWindow is called and the request requires a
+    bypass.
+  </summary>
+</histogram>
+
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
     enum="LocalNetworkAccessCheckResult" expires_after="2026-09-06">
   <owner>hchao@chromium.org</owner>

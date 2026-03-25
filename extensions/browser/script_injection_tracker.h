@@ -90,6 +90,14 @@ class ScriptInjectionTracker {
   static ExtensionIdSet GetExtensionsThatRanContentScriptsInProcess(
       const content::RenderProcessHost& process);
 
+  // Manually registers that the extension with the given `extension_id` has run
+  // a content script in `process`. This is intended for testing purposes to
+  // simulate script injection state without requiring a full navigation or
+  // renderer-side injection.
+  static void AddExtensionThatRanContentScriptsInProcessForTesting(
+      const content::RenderProcessHost& process,
+      const ExtensionId& extension_id);
+
   // The few methods below are called by ExtensionWebContentsObserver to notify
   // ScriptInjectionTracker about various events.  The methods correspond
   // directly to methods of content::WebContentsObserver with the same names.

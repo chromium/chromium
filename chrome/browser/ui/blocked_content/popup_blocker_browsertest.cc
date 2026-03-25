@@ -442,6 +442,27 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
   EXPECT_EQ(base::ASCIIToUTF16(kSearchString), match.contents);
 }
 
+// Verify that the browser process prevents a non-extension process from
+// bypassing the popup blocker. This acts as a browser-side validation against a
+// compromised renderer.
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
+                       PopupBypassFromNonExtensionProcessIsBlocked) {
+  GURL url(
+      embedded_test_server()->GetURL("/popup_blocker/popup-window-open.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* rfh = tab->GetPrimaryMainFrame();
+
+  // Simulate a compromised renderer trying to bypass the popup blocker.
+  // The popup should be blocked because the renderer is not an extension.
+  EXPECT_TRUE(content::PwnMessageHelper::OpenPopup(rfh, url));
+
+  // The popup should be blocked because the renderer is not an extension.
+  EXPECT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+}
+
 // This test fails on linux AURA with this change
 // https://codereview.chromium.org/23903056
 // BUG=https://code.google.com/p/chromium/issues/detail?id=295299

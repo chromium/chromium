@@ -173,6 +173,15 @@
 #include "third_party/blink/public/common/features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/browser/script_injection_tracker.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/context_type.mojom.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_PDF)
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -221,6 +230,78 @@ class ChromeContentBrowserClientTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+using ChromeContentBrowserClientIsPopupBypassAllowedTest =
+    ChromeRenderViewHostTestHarness;
+
+// Tests that an extension process is allowed to bypass the popup blocker.
+TEST_F(ChromeContentBrowserClientIsPopupBypassAllowedTest, ExtensionProcess) {
+  ChromeContentBrowserClient client;
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_FALSE(client.IsPopupBypassAllowed(main_rfh()));
+
+  auto* process_map = extensions::ProcessMap::Get(profile());
+  ASSERT_TRUE(process_map);
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Test").Build();
+  process_map->Insert(extension->id(),
+                      main_rfh()->GetProcess()->GetID().value());
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
+
+  EXPECT_TRUE(client.IsPopupBypassAllowed(main_rfh()));
+}
+
+// Tests that a privileged hosted app is allowed to bypass the popup blocker.
+TEST_F(ChromeContentBrowserClientIsPopupBypassAllowedTest, PrivilegedWebPage) {
+  ChromeContentBrowserClient client;
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_FALSE(client.IsPopupBypassAllowed(main_rfh()));
+
+  scoped_refptr<const extensions::Extension> hosted_app =
+      extensions::ExtensionBuilder("Hosted App")
+          .SetManifestKey(
+              "app", base::DictValue().Set("urls", base::ListValue().Append(
+                                                       "http://example.com/")))
+          .Build();
+
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(hosted_app);
+  auto* process_map = extensions::ProcessMap::Get(profile());
+  process_map->Insert(hosted_app->id(),
+                      main_rfh()->GetProcess()->GetID().value());
+
+  EXPECT_TRUE(client.IsPopupBypassAllowed(main_rfh()));
+}
+
+// Tests that a process where an extension ran a content script is allowed to
+// bypass the popup blocker.
+TEST_F(ChromeContentBrowserClientIsPopupBypassAllowedTest, ContentScript) {
+  ChromeContentBrowserClient client;
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_FALSE(client.IsPopupBypassAllowed(main_rfh()));
+
+  auto* process_map = extensions::ProcessMap::Get(profile());
+  ASSERT_TRUE(process_map);
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Test").Build();
+
+  extensions::ScriptInjectionTracker::
+      AddExtensionThatRanContentScriptsInProcessForTesting(
+          *main_rfh()->GetProcess(), extension->id());
+
+  EXPECT_TRUE(client.IsPopupBypassAllowed(main_rfh()));
+}
+
+// Tests that a normal web page is not allowed to bypass the popup blocker.
+TEST_F(ChromeContentBrowserClientIsPopupBypassAllowedTest, NormalWebPage) {
+  ChromeContentBrowserClient client;
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_FALSE(client.IsPopupBypassAllowed(main_rfh()));
+}
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // Check that chrome-native: URLs do not assign a site for their
 // SiteInstances. This works because `kChromeNativeScheme` is registered as an

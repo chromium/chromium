@@ -632,6 +632,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 
@@ -4432,6 +4433,59 @@ content::FeatureObserverClient*
 ChromeContentBrowserClient::GetFeatureObserverClient() {
   return ChromeBrowserMainExtraPartsPerformanceManager::GetInstance()
       ->GetFeatureObserverClient();
+}
+
+// These values are persisted to logs and used for histograms.
+enum class PopupBypassType {
+  kContentScript = 0,
+  kExtensionProcess = 1,
+  kPrivilegedWebPage = 2,
+  kMaxValue = kPrivilegedWebPage,
+};
+
+bool ChromeContentBrowserClient::IsPopupBypassAllowed(
+    content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  content::RenderProcessHost* process = render_frame_host->GetProcess();
+  content::BrowserContext* browser_context = process->GetBrowserContext();
+  extensions::ProcessMap* process_map =
+      extensions::ProcessMap::Get(browser_context);
+  if (!process_map) {
+    return false;
+  }
+
+  // Allow if it is an authorized extension process.
+  const extensions::Extension* extension =
+      process_map->GetEnabledExtensionByProcessID(process->GetID().value());
+  if (process_map->CanProcessHostContextType(
+          extension, *process,
+          extensions::mojom::ContextType::kPrivilegedExtension)) {
+    base::UmaHistogramEnumeration("Security.PopupBypassAllowedType",
+                                  PopupBypassType::kExtensionProcess);
+    return true;
+  }
+
+  // Allow if it is a privileged web page (e.g., hosted app) in an outermost
+  // main frame.
+  if (!render_frame_host->GetParentOrOuterDocument() &&
+      process_map->CanProcessHostContextType(
+          extension, *process,
+          extensions::mojom::ContextType::kPrivilegedWebPage)) {
+    base::UmaHistogramEnumeration("Security.PopupBypassAllowedType",
+                                  PopupBypassType::kPrivilegedWebPage);
+    return true;
+  }
+
+  // Allow if an extension ran a content script in this process.
+  if (!extensions::ScriptInjectionTracker::
+           GetExtensionsThatRanContentScriptsInProcess(*process)
+               .empty()) {
+    base::UmaHistogramEnumeration("Security.PopupBypassAllowedType",
+                                  PopupBypassType::kContentScript);
+    return true;
+  }
+#endif
+  return false;
 }
 
 bool ChromeContentBrowserClient::CanCreateWindow(

@@ -10136,9 +10136,22 @@ void RenderFrameHostImpl::CreateNewWindow(
   GetProcess()->FilterURL(false, &params->target_url);
 
   bool effective_transient_activation_state =
-      params->allow_popup || HasTransientUserActivation() ||
+      HasTransientUserActivation() ||
       (transient_allow_popup_.IsActive() &&
        params->disposition == WindowOpenDisposition::NEW_POPUP);
+
+  if (!effective_transient_activation_state && params->allow_popup) {
+    bool bypass_allowed =
+        GetContentClient()->browser()->IsPopupBypassAllowed(this);
+    base::UmaHistogramBoolean("Security.PopupBypassDeniedByContentEmbedder",
+                              !bypass_allowed);
+    if (bypass_allowed) {
+      effective_transient_activation_state = true;
+    } else {
+      std::move(callback).Run(mojom::CreateNewWindowStatus::kBlocked, nullptr);
+      return;
+    }
+  }
 
   // Ignore window creation when sent from a frame that's not active or
   // created.

@@ -223,17 +223,42 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, WindowOpenSized) {
 // Tests that an extension page can call window.open to an extension URL and
 // the new window has extension privileges.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenExtension) {
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("uitest").AppendASCII("window_open")));
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("uitest").AppendASCII("window_open"));
+  ASSERT_TRUE(extension);
 
-  GURL start_url(std::string(extensions::kExtensionScheme) +
-                     url::kStandardSchemeSeparator +
-                     last_loaded_extension_id() + "/test.html");
+  GURL start_url = extension->GetResourceURL("test.html");
   auto* web_contents = GetActiveWebContents();
   ASSERT_TRUE(NavigateToURL(web_contents, start_url));
   WebContents* newtab = nullptr;
-  ASSERT_NO_FATAL_FAILURE(OpenWindow(
-      web_contents, start_url.Resolve("newtab.html"), true, true, &newtab));
+  ASSERT_NO_FATAL_FAILURE(OpenWindow(web_contents,
+                                     extension->GetResourceURL("newtab.html"),
+                                     true, true, &newtab));
+
+  EXPECT_EQ(true, content::EvalJs(newtab, "testExtensionApi()"));
+}
+
+// Tests that an extension page can call window.open without a user gesture
+// and the new window is opened (bypassing the popup blocker) with extension
+// privileges.
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
+                       WindowOpenExtensionWithoutUserGesture) {
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("uitest").AppendASCII("window_open"));
+  ASSERT_TRUE(extension);
+
+  GURL start_url = extension->GetResourceURL("test.html");
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, start_url));
+
+  content::WebContentsAddedObserver tab_added_observer;
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "window.open('" + extension->GetResourceURL("newtab.html").spec() + "');",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  content::WebContents* newtab = tab_added_observer.GetWebContents();
+  ASSERT_TRUE(newtab);
+  EXPECT_TRUE(content::WaitForLoadStop(newtab));
 
   EXPECT_EQ(true, content::EvalJs(newtab, "testExtensionApi()"));
 }

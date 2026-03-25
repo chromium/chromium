@@ -4184,6 +4184,31 @@ void PwnMessageHelper::FileSystemWrite(RenderProcessHost* process,
   waiter.WaitForOperationToFinish();
 }
 
+bool PwnMessageHelper::OpenPopup(RenderFrameHost* render_frame_host,
+                                 const GURL& url) {
+  mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
+  params->target_url = url;
+  params->allow_popup =
+      true;  // The compromised renderer lies and sets this to true
+  params->window_container_type = mojom::WindowContainerType::NORMAL;
+  params->disposition = WindowOpenDisposition::NEW_POPUP;
+  params->features = blink::mojom::WindowFeatures::New();
+  params->referrer = blink::mojom::Referrer::New();
+
+  bool is_blocked = false;
+  base::RunLoop run_loop;
+  static_cast<mojom::FrameHost*>(
+      static_cast<RenderFrameHostImpl*>(render_frame_host))
+      ->CreateNewWindow(
+          std::move(params),
+          base::BindLambdaForTesting([&](mojom::CreateNewWindowStatus status,
+                                         mojom::CreateNewWindowReplyPtr reply) {
+            is_blocked = (status == mojom::CreateNewWindowStatus::kBlocked);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  return is_blocked;
+}
 void PwnMessageHelper::OpenURL(RenderFrameHost* render_frame_host,
                                const GURL& url) {
   auto params = blink::mojom::OpenURLParams::New();

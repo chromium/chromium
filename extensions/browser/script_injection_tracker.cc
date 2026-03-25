@@ -637,6 +637,16 @@ bool DidProcessRunScriptFromExtension(
 }  // namespace
 
 // static
+void ScriptInjectionTracker::
+    AddExtensionThatRanContentScriptsInProcessForTesting(
+        const content::RenderProcessHost& process,
+        const ExtensionId& extension_id) {
+  RenderProcessHostUserData::GetOrCreate(
+      const_cast<content::RenderProcessHost&>(process))
+      .AddScript(ScriptType::kContentScript, extension_id);
+}
+
+// static
 ExtensionIdSet
 ScriptInjectionTracker::GetExtensionsThatRanContentScriptsInProcess(
     const content::RenderProcessHost& process) {

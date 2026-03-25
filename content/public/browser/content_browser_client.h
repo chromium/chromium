@@ -1456,6 +1456,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // sequence.
   virtual FeatureObserverClient* GetFeatureObserverClient();
 
+  // Returns true if the given render frame host is allowed to bypass the popup
+  // blocker.
+  virtual bool IsPopupBypassAllowed(RenderFrameHost* render_frame_host);
+
   // Returns true if the given page is allowed to open a window of the given
   // type. If true is returned, |no_javascript_access| will indicate whether
   // the window that is created should be scriptable/in the same process.
