@@ -734,6 +734,10 @@ std::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
   return FadeWithAnimation(border_color, highlight_color_animation_);
 }
 
+void ToolbarButton::SetInternalPadding(gfx::Insets insets) {
+  SetProperty(views::kInternalPaddingKey, insets);
+}
+
 std::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
   const auto* const color_provider = parent_->GetColorProvider();

@@ -18,6 +18,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/ink_drop.h"
@@ -25,6 +26,7 @@
 
 namespace {
 constexpr int kCloseButtonSize = 16;
+constexpr int kSpaceBetweenButtons = 2;
 }  // namespace
 
 namespace glic {
@@ -151,6 +153,16 @@ BrowserFrameView* ToolbarGlicButton::GetBrowserFrameView() const {
 ui::ColorId ToolbarGlicButton::GetBackgroundColor() {
   std::optional<SkColor> background = ToolbarButton::GetBackgroundColor();
   return background.value_or(kColorToolbarButtonBackgroundHighlightedDefault);
+}
+
+void ToolbarGlicButton::Collapse() {
+  SetInternalPadding(gfx::Insets::TLBR(0, 0, 0, kSpaceBetweenButtons));
+  GlicButton<ToolbarButton>::Collapse();
+}
+
+void ToolbarGlicButton::Expand() {
+  SetInternalPadding(gfx::Insets());
+  GlicButton<ToolbarButton>::Expand();
 }
 
 void ToolbarGlicButton::ResetSplitButtonCornerStyling() {

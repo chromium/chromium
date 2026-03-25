@@ -46,6 +46,9 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
   int GetSplitRoundedEdgeRadius() override;
   ui::ColorId GetBackgroundColor();
 
+  void Collapse() override;
+  void Expand() override;
+
  private:
   void UpdateBackground();
   void UpdateInkDrop();

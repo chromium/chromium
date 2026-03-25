@@ -22,6 +22,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/context_menu_controller.h"
@@ -163,6 +164,8 @@ class ToolbarButton : public views::LabelButton,
   ui::ElementIdentifier menu_identifier() const { return menu_identifier_; }
 
   bool GetVectorIconsHasValueForTesting() { return vector_icons_.has_value(); }
+
+  void SetInternalPadding(gfx::Insets insets);
 
  protected:
   struct VectorIcons {
