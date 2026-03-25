@@ -421,14 +421,18 @@ const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
 void OffscreenCanvasRenderingContext2D::WillDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  dirty_rect_for_commit_.join(dirty_rect);
-  GetCanvasPerformanceMonitor().DidDraw(draw_type);
+  SkIRect adjusted_dirty_rect = dirty_rect;
   if (GetState().ShouldAntialias()) {
-    SkIRect inflated_dirty_rect = dirty_rect_for_commit_.makeOutset(1, 1);
-    Host()->DidDraw(inflated_dirty_rect);
-  } else {
-    Host()->DidDraw(dirty_rect_for_commit_);
+    adjusted_dirty_rect = adjusted_dirty_rect.makeOutset(1, 1);
+
+    // We might expanded rect beyond canvas's bounds. Clamp it back.
+    adjusted_dirty_rect.intersect(SkIRect::MakeWH(Width(), Height()));
   }
+
+  dirty_rect_for_commit_.join(adjusted_dirty_rect);
+  GetCanvasPerformanceMonitor().DidDraw(draw_type);
+  Host()->DidDraw(dirty_rect_for_commit_);
+
   if (layer_count_ == 0 && resource_provider_ != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     resource_provider_->FlushIfRecordingLimitExceededForCanvas2D();
