@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
@@ -14,32 +15,51 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/error_page_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
-#import "ios/web/public/test/http_server/response_provider.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 // The text of the Share Sheet item for the Open Extension.
 NSString* const kEGOpenExtension = @"EGOpenExtension";
+
+const char kPotatoPath[] = "/potato";
+
+// A request handler that provides the "tomato" response.
+std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  if (request.relative_url == kPotatoPath) {
+    response->set_code(net::HTTP_OK);
+    response->set_content("tomato");
+    response->set_content_type("text/plain");
+  } else {
+    response->set_code(net::HTTP_NOT_FOUND);
+  }
+  return response;
+}
 }  // namespace
 
 // Earl grey integration tests for Activity Service Controller.
-@interface ActivityServiceControllerTestCase : WebHttpServerChromeTestCase
+@interface ActivityServiceControllerTestCase : ChromeTestCase
 @end
 
 @implementation ActivityServiceControllerTestCase
 
+- (void)setUp {
+  [super setUp];
+  self.testServer->RegisterRequestHandler(base::BindRepeating(&HandleRequest));
+  GREYAssertTrue(self.testServer->Start(),
+                 @"EmbeddedTestServer failed to start.");
+}
+
 - (void)testOpenActivityServiceControllerAndCopy {
-  // Set up mock http server.
-  std::map<GURL, std::string> responses;
-  GURL url = web::test::HttpServer::MakeUrl("http://potato");
-  responses[url] = "tomato";
-  web::test::SetUpSimpleHttpServer(responses);
+  GURL url = self.testServer->GetURL(kPotatoPath);
 
   // Open page and open the share menu.
   [ChromeEarlGrey loadURL:url];
@@ -55,11 +75,7 @@ NSString* const kEGOpenExtension = @"EGOpenExtension";
 // Tests that the open extension opens a new tab.
 // TODO(crbug.com/484191734) Test is failing
 - (void)DISABLED_testOpenActivityServiceControllerAndOpenExtension {
-  // Set up mock http server.
-  std::map<GURL, std::string> responses;
-  GURL url = web::test::HttpServer::MakeUrl("http://potato");
-  responses[url] = "tomato";
-  web::test::SetUpSimpleHttpServer(responses);
+  GURL url = self.testServer->GetURL(kPotatoPath);
 
   // Open page and open the share menu.
   [ChromeEarlGrey loadURL:url];
