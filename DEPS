@@ -3182,7 +3182,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': '9ffj34erZlVGZVzi54CDQmDtAE3ChCm-oEfLa70jaN4C',
+        'version': 'K3G-mw0UVoEXD2NPQPURhTgj_wn7JJs5Fm8YaJiijp8C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
