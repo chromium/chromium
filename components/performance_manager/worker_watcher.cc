@@ -254,17 +254,14 @@ void WorkerWatcher::OnFinalResponseURLDetermined(
 
 void WorkerWatcher::OnWorkerCreated(
     const blink::SharedWorkerToken& shared_worker_token,
-    int worker_process_id,
+    content::ChildProcessId worker_process_id,
     const url::Origin& security_origin,
     const base::UnguessableToken& /* dev_tools_token */) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   auto worker_node = PerformanceManagerImpl::CreateWorkerNode(
       browser_context_id_, WorkerNode::WorkerType::kShared,
-      GetProcessNode(
-          content::ChildProcessId::FromUnsafeValue(worker_process_id)),
-      shared_worker_token, security_origin);
+      GetProcessNode(worker_process_id), shared_worker_token, security_origin);
 
   bool inserted =
       shared_worker_nodes_.emplace(shared_worker_token, std::move(worker_node))

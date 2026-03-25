@@ -178,8 +178,8 @@ blink::SharedWorkerToken
 PerformanceManagerTestHarness::SharedWorkerFactory::CreateSharedWorker(
     const ProcessNode* process_node,
     const url::Origin& origin) {
-  int worker_process_id =
-      process_node->GetRenderProcessHostId().GetUnsafeValue();
+  content::ChildProcessId worker_process_id =
+      process_node->GetRenderProcessHostId();
 
   // Create a new SharedWorkerToken for the worker and add it to the map.
   const blink::SharedWorkerToken shared_worker_token;

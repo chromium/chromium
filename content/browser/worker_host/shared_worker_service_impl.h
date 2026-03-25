@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/shared_worker_service.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -91,7 +92,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   virtual void DestroyHost(SharedWorkerHost* host);
 
   void NotifyWorkerCreated(const blink::SharedWorkerToken& shared_worker_token,
-                           int worker_process_id,
+                           ChildProcessId worker_process_id,
                            const url::Origin& security_origin,
                            const base::UnguessableToken& dev_tools_token);
   void NotifyBeforeWorkerDestroyed(

@@ -248,7 +248,7 @@ class WCOCallbackLogger : public WebContentsObserver,
   void OnClientAdded(const blink::SharedWorkerToken& token,
                      GlobalRenderFrameHostId render_frame_host_id) override;
   void OnWorkerCreated(const blink::SharedWorkerToken& token,
-                       int worker_process_id,
+                       ChildProcessId worker_process_id,
                        const url::Origin& security_origin,
                        const base::UnguessableToken& dev_tools_token) override {
   }

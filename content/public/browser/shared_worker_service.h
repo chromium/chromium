@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 
@@ -41,7 +42,7 @@ class CONTENT_EXPORT SharedWorkerService {
     // evaluated.
     virtual void OnWorkerCreated(
         const blink::SharedWorkerToken& token,
-        int worker_process_id,
+        ChildProcessId worker_process_id,
         const url::Origin& security_origin,
         const base::UnguessableToken& dev_tools_token) = 0;
     virtual void OnBeforeWorkerDestroyed(

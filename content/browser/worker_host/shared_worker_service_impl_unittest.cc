@@ -1240,7 +1240,7 @@ class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
 
   // SharedWorkerService::Observer:
   void OnWorkerCreated(const blink::SharedWorkerToken& shared_worker_token,
-                       int worker_process_id,
+                       ChildProcessId worker_process_id,
                        const url::Origin& security_origin,
                        const base::UnguessableToken& dev_tools_token) override {
     EXPECT_TRUE(shared_workers_.insert({shared_worker_token, {}}).second);

@@ -80,9 +80,9 @@ void SharedWorkerServiceImpl::RemoveObserver(Observer* observer) {
 
 void SharedWorkerServiceImpl::EnumerateSharedWorkers(Observer* observer) {
   for (const auto& host : worker_hosts_) {
-    observer->OnWorkerCreated(
-        host->token(), host->GetProcessHost()->GetDeprecatedID(),
-        host->instance().storage_key().origin(), host->GetDevToolsToken());
+    observer->OnWorkerCreated(host->token(), host->GetProcessHost()->GetID(),
+                              host->instance().storage_key().origin(),
+                              host->GetDevToolsToken());
     if (host->started()) {
       observer->OnFinalResponseURLDetermined(host->token(),
                                              host->final_response_url());
@@ -270,7 +270,7 @@ void SharedWorkerServiceImpl::DestroyHost(SharedWorkerHost* host) {
 
 void SharedWorkerServiceImpl::NotifyWorkerCreated(
     const blink::SharedWorkerToken& token,
-    int worker_process_id,
+    ChildProcessId worker_process_id,
     const url::Origin& security_origin,
     const base::UnguessableToken& dev_tools_token) {
   for (Observer& observer : observers_) {
