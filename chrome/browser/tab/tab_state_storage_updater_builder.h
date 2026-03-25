@@ -8,7 +8,9 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/tab/storage_id.h"
@@ -47,6 +49,7 @@ class TabStateStorageUpdaterBuilder {
   void SaveChildren(StorageId id, const TabCollection* collection);
   void SaveDivergentChildren(StorageId id, const TabCollection* collection);
   void RemoveNode(StorageId id);
+  void AddCallback(base::OnceClosure callback);
 
   std::unique_ptr<TabStateStorageUpdater> Build();
 
@@ -64,6 +67,7 @@ class TabStateStorageUpdaterBuilder {
       update_for_id_;
   absl::flat_hash_map<StorageId, std::unique_ptr<StoragePendingUpdate>>
       divergence_update_for_id_;
+  std::vector<base::OnceClosure> callbacks_;
 };
 
 }  // namespace tabs

@@ -14,7 +14,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
@@ -51,9 +51,17 @@ class TabStateStorageDatabase {
     // Returns the underlying transaction.
     sql::Transaction* GetTransaction(base::PassKey<TabStateStorageDatabase>);
 
+    // Adds a callback to be run after the transaction is successfully
+    // committed.
+    void AddCallback(base::OnceClosure callback);
+
+    // Takes the callbacks out of the transaction.
+    std::vector<base::OnceClosure> TakeCallbacks();
+
    private:
     sql::Transaction transaction_;
     bool mark_failed_ = false;
+    std::vector<base::OnceClosure> callbacks_;
   };
 
   TabStateStorageDatabase(const base::FilePath& profile_path,

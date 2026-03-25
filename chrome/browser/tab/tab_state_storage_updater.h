@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace tabs {
@@ -18,16 +19,18 @@ class TabStateStorageDatabase;
 // Atomically performs a batch of updates in storage.
 class TabStateStorageUpdater {
  public:
-  TabStateStorageUpdater();
+  TabStateStorageUpdater(
+      std::vector<std::unique_ptr<StorageUpdateUnit>> updates,
+      std::vector<base::OnceClosure> callbacks);
   TabStateStorageUpdater(const TabStateStorageUpdater&) = delete;
   TabStateStorageUpdater& operator=(const TabStateStorageUpdater&) = delete;
   ~TabStateStorageUpdater();
 
-  void Add(std::unique_ptr<StorageUpdateUnit> unit);
   bool Execute(TabStateStorageDatabase* db);
 
  private:
   std::vector<std::unique_ptr<StorageUpdateUnit>> updates_;
+  std::vector<base::OnceClosure> callbacks_;
 };
 
 }  // namespace tabs

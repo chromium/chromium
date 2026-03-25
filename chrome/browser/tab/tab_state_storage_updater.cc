@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/logging.h"
 #include "chrome/browser/tab/storage_update_unit.h"
@@ -15,15 +16,18 @@ namespace tabs {
 
 using OpenTransaction = TabStateStorageDatabase::OpenTransaction;
 
-TabStateStorageUpdater::TabStateStorageUpdater() = default;
+TabStateStorageUpdater::TabStateStorageUpdater(
+    std::vector<std::unique_ptr<StorageUpdateUnit>> updates,
+    std::vector<base::OnceClosure> callbacks)
+    : updates_(std::move(updates)), callbacks_(std::move(callbacks)) {}
 TabStateStorageUpdater::~TabStateStorageUpdater() = default;
-
-void TabStateStorageUpdater::Add(std::unique_ptr<StorageUpdateUnit> unit) {
-  updates_.push_back(std::move(unit));
-}
 
 bool TabStateStorageUpdater::Execute(TabStateStorageDatabase* db) {
   OpenTransaction* transaction = db->CreateTransaction();
+
+  for (auto& callback : callbacks_) {
+    transaction->AddCallback(std::move(callback));
+  }
 
   if (!transaction->HasFailed()) {
     for (auto& op : updates_) {

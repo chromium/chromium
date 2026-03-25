@@ -201,6 +201,14 @@ sql::Transaction* OpenTransaction::GetTransaction(
   return &transaction_;
 }
 
+void OpenTransaction::AddCallback(base::OnceClosure callback) {
+  callbacks_.push_back(std::move(callback));
+}
+
+std::vector<base::OnceClosure> OpenTransaction::TakeCallbacks() {
+  return std::move(callbacks_);
+}
+
 // static
 bool TabStateStorageDatabase::OpenTransaction::IsValid(
     OpenTransaction* transaction) {
@@ -421,7 +429,19 @@ bool TabStateStorageDatabase::CloseTransaction(
     }
   }
 
+  std::vector<base::OnceClosure> callbacks_to_run;
+  if (success) {
+    callbacks_to_run = open_transaction->TakeCallbacks();
+  }
+
   open_transaction_.reset();
+
+  for (auto& callback : callbacks_to_run) {
+    if (!callback.is_null()) {
+      std::move(callback).Run();
+    }
+  }
+
   return success;
 }
 

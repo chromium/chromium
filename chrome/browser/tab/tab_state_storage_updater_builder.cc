@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/logging.h"
 #include "chrome/browser/tab/payload.h"
@@ -138,15 +139,25 @@ void TabStateStorageUpdaterBuilder::RemoveNode(StorageId id) {
   update_for_id_[id] = std::make_unique<RemoveNodePendingUpdate>(id);
 }
 
+void TabStateStorageUpdaterBuilder::AddCallback(base::OnceClosure callback) {
+  callbacks_.push_back(std::move(callback));
+}
+
 std::unique_ptr<TabStateStorageUpdater> TabStateStorageUpdaterBuilder::Build() {
-  auto updater = std::make_unique<TabStateStorageUpdater>();
+  std::vector<std::unique_ptr<StorageUpdateUnit>> updates;
+  updates.reserve(update_for_id_.size() + divergence_update_for_id_.size());
+
   for (auto& [id, update] : update_for_id_) {
-    updater->Add(update->CreateUnit());
+    updates.push_back(update->CreateUnit());
   }
   for (auto& [id, update] : divergence_update_for_id_) {
-    updater->Add(update->CreateUnit());
+    updates.push_back(update->CreateUnit());
   }
-  return updater;
+
+  update_for_id_.clear();
+  divergence_update_for_id_.clear();
+  return std::make_unique<TabStateStorageUpdater>(std::move(updates),
+                                                  std::move(callbacks_));
 }
 
 }  // namespace tabs
