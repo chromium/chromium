@@ -216,6 +216,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   WakeupState wakeup_state_ = WakeupState::kInactive;
 
   raw_ptr<NativeEventObserver> native_event_observer_ = nullptr;
+
+  uintptr_t next_peek_message_event_id_ = reinterpret_cast<uintptr_t>(this);
 };
 
 //-----------------------------------------------------------------------------

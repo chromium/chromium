@@ -70,6 +70,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUseTerminationStatusMemoryExhaustion);
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kUserBlockingAboveNormalPriority);
 BASE_EXPORT BASE_DECLARE_FEATURE(kRetryCreateFileMappingOnCommitLimit);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPumpPeekMessageWithObserver);
 #endif
 
 // Whether the ReducePPMs feature is enabled. Unlike

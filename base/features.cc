@@ -192,6 +192,8 @@ BASE_FEATURE(kUserBlockingAboveNormalPriority, FEATURE_DISABLED_BY_DEFAULT);
 // If retrying fails, the function returns failure as usual and reports the
 // last error code.
 BASE_FEATURE(kRetryCreateFileMappingOnCommitLimit, FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPumpPeekMessageWithObserver, FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 bool IsReducePPMsEnabled() {
