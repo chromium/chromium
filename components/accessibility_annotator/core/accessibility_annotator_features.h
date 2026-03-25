@@ -12,11 +12,6 @@
 namespace accessibility_annotator {
 
 BASE_DECLARE_FEATURE(kContentAnnotator);
-BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
-BASE_DECLARE_FEATURE(kAccessibilityAnnotatorFirstRun);
-BASE_DECLARE_FEATURE(kAccessibilityAnnotatorGetEntities);
-BASE_DECLARE_FEATURE(kAccessibilityAnnotatorLiveTabContext);
-
 BASE_DECLARE_FEATURE_PARAM(int, kContentAnnotatorMaxPendingUrls);
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kContentAnnotatorClassifierTitleKeywordRules);
@@ -36,11 +31,17 @@ BASE_DECLARE_FEATURE_PARAM(double, kContentAnnotatorSemanticMatchThreshold);
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kContentAnnotatorExtractedDataValidationSchema);
 
-BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
-
-BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorOnePServiceUrl);
-
+BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAccessibilityAnnotationTTL);
+
+BASE_DECLARE_FEATURE(kAccessibilityAnnotatorFirstRun);
+
+BASE_DECLARE_FEATURE(kAccessibilityAnnotatorGetEntities);
+
+BASE_DECLARE_FEATURE(kAccessibilityAnnotatorLiveTabContext);
+
+BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
+BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorOnePServiceUrl);
 
 }  // namespace accessibility_annotator
 
