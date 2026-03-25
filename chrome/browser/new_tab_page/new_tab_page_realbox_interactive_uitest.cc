@@ -372,9 +372,6 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     NtpRealboxUiScreenshotTest,
     ValuesIn(std::vector<NtpRealboxScreenshotTestParams>{
-// TODO(crbug.com/454668186): Test fails on Windows builders for Compact and
-// Compact_dark_rtl
-#if !BUILDFLAG(IS_WIN)
         // Compact, compose disabled, light mode, LTR
         {
             .compose_button_enabled = false,
@@ -386,14 +383,10 @@ INSTANTIATE_TEST_SUITE_P(
             .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
             .rtl = true,
         },
-#endif
     }),
     [](const testing::TestParamInfo<NtpRealboxScreenshotTestParams>& info) {
       return info.param.ToString();
     });
-
-// This test suite is empty on Windows.
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NtpRealboxUiScreenshotTest);
 
 // TODO(crbug.com/454761015): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, DISABLED_Screenshots) {
