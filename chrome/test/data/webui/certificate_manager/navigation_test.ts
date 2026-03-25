@@ -4,29 +4,34 @@
 //
 import 'chrome://certificate-manager/navigation.js';
 
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {Page, Route, RouteObserverMixin, Router} from 'chrome://certificate-manager/navigation.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-const TestElementBase = RouteObserverMixin(PolymerElement);
-class TestElement extends TestElementBase {
-  static get properties() {
+const NavigationTestElementBase = RouteObserverMixin(CrLitElement);
+
+class NavigationTestElement extends NavigationTestElementBase {
+  static get is() {
+    return 'navigation-test';
+  }
+
+  static override get properties() {
     return {
-      newRoute: Object,
-      oldRoute: Object,
+      newRoute: {type: Object},
+      oldRoute: {type: Object},
     };
   }
 
-  declare newRoute: Route|undefined;
-  declare oldRoute: Route|undefined;
+  accessor newRoute: Route|undefined;
+  accessor oldRoute: Route|undefined;
 
   override currentRouteChanged(newRoute: Route, oldRoute: Route): void {
     this.newRoute = newRoute;
     this.oldRoute = oldRoute;
   }
 }
-customElements.define('test-element', TestElement);
+
+customElements.define(NavigationTestElement.is, NavigationTestElement);
 
 suite('NavigationV2Test', () => {
   setup(function() {
@@ -52,9 +57,9 @@ suite('NavigationV2Test', () => {
   });
 
   test('navigating notifies observers', function() {
-    const testElement = document.createElement('test-element') as TestElement;
+    const testElement =
+        document.createElement('navigation-test') as NavigationTestElement;
     document.body.appendChild(testElement);
-    flushTasks();
 
     Router.getInstance().navigateTo(Page.CRS_CERTS);
     assertEquals(Page.CRS_CERTS, Router.getInstance().currentRoute.page);

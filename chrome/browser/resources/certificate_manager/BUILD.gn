@@ -22,7 +22,6 @@ build_webui("build") {
     "certificate_manager_dialog.html",
     "favicon.svg",
   ]
-  web_component_files = [ "certificate_manager.ts" ]
   ts_files = [
     "certificate_confirmation_dialog.html.ts",
     "certificate_confirmation_dialog.ts",
@@ -32,6 +31,8 @@ build_webui("build") {
     "certificate_info_dialog.ts",
     "certificate_list.html.ts",
     "certificate_list.ts",
+    "certificate_manager.html.ts",
+    "certificate_manager.ts",
     "certificate_password_dialog.html.ts",
     "certificate_password_dialog.ts",
     "certificate_subpage.html.ts",
@@ -51,7 +52,7 @@ build_webui("build") {
   css_files = [
     "certificate_entry.css",
     "certificate_list.css",
-    "certificate_manager_style.css",
+    "certificate_manager.css",
     "certificate_manager_style_lit.css",
     "certificate_subpage.css",
     "local_certs_section.css",
@@ -62,7 +63,6 @@ build_webui("build") {
       "certificate_provisioning_details_dialog.css",
       "certificate_provisioning_entry.css",
       "certificate_provisioning_list.css",
-      "certificate_shared.css",
       "certificate_shared_lit.css",
     ]
     ts_files += [

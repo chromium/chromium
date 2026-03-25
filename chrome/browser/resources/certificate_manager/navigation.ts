@@ -7,8 +7,7 @@
  */
 
 import {assert, assertNotReached, assertNotReachedCase} from '//resources/js/assert.js';
-import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 /**
  * The different pages that can be shown.
@@ -186,8 +185,8 @@ let routerInstance: Router|null = null;
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const RouteObserverMixin = dedupingMixin(
-    <T extends Constructor<PolymerElement>>(superClass: T): T&
+export const RouteObserverMixin =
+    <T extends Constructor<CrLitElement>>(superClass: T): T&
     Constructor<RouteObserverMixinInterface> => {
       class RouteObserverMixin extends superClass {
         override connectedCallback() {
@@ -212,7 +211,7 @@ export const RouteObserverMixin = dedupingMixin(
       }
 
       return RouteObserverMixin;
-    });
+    };
 
 export interface RouteObserverMixinInterface {
   currentRouteChanged(newRoute: Route, oldRoute?: Route): void;

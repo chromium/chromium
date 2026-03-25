@@ -1,0 +1,62 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #import=//resources/cr_elements/cr_scrollable_lit.css.js
+ * #import=//resources/cr_elements/cr_page_host_style_lit.css.js
+ * #import=./certificate_manager_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-page-host-style-lit cr-shared-style-lit cr-nav-menu-item-style-lit cr-scrollable-lit certificate-manager-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.menu-icon {
+  padding-inline-end: 8px;
+}
+
+#main {
+  flex: 1;
+}
+
+cr-menu-selector {
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  overflow: auto;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  width: 250px;
+}
+
+#container {
+  display: flex;
+  overflow: auto;
+  flex: 1;
+}
+
+#adminCertsSection,
+#platformCertsSection,
+#platformClientCertsSection,
+#userCertsSection {
+  box-shadow: var(--cr-card-shadow);
+  /* Do not shorten '0px' below to '0' as the calc function requires
+   * units. */
+  min-height: calc(100vh - var(--cr-toolbar-height) -
+          var(--cr-toolbar-padding-top, 0px));
+}
+
+#sidebar {
+  position: sticky;
+  top: 0;
+}
+

@@ -41,7 +41,7 @@ suite('CertificateManagerV2Test', () => {
     await microtasksFinished();
 
     const parentElement =
-        certManager.shadowRoot!.querySelector('#provisionedClientCerts');
+        certManager.shadowRoot.querySelector('#provisionedClientCerts');
     // The provisioned client certs section should not be present on other OSes.
     assertFalse(
         !!parentElement,
@@ -252,13 +252,13 @@ suite('CertificateManagerV2Test', () => {
 
     const doTest = async (expectedPassword: string) => {
       // The password dialog should not be present in the DOM initially.
-      assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+      assertNull(certManager.shadowRoot.querySelector('#passwordDialog'));
 
       const promise = testProxy.callbackRouterRemote.askForImportPassword();
       await microtasksFinished();
 
       const passwordDialog =
-          certManager.shadowRoot!
+          certManager.shadowRoot
               .querySelector<CertificatePasswordDialogElement>(
                   '#passwordDialog');
       assertTrue(!!passwordDialog);
@@ -278,7 +278,7 @@ suite('CertificateManagerV2Test', () => {
     await doTest('something different');
 
     // The password dialog should no longer be present in the DOM.
-    assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+    assertNull(certManager.shadowRoot.querySelector('#passwordDialog'));
   });
 
   // Tests that cancelling the password dialog is signalled through the mojo
@@ -288,14 +288,14 @@ suite('CertificateManagerV2Test', () => {
     await microtasksFinished();
 
     // The password dialog should not be present in the DOM initially.
-    assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+    assertNull(certManager.shadowRoot.querySelector('#passwordDialog'));
 
     {
       const promise = testProxy.callbackRouterRemote.askForImportPassword();
       await microtasksFinished();
 
       const passwordDialog =
-          certManager.shadowRoot!
+          certManager.shadowRoot
               .querySelector<CertificatePasswordDialogElement>(
                   '#passwordDialog');
       assertTrue(!!passwordDialog);
@@ -308,7 +308,7 @@ suite('CertificateManagerV2Test', () => {
     }
 
     // The password dialog should no longer be present in the DOM.
-    assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+    assertNull(certManager.shadowRoot.querySelector('#passwordDialog'));
 
     // Try showing the dialog again - the dialog should work multiple times,
     // and the password field should be cleared (not still containing the value
@@ -318,7 +318,7 @@ suite('CertificateManagerV2Test', () => {
       await microtasksFinished();
 
       const passwordDialog =
-          certManager.shadowRoot!
+          certManager.shadowRoot
               .querySelector<CertificatePasswordDialogElement>(
                   '#passwordDialog');
       assertTrue(!!passwordDialog);
@@ -331,6 +331,6 @@ suite('CertificateManagerV2Test', () => {
     }
 
     // The password dialog should no longer be present in the DOM.
-    assertNull(certManager.shadowRoot!.querySelector('#passwordDialog'));
+    assertNull(certManager.shadowRoot.querySelector('#passwordDialog'));
   });
 });
