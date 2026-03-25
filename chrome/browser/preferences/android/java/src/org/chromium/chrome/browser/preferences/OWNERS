@@ -1,3 +1,5 @@
 # For simple additions and deprecations.
 per-file ChromePreferenceKeys.java=*
 per-file DeprecatedChromePreferenceKeys.java=*
+per-file MultiInstance*.java=aishwaryarj@google.com
+per-file MultiInstance*.java=zheliooo@google.com
