@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlCategory;
@@ -57,6 +58,7 @@ public class ExtensionSearchEngineMediatorUnitTest {
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private TemplateUrl mTemplateUrl;
     @Mock private ModelList mModelList;
+    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     private Context mContext;
     private ExtensionSearchEngineMediator mMediator;
@@ -82,7 +84,9 @@ public class ExtensionSearchEngineMediatorUnitTest {
                 .when(mTemplateUrlService)
                 .runWhenLoaded(any());
 
-        mMediator = new ExtensionSearchEngineMediator(mContext, mModelList, mProfile);
+        mMediator =
+                new ExtensionSearchEngineMediator(
+                        mContext, mModelList, mProfile, mSettingsCustomTabLauncher);
 
         Mockito.clearInvocations(mModelList, mTemplateUrlService);
     }
@@ -141,6 +145,14 @@ public class ExtensionSearchEngineMediatorUnitTest {
         assertEquals(
                 R.string.site_search_extensions_menu_disable,
                 makeDefaultItem.model.get(ListMenuItemProperties.TITLE_ID));
+    }
+
+    @Test
+    public void testOnMenuItemClicked_Manage() {
+        when(mTemplateUrl.getProvidingExtensionId()).thenReturn("extension_id");
+        mMediator.onMenuItemClicked(R.string.site_search_extensions_menu_manage, mTemplateUrl);
+        verify(mSettingsCustomTabLauncher)
+                .openUrlInCct(mContext, "chrome://extensions/?id=extension_id");
     }
 
     @Test

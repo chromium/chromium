@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -25,10 +26,15 @@ public class ExtensionSearchEngineCoordinator {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     public ExtensionSearchEngineCoordinator(
-            Context context, Profile profile, SearchEngineListPreference pref) {
+            Context context,
+            Profile profile,
+            SearchEngineListPreference pref,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mModelList = new ModelList();
         mAdapter = new ExtensionSearchEngineAdapter(context, mModelList);
-        mMediator = new ExtensionSearchEngineMediator(context, mModelList, profile);
+        mMediator =
+                new ExtensionSearchEngineMediator(
+                        context, mModelList, profile, settingsCustomTabLauncher);
 
         mPropertyModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)

@@ -88,7 +88,8 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
         SettingsUtils.addPreferencesFromResource(this, R.xml.extensions_preferences);
         SearchEngineListPreference extensionsPref = findPreference(EXTENSIONS_PREF_KEY);
         mExtensionSearchEngineCoordinator =
-                new ExtensionSearchEngineCoordinator(context, profile, extensionsPref);
+                new ExtensionSearchEngineCoordinator(
+                        context, profile, extensionsPref, getCustomTabLauncher());
     }
 
     @Override

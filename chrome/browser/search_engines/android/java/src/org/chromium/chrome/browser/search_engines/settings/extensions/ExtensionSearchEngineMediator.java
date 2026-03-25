@@ -6,16 +6,20 @@ package org.chromium.chrome.browser.search_engines.settings.extensions;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.settings.common.BaseSiteSearchMediator;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlCategory;
 import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -23,9 +27,16 @@ import java.util.List;
 /** Mediator for the search engines settings extensions section. */
 @NullMarked
 public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
+    private static final String EXTENSION_MANAGE_URL_PREFIX = "chrome://extensions/?id=";
+    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
-    public ExtensionSearchEngineMediator(Context context, ModelList modelList, Profile profile) {
+    public ExtensionSearchEngineMediator(
+            Context context,
+            ModelList modelList,
+            Profile profile,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         super(context, modelList, profile);
+        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
 
         initializeTemplateUrlService();
     }
@@ -55,7 +66,21 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
                             .withTitleRes(R.string.site_search_extensions_menu_disable)
                             .build());
 
-            return BrowserUiListMenuUtils.getBasicListMenu(mContext, menuItems, null);
+            return BrowserUiListMenuUtils.getBasicListMenu(
+                    mContext,
+                    menuItems,
+                    (model, view) -> {
+                        int textId = model.get(ListMenuItemProperties.TITLE_ID);
+                        onMenuItemClicked(textId, url);
+                    });
         };
+    }
+
+    @VisibleForTesting
+    void onMenuItemClicked(int textId, TemplateUrl url) {
+        if (R.string.site_search_extensions_menu_manage == textId) {
+            mSettingsCustomTabLauncher.openUrlInCct(
+                    mContext, EXTENSION_MANAGE_URL_PREFIX + url.getProvidingExtensionId());
+        }
     }
 }
