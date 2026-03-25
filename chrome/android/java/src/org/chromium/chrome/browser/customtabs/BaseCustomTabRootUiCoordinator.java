@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIphController;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -376,9 +377,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
         return new MismatchNotificationChecker(
                 mActivity,
+                mWindowAndroid,
+                mActivityResultTracker,
+                DeviceLockActivityLauncherImpl.get(),
                 profile,
                 IdentityServicesProvider.get().getIdentityManager(profile),
                 SigninAndHistorySyncActivityLauncherImpl.get(),
+                this::getBottomSheetController,
+                mModalDialogManagerSupplier.get(),
+                mSnackbarManagerSupplier.get(),
                 (signinDelegate, accountId, lastShownTime, mimData, onClose) -> {
                     boolean show =
                             connection.shouldShowAccountMismatchNotification(

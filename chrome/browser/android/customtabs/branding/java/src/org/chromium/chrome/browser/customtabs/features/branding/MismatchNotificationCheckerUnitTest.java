@@ -25,16 +25,28 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Unit test for {@link MismatchNotificationChecker} */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+    SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+})
 public class MismatchNotificationCheckerUnitTest {
     private static final int INIT_SHOW_COUNT = 2;
     private static final int INIT_USER_ACT_COUNT = 1;
@@ -144,9 +156,15 @@ public class MismatchNotificationCheckerUnitTest {
             mChecker =
                     new MismatchNotificationChecker(
                             mock(Activity.class),
+                            mock(WindowAndroid.class),
+                            mock(ActivityResultTracker.class),
+                            mock(DeviceLockActivityLauncher.class),
                             mock(Profile.class),
                             mIdentityManager,
                             mSigninLauncher,
+                            () -> mock(BottomSheetController.class),
+                            mock(ModalDialogManager.class),
+                            mock(SnackbarManager.class),
                             mDelegate);
             return this;
         }
