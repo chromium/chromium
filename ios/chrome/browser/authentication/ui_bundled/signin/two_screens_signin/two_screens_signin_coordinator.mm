@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/uno_signin_screen_provider.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
@@ -81,11 +82,14 @@ using base::UserMetricsAction;
         IdentityManagerFactory::GetForProfile(self.profile);
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
+    metrics::ProfileMetricsService* profileMetricsService =
+        IOSProfileMetricsServiceFactory::GetForProfile(self.profile);
     _fullscreenSigninPromoLogger = [[FullscreenSigninPromoLogger alloc]
           initWithAccessPoint:accessPoint
                   promoAction:promoAction
               identityManager:identityManager
-        accountManagerService:accountManagerService];
+        accountManagerService:accountManagerService
+        profileMetricsService:profileMetricsService];
   }
   return self;
 }

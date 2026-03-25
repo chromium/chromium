@@ -33,6 +33,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/first_run/public:utils",
     "//ios/chrome/browser/first_run/tos/coordinator",
     "//ios/chrome/browser/first_run/uma/coordinator",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",

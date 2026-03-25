@@ -23,6 +23,9 @@ namespace signin_metrics {
 enum class AccessPoint : int;
 enum class PromoAction : int;
 }  // namespace signin_metrics
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -67,6 +70,8 @@ class SyncService;
                           syncService:(syncer::SyncService*)syncService
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                           promoAction:(signin_metrics::PromoAction)promoAction
+                profileMetricsService:
+                    (metrics::ProfileMetricsService*)profileMetricsService
     changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
                                           changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;

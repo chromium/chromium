@@ -19,11 +19,14 @@ using signin_metrics::PromoAction;
 #pragma mark - Public
 
 - (instancetype)initWithAccessPoint:(AccessPoint)accessPoint
-                        promoAction:(PromoAction)promoAction {
+                        promoAction:(PromoAction)promoAction
+              profileMetricsService:
+                  (metrics::ProfileMetricsService*)profileMetricsService {
   self = [super init];
   if (self) {
     _accessPoint = accessPoint;
     _promoAction = promoAction;
+    _profileMetricsService = profileMetricsService;
   }
   return self;
 }

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/first_run/tos/coordinator/tos_coordinator.h"
 #import "ios/chrome/browser/first_run/uma/coordinator/uma_coordinator.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -137,6 +138,8 @@
   PrefService* localPrefService = GetApplicationContext()->GetLocalState();
   PrefService* prefService = profile->GetPrefs();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  metrics::ProfileMetricsService* profileMetricsService =
+      IOSProfileMetricsServiceFactory::GetForProfile(profile);
   self.mediator = [[FullscreenSigninScreenMediator alloc]
           initWithAccountManagerService:self.accountManagerService
                   authenticationService:self.authenticationService
@@ -146,6 +149,7 @@
                             syncService:syncService
                             accessPoint:_accessPoint
                             promoAction:_promoAction
+                  profileMetricsService:profileMetricsService
       changeProfileContinuationProvider:_changeProfileContinuationProvider];
   self.mediator.consumer = self.viewController;
   self.mediator.delegate = self;

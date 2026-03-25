@@ -18,15 +18,24 @@ enum class AccessPoint;
 enum class PromoAction;
 }  // namespace signin_metrics
 
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
+
 // Logs metrics for Chrome upgrade operations.
 @interface FullscreenSigninPromoLogger : NSObject <SigninLogger>
 
+// Service to log profile metrics.
+@property(nonatomic, assign, readonly)
+    metrics::ProfileMetricsService* profileMetricsService;
+
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
-                        promoAction:(signin_metrics::PromoAction)promoAction
-                    identityManager:(signin::IdentityManager*)identityManager
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService
+- (instancetype)
+      initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+              promoAction:(signin_metrics::PromoAction)promoAction
+          identityManager:(signin::IdentityManager*)identityManager
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+    profileMetricsService:(metrics::ProfileMetricsService*)profileMetricsService
     NS_DESIGNATED_INITIALIZER;
 
 // Disconnect this object.

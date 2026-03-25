@@ -10,6 +10,10 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
+
 // SigninLogger for user-initiated sign-in flows.
 @interface UserSigninLogger : NSObject <SigninLogger>
 
@@ -17,6 +21,8 @@
 // The designated initializer.
 - (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
                         promoAction:(signin_metrics::PromoAction)promoAction
+              profileMetricsService:
+                  (metrics::ProfileMetricsService*)profileMetricsService
     NS_DESIGNATED_INITIALIZER;
 
 // View where the sign-in button was displayed.
@@ -24,6 +30,10 @@
 
 // Promo button used to trigger the sign-in.
 @property(nonatomic, assign, readonly) signin_metrics::PromoAction promoAction;
+
+// Service to record profile metrics.
+@property(nonatomic, assign, readonly)
+    metrics::ProfileMetricsService* profileMetricsService;
 
 @end
 

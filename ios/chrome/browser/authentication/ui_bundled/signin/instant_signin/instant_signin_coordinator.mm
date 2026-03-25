@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -94,8 +95,13 @@
       IdentityManagerFactory::GetForProfile(self.profile->GetOriginalProfile());
   CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
         base::NotFatalUntil::M148);
-  _signinLogger = [[UserSigninLogger alloc] initWithAccessPoint:self.accessPoint
-                                                    promoAction:_promoAction];
+  metrics::ProfileMetricsService* profileMetricsService =
+      IOSProfileMetricsServiceFactory::GetForProfile(
+          self.profile->GetOriginalProfile());
+  _signinLogger =
+      [[UserSigninLogger alloc] initWithAccessPoint:self.accessPoint
+                                        promoAction:_promoAction
+                              profileMetricsService:profileMetricsService];
   [_signinLogger logSigninStarted];
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(

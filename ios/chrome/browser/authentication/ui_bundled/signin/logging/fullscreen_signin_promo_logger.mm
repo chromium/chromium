@@ -39,7 +39,9 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
                         promoAction:(PromoAction)promoAction
                     identityManager:(signin::IdentityManager*)identityManager
               accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService {
+                  (ChromeAccountManagerService*)accountManagerService
+              profileMetricsService:
+                  (metrics::ProfileMetricsService*)profileMetricsService {
   self = [super init];
   if (self) {
     CHECK(identityManager);
@@ -48,6 +50,7 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
     _promoAction = promoAction;
     _identityManager = identityManager;
     _accountManagerService = accountManagerService;
+    _profileMetricsService = profileMetricsService;
   }
   return self;
 }

@@ -22,6 +22,7 @@ source_set("instant_signin") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
     "//ios/chrome/browser/authentication/ui_bundled/signin/logging",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
     "//ios/chrome/browser/shared/model/application_context",

@@ -18,6 +18,7 @@ source_set("logging") {
     "//components/prefs",
     "//components/version_info",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
   ]

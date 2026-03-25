@@ -104,6 +104,8 @@ enum class SigninScreenState {
                           syncService:(syncer::SyncService*)syncService
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                           promoAction:(signin_metrics::PromoAction)promoAction
+                profileMetricsService:
+                    (metrics::ProfileMetricsService*)profileMetricsService
     changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
                                           changeProfileContinuationProvider {
   self = [super init];
@@ -145,14 +147,17 @@ enum class SigninScreenState {
 
     switch (_screenState) {
       case SigninScreenState::kNotFirstRun:
-        _logger = [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
-                                                    promoAction:promoAction];
+        _logger = [[UserSigninLogger alloc]
+              initWithAccessPoint:accessPoint
+                      promoAction:promoAction
+            profileMetricsService:profileMetricsService];
         break;
       case SigninScreenState::kFirstRunAsFirstScreen:
       case SigninScreenState::kFirstRunAsOtherScreen:
-        _logger =
-            [[FirstRunSigninLogger alloc] initWithAccessPoint:accessPoint
-                                                  promoAction:promoAction];
+        _logger = [[FirstRunSigninLogger alloc]
+              initWithAccessPoint:accessPoint
+                      promoAction:promoAction
+            profileMetricsService:profileMetricsService];
         break;
     }
 
