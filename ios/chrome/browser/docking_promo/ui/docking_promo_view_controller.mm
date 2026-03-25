@@ -16,6 +16,9 @@ namespace {
 // The name of the animation used for the Docking Promo.
 NSString* const kAnimationName = @"docking_promo";
 
+// The name of the animation used for the Docking Promo in dark mode.
+NSString* const kAnimationNameDarkMode = @"docking_promo_darkmode";
+
 // The accessibility identifier for the Docking Promo view.
 NSString* const kDockingPromoAccessibilityId = @"kDockingPromoAccessibilityId";
 
@@ -70,7 +73,7 @@ NSString* GetSubtitleString() {
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.useLegacyDarkMode = NO;
+  self.animationNameDarkMode = kAnimationNameDarkMode;
   self.animationName = kAnimationName;
   self.animationBackgroundColor = [UIColor
       colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
@@ -91,19 +94,6 @@ NSString* GetSubtitleString() {
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier = kDockingPromoAccessibilityId;
-
-  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                     withAction:@selector(configureAnimationColors)];
-  [self configureAnimationColors];
-}
-
-#pragma mark - Private
-
-// Configures the animation with semantic and custom colors.
-- (void)configureAnimationColors {
-  ConfigureAnimationSemanticColor(self.animationViewWrapper,
-                                  kTertiaryBackgroundColor,
-                                  kTertiaryBackgroundColor);
 }
 
 @end

@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 bundle_data("resources") {
-  sources = [ "docking_promo.json" ]
+  sources = [
+    "docking_promo.json",
+    "docking_promo_darkmode.json",
+  ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
