@@ -113,20 +113,20 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
       DLOG(WARNING) << "Only SIGNIN and ENABLE_SYNC are supported through "
                     << "X-Chrome-ID-Consistency-Response :" << header_value;
       return params;
-    case DiceAction::SIGNIN:
-      params.user_intention = DiceAction::SIGNIN;
-      params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
-      params.signin_info->AddAccount(
-          {std::move(account_info), std::move(authorization_code),
-           no_authorization_code,
-           std::move(supported_algorithms_for_token_binding),
-           mtls_token_binding});
+    case DiceAction::SIGNIN: {
+      DiceResponseParams::SigninInfo& signin_info =
+          params.data.emplace<DiceResponseParams::SigninInfo>();
+      signin_info.AddAccount({std::move(account_info),
+                              std::move(authorization_code),
+                              no_authorization_code,
+                              std::move(supported_algorithms_for_token_binding),
+                              mtls_token_binding});
       break;
-    case DiceAction::ENABLE_SYNC:
-      params.user_intention = DiceAction::ENABLE_SYNC;
-      params.enable_sync_info =
-          std::make_unique<DiceResponseParams::EnableSyncInfo>();
-      params.enable_sync_info->account_info = std::move(account_info);
+    }
+    case DiceAction::ENABLE_SYNC: {
+      DiceResponseParams::EnableSyncInfo& enable_sync_info =
+          params.data.emplace<DiceResponseParams::EnableSyncInfo>();
+      enable_sync_info.account_info = std::move(account_info);
       if (!authorization_code.empty()) {
         DLOG(WARNING) << "Authorization code expected only with SIGNIN action";
       }
@@ -139,6 +139,7 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
                          "with SIGNIN action";
       }
       break;
+    }
   }
 
   return params;
@@ -151,7 +152,8 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
   // http://go/gaia-response-headers
   DCHECK(!header_value.empty());
   DiceResponseParams params;
-  params.user_intention = DiceAction::SIGNOUT;
+  DiceResponseParams::SignoutInfo& signout_info =
+      params.data.emplace<DiceResponseParams::SignoutInfo>();
   std::vector<GaiaId> gaia_ids;
   std::vector<std::string> emails;
   std::vector<int> session_indices;
@@ -186,10 +188,9 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
     return params;
   }
 
-  params.signout_info = std::make_unique<DiceResponseParams::SignoutInfo>();
   for (size_t i = 0; i < gaia_ids.size(); ++i) {
-    params.signout_info->account_infos.emplace_back(gaia_ids[i], emails[i],
-                                                    session_indices[i]);
+    signout_info.account_infos.emplace_back(gaia_ids[i], emails[i],
+                                            session_indices[i]);
   }
 
   return params;

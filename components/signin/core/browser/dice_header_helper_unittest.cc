@@ -103,10 +103,10 @@ TEST_F(DiceHeaderHelperTest, TestDiceInvalidResponseParams) {
   DiceResponseParams params =
       DiceHeaderHelper::BuildDiceSigninResponseParams("blah");
   EXPECT_FALSE(params.IsValid());
-  EXPECT_EQ(DiceAction::NONE, params.user_intention);
+  EXPECT_EQ(DiceAction::NONE, params.user_intention());
   params = DiceHeaderHelper::BuildDiceSignoutResponseParams("blah");
   EXPECT_FALSE(params.IsValid());
-  EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention);
+  EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention());
 }
 
 TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
@@ -126,9 +126,10 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
             "eligible_for_token_binding=%s,",
             kGaiaID.ToString().c_str(), kEmail, kSessionIndex,
             kAuthorizationCode, kSupportedTokenBindingAlgorithms));
-    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
-    ASSERT_TRUE(params.signin_info);
-    const auto* account = params.signin_info->GetInitiator();
+    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+    const auto* signin_info = params.signin_info();
+    ASSERT_TRUE(signin_info);
+    const auto* account = signin_info->GetInitiator();
     ASSERT_TRUE(account);
     EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
     EXPECT_EQ(kEmail, account->account_info.email);
@@ -146,12 +147,12 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
     DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
         base::StringPrintf("action=ENABLE_SYNC,id=%s,email=%s,authuser=%i",
                            kGaiaID.ToString().c_str(), kEmail, kSessionIndex));
-    EXPECT_EQ(DiceAction::ENABLE_SYNC, params.user_intention);
-    ASSERT_TRUE(params.enable_sync_info);
-    EXPECT_EQ(kGaiaID, params.enable_sync_info->account_info.gaia_id);
-    EXPECT_EQ(kEmail, params.enable_sync_info->account_info.email);
-    EXPECT_EQ(kSessionIndex,
-              params.enable_sync_info->account_info.session_index);
+    EXPECT_EQ(DiceAction::ENABLE_SYNC, params.user_intention());
+    const auto* enable_sync_info = params.enable_sync_info();
+    ASSERT_TRUE(enable_sync_info);
+    EXPECT_EQ(kGaiaID, enable_sync_info->account_info.gaia_id);
+    EXPECT_EQ(kEmail, enable_sync_info->account_info.email);
+    EXPECT_EQ(kSessionIndex, enable_sync_info->account_info.session_index);
   }
 
   {
@@ -162,9 +163,10 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
         base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
                            "no_authorization_code=true",
                            kGaiaID.ToString().c_str(), kEmail, kSessionIndex));
-    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
-    ASSERT_TRUE(params.signin_info);
-    const auto* account = params.signin_info->GetInitiator();
+    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+    const auto* signin_info = params.signin_info();
+    ASSERT_TRUE(signin_info);
+    const auto* account = signin_info->GetInitiator();
     ASSERT_TRUE(account);
     EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
     EXPECT_EQ(kEmail, account->account_info.email);
@@ -182,7 +184,7 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
     DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
         base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i",
                            kGaiaID.ToString().c_str(), kEmail, kSessionIndex));
-    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
     EXPECT_FALSE(params.IsValid());
     histogram_tester.ExpectTotalCount("Signin.DiceAuthorizationCode", 0);
   }
@@ -193,7 +195,7 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
         DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
             "action=SIGNIN,id=%s,authuser=%i,authorization_code=%s",
             kGaiaID.ToString().c_str(), kSessionIndex, kAuthorizationCode));
-    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
     EXPECT_FALSE(params.IsValid());
   }
 }
@@ -213,9 +215,10 @@ TEST_F(DiceHeaderHelperTest,
                          "mtls_token_binding=true",
                          kGaiaID.ToString().c_str(), kEmail, kSessionIndex,
                          kAuthorizationCode, kSupportedTokenBindingAlgorithms));
-  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
-  ASSERT_TRUE(params.signin_info);
-  const auto* account = params.signin_info->GetInitiator();
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
   ASSERT_TRUE(account);
   EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
   EXPECT_EQ(kEmail, account->account_info.email);
@@ -238,13 +241,13 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams) {
         DiceHeaderHelper::BuildDiceSignoutResponseParams(base::StringPrintf(
             "email=%s, sessionindex=%i, obfuscatedid=%s", kEmail, kSessionIndex,
             kGaiaID.ToString().c_str()));
-    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention);
-    ASSERT_TRUE(params.signout_info);
-    EXPECT_EQ(1u, params.signout_info->account_infos.size());
-    EXPECT_EQ(kGaiaID, params.signout_info->account_infos[0].gaia_id);
-    EXPECT_EQ(kEmail, params.signout_info->account_infos[0].email);
-    EXPECT_EQ(kSessionIndex,
-              params.signout_info->account_infos[0].session_index);
+    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
+    const auto* signout_info = params.signout_info();
+    ASSERT_TRUE(signout_info);
+    EXPECT_EQ(1u, signout_info->account_infos.size());
+    EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
+    EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
+    EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
   }
 
   {
@@ -254,13 +257,13 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams) {
         DiceHeaderHelper::BuildDiceSignoutResponseParams(base::StringPrintf(
             "email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\"", kEmail,
             kSessionIndex, kGaiaID.ToString().c_str()));
-    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention);
-    ASSERT_TRUE(params.signout_info);
-    EXPECT_EQ(1u, params.signout_info->account_infos.size());
-    EXPECT_EQ(kGaiaID, params.signout_info->account_infos[0].gaia_id);
-    EXPECT_EQ(kEmail, params.signout_info->account_infos[0].email);
-    EXPECT_EQ(kSessionIndex,
-              params.signout_info->account_infos[0].session_index);
+    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
+    const auto* signout_info = params.signout_info();
+    ASSERT_TRUE(signout_info);
+    EXPECT_EQ(1u, signout_info->account_infos.size());
+    EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
+    EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
+    EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
   }
 
   {
@@ -274,17 +277,16 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams) {
             "email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\"",
             kEmail, kSessionIndex, kGaiaID.ToString().c_str(), kEmail2,
             kSessionIndex2, kGaiaID2.ToString().c_str()));
-    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention);
-    ASSERT_TRUE(params.signout_info);
-    EXPECT_EQ(2u, params.signout_info->account_infos.size());
-    EXPECT_EQ(kGaiaID, params.signout_info->account_infos[0].gaia_id);
-    EXPECT_EQ(kEmail, params.signout_info->account_infos[0].email);
-    EXPECT_EQ(kSessionIndex,
-              params.signout_info->account_infos[0].session_index);
-    EXPECT_EQ(kGaiaID2, params.signout_info->account_infos[1].gaia_id);
-    EXPECT_EQ(kEmail2, params.signout_info->account_infos[1].email);
-    EXPECT_EQ(kSessionIndex2,
-              params.signout_info->account_infos[1].session_index);
+    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
+    const auto* signout_info = params.signout_info();
+    ASSERT_TRUE(signout_info);
+    EXPECT_EQ(2u, signout_info->account_infos.size());
+    EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
+    EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
+    EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
+    EXPECT_EQ(kGaiaID2, signout_info->account_infos[1].gaia_id);
+    EXPECT_EQ(kEmail2, signout_info->account_infos[1].email);
+    EXPECT_EQ(kSessionIndex2, signout_info->account_infos[1].session_index);
   }
 
   {
@@ -294,7 +296,7 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams) {
             "email=%s, sessionindex=%i, obfuscatedid=%s, "
             "sessionindex=2, obfuscatedid=bar",
             kEmail, kSessionIndex, kGaiaID.ToString().c_str()));
-    EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention);
+    EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention());
     EXPECT_FALSE(params.IsValid());
   }
 }
@@ -312,10 +314,11 @@ TEST_F(DiceHeaderHelperTest,
           "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s",
           kGaiaID.ToString().c_str(), kEmail, kSessionIndex,
           kAuthorizationCode));
-  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
-  ASSERT_TRUE(params.signin_info);
-  ASSERT_EQ(1u, params.signin_info->accounts().size());
-  EXPECT_TRUE(params.signin_info->GetInitiator()
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  ASSERT_EQ(1u, signin_info->accounts().size());
+  EXPECT_TRUE(signin_info->GetInitiator()
                   ->supported_algorithms_for_token_binding.empty());
 }
 
@@ -333,9 +336,10 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
           "authorization_code=%s",
           kGaiaID.ToString(), kSessionIndex, kSupportedTokenBindingAlgorithms,
           kEmail, kAuthorizationCode));
-  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
-  ASSERT_TRUE(params.signin_info);
-  const auto* account = params.signin_info->GetInitiator();
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
   ASSERT_TRUE(account);
   EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
   EXPECT_EQ(kEmail, account->account_info.email);

@@ -19,17 +19,56 @@ DiceResponseParams& DiceResponseParams::operator=(DiceResponseParams&&) =
     default;
 
 bool DiceResponseParams::IsValid() const {
-  switch (user_intention) {
+  switch (user_intention()) {
     case DiceAction::NONE:
       return false;
     case DiceAction::SIGNIN:
-      return signin_info && signin_info->IsValid();
+      return signin_info()->IsValid();
     case DiceAction::SIGNOUT:
-      return signout_info && signout_info->IsValid();
+      return signout_info()->IsValid();
     case DiceAction::ENABLE_SYNC:
-      return enable_sync_info && enable_sync_info->IsValid();
+      return enable_sync_info()->IsValid();
   }
   NOTREACHED();
+}
+
+DiceAction DiceResponseParams::user_intention() const {
+  if (std::holds_alternative<SigninInfo>(data)) {
+    return DiceAction::SIGNIN;
+  }
+  if (std::holds_alternative<SignoutInfo>(data)) {
+    return DiceAction::SIGNOUT;
+  }
+  if (std::holds_alternative<EnableSyncInfo>(data)) {
+    return DiceAction::ENABLE_SYNC;
+  }
+  return DiceAction::NONE;
+}
+
+const DiceResponseParams::SigninInfo* DiceResponseParams::signin_info() const {
+  return std::get_if<SigninInfo>(&data);
+}
+
+const DiceResponseParams::SignoutInfo* DiceResponseParams::signout_info()
+    const {
+  return std::get_if<SignoutInfo>(&data);
+}
+
+const DiceResponseParams::EnableSyncInfo* DiceResponseParams::enable_sync_info()
+    const {
+  return std::get_if<EnableSyncInfo>(&data);
+}
+
+DiceResponseParams::SigninInfo* DiceResponseParams::signin_info() {
+  return std::get_if<SigninInfo>(&data);
+}
+
+DiceResponseParams::SignoutInfo* DiceResponseParams::signout_info() {
+  return std::get_if<SignoutInfo>(&data);
+}
+
+DiceResponseParams::EnableSyncInfo* DiceResponseParams::enable_sync_info() {
+  return std::get_if<EnableSyncInfo>(&data);
 }
 
 DiceResponseParams::AccountInfo::AccountInfo() = default;

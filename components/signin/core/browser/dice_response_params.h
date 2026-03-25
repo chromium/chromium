@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_DICE_RESPONSE_PARAMS_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_DICE_RESPONSE_PARAMS_H_
 
-#include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "google_apis/gaia/gaia_id.h"
@@ -132,16 +132,18 @@ struct DiceResponseParams {
 
   bool IsValid() const;
 
-  DiceAction user_intention = DiceAction::NONE;
+  // Returns the action corresponding to the current data in the variant.
+  DiceAction user_intention() const;
 
-  // Populated when |user_intention| is SIGNIN.
-  std::unique_ptr<SigninInfo> signin_info;
+  const SigninInfo* signin_info() const;
+  const SignoutInfo* signout_info() const;
+  const EnableSyncInfo* enable_sync_info() const;
 
-  // Populated when |user_intention| is SIGNOUT.
-  std::unique_ptr<SignoutInfo> signout_info;
+  SigninInfo* signin_info();
+  SignoutInfo* signout_info();
+  EnableSyncInfo* enable_sync_info();
 
-  // Populated when |user_intention| is ENABLE_SYNC.
-  std::unique_ptr<EnableSyncInfo> enable_sync_info;
+  std::variant<std::monostate, SigninInfo, SignoutInfo, EnableSyncInfo> data;
 };
 
 }  // namespace signin

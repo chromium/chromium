@@ -13,57 +13,48 @@ namespace signin {
 
 TEST(DiceResponseParamsTest, IsValid) {
   DiceResponseParams params;
-  EXPECT_FALSE(params.IsValid());  // NONE is not valid.
+  EXPECT_FALSE(params.IsValid());  // std::monostate is not valid.
 
   // SIGNIN
-  params.user_intention = DiceAction::SIGNIN;
-  EXPECT_FALSE(params.IsValid());  // Missing signin_info.
-
-  params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
+  DiceResponseParams::SigninInfo* signin_info =
+      &params.data.emplace<DiceResponseParams::SigninInfo>();
   EXPECT_FALSE(params.IsValid());  // Empty accounts.
 
-  params.signin_info->AddAccount(
+  signin_info->AddAccount(
       {{GaiaId("id"), "email", 0}, "code", false, "binding", false});
   EXPECT_TRUE(params.IsValid());
 
-  params.signin_info->SetInitiator(GaiaId("unknown"));
+  signin_info->SetInitiator(GaiaId("unknown"));
   EXPECT_FALSE(params.IsValid());  // Initiator not in accounts.
 
-  params.signin_info->SetInitiator(GaiaId("id"));
+  signin_info->SetInitiator(GaiaId("id"));
   EXPECT_TRUE(params.IsValid());
 
-  params.signin_info->SetInitiator(GaiaId());
-  params.signin_info->AddAccount(
+  signin_info->SetInitiator(GaiaId());
+  signin_info->AddAccount(
       {{GaiaId("id2"), "email2", 0}, "code2", false, "binding2", false});
   EXPECT_FALSE(params.IsValid());  // Multiple accounts, no initiator.
 
-  params.signin_info->SetInitiator(GaiaId("id2"));
+  signin_info->SetInitiator(GaiaId("id2"));
   EXPECT_TRUE(params.IsValid());
 
   // SIGNOUT
-  params = DiceResponseParams();
-  params.user_intention = DiceAction::SIGNOUT;
-  EXPECT_FALSE(params.IsValid());  // Missing signout_info.
-
-  params.signout_info = std::make_unique<DiceResponseParams::SignoutInfo>();
+  DiceResponseParams::SignoutInfo* signout_info =
+      &params.data.emplace<DiceResponseParams::SignoutInfo>();
   EXPECT_FALSE(params.IsValid());  // Empty account_infos.
 
   DiceResponseParams::AccountInfo info;
-  params.signout_info->account_infos.push_back(info);
+  signout_info->account_infos.push_back(info);
   EXPECT_TRUE(params.IsValid());  // Individual fields not checked for SIGNOUT.
 
   // ENABLE_SYNC
-  params = DiceResponseParams();
-  params.user_intention = DiceAction::ENABLE_SYNC;
-  EXPECT_FALSE(params.IsValid());  // Missing enable_sync_info.
-
-  params.enable_sync_info =
-      std::make_unique<DiceResponseParams::EnableSyncInfo>();
+  DiceResponseParams::EnableSyncInfo* enable_sync_info =
+      &params.data.emplace<DiceResponseParams::EnableSyncInfo>();
   EXPECT_FALSE(params.IsValid());  // Invalid account info.
 
-  params.enable_sync_info->account_info.gaia_id = GaiaId("id");
-  params.enable_sync_info->account_info.email = "email";
-  params.enable_sync_info->account_info.session_index = 0;
+  enable_sync_info->account_info.gaia_id = GaiaId("id");
+  enable_sync_info->account_info.email = "email";
+  enable_sync_info->account_info.session_index = 0;
   EXPECT_TRUE(params.IsValid());
 }
 
