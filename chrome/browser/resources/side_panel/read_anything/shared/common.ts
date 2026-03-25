@@ -26,7 +26,8 @@ export const MOSTLY_VISIBLE_PERCENT = 0.8;
 
 export function openMenu(
     menuToOpen: CrActionMenuElement, target: HTMLElement,
-    showAtConfig?: ShowAtConfigPrefs, onShow?: () => void) {
+    showAtConfig?: ShowAtConfigPrefs, onShow?: () => void,
+    isSubmenu: boolean = false) {
   // The button should stay active while the menu is open and deactivate when
   // the menu closes.
   menuToOpen.addEventListener('close', () => {
@@ -53,7 +54,6 @@ export function openMenu(
               },
               showAtConfig));
 
-      const isSubmenu = menuToOpen.nonModal;
       // We manually override submenu positions here because cr-action-menu's
       // native side-collision aggressively flips the entire menu. We must do
       // this after showAt() because <cr-lazy-render> keeps offsetWidth at 0

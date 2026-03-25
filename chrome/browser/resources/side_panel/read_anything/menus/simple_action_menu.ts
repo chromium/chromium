@@ -66,7 +66,9 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
   accessor label: string = '';
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
-    openMenu(this.$.lazyMenu.get(), anchor, showAtConfig);
+    openMenu(
+        this.$.lazyMenu.get(), anchor, showAtConfig, /* onShow= */ undefined,
+        this.nonModal);
   }
 
   close() {
