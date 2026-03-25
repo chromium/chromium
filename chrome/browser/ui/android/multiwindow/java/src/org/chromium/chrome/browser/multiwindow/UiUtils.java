@@ -79,25 +79,6 @@ public class UiUtils {
     }
 
     /**
-     * Checks whether the Robust Window Management feature is enabled.
-     *
-     * @return {@code true} if the Robust Window Management feature is enabled, {@code false}
-     *     otherwise.
-     */
-    public static boolean isRobustWindowManagementEnabled() {
-        return ChromeFeatureList.sRobustWindowManagement.isEnabled();
-    }
-
-    /**
-     * Checks whether the bulk close feature of Robust Window Management is enabled.
-     *
-     * @return {@code true} if bulk close is enabled, {@code false} otherwise.
-     */
-    public static boolean isRobustWindowManagementBulkCloseEnabled() {
-        return ChromeFeatureList.sRobustWindowManagementBulkClose.getValue();
-    }
-
-    /**
      * Checks whether the Recently Closed Tabs and Windows feature is enabled.
      *
      * @return {@code true} if the Recently Closed Tabs and Windows feature is enabled, {@code

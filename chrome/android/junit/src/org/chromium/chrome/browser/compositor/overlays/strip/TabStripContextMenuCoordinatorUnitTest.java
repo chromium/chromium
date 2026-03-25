@@ -46,10 +46,7 @@ import org.chromium.ui.widget.RectProvider;
 /** Unit tests for {@link TabStripContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({
-    ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
-    ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID
-})
+@EnableFeatures(ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID)
 @DisableFeatures(ChromeFeatureList.GLIC)
 public class TabStripContextMenuCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -72,22 +69,6 @@ public class TabStripContextMenuCoordinatorUnitTest {
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
         when(mDelegate.getRecentlyClosedEntryType()).thenReturn(RecentlyClosedEntryType.TAB);
         when(mDelegate.getTabCount()).thenReturn(2);
-    }
-
-    @Test
-    @DisableFeatures({
-        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
-        ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID
-    })
-    public void showMenu_emptyList_verifyMenuState() {
-        // Arrange.
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-
-        // Act.
-        mCoordinator.showMenu(mRectProvider, false, mActivity);
-
-        // Verify.
-        verifyMenuState(/* expectedNumItems= */ 0);
     }
 
     @Test

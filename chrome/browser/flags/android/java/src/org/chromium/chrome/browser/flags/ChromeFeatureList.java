@@ -596,7 +596,6 @@ public abstract class ChromeFeatureList {
             "RestrictLegacySearchEnginePromoOnFormFactors";
     public static final String RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV =
             "RightEdgeGoesForwardGestureNav";
-    public static final String ROBUST_WINDOW_MANAGEMENT = "RobustWindowManagement";
     public static final String ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL =
             "RobustWindowManagementExperimental";
     public static final String SAFETY_HUB = "SafetyHub";
@@ -1425,8 +1424,6 @@ public abstract class ChromeFeatureList {
                     RECORD_INCOGNITO_NTP_TIME_TO_FIRST_NAVIGATION_METRIC, true);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
-    public static final MutableFlagWithSafeDefault sRobustWindowManagement =
-            newMutableFlagWithSafeDefault(ROBUST_WINDOW_MANAGEMENT, true);
     public static final MutableFlagWithSafeDefault sScheduleWindowCleaning =
             newMutableFlagWithSafeDefault(SCHEDULE_WINDOW_CLEANING, false);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =
@@ -1906,7 +1903,4 @@ public abstract class ChromeFeatureList {
             sTabBottomSheet.newBooleanParam("dont_show_fusebox", false);
     public static final MutableBooleanParamWithSafeDefault sTabBottomSheetResizeWebview =
             sTabBottomSheet.newBooleanParam("resize_webview", false);
-
-    public static final MutableBooleanParamWithSafeDefault sRobustWindowManagementBulkClose =
-            sRobustWindowManagement.newBooleanParam("bulk_close", true);
 }

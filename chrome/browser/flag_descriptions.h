@@ -3915,14 +3915,6 @@ inline constexpr char kResponsiveIframesName[] = "Responsive Iframes";
 inline constexpr char kResponsiveIframesDescription[] =
     "Enable responsively-sized iframes.";
 
-inline constexpr char kRobustWindowManagementName[] =
-    "Robust window management";
-inline constexpr char kRobustWindowManagementDescription[] =
-    "Enables robust window management which includes being able to easily find "
-    "switch between, and resume specific Chrome windows. Essentially, "
-    "experiencing predictable and reliable window behavior similar to desktop "
-    "browsers.";
-
 inline constexpr char kRobustWindowManagementExperimentalName[] =
     "Robust window management experimental";
 inline constexpr char kRobustWindowManagementExperimentalDescription[] =

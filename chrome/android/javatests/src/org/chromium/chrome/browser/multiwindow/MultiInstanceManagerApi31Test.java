@@ -153,7 +153,6 @@ public class MultiInstanceManagerApi31Test {
     // Final state: max limit = 2, active tasks = 2, inactive tasks = 2.
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void decreaseInstanceLimit_ExcessActive_ExcessTasksFinished() {
         // Set initial instance limit.
         MultiWindowUtils.setMaxInstancesForTesting(4);
@@ -193,8 +192,7 @@ public class MultiInstanceManagerApi31Test {
     // Final state: max limit = 2, active tasks = 2, inactive tasks = 1.
     @Test
     @MediumTest
-    @DisabledTest(message="crbug.com/482145010: Flaky on test-tablet & automotive.")
-    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
+    @DisabledTest(message = "crbug.com/482145010: Flaky on test-tablet & automotive.")
     public void decreaseInstanceLimit_MaxActive_NoTasksFinished() {
         // Set initial instance limit.
         MultiWindowUtils.setMaxInstancesForTesting(3);
@@ -487,10 +485,7 @@ public class MultiInstanceManagerApi31Test {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
-    @Features.EnableFeatures({
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
-    })
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void moveTabsToOtherWindow_multipleWindowsOpen_hideTargetSelector_newIncognitoWindow() {
         var incognitoActivity =
                 createNewWindow(
@@ -525,10 +520,7 @@ public class MultiInstanceManagerApi31Test {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
-    @Features.EnableFeatures({
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
-    })
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void moveTabsToOtherWindow_multipleWindowsOpen_hideTargetSelector_newRegularWindow() {
         var activity = mActivityTestRule.getActivity();
         createNewWindows(
@@ -620,10 +612,7 @@ public class MultiInstanceManagerApi31Test {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
-    @Features.EnableFeatures({
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
-    })
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void moveTabGroupToOtherWindow_multipleWindowsOpen_incognitoWindow_hideTargetSelector() {
         createNewWindows(
                 mActivityTestRule.getActivity(),
@@ -646,10 +635,7 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
-    })
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void moveTabGroupToOtherWindow_multipleWindowsOpen_incognitoWindow_showTargetSelector() {
         createNewWindows(
                 mActivityTestRule.getActivity(),

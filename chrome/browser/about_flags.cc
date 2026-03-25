@@ -4272,11 +4272,6 @@ const FeatureEntry::FeatureVariation kAndroidTipsNotificationsV2Variations[] = {
      kAndroidTipsNotificationsV2UtilityAndOrganization, nullptr},
 };
 
-const FeatureEntry::FeatureParam kRobustWindowManagementBulkCloseEnabled[] = {
-    {"bulk_close", "true"}};
-const FeatureEntry::FeatureVariation kRobustWindowManagementVariations[] = {
-    {"Bulk Close", kRobustWindowManagementBulkCloseEnabled, nullptr}};
-
 const FeatureEntry::FeatureParam
     kRobustWindowManagementExperimentalOpenAdjacently[] = {
         {"open_adjacently", "false"}};
@@ -11491,12 +11486,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAdaptiveFrameRateName,
      flag_descriptions::kAndroidAdaptiveFrameRateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kUseFrameIntervalDeciderAdaptiveFrameRate)},
-
-    {"robust-window-management", flag_descriptions::kRobustWindowManagementName,
-     flag_descriptions::kRobustWindowManagementDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRobustWindowManagement,
-                                    kRobustWindowManagementVariations,
-                                    "RobustWindowManagement")},
 
     {"robust-window-management-experimental",
      flag_descriptions::kRobustWindowManagementExperimentalName,

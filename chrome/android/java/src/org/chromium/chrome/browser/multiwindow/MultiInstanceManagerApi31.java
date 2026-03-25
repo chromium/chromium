@@ -418,13 +418,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (preferredInstanceId >= 0 && instanceIdForTask == INVALID_WINDOW_ID) {
             // If we are at instance limit, immediately block allocation of a valid id for the
             // current activity so that it subsequently finishes. This is useful when multiple
-            // windows race to be restored near the limit (for eg. as a result of keyboard presses
-            // in quick succession). This is valid when only active instances contribute to the
-            // instance limit, which is the case when Robust Window Management is enabled. Otherwise
-            // we cannot return an invalid id, because we want to allocate a valid id for an
-            // inactive instance that is being restored, when limit includes both instance types.
-            if (!MultiWindowUtils.canCreateNewWindow()
-                    && UiUtils.isRobustWindowManagementEnabled()) {
+            // windows race to be restored near the limit (e.g. as a result of keyboard presses in
+            // quick succession).
+            if (!MultiWindowUtils.canCreateNewWindow()) {
                 profileType = getProfileType(instanceIdForTask, isIncognitoIntent);
                 return new AllocatedIdInfo(
                         instanceIdForTask, InstanceAllocationType.INVALID_INSTANCE, profileType);
@@ -768,7 +764,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         List<Integer> inactiveInstances = new ArrayList<>();
         for (int i : MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ANY)) {
             // Remove persistent data for unrecoverable instances.
-            if (!MultiWindowUtils.isRestorableInstance(i)) {
+            if (!MultiWindowUtils.isRestorableInstance(appTaskIds, i)) {
                 instancesRemoved.add(i);
                 // An instance with no live task is deleted if it has no tabs.
                 removeInstanceInfo(i, CloseWindowAppSource.NO_TABS_IN_WINDOW);

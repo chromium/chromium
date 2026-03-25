@@ -158,8 +158,7 @@ public class TabStripContextMenuCoordinator {
             }
         }
         // Add "Name window" option.
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()
-                && ChromeFeatureList.sRobustWindowManagement.isEnabled()) {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             itemList.add(
                     new ListItemBuilder()
                             .withTitleRes(R.string.menu_name_window)

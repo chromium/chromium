@@ -520,28 +520,21 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param type The {@link PersistedInstanceType} of instances to count.
      * @return The number of restorable Chrome instances not marked for deletion; an instance is
      *     considered restorable if it has tabs or is associated with a live task. An instance
-     *     marked for deletion is restorable, but not usable unless restored. If Robust Window
-     *     Management is not enabled, the type is ignored and all instances, both active and
-     *     inactive, are counted.
+     *     marked for deletion is restorable, but not usable unless restored.
      */
-    // TODO (crbug.com/456833895): Remove restorable instance check post-launch.
     public static int getInstanceCountWithFallback(@PersistedInstanceType int type) {
         if (sInstanceCountForTesting != null) {
             return sInstanceCountForTesting;
         }
 
         if (!isMultiInstanceApi31Enabled()) return 0;
-
-        if (!UiUtils.isRobustWindowManagementEnabled()) {
-            type = PersistedInstanceType.ANY;
-        }
         Set<Integer> ids = getPersistedInstanceIds(type);
+        Context context = ContextUtils.getApplicationContext();
+        Set<Integer> appTaskIds = MultiWindowUtils.getAllAppTaskIds(context);
         int count = 0;
         for (Integer id : ids) {
-            if (isRestorableInstance(id)
-                    && !ChromeMultiInstancePersistentStore.readMarkedForDeletion(id)) {
-                count++;
-            }
+            if (ChromeMultiInstancePersistentStore.readMarkedForDeletion(id)) continue;
+            if (isRestorableInstance(appTaskIds, id)) count++;
         }
         return count;
     }
@@ -572,9 +565,11 @@ public class MultiWindowUtils implements ActivityStateListener {
             instanceType |= PersistedInstanceType.ACTIVE;
         }
         Set<Integer> ids = getPersistedInstanceIds(instanceType);
+        Context context = ContextUtils.getApplicationContext();
+        Set<Integer> appTaskIds = getAllAppTaskIds(context);
         int count = 0;
         for (Integer id : ids) {
-            if (isRestorableInstance(id)) {
+            if (isRestorableInstance(appTaskIds, id)) {
                 count++;
             }
         }
@@ -588,11 +583,10 @@ public class MultiWindowUtils implements ActivityStateListener {
         return getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
     }
 
-    static boolean isRestorableInstance(int index) {
+    static boolean isRestorableInstance(Set<Integer> appTaskIds, int index) {
         int taskId = ChromeMultiInstancePersistentStore.readTaskId(index);
-        Set<Integer> activeTaskIds = getAllAppTaskIds(ContextUtils.getApplicationContext());
-        return ChromeMultiInstancePersistentStore.readNormalTabCount(index) != 0
-                || activeTaskIds.contains(taskId);
+        boolean isActiveTask = appTaskIds.contains(taskId);
+        return ChromeMultiInstancePersistentStore.readNormalTabCount(index) != 0 || isActiveTask;
     }
 
     @Override
