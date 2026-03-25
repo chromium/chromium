@@ -8841,11 +8841,6 @@
     "expiry_milestone": 146
   },
   {
-    "name": "tab-group-menu-improvements",
-    "owners": [ "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "tab-group-more-entry-points",
     "owners": ["top-chrome-desktop-ui@google.com"],
     "expiry_milestone": 150
@@ -8909,21 +8904,6 @@
       "mfiaz@google.com",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "tabbed-browser-use-new-layout",
-    "owners": [ "dljames@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "tabsearch-toolbar-button",
-    "owners": [ "estalin@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "tabstrip-combo-button",
-    "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -9048,11 +9028,6 @@
     "expiry_milestone": 150
   },
   {
-    "name":"tpc-phase-out-facilitated-testing",
-    "owners": ["//chrome/browser/tpcd/experiment/OWNERS"],
-    "expiry_milestone": 137
-  },
-  {
     "name": "tpcd-heuristics-grants",
     "owners": [
       "//chrome/browser/tpcd/OWNERS"
@@ -9075,13 +9050,6 @@
     "name": "traffic-counters-for-wifi-testing",
     "owners": ["khegde@google.com", "cros-device-enablement@google.com"],
     "expiry_milestone": 138
-  },
-  {
-    "name": "translate-force-trigger-on-english",
-    "owners": [ "megjablon@chromium.org", "cuianthony@chromium.org", "chrome-language@google.com" ],
-    // This flag is used to manually trigger a Finch controlled, India only
-    // feature.
-    "expiry_milestone": -1
   },
   {
     "name": "translate-open-settings",
@@ -9235,12 +9203,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "use-custom-messages-domain",
-    "owners": [ "khorimoto@chromium.org", "jonmann@chromium.org" ],
-    // This flag is used for QA and development.
-    "expiry_milestone": -1
-  },
-  {
     "name": "use-default-apps-page-for-promos",
     "owners": [ "gujen@google.com", "bling-mony-pod@google.com" ],
     "expiry_milestone": 150
@@ -9275,12 +9237,6 @@
     "name": "use-hdr-transfer-function",
     "owners": [ "mcasas@chromium.org", "chromeos-gfx@google.com" ],
     "expiry_milestone": 125
-  },
-  {
-    "name": "use_messages_staging_url",
-    "owners": [ "khorimoto@chromium.org", "jonmann@chromium.org" ],
-    // This flag is required for QA and dogfood testing.
-    "expiry_milestone": -1
   },
   {
     "name": "use-new-feed-eligibility-service",
@@ -9357,11 +9313,6 @@
     "owners": [ "cros-customization@google.com", "hsuregan@chromium.org", "khorimoto@chromium.org" ],
     // This flag is required for QA and dogfood testing.
     "expiry_milestone": -1
-  },
-  {
-    "name": "use-web-app-header-for-standalone-mode",
-    "owners": [ "aixba@google.com",  "capabilities-team@google.com"],
-    "expiry_milestone": 160
   },
   {
     "name": "use-winrt-midi-api",
@@ -9774,14 +9725,6 @@
     "name": "webui-omnibox-popup-selection-control",
     "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160
-  },
-  {
-    "name" : "webui-tab-strip-context-menu-after-tap",
-    "owners": [
-      "yuhengh@chromium.org",
-      "tluk@chromium.org"
-    ],
-    "expiry_milestone": 116
   },
   {
     "name": "webxr-hand-anonymization",
