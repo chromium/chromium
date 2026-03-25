@@ -24,8 +24,9 @@ communicating with someone in their primary language. We all get frustrated
 when working on hard problems, but we cannot allow that frustration to turn
 into personal attacks.
 
-It is especially important that we are respectful of each other's time. As a
-general rule, while it is acceptable to use AI for Chromium development
+It is especially important that we are respectful of each other's time.
+
+As a general rule, while it is acceptable to use AI for Chromium development
 (code authoring, bug finding, etc), you should not "delegate" discussing
 something with another human to an AI. If you file an AI-generated bug or
 upload an AI-authored CL and a human replies on it, you should reply to their
