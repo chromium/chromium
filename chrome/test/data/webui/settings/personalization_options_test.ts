@@ -163,7 +163,7 @@ suite('AllBuilds', function() {
         assertTrue(testElement.$.chromeSigninUserChoiceToast.open);
       });
 
-  test('signinAllowedToggle', function() {
+  test('signinAllowedToggle', async function() {
     const toggle = testElement.$.signinAllowedToggle;
     assertTrue(isVisible(toggle));
 
@@ -211,63 +211,56 @@ suite('AllBuilds', function() {
     assertFalse(
         !!testElement.shadowRoot!.querySelector('settings-signout-dialog'));
     toggle.click();
-    return eventToPromise('cr-dialog-open', testElement)
-        .then(function() {
-          flush();
-          // The toggle remains on.
-          assertTrue(toggle.checked);
-          assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
-          assertFalse(testElement.$.toast.open);
 
-          const signoutDialog =
-              testElement.shadowRoot!.querySelector('settings-signout-dialog');
-          assertTrue(!!signoutDialog);
-          assertTrue(signoutDialog.$.dialog.open);
+    await eventToPromise('cr-dialog-open', testElement);
+    flush();
+    // The toggle remains on.
+    assertTrue(toggle.checked);
+    assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertFalse(testElement.$.toast.open);
 
-          // The user clicks cancel.
-          const cancel = signoutDialog.shadowRoot!.querySelector<HTMLElement>(
-              '#disconnectCancel')!;
-          cancel.click();
+    let signoutDialog =
+        testElement.shadowRoot!.querySelector('settings-signout-dialog');
+    assertTrue(!!signoutDialog);
+    assertTrue(signoutDialog.$.dialog.open);
 
-          return eventToPromise('close', signoutDialog);
-        })
-        .then(function() {
-          flush();
-          assertFalse(!!testElement.shadowRoot!.querySelector(
-              'settings-signout-dialog'));
+    // The user clicks cancel.
+    const cancel = signoutDialog.shadowRoot!.querySelector<HTMLElement>(
+        '#disconnectCancel')!;
+    cancel.click();
 
-          // After the dialog is closed, the toggle remains turned on.
-          assertTrue(toggle.checked);
-          assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
-          assertFalse(testElement.$.toast.open);
+    await eventToPromise('close', signoutDialog);
+    flush();
+    assertFalse(
+        !!testElement.shadowRoot!.querySelector('settings-signout-dialog'));
 
-          // The user clicks the toggle again.
-          toggle.click();
-          return eventToPromise('cr-dialog-open', testElement);
-        })
-        .then(function() {
-          flush();
-          const signoutDialog =
-              testElement.shadowRoot!.querySelector('settings-signout-dialog');
-          assertTrue(!!signoutDialog);
-          assertTrue(signoutDialog.$.dialog.open);
+    // After the dialog is closed, the toggle remains turned on.
+    assertTrue(toggle.checked);
+    assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertFalse(testElement.$.toast.open);
 
-          // The user clicks confirm, which signs them out.
-          const disconnectConfirm =
-              signoutDialog.shadowRoot!.querySelector<HTMLElement>(
-                  '#disconnectConfirm')!;
-          disconnectConfirm.click();
+    // The user clicks the toggle again.
+    toggle.click();
+    await eventToPromise('cr-dialog-open', testElement);
+    flush();
+    signoutDialog =
+        testElement.shadowRoot!.querySelector('settings-signout-dialog');
+    assertTrue(!!signoutDialog);
+    assertTrue(signoutDialog.$.dialog.open);
 
-          return eventToPromise('close', signoutDialog);
-        })
-        .then(function() {
-          flush();
-          // After the dialog is closed, the toggle is turned off and the
-          // toast is shown.
-          assertFalse(toggle.checked);
-          assertFalse(testElement.prefs.signin.allowed_on_next_startup.value);
-          assertTrue(testElement.$.toast.open);
-        });
+    // The user clicks confirm, which signs them out.
+    const disconnectConfirm =
+        signoutDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#disconnectConfirm')!;
+    disconnectConfirm.click();
+
+    await eventToPromise('close', signoutDialog);
+    flush();
+    // After the dialog is closed, the toggle is turned off and the
+    // toast is shown.
+    assertFalse(toggle.checked);
+    assertFalse(testElement.prefs.signin.allowed_on_next_startup.value);
+    assertTrue(testElement.$.toast.open);
   });
 
   // Tests that the "Allow sign-in" toggle is hidden when signin is not

@@ -22,7 +22,7 @@ suite('SearchSettingsTest', function() {
    * Test that the DOM of a node is modified as expected when a search hit
    * occurs within that node.
    */
-  test('normal highlighting', function() {
+  test('normal highlighting', async function() {
     const optionText = 'FooSettingsFoo';
 
     document.body.innerHTML =
@@ -33,30 +33,25 @@ suite('SearchSettingsTest', function() {
     const section = document.querySelector('settings-section')!;
     const div = document.querySelector('#mydiv')!;
 
-    return searchManager.search('settings', section)
-        .then(function() {
-          const highlightWrapper =
-              div.querySelector('.search-highlight-wrapper');
-          assertTrue(!!highlightWrapper);
+    await searchManager.search('settings', section);
+    const highlightWrapper = div.querySelector('.search-highlight-wrapper');
+    assertTrue(!!highlightWrapper);
 
-          const originalContent = highlightWrapper.querySelector(
-              '.search-highlight-original-content');
-          assertTrue(!!originalContent);
-          assertEquals(optionText, originalContent.textContent);
+    const originalContent =
+        highlightWrapper.querySelector('.search-highlight-original-content');
+    assertTrue(!!originalContent);
+    assertEquals(optionText, originalContent.textContent);
 
-          const searchHits = highlightWrapper.querySelectorAll<HTMLElement>(
-              '.search-highlight-hit');
-          assertEquals(1, searchHits.length);
-          assertEquals('Settings', searchHits[0]!.textContent);
+    const searchHits =
+        highlightWrapper.querySelectorAll<HTMLElement>('.search-highlight-hit');
+    assertEquals(1, searchHits.length);
+    assertEquals('Settings', searchHits[0]!.textContent);
 
-          // Check that original DOM structure is restored when search
-          // highlights are cleared.
-          return searchManager.search('', section);
-        })
-        .then(function() {
-          assertEquals(0, div.children.length);
-          assertEquals(optionText, div.textContent);
-        });
+    // Check that original DOM structure is restored when search
+    // highlights are cleared.
+    await searchManager.search('', section);
+    assertEquals(0, div.children.length);
+    assertEquals(optionText, div.textContent);
   });
 
   /**
@@ -64,9 +59,8 @@ suite('SearchSettingsTest', function() {
    * settings-section to be shown and the <select> to be highlighted by a
    * bubble.
    */
-  test('<select> highlighting', function() {
-    document.body.innerHTML =
-        getTrustedStaticHtml`<settings-section>
+  test('<select> highlighting', async function() {
+    document.body.innerHTML = getTrustedStaticHtml`<settings-section>
            <select>
              <option>Foo</option>
              <option>Settings</option>
@@ -77,21 +71,17 @@ suite('SearchSettingsTest', function() {
     const section = document.querySelector('settings-section')!;
     const select = section.querySelector('select')!;
 
-    return searchManager.search('settings', section)
-        .then(function() {
-          assertEquals(1, document.querySelectorAll('.search-bubble').length);
+    await searchManager.search('settings', section);
+    assertEquals(1, document.querySelectorAll('.search-bubble').length);
 
-          // Check that original DOM structure is present even after search
-          // highlights are cleared.
-          return searchManager.search('', section);
-        })
-        .then(function() {
-          const options = select.querySelectorAll('option');
-          assertEquals(3, options.length);
-          assertEquals('Foo', options[0]!.textContent);
-          assertEquals('Settings', options[1]!.textContent);
-          assertEquals('Baz', options[2]!.textContent);
-        });
+    // Check that original DOM structure is present even after search
+    // highlights are cleared.
+    await searchManager.search('', section);
+    const options = select.querySelectorAll('option');
+    assertEquals(3, options.length);
+    assertEquals('Foo', options[0]!.textContent);
+    assertEquals('Settings', options[1]!.textContent);
+    assertEquals('Baz', options[2]!.textContent);
   });
 
   test('<select> highlighting with search-hint', async function() {
@@ -151,7 +141,7 @@ suite('SearchSettingsTest', function() {
 
   // Test that multiple requests for the same text correctly highlight their
   // corresponding part of the tree without affecting other parts of the tree.
-  test('multiple simultaneous requests for the same text', function() {
+  test('multiple simultaneous requests for the same text', async function() {
     document.body.innerHTML =
         getTrustedStaticHtml`<settings-section>
            <div><span>Hello there</span></div>
@@ -166,15 +156,14 @@ suite('SearchSettingsTest', function() {
     const sections = Array.prototype.slice.call(
         document.querySelectorAll('settings-section'));
 
-    return Promise.all(sections.map(s => searchManager.search('there', s)))
-        .then(function(requests) {
-          assertEquals(1, requests[0]!.getSearchResult().matchCount);
-          assertEquals(1, requests[1]!.getSearchResult().matchCount);
-          assertEquals(0, requests[2]!.getSearchResult().matchCount);
-        });
+    const requests =
+        await Promise.all(sections.map(s => searchManager.search('there', s)));
+    assertEquals(1, requests[0]!.getSearchResult().matchCount);
+    assertEquals(1, requests[1]!.getSearchResult().matchCount);
+    assertEquals(0, requests[2]!.getSearchResult().matchCount);
   });
 
-  test('highlight removed when text is changed', function() {
+  test('highlight removed when text is changed', async function() {
     const originalText = 'FooSettingsFoo';
 
     document.body.innerHTML =
@@ -183,22 +172,20 @@ suite('SearchSettingsTest', function() {
         </settings-section>`);
 
     const div = document.querySelector('#mydiv')!;
-    return searchManager.search('settings', document.body).then(() => {
-      assertEquals(1, div.childNodes.length);
-      const highlightWrapper = div.firstChild as HTMLElement;
-      assertTrue(
-          highlightWrapper.classList.contains('search-highlight-wrapper'));
-      const originalContent =
-          highlightWrapper.querySelector('.search-highlight-original-content');
-      assertTrue(!!originalContent);
-      originalContent.childNodes[0]!.nodeValue = 'Foo';
-      return new Promise<void>(resolve => {
-        setTimeout(() => {
-          assertEquals(1, div.childNodes.length);
-          assertEquals('Foo', div.innerHTML);
-          resolve();
-        }, 1);
-      });
+    await searchManager.search('settings', document.body);
+    assertEquals(1, div.childNodes.length);
+    const highlightWrapper = div.firstChild as HTMLElement;
+    assertTrue(highlightWrapper.classList.contains('search-highlight-wrapper'));
+    const originalContent =
+        highlightWrapper.querySelector('.search-highlight-original-content');
+    assertTrue(!!originalContent);
+    originalContent.childNodes[0]!.nodeValue = 'Foo';
+    return new Promise<void>(resolve => {
+      setTimeout(() => {
+        assertEquals(1, div.childNodes.length);
+        assertEquals('Foo', div.innerHTML);
+        resolve();
+      }, 1);
     });
   });
 

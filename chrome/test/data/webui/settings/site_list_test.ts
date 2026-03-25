@@ -884,10 +884,9 @@ suite('SiteList', function() {
           linkElement.getAttribute('aria-label'));
 
       linkElement.dispatchEvent(new MouseEvent('click'));
-      await browserProxy.whenCalled('openSystemPermissionSettings')
-          .then((contentType: string) => {
-            assertEquals(category, contentType);
-          });
+      const contentTypeArg =
+          await browserProxy.whenCalled('openSystemPermissionSettings');
+      assertEquals(category, contentTypeArg);
     }
   }
 
@@ -982,50 +981,46 @@ suite('SiteList', function() {
     }
   });
 
-  test('initial BLOCK state is correct', function() {
+  test('initial BLOCK state is correct', async function() {
     const contentType = ContentSettingsTypes.GEOLOCATION;
     const categorySubtype = ContentSetting.BLOCK;
     setUpCategory(contentType, categorySubtype, prefsGeolocation);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
-          assertEquals(categorySubtype, testElement.categorySubtype);
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
+    assertEquals(categorySubtype, testElement.categorySubtype);
 
-          assertEquals(2, testElement.sites.length);
-          assertEquals(
-              prefsGeolocation.exceptions[contentType][2]!.origin,
-              testElement.sites[0]!.origin);
-          assertEquals(
-              prefsGeolocation.exceptions[contentType][3]!.origin,
-              testElement.sites[1]!.origin);
-          flush();  // Populates action menu.
-          openActionMenu(0);
-          assertMenu(['Allow', 'Edit', 'Remove']);
+    assertEquals(2, testElement.sites.length);
+    assertEquals(
+        prefsGeolocation.exceptions[contentType][2]!.origin,
+        testElement.sites[0]!.origin);
+    assertEquals(
+        prefsGeolocation.exceptions[contentType][3]!.origin,
+        testElement.sites[1]!.origin);
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    assertMenu(['Allow', 'Edit', 'Remove']);
 
-          assertFalse(testElement.$.category.hidden);
-        });
+    assertFalse(testElement.$.category.hidden);
   });
 
-  test('initial SESSION ONLY state is correct', function() {
+  test('initial SESSION ONLY state is correct', async function() {
     const contentType = ContentSettingsTypes.COOKIES;
     const categorySubtype = ContentSetting.SESSION_ONLY;
     setUpCategory(contentType, categorySubtype, prefsSessionOnly);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
-          assertEquals(categorySubtype, testElement.categorySubtype);
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
+    assertEquals(categorySubtype, testElement.categorySubtype);
 
-          assertEquals(1, testElement.sites.length);
-          assertEquals(
-              prefsSessionOnly.exceptions[contentType][2]!.origin,
-              testElement.sites[0]!.origin);
+    assertEquals(1, testElement.sites.length);
+    assertEquals(
+        prefsSessionOnly.exceptions[contentType][2]!.origin,
+        testElement.sites[0]!.origin);
 
-          flush();  // Populates action menu.
-          openActionMenu(0);
-          assertMenu(['Allow', 'Block', 'Edit', 'Remove']);
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    assertMenu(['Allow', 'Block', 'Edit', 'Remove']);
 
-          assertFalse(testElement.$.category.hidden);
-        });
+    assertFalse(testElement.$.category.hidden);
   });
 
   test('initial INCOGNITO BLOCK state is correct', async function() {
@@ -1218,26 +1213,22 @@ suite('SiteList', function() {
     assertNotEquals(0, testElement.$.listContainer.offsetHeight);
   });
 
-  test('Block list not hidden when empty', function() {
+  test('Block list not hidden when empty', async function() {
     // Prefs: One item in Allow list, nothing in Block list.
     const contentType = ContentSettingsTypes.GEOLOCATION;
     setUpCategory(contentType, ContentSetting.BLOCK, prefsOneEnabled);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
-          assertFalse(testElement.$.category.hidden);
-        });
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
+    assertFalse(testElement.$.category.hidden);
   });
 
-  test('Allow list not hidden when empty', function() {
+  test('Allow list not hidden when empty', async function() {
     // Prefs: One item in Block list, nothing in Allow list.
     const contentType = ContentSettingsTypes.GEOLOCATION;
     setUpCategory(contentType, ContentSetting.ALLOW, prefsOneDisabled);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          assertEquals(contentType, actualContentType);
-          assertFalse(testElement.$.category.hidden);
-        });
+    const actualContentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(contentType, actualContentType);
+    assertFalse(testElement.$.category.hidden);
   });
 
   test('Mixed embeddingOrigin', async function() {

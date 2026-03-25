@@ -42,44 +42,43 @@ suite('SpellCheckPageMetricsBrowser', function() {
     CrSettingsPrefs.deferInitialization = true;
   });
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
     settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
-    return CrSettingsPrefs.initialized.then(function() {
-      // Sets up test browser proxy.
-      browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-      // Sets up test browser proxy.
-      languageSettingsMetricsProxy = new TestSpellCheckSettingsMetricsProxy();
-      LanguageSettingsMetricsProxyImpl.setInstance(
-          languageSettingsMetricsProxy);
+    await CrSettingsPrefs.initialized;
+    // Sets up test browser proxy.
+    browserProxy = new TestLanguagesBrowserProxy();
+    LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-      // Sets up fake languageSettingsPrivate API.
-      const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-      (languageSettingsPrivate as unknown as FakeLanguageSettingsPrivate)
-          .setSettingsPrefs(settingsPrefs);
+    // Sets up test browser proxy.
+    languageSettingsMetricsProxy = new TestSpellCheckSettingsMetricsProxy();
+    LanguageSettingsMetricsProxyImpl.setInstance(languageSettingsMetricsProxy);
 
-      const settingsLanguages = document.createElement('settings-languages');
-      settingsLanguages.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
-      document.body.appendChild(settingsLanguages);
+    // Sets up fake languageSettingsPrivate API.
+    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
+    (languageSettingsPrivate as unknown as FakeLanguageSettingsPrivate)
+        .setSettingsPrefs(settingsPrefs);
 
-      spellCheckPage = document.createElement('settings-spell-check-page');
+    const settingsLanguages = document.createElement('settings-languages');
+    settingsLanguages.prefs = settingsPrefs.prefs;
+    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
+    document.body.appendChild(settingsLanguages);
 
-      // Prefs would normally be data-bound to settings-languages-page.
-      spellCheckPage.prefs = settingsLanguages.prefs;
-      fakeDataBind(settingsLanguages, spellCheckPage, 'prefs');
+    spellCheckPage = document.createElement('settings-spell-check-page');
 
-      spellCheckPage.languages = settingsLanguages.languages;
-      fakeDataBind(settingsLanguages, spellCheckPage, 'languages');
+    // Prefs would normally be data-bound to settings-languages-page.
+    spellCheckPage.prefs = settingsLanguages.prefs;
+    fakeDataBind(settingsLanguages, spellCheckPage, 'prefs');
 
-      document.body.appendChild(spellCheckPage);
-      return settingsLanguages.whenReady();
-    });
+    spellCheckPage.languages = settingsLanguages.languages;
+    fakeDataBind(settingsLanguages, spellCheckPage, 'languages');
+
+    document.body.appendChild(spellCheckPage);
+    return settingsLanguages.whenReady();
   });
 
   teardown(function() {

@@ -65,22 +65,18 @@ suite('MainPageTests', function() {
     return !!settingsMain.shadowRoot!.querySelector('managed-footnote');
   }
 
-  test('managed header hides when searching', function() {
+  test('managed header hides when searching', async function() {
     flush();
 
     assertTrue(showingManagedHeader());
 
     searchManager.setMatchesFound(false);
-    return settingsMain.searchContents('Query1')
-        .then(() => {
-          assertFalse(showingManagedHeader());
+    await settingsMain.searchContents('Query1');
+    assertFalse(showingManagedHeader());
 
-          searchManager.setMatchesFound(true);
-          return settingsMain.searchContents('Query2');
-        })
-        .then(() => {
-          assertFalse(showingManagedHeader());
-        });
+    searchManager.setMatchesFound(true);
+    await settingsMain.searchContents('Query2');
+    assertFalse(showingManagedHeader());
   });
 
   test('managed header hides when showing subpage', function() {
@@ -99,28 +95,24 @@ suite('MainPageTests', function() {
     assertFalse(showingManagedHeader());
   });
 
-  test('no results page shows and hides', function() {
+  test('no results page shows and hides', async function() {
     flush();
     const noSearchResults = settingsMain.$.noSearchResults;
     assertTrue(!!noSearchResults);
     assertTrue(noSearchResults.hidden);
 
     searchManager.setMatchesFound(false);
-    return settingsMain.searchContents('Query1')
-        .then(function() {
-          assertFalse(noSearchResults.hidden);
+    await settingsMain.searchContents('Query1');
+    assertFalse(noSearchResults.hidden);
 
-          searchManager.setMatchesFound(true);
-          return settingsMain.searchContents('Query2');
-        })
-        .then(function() {
-          assertTrue(noSearchResults.hidden);
-        });
+    searchManager.setMatchesFound(true);
+    await settingsMain.searchContents('Query2');
+    assertTrue(noSearchResults.hidden);
   });
 
   // Ensure that when the user clears the search box, the "no results" page
   // is hidden.
-  test('no results page hides on clear', function() {
+  test('no results page hides on clear', async function() {
     flush();
     const noSearchResults = settingsMain.$.noSearchResults;
     assertTrue(!!noSearchResults);
@@ -128,10 +120,9 @@ suite('MainPageTests', function() {
 
     searchManager.setMatchesFound(false);
     // Clearing the search box is effectively a search for the empty string.
-    return settingsMain.searchContents('').then(function() {
-      flush();
-      assertTrue(noSearchResults.hidden);
-    });
+    await settingsMain.searchContents('');
+    flush();
+    assertTrue(noSearchResults.hidden);
   });
 
   /**
@@ -150,23 +141,22 @@ suite('MainPageTests', function() {
   // Ensure that searching, then entering a subpage, then going back
   // lands the user in a page where basic sections are visible, because the
   // page is still in search mode.
-  test('returning from subpage to search results', function() {
+  test('returning from subpage to search results', async function() {
     Router.getInstance().navigateTo(routes.BASIC);
     flush();
 
     searchManager.setMatchesFound(true);
-    return settingsMain.searchContents('Query1').then(function() {
-      // Simulate navigating into a subpage.
-      Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
-      settingsMain.shadowRoot!.querySelector('settings-basic-page')!
-          .dispatchEvent(new CustomEvent(
-              'subpage-expand', {bubbles: true, composed: true}));
-      flush();
+    await settingsMain.searchContents('Query1');
+    // Simulate navigating into a subpage.
+    Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
+    settingsMain.shadowRoot!.querySelector('settings-basic-page')!
+        .dispatchEvent(
+            new CustomEvent('subpage-expand', {bubbles: true, composed: true}));
+    flush();
 
-      // Simulate clicking the left arrow to go back to the search results.
-      Router.getInstance().navigateTo(routes.BASIC);
-      assertPageVisibility('block');
-    });
+    // Simulate clicking the left arrow to go back to the search results.
+    Router.getInstance().navigateTo(routes.BASIC);
+    assertPageVisibility('block');
   });
 
   test('updates the title based on current route', function() {

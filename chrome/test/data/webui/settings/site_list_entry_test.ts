@@ -31,7 +31,7 @@ suite('SiteListEntry', function() {
     document.body.appendChild(testElement);
   });
 
-  test('fires show-tooltip when mouse over policy indicator', function() {
+  test('fires show-tooltip when mouse over policy indicator', async function() {
     testElement.model = {
       category: ContentSettingsTypes.NOTIFICATIONS,
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
@@ -54,9 +54,8 @@ suite('SiteListEntry', function() {
     const wait = eventToPromise('show-tooltip', document);
     icon.$.indicator.dispatchEvent(
         new MouseEvent('mouseenter', {bubbles: true, composed: true}));
-    return wait.then(() => {
-      assertTooltipIsHidden(crTooltip);
-    });
+    await wait;
+    assertTooltipIsHidden(crTooltip);
   });
 
   test('not valid origin does not go to site details page', async function() {

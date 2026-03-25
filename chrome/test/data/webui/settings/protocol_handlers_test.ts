@@ -274,25 +274,24 @@ suite('ProtocolHandlers', function() {
     return testButtonFlow('removeButton', 'removeProtocolHandler');
   });
 
-  test('default button works', function() {
+  test('default button works', async function() {
     browserProxy.setProtocolHandlers(protocols);
-    return testButtonFlow('defaultButton', 'setProtocolDefault').then(() => {
-      const menuButtons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
-          'cr-icon-button.icon-more-vert');
-      const closeMenu = () =>
-          testElement.shadowRoot!.querySelector('cr-action-menu')!.close();
-      menuButtons[0]!.click();
-      flush();
-      assertTrue(testElement.$.defaultButton.disabled);
-      closeMenu();
-      menuButtons[1]!.click();
-      flush();
-      assertTrue(testElement.$.defaultButton.disabled);
-      closeMenu();
-      menuButtons[2]!.click();
-      flush();
-      assertFalse(testElement.$.defaultButton.disabled);
-    });
+    await testButtonFlow('defaultButton', 'setProtocolDefault');
+    const menuButtons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    const closeMenu = () =>
+        testElement.shadowRoot!.querySelector('cr-action-menu')!.close();
+    menuButtons[0]!.click();
+    flush();
+    assertTrue(testElement.$.defaultButton.disabled);
+    closeMenu();
+    menuButtons[1]!.click();
+    flush();
+    assertTrue(testElement.$.defaultButton.disabled);
+    closeMenu();
+    menuButtons[2]!.click();
+    flush();
+    assertFalse(testElement.$.defaultButton.disabled);
   });
 
   test('remove button for ignored works', async () => {

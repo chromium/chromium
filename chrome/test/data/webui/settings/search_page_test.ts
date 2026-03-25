@@ -10,7 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsSearchEngineListDialogElement, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 import {SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -110,12 +110,9 @@ suite('SearchPageTests', function() {
     webUIListenerCallback('search-engines-changed', searchEnginesInfo);
     flush();
     assertEquals('2', radioGroupElement.selected);
-
-    browserProxy.whenCalled('setDefaultSearchEngine').then(function() {
-      // Since the change happened in a different tab, there should be
-      // no new call to |setDefaultSearchEngine|.
-      assertNotReached('Should not call setDefaultSearchEngine again');
-    });
+    // Since the change happened in a different tab, there should be
+    // no new call to |setDefaultSearchEngine|.
+    assertEquals(0, browserProxy.getCallCount('setDefaultSearchEngine'));
   });
 
   test('ControlledByExtension', async function() {

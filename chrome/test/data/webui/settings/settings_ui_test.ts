@@ -16,15 +16,14 @@ suite('SettingsUIToolbarAndDrawer', function() {
   let toolbar: CrToolbarElement;
   let drawer: CrDrawerElement;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
-    return CrSettingsPrefs.initialized.then(() => {
-      flush();
-      toolbar = ui.$.toolbar;
-      drawer = ui.$.drawer;
-    });
+    await CrSettingsPrefs.initialized;
+    flush();
+    toolbar = ui.$.toolbar;
+    drawer = ui.$.drawer;
   });
 
   test('showing menu in toolbar is dependent on narrow mode', async function() {
@@ -79,15 +78,14 @@ suite('SettingsUISearch', function() {
   let toolbar: CrToolbarElement;
   let searchField: CrToolbarSearchFieldElement;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
-    return CrSettingsPrefs.initialized.then(() => {
-      flush();
-      toolbar = ui.$.toolbar;
-      searchField = toolbar.getSearchField();
-    });
+    await CrSettingsPrefs.initialized;
+    flush();
+    toolbar = ui.$.toolbar;
+    searchField = toolbar.getSearchField();
   });
 
   test('URL initiated search propagates to search box', function() {

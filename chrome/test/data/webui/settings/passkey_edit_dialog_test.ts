@@ -82,12 +82,7 @@ function clickDots(page: HTMLElement, num: number) {
 function clickButton(page: HTMLElement, name: string) {
   const menu = page.shadowRoot!.querySelector<HTMLElement>('#menu')!;
   const button = menu.querySelector<HTMLElement>('#' + name);
-
-  assertTrue(button !== null, name + ' button missing');
-  if (button === null) {
-    return;
-  }
-
+  assertTrue(!!button, name + ' button missing');
   button.click();
 }
 
@@ -97,12 +92,7 @@ function clickButton(page: HTMLElement, name: string) {
 function clickDialogButton(dialog: HTMLElement, name: string) {
   const menu = dialog.shadowRoot!.querySelector<HTMLElement>('#dialog')!;
   const button = menu.querySelector<HTMLElement>('#' + name);
-
-  assertTrue(button !== null, name + ' button missing');
-  if (button === null) {
-    return;
-  }
-
+  assertTrue(!!button, name + ' button missing');
   button.click();
 }
 
@@ -161,11 +151,6 @@ suite('PasskeysEditDialog', function() {
     assertFalse(isShowingError(page));
     assertDeepEquals(getUsernamesFromList(page), [passkeys[0].userName]);
 
-    browserProxy.whenCalled('edit').then((args) => {
-      assertEquals(args[0], passkeys[0].credentialId);
-      assertEquals(args[1], passkeys[0].userName);
-    });
-
     clickButton(page, 'edit');
     await flushTasks();
 
@@ -208,11 +193,6 @@ suite('PasskeysEditDialog', function() {
 
     clickDots(page, 0);
 
-    browserProxy.whenCalled('edit').then((args) => {
-      assertEquals(args[0], passkeys[0].credentialId);
-      assertEquals(args[0], editedPasskeys[0].userName);
-    });
-
     clickButton(page, 'edit');
     await flushTasks();
     const dialog = page.shadowRoot!.querySelector('passkey-edit-dialog');
@@ -223,6 +203,11 @@ suite('PasskeysEditDialog', function() {
     setInputField(dialog, 'new-username');
     await flushTasks();
     clickDialogButton(dialog, 'actionButton');
+
+    const args = await browserProxy.whenCalled('edit');
+    assertEquals(args[0], passkeys[0].credentialId);
+    assertEquals(args[1], editedPasskeys[0].userName);
+
     await flushTasks();
 
     assertEquals(browserProxy.getCallCount('edit'), 1);
@@ -251,10 +236,6 @@ suite('PasskeysEditDialog', function() {
     assertDeepEquals(getUsernamesFromList(page), [passkeys[0].userName]);
 
     clickDots(page, 0);
-
-    browserProxy.whenCalled('edit').then((args) => {
-      assertEquals(args[0], passkeys[0].credentialId);
-    });
 
     clickButton(page, 'edit');
     await flushTasks();

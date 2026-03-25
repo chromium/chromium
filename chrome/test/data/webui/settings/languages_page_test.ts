@@ -48,43 +48,42 @@ suite('LanguagesPage', function() {
     CrSettingsPrefs.deferInitialization = true;
   });
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
     settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
-    return CrSettingsPrefs.initialized.then(function() {
-      // Set up test browser proxy.
-      browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-      // Set up fake languageSettingsPrivate API.
-      const languageSettingsPrivate =
-          browserProxy.getLanguageSettingsPrivate() as unknown as
-          FakeLanguageSettingsPrivate;
-      languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
+    await CrSettingsPrefs.initialized;
+    // Set up test browser proxy.
+    browserProxy = new TestLanguagesBrowserProxy();
+    LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-      const settingsLanguages = document.createElement('settings-languages');
-      settingsLanguages.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
-      document.body.appendChild(settingsLanguages);
-      languageHelper = settingsLanguages;
+    // Set up fake languageSettingsPrivate API.
+    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
+        unknown as FakeLanguageSettingsPrivate;
+    languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
-      languagesPage = document.createElement('settings-languages-page');
+    const settingsLanguages = document.createElement('settings-languages');
+    settingsLanguages.prefs = settingsPrefs.prefs;
+    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
+    document.body.appendChild(settingsLanguages);
+    languageHelper = settingsLanguages;
 
-      languagesPage.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, languagesPage, 'prefs');
+    languagesPage = document.createElement('settings-languages-page');
 
-      languagesPage.languages = settingsLanguages.languages;
-      fakeDataBind(settingsLanguages, languagesPage, 'languages');
+    languagesPage.prefs = settingsPrefs.prefs;
+    fakeDataBind(settingsPrefs, languagesPage, 'prefs');
 
-      document.body.appendChild(languagesPage);
-      flush();
-      actionMenu = languagesPage.$.menu.get();
+    languagesPage.languages = settingsLanguages.languages;
+    fakeDataBind(settingsLanguages, languagesPage, 'languages');
 
-      return settingsLanguages.whenReady();
-    });
+    document.body.appendChild(languagesPage);
+    flush();
+    actionMenu = languagesPage.$.menu.get();
+
+    return settingsLanguages.whenReady();
   });
 
   suite('AddLanguagesDialog', function() {
@@ -117,7 +116,7 @@ suite('LanguagesPage', function() {
       }
     }
 
-    setup(function() {
+    setup(async function() {
       addLanguagesButton =
           languagesPage.shadowRoot!.querySelector<CrButtonElement>(
               '#addLanguages')!;
@@ -126,39 +125,39 @@ suite('LanguagesPage', function() {
 
       // The page stamps the dialog, registers listeners, and populates the
       // iron-list asynchronously at microtask timing, so wait for a new task.
-      return whenDialogOpen.then(() => {
-        dialog = languagesPage.shadowRoot!.querySelector(
-            'settings-add-languages-dialog')!;
-        assertTrue(!!dialog);
+      await whenDialogOpen;
 
-        // Observe the removal of the dialog via MutationObserver since the
-        // HTMLDialogElement 'close' event fires at an unpredictable time.
-        dialogClosedResolver = new PromiseResolver();
-        dialogClosedObserver = new MutationObserver(onMutation);
-        dialogClosedObserver.observe(
-            languagesPage.shadowRoot!.querySelector('settings-section')!,
-            {childList: true});
+      dialog = languagesPage.shadowRoot!.querySelector(
+          'settings-add-languages-dialog')!;
+      assertTrue(!!dialog);
 
-        actionButton = dialog.shadowRoot!.querySelector<CrButtonElement>(
-            '.action-button')!;
-        assertTrue(!!actionButton);
-        cancelButton = dialog.shadowRoot!.querySelector<CrButtonElement>(
-            '.cancel-button')!;
-        assertTrue(!!cancelButton);
-        flush();
+      // Observe the removal of the dialog via MutationObserver since the
+      // HTMLDialogElement 'close' event fires at an unpredictable time.
+      dialogClosedResolver = new PromiseResolver();
+      dialogClosedObserver = new MutationObserver(onMutation);
+      dialogClosedObserver.observe(
+          languagesPage.shadowRoot!.querySelector('settings-section')!,
+          {childList: true});
 
-        // The fixed-height dialog's iron-list should stamp far fewer than
-        // 50 items.
-        dialogItems =
-            dialog.$.dialog.querySelectorAll<SettingsCheckboxListEntryElement>(
-                'settings-checkbox-list-entry:not([hidden])');
-        assertGT(dialogItems.length, 1);
-        assertLT(dialogItems.length, 50);
+      actionButton =
+          dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button')!;
+      assertTrue(!!actionButton);
+      cancelButton =
+          dialog.shadowRoot!.querySelector<CrButtonElement>('.cancel-button')!;
+      assertTrue(!!cancelButton);
+      flush();
 
-        // No languages have been checked, so the action button is disabled.
-        assertTrue(actionButton.disabled);
-        assertFalse(cancelButton.disabled);
-      });
+      // The fixed-height dialog's iron-list should stamp far fewer than
+      // 50 items.
+      dialogItems =
+          dialog.$.dialog.querySelectorAll<SettingsCheckboxListEntryElement>(
+              'settings-checkbox-list-entry:not([hidden])');
+      assertGT(dialogItems.length, 1);
+      assertLT(dialogItems.length, 50);
+
+      // No languages have been checked, so the action button is disabled.
+      assertTrue(actionButton.disabled);
+      assertFalse(cancelButton.disabled);
     });
 
     teardown(function() {
@@ -190,11 +189,10 @@ suite('LanguagesPage', function() {
       // Canceling the dialog should close and remove it without enabling
       // the checked languages.
       cancelButton.click();
-      return dialogClosedResolver.promise.then(function() {
-        assertEquals(
-            initialLanguages,
-            languagesPage.getPref('intl.accept_languages').value);
-      });
+      await dialogClosedResolver.promise;
+      assertEquals(
+          initialLanguages,
+          languagesPage.getPref('intl.accept_languages').value);
     });
 
     test('add languages and confirm', async function() {

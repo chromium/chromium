@@ -126,7 +126,7 @@ suite('ChooserExceptionListEntry', function() {
 
   test(
       'The show-tooltip event is fired when mouse hovers over policy indicator',
-      function() {
+      async function() {
         testElement.exception =
             createChooserException(ChooserType.USB_DEVICES, [
               createSiteException('https://foo.com', {
@@ -160,9 +160,8 @@ suite('ChooserExceptionListEntry', function() {
         const wait = eventToPromise('show-tooltip', document);
         icon.$.indicator.dispatchEvent(
             new MouseEvent('mouseenter', {bubbles: true, composed: true}));
-        return wait.then(() => {
-          assertTooltipIsHidden(crTooltip);
-        });
+        await wait;
+        assertTooltipIsHidden(crTooltip);
       });
 
   test(

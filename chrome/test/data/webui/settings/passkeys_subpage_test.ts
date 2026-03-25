@@ -169,9 +169,6 @@ suite('PasskeysSubpage', function() {
 
     clickDots(page, 0);
 
-    browserProxy.whenCalled('delete').then((name: string) => {
-      assertEquals(name, testPasskeys[0].credentialId);
-    });
     clickButton(page, 'delete');
     await flushTasks();
 

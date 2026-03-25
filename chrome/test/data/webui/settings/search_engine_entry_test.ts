@@ -134,21 +134,19 @@ suite('SearchEngineEntryTest', function() {
   });
 
   // Test that clicking the "edit" menu item fires an edit event.
-  test('Edit_Enabled', function() {
+  test('Edit_Enabled', async function() {
     const engine = entry.engine;
     const editButton =
         entry.shadowRoot!.querySelector<HTMLButtonElement>(`#editIconButton`)!;
     assertTrue(isVisible(editButton));
 
-    const promise =
-        eventToPromise('view-or-edit-search-engine', entry).then(e => {
-          assertEquals(engine, e.detail.engine);
-          assertEquals(
-              entry.shadowRoot!.querySelector('cr-icon-button'),
-              e.detail.anchorElement);
-        });
+    const promise = eventToPromise('view-or-edit-search-engine', entry);
     editButton.click();
-    return promise;
+    const e = await promise;
+    assertEquals(engine, e.detail.engine);
+    assertEquals(
+        entry.shadowRoot!.querySelector('cr-icon-button'),
+        e.detail.anchorElement);
   });
 
   test('Remove_Hidden', function() {

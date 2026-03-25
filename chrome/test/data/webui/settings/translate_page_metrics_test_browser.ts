@@ -24,44 +24,43 @@ suite('TranslatePageMetricsBrowser', function() {
     CrSettingsPrefs.deferInitialization = true;
   });
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
     settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
-    return CrSettingsPrefs.initialized.then(function() {
-      // Sets up test browser proxy.
-      browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-      // Sets up test browser proxy.
-      languageSettingsMetricsProxy = new TestLanguageSettingsMetricsProxy();
-      LanguageSettingsMetricsProxyImpl.setInstance(
-          languageSettingsMetricsProxy);
+    await CrSettingsPrefs.initialized;
+    // Sets up test browser proxy.
+    browserProxy = new TestLanguagesBrowserProxy();
+    LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-      // Sets up fake languageSettingsPrivate API.
-      const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-      (languageSettingsPrivate as unknown as FakeLanguageSettingsPrivate)
-          .setSettingsPrefs(settingsPrefs);
+    // Sets up test browser proxy.
+    languageSettingsMetricsProxy = new TestLanguageSettingsMetricsProxy();
+    LanguageSettingsMetricsProxyImpl.setInstance(languageSettingsMetricsProxy);
 
-      const settingsLanguages = document.createElement('settings-languages');
-      settingsLanguages.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
-      document.body.appendChild(settingsLanguages);
+    // Sets up fake languageSettingsPrivate API.
+    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
+    (languageSettingsPrivate as unknown as FakeLanguageSettingsPrivate)
+        .setSettingsPrefs(settingsPrefs);
 
-      translatePage = document.createElement('settings-translate-page');
+    const settingsLanguages = document.createElement('settings-languages');
+    settingsLanguages.prefs = settingsPrefs.prefs;
+    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
+    document.body.appendChild(settingsLanguages);
 
-      // Prefs would normally be data-bound to settings-languages-page.
-      translatePage.prefs = settingsLanguages.prefs;
-      fakeDataBind(settingsLanguages, translatePage, 'prefs');
+    translatePage = document.createElement('settings-translate-page');
 
-      translatePage.languages = settingsLanguages.languages;
-      fakeDataBind(settingsLanguages, translatePage, 'languages');
+    // Prefs would normally be data-bound to settings-languages-page.
+    translatePage.prefs = settingsLanguages.prefs;
+    fakeDataBind(settingsLanguages, translatePage, 'prefs');
 
-      document.body.appendChild(translatePage);
-      return settingsLanguages.whenReady();
-    });
+    translatePage.languages = settingsLanguages.languages;
+    fakeDataBind(settingsLanguages, translatePage, 'languages');
+
+    document.body.appendChild(translatePage);
+    return settingsLanguages.whenReady();
   });
 
   test('records when translate target is changed', async () => {

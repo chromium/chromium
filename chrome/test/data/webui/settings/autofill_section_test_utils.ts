@@ -53,19 +53,16 @@ export async function createAutofillSection(
  * Creates the Edit Address dialog and fulfills the promise when the dialog
  * has actually opened.
  */
-export function createAddressDialog(
+export async function createAddressDialog(
     address: chrome.autofillPrivate.AddressEntry,
     accountInfo?: chrome.autofillPrivate.AccountInfo):
     Promise<SettingsAddressEditDialogElement> {
-  return new Promise(function(resolve) {
-    const section = document.createElement('settings-address-edit-dialog');
-    section.address = address;
-    section.accountInfo = accountInfo;
-    document.body.appendChild(section);
-    eventToPromise('on-update-address-wrapper', section).then(function() {
-      resolve(section);
-    });
-  });
+  const section = document.createElement('settings-address-edit-dialog');
+  section.address = address;
+  section.accountInfo = accountInfo;
+  document.body.appendChild(section);
+  await eventToPromise('on-update-address-wrapper', section);
+  return section;
 }
 
 export async function openAddressDialog(

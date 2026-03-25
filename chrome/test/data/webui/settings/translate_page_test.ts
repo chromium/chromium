@@ -33,41 +33,40 @@ suite('TranslatePage', function() {
     CrSettingsPrefs.deferInitialization = true;
   });
 
-  setup(function() {
+  setup(async function() {
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
     settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
-    return CrSettingsPrefs.initialized.then(function() {
-      // Set up test browser proxy.
-      browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-      // Set up fake languageSettingsPrivate API.
-      const languageSettingsPrivate =
-          browserProxy.getLanguageSettingsPrivate() as unknown as
-          FakeLanguageSettingsPrivate;
-      languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
+    await CrSettingsPrefs.initialized;
+    // Set up test browser proxy.
+    browserProxy = new TestLanguagesBrowserProxy();
+    LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
-      const settingsLanguages = document.createElement('settings-languages');
-      settingsLanguages.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
-      document.body.appendChild(settingsLanguages);
-      languageHelper = settingsLanguages;
+    // Set up fake languageSettingsPrivate API.
+    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
+        unknown as FakeLanguageSettingsPrivate;
+    languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
-      translatePage = document.createElement('settings-translate-page');
+    const settingsLanguages = document.createElement('settings-languages');
+    settingsLanguages.prefs = settingsPrefs.prefs;
+    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
+    document.body.appendChild(settingsLanguages);
+    languageHelper = settingsLanguages;
 
-      translatePage.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, translatePage, 'prefs');
+    translatePage = document.createElement('settings-translate-page');
 
-      translatePage.languages = settingsLanguages.languages;
-      fakeDataBind(settingsLanguages, translatePage, 'languages');
+    translatePage.prefs = settingsPrefs.prefs;
+    fakeDataBind(settingsPrefs, translatePage, 'prefs');
 
-      document.body.appendChild(translatePage);
-      flush();
+    translatePage.languages = settingsLanguages.languages;
+    fakeDataBind(settingsLanguages, translatePage, 'languages');
 
-      return settingsLanguages.whenReady();
-    });
+    document.body.appendChild(translatePage);
+    flush();
+
+    return settingsLanguages.whenReady();
   });
 
   teardown(function() {
@@ -244,7 +243,7 @@ suite('TranslatePage', function() {
       }
     }
 
-    setup(function() {
+    setup(async function() {
       const addLanguagesButton =
           translatePage.shadowRoot!.querySelector<HTMLElement>(
               '#addAlwaysTranslate');
@@ -255,22 +254,22 @@ suite('TranslatePage', function() {
       // The page stamps the dialog, registers listeners, and populates the
       // iron-list asynchronously at microtask timing, so wait for a new
       // task.
-      return whenDialogOpen.then(() => {
-        dialog = translatePage.shadowRoot!.querySelector(
-            'settings-add-languages-dialog')!;
-        assertTrue(!!dialog);
-        assertEquals(dialog.id, 'alwaysTranslateDialog');
+      await whenDialogOpen;
 
-        // Observe the removal of the dialog via MutationObserver since the
-        // HTMLDialogElement 'close' event fires at an unpredictable time.
-        dialogClosedResolver = new PromiseResolver();
-        dialogClosedObserver = new MutationObserver(onMutation);
-        dialogClosedObserver.observe(
-            translatePage.shadowRoot!.querySelector('settings-section')!,
-            {childList: true});
+      dialog = translatePage.shadowRoot!.querySelector(
+          'settings-add-languages-dialog')!;
+      assertTrue(!!dialog);
+      assertEquals(dialog.id, 'alwaysTranslateDialog');
 
-        flush();
-      });
+      // Observe the removal of the dialog via MutationObserver since the
+      // HTMLDialogElement 'close' event fires at an unpredictable time.
+      dialogClosedResolver = new PromiseResolver();
+      dialogClosedObserver = new MutationObserver(onMutation);
+      dialogClosedObserver.observe(
+          translatePage.shadowRoot!.querySelector('settings-section')!,
+          {childList: true});
+
+      flush();
     });
 
     teardown(function() {
@@ -315,7 +314,7 @@ suite('TranslatePage', function() {
       }
     }
 
-    setup(function() {
+    setup(async function() {
       const addLanguagesButton =
           translatePage.shadowRoot!.querySelector<HTMLElement>(
               '#addNeverTranslate');
@@ -326,22 +325,22 @@ suite('TranslatePage', function() {
       // The page stamps the dialog, registers listeners, and populates the
       // iron-list asynchronously at microtask timing, so wait for a new
       // task.
-      return whenDialogOpen.then(() => {
-        dialog = translatePage.shadowRoot!.querySelector(
-            'settings-add-languages-dialog')!;
-        assertTrue(!!dialog);
-        assertEquals(dialog.id, 'neverTranslateDialog');
+      await whenDialogOpen;
 
-        // Observe the removal of the dialog via MutationObserver since the
-        // HTMLDialogElement 'close' event fires at an unpredictable time.
-        dialogClosedResolver = new PromiseResolver();
-        dialogClosedObserver = new MutationObserver(onMutation);
-        dialogClosedObserver.observe(
-            translatePage.shadowRoot!.querySelector('settings-section')!,
-            {childList: true});
+      dialog = translatePage.shadowRoot!.querySelector(
+          'settings-add-languages-dialog')!;
+      assertTrue(!!dialog);
+      assertEquals(dialog.id, 'neverTranslateDialog');
 
-        flush();
-      });
+      // Observe the removal of the dialog via MutationObserver since the
+      // HTMLDialogElement 'close' event fires at an unpredictable time.
+      dialogClosedResolver = new PromiseResolver();
+      dialogClosedObserver = new MutationObserver(onMutation);
+      dialogClosedObserver.observe(
+          translatePage.shadowRoot!.querySelector('settings-section')!,
+          {childList: true});
+
+      flush();
     });
 
     teardown(function() {

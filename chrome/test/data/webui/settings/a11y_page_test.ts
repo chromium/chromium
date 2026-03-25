@@ -58,7 +58,7 @@ suite('A11yPage', () => {
   let browserProxy: TestAccessibilityBrowserProxy;
   let metrics: MetricsTracker;
 
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({
       axTreeFixingEnabled: true,
       mainNodeAnnotationsEnabled: true,
@@ -71,26 +71,25 @@ suite('A11yPage', () => {
     settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
 
-    return CrSettingsPrefs.initialized.then(function() {
-      // Set up test browser proxy.
-      browserProxy = new TestAccessibilityBrowserProxy();
-      AccessibilityBrowserProxyImpl.setInstance(browserProxy);
+    await CrSettingsPrefs.initialized;
+    // Set up test browser proxy.
+    browserProxy = new TestAccessibilityBrowserProxy();
+    AccessibilityBrowserProxyImpl.setInstance(browserProxy);
 
-      // Set up languages helper.
-      const settingsLanguages = document.createElement('settings-languages');
-      settingsLanguages.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
-      document.body.appendChild(settingsLanguages);
+    // Set up languages helper.
+    const settingsLanguages = document.createElement('settings-languages');
+    settingsLanguages.prefs = settingsPrefs.prefs;
+    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
+    document.body.appendChild(settingsLanguages);
 
-      a11yPage = document.createElement('settings-a11y-page');
-      a11yPage.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, a11yPage, 'prefs');
+    a11yPage = document.createElement('settings-a11y-page');
+    a11yPage.prefs = settingsPrefs.prefs;
+    fakeDataBind(settingsPrefs, a11yPage, 'prefs');
 
-      document.body.appendChild(a11yPage);
-      flush();
+    document.body.appendChild(a11yPage);
+    flush();
 
-      return settingsLanguages.whenReady();
-    });
+    return settingsLanguages.whenReady();
   });
 
   test('ax tree fixing toggle and pref', async () => {

@@ -332,9 +332,9 @@ suite('SiteDetails', function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
 
-    await browserProxy.whenCalled('isOriginValid').then(async () => {
-      await browserProxy.whenCalled('getOriginPermissions');
-    });
+    await browserProxy.whenCalled('isOriginValid');
+    await browserProxy.whenCalled('getOriginPermissions');
+    await flushTasks();
 
     const siteDetailsPermissions =
         testElement.shadowRoot!.querySelectorAll('site-details-permission');
@@ -477,7 +477,7 @@ suite('SiteDetails', function() {
     });
   });
 
-  test('permissions update dynamically', function() {
+  test('permissions update dynamically', async function() {
     browserProxy.setPrefs(prefs);
     const origin = 'https://foo.com:443';
     testElement = createSiteDetails(origin);
@@ -488,44 +488,37 @@ suite('SiteDetails', function() {
         elem => elem.category === ContentSettingsTypes.NOTIFICATIONS)!;
 
     // Wait for all the permissions to be populated initially.
-    return browserProxy.whenCalled('isOriginValid')
-        .then(() => {
-          return browserProxy.whenCalled('getOriginPermissions');
-        })
-        .then(() => {
-          // Make sure initial state is as expected.
-          assertEquals(ContentSetting.ASK, notificationPermission.site.setting);
-          assertEquals(
-              SiteSettingSource.POLICY, notificationPermission.site.source);
-          assertEquals(
-              ContentSetting.ASK, notificationPermission.$.permission.value);
+    await browserProxy.whenCalled('isOriginValid');
+    await browserProxy.whenCalled('getOriginPermissions');
+    await flushTasks();
 
-          // Set new prefs and make sure only that permission is updated.
-          const newException = createRawSiteException(origin, {
-            embeddingOrigin: origin,
-            origin: origin,
-            setting: ContentSetting.BLOCK,
-            source: SiteSettingSource.DEFAULT,
-          });
-          browserProxy.resetResolver('getOriginPermissions');
-          browserProxy.setSingleException(
-              ContentSettingsTypes.NOTIFICATIONS, newException);
-          return browserProxy.whenCalled('getOriginPermissions');
-        })
-        .then((args) => {
-          // The notification pref was just updated, so make sure the call to
-          // getOriginPermissions was to check notifications.
-          assertTrue(args[1].includes(ContentSettingsTypes.NOTIFICATIONS));
+    // Make sure initial state is as expected.
+    assertEquals(ContentSetting.ASK, notificationPermission.site.setting);
+    assertEquals(SiteSettingSource.POLICY, notificationPermission.site.source);
+    assertEquals(ContentSetting.ASK, notificationPermission.$.permission.value);
 
-          // Check |notificationPermission| now shows the new permission value.
-          assertEquals(
-              ContentSetting.BLOCK, notificationPermission.site.setting);
-          assertEquals(
-              SiteSettingSource.DEFAULT, notificationPermission.site.source);
-          assertEquals(
-              ContentSetting.DEFAULT,
-              notificationPermission.$.permission.value);
-        });
+    // Set new prefs and make sure only that permission is updated.
+    const newException = createRawSiteException(origin, {
+      embeddingOrigin: origin,
+      origin: origin,
+      setting: ContentSetting.BLOCK,
+      source: SiteSettingSource.DEFAULT,
+    });
+    browserProxy.resetResolver('getOriginPermissions');
+    browserProxy.setSingleException(
+        ContentSettingsTypes.NOTIFICATIONS, newException);
+    const args = await browserProxy.whenCalled('getOriginPermissions');
+    await flushTasks();
+
+    // The notification pref was just updated, so make sure the call to
+    // getOriginPermissions was to check notifications.
+    assertTrue(args[1].includes(ContentSettingsTypes.NOTIFICATIONS));
+
+    // Check |notificationPermission| now shows the new permission value.
+    assertEquals(ContentSetting.BLOCK, notificationPermission.site.setting);
+    assertEquals(SiteSettingSource.DEFAULT, notificationPermission.site.source);
+    assertEquals(
+        ContentSetting.DEFAULT, notificationPermission.$.permission.value);
   });
 
   test('invalid origins navigate back', async function() {

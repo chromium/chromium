@@ -408,10 +408,9 @@ suite('SiteDetailsPermission', function() {
 
         browserProxy.resetResolver('openSystemPermissionSettings');
         linkElement.dispatchEvent(new MouseEvent('click'));
-        await browserProxy.whenCalled('openSystemPermissionSettings')
-            .then((contentType: string) => {
-              assertEquals(category, contentType);
-            });
+        const contentType =
+            await browserProxy.whenCalled('openSystemPermissionSettings');
+        assertEquals(category, contentType);
       }
     }
   });
