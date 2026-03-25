@@ -185,7 +185,7 @@ bool FontUniqueNameLookupAndroid::RequestedNameInQueryableFonts(
     android_font_lookup_service_->GetUniqueNameLookupTable(&retrieved_fonts);
     queryable_fonts_ = std::move(retrieved_fonts);
   }
-  return queryable_fonts_ && queryable_fonts_->Contains(String::FromUTF8(
+  return queryable_fonts_ && queryable_fonts_->Contains(String::FromUtf8(
                                  IcuFoldCase(font_unique_name.Utf8())));
 }
 
@@ -203,7 +203,7 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
 
   base::File font_file;
   String case_folded_unique_font_name =
-      String::FromUTF8(IcuFoldCase(font_unique_name.Utf8()));
+      String::FromUtf8(IcuFoldCase(font_unique_name.Utf8()));
 
   base::ElapsedTimer elapsed_timer;
 

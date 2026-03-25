@@ -100,7 +100,7 @@ TEST(KURLTest, Getters) {
   for (size_t i = 0; i < std::size(cases); i++) {
     const GetterCase& c = cases[i];
 
-    const String& url = String::FromUTF8(c.url);
+    const String& url = String::FromUtf8(c.url);
 
     const KURL kurl(url);
 
@@ -121,7 +121,7 @@ TEST(KURLTest, Getters) {
           << url;
     }
     if (c.has_fragment_identifier) {
-      EXPECT_EQ(String::FromUTF8(c.fragment_identifier),
+      EXPECT_EQ(String::FromUtf8(c.fragment_identifier),
                 kurl.FragmentIdentifier())
           << url;
       if (strlen(c.fragment_identifier) > 0) {
@@ -327,10 +327,10 @@ TEST(KURLTest, EncodeWithUrlEscapeSequences) {
 
   // Encoding should not NFC-normalize the string.
   // Contain a combining character ('e' + COMBINING OGONEK).
-  String combining(String::FromUTF8("\x65\xCC\xA8"));
+  String combining(String::FromUtf8("\x65\xCC\xA8"));
   EXPECT_EQ(EncodeWithUrlEscapeSequences(combining), "e%CC%A8");
   // Contain a precomposed character corresponding to |combining|.
-  String precomposed(String::FromUTF8("\xC4\x99"));
+  String precomposed(String::FromUtf8("\xC4\x99"));
   EXPECT_EQ(EncodeWithUrlEscapeSequences(precomposed), "%C4%99");
 }
 
@@ -1267,7 +1267,7 @@ class KURLTestTraits {
   using UrlType = blink::KURL;
 
   static UrlType CreateUrlFromString(std::string_view s) {
-    return blink::KURL(blink::String::FromUTF8(s));
+    return blink::KURL(blink::String::FromUtf8(s));
   }
 
   static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlankUrl(); }

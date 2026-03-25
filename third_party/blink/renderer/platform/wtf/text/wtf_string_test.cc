@@ -202,17 +202,17 @@ TEST(StringTest, ReplaceWithLiteral) {
 
   // Cases for 16Bit source.
   // U+00E9 (=0xC3 0xA9 in UTF-8) is e with accent.
-  test_string = String::FromUTF8("r\xC3\xA9sum\xC3\xA9");
+  test_string = String::FromUtf8("r\xC3\xA9sum\xC3\xA9");
   EXPECT_FALSE(test_string.Is8Bit());
   test_string.Replace(UChar(0x00E9), "e");
   EXPECT_EQ("resume", test_string);
 
-  test_string = String::FromUTF8("r\xC3\xA9sum\xC3\xA9");
+  test_string = String::FromUtf8("r\xC3\xA9sum\xC3\xA9");
   EXPECT_FALSE(test_string.Is8Bit());
   test_string.Replace(UChar(0x00E9), "");
   EXPECT_EQ("rsum", test_string);
 
-  test_string = String::FromUTF8("r\xC3\xA9sum\xC3\xA9");
+  test_string = String::FromUtf8("r\xC3\xA9sum\xC3\xA9");
   EXPECT_FALSE(test_string.Is8Bit());
   test_string.Replace('3', "NotFound");
   EXPECT_EQ("r\xC3\xA9sum\xC3\xA9", test_string.Utf8());
@@ -398,7 +398,7 @@ TEST(StringTest, SplitByString) {
 
 TEST(StringTest, StartsWithIgnoringUnicodeCase) {
   // [U+017F U+212A i a] starts with "sk".
-  EXPECT_TRUE(String::FromUTF8("\xC5\xBF\xE2\x84\xAAia")
+  EXPECT_TRUE(String::FromUtf8("\xC5\xBF\xE2\x84\xAAia")
                   .DeprecatedStartsWithIgnoringCase("sk"));
 }
 
@@ -410,7 +410,7 @@ TEST(StringTest, StartsWithIgnoringAsciiCase) {
   EXPECT_TRUE(all_ascii.StartsWithIgnoringAsciiCase(all_ascii_mixed_case));
   String all_ascii_different("foo");
   EXPECT_FALSE(all_ascii.StartsWithIgnoringAsciiCase(all_ascii_different));
-  String non_ascii = String::FromUTF8("LIN\xE2\x84\xAA");
+  String non_ascii = String::FromUtf8("LIN\xE2\x84\xAA");
   EXPECT_FALSE(all_ascii.StartsWithIgnoringAsciiCase(non_ascii));
   EXPECT_TRUE(
       all_ascii.StartsWithIgnoringAsciiCase(non_ascii.DeprecatedLower()));
@@ -436,7 +436,7 @@ TEST(StringTest, EndsWithIgnoringAsciiCase) {
   EXPECT_TRUE(all_ascii.EndsWithIgnoringAsciiCase(all_ascii_mixed_case));
   String all_ascii_different("foo");
   EXPECT_FALSE(all_ascii.EndsWithIgnoringAsciiCase(all_ascii_different));
-  String non_ascii = String::FromUTF8("LIN\xE2\x84\xAA");
+  String non_ascii = String::FromUtf8("LIN\xE2\x84\xAA");
   EXPECT_FALSE(all_ascii.EndsWithIgnoringAsciiCase(non_ascii));
   EXPECT_TRUE(all_ascii.EndsWithIgnoringAsciiCase(non_ascii.DeprecatedLower()));
 
@@ -454,7 +454,7 @@ TEST(StringTest, EqualIgnoringAsciiCase) {
   EXPECT_TRUE(EqualIgnoringAsciiCase(all_ascii, all_ascii_mixed_case));
   String all_ascii_different("foo");
   EXPECT_FALSE(EqualIgnoringAsciiCase(all_ascii, all_ascii_different));
-  String non_ascii = String::FromUTF8("LIN\xE2\x84\xAA");
+  String non_ascii = String::FromUtf8("LIN\xE2\x84\xAA");
   EXPECT_FALSE(EqualIgnoringAsciiCase(all_ascii, non_ascii));
   EXPECT_TRUE(EqualIgnoringAsciiCase(all_ascii, non_ascii.DeprecatedLower()));
 
@@ -465,17 +465,17 @@ TEST(StringTest, EqualIgnoringAsciiCase) {
 }
 
 TEST(StringTest, FindIgnoringAsciiCase) {
-  String needle = String::FromUTF8("a\xCC\x88qa\xCC\x88");
+  String needle = String::FromUtf8("a\xCC\x88qa\xCC\x88");
 
   // Multiple matches, non-overlapping
-  String haystack1 = String::FromUTF8(
+  String haystack1 = String::FromUtf8(
       "aA\xCC\x88QA\xCC\x88sA\xCC\x88qa\xCC\x88rfi\xC3\xA4q\xC3\xA4");
   EXPECT_EQ(1u, haystack1.FindIgnoringAsciiCase(needle));
   EXPECT_EQ(7u, haystack1.FindIgnoringAsciiCase(needle, 2));
   EXPECT_EQ(kNotFound, haystack1.FindIgnoringAsciiCase(needle, 8));
 
   // Multiple matches, overlapping
-  String haystack2 = String::FromUTF8("aA\xCC\x88QA\xCC\x88qa\xCC\x88rfi");
+  String haystack2 = String::FromUtf8("aA\xCC\x88QA\xCC\x88qa\xCC\x88rfi");
   EXPECT_EQ(1u, haystack2.FindIgnoringAsciiCase(needle));
   EXPECT_EQ(4u, haystack2.FindIgnoringAsciiCase(needle, 2));
   EXPECT_EQ(kNotFound, haystack2.FindIgnoringAsciiCase(needle, 5));
@@ -488,7 +488,7 @@ TEST(StringTest, DeprecatedLower) {
 
   // U+212A -> k
   EXPECT_EQ("link",
-            String::FromUTF8("LIN\xE2\x84\xAA").DeprecatedLower().Utf8());
+            String::FromUtf8("LIN\xE2\x84\xAA").DeprecatedLower().Utf8());
 }
 
 TEST(StringTest, Ensure16Bit) {
@@ -695,7 +695,7 @@ TEST(StringTest, ContainsNoAsciiUpper) {
 
 // https://issues.chromium.org/u/1/issues/420990876#comment9
 TEST(StringTest, Issue420990876FuzzerCase) {
-  EXPECT_EQ(String(), String::FromUTF8("\364\244\204\244"));
+  EXPECT_EQ(String(), String::FromUtf8("\364\244\204\244"));
 }
 
 }  // namespace blink

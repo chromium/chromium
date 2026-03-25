@@ -70,7 +70,7 @@ TEST_F(CorsExposedHeadersTest, InvalidInput) {
 
   // U+0141 which is 'A' (0x41) + 0x100.
   EXPECT_TRUE(
-      Parse(CredentialsMode::kOmit, AtomicString(String::FromUTF8("\xC5\x81")))
+      Parse(CredentialsMode::kOmit, AtomicString(String::FromUtf8("\xC5\x81")))
           .empty());
 }
 

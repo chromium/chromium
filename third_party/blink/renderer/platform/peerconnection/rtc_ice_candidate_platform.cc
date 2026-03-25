@@ -64,12 +64,12 @@ void RTCIceCandidatePlatform::PopulateFields() {
 
   const webrtc::Candidate& c = parsed_candidate.value();
 
-  foundation_ = String::FromUTF8(c.foundation());
+  foundation_ = String::FromUtf8(c.foundation());
   component_ = CandidateComponentToString(c.component());
   priority_ = c.priority();
-  protocol_ = String::FromUTF8(c.protocol());
+  protocol_ = String::FromUtf8(c.protocol());
   if (!c.address().IsNil()) {
-    address_ = String::FromUTF8(c.address().HostAsURIString());
+    address_ = String::FromUtf8(c.address().HostAsURIString());
     port_ = c.address().port();
   }
   // The `type_name()` property returns a name as specified in:
@@ -81,10 +81,10 @@ void RTCIceCandidatePlatform::PopulateFields() {
          type == "relay");
   type_ = String(type);
   if (!c.tcptype().empty()) {
-    tcp_type_ = String::FromUTF8(c.tcptype());
+    tcp_type_ = String::FromUtf8(c.tcptype());
   }
   if (!c.related_address().IsNil()) {
-    related_address_ = String::FromUTF8(c.related_address().HostAsURIString());
+    related_address_ = String::FromUtf8(c.related_address().HostAsURIString());
     related_port_ = c.related_address().port();
   }
   // url_ is set only when the candidate was gathered locally.

@@ -71,7 +71,7 @@ void RtcDtmfSenderHandler::SetClient(RtcDtmfSenderHandler::Client* client) {
 }
 
 String RtcDtmfSenderHandler::CurrentToneBuffer() {
-  return String::FromUTF8(dtmf_sender_->tones());
+  return String::FromUtf8(dtmf_sender_->tones());
 }
 
 bool RtcDtmfSenderHandler::CanInsertDTMF() {

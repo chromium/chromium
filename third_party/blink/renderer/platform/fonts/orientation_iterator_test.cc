@@ -32,7 +32,7 @@ class OrientationIteratorTest : public testing::Test {
     text.Ensure16Bit();
     Vector<OrientationExpectedRun> expect;
     for (auto& run : runs) {
-      text.Append(String::FromUTF8(run.text));
+      text.Append(String::FromUtf8(run.text));
       expect.push_back(OrientationExpectedRun(text.length(), run.code));
     }
     OrientationIterator orientation_iterator(text.Span16(),

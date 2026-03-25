@@ -267,14 +267,14 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateOpaque(
 scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromUrlOrigin(
     const url::Origin& origin) {
   const url::SchemeHostPort& tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
-  DCHECK(String::FromUTF8(tuple.scheme()).ContainsOnlyAsciiOrEmpty());
-  DCHECK(String::FromUTF8(tuple.host()).ContainsOnlyAsciiOrEmpty());
+  DCHECK(String::FromUtf8(tuple.scheme()).ContainsOnlyAsciiOrEmpty());
+  DCHECK(String::FromUtf8(tuple.host()).ContainsOnlyAsciiOrEmpty());
 
   scoped_refptr<SecurityOrigin> tuple_origin;
   if (tuple.IsValid()) {
     tuple_origin =
-        CreateFromValidTuple(String::FromUTF8(tuple.scheme()),
-                             String::FromUTF8(tuple.host()), tuple.port());
+        CreateFromValidTuple(String::FromUtf8(tuple.scheme()),
+                             String::FromUtf8(tuple.host()), tuple.port());
   }
   const base::UnguessableToken* nonce_if_opaque =
       origin.GetNonceForSerialization();
@@ -735,7 +735,7 @@ String SecurityOrigin::CanonicalizeSpecialHost(const String& host,
                                             url::Component(0, host.length()),
                                             canon_output, out_host);
   }
-  return String::FromUTF8(canon_output.view());
+  return String::FromUtf8(canon_output.view());
 }
 
 String SecurityOrigin::CanonicalizeHost(const String& host,
@@ -757,7 +757,7 @@ String SecurityOrigin::CanonicalizeHost(const String& host,
                                          url::Component(0, host.length()),
                                          canon_output, out_host);
   }
-  return String::FromUTF8(canon_output.view());
+  return String::FromUtf8(canon_output.view());
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::GetOriginForAgentCluster(

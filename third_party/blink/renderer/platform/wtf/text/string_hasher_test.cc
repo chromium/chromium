@@ -126,8 +126,8 @@ TEST(StringHasherTest, CaseFoldingHash) {
   EXPECT_TRUE(EqualCaseFoldingHash("foo", "FOO"));
   EXPECT_TRUE(EqualCaseFoldingHash("foo", "Foo"));
   EXPECT_TRUE(EqualCaseFoldingHash("Longer string 123", "longEr String 123"));
-  EXPECT_TRUE(EqualCaseFoldingHash(String::FromUTF8("Ünicode"),
-                                   String::FromUTF8("ünicode")));
+  EXPECT_TRUE(EqualCaseFoldingHash(String::FromUtf8("Ünicode"),
+                                   String::FromUtf8("ünicode")));
 }
 
 TEST(StringHasherTest, ContractionAndExpansion) {

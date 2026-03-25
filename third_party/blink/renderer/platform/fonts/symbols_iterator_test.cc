@@ -38,7 +38,7 @@ class SymbolsIteratorTest : public testing::Test {
     text.Ensure16Bit();
     Vector<FallbackExpectedRun> expect;
     for (auto& run : runs) {
-      text.Append(String::FromUTF8(run.text.c_str()));
+      text.Append(String::FromUtf8(run.text));
       expect.push_back(
           FallbackExpectedRun(text.length(), run.font_fallback_priority));
     }

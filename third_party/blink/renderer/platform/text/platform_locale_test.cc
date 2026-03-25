@@ -14,8 +14,8 @@ TEST(PlatformLocaleTest, StripInvalidNumberCharacters) {
   // uses Extened Arabic-Indic digits.
   std::unique_ptr<Locale> locale = Locale::Create("fa");
   String result = locale->StripInvalidNumberCharacters(
-      String::FromUTF8("abc\u06F0ghi"), "0123456789");
+      String::FromUtf8("abc\u06F0ghi"), "0123456789");
   // EXTENDED ARABIC-INDIC DIGIT ZERO U+06F0
-  EXPECT_EQ(String::FromUTF8("\u06F0"), result);
+  EXPECT_EQ(String::FromUtf8("\u06F0"), result);
 }
 }

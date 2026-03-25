@@ -13,7 +13,7 @@ namespace blink {
 class TextBreakIteratorTest : public testing::Test {
  protected:
   void SetTestString(const char* test_string) {
-    test_string_ = String::FromUTF8(test_string);
+    test_string_ = String::FromUtf8(test_string);
   }
 
   void SetTestString16(Vector<UChar> input) { test_string_ = String(input); }

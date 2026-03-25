@@ -32,7 +32,7 @@ class SmallCapsIteratorTest : public testing::Test {
     text.Ensure16Bit();
     Vector<SmallCapsExpectedRun> expect;
     for (auto& run : runs) {
-      text.Append(String::FromUTF8(run.text));
+      text.Append(String::FromUtf8(run.text));
       expect.push_back(SmallCapsExpectedRun(text.length(), run.code));
     }
     SmallCapsIterator small_caps_iterator(text.Span16());

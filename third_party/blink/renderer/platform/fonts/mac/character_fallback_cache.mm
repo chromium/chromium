@@ -31,7 +31,7 @@ String BuildIdentifierKey(CTFontRef ct_font) {
   }
 
   String postscript_name =
-      String::FromUTF8(base::SysCFStringRefToUTF8(ct_postscript_name.get()));
+      String::FromUtf8(base::SysCFStringRefToUTF8(ct_postscript_name.get()));
 
   if (postscript_name[0] != '.') {
     // Not a system UI font.
@@ -59,7 +59,7 @@ String BuildIdentifierKey(CTFontRef ct_font) {
       if (ui_usage_value) {
         result_builder.Append("UIFONTUSAGE:");
         result_builder.Append(
-            String::FromUTF8(base::SysCFStringRefToUTF8(ui_usage_value)));
+            String::FromUtf8(base::SysCFStringRefToUTF8(ui_usage_value)));
       } else {
         return String();
       }
@@ -72,7 +72,7 @@ String BuildIdentifierKey(CTFontRef ct_font) {
         }
         result_builder.Append("LANG:");
         result_builder.Append(
-            String::FromUTF8(base::SysCFStringRefToUTF8(language_value)));
+            String::FromUtf8(base::SysCFStringRefToUTF8(language_value)));
       } else {
         return String();
       }

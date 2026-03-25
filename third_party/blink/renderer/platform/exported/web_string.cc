@@ -82,7 +82,7 @@ WebString WebString::Substring(size_t pos, size_t len) const {
 }
 
 WebString WebString::FromUTF8(std::string_view s) {
-  return String::FromUTF8(s);
+  return String::FromUtf8(s);
 }
 
 std::u16string WebString::Utf16() const {

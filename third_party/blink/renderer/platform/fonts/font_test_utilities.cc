@@ -7,7 +7,7 @@
 namespace blink {
 
 String To16Bit(std::string_view text) {
-  String s = String::FromUTF8(text);
+  String s = String::FromUtf8(text);
   s.Ensure16Bit();
   return s;
 }

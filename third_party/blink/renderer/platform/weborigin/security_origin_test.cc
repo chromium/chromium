@@ -490,7 +490,7 @@ TEST_F(SecurityOriginTest, CanonicalizeHost) {
 
   for (const TestCase& test : cases) {
     SCOPED_TRACE(testing::Message() << "raw host: '" << test.host << "'");
-    String host = String::FromUTF8(test.host);
+    String host = String::FromUtf8(test.host);
     bool success = false;
     String canonical_host =
         SecurityOrigin::CanonicalizeSpecialHost(host, &success);
@@ -566,7 +566,7 @@ TEST_F(SecurityOriginTest, UrlOriginConversions) {
   for (const auto& test_case : cases) {
     SCOPED_TRACE(test_case.url);
     GURL gurl(test_case.url);
-    KURL kurl(String::FromUTF8(test_case.url));
+    KURL kurl(String::FromUtf8(test_case.url));
     EXPECT_TRUE(gurl.is_valid());
     EXPECT_TRUE(kurl.IsValid());
     url::Origin origin_via_gurl = url::Origin::Create(gurl);
@@ -1163,7 +1163,7 @@ class BlinkSecurityOriginTestTraits {
   using OriginType = scoped_refptr<blink::SecurityOrigin>;
 
   static OriginType CreateOriginFromString(std::string_view s) {
-    return blink::SecurityOrigin::CreateFromString(blink::String::FromUTF8(s));
+    return blink::SecurityOrigin::CreateFromString(blink::String::FromUtf8(s));
   }
 
   static OriginType CreateUniqueOpaqueOrigin() {
@@ -1174,7 +1174,7 @@ class BlinkSecurityOriginTestTraits {
       std::string_view url,
       const OriginType& reference_origin) {
     return blink::SecurityOrigin::CreateWithReferenceOrigin(
-        blink::KURL(blink::String::FromUTF8(url)), reference_origin.get());
+        blink::KURL(blink::String::FromUtf8(url)), reference_origin.get());
   }
 
   static OriginType DeriveNewOpaqueOrigin(const OriginType& reference_origin) {
@@ -1212,7 +1212,7 @@ class BlinkSecurityOriginTestTraits {
   }
 
   static bool IsValidUrl(std::string_view str) {
-    return blink::KURL(blink::String::FromUTF8(str)).IsValid();
+    return blink::KURL(blink::String::FromUtf8(str)).IsValid();
   }
 
   static bool IsOriginPotentiallyTrustworthy(const OriginType& origin) {
@@ -1224,7 +1224,7 @@ class BlinkSecurityOriginTestTraits {
     // this is a test harness intended to exercise the behavior of `KURL` and
     // `SecurityOrigin`.
     return network::IsUrlPotentiallyTrustworthy(
-        GURL(blink::KURL(blink::String::FromUTF8(str))));
+        GURL(blink::KURL(blink::String::FromUtf8(str))));
   }
 
   static bool IsOriginOfLocalhost(const OriginType& origin) {

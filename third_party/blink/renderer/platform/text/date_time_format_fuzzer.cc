@@ -36,6 +36,6 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
       blink::BlinkFuzzerTestSupport();
   blink::test::TaskEnvironment task_environment;
   blink::DummyTokenHandler handler;
-  blink::DateTimeFormat::Parse(blink::String::FromUTF8(data), handler);
+  blink::DateTimeFormat::Parse(blink::String::FromUtf8(data), handler);
   return 0;
 }

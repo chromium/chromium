@@ -305,7 +305,7 @@ class ScriptRunIteratorTest : public testing::Test {
     text.Ensure16Bit();
     Vector<ScriptExpectedRun> expect;
     for (auto& run : runs) {
-      text.Append(String::FromUTF8(run.text));
+      text.Append(String::FromUtf8(run.text));
       expect.push_back(ScriptExpectedRun(text.length(), run.code));
     }
     ScriptRunIterator script_run_iterator(text.Span16());

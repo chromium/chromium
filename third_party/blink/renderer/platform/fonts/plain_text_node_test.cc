@@ -483,7 +483,7 @@ TEST_F(PlainTextNodeTest, SegmentEmojiSequences) {
       "\U0001f468\U0001f3ff\u200D\U0001f9b0"};
 
   for (auto test_string : test_strings) {
-    String emoji_string = String::FromUTF8(test_string);
+    String emoji_string = String::FromUtf8(test_string);
     TextRun text_run(emoji_string);
     PlainTextNode& node =
         CreatePlainTextNode(text_run, kNormalizeSpace, kSupportsBidi);

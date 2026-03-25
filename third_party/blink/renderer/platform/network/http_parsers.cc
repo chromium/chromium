@@ -116,11 +116,11 @@ blink::LoadingMode ConvertToBlink(LoadingMode in) {
 
 // ===== Converters for other basic Blink types =====
 ::blink::String ConvertToBlink(const std::string& in) {
-  return ::blink::String::FromUTF8(in);
+  return ::blink::String::FromUtf8(in);
 }
 
 ::blink::String ConvertToBlink(const std::optional<std::string>& in) {
-  return in ? ::blink::String::FromUTF8(*in) : ::blink::String();
+  return in ? ::blink::String::FromUtf8(*in) : ::blink::String();
 }
 
 ::blink::KURL ConvertToBlink(const GURL& in) {
@@ -962,8 +962,8 @@ bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
 
   std::string mime_type, charset;
   response_headers->GetMimeTypeAndCharset(&mime_type, &charset);
-  response->SetMimeType(AtomicString(String::FromUTF8(mime_type)));
-  response->SetTextEncodingName(AtomicString(String::FromUTF8(charset)));
+  response->SetMimeType(AtomicString(String::FromUtf8(mime_type)));
+  response->SetTextEncodingName(AtomicString(String::FromUtf8(charset)));
 
   // Copy headers listed in replaceHeaders to the response.
   for (const AtomicString& header : ReplaceHeaders()) {
@@ -1014,7 +1014,7 @@ bool ParseMultipartFormHeadersFromBody(base::span<const uint8_t> bytes,
     std::string value;
     while (response_headers->EnumerateHeader(
         &iterator, header_name_string_piece, &value)) {
-      header_fields->Add(*header_name, AtomicString(String::FromUTF8(value)));
+      header_fields->Add(*header_name, AtomicString(String::FromUtf8(value)));
     }
   }
 

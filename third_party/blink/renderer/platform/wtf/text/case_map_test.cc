@@ -296,7 +296,7 @@ TEST(CaseMapTest, ToUpperLocale) {
 
   for (const auto& test_data : test_data_list) {
     const char* expected = test_data.expected;
-    String source = String::FromUTF8(test_data.source);
+    String source = String::FromUtf8(test_data.source);
     for (const auto& locale : test_data.locale_list) {
       CaseMap case_map{AtomicString(locale)};
       EXPECT_EQ(expected, case_map.ToUpper(source).Utf8())
@@ -361,7 +361,7 @@ TEST(CaseMapTest, ToLowerLocale) {
 
   for (const auto& test_data : test_data_list) {
     const char* expected = test_data.expected;
-    String source = String::FromUTF8(test_data.source);
+    String source = String::FromUtf8(test_data.source);
     for (const auto& locale : test_data.locale_list) {
       CaseMap case_map{AtomicString(locale)};
       EXPECT_EQ(expected, case_map.ToLower(source).Utf8())
@@ -424,7 +424,7 @@ TEST(CaseMapTest, ToTitleLocale) {
 
   for (const auto& test_data : test_data_list) {
     const char* expected = test_data.expected;
-    String source = String::FromUTF8(test_data.source);
+    String source = String::FromUtf8(test_data.source);
     for (const auto& locale : test_data.locale_list) {
       CaseMap case_map{AtomicString(locale)};
       EXPECT_EQ(expected, case_map.ToTitle(source).Utf8())
@@ -451,9 +451,9 @@ TEST(CaseMapTest, ToTitleWithPreviousCharacter) {
   CaseMap de_case_map(AtomicString("de"));
 
   // \xC3\x9F = U+00DF (Latin Small Letter Sharp S)
-  String input4 = String::FromUTF8("\xC3\x9F");
+  String input4 = String::FromUtf8("\xC3\x9F");
   String result4 = de_case_map.ToTitle(input4, nullptr, u'a');
-  EXPECT_EQ(result4, String::FromUTF8("\xC3\x9F"));
+  EXPECT_EQ(result4, String::FromUtf8("\xC3\x9F"));
 
   String input5 = "abc";
   String result5 = de_case_map.ToTitle(input5, nullptr, u'\u00DF');

@@ -57,7 +57,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   std::string input(reinterpret_cast<const char*>(data), size);
   RoundTripFromContent(GURL(input));
-  RoundTripFromBlink(String::FromUTF8(input));
+  RoundTripFromBlink(String::FromUtf8(input));
   return EXIT_SUCCESS;
 }
 

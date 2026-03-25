@@ -85,7 +85,7 @@ String MIMETypeRegistry::GetWellKnownMIMETypeForExtension(
   std::string mime_type;
   net::GetWellKnownMimeTypeFromExtension(StringViewToFilePath(ext).value(),
                                          &mime_type);
-  return String::FromUTF8(mime_type);
+  return String::FromUtf8(mime_type);
 }
 
 bool MIMETypeRegistry::IsSupportedMIMEType(const String& mime_type) {

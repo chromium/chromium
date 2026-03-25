@@ -12,7 +12,7 @@ namespace blink {
 
 String UncompressResourceAsString(int resource_id) {
   std::string data = Platform::Current()->GetDataResourceString(resource_id);
-  return String::FromUTF8(data);
+  return String::FromUtf8(data);
 }
 
 String UncompressResourceAsASCIIString(int resource_id) {

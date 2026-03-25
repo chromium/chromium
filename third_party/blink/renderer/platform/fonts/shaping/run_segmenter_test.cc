@@ -49,7 +49,7 @@ class RunSegmenterTest : public testing::Test {
     Vector<SegmenterExpectedRun> expect;
     for (auto& run : runs) {
       unsigned length_before = text.length();
-      text.Append(String::FromUTF8(run.text.c_str()));
+      text.Append(String::FromUtf8(run.text));
       expect.push_back(SegmenterExpectedRun(length_before, text.length(),
                                             run.script, run.render_orientation,
                                             run.font_fallback_priority));

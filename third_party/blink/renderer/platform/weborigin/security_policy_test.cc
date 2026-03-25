@@ -256,9 +256,9 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
   for (TestCase test : inputs) {
     KURL destination(test.destination);
     Referrer result = SecurityPolicy::GenerateReferrer(
-        test.policy, destination, String::FromUTF8(test.referrer));
+        test.policy, destination, String::FromUtf8(test.referrer));
     if (test.expected) {
-      EXPECT_EQ(String::FromUTF8(test.expected), result.referrer)
+      EXPECT_EQ(String::FromUtf8(test.expected), result.referrer)
           << "'" << test.referrer << "' to '" << test.destination
           << "' with policy=" << static_cast<int>(test.policy)
           << " should have been '" << test.expected << "': was '"

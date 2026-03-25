@@ -198,8 +198,8 @@ String FontCache::FirstAvailableOrFirst(const String& families) {
   // For now we prefer shared code over the cost because a) inputs are
   // only from grd/xtb and all ASCII, and b) at most only a few times per
   // setting change/script.
-  return String::FromUTF8(
-      gfx::FontList::FirstAvailableOrFirst(families.Utf8().c_str()));
+  return String::FromUtf8(
+      gfx::FontList::FirstAvailableOrFirst(families.Utf8()));
 }
 
 const SimpleFontData* FontCache::FallbackFontForCharacter(
@@ -320,7 +320,7 @@ void FontCache::MaybePreloadSystemFonts() {
   }
 
   std::unique_ptr<JSONArray> targets =
-      JSONArray::From(ParseJSON(String::FromUTF8(
+      JSONArray::From(ParseJSON(String::FromUtf8(
           base::UnescapeURLComponent(features::kPreloadSystemFontsTargets.Get(),
                                      base::UnescapeRule::SPACES))));
 

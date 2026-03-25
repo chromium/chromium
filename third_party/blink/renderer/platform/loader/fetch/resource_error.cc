@@ -371,8 +371,7 @@ std::ostream& operator<<(std::ostream& os, const ResourceError& error) {
             << ", HasCopyInCache = " << error.HasCopyInCache()
             << ", IsCacheMiss = " << error.IsCacheMiss()
             << ", TrustTokenOperationError = "
-            << String::FromUTF8(base::NumberToString(
-                   static_cast<int32_t>(error.TrustTokenOperationError())));
+            << static_cast<int32_t>(error.TrustTokenOperationError());
 }
 
 }  // namespace blink

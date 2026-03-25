@@ -918,7 +918,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
         case 'D':
           default_task_runner_->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         case 'C':
           if (task.starts_with("CM")) {
@@ -926,18 +926,18 @@ class MainThreadSchedulerImplTest : public testing::Test {
                 FROM_HERE, base::BindOnce(&MainThreadSchedulerImplTest::
                                               AppendToVectorBeginMainFrameTask,
                                           base::Unretained(this), run_order,
-                                          String::FromUTF8(task)));
+                                          String::FromUtf8(task)));
           } else if (task.starts_with("CI")) {
             compositor_task_runner_->PostTask(
                 FROM_HERE,
                 base::BindOnce(&MainThreadSchedulerImplTest::
                                    AppendToVectorBeginMainFrameTaskWithInput,
                                base::Unretained(this), run_order,
-                               String::FromUTF8(task)));
+                               String::FromUtf8(task)));
           } else {
             compositor_task_runner_->PostTask(
                 FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                          String::FromUTF8(task)));
+                                          String::FromUtf8(task)));
           }
           break;
         case 'P':
@@ -947,7 +947,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
                 base::BindOnce(
                     &MainThreadSchedulerImplTest::AppendToVectorInputEventTask,
                     base::Unretained(this), WebInputEvent::Type::kMouseMove,
-                    run_order, String::FromUTF8(task)));
+                    run_order, String::FromUtf8(task)));
 
           } else if (task.starts_with("PD")) {
             input_task_runner_->PostTask(
@@ -955,52 +955,52 @@ class MainThreadSchedulerImplTest : public testing::Test {
                 base::BindOnce(
                     &MainThreadSchedulerImplTest::AppendToVectorInputEventTask,
                     base::Unretained(this), WebInputEvent::Type::kMouseUp,
-                    run_order, String::FromUTF8(task)));
+                    run_order, String::FromUtf8(task)));
           } else {
             input_task_runner_->PostTask(
                 FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                          String::FromUTF8(task)));
+                                          String::FromUtf8(task)));
           }
           break;
         case 'L':
           loading_task_queue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         case 'M':
           loading_control_task_runner_->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         case 'I':
           idle_task_runner_->PostIdleTask(
               FROM_HERE, base::BindOnce(&AppendToVectorIdleTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         case 'R':
           render_blocking_task_runner_->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         case 'T':
           throttleable_task_runner_->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         case 'V':
           v8_task_runner_->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         case 'F':
           find_in_page_task_runner_->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         case 'U':
           prioritised_local_frame_task_runner_->PostTask(
               FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+                                        String::FromUtf8(task)));
           break;
         default:
           NOTREACHED();

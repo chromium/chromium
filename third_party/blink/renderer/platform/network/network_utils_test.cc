@@ -53,10 +53,10 @@ TEST(NetworkUtilsTest, IsReservedIPAddress) {
     std::string address_string = address.ToString();
     if (i == 0 || i == 10 || i == 127 || i == 192 || i > 223) {
       EXPECT_TRUE(
-          network_utils::IsReservedIPAddress(String::FromUTF8(address_string)));
+          network_utils::IsReservedIPAddress(String::FromUtf8(address_string)));
     } else {
       EXPECT_FALSE(
-          network_utils::IsReservedIPAddress(String::FromUTF8(address_string)));
+          network_utils::IsReservedIPAddress(String::FromUtf8(address_string)));
     }
   }
 }

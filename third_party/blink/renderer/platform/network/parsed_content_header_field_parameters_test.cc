@@ -101,7 +101,7 @@ TEST(ParsedContentHeaderFieldParametersTest, ParameterName) {
   EXPECT_EQ("U", t->ParameterValueForName("Q"));
   EXPECT_EQ("S", t->ParameterValueForName("T"));
 
-  String kelvin = String::FromUTF8("\xe2\x84\xaa");
+  String kelvin = String::FromUtf8("\xe2\x84\xaa");
   DCHECK_EQ(CaseMap(AtomicString()).ToLower(kelvin), "k");
   EXPECT_EQ(String(), t->ParameterValueForName(kelvin));
 }
