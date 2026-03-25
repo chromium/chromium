@@ -1477,12 +1477,17 @@
     {
         "name": "core-common",
         "group": "com.google.android.play",
-        "version": "2.0.3"
+        "version": "2.0.4"
     },
     {
         "name": "feature-delivery",
         "group": "com.google.android.play",
         "version": "2.1.0"
+    },
+    {
+        "name": "review",
+        "group": "com.google.android.play",
+        "version": "2.0.2"
     },
     {
         "name": "annotations",

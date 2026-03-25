@@ -457,6 +457,19 @@ template("define_autorolled_targets") {
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt("com_google_android_play_review_java") {
+      aar_path =
+          "autorolled/cipd/libs/com_google_android_play_review/review.aar"
+      info_path = "autorolled/committed/libs/com_google_android_play_review/com_google_android_play_review.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/android_deps:com_google_android_play_core_common_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     android_aar_prebuilt("com_google_ar_impress_java") {
       aar_path = "autorolled/cipd/libs/com_google_ar_impress/impress.aar"
       info_path = "autorolled/committed/libs/com_google_ar_impress/com_google_ar_impress.info"
