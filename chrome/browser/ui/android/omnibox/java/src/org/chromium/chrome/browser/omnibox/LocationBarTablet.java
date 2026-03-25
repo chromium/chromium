@@ -527,6 +527,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void adjustBackgroundForSuggestions() {
+        if (mFuseboxState == FuseboxState.DISABLED) return;
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
         GradientDrawable outerRect = (GradientDrawable) mFocusedPopupDrawable.getDrawable(0);
         Resources resources = getResources();
@@ -534,16 +535,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 resources.getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
         float cornerRadius =
                 resources.getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
-        if (!mHasSuggestions
-                && (mFuseboxState == FuseboxState.COMPACT
-                        || mFuseboxState == FuseboxState.EXPANDED)) {
-            // Add extra padding and round the corners of the outer rect to account for the lack of
-            // a visible suggestions dropdown to bleed into.
-            layoutParams.bottomMargin = -inset;
-            outerRect.setCornerRadius(cornerRadius);
-            mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, inset);
-            setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), inset);
-        } else {
+        if (mHasSuggestions) {
             // Remove the extra padding and un-round the corners of the outer rect since we're now
             // bleeding into the suggestions dropdown.
             layoutParams.bottomMargin = 0;
@@ -552,7 +544,26 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                         cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0
                     });
             mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, 0);
+            mFocusedPopupDrawable.setLayerInsetRelative(
+                    mFocusedPopupDrawable.findIndexByLayerId(R.id.glif_border_layer),
+                    inset,
+                    inset,
+                    inset,
+                    0);
             setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), 0);
+        } else {
+            // Add extra padding and round the corners of the outer rect to account for the lack of
+            // a visible suggestions dropdown to bleed into.
+            layoutParams.bottomMargin = -inset;
+            outerRect.setCornerRadius(cornerRadius);
+            mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, inset);
+            mFocusedPopupDrawable.setLayerInsetRelative(
+                    mFocusedPopupDrawable.findIndexByLayerId(R.id.glif_border_layer),
+                    inset,
+                    inset,
+                    inset,
+                    inset);
+            setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), inset);
         }
         setLayoutParams(layoutParams);
     }
