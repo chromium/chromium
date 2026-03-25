@@ -2360,11 +2360,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "disable-idle-sockets-close-on-memory-pressure",
-    "owners": [ "pmarko@chromium.org" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "disable-javascript-harmony-shipping",
     "owners": [ "adamk@chromium.org", "syg@chromium.org" ],
     // This flag is used for field debugging along with
@@ -2630,11 +2625,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "enable-accessibility-include-long-click-action",
-    "owners": ["mschillaci@google.com", "//ui/accessibility/OWNERS"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-accessibility-labeledby",
     "owners": [ "lucasradaelli@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 144
@@ -2684,11 +2674,6 @@
       "//ui/accessibility/OWNERS"
     ],
     "expiry_milestone": 143
-  },
-  {
-    "name": "enable-accessibility-page-zoom",
-    "owners": [ "mschillaci@chromium.org", "aldietz@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 150
   },
   {
     "name": "enable-accessibility-populate-supplemental-description-api",
@@ -2893,11 +2878,6 @@
     "expiry_milestone": 149
   },
   {
-    "name": "enable-async-real-time-check",
-    "owners": [ "joemerramos@chromium.org", "ajuma@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-audio-focus-enforcement",
     "owners": [ "liberato@chromium.org", "steimel@chromium.org", "meganlfu@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 155
@@ -2954,14 +2934,6 @@
       "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "enable-canvas-noise",
-    "owners": [
-      "tov@chromium.org",
-      "//third_party/blink/renderer/core/canvas_interventions/OWNERS"
-    ],
-    "expiry_milestone": 150
   },
   {
     "name": "enable-cast-streaming-av1",
@@ -3081,11 +3053,6 @@
     "name": "enable-cros-ime-assist-multi-word",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "enable-cros-ime-manifest-v3",
-    "owners": [ "jopalmer@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 150
   },
   {
     "name": "enable-cros-ime-switch-check-connection-status",
@@ -3497,11 +3464,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-input-in-diagnostics-app",
-    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "enable-input-protection",
     "owners": [ "bkeen@google.com", "media-dev@chromium.org"],
     "expiry_milestone": 155
@@ -3705,14 +3667,6 @@
     "name": "enable-media-link-helpers",
     "owners": [ "liberato@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 145
-  },
-  {
-    "name": "enable-minimal-ui-menu-button",
-    "owners": [
-      "aixba@google.com",
-      "capabilities-team@google.com"
-    ],
-    "expiry_milestone": 150
   },
   {
     "name": "enable-missive-storage-config",
@@ -3922,11 +3876,6 @@
     "expiry_milestone": 160
   },
   {
-     "name": "enable-retry-capture-device-enumeration-on-crash",
-     "owners": [ "orphis@chromium.org", "toprice@chromium.org" ],
-     "expiry_milestone": 118
-  },
-  {
     "name": "enable-rfc-8925",
     "owners": [ "taoyl@chromium.org", "cros-networking@google.com" ],
     // This is used by network administrators to debug potential network issues
@@ -3969,11 +3918,6 @@
       "slobodan@chromium.org",
       "chrome-payments-eng@google.com"
     ],
-    "expiry_milestone": 160
-  },
-  {
-    "name": "enable-secure-payment-confirmation-fallback-ux",
-    "owners": ["smcgruer@chromium.org", "darwinyang@chromium.org", "chrome-payments-eng@google.com"],
     "expiry_milestone": 160
   },
   {
@@ -4119,14 +4063,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-task-manager-desktop-refresh",
-    "owners": [
-      "mwoj@google.com",
-      "cros-sw-perf@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-three-dot-menu-back-button",
     "owners": [
       "jtanaristy@google.com",
@@ -4219,11 +4155,6 @@
     // This flag is used by developers to test upcoming WebGPU features on
     // their own content, before the features are considered stable.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-user-link-capturing-scope-extensions-pwa",
-    "owners": [ "dmurph@chromium.org", "pwa-team@google.com", "mek@chromium.org" ],
-    "expiry_milestone": 145
   },
   {
     "name": "enable-user-navigation-capturing-pwa",
@@ -4372,14 +4303,6 @@
     "expiry_milestone": 152
   },
   {
-    "name": "enable-welcome-experience",
-    "owners": [
-      "michaelcheco@google.com",
-      "cros-device-enablement@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-welcome-experience-test-unsupported-devices",
     "owners": [
       "michaelcheco@google.com",
@@ -4477,11 +4400,6 @@
     "name": "esim-empty-activation-code-support",
     "owners": ["nikhilcn@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "ewallet-payments",
-    "owners": [ "junhuihe@google.com", "chrome-payments-eng@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 151
   },
   {
     "name": "exclude-pip-from-screen-capture",
@@ -4623,14 +4541,6 @@
       "jackshira@google.com"
     ],
     "expiry_milestone": 133
-  },
-  {
-    "name": "fast-pair-hid",
-    "owners": [
-      "//ash/quick_pair/OWNERS",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 145
   },
   {
     "name": "fast-pair-keyboards",
@@ -4838,22 +4748,6 @@
     "name": "flex-firmware-update",
     "owners": [ "nicholasbishop@google.com", "chromeos-flex-eng@google.com" ],
     "expiry_milestone": 143
-  },
-  {
-    "name": "fluent-overlay-scrollbars",
-    "owners": [
-      "gastonr@microsoft.com",
-      "gerchiko@microsoft.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "fluent-scrollbars",
-    "owners": [
-      "gastonr@microsoft.com",
-      "gerchiko@microsoft.com"
-    ],
-    "expiry_milestone": 150
   },
   {
     "name": "fluid-resize",
@@ -5296,11 +5190,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "glic-fre-pre-warming",
-    "owners": [ "carlosk@chromium.org", "vollick@chromium.org", "//chrome/browser/glic/OWNERS" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "glic-guest-url-presets",
     "owners": [
       "cuianthony@google.com",
@@ -5491,13 +5380,6 @@
     "name": "hardware-media-key-handling",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 170
-  },
-  {
-    "name": "hats-webui",
-    "owners": [
-      "//chrome/browser/ui/hats/OWNERS"
-    ],
-    "expiry_milestone": 150
   },
   {
     "name": "hdr-agtm",
