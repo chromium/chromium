@@ -42,6 +42,10 @@ class HTMLSourceElement final : public HTMLElement {
   explicit HTMLSourceElement(Document&);
   ~HTMLSourceElement() override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLSourceElement;
+  }
+
   const AtomicString& type() const;
   void setType(const AtomicString&);
 

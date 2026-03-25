@@ -45,6 +45,10 @@ class CORE_EXPORT HTMLAudioElement final : public HTMLMediaElement {
 
   HTMLAudioElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLAudioElement;
+  }
+
   bool IsHTMLAudioElement() const override { return true; }
 
   // WebMediaPlayerClient implementation.

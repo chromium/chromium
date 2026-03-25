@@ -524,115 +524,117 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
     }
   }
 
-  // <div> and <span> are the most common elements on the web, we skip all the
-  // work for them.
-  if (IsA<HTMLDivElement>(element) || IsA<HTMLSpanElement>(element)) {
-    return;
-  }
-
-  if (auto* image = DynamicTo<HTMLImageElement>(element)) {
-    if (image->IsCollapsed() || builder.Display() == EDisplay::kContents) {
-      builder.SetDisplay(EDisplay::kNone);
+  switch (element.GetHTMLElementType()) {
+    case HTMLElementType::kHTMLImageElement: {
+      auto& image = To<HTMLImageElement>(element);
+      if (image.IsCollapsed() || builder.Display() == EDisplay::kContents) {
+        builder.SetDisplay(EDisplay::kNone);
+      }
+      break;
     }
-    return;
-  }
 
-  if (IsA<HTMLTableElement>(element)) {
-    // Tables never support the -webkit-* values for text-align and will reset
-    // back to the default.
-    if (builder.GetTextAlign() == ETextAlign::kWebkitLeft ||
-        builder.GetTextAlign() == ETextAlign::kWebkitCenter ||
-        builder.GetTextAlign() == ETextAlign::kWebkitRight) {
-      builder.SetTextAlign(ETextAlign::kStart);
+    case HTMLElementType::kHTMLTableElement:
+      // Tables never support the -webkit-* values for text-align and will reset
+      // back to the default.
+      if (builder.GetTextAlign() == ETextAlign::kWebkitLeft ||
+          builder.GetTextAlign() == ETextAlign::kWebkitCenter ||
+          builder.GetTextAlign() == ETextAlign::kWebkitRight) {
+        builder.SetTextAlign(ETextAlign::kStart);
+      }
+      break;
+
+    case HTMLElementType::kHTMLFrameElement:
+    case HTMLElementType::kHTMLFrameSetElement:
+      // Frames and framesets never honor position:relative or
+      // position:absolute. This is necessary to fix a crash where a site tries
+      // to position these objects. They also never honor display nor floating.
+      builder.SetPosition(EPosition::kStatic);
+      builder.SetDisplay(EDisplay::kBlock);
+      builder.SetFloating(EFloat::kNone);
+      break;
+
+    case HTMLElementType::kHTMLFencedFrameElement:
+      // Force the CSS style `zoom` property to 1 so that the embedder cannot
+      // communicate into the fenced frame by adjusting it, but still include
+      // the page zoom factor in the effective zoom, which is safe because it
+      // comes from user intervention. crbug.com/1285327
+      builder.SetEffectiveZoom(
+          element.GetDocument().GetStyleResolver().InitialZoom());
+      break;
+
+    case HTMLElementType::kHTMLLegendElement:
+      if (builder.Display() != EDisplay::kContents) {
+        // Allow any blockified display value for legends. Note that according
+        // to the spec, this shouldn't affect computed style (like we do here).
+        // Instead, the display override should be determined during box
+        // creation, and even then only be applied to the rendered legend inside
+        // a fieldset. However, Blink determines the rendered legend during
+        // layout instead of during layout object creation, and also generally
+        // makes assumptions that the computed display value is the one to use.
+        builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
+      }
+      break;
+
+    case HTMLElementType::kHTMLMarqueeElement:
+      // For now, <marquee> requires an overflow clip to work properly.
+      builder.SetOverflowX(EOverflow::kHidden);
+      builder.SetOverflowY(EOverflow::kHidden);
+      break;
+
+    case HTMLElementType::kHTMLTextAreaElement:
+      // Textarea considers overflow visible as auto.
+      builder.SetOverflowX(builder.OverflowX() == EOverflow::kVisible
+                               ? EOverflow::kAuto
+                               : builder.OverflowX());
+      builder.SetOverflowY(builder.OverflowY() == EOverflow::kVisible
+                               ? EOverflow::kAuto
+                               : builder.OverflowY());
+      if (builder.Display() == EDisplay::kContents) {
+        builder.SetDisplay(EDisplay::kNone);
+      }
+
+      // See https://drafts.csswg.org/css-display/#unbox-html
+      if (builder.Display() == EDisplay::kContents) {
+        builder.SetDisplay(EDisplay::kNone);
+      }
+
+      break;
+
+    case HTMLElementType::kHTMLEmbedElement:
+    case HTMLElementType::kHTMLObjectElement: {
+      auto& html_plugin_element = To<HTMLPlugInElement>(element);
+      builder.SetRequiresAcceleratedCompositingForExternalReasons(
+          html_plugin_element.ShouldAccelerate());
+      if (builder.Display() == EDisplay::kContents) {
+        builder.SetDisplay(EDisplay::kNone);
+      }
+      break;
     }
-    return;
-  }
 
-  if (IsA<HTMLFrameElement>(element) || IsA<HTMLFrameSetElement>(element)) {
-    // Frames and framesets never honor position:relative or position:absolute.
-    // This is necessary to fix a crash where a site tries to position these
-    // objects. They also never honor display nor floating.
-    builder.SetPosition(EPosition::kStatic);
-    builder.SetDisplay(EDisplay::kBlock);
-    builder.SetFloating(EFloat::kNone);
-    return;
-  }
+    case HTMLElementType::kHTMLBodyElement:
+      if (element.GetDocument().FirstBodyElement() != element) {
+        builder.SetIsSecondaryBodyElement();
+      }
+      break;
 
-  if (IsA<HTMLFrameElementBase>(element)) {
-    if (builder.Display() == EDisplay::kContents) {
-      builder.SetDisplay(EDisplay::kNone);
-      return;
-    }
-    return;
-  }
+    case HTMLElementType::kHTMLBRElement:
+    case HTMLElementType::kHTMLWBRElement:
+    case HTMLElementType::kHTMLMeterElement:
+    case HTMLElementType::kHTMLProgressElement:
+    case HTMLElementType::kHTMLCanvasElement:
+    case HTMLElementType::kHTMLAudioElement:
+    case HTMLElementType::kHTMLVideoElement:
+    case HTMLElementType::kHTMLInputElement:
+    case HTMLElementType::kHTMLSelectElement:
+    case HTMLElementType::kHTMLIFrameElement:
+      // See https://drafts.csswg.org/css-display/#unbox-html
+      if (builder.Display() == EDisplay::kContents) {
+        builder.SetDisplay(EDisplay::kNone);
+      }
+      break;
 
-  if (IsA<HTMLFencedFrameElement>(element)) {
-    // Force the CSS style `zoom` property to 1 so that the embedder cannot
-    // communicate into the fenced frame by adjusting it, but still include
-    // the page zoom factor in the effective zoom, which is safe because it
-    // comes from user intervention. crbug.com/1285327
-    builder.SetEffectiveZoom(
-        element.GetDocument().GetStyleResolver().InitialZoom());
-  }
-
-  if (IsA<HTMLLegendElement>(element) &&
-      builder.Display() != EDisplay::kContents) {
-    // Allow any blockified display value for legends. Note that according to
-    // the spec, this shouldn't affect computed style (like we do here).
-    // Instead, the display override should be determined during box creation,
-    // and even then only be applied to the rendered legend inside a
-    // fieldset. However, Blink determines the rendered legend during layout
-    // instead of during layout object creation, and also generally makes
-    // assumptions that the computed display value is the one to use.
-    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
-    return;
-  }
-
-  if (IsA<HTMLMarqueeElement>(element)) {
-    // For now, <marquee> requires an overflow clip to work properly.
-    builder.SetOverflowX(EOverflow::kHidden);
-    builder.SetOverflowY(EOverflow::kHidden);
-    return;
-  }
-
-  if (IsA<HTMLTextAreaElement>(element)) {
-    // Textarea considers overflow visible as auto.
-    builder.SetOverflowX(builder.OverflowX() == EOverflow::kVisible
-                             ? EOverflow::kAuto
-                             : builder.OverflowX());
-    builder.SetOverflowY(builder.OverflowY() == EOverflow::kVisible
-                             ? EOverflow::kAuto
-                             : builder.OverflowY());
-    if (builder.Display() == EDisplay::kContents) {
-      builder.SetDisplay(EDisplay::kNone);
-    }
-    return;
-  }
-
-  if (auto* html_plugin_element = DynamicTo<HTMLPlugInElement>(element)) {
-    builder.SetRequiresAcceleratedCompositingForExternalReasons(
-        html_plugin_element->ShouldAccelerate());
-    if (builder.Display() == EDisplay::kContents) {
-      builder.SetDisplay(EDisplay::kNone);
-    }
-    return;
-  }
-
-  if (builder.Display() == EDisplay::kContents) {
-    // See https://drafts.csswg.org/css-display/#unbox-html
-    // Some of these elements are handled with other adjustments above.
-    if (IsA<HTMLBRElement>(element) || IsA<HTMLWBRElement>(element) ||
-        IsA<HTMLMeterElement>(element) || IsA<HTMLProgressElement>(element) ||
-        IsA<HTMLCanvasElement>(element) || IsA<HTMLMediaElement>(element) ||
-        IsA<HTMLInputElement>(element) || IsA<HTMLTextAreaElement>(element) ||
-        IsA<HTMLSelectElement>(element)) {
-      builder.SetDisplay(EDisplay::kNone);
-    }
-  }
-
-  if (IsA<HTMLBodyElement>(element) &&
-      element.GetDocument().FirstBodyElement() != element) {
-    builder.SetIsSecondaryBodyElement();
+    default:
+      break;
   }
 }
 

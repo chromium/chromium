@@ -40,6 +40,9 @@ namespace blink {
 class HTMLWBRElement final : public HTMLElement {
  public:
   explicit HTMLWBRElement(Document&);
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLWBRElement;
+  }
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

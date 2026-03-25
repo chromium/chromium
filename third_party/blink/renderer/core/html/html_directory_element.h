@@ -32,6 +32,10 @@ class HTMLDirectoryElement final : public HTMLElement {
 
  public:
   explicit HTMLDirectoryElement(Document&);
+
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLDirectoryElement;
+  }
 };
 
 }  // namespace blink

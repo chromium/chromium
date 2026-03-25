@@ -28,6 +28,10 @@ namespace blink {
 class HTMLBDIElement final : public HTMLElement {
  public:
   explicit HTMLBDIElement(Document& document);
+
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLBDIElement;
+  }
 };
 
 }  // namespace blink

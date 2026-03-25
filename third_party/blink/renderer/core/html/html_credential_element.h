@@ -21,6 +21,10 @@ class CORE_EXPORT HTMLCredentialElement : public HTMLElement {
  public:
   explicit HTMLCredentialElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLCredentialElement;
+  }
+
   // Returns the FederatedAuthRequest options derived from the element's
   // attributes (e.g. configURL, clientID, etc.). Returns null if the element is
   // not a valid credential configuration.

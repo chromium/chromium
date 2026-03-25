@@ -15,6 +15,9 @@ class CORE_EXPORT HTMLMenuListElement final : public HTMLMenuOwnerElement {
 
  public:
   explicit HTMLMenuListElement(Document&);
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLMenuListElement;
+  }
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 };

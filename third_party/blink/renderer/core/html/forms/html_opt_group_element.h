@@ -40,6 +40,10 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   explicit HTMLOptGroupElement(Document&);
   ~HTMLOptGroupElement() override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLOptGroupElement;
+  }
+
   bool IsDisabledFormControl() const override;
   String DefaultToolTip() const override;
   HTMLSelectElement* OwnerSelectElement(bool skip_check = false) const;

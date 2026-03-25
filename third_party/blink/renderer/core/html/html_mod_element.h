@@ -34,6 +34,10 @@ class HTMLModElement final : public HTMLElement {
  public:
   HTMLModElement(const QualifiedName&, Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLModElement;
+  }
+
  private:
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;

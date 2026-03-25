@@ -134,6 +134,10 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLAnchorElementBase {
  public:
   explicit HTMLAnchorElement(Document& document);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLAnchorElement;
+  }
+
   void AttachLayoutTree(AttachContext& context) override;
   void DetachLayoutTree(bool performing_reattach) override;
 

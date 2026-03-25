@@ -42,6 +42,10 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
  public:
   explicit HTMLTextAreaElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLTextAreaElement;
+  }
+
   unsigned cols() const { return cols_; }
   unsigned rows() const { return rows_; }
 

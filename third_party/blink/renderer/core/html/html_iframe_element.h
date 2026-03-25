@@ -45,6 +45,10 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
   explicit HTMLIFrameElement(Document&);
   ~HTMLIFrameElement() override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLIFrameElement;
+  }
+
   DOMTokenList* sandbox() const;
   // Support JS introspection of frame policy (e.g. permissions policy)
   DOMFeaturePolicy* featurePolicy();

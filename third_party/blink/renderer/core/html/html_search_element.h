@@ -12,6 +12,10 @@ namespace blink {
 class HTMLSearchElement : public HTMLElement {
  public:
   explicit HTMLSearchElement(Document&);
+
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLSearchElement;
+  }
 };
 
 }  // namespace blink

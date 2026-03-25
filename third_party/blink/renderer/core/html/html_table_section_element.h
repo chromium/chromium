@@ -36,8 +36,11 @@ class HTMLTableSectionElement final : public HTMLTablePartElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-
   HTMLTableSectionElement(const QualifiedName& tag_name, Document&);
+
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLTableSectionElement;
+  }
 
   HTMLElement* insertRow(int index, ExceptionState&);
   void deleteRow(int index, ExceptionState&);

@@ -48,6 +48,10 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   HTMLScriptElement(Document&, const CreateElementFlags);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLScriptElement;
+  }
+
   // Returns attributes that should be checked against Trusted Types
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 

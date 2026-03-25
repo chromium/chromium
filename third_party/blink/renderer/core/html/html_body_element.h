@@ -42,6 +42,9 @@ class CORE_EXPORT HTMLBodyElement final : public HTMLElement,
   ~HTMLBodyElement() override;
 
   // HTMLElement override
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLBodyElement;
+  }
   bool IsHTMLBodyElement() const override { return true; }
 
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)

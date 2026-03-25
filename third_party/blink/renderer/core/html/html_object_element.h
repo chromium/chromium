@@ -48,6 +48,10 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   ~HTMLObjectElement() override = default;
   void Trace(Visitor*) const override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLObjectElement;
+  }
+
   // Returns attributes that should be checked against Trusted Types
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 

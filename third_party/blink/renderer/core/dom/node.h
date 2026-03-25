@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_options.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/html_element_type_enum.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -459,6 +460,14 @@ class CORE_EXPORT Node : public EventTarget {
     return GetCustomElementState() != CustomElementState::kUncustomized;
   }
   void SetCustomElementState(CustomElementState);
+
+  // Used in the IsA<> implementation; every HTMLElement must override this
+  // so that callers can ask for the type. We rely on Clang in LTO mode
+  // to optimize this so that calls become a simple getter (the value is
+  // stored before or after the vtable) instead of an actual virtual call.
+  virtual HTMLElementType GetHTMLElementType() const {
+    return HTMLElementType::kIsNotHTMLElement;
+  }
 
   virtual bool IsPseudoElement() const { return false; }
   virtual bool IsColumnPseudoElement() const { return false; }

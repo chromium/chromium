@@ -38,6 +38,10 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
  public:
   explicit HTMLFieldSetElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLFieldSetElement;
+  }
+
   HTMLLegendElement* Legend() const;
   HTMLCollection* elements();
 

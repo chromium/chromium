@@ -35,6 +35,10 @@ class CORE_EXPORT HTMLBRElement final : public HTMLElement {
  public:
   explicit HTMLBRElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLBRElement;
+  }
+
   bool CanContainRangeEndPoint() const override { return false; }
 
   bool IsRichlyEditableForAccessibility() const override { return false; }

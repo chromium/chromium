@@ -33,6 +33,10 @@ class HTMLPreElement final : public HTMLElement {
  public:
   HTMLPreElement(const QualifiedName&, Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLPreElement;
+  }
+
  private:
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(

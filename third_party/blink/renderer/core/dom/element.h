@@ -1560,6 +1560,9 @@ class CORE_EXPORT Element : public ContainerNode {
 
   DOMStringMap& dataset();
 
+  HTMLElementType GetHTMLElementType() const override {
+    return HTMLElementType::kIsNotHTMLElement;
+  }
   virtual bool IsDateTimeEditElement() const { return false; }
   virtual bool IsDateTimeFieldElement() const { return false; }
   virtual bool IsPickerIndicatorElement() const { return false; }

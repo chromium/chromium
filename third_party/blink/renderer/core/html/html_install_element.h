@@ -31,6 +31,10 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
  public:
   explicit HTMLInstallElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLInstallElement;
+  }
+
   // HTMLElement:
   bool IsHTMLInstallElement() const final { return true; }
 

@@ -66,6 +66,10 @@ class CORE_EXPORT HTMLInputElement
   ~HTMLInputElement() override;
   void Trace(Visitor*) const override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLInputElement;
+  }
+
   bool HasPendingActivity() const final;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(webkitspeechchange, kWebkitspeechchange)

@@ -41,6 +41,10 @@ class HTMLNoEmbedElement final : public HTMLElement {
  public:
   explicit HTMLNoEmbedElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLNoEmbedElement;
+  }
+
  private:
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
 };

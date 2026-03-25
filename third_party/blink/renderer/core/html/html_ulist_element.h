@@ -33,6 +33,10 @@ class HTMLUListElement final : public HTMLElement {
  public:
   explicit HTMLUListElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLUListElement;
+  }
+
  private:
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(

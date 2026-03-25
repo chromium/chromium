@@ -49,6 +49,10 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   explicit HTMLTemplateElement(Document&);
   ~HTMLTemplateElement() override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLTemplateElement;
+  }
+
   bool HasNonInBodyInsertionMode() const override { return true; }
 
   void Trace(Visitor*) const override;

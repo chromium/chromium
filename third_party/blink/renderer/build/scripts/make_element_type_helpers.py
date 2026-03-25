@@ -51,10 +51,11 @@ class MakeElementTypeHelpersWriter(json5_generator.Writer):
 
         assert self.namespace, 'A namespace is required.'
 
-        basename = self.namespace.lower() + '_element_type_helpers'
+        basename = self.namespace.lower() + '_element_type'
         self._outputs = {
-            (basename + '.h'): self.generate_helper_header,
-            (basename + '.cc'): self.generate_helper_implementation,
+            (basename + '_enum.h'): self.generate_enum_header,
+            (basename + '_helpers.h'): self.generate_helper_header,
+            (basename + '_helpers.cc'): self.generate_helper_implementation,
         }
 
         base_element_header = 'third_party/blink/renderer/core/{}/{}_element.h'.format(
@@ -78,12 +79,17 @@ class MakeElementTypeHelpersWriter(json5_generator.Writer):
             tag['js_interface'] = tag['interface']
             if tag['JSInterfaceName']:
                 tag['js_interface'] = tag['JSInterfaceName']
-            elements.add(tag['js_interface'])
+            elements.add(tag['interface'])
 
         for tag in tags:
             tag['multipleTagNames'] = (
                 interface_counts[tag['interface']] > 1
                 or tag['interface'] == self.fallback_interface)
+
+    @template_expander.use_jinja("templates/element_type_enum.h.tmpl",
+                                 filters=filters)
+    def generate_enum_header(self):
+        return self._template_context
 
     @template_expander.use_jinja(
         "templates/element_type_helpers.h.tmpl", filters=filters)

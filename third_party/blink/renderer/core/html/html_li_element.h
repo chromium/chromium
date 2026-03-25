@@ -35,6 +35,10 @@ class HTMLLIElement final : public HTMLElement {
  public:
   explicit HTMLLIElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLLIElement;
+  }
+
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;

@@ -36,6 +36,10 @@ class HTMLTableCaptionElement final : public HTMLElement {
  public:
   HTMLTableCaptionElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLTableCaptionElement;
+  }
+
   bool HasNonInBodyInsertionMode() const override { return true; }
 
  private:

@@ -99,6 +99,10 @@ class CORE_EXPORT HTMLCanvasElement final
   explicit HTMLCanvasElement(Document&);
   ~HTMLCanvasElement() override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLCanvasElement;
+  }
+
   // cc::TextureLayerClient implementation.
   bool PrepareTransferableResource(
       viz::TransferableResource* out_resource,

@@ -35,6 +35,9 @@ class HTMLFontElement final : public HTMLElement {
   static std::optional<CSSValueID> CssValueFromFontSizeNumber(const String&);
 
   explicit HTMLFontElement(Document&);
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLFontElement;
+  }
 
  private:
   bool IsPresentationAttribute(const QualifiedName&) const override;

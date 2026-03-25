@@ -36,6 +36,10 @@ class HTMLDetailsElement final : public HTMLElement {
   explicit HTMLDetailsElement(Document&);
   ~HTMLDetailsElement() override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLDetailsElement;
+  }
+
   Element& MainSummary() const;
 
   void ManuallyAssignSlots() override;

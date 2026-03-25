@@ -36,6 +36,10 @@ class CORE_EXPORT HTMLSpanElement : public HTMLElement {
 
  public:
   explicit HTMLSpanElement(Document&);
+
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLSpanElement;
+  }
 };
 
 }  // namespace blink

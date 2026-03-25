@@ -44,6 +44,10 @@ class CORE_EXPORT HTMLOutputElement final : public HTMLFormControlElement {
   explicit HTMLOutputElement(Document&);
   ~HTMLOutputElement() override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLOutputElement;
+  }
+
   bool willValidate() const override { return false; }
 
   String value() const;

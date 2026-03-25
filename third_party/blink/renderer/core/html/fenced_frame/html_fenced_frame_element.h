@@ -72,6 +72,10 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   ~HTMLFencedFrameElement() override;
   void Trace(Visitor* visitor) const override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLFencedFrameElement;
+  }
+
   DOMTokenList* sandbox() const;
 
   // HTMLFrameOwnerElement overrides.

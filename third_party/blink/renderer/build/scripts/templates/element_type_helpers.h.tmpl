@@ -9,6 +9,9 @@
 #include "{{base_element_header}}"
 #include "third_party/blink/renderer/core/{{namespace|lower}}_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+{% if namespace == "HTML" %}
+#include "third_party/blink/renderer/core/html_element_type_enum.h"
+{% endif %}
 
 namespace blink {
 
@@ -19,6 +22,11 @@ class Document;
 class {{tag.interface}};
 template <>
 struct DowncastTraits<{{tag.interface}}> {
+{% if namespace == "HTML" %}
+  static bool AllowFrom(const Node& node) {
+    return node.GetHTMLElementType() == HTMLElementType::k{{tag.interface}};
+  }
+{% else %}
   // AllowFrom(const {{namespace}}Element&) and AllowFrom(const Element&)
   // have the same code, but the {{namespace}}Element ones are a little
   // more efficient because of the
@@ -53,22 +61,24 @@ struct DowncastTraits<{{tag.interface}}> {
     // true if `node` is derived from `Element`.
     return node.Is{{namespace}}Element() && IsA<{{tag.interface}}>(UnsafeTo<{{namespace}}Element>(node));
   }
+{% endif %}
 };
 
 {% endfor %}
 
 {% if namespace == "HTML" %}
 
-enum class HTMLElementType {
-  {% for element in elements|sort %}k{{element}},
-  {% endfor %}
-};
-
 // Tag checking.
 // |tag_name| is the local name for an HTML element in lowercase.
 // The corresponding HTMLElement type for the tag name will be returned.
 // Do NOT use this function with SVG tag names and SVGElements.
 // If |tag_name| is an undefined HTML tag name HTMLUnknownElement is returned.
+//
+// Note that this will return the HTMLElementType corresponding to the
+// JavaScript interface, not the C++ class. For instance, <bdi> is implemented
+// in blink::HTMLBDIElement, yet we will return HTMLElementType::kHTMLElement
+// for it here, since there is no specialized JS interface for it in the standard.
+// This is unlike Node::GetHTMLElementType().
 HTMLElementType HtmlElementTypeForTag(const AtomicString& tag_name, const Document*);
 
 bool IsKnownBuiltinTagName(const AtomicString& tag_name);

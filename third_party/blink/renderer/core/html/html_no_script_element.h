@@ -41,6 +41,10 @@ class HTMLNoScriptElement final : public HTMLElement {
  public:
   explicit HTMLNoScriptElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLNoScriptElement;
+  }
+
  private:
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
 };

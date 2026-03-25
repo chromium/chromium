@@ -44,6 +44,10 @@ class HTMLTrackElement final : public HTMLElement,
   explicit HTMLTrackElement(Document&);
   ~HTMLTrackElement() override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLTrackElement;
+  }
+
   AtomicString kind();
   void setKind(const AtomicString&);
 

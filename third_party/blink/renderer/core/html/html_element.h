@@ -120,6 +120,10 @@ class CORE_EXPORT HTMLElement : public Element {
     return HasLocalName(name.LocalName());
   }
 
+  HTMLElementType GetHTMLElementType() const override {
+    return HTMLElementType::kHTMLElement;
+  }
+
   const char* GetHumanReadableName() const override;
 
   String title() const final;

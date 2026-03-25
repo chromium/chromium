@@ -52,6 +52,10 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
  public:
   explicit HTMLDialogElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLDialogElement;
+  }
+
   void Trace(Visitor*) const override;
 
   // open_attribute_being_removed should only be true when `close()` is being

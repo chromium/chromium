@@ -37,6 +37,10 @@ class CORE_EXPORT HTMLMarqueeElement final : public HTMLElement {
 
   explicit HTMLMarqueeElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLMarqueeElement;
+  }
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;
   void RemovedFrom(ContainerNode&) final;
 

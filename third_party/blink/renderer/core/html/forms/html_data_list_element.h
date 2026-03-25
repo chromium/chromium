@@ -51,6 +51,10 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
 
   explicit HTMLDataListElement(Document&);
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLDataListElement;
+  }
+
   HTMLDataListOptionsCollection* options();
 
   void OptionElementChildrenChanged();

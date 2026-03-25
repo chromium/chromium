@@ -59,6 +59,10 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   ~HTMLOptionElement() override;
   void Trace(Visitor* visitor) const override;
 
+  HTMLElementType GetHTMLElementType() const final {
+    return HTMLElementType::kHTMLOptionElement;
+  }
+
   // A text to be shown to users.  The difference from |label()| is |label()|
   // returns an empty string if |label| content attribute is empty.
   // |displayLabel()| returns the value string in that case.
