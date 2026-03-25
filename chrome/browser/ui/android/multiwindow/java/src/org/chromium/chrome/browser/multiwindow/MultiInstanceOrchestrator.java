@@ -9,10 +9,12 @@ import android.app.Activity;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Class that orchestrates and provides for common tasks applicable to all windows in a multi-window
@@ -69,4 +71,10 @@ public interface MultiInstanceOrchestrator {
      * @return {@code true} if the url launch request was successful, {@code false} otherwise.
      */
     boolean openUrlInOtherWindow(Tab sourceTab, LoadUrlParams loadUrlParams, boolean preferNew);
+
+    /**
+     * @param type A bit-int representing one or more {@link PersistedInstanceType}s.
+     * @return A set of instance ids of the specified {@code type} that are not marked for deletion.
+     */
+    Set<Integer> getUsableWindowIds(@PersistedInstanceType int type);
 }

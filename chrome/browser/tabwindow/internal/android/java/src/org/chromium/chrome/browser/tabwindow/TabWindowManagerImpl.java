@@ -30,9 +30,9 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -589,13 +589,13 @@ public class TabWindowManagerImpl implements TabWindowManager {
         mKeepAllTabModelsLoaded = true;
 
         List<TabModelSelector> tabModelSelectorList = new ArrayList<>();
-        List<InstanceInfo> instanceInfoList =
-                multiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
-        if (instanceInfoList.isEmpty()) {
+        Set<Integer> usableWindowIds =
+                MultiInstanceOrchestratorFactory.getInstance()
+                        .getUsableWindowIds(PersistedInstanceType.ANY);
+        if (usableWindowIds.isEmpty()) {
             tabModelSelectorList.add(selector);
         } else {
-            for (InstanceInfo instanceInfo : instanceInfoList) {
-                @WindowId int windowId = instanceInfo.instanceId;
+            for (@WindowId int windowId : usableWindowIds) {
                 if (!mWindowIdToSelectors.containsKey(windowId)) {
                     tabModelSelectorList.add(requestSelectorWithoutActivity(windowId, profile));
                 } else {

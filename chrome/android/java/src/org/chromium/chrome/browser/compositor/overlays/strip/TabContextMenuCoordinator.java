@@ -81,7 +81,6 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -653,12 +652,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
         List<ListItem> result = new ArrayList<>();
 
-        Set<Integer> activeInstanceIds = new HashSet<>();
-        List<InstanceInfo> activeInstances =
-                assumeNonNull(mMultiInstanceManager).getInstanceInfo(ACTIVE);
-        for (InstanceInfo activeInstance : activeInstances) {
-            activeInstanceIds.add(activeInstance.instanceId);
-        }
+        Set<Integer> activeInstanceIds = mMultiInstanceOrchestrator.getUsableWindowIds(ACTIVE);
 
         for (SavedTabGroup tabGroup : sortedTabGroups) {
             if (tabGroup.localId == null) continue;
@@ -669,6 +663,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
             TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
             @WindowId int windowId = tabWindowManager.findWindowIdForTabGroup(groupId);
+            assumeNonNull(mMultiInstanceManager);
             boolean isGroupInCurrentWindow =
                     windowId == mMultiInstanceManager.getCurrentInstanceId();
             if (!activeInstanceIds.contains(windowId)) {
