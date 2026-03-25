@@ -1578,7 +1578,7 @@
         Turn on AI Mode
       </message>
       <message name="IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER" desc="The placeholder to show when AIM is enabled and no user text was added.">
-        Ask Google anything
+        Ask anything
       </message>
       <message name="IDS_IOS_COMPOSEBOX_ASK_ABOUT_THIS_PAGE_ACTION" desc="A Composebox button to attach the current tab as context. [iOS only].">
         Ask about this page
