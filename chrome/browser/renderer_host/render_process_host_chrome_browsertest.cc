@@ -25,6 +25,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/performance_manager/public/features.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -96,7 +97,10 @@ bool IsProcessBackgrounded(const base::Process& process) {
 
 class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
  public:
-  ChromeRenderProcessHostTest() = default;
+  ChromeRenderProcessHostTest() {
+    feature_list_.InitAndDisableFeature(
+        performance_manager::features::kTransientKeepAlivePolicy);
+  }
 
   ChromeRenderProcessHostTest(const ChromeRenderProcessHostTest&) = delete;
   ChromeRenderProcessHostTest& operator=(const ChromeRenderProcessHostTest&) =
@@ -256,6 +260,7 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ChromeRenderProcessHostTestWithCommandLine
