@@ -34,7 +34,6 @@ enum Token {
   // os
   kConfigWin10 = 0,
   kConfigWin,
-  kConfigMacSnowLeopard,
   kConfigMacLion,
   kConfigMacMountainLion,
   kConfigMacMavericks,
@@ -49,6 +48,7 @@ enum Token {
   kConfigMacVentura,
   kConfigMacSonoma,
   kConfigMacSequoia,
+  kConfigMacTahoe,
   kConfigMac,
   kConfigLinux,
   kConfigChromeOS,
@@ -97,7 +97,6 @@ struct TokenInfo {
 const std::array<TokenInfo, 42> kTokenData = {{
     {"win10", GPUTestConfig::kOsWin10},
     {"win", GPUTestConfig::kOsWin},
-    {"snowleopard", GPUTestConfig::kOsMacSnowLeopard},
     {"lion", GPUTestConfig::kOsMacLion},
     {"mountainlion", GPUTestConfig::kOsMacMountainLion},
     {"mavericks", GPUTestConfig::kOsMacMavericks},
@@ -112,6 +111,7 @@ const std::array<TokenInfo, 42> kTokenData = {{
     {"ventura", GPUTestConfig::kOsMacVentura},
     {"sonoma", GPUTestConfig::kOsMacSonoma},
     {"sequoia", GPUTestConfig::kOsMacSequoia},
+    {"tahoe", GPUTestConfig::kOsMacTahoe},
     {"mac", GPUTestConfig::kOsMac},
     {"linux", GPUTestConfig::kOsLinux},
     {"chromeos", GPUTestConfig::kOsChromeOS},
@@ -268,7 +268,6 @@ bool GPUTestExpectationsParser::ParseConfig(
     switch (token) {
       case kConfigWin10:
       case kConfigWin:
-      case kConfigMacSnowLeopard:
       case kConfigMacLion:
       case kConfigMacMountainLion:
       case kConfigMacMavericks:
@@ -283,6 +282,7 @@ bool GPUTestExpectationsParser::ParseConfig(
       case kConfigMacVentura:
       case kConfigMacSonoma:
       case kConfigMacSequoia:
+      case kConfigMacTahoe:
       case kConfigMac:
       case kConfigLinux:
       case kConfigChromeOS:
@@ -335,7 +335,6 @@ bool GPUTestExpectationsParser::ParseLine(
         break;
       case kConfigWin10:
       case kConfigWin:
-      case kConfigMacSnowLeopard:
       case kConfigMacLion:
       case kConfigMacMountainLion:
       case kConfigMacMavericks:
@@ -350,6 +349,7 @@ bool GPUTestExpectationsParser::ParseLine(
       case kConfigMacVentura:
       case kConfigMacSonoma:
       case kConfigMacSequoia:
+      case kConfigMacTahoe:
       case kConfigMac:
       case kConfigLinux:
       case kConfigChromeOS:
@@ -465,7 +465,6 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
   switch (token) {
     case kConfigWin10:
     case kConfigWin:
-    case kConfigMacSnowLeopard:
     case kConfigMacLion:
     case kConfigMacMountainLion:
     case kConfigMacMavericks:
@@ -480,6 +479,7 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
     case kConfigMacVentura:
     case kConfigMacSonoma:
     case kConfigMacSequoia:
+    case kConfigMacTahoe:
     case kConfigMac:
     case kConfigLinux:
     case kConfigChromeOS:
