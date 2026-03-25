@@ -2620,7 +2620,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="ReplaceFileResult">
   <int value="0" label="kSuccess"/>
-  <int value="1" label="kUnableToFindValidBackupFilePath"/>
+  <int value="1"
+      label="(Obsolete) kUnableToFindValidBackupFilePath. Removed in 2026/03."/>
   <int value="2" label="kUnableToMoveReplacementMoveFailed"/>
   <int value="3" label="kUnableToMoveReplacementMoveSuccess"/>
   <int value="4" label="kUnableToMoveReplacement2RecoveryFailed"/>
@@ -2629,6 +2630,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="kFileNotFoundMoveSuccess"/>
   <int value="8" label="kOtherErrorsMoveFailed"/>
   <int value="9" label="kOtherErrorsMoveSuccess"/>
+  <int value="10" label="kUnableToMoveReplacement2MoveFailed"/>
+  <int value="11" label="kUnableToMoveReplacement2MoveSuccess"/>
 </enum>
 
 <!-- LINT.IfChange(SystemInstallerLaunchStatus) -->

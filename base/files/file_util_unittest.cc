@@ -1857,28 +1857,37 @@ TEST_F(FileUtilTest, ReplaceFileSuccess) {
                             /*count=*/1);
 }
 
-TEST_F(FileUtilTest, ReplaceFileUnableToFindValidBackupFilePath) {
-  HistogramTester tester;
-  // Use an invalid file path to force ReplaceFile to fail to find a valid
-  // backup file path.
-  const FilePath to_file_path = temp_dir_.GetPath()
-                                    .Append(FILE_PATH_LITERAL("invalid_path"))
-                                    .Append(FILE_PATH_LITERAL("to_file"));
+TEST_F(FileUtilTest, TmpFilePathExceedsMaxLength) {
+  // Determine current temp dir path length and pad with nested subdirectory
+  // to reach at least 240 characters which is enough to make the auto created
+  // temp file path by ReplaceFile exceeds the max file path length.
+  FilePath long_dir = temp_dir_.GetPath();
+  const size_t kTargetLen = 240;
+  const size_t current_len = long_dir.value().length();
+  if (current_len < kTargetLen) {
+    // Build a subdirectory name long enough to bring total path to kTargetLen.
+    // Reserve 1 character for the path separator.
+    const size_t padding = kTargetLen - current_len - 1;
+    const FilePath::StringType padding_name(padding, FILE_PATH_LITERAL('a'));
+    long_dir = long_dir.Append(FilePath(padding_name));
+    ASSERT_TRUE(CreateDirectory(long_dir));
+  }
+
+  const FilePath to_file_path = long_dir.Append(FILE_PATH_LITERAL("to_file"));
   const FilePath from_file_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("from_file"));
 
-  const std::string content = "new";
-  ASSERT_TRUE(WriteFile(from_file_path, content));
+  const std::string from_content = "hello";
+  ASSERT_TRUE(WriteFile(from_file_path, from_content));
+  ASSERT_TRUE(WriteFile(to_file_path, "old"));
 
-  // The replace should fail because the backup file path is invalid.
-  EXPECT_FALSE(ReplaceFile(from_file_path, to_file_path, /*error=*/nullptr));
+  // ReplaceFile should succeed even when the temp file creation failed due to
+  // file path exceeds the max path length.
+  EXPECT_TRUE(ReplaceFile(from_file_path, to_file_path, /*error=*/nullptr));
 
-  // The histogram should record a "unable to find valid backup file path"
-  // sample.
-  tester.ExpectUniqueSample(
-      "Windows.ReplaceFileResult",
-      /*sample=*/1,  // ReplaceFileResult::kUnableToFindValidBackupFilePath
-      /*count=*/1);
+  std::string result;
+  ASSERT_TRUE(ReadFileToString(to_file_path, &result));
+  EXPECT_EQ(result, from_content);
 }
 
 TEST_F(FileUtilTest, ReplaceFileOtherErrorsMoveFailed) {

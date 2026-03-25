@@ -76,7 +76,7 @@ enum class ReplaceFileResult {
   // ::ReplaceFile succeeded.
   kSuccess = 0,
   // Fail to find a valid backup file path for ::ReplaceFile to use.
-  kUnableToFindValidBackupFilePath = 1,
+  // OBSOLETE: kUnableToFindValidBackupFilePath = 1,
   // ::ReplaceFile failed with ERROR_UNABLE_TO_MOVE_REPLACEMENT and the fallback
   // ::MoveFile operation also failed.
   kUnableToMoveReplacementMoveFailed = 2,
@@ -103,7 +103,15 @@ enum class ReplaceFileResult {
   // ::ReplaceFile failed with other errors but the fallback ::MoveFile
   // operation succeeded. It's treated as success for ReplaceFile.
   kOtherErrorsMoveSuccess = 9,
-  kMaxValue = kOtherErrorsMoveSuccess,
+  // ::ReplaceFile failed with ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 and no backup
+  // file is used, and the fallback ::MoveFile operation failed. It's treated as
+  // failure for ReplaceFile.
+  kUnableToMoveReplacement2MoveFailed = 10,
+  // ::ReplaceFile failed with ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 and no backup
+  // file is used, but the fallback ::MoveFile operation succeeded. It's treated
+  // as success for ReplaceFile.
+  kUnableToMoveReplacement2MoveSuccess = 11,
+  kMaxValue = kUnableToMoveReplacement2MoveSuccess
 };
 
 // Records histogram for the ReplaceFile result. |is_backup_path_valid|
@@ -114,13 +122,6 @@ enum class ReplaceFileResult {
 void RecordReplaceFileResult(bool is_backup_path_valid,
                              std::optional<DWORD> replace_result,
                              std::optional<bool> is_move_success) {
-  if (!is_backup_path_valid) {
-    UmaHistogramEnumeration(
-        "Windows.ReplaceFileResult",
-        ReplaceFileResult::kUnableToFindValidBackupFilePath);
-    return;
-  }
-
   ReplaceFileResult result = ReplaceFileResult::kSuccess;
   switch (replace_result.value()) {
     case ERROR_SUCCESS:
@@ -136,9 +137,16 @@ void RecordReplaceFileResult(bool is_backup_path_valid,
                    : ReplaceFileResult::kUnableToMoveReplacementMoveFailed;
       break;
     case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2:
-      result = is_move_success.value()
-                   ? ReplaceFileResult::kUnableToMoveReplacement2RecoverySuccess
-                   : ReplaceFileResult::kUnableToMoveReplacement2RecoveryFailed;
+      if (is_backup_path_valid) {
+        result =
+            is_move_success.value()
+                ? ReplaceFileResult::kUnableToMoveReplacement2RecoverySuccess
+                : ReplaceFileResult::kUnableToMoveReplacement2RecoveryFailed;
+      } else {
+        result = is_move_success.value()
+                     ? ReplaceFileResult::kUnableToMoveReplacement2MoveSuccess
+                     : ReplaceFileResult::kUnableToMoveReplacement2MoveFailed;
+      }
       break;
     default:
       result = is_move_success.value()
@@ -606,14 +614,8 @@ bool ReplaceFile(const FilePath& from_path,
     // A valid backup file path is found. Delete the file that was just created.
     temp_file.DeleteOnClose(true);
   } else {
-    // Can't devise a path to a backup file.
-    RecordReplaceFileResult(/*is_backup_path_valid=*/false,
-                            /*replace_result=*/std::nullopt,
-                            /*is_move_success=*/std::nullopt);
-    if (error) {
-      *error = temp_file.error_details();
-    }
-    return false;
+    // Not find a valid backup file path and won't use backup file.
+    backup_path.clear();
   }
 
   // Assume that |to_path| already exists and try the normal replace. This will
@@ -621,18 +623,21 @@ bool ReplaceFile(const FilePath& from_path,
   // a network share, we may not be able to change the ACLs. Ignore ACL errors
   // then (REPLACEFILE_IGNORE_MERGE_ERRORS).
   if (::ReplaceFile(to_path.value().c_str(), from_path.value().c_str(),
-                    backup_path.value().c_str(),
+                    backup_path.empty() ? NULL : backup_path.value().c_str(),
                     REPLACEFILE_IGNORE_MERGE_ERRORS, NULL, NULL)) {
     // ReplaceFile succeeded. The backup file is no longer needed.
-    DeleteFile(backup_path);
-    RecordReplaceFileResult(/*is_backup_path_valid=*/true,
+    if (!backup_path.empty()) {
+      DeleteFile(backup_path);
+    }
+    RecordReplaceFileResult(/*is_backup_path_valid=*/!backup_path.empty(),
                             /*replace_result=*/ERROR_SUCCESS,
                             /*is_move_success=*/std::nullopt);
     return true;
   }
 
   const DWORD replace_error_code = GetLastError();
-  if (replace_error_code == ERROR_UNABLE_TO_MOVE_REPLACEMENT_2) {
+  if (replace_error_code == ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 &&
+      !backup_path.empty()) {
     // In the case of ERROR_UNABLE_TO_MOVE_REPLACEMENT_2, the replace operation
     // failed and |to_path| file is lost. The |backup_path| now points to the
     // original |to_path| file. Try to recover the |to_path| file by moving the
@@ -647,14 +652,16 @@ bool ReplaceFile(const FilePath& from_path,
     // doesn't already exist.
     const bool is_move_success =
         ::MoveFile(from_path.value().c_str(), to_path.value().c_str());
-    RecordReplaceFileResult(/*is_backup_path_valid=*/true, replace_error_code,
-                            is_move_success);
+    RecordReplaceFileResult(/*is_backup_path_valid=*/!backup_path.empty(),
+                            replace_error_code, is_move_success);
 
     if (is_move_success) {
       // Though ::ReplaceFile failed, we were able to move the file to the
       // destination. The backup file is no longer needed. This is treated as
       // success for ReplaceFile.
-      DeleteFile(backup_path);
+      if (!backup_path.empty()) {
+        DeleteFile(backup_path);
+      }
       return true;
     }
   }
