@@ -20,6 +20,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -39,6 +40,8 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -47,6 +50,7 @@
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -286,6 +290,40 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
       contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
           profile);
 #endif
+  contextual_tasks_service_ =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
+  if (contextual_tasks_service_) {
+    query_contextualizer_ =
+        std::make_unique<contextual_tasks::QueryContextualizer>(
+            contextual_tasks_service_, this);
+  }
+}
+
+GURL ContextualSearchboxHandler::GetTabUrl(int32_t id) {
+  // No-op.
+  return GURL();
+}
+
+SessionID ContextualSearchboxHandler::GetTabSessionId(int32_t id) {
+  // No-op.
+  return SessionID::InvalidValue();
+}
+
+void ContextualSearchboxHandler::GetPageContext(
+    int32_t id,
+    base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
+        callback) {
+  // No-op.
+  std::move(callback).Run(nullptr);
+}
+
+void ContextualSearchboxHandler::OnPageContextIneligible() {
+  // No-op.
+}
+
+void ContextualSearchboxHandler::OnTabProcessedForQueryContextualization(
+    int32_t id) {
+  // No-op.
 }
 
 void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
@@ -354,6 +392,7 @@ ContextualSearchboxHandler::GetContextualSessionHandle() {
 }
 
 ContextualSearchboxHandler::~ContextualSearchboxHandler() {
+  query_contextualizer_.reset();
   if (context_controller_) {
     context_controller_->RemoveObserver(this);
   }
@@ -784,6 +823,27 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
       PageClassificationToAimEntryPoint(
           omnibox_controller()->client()->GetPageClassification(
               /*is_prefetch=*/false));
+
+  if (query_contextualizer_) {
+    auto* browser_window_interface =
+        webui::GetBrowserWindowInterface(web_contents_);
+    if (browser_window_interface) {
+      auto* active_web_contents =
+          browser_window_interface->GetTabStripModel()->GetActiveWebContents();
+      if (active_web_contents) {
+        int32_t active_tab_id =
+            sessions::SessionTabHelper::IdForTab(active_web_contents).id();
+        query_contextualizer_->Contextualize(
+            GetTaskId(), {active_tab_id}, {}, GetContextualSessionHandle(),
+            base::BindOnce(&ContextualSearchboxHandler::ComputeAndOpenQueryUrl,
+                           weak_ptr_factory_.GetWeakPtr(), query_text,
+                           disposition, aim_entry_point,
+                           std::map<std::string, std::string>()));
+        return;
+      }
+    }
+  }
+
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,
                          /*additional_params=*/{});
 }
@@ -1027,4 +1087,13 @@ void ContextualSearchboxHandler::OpenUrl(
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
   contextual_session_handle->ClearSubmittedContextTokens();
+}
+
+std::optional<base::Uuid> ContextualSearchboxHandler::GetTaskId() {
+  if (!web_contents_) {
+    return std::nullopt;
+  }
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents_);
+  return helper ? helper->task_id() : std::nullopt;
 }

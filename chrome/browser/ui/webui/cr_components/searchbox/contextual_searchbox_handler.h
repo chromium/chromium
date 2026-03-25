@@ -26,6 +26,9 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
@@ -88,8 +91,11 @@ class ContextualSearchboxHandler
     : public contextual_search::ContextualSearchContextController::
           ContextUploadStatusObserver,
       public SearchboxHandler,
-      public TabListInterfaceObserver {
+      public TabListInterfaceObserver,
+      public contextual_tasks::QueryContextualizer::Delegate {
  public:
+  using RecontextualizeTabCallback = base::OnceCallback<void(bool)>;
+
   explicit ContextualSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
@@ -148,13 +154,6 @@ class ContextualSearchboxHandler
       mojo_base::BigBuffer file_bytes,
       std::optional<lens::ImageEncodingOptions> image_encoding_options,
       AddFileContextCallback callback);
-
-  using RecontextualizeTabCallback = base::OnceCallback<void(bool success)>;
-  virtual void UploadTabContextWithData(
-      int32_t tab_id,
-      std::optional<int64_t> context_id,
-      std::unique_ptr<lens::ContextualInputData> data,
-      RecontextualizeTabCallback callback);
 
   // contextual_search::ContextUploadStatusObserver:
   void OnContextUploadStatusChanged(
@@ -233,6 +232,8 @@ class ContextualSearchboxHandler
 
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder();
 
+  raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
+
   // Helper function that uploads the cached tab context if it exists.
   void UploadTabContext(
       const base::UnguessableToken& context_token,
@@ -255,6 +256,20 @@ class ContextualSearchboxHandler
                             bool is_tab_suggestion_chip);
 
   virtual void InitializeInputStateModel();
+
+  // contextual_tasks::QueryContextualizer::Delegate:
+  GURL GetTabUrl(int32_t id) override;
+  SessionID GetTabSessionId(int32_t id) override;
+  void GetPageContext(
+      int32_t id,
+      base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
+          callback) override;
+  void UploadTabContextWithData(int32_t id,
+                                std::optional<int64_t> context_id,
+                                std::unique_ptr<lens::ContextualInputData> data,
+                                RecontextualizeTabCallback callback) override;
+  void OnPageContextIneligible() override;
+  void OnTabProcessedForQueryContextualization(int32_t id) override;
 
   std::unique_ptr<contextual_search::InputStateModel> input_state_model_;
 
@@ -286,6 +301,9 @@ class ContextualSearchboxHandler
   std::optional<std::pair<base::UnguessableToken,
                           std::unique_ptr<lens::ContextualInputData>>>
       tab_context_snapshot_;
+
+  std::unique_ptr<contextual_tasks::QueryContextualizer> query_contextualizer_;
+
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<contextual_tasks::ContextualTasksContextService>
       contextual_tasks_context_service_;
