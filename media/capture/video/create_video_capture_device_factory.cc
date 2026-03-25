@@ -12,7 +12,10 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/capture/video/file_video_capture_device_factory.h"
+#endif
 
 #if BUILDFLAG(IS_LINUX)
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
@@ -38,20 +41,23 @@ std::unique_ptr<VideoCaptureDeviceFactory>
 CreateFakeVideoCaptureDeviceFactory() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
+#if !BUILDFLAG(IS_ANDROID)
   // Use a File Video Device Factory if the command line flag is present.
-  // Otherwise, use a Fake Video Device Factory.
+  // Otherwise, use a Fake Video Device Factory. The File Video Device Factory
+  // is not supported on Android due to the lack of file system access and
+  // excessive binary size usage.
   if (command_line->HasSwitch(switches::kUseFileForFakeVideoCapture)) {
     return std::make_unique<FileVideoCaptureDeviceFactory>();
-  } else {
-    std::vector<FakeVideoCaptureDeviceSettings> config;
-    FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
-        command_line->GetSwitchValueASCII(
-            switches::kUseFakeDeviceForMediaStream),
-        &config);
-    auto result = std::make_unique<FakeVideoCaptureDeviceFactory>();
-    result->SetToCustomDevicesConfig(config);
-    return std::move(result);
   }
+#endif
+
+  std::vector<FakeVideoCaptureDeviceSettings> config;
+  FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
+      command_line->GetSwitchValueASCII(switches::kUseFakeDeviceForMediaStream),
+      &config);
+  auto result = std::make_unique<FakeVideoCaptureDeviceFactory>();
+  result->SetToCustomDevicesConfig(config);
+  return result;
 }
 
 std::unique_ptr<VideoCaptureDeviceFactory>
