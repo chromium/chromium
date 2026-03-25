@@ -144,6 +144,7 @@ void AddStringsForFileTypes(base::DictValue* dict) {
   SET_STRING("WORD_DOCUMENT_FILE_TYPE",
              IDS_FILE_BROWSER_WORD_DOCUMENT_FILE_TYPE);
   SET_STRING("TINI_FILE_TYPE", IDS_FILE_BROWSER_TINI_FILE_TYPE);
+  SET_STRING("SWBN_FILE_TYPE", IDS_FILE_BROWSER_SWBN_FILE_TYPE);
 }
 
 void AddStringsForDrive(base::DictValue* dict) {

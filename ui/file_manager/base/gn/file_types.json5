@@ -569,5 +569,12 @@
     "translationKey": "TINI_FILE_TYPE",
     "subtype": "TGZ",
     "extensions": [".tini"]
+  },
+  {
+    "type": "archive",
+    "icon": "signed_web_bundle",
+    "translationKey": "SWBN_FILE_TYPE",
+    "subtype": "SWBN",
+    "extensions": [".swbn"]
   }
 ]

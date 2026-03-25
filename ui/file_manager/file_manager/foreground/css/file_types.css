@@ -135,6 +135,10 @@ body.check-select #list-container li[selected] [file-type-icon],
   -webkit-mask-image: url(../images/filetype/filetype_sites.svg);
 }
 
+[file-type-icon='signed_web_bundle'] {
+  -webkit-mask-image: url(../images/filetype/filetype_swbn.svg);
+}
+
 [file-type-icon='smb'] {
   -webkit-mask-image: url(../images/volumes/smb.svg);
 }
@@ -244,6 +248,10 @@ body.check-select #list-container li[selected] [file-type-icon],
 
 .no-thumbnail[generic-thumbnail='sites'] {
   -webkit-mask-image: url(../images/filetype/filetype_sites.svg);
+}
+
+.no-thumbnail[generic-thumbnail='signed_web_bundle'] {
+  -webkit-mask-image: url(../images/filetype/filetype_swbn.svg);
 }
 
 .no-thumbnail[generic-thumbnail='word'] {

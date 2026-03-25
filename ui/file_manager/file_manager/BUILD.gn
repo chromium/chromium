@@ -109,6 +109,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/filetype/filetype_ppt.svg",
     "foreground/images/filetype/filetype_script.svg",
     "foreground/images/filetype/filetype_sites.svg",
+    "foreground/images/filetype/filetype_swbn.svg",
     "foreground/images/filetype/filetype_team_drive.svg",
     "foreground/images/filetype/filetype_tini.svg",
     "foreground/images/filetype/filetype_video.svg",
