@@ -20,7 +20,9 @@ namespace blink {
 using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
 
 ScrollPredictor::ScrollPredictor()
-    : metrics_handler_("Event.InputEventPrediction.Scroll") {
+    : metrics_handler_("Event.InputEventPrediction.Scroll"),
+      fling_metrics_handler_("Event.InputEventPrediction.Fling",
+                             /*report_score_metrics=*/false) {
   // Get the predictor from feature flags
   std::string predictor_name = GetFieldTrialParamValueByFeature(
       blink::features::kResamplingScrollEvents, "predictor");
@@ -62,6 +64,13 @@ ScrollPredictor::ScrollPredictor()
 }
 
 ScrollPredictor::~ScrollPredictor() = default;
+
+ui::PredictionMetricsHandler& ScrollPredictor::GetMetricsHandler(
+    WebGestureEvent::InertialPhaseState phase) {
+  return phase == WebGestureEvent::InertialPhaseState::kMomentum
+             ? fling_metrics_handler_
+             : metrics_handler_;
+}
 
 void ScrollPredictor::ResetOnGestureScrollBegin(const WebGestureEvent& event) {
   DCHECK(event.GetType() == WebInputEvent::Type::kGestureScrollBegin);
@@ -132,11 +141,19 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
       if (metrics) {
         WebGestureEvent* gesture_event =
             static_cast<WebGestureEvent*>(event_with_callback->event_pointer());
-        metrics->set_predicted_delta(gesture_event->data.scroll_update.delta_y);
+        // Do not sync predicted delta for AverageLag if this is a fling.
+        // AverageLag measures finger-to-pixel distance, which is undefined
+        // during fling.
+        if (gesture_event->data.scroll_update.inertial_phase !=
+            WebGestureEvent::InertialPhaseState::kMomentum) {
+          metrics->set_predicted_delta(
+              gesture_event->data.scroll_update.delta_y);
+        }
       }
     }
 
     metrics_handler_.EvaluatePrediction();
+    fling_metrics_handler_.EvaluatePrediction();
 
   } else if (event_with_callback->event().GetType() ==
              WebInputEvent::Type::kGestureScrollEnd) {
@@ -158,6 +175,12 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
   }
   WebGestureEvent gesture_event(WebInputEvent::Type::kGestureScrollUpdate,
                                 modifiers, frame_time, gesture_device);
+
+  // Inherit the phase from the curve we are predicting.
+  gesture_event.data.scroll_update.inertial_phase = last_inertial_phase_;
+  bool is_scroll_inertial =
+      (last_inertial_phase_ == WebGestureEvent::InertialPhaseState::kMomentum);
+
   ui::LatencyInfo latency_info;
   latency_info.set_trace_id(base::trace_event::GetNextGlobalTraceId());
   ResampleEvent(frame_time, frame_interval, &gesture_event,
@@ -173,7 +196,7 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
       cc::ScrollUpdateEventMetrics::Create(
           ui::EventType::kGestureScrollUpdate,
           gesture_event.GetScrollInputType(),
-          /*is_inertial=*/false,
+          /*is_inertial=*/is_scroll_inertial,
           cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
           /*delta=*/gesture_event.data.scroll_update.delta_y,
           /*timestamp=*/gesture_event.TimeStamp(),
@@ -181,7 +204,9 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
           /*blocking_touch_dispatched_to_renderer=*/gesture_event.TimeStamp(),
           /*trace_id=*/
           base::IdType64<class ui::LatencyInfo>(latency_info.trace_id()));
-  metrics->set_predicted_delta(gesture_event.data.scroll_update.delta_y);
+  if (!is_scroll_inertial) {
+    metrics->set_predicted_delta(gesture_event.data.scroll_update.delta_y);
+  }
   metrics->set_is_synthetic(true);
   return std::make_unique<EventWithCallback>(
       std::make_unique<WebCoalescedInputEvent>(std::move(gesture_event),
@@ -241,7 +266,9 @@ void ScrollPredictor::Reset() {
   last_raw_synthetic_pos_ = gfx::PointF();
   last_raw_linear_pos_ = gfx::PointF();
   last_prediction_update_timestamp_ = base::TimeTicks();  // Reset the timestamp
+  last_inertial_phase_ = WebGestureEvent::InertialPhaseState::kUnknownMomentum;
   metrics_handler_.Reset();
+  fling_metrics_handler_.Reset();
 }
 
 base::TimeDelta ScrollPredictor::ResampleLatency(
@@ -257,7 +284,10 @@ void ScrollPredictor::UpdatePredictionForEventAfterSampleTime(
 
   if (gesture_event.data.scroll_update.inertial_phase ==
       WebGestureEvent::InertialPhaseState::kMomentum) {
-    return;
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kResampleScrollEventsForFling)) {
+      return;
+    }
   }
 
   if (last_prediction_update_timestamp_ < gesture_event.TimeStamp()) {
@@ -277,11 +307,18 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
   DCHECK(event.GetType() == WebInputEvent::Type::kGestureScrollUpdate);
   const WebGestureEvent& gesture_event =
       static_cast<const WebGestureEvent&>(event);
-  // When fling, GSU is sending per frame, resampling is not needed.
+
+  last_inertial_phase_ = gesture_event.data.scroll_update.inertial_phase;
+
+  // When fling, GSU is sending per frame, resampling is not needed unless
+  // kResampleScrollEventsForFling is enabled.
   if (gesture_event.data.scroll_update.inertial_phase ==
       WebGestureEvent::InertialPhaseState::kMomentum) {
-    should_resample_scroll_events_ = false;
-    return;
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kResampleScrollEventsForFling)) {
+      should_resample_scroll_events_ = false;
+      return;
+    }
   }
 
   current_event_accumulated_delta_.Offset(
@@ -302,9 +339,9 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
     last_prediction_update_timestamp_ = gesture_event.TimeStamp();
   }
 
-  metrics_handler_.AddRealEvent(current_event_accumulated_delta_,
-                                gesture_event.TimeStamp(), frame_time,
-                                true /* Scrolling */);
+  GetMetricsHandler(gesture_event.data.scroll_update.inertial_phase)
+      .AddRealEvent(current_event_accumulated_delta_, gesture_event.TimeStamp(),
+                    frame_time, true /* Scrolling */);
 }
 
 void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
@@ -449,9 +486,9 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
       gesture_event->data.scroll_update.delta_y);
 
   if (predicted) {
-    metrics_handler_.AddPredictedEvent(predicted_accumulated_delta,
-                                       result->time_stamp, frame_time,
-                                       true /* Scrolling */);
+    GetMetricsHandler(gesture_event->data.scroll_update.inertial_phase)
+        .AddPredictedEvent(predicted_accumulated_delta, result->time_stamp,
+                           frame_time, true /* Scrolling */);
   }
   last_resample_time_ = gesture_event->TimeStamp();
 }

@@ -296,6 +296,38 @@ TEST_F(ScrollPredictorTest, ScrollResamplingStates) {
   EXPECT_FALSE(GetResamplingState());
 }
 
+TEST_F(ScrollPredictorTest, ScrollResamplingStatesWithFlingFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kResampleScrollEventsForFling);
+
+  // Initially, no resampling state should be active.
+  EXPECT_FALSE(GetResamplingState());
+
+  // A GestureScrollBegin starts a new scroll sequence. Resampling should be
+  // enabled.
+  SendGestureScrollBegin();
+  EXPECT_TRUE(GetResamplingState());
+
+  // Provide a GestureScrollUpdate with the kMomentum inertial phase, indicating
+  // a fling. Because the kResampleScrollEventsForFling feature is enabled,
+  // resampling should remain active and not be disabled.
+  std::unique_ptr<WebInputEvent> gesture_update = CreateGestureScrollUpdate(
+      0, 10, 10 /* ms */, WebGestureEvent::InertialPhaseState::kMomentum);
+  HandleResampleScrollEvents(gesture_update, 15 /* ms */);
+  EXPECT_TRUE(GetResamplingState());
+
+  // A GestureScrollEnd indicates the end of the scroll sequence, which
+  // subsequently disables resampling.
+  std::unique_ptr<WebInputEvent> gesture_end =
+      std::make_unique<WebGestureEvent>(
+          WebInputEvent::Type::kGestureScrollEnd, WebInputEvent::kNoModifiers,
+          WebInputEvent::GetStaticTimeStampForTests(),
+          WebGestureDevice::kTouchscreen);
+  HandleResampleScrollEvents(gesture_end);
+  EXPECT_FALSE(GetResamplingState());
+}
+
 TEST_F(ScrollPredictorTest, ResampleGestureScrollEvents) {
   ConfigurePredictorFieldTrialAndInitialize(features::kResamplingScrollEvents,
                                             ::features::kPredictorNameEmpty);
