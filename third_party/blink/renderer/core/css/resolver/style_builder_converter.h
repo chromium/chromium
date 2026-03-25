@@ -305,6 +305,8 @@ class StyleBuilderConverter {
   static GapDataList<EBorderStyle> ConvertGapDecorationStyleDataList(
       const StyleResolverState&,
       const CSSValue&);
+  static Length ConvertGapDecorationInsetLength(const StyleResolverState&,
+                                                const CSSValue&);
   static ShadowData ConvertShadow(const CSSToLengthConversionData&,
                                   StyleResolverState*,
                                   const CSSValue&);

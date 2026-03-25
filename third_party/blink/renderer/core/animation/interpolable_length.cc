@@ -98,6 +98,8 @@ CSSValueID InterpolableLength::LengthTypeToCSSValueID(Length::Type lt) {
       return CSSValueID::kStretch;
     case Length::Type::kContent:  // only valid for flex-basis.
       return CSSValueID::kContent;
+    case Length::Type::kOverlapJoin:  // only valid for gap decoration inset.
+      return CSSValueID::kOverlapJoin;
     default:
       return CSSValueID::kInvalid;
   }

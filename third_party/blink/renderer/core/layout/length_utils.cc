@@ -154,6 +154,8 @@ LayoutUnit ResolveInlineLengthInternal(
       return kIndefiniteSize;
     case Length::kFlex:
       NOTREACHED() << "Should only be used for grid.";
+    case Length::kOverlapJoin:
+      NOTREACHED() << "Should only be used for gap decoration insets.";
   }
 }
 
@@ -271,6 +273,8 @@ LayoutUnit ResolveBlockLengthInternal(
       return kIndefiniteSize;
     case Length::kFlex:
       NOTREACHED() << "Should only be used for grid.";
+    case Length::kOverlapJoin:
+      NOTREACHED() << "Should only be used for gap decoration insets.";
   }
 }
 

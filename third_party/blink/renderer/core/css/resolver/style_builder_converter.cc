@@ -2062,6 +2062,17 @@ Length StyleBuilderConverter::ConvertLength(const StyleResolverState& state,
       state.CssToLengthConversionData());
 }
 
+Length StyleBuilderConverter::ConvertGapDecorationInsetLength(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kOverlapJoin) {
+    return Length(Length::kOverlapJoin);
+  }
+  return ConvertLength(state, value);
+}
+
 UnzoomedLength StyleBuilderConverter::ConvertUnzoomedLength(
     StyleResolverState& state,
     const CSSValue& value) {

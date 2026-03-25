@@ -1314,6 +1314,9 @@
     // intersection
     // normal
 
+    // rule-inset
+    "overlap-join",
+
     // column-rule-visibility-items
     // auto
     // all

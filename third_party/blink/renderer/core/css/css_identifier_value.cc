@@ -64,6 +64,7 @@ CSSIdentifierValue::CSSIdentifierValue(const Length& length)
     case Length::kFlex:
     case Length::kMinIntrinsic:
     case Length::kNone:
+    case Length::kOverlapJoin:
       NOTREACHED();
   }
 }

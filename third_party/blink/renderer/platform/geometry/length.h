@@ -125,7 +125,8 @@ class PLATFORM_EXPORT Length {
     kCalculated,
     kFlex,
     kNone,    // only valid for max-width, max-height, or contain-intrinsic-size
-    kContent  // only valid for flex-basis
+    kContent,      // only valid for flex-basis
+    kOverlapJoin,  // only valid for gap decoration inset properties
   };
 
   Length() : value_(0), type_(kAuto) {}
@@ -310,6 +311,7 @@ class PLATFORM_EXPORT Length {
   bool IsStretch() const { return GetType() == kStretch; }
   bool IsFitContent() const { return GetType() == kFitContent; }
   bool IsPercent() const { return GetType() == kPercent; }
+  bool IsOverlapJoin() const { return GetType() == kOverlapJoin; }
   // MayHavePercentDependence should be used to decide whether to optimize
   // away computing the value on which percentages depend or optimize away
   // recomputation that results from changes to that value.  It is intended to

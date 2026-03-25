@@ -7773,7 +7773,7 @@ bool ConsumeGapDecorationsShorthandRepeatFunction(
 }
 
 // Consuming the `*-rule-edge-inset` and `*-rule-interior-inset` shorthands
-// with syntax <length-percentage> <length-percentage>?
+// with syntax [ overlap-join | <length-percentage> ]
 bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
     bool important,
     const CSSParserContext& context,
@@ -7786,7 +7786,7 @@ bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
   rule_start_inset = nullptr;
   rule_end_inset = nullptr;
 
-  // Consume the first <length-percentage> value (required).
+  // Consume the first value (required).
   if (!ConsumeGapDecorationsRuleInsetStartEndShorthand(
           important, context, local_context, stream, rule_start_inset)) {
     return false;
@@ -7805,7 +7805,7 @@ bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
 }
 
 // Consuming the `*-rule-inset-start` and `*-rule-inset-end` shorthands
-// with syntax <length-percentage>
+// with syntax overlap-join | <length-percentage>
 bool ConsumeGapDecorationsRuleInsetStartEndShorthand(
     bool important,
     const CSSParserContext& context,
@@ -7814,14 +7814,20 @@ bool ConsumeGapDecorationsRuleInsetStartEndShorthand(
     CSSValue*& rule_inset_value) {
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
+  if (stream.Peek().Id() == CSSValueID::kOverlapJoin) {
+    rule_inset_value = ConsumeIdent(stream);
+    return true;
+  }
   rule_inset_value = ConsumeLengthOrPercent(
       stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
   return rule_inset_value != nullptr;
 }
 
 // Consuming the `rule-inset`, `column-rule-inset`, `row-rule-inset`
-// shorthands with syntax <length-percentage> <length-percentage>?
-// [ / <length-percentage> <length-percentage>?]?
+// shorthands with syntax [ overlap-join | <length-percentage> ]
+// [ overlap-join | <length-percentage> ]?
+// [ / [ overlap-join | <length-percentage> ]
+// [ overlap-join | <length-percentage> ]? ]?
 bool ConsumeGapDecorationsRuleInsetShorthand(
     bool important,
     const CSSParserContext& context,
@@ -7853,9 +7859,9 @@ bool ConsumeGapDecorationsRuleInsetShorthand(
       continue;
     }
 
-    CSSValue* value = ConsumeLengthOrPercent(
-        stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
-    if (!value) {
+    CSSValue* value = nullptr;
+    if (!ConsumeGapDecorationsRuleInsetStartEndShorthand(
+            important, context, local_context, stream, value)) {
       return false;
     }
 

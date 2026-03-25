@@ -77,12 +77,12 @@ LayoutUnit GapGeometry::ComputeInsetEnd(
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
   if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
                          is_main, intersections)) {
-    return ValueForLength((is_column_gap ? style.ColumnRuleEdgeInsetEnd()
-                                         : style.RowRuleEdgeInsetEnd()),
+    return ValueForLength(is_column_gap ? style.ColumnRuleEdgeInsetEnd()
+                                        : style.RowRuleEdgeInsetEnd(),
                           cross_width);
   } else {
-    return ValueForLength((is_column_gap ? style.ColumnRuleInteriorInsetEnd()
-                                         : style.RowRuleInteriorInsetEnd()),
+    return ValueForLength(is_column_gap ? style.ColumnRuleInteriorInsetEnd()
+                                        : style.RowRuleInteriorInsetEnd(),
                           cross_width);
   }
 }
@@ -101,12 +101,12 @@ LayoutUnit GapGeometry::ComputeInsetStart(
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
   if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
                          is_main, intersections)) {
-    return ValueForLength((is_column_gap ? style.ColumnRuleEdgeInsetStart()
-                                         : style.RowRuleEdgeInsetStart()),
+    return ValueForLength(is_column_gap ? style.ColumnRuleEdgeInsetStart()
+                                        : style.RowRuleEdgeInsetStart(),
                           cross_width);
   } else {
-    return ValueForLength((is_column_gap ? style.ColumnRuleInteriorInsetStart()
-                                         : style.RowRuleInteriorInsetStart()),
+    return ValueForLength(is_column_gap ? style.ColumnRuleInteriorInsetStart()
+                                        : style.RowRuleInteriorInsetStart(),
                           cross_width);
   }
 }

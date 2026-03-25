@@ -55,6 +55,7 @@ float FloatValueForLength(const Length& length,
     case Length::kContent:
     case Length::kFlex:
     case Length::kNone:
+    case Length::kOverlapJoin:
       NOTREACHED();
   }
   NOTREACHED();
@@ -82,6 +83,7 @@ LayoutUnit MinimumValueForLengthInternal(const Length& length,
     case Length::kContent:
     case Length::kFlex:
     case Length::kNone:
+    case Length::kOverlapJoin:
       NOTREACHED();
   }
   NOTREACHED();
@@ -105,6 +107,7 @@ LayoutUnit ValueForLength(const Length& length,
     case Length::kContent:
     case Length::kFlex:
     case Length::kNone:
+    case Length::kOverlapJoin:
       NOTREACHED();
   }
   NOTREACHED();

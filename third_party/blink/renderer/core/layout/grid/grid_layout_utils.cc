@@ -622,6 +622,7 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
     case Length::kFlex:
     case Length::kNone:
     case Length::kContent:
+    case Length::kOverlapJoin:
       NOTREACHED();
   }
 }

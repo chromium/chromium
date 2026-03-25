@@ -130,6 +130,7 @@ CSSValue* CSSValue::Create(const Length& value, float zoom) {
       return CSSPrimitiveValue::CreateFromLength(value, zoom);
     case Length::kMinIntrinsic:
     case Length::kNone:
+    case Length::kOverlapJoin:
       NOTREACHED();
   }
 }

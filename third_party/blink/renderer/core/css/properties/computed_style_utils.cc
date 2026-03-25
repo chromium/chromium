@@ -4176,6 +4176,15 @@ CSSValueList* ComputedStyleUtils::ValuesForGapDecorationRuleInsetShorthand(
     return nullptr;
   }
 
+  if (AllCSSValuesEqual(
+          {rule_edge_start_inset_value, rule_edge_end_inset_value,
+           rule_interior_start_inset_value,
+           rule_interior_end_inset_value})) {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*rule_edge_start_inset_value);
+    return list;
+  }
+
   CSSValueList* edge_values_list = CSSValueList::CreateSpaceSeparated();
   CSSValueList* interior_values_list = CSSValueList::CreateSpaceSeparated();
   CSSValueList* full_list = CSSValueList::CreateSlashSeparated();
@@ -4540,6 +4549,12 @@ const CSSValue* ComputedStyleUtils::ValuesForBidirectionalGapRuleInsetShorthand(
       !base::ValuesEquivalent(column_rule_interior_end,
                               row_rule_interior_end)) {
     return nullptr;
+  }
+
+  if (AllCSSValuesEqual(
+          {column_rule_edge_start, column_rule_edge_end,
+           column_rule_interior_start, column_rule_interior_end})) {
+    return column_rule_edge_start;
   }
 
   CSSValueList* edge_values = CSSValueList::CreateSpaceSeparated();
