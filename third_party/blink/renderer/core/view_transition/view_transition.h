@@ -214,6 +214,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
   bool IsDone() const { return IsTerminalState(state_); }
 
+  bool NavigationSnapshotComplete() {
+    return state_ == State::kTransitionStateCallbackDispatched;
+  }
+
   bool HasActiveAnimations() const;
 
   // Returns true if this object was created to cache a snapshot of the current

@@ -295,9 +295,6 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
     delegate_->OnTransitionFinished(this);
   }
 
-  // TODO(khushalsagar): Figure out the promise handling when this is on the
-  // old Document for a cross-document navigation.
-
   // Cleanup logic which is tied to ViewTransition objects created using the
   // script API. script_delegate_ is cleared when the Document is being torn
   // down and script specific callbacks don't need to be dispatched in that
