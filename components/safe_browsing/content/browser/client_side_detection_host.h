@@ -186,7 +186,6 @@ class ClientSideDetectionHost
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
   void KeyboardLockRequested() override;
-  void PointerLockRequested() override;
   void VibrationRequested() override;
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;

@@ -1219,14 +1219,6 @@ void ClientSideDetectionHost::KeyboardLockRequested() {
   }
 }
 
-void ClientSideDetectionHost::PointerLockRequested() {
-  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
-    return;
-  }
-
-  MaybeStartPreClassification(ClientSideDetectionType::POINTER_LOCK_REQUESTED);
-}
-
 void ClientSideDetectionHost::VibrationRequested() {
   if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
