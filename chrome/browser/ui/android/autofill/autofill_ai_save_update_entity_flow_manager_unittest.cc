@@ -195,7 +195,7 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowsMessage_MessageIngored) {
 
   // Simulate the user ignoring the message which dismisses it.
   EXPECT_CALL(prompt_closed_callback(),
-              Run(AutofillClient::AutofillAiBubbleResult::kNotInteracted));
+              Run(AutofillClient::AutofillAiBubbleResult::kNotInteracted, _));
   message_model->OnDismissed(messages::DismissReason::TIMER);
 }
 
@@ -209,7 +209,7 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowsMessage_MessageClosed) {
 
   // Simulate the swipe on the message that closes it.
   EXPECT_CALL(prompt_closed_callback(),
-              Run(AutofillClient::AutofillAiBubbleResult::kClosed));
+              Run(AutofillClient::AutofillAiBubbleResult::kClosed, _));
   message_model->OnDismissed(messages::DismissReason::GESTURE);
 }
 
@@ -234,7 +234,7 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest,
       .Times(2)
       .WillRepeatedly(SaveArgByMove<0>(&message_model));
   EXPECT_CALL(prompt_closed_callback(),
-              Run(AutofillClient::AutofillAiBubbleResult::kClosed))
+              Run(AutofillClient::AutofillAiBubbleResult::kClosed, _))
       .Times(2);
 
   flow_manager().OfferSave(new_entity(), /*old_entity=*/std::nullopt,

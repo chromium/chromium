@@ -168,7 +168,8 @@ void AutofillAiSaveUpdateEntityFlowManager::OnMessageDismissed(
 void AutofillAiSaveUpdateEntityFlowManager::RunPromptClosedCallback(
     AutofillClient::AutofillAiBubbleResult result) {
   if (prompt_result_callback_) {
-    std::move(prompt_result_callback_).Run(result);
+    // TODO(crbug.com/489354073): Pass the correct UI context.
+    std::move(prompt_result_callback_).Run(result, {});
   }
 }
 

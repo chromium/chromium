@@ -356,7 +356,8 @@ void AutofillAiManager::HandlePromptResult(
     EntityInstance entity,
     ukm::SourceId ukm_source_id,
     AutofillClient::AutofillAiImportPromptType prompt_type,
-    AutofillClient::AutofillAiBubbleResult result) {
+    AutofillClient::AutofillAiBubbleResult result,
+    const AutofillClient::EntityImportUIContext& ui_context) {
   logger_.OnImportPromptResult(form, prompt_type, entity.type(),
                                entity.record_type(), result, ukm_source_id);
   EntityDataManager& entity_manager =
@@ -409,8 +410,8 @@ void AutofillAiManager::HandlePromptResult(
     switch (prompt_type) {
       case AutofillClient::AutofillAiImportPromptType::kSave:
       case AutofillClient::AutofillAiImportPromptType::kMigrate:
-        // TODO(crbug.com/489354073): Log consent and replace with the correct
-        // session ID.
+        // TODO(crbug.com/489354073): Log consent using `ui_context` and replace
+        // the parameter with the correct session ID.
         wallet_manager->SaveWalletEntityInstance(
             entity, consent_auditor::ConsentAuditor::GenerateSessionId(),
             std::move(callback));

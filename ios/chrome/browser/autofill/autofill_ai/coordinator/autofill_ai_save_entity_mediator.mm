@@ -25,8 +25,9 @@
 
 - (void)disconnect {
   if (_params && !_params->callback.is_null()) {
+    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(_params->callback)
-        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown);
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown, {});
   }
   _params = std::nullopt;
   _consumer = nil;
@@ -46,14 +47,16 @@
   }
 
   CHECK(!_params->callback.is_null());
+  // TODO(crbug.com/489354073): Pass the correct UI context.
   std::move(_params->callback)
-      .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted);
+      .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted, {});
 }
 
 - (void)cancelSaving {
   if (_params && !_params->callback.is_null()) {
+    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(_params->callback)
-        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kCancelled);
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kCancelled, {});
   }
 }
 

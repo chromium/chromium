@@ -101,8 +101,9 @@ void AutofillAiImportDataControllerImpl::ShowPrompt(
   // Don't show the bubble if it's already visible.
   if (bubble_view() || !MaySetUpBubble()) {
     if (!prompt_result_callback.is_null()) {
+      // TODO(crbug.com/489354073): Pass the correct UI context.
       std::move(prompt_result_callback)
-          .Run(AutofillClient::AutofillAiBubbleResult::kUnknown);
+          .Run(AutofillClient::AutofillAiBubbleResult::kUnknown, {});
     }
     return;
   }
@@ -127,8 +128,9 @@ void AutofillAiImportDataControllerImpl::OnSaveButtonClicked() {
   if (GetSaveUpdateState().close_on_accept) {
     OnBubbleClosed(AutofillClient::AutofillAiBubbleResult::kAccepted);
   } else if (!GetSaveUpdateState().prompt_result_callback.is_null()) {
+    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(GetSaveUpdateState().prompt_result_callback)
-        .Run(AutofillClient::AutofillAiBubbleResult::kAccepted);
+        .Run(AutofillClient::AutofillAiBubbleResult::kAccepted, {});
   }
 }
 
@@ -293,7 +295,8 @@ void AutofillAiImportDataControllerImpl::MaybeRunSaveUpdateCallback(
     AutofillClient::AutofillAiBubbleResult result) {
   if (IsSaveUpdatePrompt() &&
       !GetSaveUpdateState().prompt_result_callback.is_null()) {
-    std::move(GetSaveUpdateState().prompt_result_callback).Run(result);
+    // TODO(crbug.com/489354073): Pass the correct UI context.
+    std::move(GetSaveUpdateState().prompt_result_callback).Run(result, {});
   }
 }
 

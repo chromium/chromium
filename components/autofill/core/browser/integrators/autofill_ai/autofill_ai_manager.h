@@ -190,7 +190,8 @@ class AutofillAiManager {
       EntityInstance entity,
       ukm::SourceId ukm_source_id,
       AutofillClient::AutofillAiImportPromptType prompt_type,
-      AutofillClient::AutofillAiBubbleResult result);
+      AutofillClient::AutofillAiBubbleResult result,
+      const AutofillClient::EntityImportUIContext& ui_context);
 
   // Handles the fallback UI and storage logic when a Wallet save is
   // accepted but the user is no longer eligible. This can happen if eligibility

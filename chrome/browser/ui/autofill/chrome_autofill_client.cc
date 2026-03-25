@@ -1445,7 +1445,7 @@ void ChromeAutofillClient::ShowEntityImportBubble(
                            std::move(prompt_result_callback));
   } else {
     std::move(prompt_result_callback)
-        .Run(AutofillClient::AutofillAiBubbleResult::kUnknown);
+        .Run(AutofillClient::AutofillAiBubbleResult::kUnknown, {});
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

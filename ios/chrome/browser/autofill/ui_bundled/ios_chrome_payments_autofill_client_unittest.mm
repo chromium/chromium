@@ -130,7 +130,7 @@
 
 - (void)showSaveEntityDialog:(autofill::SaveEntityParams)params {
   std::move(params.callback)
-      .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown);
+      .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown, {});
 }
 
 - (void)dismissSaveEntityDialog {

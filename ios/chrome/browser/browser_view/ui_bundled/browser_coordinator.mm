@@ -2364,7 +2364,7 @@ const char kChromeAppStoreUrl[] =
 - (void)showSaveEntityDialog:(autofill::SaveEntityParams)params {
   if (_autofillAISaveEntityCoordinator) {
     std::move(params.callback)
-        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown);
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown, {});
     return;
   }
 

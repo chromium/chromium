@@ -197,12 +197,13 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
   ShowUi("SaveNewEntity");
   ASSERT_TRUE(controller()->IsShowingBubble());
 
-  base::test::TestFuture<AutofillClient::AutofillAiBubbleResult>
+  base::test::TestFuture<AutofillClient::AutofillAiBubbleResult,
+                         const AutofillClient::EntityImportUIContext&>
       prompt_result_future;
   controller()->ShowPrompt(test::GetPassportEntityInstance(), std::nullopt,
                            /*close_on_accept=*/true,
                            prompt_result_future.GetCallback());
-  EXPECT_EQ(prompt_result_future.Get(),
+  EXPECT_EQ(std::get<0>(prompt_result_future.Get()),
             AutofillClient::AutofillAiBubbleResult::kUnknown);
 }
 
