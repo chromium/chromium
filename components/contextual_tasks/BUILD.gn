@@ -7,6 +7,7 @@ group("unit_tests") {
 
   deps = [
     "//components/contextual_tasks/internal:unit_tests",
+    "//components/contextual_tasks/public:search_unittests",
     "//components/contextual_tasks/public:unit_tests",
   ]
 }

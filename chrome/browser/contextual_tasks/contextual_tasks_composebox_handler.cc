@@ -145,11 +145,6 @@ void ContextualTasksOmniboxClient::OnAutocompleteAccept(
   composebox_handler_->CreateAndSendQueryMessage(query_text);
 }
 
-// The amount of change in bytes that is considered a significant change and
-// should trigger a page content update request. This provides tolerance in
-// case there is slight variation in the retrieved bytes in between calls.
-constexpr float kByteChangeTolerancePercent = 0.01;
-
 lens::LensOverlayDismissalSource ToLensOverlayDismissalSource(
     composebox::mojom::LensOverlayDismissalSource dismissal_source) {
   switch (dismissal_source) {
@@ -191,7 +186,10 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
       web_ui_interface_(web_ui_interface),
       contextual_tasks_service_(
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-              profile)) {
+              profile)),
+      recontextualizer_(std::make_unique<contextual_tasks::QueryContextualizer>(
+          contextual_tasks_service_,
+          this)) {
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
@@ -302,18 +300,20 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     return;
   }
 
+  std::vector<contextual_tasks::QueryContextualizer::TabId>
+      tabs_to_recontextualize;
   // Get the active tab handle now, as recontextualization is an async process
   // and fetching the active tab later may result in unexpected behavior.
-  tabs::TabHandle active_tab_handle;
+  tabs::TabInterface* active_tab = nullptr;
   auto* browser_window_interface = webui::GetBrowserWindowInterface(
       web_ui_interface_->GetWebUIWebContents());
   if (browser_window_interface) {
     TabListInterface* tab_list =
         TabListInterface::From(browser_window_interface);
     if (tab_list) {
-      tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+      active_tab = tab_list->GetActiveTab();
       if (active_tab) {
-        active_tab_handle = active_tab->GetHandle();
+        tabs_to_recontextualize.push_back(active_tab->GetHandle().raw_value());
       }
     }
 
@@ -326,24 +326,23 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     }
   }
 
-  // Fetch the context for the task, including pending context from the current
-  // session handle.
-  auto context_decoration_params =
-      std::make_unique<contextual_tasks::ContextDecorationParams>();
-  if (session_handle) {
-    context_decoration_params->contextual_search_session_handle =
-        session_handle->AsWeakPtr();
+  std::vector<contextual_tasks::QueryContextualizer::TabId>
+      tabs_to_force_contextualize;
+  for (const auto& [token, tab_id] : delayed_tabs_) {
+    tabs_to_force_contextualize.push_back(tab_id);
   }
+  delayed_tabs_.clear();
 
-  contextual_tasks_service->GetContextForTask(
-      *task_id,
-      {contextual_tasks::ContextualTaskContextSource::
-           kSubmittedContextDecorator},
-      std::move(context_decoration_params),
-      base::BindOnce(&ContextualTasksComposeboxHandler::OnContextRetrieved,
-                     weak_factory_.GetWeakPtr(), query, active_tab_handle,
-                     /*task_id=*/task_id,
-                     has_visual_selection ? overlay_token : std::nullopt));
+  // Kick off the on-submit contextualization flow to upload delayed tabs and
+  // recontextualize the active tab.
+  recontextualization_pending_count_++;
+  recontextualizer_->Contextualize(
+      task_id, tabs_to_recontextualize, tabs_to_force_contextualize,
+      session_handle,
+      base::BindOnce(
+          &ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage,
+          weak_factory_.GetWeakPtr(), query, task_id,
+          has_visual_selection ? overlay_token : std::nullopt));
 }
 
 contextual_tasks::ContextualTasksService*
@@ -351,118 +350,6 @@ ContextualTasksComposeboxHandler::GetContextualTasksService() {
   return contextual_tasks_service_;
 }
 
-void ContextualTasksComposeboxHandler::OnContextRetrieved(
-    std::string query,
-    tabs::TabHandle active_tab_handle,
-    std::optional<base::Uuid> original_task_id,
-    std::optional<base::UnguessableToken> overlay_token,
-    std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
-  if (!context || web_ui_interface_->GetTaskId() != original_task_id) {
-    ContinueCreateAndSendQueryMessage(query, original_task_id, overlay_token);
-    return;
-  }
-  tabs::TabInterface* active_tab = active_tab_handle.Get();
-  std::vector<tabs::TabInterface*> tabs_to_update =
-      GetTabsToUpdate(*context, active_tab);
-
-  // Use a barrier closure to wait for all tabs to be processed +
-  // run upload callback callback once finished one time.
-  // OnSingleTabProcessed runs per tab finishing uploading.
-  // We make sure we do not create closures unless there
-  // are tabs to be updated. Otherwise, the closure will
-  // run immediately due to number of usages expected
-  // being based on tabs_to_update.size().
-  if (tabs_to_update.empty()) {
-    ContinueCreateAndSendQueryMessage(query, original_task_id, overlay_token);
-    return;
-  }
-  base::RepeatingClosure create_and_send_query_closure = base::BarrierClosure(
-      tabs_to_update.size(),
-      base::BindOnce(
-          &ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage,
-          weak_factory_.GetWeakPtr(), query, original_task_id, overlay_token));
-
-  int32_t tab_id;
-  for (tabs::TabInterface* tab : tabs_to_update) {
-    // -1 is filler value since tabs that do not exist will not be added
-    // to the delayed_tabs set. OnSingleTabProcessed will remove -1 from the
-    // set, but because it is a set, it is allowed even if -1 is not in the set.
-    tab_id = tab ? tab->GetHandle().raw_value() : -1;
-    // This adjusts the delayed tab counter once finished uploading.
-    base::RepeatingClosure single_tab_upload_callback = base::BindRepeating(
-        &ContextualTasksComposeboxHandler::OnSingleTabProcessed,
-        weak_factory_.GetWeakPtr(), create_and_send_query_closure, tab_id);
-    if (!tab) {
-      single_tab_upload_callback.Run();
-      continue;
-    }
-
-    tabs::TabFeatures* tab_features = tab->GetTabFeatures();
-    if (!tab_features) {
-      single_tab_upload_callback.Run();
-      continue;
-    }
-
-    lens::TabContextualizationController* controller =
-        tab_features->tab_contextualization_controller();
-    if (!controller) {
-      single_tab_upload_callback.Run();
-      continue;
-    }
-
-    controller->GetPageContext(base::BindOnce(
-        &ContextualTasksComposeboxHandler::OnTabContextualizationFetched,
-        weak_factory_.GetWeakPtr(),
-        // Create a copy of the context for each tab, so that the context can
-        // be moved into the callback. This is fine because all member
-        // variables are held by value, and all complex objects have explicit
-        // copy constructors.
-        std::make_unique<contextual_tasks::ContextualTaskContext>(*context),
-        single_tab_upload_callback, original_task_id, tab_id));
-  }
-}
-
-void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
-    std::unique_ptr<contextual_tasks::ContextualTaskContext> context,
-    base::RepeatingClosure single_tab_upload_callback,
-    std::optional<base::Uuid> original_task_id,
-    int32_t tab_id,
-    std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  if (!page_content_data) {
-    single_tab_upload_callback.Run();
-    return;
-  }
-
-  // Set the is_implicit_upload field for the page content data since this
-  // callback runs for re-contextualization from the contextual tasks page.
-  page_content_data->is_implicit_upload = true;
-
-  if (web_ui_interface_->GetTaskId() != original_task_id) {
-    single_tab_upload_callback.Run();
-    return;
-  }
-
-  if (contextual_tasks::GetIsProtectedPageErrorEnabled() &&
-      !page_content_data->is_page_context_eligible.value_or(false)) {
-    web_ui_interface_->OnPageContextEligibilityChecked(false);
-    single_tab_upload_callback.Run();
-    return;
-  }
-
-  std::optional<int64_t> maybe_context_id = std::nullopt;
-  if (page_content_data->tab_session_id.has_value()) {
-    maybe_context_id = GetContextIdForTab(*context, *page_content_data);
-  }
-
-  if (!ShouldUploadTabContext(maybe_context_id, *page_content_data)) {
-    single_tab_upload_callback.Run();
-    return;
-  }
-
-  UploadTabContextWithData(tab_id, maybe_context_id,
-                           std::move(page_content_data),
-                           base::IgnoreArgs<bool>(single_tab_upload_callback));
-}
 
 void ContextualTasksComposeboxHandler::OnTaskChanged() {
   ClearFiles(/*should_block_auto_suggested_tabs=*/false);
@@ -518,260 +405,72 @@ void ContextualTasksComposeboxHandler::AddFileContextFromBrowser(
   std::move(callback).Run(base::ok(token));
 }
 
-std::vector<tabs::TabInterface*>
-ContextualTasksComposeboxHandler::GetTabsToUpdate(
-    const contextual_tasks::ContextualTaskContext& context,
-    tabs::TabInterface* active_tab) {
-  std::set<tabs::TabInterface*> tabs_to_update;
-  // TODO(crbug.com/469807132): Add suggested tabs to the list of tabs to
-  // update.
-
-  // Add delayed tabs to the list of tabs to update.
-  for (const auto& [token, tab_id] : delayed_tabs_) {
-    tabs::TabHandle handle = tabs::TabHandle(tab_id);
-    if (tabs::TabInterface* tab = handle.Get()) {
-      tabs_to_update.insert(tab);
-    } else {
-      // Remove invalid delayed tabs from pending set.
-      MarkDelayedTabUploadFinished(tab_id);
-    }
+GURL ContextualTasksComposeboxHandler::GetTabUrl(
+    contextual_tasks::QueryContextualizer::TabId id) {
+  tabs::TabHandle handle = tabs::TabHandle(id);
+  tabs::TabInterface* const tab = handle.Get();
+  if (!tab || !tab->GetContents()) {
+    return GURL();
   }
-  // We remove delayed tabs since if the submission of the query fails, or we
-  // swap tasks mid-submission context upload, we do not want tabs that failed
-  // to upload to remain and be uploaded in the next query unless the user
-  // re-adds them.
-  delayed_tabs_.clear();
-
-  // TODO(crbug.com/468430623): Support updating multiple tabs.
-  // Currently this only checks the active tab.
-  if (!active_tab) {
-    return std::vector<tabs::TabInterface*>(tabs_to_update.begin(),
-                                            tabs_to_update.end());
-  }
-
-  // Check if the active tab is in the context.
-  SessionID active_tab_session_id =
-      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
-  if (!active_tab_session_id.is_valid()) {
-    return std::vector<tabs::TabInterface*>(tabs_to_update.begin(),
-                                            tabs_to_update.end());
-  }
-
-  if (GetMatchingAttachment(context,
-                            active_tab->GetContents()->GetLastCommittedURL(),
-                            active_tab_session_id)) {
-    tabs_to_update.insert(active_tab);
-    int32_t active_tab_id = active_tab->GetHandle().raw_value();
-
-    // Since `pending_delayed_tab_ids_` is a set,
-    // we do not have to worry about duplicate active tab
-    // ID insertion.
-    pending_delayed_tab_ids_.insert(active_tab_id);
-  }
-
-  return std::vector<tabs::TabInterface*>(tabs_to_update.begin(),
-                                          tabs_to_update.end());
+  return tab->GetContents()->GetLastCommittedURL();
 }
 
-std::optional<int64_t> ContextualTasksComposeboxHandler::GetContextIdForTab(
-    const contextual_tasks::ContextualTaskContext& context,
-    const lens::ContextualInputData& page_content_data) {
-  if (!page_content_data.tab_session_id.has_value()) {
-    return std::nullopt;
+SessionID ContextualTasksComposeboxHandler::GetTabSessionId(
+    contextual_tasks::QueryContextualizer::TabId id) {
+  tabs::TabHandle handle = tabs::TabHandle(id);
+  tabs::TabInterface* const tab = handle.Get();
+  if (!tab || !tab->GetContents()) {
+    return SessionID::InvalidValue();
   }
-  SessionID tab_session_id = page_content_data.tab_session_id.value();
-
-  auto* controller = GetContextualTasksService();
-  if (!controller) {
-    return std::nullopt;
-  }
-
-  auto* contextual_session_handle = GetContextualSessionHandle();
-  if (!contextual_session_handle) {
-    return std::nullopt;
-  }
-
-  auto* search_context_controller = contextual_session_handle->GetController();
-  if (!search_context_controller) {
-    return std::nullopt;
-  }
-
-  if (!page_content_data.page_url.has_value()) {
-    return std::nullopt;
-  }
-
-  if (GetMatchingAttachment(context, page_content_data.page_url.value(),
-                            tab_session_id)) {
-    const auto& file_info_list = search_context_controller->GetFileInfoList();
-    for (const auto* file_info : file_info_list) {
-      if (file_info->tab_session_id == tab_session_id) {
-        return file_info->GetContextId();
-      }
-    }
-  }
-  return std::nullopt;
+  return sessions::SessionTabHelper::IdForTab(tab->GetContents());
 }
 
-bool ContextualTasksComposeboxHandler::ShouldUploadTabContext(
+void ContextualTasksComposeboxHandler::GetPageContext(
+    contextual_tasks::QueryContextualizer::TabId id,
+    base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
+        callback) {
+  tabs::TabHandle handle = tabs::TabHandle(id);
+  tabs::TabInterface* const tab = handle.Get();
+  if (!tab) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+  if (!tab_features || !tab_features->tab_contextualization_controller()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  tab_features->tab_contextualization_controller()->GetPageContext(
+      std::move(callback));
+}
+
+void ContextualTasksComposeboxHandler::UploadTabContextWithData(
+    contextual_tasks::QueryContextualizer::TabId id,
     std::optional<int64_t> context_id,
-    const lens::ContextualInputData& page_content_data) {
-  // If the tab was not previously uploaded, or if the tab has expired, or if
-  // the tab contents have changed significantly, the tab context should be
-  // uploaded.
-  if (!context_id.has_value()) {
-    return true;
-  }
-
-  if (!page_content_data.tab_session_id.has_value()) {
-    return true;
-  }
-  SessionID tab_session_id = page_content_data.tab_session_id.value();
-
-  auto* contextual_session_handle = GetContextualSessionHandle();
-  if (!contextual_session_handle) {
-    return true;
-  }
-
-  auto* search_context_controller = contextual_session_handle->GetController();
-  if (!search_context_controller) {
-    return true;
-  }
-
-  const auto& file_info_list = search_context_controller->GetFileInfoList();
-  const contextual_search::FileInfo* matching_file_info = nullptr;
-  for (const auto* file_info : file_info_list) {
-    if (file_info->tab_session_id == tab_session_id) {
-      matching_file_info = file_info;
-      break;
-    }
-  }
-
-  if (!matching_file_info) {
-    return true;
-  }
-
-  if (matching_file_info->upload_status ==
-      contextual_search::ContextUploadStatus::kUploadExpired) {
-    return true;
-  }
-
-  if (!matching_file_info->input_data) {
-    return true;
-  }
-
-  const auto& old_data = *matching_file_info->input_data;
-  const auto& new_data = page_content_data;
-
-  // Check if primary content type changed.
-  if (old_data.primary_content_type != new_data.primary_content_type) {
-    return true;
-  }
-
-  // Check if page contents changed.
-  if (new_data.primary_content_type.has_value()) {
-    const std::vector<lens::ContextualInput>& old_inputs =
-        old_data.context_input.has_value()
-            ? *old_data.context_input
-            : std::vector<lens::ContextualInput>();
-    const std::vector<lens::ContextualInput>& new_inputs =
-        new_data.context_input.has_value()
-            ? *new_data.context_input
-            : std::vector<lens::ContextualInput>();
-    auto old_it = std::ranges::find_if(old_inputs, [&](const auto& input) {
-      return input.content_type_ == new_data.primary_content_type.value();
-    });
-    auto new_it = std::ranges::find_if(new_inputs, [&](const auto& input) {
-      return input.content_type_ == new_data.primary_content_type.value();
-    });
-
-    if (old_it != old_inputs.end() && new_it != new_inputs.end()) {
-      const float old_size = old_it->bytes_.size();
-      const float new_size = new_it->bytes_.size();
-      if (old_size > 0) {
-        const float percent_changed = abs((new_size - old_size) / old_size);
-        if (percent_changed >= kByteChangeTolerancePercent) {
-          return true;
-        }
-      } else if (new_size > 0) {
-        return true;
-      }
-    } else if (old_it != old_inputs.end() || new_it != new_inputs.end()) {
-      // One has content and the other doesn't.
-      return true;
-    }
-  }
-
-  // Check if viewport screenshot changed.
-  // TODO(crbug.com/471960792): Add support for only recontextualizing the
-  // screenshot when the viewport has changed but the page contents are the
-  // same.
-
-  // The screenshot may be in either the byte array or bitmap members of
-  // ContextualInputData. Both should be checked for changes.
-  bool old_has_screenshot = old_data.viewport_screenshot_bytes.has_value() &&
-                            !old_data.viewport_screenshot_bytes->empty();
-  bool new_has_screenshot = new_data.viewport_screenshot_bytes.has_value() &&
-                            !new_data.viewport_screenshot_bytes->empty();
-
-  if (old_has_screenshot != new_has_screenshot) {
-    return true;
-  }
-
-  if (old_has_screenshot) {
-    const auto& old_bytes = old_data.viewport_screenshot_bytes.value();
-    const auto& new_bytes = new_data.viewport_screenshot_bytes.value();
-    if (old_bytes.size() != new_bytes.size()) {
-      return true;
-    }
-    // Exact byte comparison for screenshot.
-    if (old_bytes != new_bytes) {
-      return true;
-    }
-  }
-
-  bool old_has_bitmap = old_data.viewport_screenshot.has_value();
-  bool new_has_bitmap = new_data.viewport_screenshot.has_value();
-
-  if (old_has_bitmap != new_has_bitmap) {
-    return true;
-  }
-
-  if (old_has_bitmap) {
-    const auto& old_bitmap = old_data.viewport_screenshot.value();
-    const auto& new_bitmap = new_data.viewport_screenshot.value();
-    if (!new_bitmap.drawsNothing() &&
-        (old_bitmap.drawsNothing() ||
-         !gfx::BitmapsAreEqual(old_bitmap, new_bitmap))) {
-      return true;
-    }
-  }
-
-  return false;
+    std::unique_ptr<lens::ContextualInputData> data,
+    base::OnceCallback<void(bool)> callback) {
+  ComposeboxHandler::UploadTabContextWithData(id, context_id, std::move(data),
+                                              std::move(callback));
 }
 
-const contextual_tasks::UrlAttachment*
-ContextualTasksComposeboxHandler::GetMatchingAttachment(
-    const contextual_tasks::ContextualTaskContext& context,
-    const GURL& url,
-    SessionID session_id) {
-  std::unique_ptr<url_deduplication::URLDeduplicationHelper>
-      url_duplication_helper =
-          contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
-  std::vector<const contextual_tasks::UrlAttachment*> matching_attachments =
-      context.GetMatchingUrlAttachments(url, url_duplication_helper.get());
+void ContextualTasksComposeboxHandler::OnPageContextIneligible() {
+  web_ui_interface_->OnPageContextEligibilityChecked(false);
+}
 
-  for (const auto* attachment : matching_attachments) {
-    if (attachment->GetTabSessionId() == session_id) {
-      return attachment;
-    }
-  }
-  return nullptr;
+void ContextualTasksComposeboxHandler::OnTabProcessedForQueryContextualization(
+    contextual_tasks::QueryContextualizer::TabId id) {
+  pending_delayed_tab_ids_.erase(id);
 }
 
 void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     std::string query,
     std::optional<base::Uuid> original_task_id,
     std::optional<base::UnguessableToken> overlay_token) {
+  if (recontextualization_pending_count_ > 0) {
+    recontextualization_pending_count_--;
+  }
   if (web_ui_interface_->GetTaskId() != original_task_id) {
     return;
   }
@@ -916,7 +615,8 @@ void ContextualTasksComposeboxHandler::OnFileRead(
 }
 
 bool ContextualTasksComposeboxHandler::IsAnyContextUploading() {
-  return GetNumContextUploading() > 0 || GetNumTabsDelayed() > 0;
+  return GetNumContextUploading() > 0 || GetNumTabsDelayed() > 0 ||
+         recontextualization_pending_count_ > 0;
 }
 
 bool ContextualTasksComposeboxHandler::HasPendingQueryForTesting() const {
@@ -1350,16 +1050,6 @@ void ContextualTasksComposeboxHandler::MaybeSendPendingQuery() {
   }
 }
 
-void ContextualTasksComposeboxHandler::OnSingleTabProcessed(
-    base::RepeatingClosure barrier_closure,
-    int32_t tab_id) {
-  // Delayed tab finished uploading. Does not require
-  // `MarkDelayedTabUploadFinished` since barrier closure will call
-  // `MaybeSendPendingQuery` (what `MarkDelayedTabUploadFinished` does).
-  pending_delayed_tab_ids_.erase(tab_id);
-
-  barrier_closure.Run();
-}
 
 void ContextualTasksComposeboxHandler::SendDeleteInjectedInputUpdate(
     const std::string& id) {

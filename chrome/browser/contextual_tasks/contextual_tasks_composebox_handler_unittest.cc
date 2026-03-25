@@ -299,6 +299,9 @@ class ContextualTasksComposeboxHandlerTest
         base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                             base::Unretained(mock_ui_.get())));
     handler_->SetMockContextualTasksService(mock_contextual_tasks_service_ptr_);
+    handler_->recontextualizer_ =
+        std::make_unique<contextual_tasks::QueryContextualizer>(
+            mock_contextual_tasks_service_ptr_, handler_.get());
 
     // Default to calling the real implementation for
     // OnContextUploadStatusChanged.
@@ -1298,7 +1301,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
           [](int32_t tab_id, std::optional<int64_t> context_id,
              std::unique_ptr<lens::ContextualInputData> data,
              ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
-            EXPECT_TRUE(data->is_implicit_upload);
+            // The delay-upload tab is not an implicit upload.
+            EXPECT_FALSE(data->is_implicit_upload);
             std::move(callback).Run(true);
           });
 
@@ -1877,7 +1881,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
           [](int32_t tab_id, std::optional<int64_t> context_id,
              std::unique_ptr<lens::ContextualInputData> data,
              ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
-            EXPECT_TRUE(data->is_implicit_upload);
+            // The delay-upload tab is not an implicit upload.
+            EXPECT_FALSE(data->is_implicit_upload);
             std::move(callback).Run(true);
           });
 
@@ -2053,7 +2058,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
           [](int32_t tab_id, std::optional<int64_t> context_id,
              std::unique_ptr<lens::ContextualInputData> data,
              ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
-            EXPECT_TRUE(data->is_implicit_upload);
+            // The delay-upload tab is not an implicit upload.
+            EXPECT_FALSE(data->is_implicit_upload);
             std::move(callback).Run(true);
           });
 

@@ -49,8 +49,10 @@ class ContextualSearchSessionHandle {
 
   // Provides a WeakPtr to this instance. The caller is responsible to only use
   // this on the same sequence that the `ContextualSearchSessionHandle` is
-  // destructed on.
-  base::WeakPtr<ContextualSearchSessionHandle> AsWeakPtr();
+  // destructed on. Inlined to fix linking issues on iOS.
+  base::WeakPtr<ContextualSearchSessionHandle> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   base::UnguessableToken session_id() const { return session_id_; }
 

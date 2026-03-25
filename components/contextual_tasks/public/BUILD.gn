@@ -56,6 +56,25 @@ source_set("public") {
   ]
 }
 
+source_set("query_contextualizer") {
+  sources = [
+    "query_contextualizer.cc",
+    "query_contextualizer.h",
+  ]
+
+  deps = [
+    ":public",
+    "//base",
+    "//components/contextual_search:public",
+    "//components/lens",
+    "//components/lens:lens_url_utils",
+    "//components/sessions:session_id",
+    "//components/url_deduplication",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -97,6 +116,27 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/url_deduplication",
     "//components/visited_url_ranking/public",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  visibility = [ "//components/contextual_tasks:unit_tests" ]
+}
+
+source_set("search_unittests") {
+  testonly = true
+
+  sources = [ "query_contextualizer_unittest.cc" ]
+
+  deps = [
+    ":public",
+    ":query_contextualizer",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/contextual_search:public",
+    "//components/contextual_search:test_support",
+    "//components/lens",
+    "//components/sessions:session_id",
     "//testing/gtest",
     "//url",
   ]

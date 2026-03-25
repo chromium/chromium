@@ -433,10 +433,6 @@ bool ContextualSearchSessionHandle::IsTabInContext(SessionID session_id) const {
   return false;
 }
 
-base::WeakPtr<ContextualSearchSessionHandle>
-ContextualSearchSessionHandle::AsWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
 
 void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
     const std::vector<FileInfo>& file_infos,
