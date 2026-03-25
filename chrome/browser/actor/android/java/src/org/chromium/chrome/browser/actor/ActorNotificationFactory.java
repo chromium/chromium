@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -27,6 +28,10 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
 /** Builds all types of notifications for Actor tasks. */
 @NullMarked
 public class ActorNotificationFactory {
+    /** Extra for the Intent to show the actor control bottom sheet. */
+    public static final String EXTRA_SHOW_ACTOR_CONTROL =
+            "org.chromium.chrome.browser.actor.SHOW_ACTOR_CONTROL";
+
     @IntDef({
         NotificationCategory.RUNNING,
         NotificationCategory.PAUSED,
@@ -193,10 +198,13 @@ public class ActorNotificationFactory {
 
     private static void addViewAction(
             NotificationWrapperBuilder builder, Context context, ActorTask task) {
+        @Nullable PendingIntent intent = createTabRoutingIntent(context, task);
+        if (intent == null) return;
+
         builder.addAction(
                 R.drawable.ic_spark_24dp,
                 context.getString(R.string.actor_notification_button_view_task),
-                createTabRoutingIntent(context, task));
+                intent);
     }
 
     private static PendingIntent createBroadcastIntent(
@@ -216,11 +224,11 @@ public class ActorNotificationFactory {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
-    private static PendingIntent createTabRoutingIntent(Context context, ActorTask task) {
-        // Creates intent to launch chrome, call actor task related tab.
-        // TODO(crbug.com/486281299): Implement actual tab routing logic.
-        Intent intent = new Intent();
-        intent.setPackage(context.getPackageName());
+    private static @Nullable PendingIntent createTabRoutingIntent(Context context, ActorTask task) {
+        Intent intent =
+                ActorForegroundServiceController.get().createTrustedBringTabToFrontIntent(task);
+        if (intent == null) return null;
+
         return PendingIntent.getActivity(
                 context,
                 task.getId(),

@@ -8,11 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Notification;
 import android.content.Context;
+import android.content.Intent;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,6 +44,7 @@ public class ActorNotificationFactoryTest {
     @Mock private ActorTask mTask;
     @Mock private Profile mProfile;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
+    @Mock private ActorForegroundServiceController mServiceController;
 
     private Context mContext;
     private static final String TASK_TITLE = "Test Task";
@@ -49,10 +53,13 @@ public class ActorNotificationFactoryTest {
     public void setUp() {
         mContext = RuntimeEnvironment.application;
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
+        ActorForegroundServiceController.setInstanceForTesting(mServiceController);
 
         when(mTask.getId()).thenReturn(1);
         when(mTask.getTitle()).thenReturn(TASK_TITLE);
         when(mTask.getProfile()).thenReturn(mProfile);
+        when(mServiceController.createTrustedBringTabToFrontIntent(mTask))
+                .thenReturn(new Intent("DEFAULT_ACTION"));
     }
 
     @Test
@@ -164,6 +171,22 @@ public class ActorNotificationFactoryTest {
     }
 
     @Test
+    public void testBuildNotification_UsesControllerForTabRouting() {
+        Intent mockIntent = new Intent("MOCK_ACTION");
+        when(mServiceController.createTrustedBringTabToFrontIntent(mTask)).thenReturn(mockIntent);
+
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
+
+        verify(mServiceController, times(2)).createTrustedBringTabToFrontIntent(mTask);
+        Notification notification = wrapper.getNotification();
+        assertNotNull("Content intent should not be null", notification.contentIntent);
+
+        Intent intent = shadowOf(notification.contentIntent).getSavedIntent();
+        assertEquals("MOCK_ACTION", intent.getAction());
+    }
+
+    @Test
     public void testBuildNotification_Finished() {
         NotificationWrapper wrapper =
                 ActorNotificationFactory.buildNotification(mTask, ActorTaskState.FINISHED);
@@ -225,5 +248,25 @@ public class ActorNotificationFactoryTest {
         assertTrue(
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+    }
+
+    @Test
+    public void testBuildNotification_NullRoutingIntent() {
+        when(mServiceController.createTrustedBringTabToFrontIntent(mTask)).thenReturn(null);
+
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.ACTING);
+
+        Notification notification = wrapper.getNotification();
+        // Acting notification normally has 2 actions: View and Pause.
+        // If View is missing, it should only have 1 (Pause).
+        assertEquals(
+                "Should have only 1 action when routing intent is null",
+                1,
+                notification.actions.length);
+        assertEquals(
+                "Remaining action should be 'Pause task'",
+                mContext.getString(R.string.actor_notification_button_pause_task),
+                notification.actions[0].title);
     }
 }

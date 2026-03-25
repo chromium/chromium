@@ -17,6 +17,11 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.Set;
 
 /** Android implementation of {@link ActorForegroundServiceController}. */
 @NullMarked
@@ -97,6 +102,19 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
             return;
         }
         mBoundService.stopActorForegroundService(flags);
+    }
+
+    @Override
+    public @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task) {
+        Set<Integer> tabs = task.getLastActedTabs();
+        int tabId = tabs.isEmpty() ? Tab.INVALID_TAB_ID : tabs.iterator().next();
+
+        Intent intent =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        tabId, IntentHandler.BringToFrontSource.NOTIFICATION);
+        intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, task.getId());
+        return intent;
     }
 
     public ServiceConnection getServiceConnectionForTesting() {

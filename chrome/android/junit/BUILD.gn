@@ -1496,6 +1496,8 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//base:holder_java",
+      "//chrome/browser/actor/android:java",
+      "//chrome/browser/notifications:java",
       "//chrome/browser/privacy:privacy_preference_manager_java",
       "//components/dom_distiller/content/browser/android:dom_distiller_content_java",
       "//components/dom_distiller/core/android:dom_distiller_core_java",

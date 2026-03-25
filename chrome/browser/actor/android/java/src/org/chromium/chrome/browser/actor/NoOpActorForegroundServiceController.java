@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.actor;
 
 import android.app.Notification;
+import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** No-op implementation of {@link ActorForegroundServiceController}. */
 @NullMarked
@@ -42,4 +44,9 @@ public class NoOpActorForegroundServiceController implements ActorForegroundServ
 
     @Override
     public void stopActorForegroundService(int flags) {}
+
+    @Override
+    public @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task) {
+        return null;
+    }
 }

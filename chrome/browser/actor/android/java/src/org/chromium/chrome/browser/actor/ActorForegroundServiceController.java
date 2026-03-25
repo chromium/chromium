@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import android.app.Notification;
+import android.content.Intent;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
@@ -46,6 +47,15 @@ public interface ActorForegroundServiceController {
 
     /** Proxies the stopActorForegroundService call to the bound service. */
     void stopActorForegroundService(int flags);
+
+    /**
+     * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the
+     * foreground and show the actor control bottom sheet.
+     *
+     * @param task The {@link ActorTask} to bring to front.
+     * @return Created Intent.
+     */
+    @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task);
 
     /** Returns the singleton instance. */
     static ActorForegroundServiceController get() {

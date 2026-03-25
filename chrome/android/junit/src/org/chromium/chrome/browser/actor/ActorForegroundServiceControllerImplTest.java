@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,10 @@ import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.Collections;
 
 /** Unit tests for {@link ActorForegroundServiceControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,6 +45,7 @@ public class ActorForegroundServiceControllerImplTest {
     @Mock private ActorForegroundServiceImpl mServiceImpl;
     @Mock private ActorForegroundServiceImpl.LocalBinder mBinder;
     @Mock private Notification mNotification;
+    @Mock private ActorTask mActorTask;
 
     private ActorForegroundServiceControllerImpl mController;
     private ShadowApplication mShadowApplication;
@@ -113,5 +119,48 @@ public class ActorForegroundServiceControllerImplTest {
 
         mController.unbindService();
         assertFalse("Controller should be disconnected after unbind.", mController.isConnected());
+    }
+
+    @Test
+    public void testCreateTrustedBringTabToFrontIntent() {
+        int tabId = 123;
+        int taskId = 456;
+        when(mActorTask.getId()).thenReturn(taskId);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(tabId));
+
+        Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
+        assertNotNull("Intent should not be null.", intent);
+        assertEquals(
+                "Intent extra should contain the correct tabId.",
+                tabId,
+                intent.getIntExtra("BRING_TAB_TO_FRONT", Tab.INVALID_TAB_ID));
+        assertTrue(
+                "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
+                intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));
+        assertEquals(
+                "Intent should have the correct taskId.",
+                taskId,
+                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
+    }
+
+    @Test
+    public void testCreateTrustedBringTabToFrontIntent_EmptyTabs() {
+        int taskId = 456;
+        when(mActorTask.getId()).thenReturn(taskId);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.emptySet());
+
+        Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
+        assertNotNull("Intent should not be null.", intent);
+        assertEquals(
+                "Intent extra should contain INVALID_TAB_ID for empty tabs.",
+                Tab.INVALID_TAB_ID,
+                intent.getIntExtra("BRING_TAB_TO_FRONT", Tab.INVALID_TAB_ID));
+        assertTrue(
+                "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
+                intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));
+        assertEquals(
+                "Intent should have the correct taskId.",
+                taskId,
+                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
     }
 }
