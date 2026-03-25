@@ -78,7 +78,10 @@ class COMPONENT_EXPORT(INPUT) FlingController {
     gfx::PointF global_point;
     int modifiers;
     blink::WebGestureDevice source_device;
+    // Timestamp where the fling curve animation begins physics calculations.
     base::TimeTicks start_time;
+    // Timestamp of the original GestureFlingStart event.
+    base::TimeTicks fling_start_event_time;
 
     ActiveFlingParameters() : modifiers(0) {}
   };
