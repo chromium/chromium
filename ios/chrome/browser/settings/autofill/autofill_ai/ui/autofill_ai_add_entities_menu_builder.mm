@@ -40,12 +40,13 @@
     UIImage* image = autofill::DefaultIconForAutofillAiEntityType(
         entityType.name(), kSymbolActionPointSize);
 
+    autofill::EntityType capturedType = entityType;
     UIAction* uiAction = [UIAction
         actionWithTitle:title
                   image:image
              identifier:nil
                 handler:^(UIAction* action) {
-                  [weakDelegate didSelectAddEntityWithType:entityType];
+                  [weakDelegate didSelectAddEntityWithType:capturedType];
                 }];
     if (!entitiesEnabled) {
       uiAction.attributes = UIMenuElementAttributesDisabled;

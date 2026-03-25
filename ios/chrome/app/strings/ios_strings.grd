@@ -574,8 +574,8 @@
       <message name="IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_WALLET" desc="Footer text in the save/update dialog explaining the benefits of saving to Google Wallet. [iOS only]">
       Save your info and get things done faster, like filling forms across Google products. You can manage your info in Google Wallet for <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
       </message>
-      <message name="IDS_IOS_AUTOFILL_AI_IDENTITY_DOCS_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved identity documents. Sentence-Cased." formatter_data="android_java">
-        Identity docs
+      <message name="IDS_IOS_AUTOFILL_AI_OTHER_TITLE" desc="Title for the other section in Addresses and more page for entities that are not identity docs, nor travel docs. [iOS only]">
+        Other
       </message>
       <message name="IDS_IOS_AUTOFILL_AI_SAVE_FALLBACK_BODY" desc="Body text of the alert shown when saving to Wallet fails but saving to device succeeds. [iOS only]">
       You’ll have the chance to save this info to Wallet the next time you fill a relevant form.
@@ -585,9 +585,6 @@
       </message>
       <message name="IDS_IOS_AUTOFILL_AI_SAVE_PROMPT" desc="The prompt text asking the user to save a new entity to Autofill AI. [iOS only]">
         Save <ph name="ENTITY_TYPE">$1<ex>Passport</ex></ph>?
-      </message>
-      <message name="IDS_IOS_AUTOFILL_AI_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
-        Travel
       </message>
       <message name="IDS_IOS_AUTOFILL_AI_UPDATE_PROMPT" desc="The prompt text asking the user to update an existing entity in Autofill AI. [iOS only]">
         Update <ph name="ENTITY_TYPE">$1<ex>Passport</ex></ph>?
