@@ -119,7 +119,6 @@ public class TabBottomSheetFusebox {
                         /* isToolbarPositionCustomizationEnabled= */ false,
                         /* pageZoomManager= */ null,
                         /* tabFaviconFunction= */ (tab) -> null,
-                        /* multiInstanceManager= */ null,
                         snackbarManager,
                         bottomContainer,
                         /* omniboxChipManager= */ null);

@@ -35,9 +35,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
@@ -80,7 +79,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final Runnable mContextMenuCopyLinkObserver;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private @Nullable final MultiInstanceManager mMultiInstanceManager;
 
     /** Builds a {@link TabContextMenuItemDelegate} instance. */
     public TabContextMenuItemDelegate(
@@ -91,8 +89,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             Runnable contextMenuCopyLinkObserver,
             Supplier<SnackbarManager> snackbarManagerSupplier,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier,
-            @Nullable MultiInstanceManager multiInstanceManager) {
+            Supplier<BottomSheetController> bottomSheetControllerSupplier) {
         mActivity = activity;
         mActivityType = activityType;
         mTab = (TabImpl) tab;
@@ -101,7 +98,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
-        mMultiInstanceManager = multiInstanceManager;
     }
 
     @Override
@@ -290,15 +286,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (!isIncognito) {
             loadUrlParams.setReferrer(referrer);
         }
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow() && mMultiInstanceManager != null) {
-            mMultiInstanceManager.openUrlInOtherWindow(
-                    loadUrlParams,
-                    mTab.getParentId(),
-                    /* preferNew= */ false,
-                    isIncognito
-                            ? PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD
-                            : PersistedInstanceType.ACTIVE);
-        } else {
+        boolean processed =
+                MultiInstanceOrchestratorFactory.getInstance()
+                        .openUrlInOtherWindow(mTab, loadUrlParams, /* preferNew= */ false);
+        if (!processed) {
             openInAnotherWindow(url, referrer, isIncognito);
         }
     }

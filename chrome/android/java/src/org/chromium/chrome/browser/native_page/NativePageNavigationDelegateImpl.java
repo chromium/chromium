@@ -11,9 +11,8 @@ import android.app.Activity;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -37,21 +36,18 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
     protected final Tab mTab;
     protected final Activity mActivity;
     protected final NativePageHost mHost;
-    private final MultiInstanceManager mMultiInstanceManager;
 
     public NativePageNavigationDelegateImpl(
             Activity activity,
             Profile profile,
             NativePageHost host,
             TabModelSelector tabModelSelector,
-            Tab tab,
-            MultiInstanceManager multiInstanceManager) {
+            Tab tab) {
         mActivity = activity;
         mProfile = profile;
         mHost = host;
         mTabModelSelector = tabModelSelector;
         mTab = tab;
-        mMultiInstanceManager = multiInstanceManager;
     }
 
     @Override
@@ -84,16 +80,10 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                 mHost.loadUrl(loadUrlParams, true);
                 break;
             case WindowOpenDisposition.NEW_WINDOW:
-                if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-                    mMultiInstanceManager.openUrlInOtherWindow(
-                            loadUrlParams,
-                            mHost.getParentId(),
-                            /* preferNew= */ false,
-                            mTab.isIncognitoBranded()
-                                    ? PersistedInstanceType.ACTIVE
-                                            | PersistedInstanceType.OFF_THE_RECORD
-                                    : PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
-                } else {
+                boolean processed =
+                        MultiInstanceOrchestratorFactory.getInstance()
+                                .openUrlInOtherWindow(mTab, loadUrlParams, /* preferNew= */ false);
+                if (!processed) {
                     openUrlInNewWindow(loadUrlParams);
                 }
                 break;

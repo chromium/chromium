@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -270,23 +269,6 @@ public abstract class MultiInstanceManager {
     public void moveTabGroupToOtherWindow(
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         // Not implemented
-    }
-
-    /**
-     * Opens a URL in another existing window or a new window.
-     *
-     * @param loadUrlParams The url to open.
-     * @param parentTabId The ID of the parent tab.
-     * @param preferNew Whether we should prioritize launching the tab in a new window.
-     * @param instanceType The {@link PersistedInstanceType} that will be used to determine the type
-     *     of window the URL can be opened in.
-     */
-    public void openUrlInOtherWindow(
-            LoadUrlParams loadUrlParams,
-            int parentTabId,
-            boolean preferNew,
-            @PersistedInstanceType int instanceType) {
-        // not implemented
     }
 
     /**

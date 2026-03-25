@@ -119,7 +119,6 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -2259,98 +2258,6 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* openAdjacently= */ true,
                         /* finalizeCallback= */ null,
                         NewWindowAppSource.MENU);
-    }
-
-    @Test
-    public void testOpenUrlInOtherWindow_fromRegularWindow_dialogShown() {
-        MultiWindowUtils.setInstanceCountForTesting(2);
-        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
-
-        mMultiInstanceManager.openUrlInOtherWindow(
-                urlParams,
-                /* parentTabId= */ 1,
-                /* preferNew= */ false,
-                PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
-
-        verify(mMultiInstanceManager)
-                .showTargetSelectorDialog(
-                        any(),
-                        eq(PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR),
-                        eq(R.string.contextmenu_open_in_other_window));
-    }
-
-    @Test
-    public void testOpenUrlInOtherWindow_fromIncognitoWindow_dialogShown() {
-        MultiWindowUtils.setIncognitoInstanceCountForTesting(2);
-        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
-
-        mMultiInstanceManager.openUrlInOtherWindow(
-                urlParams,
-                /* parentTabId= */ 1,
-                /* preferNew= */ false,
-                PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD);
-
-        verify(mMultiInstanceManager)
-                .showTargetSelectorDialog(
-                        any(),
-                        eq(PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD),
-                        eq(R.string.contextmenu_open_in_other_window));
-    }
-
-    @Test
-    public void testOpenUrlInOtherWindow_fromRegularWindow_dialogHidden() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
-
-        mMultiInstanceManager.openUrlInOtherWindow(
-                urlParams,
-                /* parentTabId= */ 1,
-                /* preferNew= */ false,
-                PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
-
-        verify(mMultiInstanceManager, never())
-                .showTargetSelectorDialog(
-                        any(), anyInt(), eq(R.string.contextmenu_open_in_other_window));
-        verify(mMultiInstanceManager, never()).showInstanceCreationLimitMessage();
-        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mCurrentActivity).startActivity(intentCaptor.capture());
-        assertEquals(
-                "New window source extra is incorrect.",
-                NewWindowAppSource.URL_LAUNCH,
-                intentCaptor
-                        .getValue()
-                        .getIntExtra(
-                                IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
-                                NewWindowAppSource.UNKNOWN));
-    }
-
-    @Test
-    public void testOpenUrlInOtherWindow_fromIncognitoWindow_dialogHidden() {
-        MultiWindowUtils.setIncognitoInstanceCountForTesting(1);
-        // Regular instance count should be irrelevant.
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
-
-        mMultiInstanceManager.openUrlInOtherWindow(
-                urlParams,
-                /* parentTabId= */ 1,
-                /* preferNew= */ false,
-                PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD);
-
-        verify(mMultiInstanceManager, never())
-                .showTargetSelectorDialog(
-                        any(), anyInt(), eq(R.string.contextmenu_open_in_other_window));
-        verify(mMultiInstanceManager, never()).showInstanceCreationLimitMessage();
-        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mCurrentActivity).startActivity(intentCaptor.capture());
-        assertEquals(
-                "New window source extra is incorrect.",
-                NewWindowAppSource.URL_LAUNCH,
-                intentCaptor
-                        .getValue()
-                        .getIntExtra(
-                                IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
-                                NewWindowAppSource.UNKNOWN));
     }
 
     @Test

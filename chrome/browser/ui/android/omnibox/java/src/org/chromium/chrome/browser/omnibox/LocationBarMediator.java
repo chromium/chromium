@@ -64,8 +64,7 @@ import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
@@ -257,7 +256,6 @@ class LocationBarMediator
     private final ButtonToolbarWidthConsumer mMicButtonToolbarWidthConsumer;
     private final ButtonToolbarWidthConsumer mLensButtonToolbarWidthConsumer;
     private final ButtonToolbarWidthConsumer mZoomButtonToolbarWidthConsumer;
-    private final @Nullable MultiInstanceManager mMultiInstanceManager;
     private final @Nullable OmniboxChipManager mOmniboxChipManager;
 
     /*package */ LocationBarMediator(
@@ -281,7 +279,6 @@ class LocationBarMediator
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
             FuseboxCoordinator fuseboxCoordinator,
-            @Nullable MultiInstanceManager multiInstanceManager,
             LocationBarEmbedder locationBarEmbedder,
             @Nullable OmniboxChipManager omniboxChipManager) {
         mContext = context;
@@ -345,8 +342,6 @@ class LocationBarMediator
                         mIsTablet,
                         this::shouldShowZoomButton,
                         this::setZoomButtonVisibility);
-
-        mMultiInstanceManager = multiInstanceManager;
 
         mFuseboxCoordinator
                 .getFuseboxStateSupplier()
@@ -792,19 +787,21 @@ class LocationBarMediator
                 }
 
                 TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-                if (omniboxLoadUrlParams.openInNewWindow && mMultiInstanceManager != null) {
-                    mMultiInstanceManager.openUrlInOtherWindow(
-                            loadUrlParams,
-                            currentTab.getParentId(),
-                            /* preferNew= */ true,
-                            PersistedInstanceType.ACTIVE);
+                boolean processed = false;
+                if (omniboxLoadUrlParams.openInNewWindow) {
+                    processed =
+                            MultiInstanceOrchestratorFactory.getInstance()
+                                    .openUrlInOtherWindow(
+                                            currentTab, loadUrlParams, /* preferNew= */ true);
                 } else if (omniboxLoadUrlParams.openInNewTab && tabModelSelector != null) {
                     tabModelSelector.openNewTab(
                             loadUrlParams,
                             TabLaunchType.FROM_OMNIBOX,
                             currentTab,
                             currentTab.isIncognito());
-                } else {
+                    processed = true;
+                }
+                if (!processed) {
                     currentTab.loadUrl(loadUrlParams);
                 }
                 RecordUserAction.record("MobileOmniboxUse");

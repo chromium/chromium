@@ -389,7 +389,6 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* isToolbarPositionCustomizationEnabled= */ false,
                         /* pageZoomManager= */ null,
                         TabFavicon::getBitmap,
-                        /* multiInstanceManager= */ null,
                         mSnackbarManager,
                         findViewById(R.id.bottom_container),
                         /* omniboxChipManager= */ null);

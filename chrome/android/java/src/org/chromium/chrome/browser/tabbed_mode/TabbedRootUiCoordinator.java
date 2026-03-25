@@ -1958,11 +1958,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    public @Nullable MultiInstanceManager getMultiInstanceManager() {
-        return mMultiInstanceManager;
-    }
-
-    @Override
     protected boolean supportsEdgeToEdge() {
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
     }

@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.List;
 
@@ -58,4 +59,14 @@ public interface MultiInstanceOrchestrator {
      */
     void moveTabsToWindowByIdChecked(
             int destWindowId, List<Tab> tabs, int destTabIndex, int destGroupTabId);
+
+    /**
+     * Opens a URL in an existing window or a new window.
+     *
+     * @param sourceTab The tab containing the URL.
+     * @param loadUrlParams The url to open.
+     * @param preferNew Whether we should prioritize launching the tab in a new window.
+     * @return {@code true} if the url launch request was successful, {@code false} otherwise.
+     */
+    boolean openUrlInOtherWindow(Tab sourceTab, LoadUrlParams loadUrlParams, boolean preferNew);
 }

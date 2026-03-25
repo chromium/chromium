@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.IncognitoNtpMetrics;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -105,7 +104,6 @@ public class NativePageFactory {
     private @Nullable NativePageBuilder mNativePageBuilder;
     private static @Nullable NativePage sTestPage;
     private final BackPressManager mBackPressManager;
-    private final MultiInstanceManager mMultiInstanceManager;
     private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
 
     public NativePageFactory(
@@ -128,7 +126,6 @@ public class NativePageFactory {
             TopInsetProvider topInsetProvider,
             StartupMetricsTracker startupMetricsTracker,
             BackPressManager backPressManager,
-            MultiInstanceManager multiInstanceManager,
             RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
         mActivity = activity;
         mBottomSheetController = sheetController;
@@ -149,7 +146,6 @@ public class NativePageFactory {
         mTopInsetProvider = topInsetProvider;
         mStartupMetricsTracker = startupMetricsTracker;
         mBackPressManager = backPressManager;
-        mMultiInstanceManager = multiInstanceManager;
         mRecentlyClosedEntriesManager = recentlyClosedEntriesManager;
     }
 
@@ -177,7 +173,6 @@ public class NativePageFactory {
                             mTopInsetProvider,
                             mStartupMetricsTracker,
                             mBackPressManager,
-                            mMultiInstanceManager,
                             mRecentlyClosedEntriesManager);
         }
         return mNativePageBuilder;
@@ -214,7 +209,6 @@ public class NativePageFactory {
         private final TopInsetProvider mTopInsetProvider;
         private final StartupMetricsTracker mStartupMetricsTracker;
         private final BackPressManager mBackPressManager;
-        private final MultiInstanceManager mMultiInstanceManager;
         private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
 
         public NativePageBuilder(
@@ -238,7 +232,6 @@ public class NativePageFactory {
                 TopInsetProvider topInsetProvider,
                 StartupMetricsTracker startupMetricsTracker,
                 BackPressManager backPressManager,
-                MultiInstanceManager multiInstanceManager,
                 RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
             mActivity = activity;
             mNewTabPageCreationTracker = newTabPageCreationTracker;
@@ -260,7 +253,6 @@ public class NativePageFactory {
             mTopInsetProvider = topInsetProvider;
             mStartupMetricsTracker = startupMetricsTracker;
             mBackPressManager = backPressManager;
-            mMultiInstanceManager = multiInstanceManager;
             mRecentlyClosedEntriesManager = recentlyClosedEntriesManager;
         }
 
@@ -304,8 +296,7 @@ public class NativePageFactory {
                     mModuleRegistrySupplier,
                     mEdgeToEdgeControllerSupplier,
                     mTopInsetProvider,
-                    mStartupMetricsTracker,
-                    mMultiInstanceManager);
+                    mStartupMetricsTracker);
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {
@@ -383,12 +374,7 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier);
             NativePageNavigationDelegate navigationDelegate =
                     new NativePageNavigationDelegateImpl(
-                            mActivity,
-                            tab.getProfile(),
-                            host,
-                            mTabModelSelector,
-                            tab,
-                            mMultiInstanceManager);
+                            mActivity, tab.getProfile(), host, mTabModelSelector, tab);
 
             return new RecentTabsPage(
                     mActivity,

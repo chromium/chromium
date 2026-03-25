@@ -119,7 +119,6 @@ import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.messages.MessageContainerObserver;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
@@ -1935,7 +1934,6 @@ public class RootUiCoordinator
                             mTopControlsLockCoordinator != null
                                     ? mTopControlsLockCoordinator.getDeferredLockingTokenJar()
                                     : null,
-                            getMultiInstanceManager(),
                             mTabBookmarkerSupplier,
                             getMenuButtonVisibilityDelegate(),
                             mTopControlsStacker,
@@ -2649,10 +2647,6 @@ public class RootUiCoordinator
     /** Returns a supplier of the share delegate. */
     public MonotonicObservableSupplier<ShareDelegate> getShareDelegateSupplier() {
         return mShareDelegateSupplier;
-    }
-
-    public @Nullable MultiInstanceManager getMultiInstanceManager() {
-        return null;
     }
 
     public @Nullable ExclusiveAccessManager getExclusiveAccessManager() {

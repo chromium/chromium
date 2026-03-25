@@ -99,7 +99,6 @@ public class TabUmaTest {
                 cta.getStartupMetricsTracker(),
                 /* exclusiveAccessManager= */ null,
                 /* backPressManager= */ null,
-                /* multiInstanceManager= */ null,
                 /* recentlyClosedEntriesManager= */ null);
     }
 
