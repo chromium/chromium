@@ -375,6 +375,7 @@
     "GPU Linux Builder (dbg)": "ci/GPU Linux Builder (dbg)/gn-args.json",
     "GPU Mac Builder": "ci/GPU Mac Builder/gn-args.json",
     "GPU Mac Builder (dbg)": "ci/GPU Mac Builder (dbg)/gn-args.json",
+    "GPU Mac arm64 Builder": "ci/GPU Mac arm64 Builder/gn-args.json",
     "GPU Win x64 Builder": "ci/GPU Win x64 Builder/gn-args.json",
     "GPU Win x64 Builder (dbg)": "ci/GPU Win x64 Builder (dbg)/gn-args.json"
   },

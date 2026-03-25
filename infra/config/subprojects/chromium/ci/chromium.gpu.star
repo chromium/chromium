@@ -277,6 +277,50 @@ gpu.ci.mac_builder(
     ),
 )
 
+gpu.ci.mac_builder(
+    name = "GPU Mac arm64 Builder",
+    description_html = "Builds release Mac arm64 binaries for GPU testing",
+    builder_spec = builder_config.builder_spec(
+        # Keep in sync with `mac-arm64-rel`.
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                # This is necessary due to child builders running the
+                # telemetry_perf_unittests suite.
+                "chromium_with_telemetry_dependencies",
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "try_builder",
+            "remoteexec",
+            "arm64",
+            "mac",
+        ],
+    ),
+    targets = targets.bundle(),
+    # TODO(crbug.com/491905300): Make tree-closing once confirmed to be stable.
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac arm64|Builder",
+        short_name = "rel",
+    ),
+)
+
 gpu.ci.windows_builder(
     name = "GPU Win x64 Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
