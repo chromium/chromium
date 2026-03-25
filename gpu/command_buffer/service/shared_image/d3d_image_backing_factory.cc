@@ -951,8 +951,6 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
                   "images. Only kPremul_SkAlphaType is accepted.";
   }
 
-  uint64_t buffer_width = size.width();
-
   D3D12_HEAP_DESC heap_desc = {};
   heap_desc.Flags = D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS;
   heap_desc.Properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
@@ -961,16 +959,6 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
   heap_desc.Properties.VisibleNodeMask = 1;
 
   if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
-    // DML requires buffers to be in multiple of 4 bytes.
-    // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
-    constexpr uint64_t kDMLBufferAlignment = 4ull;
-    if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
-        buffer_width) {
-      LOG(ERROR) << "Width exceeds maximum alignable size.";
-      return nullptr;
-    }
-    buffer_width = base::bits::AlignUp(buffer_width, kDMLBufferAlignment);
-
     D3D12_FEATURE_DATA_ARCHITECTURE arch = {};
     if (FAILED(d3d12_device_->CheckFeatureSupport(D3D12_FEATURE_ARCHITECTURE,
                                                   &arch, sizeof(arch)))) {
@@ -1024,6 +1012,8 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
     // Standard WebGPU uses default.
     heap_desc.Properties.Type = D3D12_HEAP_TYPE_DEFAULT;
   }
+
+  uint64_t buffer_width = size.width();
 
   // D3D allocates buffers in a multiple of 64KB.
   // Since a heap only holds a single buffer, use the same aligned size.
