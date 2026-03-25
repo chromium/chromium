@@ -78,6 +78,8 @@ class GlicGlobalEnabling {
   explicit GlicGlobalEnabling(Delegate& delegate);
   ~GlicGlobalEnabling();
   bool IsEnabledByFlags();
+  bool IsLocaleEnabled() const { return locale_enablement_.value_or(true); }
+  bool IsCountryEnabled() const { return country_enablement_.value_or(true); }
 
  private:
   std::optional<bool> locale_enablement_;
@@ -151,6 +153,9 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // Whether the profile is in the Glic tiered rollout population.
   static bool IsEligibleForGlicTieredRollout(Profile* profile);
 
+  // Whether the glic internals page is enabled.
+  static bool IsInternalsWebUIEnabled(Profile* profile);
+
   // The settings page is shown when:
   // * Flags are enabled
   // * The profile is eligible (regular, non-incognito, non-guest, etc.)
@@ -203,6 +208,12 @@ class GlicEnabling : public signin::IdentityManager::Observer,
     bool disallowed_by_remote_other : 1 = false;
     bool not_consented : 1 = false;
 
+    // Whether disallowed by country filtering.
+    bool disallowed_by_country_filter : 1 = false;
+
+    // Whether disallowed by locale filtering.
+    bool disallowed_by_locale_filter : 1 = false;
+
     // Whether live (audio) functionality is disallowed for this account type.
     bool live_disallowed : 1 = false;
 
@@ -232,7 +243,8 @@ class GlicEnabling : public signin::IdentityManager::Observer,
     bool IsEnabled() const {
       return IsProfileEligible() && !not_rolled_out &&
              !primary_account_not_capable && !DisallowedByAdmin() &&
-             !disallowed_by_remote_other;
+             !disallowed_by_remote_other && !disallowed_by_country_filter &&
+             !disallowed_by_locale_filter;
     }
 
     bool IsEnabledAndConsented() const { return IsEnabled() && !not_consented; }

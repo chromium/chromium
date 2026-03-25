@@ -30,7 +30,7 @@ namespace {
 
 mojom::ProfileEnablementPtr BuildProfileEnablement(
     content::BrowserContext* browser_context,
-    const GlicActorPolicyChecker& actor_policy_checker) {
+    const GlicActorPolicyChecker* actor_policy_checker) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   GlicEnabling::ProfileEnablement enablement =
       GlicEnabling::EnablementForProfile(profile);
@@ -46,6 +46,9 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   result->disallowed_by_remote_admin = enablement.disallowed_by_remote_admin;
   result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
   result->not_consented = enablement.not_consented;
+  result->disallowed_by_country_filter =
+      enablement.disallowed_by_country_filter;
+  result->disallowed_by_locale_filter = enablement.disallowed_by_locale_filter;
   result->live_disallowed = enablement.live_disallowed;
   result->share_image_disallowed = enablement.share_image_disallowed;
   result->actuation_not_consented =
@@ -53,29 +56,36 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
       false;
 
   using CannotActReason = GlicActorPolicyChecker::CannotActReason;
-  if (actor_policy_checker.CanActOnWeb()) {
-    result->actuation_eligibility = mojom::ActuationEligibility::kEligible;
-  } else {
-    switch (actor_policy_checker.CannotActOnWebReason()) {
-      case CannotActReason::kAccountCapabilityIneligible:
-        result->actuation_eligibility =
-            mojom::ActuationEligibility::kMissingAccountCapability;
-        break;
-      case CannotActReason::kAccountMissingChromeBenefits:
-        result->actuation_eligibility =
-            mojom::ActuationEligibility::kMissingChromeBenefits;
-        break;
-      case CannotActReason::kDisabledByPolicy:
-        result->actuation_eligibility =
-            mojom::ActuationEligibility::kDisabledByPolicy;
-        break;
-      case CannotActReason::kEnterpriseWithoutManagement:
-        result->actuation_eligibility =
-            mojom::ActuationEligibility::kEnterpriseWithoutManagement;
-        break;
-      case CannotActReason::kNone:
-        NOTREACHED();
+  if (actor_policy_checker) {
+    if (actor_policy_checker->CanActOnWeb()) {
+      result->actuation_eligibility = mojom::ActuationEligibility::kEligible;
+    } else {
+      switch (actor_policy_checker->CannotActOnWebReason()) {
+        case CannotActReason::kAccountCapabilityIneligible:
+          result->actuation_eligibility =
+              mojom::ActuationEligibility::kMissingAccountCapability;
+          break;
+        case CannotActReason::kAccountMissingChromeBenefits:
+          result->actuation_eligibility =
+              mojom::ActuationEligibility::kMissingChromeBenefits;
+          break;
+        case CannotActReason::kDisabledByPolicy:
+          result->actuation_eligibility =
+              mojom::ActuationEligibility::kDisabledByPolicy;
+          break;
+        case CannotActReason::kEnterpriseWithoutManagement:
+          result->actuation_eligibility =
+              mojom::ActuationEligibility::kEnterpriseWithoutManagement;
+          break;
+        case CannotActReason::kNone:
+          NOTREACHED();
+      }
     }
+  } else {
+    // If there is no GlicKeyedService (e.g., due to country filter),
+    // default to missing capability or disabled by policy.
+    result->actuation_eligibility =
+        mojom::ActuationEligibility::kMissingAccountCapability;
   }
 
   return result;
@@ -100,8 +110,10 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
     GetInternalsDataPayloadCallback callback) {
   mojom::InternalsDataPayloadPtr payload = mojom::InternalsDataPayload::New();
 
+  GlicKeyedService* glic_service = GetGlicService();
   payload->enablement = BuildProfileEnablement(
-      browser_context_, GetGlicService()->actor_policy_checker());
+      browser_context_,
+      glic_service ? &glic_service->actor_policy_checker() : nullptr);
 
   mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
   config->guest_url = GetGuestURL();

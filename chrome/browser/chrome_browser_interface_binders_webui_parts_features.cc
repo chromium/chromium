@@ -6,6 +6,7 @@
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "components/compose/buildflags.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
@@ -116,6 +117,10 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
                                            glic::GlicUI>(map);
     RegisterWebUIControllerInterfaceBinder<
         glic::mojom::GlicPreloadHandlerFactory, glic::GlicUI>(map);
+  }
+
+  if (glic::GlicEnabling::IsInternalsWebUIEnabled(Profile::FromBrowserContext(
+          render_frame_host->GetProcess()->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<
         glic::mojom::InternalsPageHandlerFactory, glic::GlicUI>(map);
   }

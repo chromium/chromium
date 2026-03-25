@@ -55,6 +55,12 @@ struct ProfileEnablement {
   // Whether the user has passed the FRE.
   bool not_consented;
 
+  // Whether disallowed by country filtering.
+  bool disallowed_by_country_filter;
+
+  // Whether disallowed by locale filtering.
+  bool disallowed_by_locale_filter;
+
   // Whether the user has consented to actuation.
   bool actuation_not_consented;
 
@@ -754,10 +760,8 @@ enum SkillSource {
   [MinVersion=1] kDerivedFromFirstParty = 3,
 };
 
-// clang-format off
 // LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource,
 // //components/sync/protocol/skill_specifics.proto:SkillSource)
-// clang-format on
 
 // LINT.IfChange(Skill)
 // A single skill preview.
@@ -787,11 +791,9 @@ struct Skill {
   string? source_skill_id;
 };
 
-// clang-format off
 // LINT.ThenChange(//components/skills/public/skill.mojom:Skill,
 // //components/skills/public/skill.h:Skill,
 // //chrome/browser/resources/glic/glic_api/glic_api.ts:Skill)
-// clang-format on
 
 // Request to create a skill.
 struct CreateSkillRequest {

@@ -308,7 +308,13 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     return result;
   }
 
-  if (!IsEnabledByFlags()) {
+  GlicGlobalEnabling& global_enabling =
+      g_browser_process->GetFeatures()->glic_global_enabling();
+
+  result.disallowed_by_country_filter = !global_enabling.IsCountryEnabled();
+  result.disallowed_by_locale_filter = !global_enabling.IsLocaleEnabled();
+
+  if (!global_enabling.IsEnabledByFlags()) {
     result.feature_disabled = true;
     return result;
   }
@@ -584,6 +590,11 @@ bool GlicEnabling::IsEligibleForGlicTieredRollout(Profile* profile) {
   return base::FeatureList::IsEnabled(features::kGlicTieredRolloutV2) &&
          features::GetGlicTieredRolloutV2EligibleTiers().contains(
              subscription_eligibility_service->GetAiSubscriptionTier());
+}
+
+bool GlicEnabling::IsInternalsWebUIEnabled(Profile* profile) {
+  return base::FeatureList::IsEnabled(features::kGlic) &&
+         profile->IsRegularProfile();
 }
 
 bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {

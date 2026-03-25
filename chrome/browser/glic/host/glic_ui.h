@@ -33,6 +33,9 @@ class GlicUIConfig : public content::DefaultWebUIConfig<GlicUI> {
  public:
   GlicUIConfig();
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 // The WebUI for chrome://glic
@@ -81,6 +84,8 @@ class GlicUI : public ui::MojoWebUIController,
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   using SlimWebViewPageHandlerFactory::CreatePageHandler;
 #endif
+
+  bool IsProfileEligible();
 
   void CreatePageHandler(
       mojo::PendingReceiver<glic::mojom::PageHandler> receiver,

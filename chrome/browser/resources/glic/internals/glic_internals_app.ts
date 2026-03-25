@@ -187,6 +187,14 @@ export class GlicInternalsAppElement extends CrLitElement {
         label: 'User accepted actuation consent',
         value: !this.data_.enablement.actuationNotConsented,
       },
+      {
+        label: 'Passed country filter',
+        value: !this.data_.enablement.disallowedByCountryFilter,
+      },
+      {
+        label: 'Passed locale filter',
+        value: !this.data_.enablement.disallowedByLocaleFilter,
+      },
     ];
   }
 
