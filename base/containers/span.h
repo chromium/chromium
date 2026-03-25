@@ -33,12 +33,15 @@
 #include "base/numerics/integral_constant_like.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/to_address.h"
+#include "partition_alloc/buildflags.h"
 
-// nogncheck: When `use_partition_alloc` is false,
-// `IsExtentOutOfBounds()` is made into a trivial, always-inlined
-// function (that doesn't actually depend on the rest of
-// PartitionAlloc).
+#if PA_BUILDFLAG(CHECKED_SPAN)
+// nogncheck: The only function used from this header
+// (`IsExtentOutOfBounds()`) is gated consistently by this buildflag
+// in this file, and the buildflag is false when `use_partition_alloc`
+// evaluates false.
 #include "partition_alloc/bounds_checks.h"  // nogncheck
+#endif
 
 // A span is a view of contiguous elements that can be accessed like an array,
 // intended for use as a parameter or local. Unlike direct use of pointers and
@@ -490,12 +493,14 @@ class GSL_POINTER span {
   // contiguous valid elements.
   UNSAFE_BUFFER_USAGE constexpr span(It first, StrictNumeric<size_type> count)
       : span(unchecked, first, count) {
+#if PA_BUILDFLAG(CHECKED_SPAN)
     if (!std::is_constant_evaluated()) {
       if (data() || size()) {
         CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
                                                     sizeof(element_type)));
       }
     }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN)
   }
 
   // Iterator + count, skipping PartitionAlloc bounds check.
@@ -524,12 +529,14 @@ class GSL_POINTER span {
   UNSAFE_BUFFER_USAGE constexpr span(It first, End last)
       // SAFETY: See comments in the unchecked constructor.
       : UNSAFE_BUFFERS(span(unchecked, first, last)) {
+#if PA_BUILDFLAG(CHECKED_SPAN)
     if (!std::is_constant_evaluated()) {
       if (data() || size()) {
         CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
                                                     sizeof(element_type)));
       }
     }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN)
   }
 
   // Iterator + sentinel, skipping the PartitionAlloc bounds check.
@@ -1071,12 +1078,14 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // contiguous valid elements.
   UNSAFE_BUFFER_USAGE constexpr span(It first, StrictNumeric<size_type> count)
       : span(unchecked, first, count) {
+#if PA_BUILDFLAG(CHECKED_SPAN)
     if (!std::is_constant_evaluated()) {
       if (data() || size()) {
         CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
                                                     sizeof(element_type)));
       }
     }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN)
   }
 
   // Iterator + count, skipping PartitionAlloc bounds check.
@@ -1103,12 +1112,14 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   UNSAFE_BUFFER_USAGE constexpr span(It first, End last)
       // SAFETY: See comments in the unchecked constructor.
       : UNSAFE_BUFFERS(span(unchecked, first, last)) {
+#if PA_BUILDFLAG(CHECKED_SPAN)
     if (!std::is_constant_evaluated()) {
       if (data() || size()) {
         CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
                                                     sizeof(element_type)));
       }
     }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN)
   }
 
   // Iterator + sentinel, skipping the PartitionAlloc bounds check.

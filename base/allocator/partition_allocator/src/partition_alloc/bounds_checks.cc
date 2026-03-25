@@ -66,12 +66,10 @@ PtrPosWithinAlloc IsPtrWithinSameAllocInBRPPool(uintptr_t orig_address,
                               internal::pool_handle::kBRPPoolHandle);
 }
 
-// This implementation collapses into a constexpr false when Checked
-// Span is not built.
-#if PA_BUILDFLAG(CHECKED_SPAN)
 bool IsExtentOutOfBounds(const void* ptr,
                          size_t extent_bytes,
                          size_t type_size) {
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   const uintptr_t address = partition_alloc::UntagPtr(ptr);
 
   if (!partition_alloc::IsManagedByPartitionAlloc(address)) {
@@ -85,7 +83,9 @@ bool IsExtentOutOfBounds(const void* ptr,
 
   return IsPtrWithinSameAlloc(address, address + extent_bytes, type_size,
                               pool) == PtrPosWithinAlloc::kFarOOB;
+#else
+  return false;
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 }
-#endif  // PA_BUILDFLAG(CHECKED_SPAN)
 
 }  // namespace partition_alloc
