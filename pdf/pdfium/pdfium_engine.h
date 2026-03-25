@@ -18,7 +18,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -1392,11 +1391,11 @@ class PDFiumEngine : public DocumentLoader::Client,
   // stroke changes.
   std::set<int> ink_stroked_pages_needing_regeneration_;
 
-#if DCHECK_IS_ON()
-  // Used to keep track of LoadV2InkPathsForPage() calls as a sanity check.
-  // Stores the 0-based page indices for pages that have been loaded.
-  std::set<int> pages_with_loaded_v2_ink_paths_;
-#endif  // DCHECK_IS_ON()
+  // Stores the 0-based page indices for pages that have loaded shapes.
+  // Unlike `ink_stroke_data_`, which is dynamic, the loaded shapes data is
+  // static. So just store this data separately from `ink_modeled_shape_map_` to
+  // make searches faster.
+  std::set<int> pages_with_loaded_v2_ink_shapes_;
 
   // Used to hand out unique IDs of type InkModeledShapeId for the V2 Ink paths
   // read out of the PDF. It is stored here as the raw type to simplify
