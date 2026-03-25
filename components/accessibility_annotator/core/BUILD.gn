@@ -11,6 +11,7 @@ source_set("core") {
     "direct_server_entity_provider.cc",
     "direct_server_entity_provider.h",
     "entity_data_provider.h",
+    "url_constants.h",
   ]
 
   public_deps = [

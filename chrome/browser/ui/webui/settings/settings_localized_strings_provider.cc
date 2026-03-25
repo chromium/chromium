@@ -61,6 +61,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/accessibility_annotator/core/url_constants.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -1866,6 +1867,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("autofillAiReauthOnViewingSensitiveDataEnabled",
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillAiReauthRequired));
+
+  html_source->AddString(
+      "accessibilityAnnotatorSettingsUrl",
+      accessibility_annotator::kAccessibilityAnnotatorSettingsURL);
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
