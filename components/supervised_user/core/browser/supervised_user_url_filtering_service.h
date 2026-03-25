@@ -233,7 +233,12 @@ class SupervisedUserUrlFilteringService : public KeyedService,
   std::unique_ptr<UrlFilteringDelegate> device_parental_controls_url_filter_;
 
   // External observers.
-  base::ObserverList<Observer> observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observer_list_;
 
   // Own observees.
   base::ScopedObservation<UrlFilteringDelegate, UrlFilteringDelegateObserver>
