@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
+import android.content.Context;
+import android.content.Intent;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -13,11 +16,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.util.HashUtil;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.GaiaId;
 
 /**
@@ -25,10 +31,12 @@ import org.chromium.google_apis.gaia.GaiaId;
  * BrandingController} for global branding rate-limiting policy.
  */
 @NullMarked
-public class MismatchNotificationChecker {
+public class MismatchNotificationChecker implements MismatchNotificationSigninDelegate {
+    private final Context mContext;
     private final Profile mProfile;
     private final Delegate mDelegate;
     private final IdentityManager mIdentityManager;
+    private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final CallbackController mCallbackController = new CallbackController();
 
     /** Used to suppress IPH UIs while the mismatch notification UI is on the screen. */
@@ -45,6 +53,7 @@ public class MismatchNotificationChecker {
         /**
          * Show the account mismatch UI if conditions are right.
          *
+         * @param signinDelegate The delegate for the controller to be used for the sign-in flow.
          * @param accountId Account ID to be used to access notification data.
          * @param lastShownTime The last time the notification was shown to user.
          * @param mimData Account mismatch notification data.
@@ -52,6 +61,7 @@ public class MismatchNotificationChecker {
          * @return Whether the UI will be shown or not.
          */
         boolean maybeShow(
+                MismatchNotificationSigninDelegate signinDelegate,
                 String accountId,
                 long lastShownTime,
                 @Nullable MismatchNotificationData mimData,
@@ -61,14 +71,22 @@ public class MismatchNotificationChecker {
     /**
      * Constructor.
      *
+     * @param context The context is used to start the sign-in activity.
      * @param profile The current profile object.
      * @param identityManager The manager providing the account info.
+     * @param signinLauncher The launcher for sign-in activity.
      * @param delegate Delegate providing the actual decision/UI logic.
      */
     public MismatchNotificationChecker(
-            Profile profile, IdentityManager identityManager, Delegate delegate) {
+            Context context,
+            Profile profile,
+            IdentityManager identityManager,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
+            Delegate delegate) {
+        mContext = context;
         mProfile = profile;
         mIdentityManager = identityManager;
+        mSigninLauncher = signinLauncher;
         mDelegate = delegate;
     }
 
@@ -82,6 +100,7 @@ public class MismatchNotificationChecker {
         MismatchNotificationData mimData = data; // effective final
         boolean show =
                 mDelegate.maybeShow(
+                        this,
                         accountId,
                         lastShowTime,
                         data,
@@ -116,6 +135,20 @@ public class MismatchNotificationChecker {
         return show;
     }
 
+    /** Implements {@link MismatchNotificationControllerDelegate}. */
+    @Override
+    public void startSignin(BottomSheetSigninAndHistorySyncConfig config) {
+        @Nullable Intent intent =
+                mSigninLauncher.createBottomSheetSigninIntentOrShowError(
+                        mContext,
+                        mProfile,
+                        config,
+                        SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION);
+        if (intent != null) {
+            mContext.startActivity(intent);
+        }
+    }
+
     /** Returns a cropped hash of the currently sign-in account ID. */
     @VisibleForTesting
     String getAccountId() {
@@ -132,7 +165,7 @@ public class MismatchNotificationChecker {
         return mShouldSuppressPromptUis;
     }
 
-    void cancel() {
+    public void destroy() {
         mCallbackController.destroy();
         mShouldSuppressPromptUis = false;
         if (mFeatureEngagementLock != null) mFeatureEngagementLock.release();
