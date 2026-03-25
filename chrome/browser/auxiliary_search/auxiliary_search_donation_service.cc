@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/android/application_status_listener.h"
@@ -37,7 +38,8 @@ AuxiliarySearchDonationService::AuxiliarySearchDonationService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     visited_url_ranking::VisitedURLRankingService* ranking_service,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    DonateCallback donate_callback)
     : page_content_annotations_service_(
           raw_ref<page_content_annotations::PageContentAnnotationsService>::
               from_ptr(page_content_annotations_service)),
@@ -45,6 +47,7 @@ AuxiliarySearchDonationService::AuxiliarySearchDonationService(
           raw_ref<visited_url_ranking::VisitedURLRankingService>::from_ptr(
               ranking_service)),
       pref_service_(raw_ref<PrefService>::from_ptr(pref_service)),
+      donate_callback_(std::move(donate_callback)),
       application_status_listener_(
           base::android::ApplicationStatusListener::New(base::BindRepeating(
               &AuxiliarySearchDonationService::OnApplicationStateChanged,
@@ -120,8 +123,10 @@ void AuxiliarySearchDonationService::FetchHistoryAndDonate() {
 void AuxiliarySearchDonationService::DonateHistoryEntries(
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries,
     const visited_url_ranking::URLVisitsMetadata& metadata) {
-  // TODO: https://crbug.com/432359106 - Use AuxiliarySearchDonor to donate the
-  // entries.
+  if (!entries.empty()) {
+    donate_callback_.Run(std::move(entries));
+  }
+
   if (!metadata.most_recent_timestamp.has_value()) {
     return;
   }

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/android/application_status_listener.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -31,16 +32,20 @@ struct URLVisitsMetadata;
 
 // AuxiliarySearchDonationService manages donation of Chrome data to AppSearch.
 // Currently only donates browsing history data.
+// The provided donate callback is only called with non-empty vectors.
 class AuxiliarySearchDonationService
     : public KeyedService,
       public page_content_annotations::PageContentAnnotationsService::
           PageContentAnnotationsObserver {
  public:
+  using DonateCallback = base::RepeatingCallback<void(
+      std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)>;
   explicit AuxiliarySearchDonationService(
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       visited_url_ranking::VisitedURLRankingService* ranking_service,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      DonateCallback donate_callback);
   ~AuxiliarySearchDonationService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -71,6 +76,7 @@ class AuxiliarySearchDonationService
       page_content_annotations_service_;
   const raw_ref<visited_url_ranking::VisitedURLRankingService> ranking_service_;
   const raw_ref<PrefService> pref_service_;
+  const DonateCallback donate_callback_;
   std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;
   base::OneShotTimer donation_timer_;

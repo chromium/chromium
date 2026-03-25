@@ -4,6 +4,8 @@
 
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
 
+#include <jni.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -11,6 +13,7 @@
 #include "base/android/application_status_listener.h"
 #include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -20,11 +23,13 @@
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace {
 
@@ -107,9 +112,9 @@ class AuxiliarySearchDonationServiceTest : public testing::Test {
 };
 
 TEST_F(AuxiliarySearchDonationServiceTest, IgnoresRemoteVisits) {
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
 
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(0);
 
@@ -119,9 +124,9 @@ TEST_F(AuxiliarySearchDonationServiceTest, IgnoresRemoteVisits) {
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, FetchesLocalVisitAfterDelay) {
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
   base::test::TestFuture<void> future;
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _))
       .WillOnce(base::test::InvokeFuture(future));
@@ -136,9 +141,9 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchesLocalVisitAfterDelay) {
 
 TEST_F(AuxiliarySearchDonationServiceTest,
        MultipleAnnotationsFetchesOnlyOnceAfterDelay) {
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
 
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(1);
@@ -150,9 +155,9 @@ TEST_F(AuxiliarySearchDonationServiceTest,
 
 TEST_F(AuxiliarySearchDonationServiceTest,
        MultipleAnnotationsFetchesAgainAfterDelay) {
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
 
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(2);
 
@@ -164,9 +169,9 @@ TEST_F(AuxiliarySearchDonationServiceTest,
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, FirstFetchUsesDefaultBeginTime) {
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
 
   base::Time begin_time;
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _))
@@ -183,9 +188,9 @@ TEST_F(AuxiliarySearchDonationServiceTest, FirstFetchUsesDefaultBeginTime) {
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, FetchUsesLastTime) {
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
 
   // First fetch returns the fake visit time as metadata. The second fetch
   // should use the provided fake visit time (plus 1us to ensure that the same
@@ -208,9 +213,9 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchUsesLastTime) {
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotFetchTooFarBack) {
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
   // First fetch returns the fake visit time as metadata. The second fetch
   // should not use the provided fake visit time because it is too far back.
   const base::Time fake_visit_time = base::Time::Now() - base::Hours(1);
@@ -233,9 +238,9 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotFetchTooFarBack) {
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
 
   // First fetch returns the fake visit time as metadata. The second fetch
   // returns an error. The third fetch should still use the fake visit time
@@ -274,17 +279,17 @@ TEST_F(AuxiliarySearchDonationServiceTest, LastFetchTimePersistsInPrefs) {
       .WillOnce(WithArg<0>(SaveBeginTime(&begin_time)));
 
   {
-    AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                           mock_ranking_service(),
-                                           test_pref_service());
+    AuxiliarySearchDonationService service(
+        page_content_annotations_service(), mock_ranking_service(),
+        test_pref_service(), base::DoNothing());
     service.OnPageContentAnnotated(CreateLocalVisit(),
                                    CreateAnnotationsResult());
     task_environment().FastForwardBy(service.GetDonationDelay());
   }
   {
-    AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                           mock_ranking_service(),
-                                           test_pref_service());
+    AuxiliarySearchDonationService service(
+        page_content_annotations_service(), mock_ranking_service(),
+        test_pref_service(), base::DoNothing());
     service.OnPageContentAnnotated(CreateLocalVisit(),
                                    CreateAnnotationsResult());
     task_environment().FastForwardBy(service.GetDonationDelay());
@@ -298,9 +303,9 @@ TEST_F(AuxiliarySearchDonationServiceTest,
   base::test::TestFuture<base::android::ApplicationState> future;
   auto listener = base::android::ApplicationStatusListener::New(
       future.GetRepeatingCallback());
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
 
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(1);
@@ -315,15 +320,48 @@ TEST_F(AuxiliarySearchDonationServiceTest,
   base::test::TestFuture<base::android::ApplicationState> future;
   auto listener = base::android::ApplicationStatusListener::New(
       future.GetRepeatingCallback());
-  AuxiliarySearchDonationService service(page_content_annotations_service(),
-                                         mock_ranking_service(),
-                                         test_pref_service());
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), base::DoNothing());
 
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(0);
 
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES);
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(AuxiliarySearchDonationServiceTest, DonatesHistoryEntries) {
+  const base::Time fake_visit_time = base::Time::Now() - base::Hours(1);
+  {
+    std::vector<visited_url_ranking::URLVisitAggregate> aggregates;
+    aggregates.push_back(visited_url_ranking::CreateSampleURLVisitAggregate(
+        GURL("https://example.com"),
+        /*visibility_score=*/1.0f,
+        /*time=*/fake_visit_time,
+        /*fetchers=*/{visited_url_ranking::Fetcher::kHistory}));
+    EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _))
+        .WillOnce(RunOnceCallback<1>(
+            ResultStatus::kSuccess,
+            URLVisitsMetadata{.most_recent_timestamp = fake_visit_time},
+            std::move(aggregates)));
+  }
+  base::test::TestFuture<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>
+      future;
+  AuxiliarySearchDonationService service(
+      page_content_annotations_service(), mock_ranking_service(),
+      test_pref_service(), future.GetRepeatingCallback());
+
+  service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
+  task_environment().FastForwardBy(service.GetDonationDelay());
+
+  // We incorrectly filter out legitimate history entries because
+  // `FetchAndRankHelper` assumes that we are only fetching active tabs or
+  // custom tabs.
+  // TODO: crbug.com/432359106 - Either update `FetchAndRankHelper` to support
+  // this, or use `VisitedURLRankingService` / `HistoryURLVisitDataFetcher`
+  // directly.
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace
