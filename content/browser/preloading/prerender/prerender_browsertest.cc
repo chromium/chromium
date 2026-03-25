@@ -17089,22 +17089,50 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 class PrerenderProcessReuseBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderProcessReuseBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kReusePrerenderingProcessForMainFrames},
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kReusePrerenderingProcessForMainFrames, {}},
+         // The isloated origins feature are added so that the navigation
+         // to a.test and b.test require a dedicated process on Android with
+         // partial site isolation.
+         {features::kIsolateOrigins,
+          {{features::kIsolateOriginsFieldTrialParamName,
+            "https://a.test/,https://b.test/"}}}},
         {features::kProcessPerSiteUpToMainFrameThreshold});
   }
 
+  void SetUpOnMainThread() override {
+    if (!AreAllSitesIsolatedForTesting()) {
+      browser_client_ =
+          std::make_unique<ForceSiteIsolationContentBrowserClient>();
+    }
+    PrerenderBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    PrerenderBrowserTest::TearDownOnMainThread();
+    browser_client_.reset();
+  }
+
+  // Forces the site isolation for the origins in the test to emulate
+  // isolated sites under partial site isolation.
+  class ForceSiteIsolationContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    bool DoesSiteRequireDedicatedProcess(
+        BrowserContext* browser_context,
+        const GURL& effective_site_url) override {
+      return effective_site_url == GURL("http://a.test") ||
+             effective_site_url == GURL("http://b.test");
+    }
+  };
+
  private:
+  std::unique_ptr<ForceSiteIsolationContentBrowserClient> browser_client_;
   base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
                        ReusePrerenderProcessInNavigation) {
-  // The test assumes site isolation. Otherwise the navigation will reuse the
-  // RFH and the RPH of the current active frame rather than the prerender ones.
-  if (!AreAllSitesIsolatedForTesting()) {
-    return;
-  }
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -17112,6 +17140,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
   const GURL initial_url =
       embedded_test_server()->GetURL("b.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  RenderProcessHost* initial_process = current_frame_host()->GetProcess();
 
   // 2. Prerender a cross-site page.
   const GURL prerender_url =
@@ -17134,6 +17163,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
       embedded_test_server()->GetURL("a.test", "/title2.html");
   EXPECT_TRUE(NavigateToURL(shell(), navigation_url));
   RenderProcessHost* navigation_process = current_frame_host()->GetProcess();
+  EXPECT_NE(navigation_process, initial_process);
   EXPECT_EQ(navigation_process, prerender_process);
   // Verify that the reuse policy UMA is correctly recoreded.
   histogram_tester.ExpectUniqueSample(
