@@ -359,6 +359,11 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingCorrectnessMetrics_MixedForm) {
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
 
   histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingAssistance.Address", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingAssistance.CreditCard", true, 1);
+
+  histogram_tester.ExpectUniqueSample(
       "Autofill.Actor.KeyMetrics.FillingCorrectness.Address", false, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Actor.KeyMetrics.FillingCorrectness.CreditCard", true, 1);
@@ -475,6 +480,8 @@ TEST_F(ActorKeyMetricsRecorderTest,
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Actor.KeyMetrics.FillingReadiness.Address", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Actor.KeyMetrics.FillingReadiness.CreditCard", 0);
 }
 
 // Tests that FillingReadiness metrics are correctly recorded when actor
@@ -770,7 +777,8 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_MixedForm_Imperfect) {
 
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
 
-  // Both should be false because the form as a whole is imperfect.
+  // Both should be false because one field in the form was edited, which
+  // penalizes all products in a combined form.
   histogram_tester.ExpectUniqueSample("Autofill.Actor.PerfectFilling.Address",
                                       false, 1);
   histogram_tester.ExpectUniqueSample(
@@ -816,6 +824,8 @@ TEST_F(ActorKeyMetricsRecorderTest,
                                     base::TimeTicks::Now());
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
 
+  // Should record false because any field interaction (even on UNKNOWN_TYPE)
+  // penalizes the metric.
   histogram_tester.ExpectUniqueSample("Autofill.Actor.PerfectFilling.Address",
                                       false, 1);
 }
@@ -859,8 +869,8 @@ TEST_F(ActorKeyMetricsRecorderTest,
 
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
 
-  // Should fail because the CC field has an autofill modifier, but wasn't
-  // filled by any Actor.
+  // Should record false because followup filling by standard Autofill is not
+  // considered an actor perfect filling experience.
   histogram_tester.ExpectUniqueSample("Autofill.Actor.PerfectFilling.Address",
                                       false, 1);
 }

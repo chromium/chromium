@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
 #define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
@@ -79,22 +81,28 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
 
   // Records the "FillingAssistance" metric for a `form`.
   void RecordFillingAssistance(const FormStructure& form,
-                               const ProductState& state,
-                               std::string_view product_str);
+                               FillingProduct product);
   void RecordFillingCorrectness(const FormStructure& form,
-                                const ProductState& state,
-                                std::string_view product_str);
+                              const ProductState& state,
+                                FillingProduct product);
   void RecordFillingReadiness(const FormStructure& form,
                               const ProductState& state,
-                              std::string_view product_str);
+                              FillingProduct product);
   void RecordPerfectFillingMetric(const FormStructure& form,
-                                  const ProductState& state,
-                                  std::string_view product_str);
+                                  FillingProduct product);
   void RecordEditedAutofilledFieldAtSubmission(const FormStructure& form);
 
+  // Returns true if the actor filled at least one field of `product` in `form`.
+  bool HasFilledFieldOfProduct(const FormStructure& form,
+                               FillingProduct product) const;
+
   // Returns true if the field with `field_id` in `form` was filled by
-  // actor with any `FillingProduct`.
-  bool WasFieldFilledByActor(const FormStructure& form, FieldGlobalId field_id);
+  // actor with a specific `product` (if provided), or with any product
+  // otherwise.
+  bool WasFieldFilledByActor(
+      const FormStructure& form,
+      FieldGlobalId field_id,
+      std::optional<FillingProduct> product = std::nullopt) const;
 
   std::array<ProductState, std::to_underlying(FillingProduct::kMaxValue) + 1>
       states_;
