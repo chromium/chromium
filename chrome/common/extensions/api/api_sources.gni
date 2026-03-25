@@ -77,7 +77,7 @@ if (enable_extensions) {
     "experimental_actor.idl",
     "experimental_ai_data.idl",
     "autofill_private.idl",
-    "autotest_private.idl",
+    "autotest_private.webidl",
     "bookmark_manager_private.json",
     "braille_display_private.idl",
     "command_line_private.json",
