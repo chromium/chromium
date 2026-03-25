@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <sys/stat.h>
+
 #include <algorithm>
 #include <string_view>
 
@@ -58,6 +60,36 @@ int LLVMFuzzerRunDriverImpl(int* argc,
                             int (*UserCb)(const uint8_t* Data, size_t Size)) {
   // Allow blocking for the whole fuzzing session.
   base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Verify that the FDs used by Fuzzilli match what we expect i.e.
+  // kControlReadFd and kControlWriteFd should be pipes, and kDataReadFd should
+  // be a memfd which appears as a regular file.
+  //
+  // During startup tests, Fuzzilli will launch js_in_process_fuzzer without the
+  // required FDs. In that case, we just print a warning and exit.
+  struct stat st_ctrl_read, st_ctrl_write, st_data_read;
+
+  // Ensure all three expected file descriptors are open.
+  if (fstat(kControlReadFd, &st_ctrl_read) != 0 ||
+      fstat(kControlWriteFd, &st_ctrl_write) != 0 ||
+      fstat(kDataReadFd, &st_data_read) != 0) {
+    LOG(WARNING)
+        << "Unexpected FD: REPRL file descriptors are not open. Exiting.";
+    return 0;
+  }
+
+  // Verify Control FDs are pipes (FIFOs).
+  if (!S_ISFIFO(st_ctrl_read.st_mode) || !S_ISFIFO(st_ctrl_write.st_mode)) {
+    LOG(WARNING) << "Unexpected FD: REPRL Control FDs are not pipes. Exiting.";
+    return 0;
+  }
+
+  // Verify Data FD is a regular file.
+  if (!S_ISREG(st_data_read.st_mode)) {
+    LOG(WARNING)
+        << "Unexpected FD: REPRL Data FD is not a regular file. Exiting.";
+    return 0;
+  }
 
   // Explicitly pull in the Fuzzilli coverage instrumentation. Otherwise the
   // linker might decide not to link in `cov.o`, causing us to not record
