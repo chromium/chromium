@@ -12,20 +12,17 @@ source_set("native_message_host_origins") {
 source_set("drivefs") {
   deps = [
     "//base",
-    "//chrome/browser/profiles:profile",
     "//chromeos/components/drivefs/mojom",
     "//components/drive",
     "//components/keep_alive_registry",
+    "//content/public/browser",
     "//extensions/browser/api/messaging",
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/common",
     "//mojo/public/cpp/bindings",
   ]
 
-  public_deps = [
-    ":native_message_host_origins",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":native_message_host_origins" ]
 
   sources = [
     "drivefs_native_message_host.cc",

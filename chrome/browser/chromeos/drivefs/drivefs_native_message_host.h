@@ -17,7 +17,9 @@ namespace extensions {
 class NativeMessageHost;
 }
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 namespace drive {
 
@@ -39,7 +41,7 @@ std::unique_ptr<extensions::NativeMessageHost> CreateDriveFsNativeMessageHost(
 // `ConnectToDriveFsNativeMessageExtension` to construct a native message host.
 std::unique_ptr<extensions::NativeMessageHost>
 CreateDriveFsInitiatedNativeMessageHostInternal(
-    Profile* profile,
+    content::BrowserContext* context,
     mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort>
         extension_receiver,
     mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote);
@@ -49,7 +51,7 @@ CreateDriveFsInitiatedNativeMessageHostInternal(
 // mojo endpoints to the host to create a connection.
 drivefs::mojom::ExtensionConnectionStatus
 ConnectToDriveFsNativeMessageExtension(
-    Profile* profile,
+    content::BrowserContext* context,
     const std::string& extension_id,
     mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort>
         extension_receiver,
