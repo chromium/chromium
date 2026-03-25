@@ -81,22 +81,6 @@ bool ShouldBlockThirdPartyOrFirstPartyCookies(
          default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
 }
 
-// Similar to the function above, but checks for ALL 3P cookies to be blocked
-// pre and post 3PCD.
-bool AreAllThirdPartyCookiesBlocked(
-    content_settings::CookieSettings* cookie_settings,
-    PrefService* prefs) {
-  // Check if 1PCs are blocked.
-  if (cookie_settings->GetDefaultCookieSetting() ==
-      ContentSetting::CONTENT_SETTING_BLOCK) {
-    return true;
-  }
-  // Check if all 3PCs are blocked.
-  return prefs->GetInteger(prefs::kCookieControlsMode) ==
-         static_cast<int>(
-             content_settings::CookieControlsMode::kBlockThirdParty);
-}
-
 // Sorts |topics| alphabetically by topic display name for display.
 // In addition, removes duplicate topics.
 void SortAndDeduplicateTopicsForDisplay(
@@ -257,15 +241,6 @@ void RecordAdMeasurementEnabledHistograms(Profile* profile, bool enabled) {
                             enabled);
 }
 
-bool HasAckedAnyMeasurementNotice(PrefService* pref_service) {
-  return pref_service->GetBoolean(
-             prefs::kPrivacySandboxM1EEANoticeAcknowledged) ||
-         pref_service->GetBoolean(
-             prefs::kPrivacySandboxM1RowNoticeAcknowledged) ||
-         pref_service->GetBoolean(
-             prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
-}
-
 }  // namespace
 
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
@@ -372,81 +347,6 @@ void PrivacySandboxServiceImpl::Shutdown() {
   cookie_settings_ = nullptr;
   privacy_sandbox_settings_ = nullptr;
   profile_ = nullptr;
-}
-
-void PrivacySandboxServiceImpl::SetPromptSuppressedReason(
-    PromptSuppressedReason reason) {
-  pref_service_->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                            static_cast<int>(reason));
-}
-
-bool PrivacySandboxServiceImpl::UpdateAndGetSuppressionReason() {
-  // If a prompt was suppressed once, for any reason, it will forever remain
-  // suppressed.
-  if (static_cast<PromptSuppressedReason>(pref_service_->GetInteger(
-          prefs::kPrivacySandboxM1PromptSuppressed)) !=
-      PromptSuppressedReason::kNone) {
-    return true;
-  }
-
-  if (IsM1PrivacySandboxEffectivelyManaged(pref_service_)) {
-    return true;
-  }
-
-  if (AreAllThirdPartyCookiesBlocked(cookie_settings_.get(), pref_service_)) {
-    SetPromptSuppressedReason(
-        PromptSuppressedReason::kThirdPartyCookiesBlocked);
-    return true;
-  }
-
-  // If the Privacy Sandbox is restricted, set the suppression reason as such.
-  // This doesn't apply if the restricted notice is specifically required.
-  if (privacy_sandbox_settings_->IsPrivacySandboxRestricted() &&
-      !IsRestrictedNoticeRequired()) {
-    SetPromptSuppressedReason(PromptSuppressedReason::kRestricted);
-    return true;
-  }
-
-  // Special case for restricted notice: if the user is restricted but not
-  // subject to the restricted notice (e.g. supervised user whose guardian
-  // saw a notice), suppress with kNoticeShownToGuardian.
-  if (IsRestrictedNoticeRequired() &&
-      !HasAckedAnyMeasurementNotice(pref_service_) &&
-      privacy_sandbox_settings_->IsPrivacySandboxRestricted() &&
-      !privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
-    SetPromptSuppressedReason(PromptSuppressedReason::kNoticeShownToGuardian);
-    // This specific suppression reason also means ad measurement should be
-    // enabled.
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
-                              true);
-    return true;
-  }
-
-  // If the user has seen a ROW notice and disabled Topics, and is now in an
-  // EEA-consent-required region, we should not attempt to consent them.
-  if (IsConsentRequired() &&
-      !pref_service_->GetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade) &&
-      pref_service_->GetBoolean(
-          prefs::kPrivacySandboxM1RowNoticeAcknowledged) &&
-      !pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)) {
-    SetPromptSuppressedReason(
-        PromptSuppressedReason::
-            kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration);
-    return true;
-  }
-
-  // If a user that migrated from EEA to ROW has already completed the EEA
-  // consent and notice flow, set the suppression reason as such.
-  if (IsNoticeRequired() &&
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade) &&
-      pref_service_->GetBoolean(
-          prefs::kPrivacySandboxM1EEANoticeAcknowledged)) {
-    SetPromptSuppressedReason(
-        PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration);
-    return true;
-  }
-
-  return false;
 }
 
 void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
