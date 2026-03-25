@@ -81,20 +81,27 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override {
-    if (timeout_) {
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), *timeout_);
-      run_loop.Run();
-    }
-
     if (status_ == passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
+      if (timeout_) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                std::move(callback), passages,
+                passage_embeddings::ComputeEmbeddingsForPassages(passages), 0,
+                status_),
+            *timeout_);
+        return 0;
+      }
+
       passage_embeddings::TestEmbedder::ComputePassagesEmbeddings(
-          priority, passages, std::move(callback));
+          priority, std::move(passages), std::move(callback));
       return 0;
     }
 
-    std::move(callback).Run(passages, {}, 0, status_);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(passages),
+                                  std::vector<passage_embeddings::Embedding>(),
+                                  0, status_));
     return 0;
   }
 

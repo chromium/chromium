@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
@@ -117,9 +118,11 @@ SchedulingEmbedder::TaskId SchedulingEmbedder::ComputePassagesEmbeddings(
   // Zero size jobs are expected, and can be called back immediately
   // instead of waiting in line for nothing.
   if (passages.empty()) {
-    std::move(callback).Run(
-        /*passages=*/{}, /*embeddings=*/{}, task_id,
-        ComputeEmbeddingsStatus::kSuccess);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::vector<std::string>(),
+                       std::vector<Embedding>(), task_id,
+                       ComputeEmbeddingsStatus::kSuccess));
     return task_id;
   }
 
@@ -237,9 +240,12 @@ bool SchedulingEmbedder::TryCancel(TaskId task_id) {
       VLOG(2) << "Aborted embedding work for " << job.passages.size()
               << " passages starting with `"
               << (job.passages.empty() ? "" : job.passages[0]) << "`";
-      std::move(job.callback)
-          .Run(std::move(job.passages), {}, job.task_id,
-               ComputeEmbeddingsStatus::kCanceled);
+
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(job.callback), std::move(job.passages),
+                         std::vector<Embedding>(), job.task_id,
+                         ComputeEmbeddingsStatus::kCanceled));
       RecordStatusHistograms(job.priority, ComputeEmbeddingsStatus::kCanceled);
       jobs_.erase(itr);
       return true;
