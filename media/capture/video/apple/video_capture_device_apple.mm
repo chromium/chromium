@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/capture/video/apple/video_capture_device_apple.h"
 
@@ -15,6 +11,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -273,7 +270,7 @@ void VideoCaptureDeviceApple::OnPhotoTaken(const uint8_t* image_data,
   }
 
   mojom::BlobPtr blob = mojom::Blob::New();
-  blob->data.assign(image_data, image_data + image_length);
+  blob->data.assign(image_data, UNSAFE_TODO(image_data + image_length));
   blob->mime_type = mime_type;
   std::move(photo_callback_).Run(std::move(blob));
 }

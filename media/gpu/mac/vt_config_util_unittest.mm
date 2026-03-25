@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/mac/vt_config_util.h"
 
@@ -14,6 +10,7 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/mac/mac_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -127,7 +124,8 @@ void AssertHasDefaultHDRMetadata(CFDictionaryRef fmt) {
       fmt, kCMFormatDescriptionExtension_MasteringDisplayColorVolume);
   ASSERT_EQ(24u, mdcv.size());
   ASSERT_EQ(24u, CFDataGetLength(mdcv_expected.get()));
-  EXPECT_EQ(0, memcmp(mdcv.data(), CFDataGetBytePtr(mdcv_expected.get()), 24u));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(mdcv.data(),
+                                  CFDataGetBytePtr(mdcv_expected.get()), 24u)));
 
   auto clli =
       GetDataValue(fmt, kCMFormatDescriptionExtension_ContentLightLevelInfo);
@@ -347,7 +345,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_AV1) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_AV1, kTestProfile, 10, kTestColorSpace,
       gfx::HDRMetadata(),
-      base::span<const uint8_t>(kAvc1Box, sizeof(kAvc1Box)));
+      UNSAFE_TODO(base::span<const uint8_t>(kAvc1Box, sizeof(kAvc1Box))));
   EXPECT_EQ(10, GetIntValue(fmt.get(),
                             base::SysUTF8ToCFStringRef(kBitDepthKey).get()));
 

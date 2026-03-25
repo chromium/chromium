@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/374320451): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/midi/midi_manager_mac.h"
 
 #include <mach/mach_time.h>
@@ -16,10 +11,12 @@
 #include <iterator>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -345,7 +342,7 @@ void MidiManagerMac::SendMidiData(MidiManagerClient* client,
   size_t send_size;
   for (size_t sent_size = 0u; sent_size < data.size(); sent_size += send_size) {
     MIDIPacketList* packet_list =
-        reinterpret_cast<MIDIPacketList*>(midi_buffer_.data());
+        UNSAFE_TODO(reinterpret_cast<MIDIPacketList*>(midi_buffer_.data()));
     MIDIPacket* midi_packet = MIDIPacketListInit(packet_list);
     // Limit the maximum payload size to kEstimatedMaxPacketDataSize that is
     // half of midi_buffer data size. MIDIPacketList and MIDIPacket consume

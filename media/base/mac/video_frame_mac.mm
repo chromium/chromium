@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/mac/video_frame_mac.h"
 
@@ -14,6 +10,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "media/base/mac/color_space_util_mac.h"
@@ -172,12 +169,13 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
   size_t plane_heights[kMaxPlanes];
   size_t plane_bytes_per_row[kMaxPlanes];
   for (int plane_i = 0; plane_i < num_planes; ++plane_i) {
-    plane_ptrs[plane_i] = const_cast<uint8_t*>(frame->visible_data(plane_i));
+    UNSAFE_TODO(plane_ptrs[plane_i]) =
+        const_cast<uint8_t*>(frame->visible_data(plane_i));
     gfx::Size plane_size =
         VideoFrame::PlaneSize(video_frame_format, plane_i, visible_rect.size());
-    plane_widths[plane_i] = plane_size.width();
-    plane_heights[plane_i] = plane_size.height();
-    plane_bytes_per_row[plane_i] = frame->stride(plane_i);
+    UNSAFE_TODO(plane_widths[plane_i]) = plane_size.width();
+    UNSAFE_TODO(plane_heights[plane_i]) = plane_size.height();
+    UNSAFE_TODO(plane_bytes_per_row[plane_i]) = frame->stride(plane_i);
   }
 
   // CVPixelBufferCreateWithPlanarBytes needs a dummy plane descriptor or the

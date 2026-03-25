@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/mac/channel_layout_util_mac.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "media/base/channel_layout.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -124,9 +120,11 @@ TEST(ChannelLayoutUtilMac, ChannelLayoutDiscreteToAudioChannelLayout) {
   EXPECT_EQ(output_layout->layout()->mNumberChannelDescriptions,
             static_cast<UInt32>(channels));
   for (int i = 0; i < channels; i++) {
-    EXPECT_EQ(output_layout->layout()->mChannelDescriptions[i].mChannelLabel,
+    EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[i])
+                  .mChannelLabel,
               kAudioChannelLabel_Unknown);
-    EXPECT_EQ(output_layout->layout()->mChannelDescriptions[i].mChannelFlags,
+    EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[i])
+                  .mChannelFlags,
               kAudioChannelFlags_AllOff);
   }
 }
@@ -145,33 +143,47 @@ TEST(ChannelLayoutUtilMac, ChannelLayout7Point1ToAudioChannelLayout) {
             kAudioChannelLabel_Left);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[0].mChannelFlags,
             kAudioChannelFlags_AllOff);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[1].mChannelLabel,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[1])
+                .mChannelLabel,
             kAudioChannelLabel_Right);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[1].mChannelFlags,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[1])
+                .mChannelFlags,
             kAudioChannelFlags_AllOff);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[2].mChannelLabel,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[2])
+                .mChannelLabel,
             kAudioChannelLabel_Center);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[2].mChannelFlags,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[2])
+                .mChannelFlags,
             kAudioChannelFlags_AllOff);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[3].mChannelLabel,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[3])
+                .mChannelLabel,
             kAudioChannelLabel_LFEScreen);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[3].mChannelFlags,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[3])
+                .mChannelFlags,
             kAudioChannelFlags_AllOff);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[4].mChannelLabel,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[4])
+                .mChannelLabel,
             kAudioChannelLabel_RearSurroundLeft);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[4].mChannelFlags,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[4])
+                .mChannelFlags,
             kAudioChannelFlags_AllOff);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[5].mChannelLabel,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[5])
+                .mChannelLabel,
             kAudioChannelLabel_RearSurroundRight);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[5].mChannelFlags,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[5])
+                .mChannelFlags,
             kAudioChannelFlags_AllOff);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[6].mChannelLabel,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[6])
+                .mChannelLabel,
             kAudioChannelLabel_LeftSurround);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[6].mChannelFlags,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[6])
+                .mChannelFlags,
             kAudioChannelFlags_AllOff);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[7].mChannelLabel,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[7])
+                .mChannelLabel,
             kAudioChannelLabel_RightSurround);
-  EXPECT_EQ(output_layout->layout()->mChannelDescriptions[7].mChannelFlags,
+  EXPECT_EQ(UNSAFE_TODO(output_layout->layout()->mChannelDescriptions[7])
+                .mChannelFlags,
             kAudioChannelFlags_AllOff);
 }
 
@@ -189,25 +201,25 @@ TEST(ChannelLayoutUtilMac, AudioChannelLayoutWithDescriptionsToChannelLayout) {
       kAudioChannelLabel_Left;
   input_layout.layout()->mChannelDescriptions[0].mChannelFlags =
       kAudioChannelFlags_AllOff;
-  input_layout.layout()->mChannelDescriptions[1].mChannelLabel =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[1]).mChannelLabel =
       kAudioChannelLabel_Right;
-  input_layout.layout()->mChannelDescriptions[1].mChannelFlags =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[1]).mChannelFlags =
       kAudioChannelFlags_AllOff;
-  input_layout.layout()->mChannelDescriptions[2].mChannelLabel =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[2]).mChannelLabel =
       kAudioChannelLabel_Center;
-  input_layout.layout()->mChannelDescriptions[2].mChannelFlags =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[2]).mChannelFlags =
       kAudioChannelFlags_AllOff;
-  input_layout.layout()->mChannelDescriptions[3].mChannelLabel =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[3]).mChannelLabel =
       kAudioChannelLabel_LFEScreen;
-  input_layout.layout()->mChannelDescriptions[3].mChannelFlags =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[3]).mChannelFlags =
       kAudioChannelFlags_AllOff;
-  input_layout.layout()->mChannelDescriptions[4].mChannelLabel =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[4]).mChannelLabel =
       kAudioChannelLabel_LeftSurround;
-  input_layout.layout()->mChannelDescriptions[4].mChannelFlags =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[4]).mChannelFlags =
       kAudioChannelFlags_AllOff;
-  input_layout.layout()->mChannelDescriptions[5].mChannelLabel =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[5]).mChannelLabel =
       kAudioChannelLabel_RightSurround;
-  input_layout.layout()->mChannelDescriptions[5].mChannelFlags =
+  UNSAFE_TODO(input_layout.layout()->mChannelDescriptions[5]).mChannelFlags =
       kAudioChannelFlags_AllOff;
 
   ChannelLayout output_layout;

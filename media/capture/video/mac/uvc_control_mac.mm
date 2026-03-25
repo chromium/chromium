@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/capture/video/mac/uvc_control_mac.h"
 
@@ -14,6 +10,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
@@ -274,7 +271,7 @@ std::vector<uint8_t> ExtractControls(IOUSBDescriptorHeader* usb_descriptor) {
     const uint8_t* bytes =
         reinterpret_cast<const uint8_t*>(&descriptor->bmControls[0]);
     const size_t length = descriptor->bControlSize;
-    return std::vector<uint8_t>(bytes, bytes + length);
+    return std::vector<uint8_t>(bytes, UNSAFE_TODO(bytes + length));
   }
   return std::vector<uint8_t>();
 }

@@ -5,16 +5,13 @@
 #ifndef MEDIA_BASE_MAC_CHANNEL_LAYOUT_UTIL_MAC_H_
 #define MEDIA_BASE_MAC_CHANNEL_LAYOUT_UTIL_MAC_H_
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/374320451): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 
@@ -32,7 +29,7 @@ class MEDIA_EXPORT ScopedAudioChannelLayout {
   size_t layout_size() const { return layout_.size(); }
 
   AudioChannelLayout* layout() {
-    return reinterpret_cast<AudioChannelLayout*>(layout_.data());
+    return UNSAFE_TODO(reinterpret_cast<AudioChannelLayout*>(layout_.data()));
   }
 
  private:

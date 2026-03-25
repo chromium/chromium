@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #import "media/capture/video/apple/video_capture_device_avfoundation.h"
 
@@ -19,6 +15,7 @@
 #include <sstream>
 
 #include "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -943,11 +940,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       for (row = 0;
            row < std::min(packedHeights[plane], pixelBufferHeights[plane]);
            ++row) {
-        memcpy(dstAddr, srcAddr,
-               std::min(packedBytesPerRows[plane],
-                        pixelBufferBytesPerRows[plane]));
-        dstAddr += packedBytesPerRows[plane];
-        srcAddr += pixelBufferBytesPerRows[plane];
+        UNSAFE_TODO(memcpy(dstAddr, srcAddr,
+                           std::min(packedBytesPerRows[plane],
+                                    pixelBufferBytesPerRows[plane])));
+        UNSAFE_TODO(dstAddr += packedBytesPerRows[plane]);
+        UNSAFE_TODO(srcAddr += pixelBufferBytesPerRows[plane]);
       }
     }
   }

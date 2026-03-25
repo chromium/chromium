@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/mac/video_frame_mac.h"
 
 #include <stddef.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "media/base/video_frame.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -126,7 +121,7 @@ static void FillFrameWithPredictableValues(const VideoFrame& frame) {
       const int row_index = h * frame.stride(i);
       for (int w = 0; w < size.width(); ++w) {
         const int index = row_index + w;
-        plane_ptr[index] = static_cast<uint8_t>(w ^ h);
+        UNSAFE_TODO(plane_ptr[index]) = static_cast<uint8_t>(w ^ h);
       }
     }
   }
@@ -173,7 +168,7 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
       for (int w = 0; w < plane_size.width(); ++w) {
         const int index = row_index + w;
         EXPECT_EQ(static_cast<uint8_t>((w + offset) ^ (h + offset)),
-                  plane_ptr[index]);
+                  UNSAFE_TODO(plane_ptr[index]));
       }
     }
   }

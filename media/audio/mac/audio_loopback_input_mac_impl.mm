@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/audio/mac/audio_loopback_input_mac_impl.h"
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -532,11 +529,13 @@ void SCKAudioInputStream::OnStreamSample(
     // the audio data, we must retain a reference to |sample_buffer| until
     // |audio_bus_| is no longer used.
     for (int channel = 0; channel < params_.channels(); channel++) {
-      float* channel_data = reinterpret_cast<float*>(buffer) +
-                            channel * total_frame_count + frames_delivered;
+      float* channel_data =
+          UNSAFE_TODO(reinterpret_cast<float*>(buffer) +
+                      channel * total_frame_count + frames_delivered);
       audio_bus_->SetChannelData(
-          channel, base::span(channel_data, base::checked_cast<size_t>(
-                                                params_.frames_per_buffer())));
+          channel, UNSAFE_TODO(base::span(channel_data,
+                                          base::checked_cast<size_t>(
+                                              params_.frames_per_buffer()))));
     }
 
     // Adjust the volume.
@@ -560,7 +559,8 @@ void SCKAudioInputStream::SendLogMessage(const char* format, ...) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   va_list args;
   va_start(args, format);
-  log_callback_.Run("SCKAudioInputStream::" + base::StringPrintV(format, args));
+  log_callback_.Run("SCKAudioInputStream::" +
+                    UNSAFE_TODO(base::StringPrintV(format, args)));
   va_end(args);
 }
 

@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/capture/video/apple/sample_buffer_transformer.h"
 
 #include <tuple>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "build/build_config.h"
@@ -171,7 +168,7 @@ void PlanarCvPixelBufferReleaseCallback(void* releaseRef,
                                         const void* planes[]) {
   free(const_cast<void*>(data));
   for (size_t plane = 0; plane < num_planes; ++plane) {
-    free(const_cast<void*>(planes[plane]));
+    free(const_cast<void*>(UNSAFE_TODO(planes[plane])));
   }
 }
 
@@ -231,9 +228,9 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> AddPadding(
     CHECK(dst_ptr);
     CHECK(src_ptr);
     for (size_t r = 0; r < plane_heights[plane]; ++r) {
-      memcpy(dst_ptr, src_ptr, plane_stride);
-      src_ptr += plane_stride;
-      dst_ptr += plane_strides[plane];
+      UNSAFE_TODO(memcpy(dst_ptr, src_ptr, plane_stride));
+      UNSAFE_TODO(src_ptr += plane_stride);
+      UNSAFE_TODO(dst_ptr += plane_strides[plane]);
     }
   }
   CHECK_EQ(

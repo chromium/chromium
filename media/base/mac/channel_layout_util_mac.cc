@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/mac/channel_layout_util_mac.h"
 
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "media/base/channel_layout.h"
 
 namespace media {
@@ -136,23 +133,24 @@ std::unique_ptr<ScopedAudioChannelLayout> ChannelLayoutToAudioChannelLayout(
   if (input_layout == CHANNEL_LAYOUT_DISCRETE) {
     // For the discrete case, mark all channels as unknown.
     for (int ch = 0; ch < input_channels; ++ch) {
-      descriptions[ch].mChannelLabel = kAudioChannelLabel_Unknown;
-      descriptions[ch].mChannelFlags = kAudioChannelFlags_AllOff;
+      UNSAFE_TODO(descriptions[ch].mChannelLabel) = kAudioChannelLabel_Unknown;
+      UNSAFE_TODO(descriptions[ch].mChannelFlags) = kAudioChannelFlags_AllOff;
     }
   } else if (input_layout == CHANNEL_LAYOUT_MONO) {
     // CoreAudio has a special label for mono.
     CHECK_EQ(input_channels, 1);
-    descriptions[0].mChannelLabel = kAudioChannelLabel_Mono;
-    descriptions[0].mChannelFlags = kAudioChannelFlags_AllOff;
+    UNSAFE_TODO(descriptions[0].mChannelLabel) = kAudioChannelLabel_Mono;
+    UNSAFE_TODO(descriptions[0].mChannelFlags) = kAudioChannelFlags_AllOff;
   } else {
     for (int ch = 0; ch <= CHANNELS_MAX; ++ch) {
       const int order = ChannelOrder(input_layout, static_cast<Channels>(ch));
       if (order == -1) {
         continue;
       }
-      descriptions[order].mChannelLabel =
+      UNSAFE_TODO(descriptions[order].mChannelLabel) =
           ChannelToAudioChannelLabel(static_cast<Channels>(ch));
-      descriptions[order].mChannelFlags = kAudioChannelFlags_AllOff;
+      UNSAFE_TODO(descriptions[order].mChannelFlags) =
+          kAudioChannelFlags_AllOff;
     }
   }
 
@@ -209,8 +207,9 @@ bool AudioChannelLayoutToChannelLayout(const AudioChannelLayout& input_layout,
     Channels channel;
     auto channelLabel =
         tag == kAudioChannelLayoutTag_UseChannelDescriptions
-            ? input_layout.mChannelDescriptions[i].mChannelLabel
-            : new_layout.layout()->mChannelDescriptions[i].mChannelLabel;
+            ? UNSAFE_TODO(input_layout.mChannelDescriptions[i].mChannelLabel)
+            : UNSAFE_TODO(
+                  new_layout.layout()->mChannelDescriptions[i].mChannelLabel);
     if (!AudioChannelLabelToChannel(channelLabel, &channel)) {
       return false;
     }
