@@ -18,12 +18,14 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/mock_log.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version_info/version_info.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -61,9 +64,11 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
@@ -212,36 +217,35 @@ struct StartupBrowserCreatorFlagTypeValue {
 
 typedef std::optional<policy::PolicyLevel> PolicyVariant;
 
-// This class waits until all browser windows are closed, and then runs
-// a quit closure.
-class AllBrowsersClosedWaiter : public BrowserListObserver {
+// Extra parts that facilitates observing the first Browser instance created
+// for the chrome process.
+class BrowserCreatedMainParts : public ChromeBrowserMainExtraParts,
+                                public BrowserCollectionObserver {
  public:
-  explicit AllBrowsersClosedWaiter(base::OnceClosure quit_closure);
-  AllBrowsersClosedWaiter(const AllBrowsersClosedWaiter&) = delete;
-  AllBrowsersClosedWaiter& operator=(const AllBrowsersClosedWaiter&) = delete;
-  ~AllBrowsersClosedWaiter() override;
+  explicit BrowserCreatedMainParts(base::OnceClosure first_browser_created_cb)
+      : first_browser_created_cb_(std::move(first_browser_created_cb)) {}
+  BrowserCreatedMainParts(const BrowserCreatedMainParts&) = delete;
+  BrowserCreatedMainParts& operator=(const BrowserCreatedMainParts&) = delete;
+  ~BrowserCreatedMainParts() override = default;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // ChromeBrowserMainExtraParts:
+  void PreCreateThreads() override {
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
+  }
+
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    std::move(first_browser_created_cb_).Run();
+    browser_collection_observation_.Reset();
+  }
 
  private:
-  base::OnceClosure quit_closure_;
+  base::OnceClosure first_browser_created_cb_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
-
-AllBrowsersClosedWaiter::AllBrowsersClosedWaiter(base::OnceClosure quit_closure)
-    : quit_closure_(std::move(quit_closure)) {
-  BrowserList::AddObserver(this);
-}
-
-AllBrowsersClosedWaiter::~AllBrowsersClosedWaiter() {
-  BrowserList::RemoveObserver(this);
-}
-
-void AllBrowsersClosedWaiter::OnBrowserRemoved(Browser* browser) {
-  if (chrome::GetTotalBrowserCount() == 0) {
-    std::move(quit_closure_).Run();
-  }
-}
 
 }  // namespace
 
@@ -313,17 +317,6 @@ class StartupBrowserCreatorTest : public extensions::ExtensionBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class OpenURLsPopupObserver : public BrowserListObserver {
- public:
-  OpenURLsPopupObserver() = default;
-
-  void OnBrowserAdded(Browser* browser) override { added_browser_ = browser; }
-
-  void OnBrowserRemoved(Browser* browser) override {}
-
-  raw_ptr<Browser> added_browser_ = nullptr;
-};
-
 // Test that when there is a popup as the active browser any requests to
 // StartupBrowserCreatorImpl::OpenURLsInBrowser don't crash because there's no
 // explicit profile given.
@@ -336,13 +329,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenURLsPopup) {
   // platform UI toolkit messages, and those messages are not sent during unit
   // testing sessions.
 
-  OpenURLsPopupObserver observer;
-  BrowserList::AddObserver(&observer);
-
-  Browser* popup = Browser::Create(
+  BrowserWindowInterface* popup = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
-  ASSERT_TRUE(popup->is_type_popup());
-  ASSERT_EQ(popup, observer.added_browser_);
+  ASSERT_EQ(popup->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
 
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   chrome::startup::IsFirstRun first_run =
@@ -351,9 +340,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenURLsPopup) {
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
   // This should create a new window, but re-use the profile from |popup|. If
   // it used a null or invalid profile, it would crash.
-  launch.OpenURLsInBrowser(popup, chrome::startup::IsProcessStartup::kNo, urls);
-  ASSERT_NE(popup, observer.added_browser_);
-  BrowserList::RemoveObserver(&observer);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  launch.OpenURLsInBrowser(popup->GetBrowserForMigrationOnly(),
+                           chrome::startup::IsProcessStartup::kNo, urls);
+  BrowserWindowInterface* created_browser = browser_created_observer.Wait();
+  ASSERT_NE(popup, created_browser);
 }
 
 // We don't do non-process-startup browser launches on ChromeOS.
@@ -1656,11 +1647,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
       browser2, embedded_test_server()->GetURL("/empty.html")));
   // Exit the browser, saving the multi-profile session state.
   chrome::ExecuteCommand(browser(), IDC_EXIT);
-  {
-    base::RunLoop run_loop;
-    AllBrowsersClosedWaiter waiter(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return GlobalBrowserCollection::GetInstance()->IsEmpty(); }));
 
 #if BUILDFLAG(IS_MAC)
   // While we closed all the browsers above, this doesn't quit the Mac app,
@@ -2085,15 +2073,20 @@ webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
 
-class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
-                                         public BrowserListObserver {
+class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest {
  protected:
-  StartupBrowserCreatorRestartTest() { BrowserList::AddObserver(this); }
-  ~StartupBrowserCreatorRestartTest() override {
-    // We might have already been removed but it's safe to call again.
-    BrowserList::RemoveObserver(this);
-  }
+  StartupBrowserCreatorRestartTest() = default;
+  ~StartupBrowserCreatorRestartTest() override = default;
 
+  // InProcessBrowserTest:
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+    static_cast<ChromeBrowserMainParts*>(browser_main_parts)
+        ->AddParts(std::make_unique<BrowserCreatedMainParts>(base::BindOnce(
+            &StartupBrowserCreatorRestartTest::OnFirstBrowserCreated,
+            base::Unretained(this))));
+  }
   void SetUpInProcessBrowserTestFixture() override {
     std::string_view test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
@@ -2109,7 +2102,7 @@ class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
     }
   }
 
-  void OnBrowserAdded(Browser* browser) override {
+  void OnFirstBrowserCreated() {
     std::string_view test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
 
@@ -2119,7 +2112,6 @@ class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
       EXPECT_TRUE(StartupBrowserCreator::WasRestarted());
       EXPECT_FALSE(browser_added_check_passed_);
       browser_added_check_passed_ = true;
-      BrowserList::RemoveObserver(this);
     }
   }
 
@@ -2218,31 +2210,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// An observer that returns back to test code after a new browser is added to
-// the BrowserList.
-class BrowserAddedObserver : public BrowserListObserver {
- public:
-  BrowserAddedObserver() { BrowserList::AddObserver(this); }
-
-  ~BrowserAddedObserver() override { BrowserList::RemoveObserver(this); }
-
-  Browser* Wait() {
-    run_loop_.Run();
-    return browser_;
-  }
-
- protected:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
-    browser_ = browser;
-    run_loop_.Quit();
-  }
-
- private:
-  raw_ptr<Browser> browser_ = nullptr;
-  base::RunLoop run_loop_;
-};
-
 class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2338,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
                        PRE_LastUsedProfilesWithWebApp) {
   {
-    BrowserAddedObserver added_observer;
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
 #if BUILDFLAG(IS_MAC)
     // Simulate an app shim connecting and launching an app.
@@ -2349,7 +2316,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
     // Launching with an app opens the app window via a task, so the test
     // might start before the first browser is created.
     if (!browser()) {
-      SetBrowser(added_observer.Wait());
+      SetBrowser(browser_created_observer.Wait());
     }
   }
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -3297,14 +3264,20 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
 
 // Validates that prefs::kWasRestarted is automatically reset after next browser
 // start.
-class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
-                                              public BrowserListObserver {
+class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest {
  public:
-  StartupBrowserCreatorWasRestartedFlag() { BrowserList::AddObserver(this); }
-  ~StartupBrowserCreatorWasRestartedFlag() override {
-    BrowserList::RemoveObserver(this);
-  }
+  StartupBrowserCreatorWasRestartedFlag() = default;
+  ~StartupBrowserCreatorWasRestartedFlag() override = default;
 
+  // InProcessBrowserTest:
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+    static_cast<ChromeBrowserMainParts*>(browser_main_parts)
+        ->AddParts(std::make_unique<BrowserCreatedMainParts>(base::BindOnce(
+            &StartupBrowserCreatorWasRestartedFlag::OnFirstBrowserCreated,
+            base::Unretained(this))));
+  }
   bool SetUpUserDataDirectory() override {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
@@ -3326,7 +3299,7 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
  protected:
   // SetUpCommandLine is setting kWasRestarted, so these tests all start up
   // with WasRestarted() true.
-  void OnBrowserAdded(Browser* browser) override {
+  void OnFirstBrowserCreated() {
     EXPECT_TRUE(StartupBrowserCreator::WasRestarted());
     EXPECT_FALSE(
         g_browser_process->local_state()->GetBoolean(prefs::kWasRestarted));
@@ -3367,10 +3340,10 @@ class StartupBrowserCreatorInfobarsTest
       : flag_type_(std::get<0>(GetParam())), policy_(std::get<1>(GetParam())) {}
 
  protected:
-  std::pair<Browser*, infobars::ContentInfoBarManager*>
+  std::pair<BrowserWindowInterface*, infobars::ContentInfoBarManager*>
   LaunchBrowserAndGetCreatedInfoBarManager(
       const base::CommandLine& command_line) {
-    BrowserAddedObserver added_observer;
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
     base::test::TestFuture<void> app_launch_done;
     if (command_line.HasSwitch(switches::kAppId)) {
@@ -3387,12 +3360,12 @@ class StartupBrowserCreatorInfobarsTest
     // Wait until the new browser window has been created. Using
     // `FindOneOtherBrowser` is not sufficient here, because the window may be
     // created asynchronously.
-    Browser* new_browser = added_observer.Wait();
+    BrowserWindowInterface* new_browser = browser_created_observer.Wait();
     EXPECT_TRUE(new_browser);
 
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(
-            new_browser->tab_strip_model()->GetWebContentsAt(0));
+            new_browser->GetTabStripModel()->GetWebContentsAt(0));
     EXPECT_TRUE(infobar_manager);
 
     return std::make_pair(new_browser, infobar_manager);
@@ -3434,7 +3407,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest, CheckInfobar) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(flag_type_.flag);
   auto [browser, infobar_manager] =
       LaunchBrowserAndGetCreatedInfoBarManager(command_line);
-  EXPECT_TRUE(browser->is_type_normal());
+  EXPECT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
 
   EXPECT_EQ(HasInfoBar(infobar_manager, flag_type_.infobar_identifier),
             policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
@@ -3459,7 +3432,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
 
   auto [browser, infobar_manager] =
       LaunchBrowserAndGetCreatedInfoBarManager(command_line);
-  EXPECT_TRUE(browser->is_type_app());
+  EXPECT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   EXPECT_EQ(HasInfoBar(infobar_manager, flag_type_.infobar_identifier),
             policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
@@ -3486,7 +3459,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
 
   auto [browser, infobar_manager] =
       LaunchBrowserAndGetCreatedInfoBarManager(command_line);
-  EXPECT_TRUE(browser->is_type_app());
+  EXPECT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   EXPECT_EQ(HasInfoBar(infobar_manager, flag_type_.infobar_identifier),
             policy_ != CommandLineFlagSecurityWarningsPolicy::kDisabled);
@@ -3510,7 +3483,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
   command_line.AppendSwitch(flag_type_.flag);
   auto [browser, infobar_manager] =
       LaunchBrowserAndGetCreatedInfoBarManager(command_line);
-  EXPECT_TRUE(browser->is_type_normal());
+  EXPECT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
 
   EXPECT_FALSE(HasInfoBar(infobar_manager, flag_type_.infobar_identifier));
 }
