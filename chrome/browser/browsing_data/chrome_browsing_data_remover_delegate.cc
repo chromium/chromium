@@ -201,13 +201,10 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/activity_log/activity_log.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/net/system_proxy_manager.h"
@@ -434,7 +431,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       language_histogram->ClearHistory(delete_begin_, delete_end_);
     }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // The extension activity log contains details of which websites extensions
     // were active on. It therefore indirectly stores details of websites a
     // user has visited so best clean from here as well.

@@ -3645,8 +3645,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_THAT(language_histogram->GetLanguageFrequency("es"), FloatEq(0.0));
 }
 
-// TODO(crbug.com/371426261)): Enable this for ENABLE_EXTENSIONS_CORE, but first
-// MockExtensionSpecialStoragePolicy must compile on Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, OriginTypeMasks) {
   const GURL kOriginProtected("http://protected.com");
