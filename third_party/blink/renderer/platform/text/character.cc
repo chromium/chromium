@@ -354,7 +354,7 @@ bool Character::IsCursiveScript(UChar32 code_point) {
 }
 
 // https://w3c.github.io/mathml-core/#stretchy-operator-axis
-static const UChar stretchy_operator_with_inline_axis[]{
+static constexpr UChar kStretchyOperatorWithInlineAxis[]{
     0x003D, 0x005E, 0x005F, 0x007E, 0x00AF, 0x02C6, 0x02C7, 0x02C9, 0x02CD,
     0x02DC, 0x02F7, 0x0302, 0x0332, 0x203E, 0x20D0, 0x20D1, 0x20D6, 0x20D7,
     0x20E1, 0x2190, 0x2192, 0x2194, 0x2198, 0x2199, 0x219C, 0x219D, 0x219E,
@@ -372,11 +372,8 @@ bool Character::IsVerticalMathCharacter(UChar32 text_content) {
   return text_content !=
              uchar::kArabicMathematicalOperatorMeemWithHahWithTatweel &&
          text_content != uchar::kArabicMathematicalOperatorHahWithDal &&
-         !std::binary_search(
-             stretchy_operator_with_inline_axis,
-             UNSAFE_TODO(stretchy_operator_with_inline_axis +
-                         std::size(stretchy_operator_with_inline_axis)),
-             text_content);
+         !std::ranges::binary_search(kStretchyOperatorWithInlineAxis,
+                                     text_content);
 }
 
 UChar32 Character::FullwidthVariant(UChar32 code_point) {
