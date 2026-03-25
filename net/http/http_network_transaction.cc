@@ -2126,9 +2126,9 @@ int HttpNetworkTransaction::HandleIOError(int error) {
                                         base::Unretained(this), OK));
           return ERR_IO_PENDING;
         }
-        error = OK;
+        return OK;
       }
-      break;
+      return error;
     case RetryReason::kEarlyDataRejected:
     case RetryReason::kWrongVersionOnEarlyData:
       net_log_.AddEventWithNetErrorCode(
@@ -2136,20 +2136,19 @@ int HttpNetworkTransaction::HandleIOError(int error) {
       // Disable early data on a reset.
       can_send_early_data_ = false;
       ResetConnectionAndRequestForResend(*retry_reason);
-      error = OK;
-      break;
+      return OK;
     case RetryReason::kHttp2PingFailed:
     case RetryReason::kHttp2ServerRefusedStream:
     case RetryReason::kQuicHandshakeFailed:
     case RetryReason::kQuicGoawayRequestCanBeRetried:
-      if (HasExceededMaxRetries())
-        break;
+      if (HasExceededMaxRetries()) {
+        return error;
+      }
       net_log_.AddEventWithNetErrorCode(
           NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
       retry_attempts_++;
       ResetConnectionAndRequestForResend(*retry_reason);
-      error = OK;
-      break;
+      return OK;
     case RetryReason::kQuicProtocolError:
       if (HasExceededMaxRetries() || GetResponseHeaders() != nullptr ||
           !stream_->GetAlternativeService(&retried_alternative_service_)) {
@@ -2157,7 +2156,7 @@ int HttpNetworkTransaction::HandleIOError(int error) {
         // then the request can not be retried. Also, if there was no
         // alternative service used for this request, then there is no
         // alternative service to be disabled.
-        break;
+        return error;
       }
 
       if (session_->http_server_properties()->IsAlternativeServiceBroken(
@@ -2169,7 +2168,7 @@ int HttpNetworkTransaction::HandleIOError(int error) {
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
         retry_attempts_++;
         ResetConnectionAndRequestForResend(*retry_reason);
-        error = OK;
+        return OK;
       } else if (session_->context()
                      .quic_context->params()
                      ->retry_without_alt_svc_on_quic_errors) {
@@ -2181,9 +2180,9 @@ int HttpNetworkTransaction::HandleIOError(int error) {
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
         retry_attempts_++;
         ResetConnectionAndRequestForResend(*retry_reason);
-        error = OK;
+        return OK;
       }
-      break;
+      return error;
 
     // The following reasons are not covered here.
     case RetryReason::kHttpRequestTimeout:
@@ -2192,7 +2191,7 @@ int HttpNetworkTransaction::HandleIOError(int error) {
     case RetryReason::kSslClientAuthSignatureFailed:
       NOTREACHED();
   }
-  return error;
+  NOTREACHED();
 }
 
 void HttpNetworkTransaction::ResetStateForRestart() {
