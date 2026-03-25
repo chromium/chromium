@@ -135,9 +135,15 @@ if (is_android) {
       ":execution_status_enums_java",
       ":jni_headers",
       ":processed_value_enums_java",
+      ":segmentation_platform_strings_java",
     ]
 
     public_deps = [ "//components/segmentation_platform/public/proto:segmentation_platform_proto_java" ]
+  }
+
+  java_cpp_strings("segmentation_platform_strings_java") {
+    sources = [ "constants.h" ]
+    class_name = "org.chromium.components.segmentation_platform.SegmentationPlatformConstants"
   }
 
   robolectric_library("junit") {
