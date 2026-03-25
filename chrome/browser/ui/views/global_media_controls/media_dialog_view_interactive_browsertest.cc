@@ -34,6 +34,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
+#include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
@@ -172,11 +173,11 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    media_router_ = static_cast<TestMediaRouter*>(
+    auto* media_router = static_cast<TestMediaRouter*>(
         media_router::ChromeMediaRouterFactory::GetInstance()
             ->SetTestingFactoryAndUse(
                 context, base::BindRepeating(&TestMediaRouter::Create)));
-    ON_CALL(*media_router_, RegisterMediaSinksObserver)
+    ON_CALL(*media_router, RegisterMediaSinksObserver)
         .WillByDefault(testing::Return(true));
   }
 
@@ -394,9 +395,14 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
         speech::LanguageCode::kEnUs);
   }
 
+  TestMediaRouter* GetMediaRouter() {
+    return static_cast<TestMediaRouter*>(
+        media_router::MediaRouterFactory::GetApiForBrowserContext(
+            browser()->profile()));
+  }
+
  protected:
   std::unique_ptr<TestWebContentsPresentationManager> presentation_manager_;
-  raw_ptr<TestMediaRouter, DanglingUntriaged> media_router_ = nullptr;
   MediaDialogUiForTest ui_{base::BindRepeating(&InProcessBrowserTest::browser,
                                                base::Unretained(this))};
 
@@ -634,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
                                  "sink_id", route_description, true);
   route.set_media_sink_name("My Sink");
   route.set_controller_type(media_router::RouteControllerType::kGeneric);
-  media_router_->NotifyMediaRoutesChanged({route});
+  GetMediaRouter()->NotifyMediaRoutesChanged({route});
   base::RunLoop().RunUntilIdle();
   presentation_manager_->NotifyPresentationsChanged(true);
 
