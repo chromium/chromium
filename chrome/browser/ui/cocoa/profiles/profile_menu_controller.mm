@@ -75,7 +75,11 @@ class Observer : public BrowserCollectionObserver, public AvatarMenuObserver {
 
  private:
   ProfileMenuController* controller_;  // Weak; owns this.
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+
+  // TODO(crbug.com/495683109): remove when the Observer is no
+  // longer outliving the GlobalBrowserCollection it observes.
+  base::ScopedObservation<GlobalBrowserCollection,
+                          BrowserCollectionObserver>::LeakedDanglingUntriaged
       browser_collection_observation_{this};
 };
 
