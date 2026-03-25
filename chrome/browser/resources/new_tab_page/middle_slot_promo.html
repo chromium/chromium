@@ -1,11 +1,12 @@
 <!-- Visibility is toggled in TS -->
 <div id="promoAndDismissContainer" hidden>
   <!-- Promo parts are added by TS. -->
+  <!-- TODO(crbug.com/493257837): Create new string for promo dismiss button instead of reusing voiceClose. -->
   ${this.shownMiddleSlotPromoId_ ? html`
     <cr-icon-button id="dismissPromoButton"
         class="icon-clear"
-        aria-label="$i18n{close}"
-        title="$i18n{close}"
+        aria-label="$i18n{voiceClose}"
+        title="$i18n{voiceClose}"
         @click="${this.onDismissPromoButtonClick_}">
     </cr-icon-button>
   ` : ''}
