@@ -24,7 +24,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_commands.h"
-#include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/notification/download_notification_manager.h"
@@ -57,6 +56,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_util.h"
 #include "net/base/mime_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -216,7 +216,7 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
 
 bool IsExtensionDownload(DownloadUIModel* item) {
   return item->GetDownloadItem() &&
-         download_crx_util::IsExtensionDownload(*item->GetDownloadItem());
+         extensions::util::IsExtensionDownload(*item->GetDownloadItem());
 }
 
 }  // namespace

@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
-#include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/common/pref_names.h"
@@ -42,6 +41,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
+#include "extensions/browser/extension_util.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -124,7 +124,7 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
     return;
   // crx downloads are handled by the DownloadBubbleUpdateService.
   // TODO(chlily): Consolidate these code paths.
-  if (download_crx_util::IsExtensionDownload(*item)) {
+  if (extensions::util::IsExtensionDownload(*item)) {
     return;
   }
 

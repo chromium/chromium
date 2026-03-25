@@ -138,6 +138,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "extensions/browser/crx_installer.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/webstore_installer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/user_script.h"
@@ -1012,7 +1013,7 @@ bool ChromeDownloadManagerDelegate::ShouldOpenDownload(
     DownloadItem* item,
     content::DownloadOpenDelayedCallback callback) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (download_crx_util::IsExtensionDownload(*item) &&
+  if (extensions::util::IsExtensionDownload(*item) &&
       !extensions::WebstoreInstaller::GetAssociatedApproval(*item)) {
     scoped_refptr<CrxInstaller> installer(
         download_crx_util::CreateCrxInstaller(profile_, *item));

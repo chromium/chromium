@@ -70,6 +70,10 @@
 #include "ui/views/vector_icons.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_util.h"
+#endif
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -665,11 +669,9 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::SHOW_IN_FOLDER:
       return download_->CanShowInFolder();
     case DownloadCommands::OPEN_WHEN_COMPLETE:
-      return download_->CanOpenDownload() &&
-             !download_crx_util::IsExtensionDownload(*download_);
+      return download_->CanOpenDownload() && !IsExtensionDownload();
     case DownloadCommands::PLATFORM_OPEN:
-      return download_->CanOpenDownload() &&
-             !download_crx_util::IsExtensionDownload(*download_);
+      return download_->CanOpenDownload() && !IsExtensionDownload();
     case DownloadCommands::ALWAYS_OPEN_TYPE:
       // For temporary downloads, the target filename might be a temporary
       // filename. Don't base an "Always open" decision based on it. Also
@@ -680,7 +682,7 @@ bool DownloadItemModel::IsCommandEnabled(
                  ->IsAllowedToOpenAutomatically(
                      download_->GetTargetFilePath()) &&
 #endif
-             !download_crx_util::IsExtensionDownload(*download_);
+             !IsExtensionDownload();
     case DownloadCommands::PAUSE:
       return !download_->IsSavePackageDownload() &&
              DownloadUIModel::IsCommandEnabled(download_commands, command);
@@ -691,7 +693,7 @@ bool DownloadItemModel::IsCommandEnabled(
           MaybeGetMediaAppAction();
 
       return media_app_command == command && download_->CanOpenDownload() &&
-             !download_crx_util::IsExtensionDownload(*download_);
+             !IsExtensionDownload();
 #else
       return false;
 #endif
@@ -722,8 +724,7 @@ bool DownloadItemModel::IsCommandChecked(
     DownloadCommands::Command command) const {
   switch (command) {
     case DownloadCommands::OPEN_WHEN_COMPLETE:
-      return download_->GetOpenWhenComplete() ||
-             download_crx_util::IsExtensionDownload(*download_);
+      return download_->GetOpenWhenComplete() || IsExtensionDownload();
     case DownloadCommands::ALWAYS_OPEN_TYPE:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
@@ -1097,7 +1098,11 @@ std::string DownloadItemModel::GetMimeType() const {
 }
 
 bool DownloadItemModel::IsExtensionDownload() const {
-  return download_crx_util::IsExtensionDownload(*download_);
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  return extensions::util::IsExtensionDownload(*download_);
+#else
+  return false;
+#endif
 }
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

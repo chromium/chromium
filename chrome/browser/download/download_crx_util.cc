@@ -115,14 +115,8 @@ scoped_refptr<extensions::CrxInstaller> CreateCrxInstaller(
   return installer;
 }
 
-// TODO(crbug.com/358567092): Remove this method and update all callers to use
-// extensions::util::IsExtensionDownload() directly.
-bool IsExtensionDownload(const DownloadItem& download_item) {
-  return extensions::util::IsExtensionDownload(download_item);
-}
-
 bool IsTrustedExtensionDownload(Profile* profile, const DownloadItem& item) {
-  return IsExtensionDownload(item) &&
+  return extensions::util::IsExtensionDownload(item) &&
          (OffStoreInstallAllowedByPrefs(profile, item) ||
           extension_urls::IsWebstoreUpdateUrl(item.GetOriginalUrl()) ||
           extension_urls::IsWebstoreDomain(item.GetOriginalUrl()));

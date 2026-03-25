@@ -22,7 +22,6 @@
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_web_app_data.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -43,6 +42,7 @@
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/browser/download_manager.h"
+#include "extensions/browser/extension_util.h"
 
 namespace {
 
@@ -774,7 +774,7 @@ void DownloadBubbleUpdateService::OnDownloadCreated(
   if (!download_item_notifier_) {
     return;
   }
-  if (download_crx_util::IsExtensionDownload(*item) &&
+  if (extensions::util::IsExtensionDownload(*item) &&
       delayed_crx_guids_.size() < kMaxDelayedCrxGuids) {
     const std::string& guid = item->GetGuid();
     CHECK(!delayed_crx_guids_.contains(guid));
