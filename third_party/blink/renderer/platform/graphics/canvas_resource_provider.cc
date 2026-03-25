@@ -828,6 +828,7 @@ bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
     uint32_t src_y,
     const gpu::SyncToken& ready_sync_token,
     gpu::SyncToken& completion_sync_token) {
+  CHECK(is_accelerated_);
   gpu::raster::RasterInterface* raster = RasterInterface();
   if (!raster) {
     return false;

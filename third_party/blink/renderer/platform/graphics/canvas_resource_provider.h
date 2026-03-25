@@ -723,6 +723,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // instance's SharedImage. Waits on `ready_sync_token` before copying; pass
   // SyncToken() if no sync is required. Synthesizes a new sync token in
   // `completion_sync_token` which will satisfy after the image copy completes.
+  // NOTE: Can only be used if this instance is accelerated.
   bool CopyToBackingSharedImage(
       const scoped_refptr<gpu::ClientSharedImage>& shared_image,
       uint32_t src_x,
