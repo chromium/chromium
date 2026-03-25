@@ -3123,6 +3123,28 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(page_handler_, OnImageDataRequested).Times(0);
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnStringAttributeChanged_ReadabilityFlagEnabled_DoesNothing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kReadAnythingImagesViaAlgorithm,
+                                 features::kReadAnythingWithReadability},
+                                {});
+
+  // Create an image node with a placeholder "data:" URL, mimicking a
+  // lazy-loaded image.
+  static constexpr ui::AXNodeID kImageNodeId = 2;
+  std::string placeholder_src = "data:image/svg+xml,...";
+  ui::AXNodeData image_node = test::ImageNode(kImageNodeId, placeholder_src);
+  SendUpdateAndDistillNodes({std::move(image_node)});
+
+  // Now update with the actual image url.
+  std::string final_src = "https://example.com/real_image.png";
+  ui::AXNodeData updated_image_node = test::ImageNode(kImageNodeId, final_src);
+  SendUpdateAndDistillNodes({std::move(updated_image_node)});
+
+  EXPECT_CALL(page_handler_, OnImageDataRequested).Times(0);
+}
+
 TEST_F(ReadAnythingAppControllerTest, UpdateWordsSeen_ReplacesWordsSeen) {
   controller().UpdateWordsSeen(123);
   EXPECT_EQ(123, model().words_seen());

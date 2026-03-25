@@ -536,6 +536,7 @@ void ReadAnythingAppController::OnStringAttributeChanged(
     const std::string& new_value) {
   // Return early when the images flag is disabled to avoid potential crashes.
   if (!features::IsReadAnythingImagesViaAlgorithmEnabled() ||
+      features::IsReadAnythingWithReadabilityEnabled() ||
       attr != ax::mojom::StringAttribute::kUrl) {
     return;
   }
