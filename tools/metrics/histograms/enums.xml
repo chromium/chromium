@@ -2956,10 +2956,13 @@ Called by update_net_error_codes.py.-->
 <enum name="DefaultSearchEngineMirrorCheckOutcomeType">
   <int value="0" label="Not reset, no tampering detected"/>
   <int value="1"
-      label="Not reset, mirrored pref mismatch on enterprise device"/>
+      label="(Obsolete) Not reset, mirrored pref mismatch on enterprise
+             device"/>
   <int value="2" label="Reset, mirrored pref mismatch (non-enterprise device)"/>
   <int value="3" label="Already reset, recent HMAC check"/>
   <int value="4" label="Already reset, stale HMAC check"/>
+  <int value="5"
+      label="Not reset, mirrored pref mismatch (managed default search)"/>
 </enum>
 
 <enum name="DeprecatedArcKioskUserStatus">

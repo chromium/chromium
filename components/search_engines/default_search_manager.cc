@@ -415,7 +415,7 @@ void DefaultSearchManager::HandleDefaultSearchEngineTampering(
     // Clear the mirrored pref to eliminate future mismatch.
     pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
   } else {  // Tampering detected.
-    if (!base::IsEnterpriseDevice()) {
+    if (!default_search_mandatory_by_policy_) {
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::kMirrorCheckReset;
       pref_service_->ClearPref(kDefaultSearchProviderDataPrefName);
       // Clear the mirrored pref to eliminate future mismatch.
@@ -427,7 +427,7 @@ void DefaultSearchManager::HandleDefaultSearchEngineTampering(
           base::Time::Now());
     } else {
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::
-          kResetSkippedForEnterpriseDevice;
+          kResetSkippedForManagedDefaultSearch;
     }
   }
   base::UmaHistogramEnumeration(kDefaultSearchEngineMirrorCheckOutcomeMetric,

@@ -535,6 +535,54 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchReset) {
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
 }
 
+TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForManagedDefaultSearch) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+  base::HistogramTester histograms;
+
+  auto user_data = set_default_search_provider_data_pref("search_engine_A");
+  set_mirrored_default_search_provider_data_pref("search_engine_B");
+
+  // Set the policy-enforced default search.
+  std::unique_ptr<TemplateURLData> policy_data =
+      GenerateDummyTemplateURLData("policy");
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/true);
+
+  auto manager = create_manager();
+
+  // The original and mirrored DSE prefs should NOT be cleared since the setting
+  // is managed by policy.
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(
+              DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
+          .empty());
+
+  // Reset skipped due to managed policy recorded.
+  histograms.ExpectUniqueSample(
+      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
+      static_cast<int>(
+          DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
+              kResetSkippedForManagedDefaultSearch),
+      1);
+
+  // Unacknowledged reset did not occur.
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
+  EXPECT_TRUE(pref_service()->GetTime(
+                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+              base::Time());
+
+  // The DSE should be the policy-enforced one.
+  DefaultSearchManager::Source source;
+  ExpectSimilar(policy_data.get(), manager->GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
+}
+
 TEST_F(DefaultSearchManagerTest, UserDseChangeDisablesResetNotification) {
   base::test::ScopedFeatureList feature_list{
       switches::kResetTamperedDefaultSearchEngine};
@@ -564,7 +612,8 @@ TEST_F(DefaultSearchManagerTest, UserDseChangeDisablesResetNotification) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
+TEST_F(DefaultSearchManagerTest,
+       DefaultSearchResetOnEnterpriseDeviceWithoutPolicy) {
   base::test::ScopedFeatureList feature_list{
       switches::kResetTamperedDefaultSearchEngine};
   // Simulate an enterprise device.
@@ -576,37 +625,38 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
 
   auto manager = create_manager();
 
-  // The DSE prefs should NOT be cleared since this is an enterprise device.
-  EXPECT_FALSE(
+  // The DSE prefs SHOULD be cleared since there is no policy enforcing it,
+  // even though it is an enterprise device.
+  EXPECT_TRUE(
       pref_service()
           ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
           .empty());
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       pref_service()
           ->GetDict(
               DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
           .empty());
 
-  // DSE reset was skipped due to enterprise policy recorded.
+  // DSE reset was executed.
   histograms.ExpectUniqueSample(
       DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
       static_cast<int>(
           DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
-              kResetSkippedForEnterpriseDevice),
+              kMirrorCheckReset),
       1);
 
-  // Reset did not occur.
-  EXPECT_FALSE(pref_service()->GetBoolean(
+  // Reset DID occur.
+  EXPECT_TRUE(pref_service()->GetBoolean(
       prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
-  // A mirror check reset time is not recorded.
-  EXPECT_TRUE(pref_service()->GetTime(
-                  prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
-              base::Time());
+  // A mirror check reset time IS recorded.
+  EXPECT_FALSE(pref_service()->GetTime(
+                   prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
+               base::Time());
 
-  // The DSE should not have been changed.
+  // The DSE should now be the fallback.
   DefaultSearchManager::Source source;
-  ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
-  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+  manager->GetDefaultSearchEngine(&source);
+  EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -114,11 +114,12 @@ class DefaultSearchManager
   // Keep in sync with enums.xml.
   enum class DefaultSearchEngineMirrorCheckOutcomeType {
     kNoTamperingDetected = 0,
-    kResetSkippedForEnterpriseDevice = 1,
+    kObsoleteResetSkippedForEnterpriseDevice = 1,
     kMirrorCheckReset = 2,
     kRecentHmacReset = 3,
     kStaleHmacReset = 4,
-    kMaxValue = kStaleHmacReset,
+    kResetSkippedForManagedDefaultSearch = 5,
+    kMaxValue = kResetSkippedForManagedDefaultSearch,
   };
 
   using ObserverCallback =
