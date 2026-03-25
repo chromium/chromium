@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { padding: 10px; width: 320px; font-family: sans-serif; }
+    h3 { margin-top: 0; margin-bottom: 10px; font-size: 16px;}
+    h4 { margin-top: 15px; margin-bottom: 5px; font-size: 14px; color: #333;}
+    button { display: block; width: 100%; margin-bottom: 5px; padding: 6px; font-size: 12px; cursor: pointer;}
+    .section { border: 1px solid #eee; padding: 8px; margin-bottom: 10px; border-radius: 4px;}
+    #status { margin-top: 10px; font-weight: bold; color: green; font-size: 12px; min-height: 15px;}
+  </style>
+</head>
+<body>
+  <h3>DOM Activity Telemetry Tester</h3>
+
+  <div class="section">
+    <h4>Confidentiality (DOM Access)</h4>
+    <button id="btn-cookie">Read Document.cookie</button>
+    <button id="btn-input">Read HTMLInputElement</button>
+    <button id="btn-textarea">Read HTMLTextAreaElement</button>
+  </div>
+
+  <div class="section">
+    <h4>Integrity (Script Injection)</h4>
+    <button id="btn-exec-script-func">scripting.executeScript (func)</button>
+    <button id="btn-exec-script-file">scripting.executeScript (file)</button>
+  </div>
+
+  <div class="section">
+    <h4>Integrity (DOM Injection)</h4>
+    <button id="btn-add-script">Add &lt;script src="..."&gt;</button>
+    <button id="btn-mod-script">Modify &lt;script src&gt;</button>
+    <button id="btn-add-iframe">Add &lt;iframe src="..."&gt;</button>
+    <button id="btn-add-form">Add &lt;form action="..."&gt;</button>
+    <button id="btn-form-action">Modify &lt;form action&gt;</button>
+    <button id="btn-add-button-formaction">Add &lt;button formaction="..."&gt;</button>
+    <button id="btn-formaction">Modify &lt;button formaction&gt;</button>
+    <button id="btn-add-link-js">Add &lt;a href="javascript:"&gt;</button>
+    <button id="btn-href-js">Modify &lt;a href="javascript:"&gt;</button>
+    <button id="btn-add-href-data">Add &lt;a href="data:"&gt;</button>
+  </div>
+
+  <div id="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

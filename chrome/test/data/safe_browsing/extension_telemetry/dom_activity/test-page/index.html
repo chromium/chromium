@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telemetry Signal Test Page</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .section { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        input, textarea, button { margin-top: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>DOM Activity Signals Test Page</h1>
+    <p>This page contains elements designed to be interacted with by the test extension to trigger various telemetry signals.</p>
+
+    <div class="section">
+        <h2>Confidentiality Signals (DOM Access)</h2>
+        <label for="test-input">Input Element:</label>
+        <input type="text" id="test-input" value="Secret input value">
+        <br><br>
+        <label for="test-textarea">Textarea Element:</label><br>
+        <textarea id="test-textarea" rows="3" cols="30">Secret textarea value</textarea>
+    </div>
+
+    <div class="section">
+        <h2>Integrity Signals (DOM-Based Injections)</h2>
+        <div id="script-container">
+            <script id="test-script">console.log('original script');</script>
+        </div>
+        <div id="iframe-container"></div>
+
+        <form id="test-form" action="/search" method="GET">
+            <input type="text" name="q" value="test">
+            <button type="submit" id="test-button">Submit Form</button>
+        </form>
+
+        <a href="https://example.com" id="test-link">Test Link</a>
+    </div>
+</body>
+</html>
