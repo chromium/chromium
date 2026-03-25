@@ -305,35 +305,32 @@ bool GraphiteSharedContext::InsertRecordingImpl(
   return insert_status == skgpu::graphite::InsertStatus::kSuccess;
 }
 
-void GraphiteSharedContext::submit(skgpu::graphite::SubmitInfo submit_info) {
+void GraphiteSharedContext::submit(skgpu::graphite::SyncToCpu syncToCpu) {
   AutoLock auto_lock(this);
-  CHECK(SubmitImpl(submit_info));
+  CHECK(SubmitImpl(syncToCpu));
 }
 
-bool GraphiteSharedContext::SubmitImpl(
-    const skgpu::graphite::SubmitInfo& submit_info) {
+bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SyncToCpu syncToCpu) {
   num_pending_recordings_ = 0;
 
-  if (submit_info.fSync == skgpu::graphite::SyncToCpu::kNo &&
-      !submit_info.fFinishedProc && !graphite_context_->hasPendingGPUWork()) {
-    // Skip submitting if there is no pending GPU work and no finish proc. If a
-    // finish proc is provided, we must call submit() even without new work so
-    // that it can be triggered when all previously submitted work completes.
-    return true;
+  if (syncToCpu == skgpu::graphite::SyncToCpu::kNo &&
+      !graphite_context_->hasPendingGPUWork()) {
+      // Skip submitting if there is no pending GPU work.
+      return true;
   }
 
-  return graphite_context_->submit(submit_info);
+  return graphite_context_->submit(syncToCpu);
 }
 
 void GraphiteSharedContext::submitAndFlushBackend(
-    skgpu::graphite::SubmitInfo submit_info) {
+    skgpu::graphite::SyncToCpu syncToCpu) {
   AutoLock auto_lock(this);
-  SubmitAndFlushBackendImpl(submit_info);
+  SubmitAndFlushBackendImpl(syncToCpu);
 }
 
 void GraphiteSharedContext::SubmitAndFlushBackendImpl(
-    const skgpu::graphite::SubmitInfo& submit_info) {
-  CHECK(SubmitImpl(submit_info));
+    skgpu::graphite::SyncToCpu syncToCpu) {
+  CHECK(SubmitImpl(syncToCpu));
 
   if (backend_flush_callback_) {
     backend_flush_callback_.Run();

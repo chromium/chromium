@@ -343,25 +343,31 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
       gr_context->submit();
     } else {
       CHECK(shared_context_state_->graphite_shared_context());
-      skgpu::graphite::SubmitInfo submit_info;
-      submit_info.fFinishedProc = [](void* context,
-                                     skgpu::CallbackResult result) {
-        RasterCommandsCompletedQuery::FinishedProc(context);
-      };
-      submit_info.fFinishedContext =
-          new base::WeakPtr<RasterCommandsCompletedQuery>(
-              weak_ptr_factory_.GetWeakPtr());
+      auto recording =
+          shared_context_state_->gpu_main_graphite_recorder()->snap();
+      if (recording) {
+        skgpu::graphite::InsertRecordingInfo info = {};
+        info.fRecording = recording.get();
+        info.fFinishedProc = [](void* context, skgpu::CallbackResult result) {
+          RasterCommandsCompletedQuery::FinishedProc(context);
+        };
+        info.fFinishedContext = new base::WeakPtr<RasterCommandsCompletedQuery>(
+            weak_ptr_factory_.GetWeakPtr());
+        shared_context_state_->graphite_shared_context()->insertRecording(info);
 
-      // Canvas typically uses Commands Completed query to implement
-      // backpressures. We need to flush any delayed commands to make sure the
-      // query can be completed in finite time.
-      // Furthermore, some websites use setTimeout() to implement canvas'
-      // rendering loop. Hence within a vsync interval, a canvas could be
-      // redrawn multiple times. Flushing here ensures that we send the draw
-      // commands to GPU earlier, reducing the chance the canvas' rate limiter
-      // kicks in.
-      shared_context_state_->graphite_shared_context()->submitAndFlushBackend(
-          submit_info);
+        // Canvas typically uses Commands Completed query to implement
+        // backpressures. We need to flush any delayed commands to make sure the
+        // query can be completed in finite time.
+        // Furthermore, some websites use setTimeout() to implement canvas'
+        // rendering loop. Hence within a vsync interval, a canvas could be
+        // redrawn multiple times. Flushing here ensures that we send the draw
+        // commands to GPU earlier, reducing the chance the canvas' rate limiter
+        // kicks in.
+        shared_context_state_->graphite_shared_context()
+            ->submitAndFlushBackend();
+      } else {
+        finished_ = true;
+      }
     }
   }
 
