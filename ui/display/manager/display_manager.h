@@ -764,7 +764,13 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // time.
   base::OnceClosure created_mirror_window_;
 
-  base::ObserverList<DisplayObserver> display_observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      DisplayObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      display_observers_;
 
   // TODO(crbug.com/484371187): Investigate if this can be non reentrant.
   base::ObserverList<
