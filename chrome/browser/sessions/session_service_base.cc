@@ -429,9 +429,10 @@ void SessionServiceBase::SetSelectedNavigationIndex(SessionID window_id,
     return;
   }
 
-  if (tab_to_available_range_.find(tab_id) != tab_to_available_range_.end()) {
-    if (index < tab_to_available_range_[tab_id].first ||
-        index > tab_to_available_range_[tab_id].second) {
+  auto it = tab_to_available_range_.find(tab_id);
+  if (it != tab_to_available_range_.end()) {
+    std::pair<int, int>& range = it->second;
+    if (index < range.first || index > range.second) {
       // The new index is outside the range of what we've archived, schedule
       // a reset.
       ResetFromCurrentBrowsers();
@@ -451,8 +452,9 @@ void SessionServiceBase::UpdateTabNavigation(
     return;
   }
 
-  if (tab_to_available_range_.find(tab_id) != tab_to_available_range_.end()) {
-    std::pair<int, int>& range = tab_to_available_range_[tab_id];
+  auto it = tab_to_available_range_.find(tab_id);
+  if (it != tab_to_available_range_.end()) {
+    std::pair<int, int>& range = it->second;
     range.first = std::min(navigation.index(), range.first);
     range.second = std::max(navigation.index(), range.second);
   }
@@ -471,8 +473,9 @@ void SessionServiceBase::TabNavigationPathPruned(SessionID window_id,
   DCHECK_GT(count, 0);
 
   // Update the range of available indices.
-  if (tab_to_available_range_.find(tab_id) != tab_to_available_range_.end()) {
-    std::pair<int, int>& range = tab_to_available_range_[tab_id];
+  auto it = tab_to_available_range_.find(tab_id);
+  if (it != tab_to_available_range_.end()) {
+    std::pair<int, int>& range = it->second;
 
     // if both range.first and range.second are also deleted.
     if (range.second >= index && range.second < index + count &&
@@ -806,7 +809,7 @@ void SessionServiceBase::ScheduleCommand(
 }
 
 bool SessionServiceBase::ShouldTrackChangesToWindow(SessionID window_id) const {
-  return windows_tracking_.find(window_id) != windows_tracking_.end();
+  return windows_tracking_.contains(window_id);
 }
 
 bool SessionServiceBase::ShouldTrackBrowser(

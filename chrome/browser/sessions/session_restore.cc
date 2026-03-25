@@ -268,14 +268,10 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
 
     // Only one SessionRestoreImpl should be operating on the profile at the
     // same time.
-    std::set<SessionRestoreImpl*>::iterator it;
-    for (it = active_session_restorers->begin();
-         it != active_session_restorers->end(); ++it) {
-      if ((*it)->profile_ == profile) {
-        break;
-      }
-    }
-    DCHECK(it == active_session_restorers->end());
+    DCHECK(std::ranges::find_if(*active_session_restorers,
+                                [profile](SessionRestoreImpl* restorer) {
+                                  return restorer->profile_ == profile;
+                                }) == active_session_restorers->end());
 
     active_session_restorers->insert(this);
 
