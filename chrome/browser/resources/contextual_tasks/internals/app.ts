@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
+import '//resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '/strings.m.js';
 
@@ -104,6 +106,8 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
       minModelScore_: {type: Number},
       minModelScoreTicks_: {type: Array},
       eventLogMessages_: {type: Array},
+      forcedHost_: {type: String},
+      currentHost_: {type: String},
     };
   }
 
@@ -113,6 +117,8 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   protected accessor tabSelectionMode_: string = 'kEmbeddingsMatch';
   protected accessor minModelScore_: number = 0.8;
   protected accessor eventLogMessages_: EventLogMessage[] = [];
+  protected accessor forcedHost_: string = '';
+  protected accessor currentHost_: string = '';
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
 
@@ -120,6 +126,23 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
     super.connectedCallback();
     this.proxy_.callbackRouter.onLogMessageAdded.addListener(
         this.onLogMessageAdded_.bind(this));
+    this.refreshCurrentHost_();
+  }
+
+  private async refreshCurrentHost_() {
+    const response = await this.proxy_.handler.getForcedEmbeddedPageHost();
+    const fullUrl = response.host;
+    if (fullUrl) {
+      // Create a URL object to extract just the host part for display.
+      // If the URL is invalid, display an error message.
+      const parsedUrl = URL.parse(fullUrl);
+      this.currentHost_ = parsedUrl ?
+          parsedUrl.host :
+          `Error: Invalid URL provided (${fullUrl})`;
+    } else {
+      // Reset the current host if the forced host is empty.
+      this.currentHost_ = '';
+    }
   }
 
   protected onTabSelectionModeChange_() {
@@ -132,6 +155,38 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
 
   protected onQueryValueChanged_(e: CustomEvent<{value: string}>) {
     this.query_ = e.detail.value;
+  }
+
+  protected onForcedHostValueChanged_(e: CustomEvent<{value: string}>) {
+    this.forcedHost_ = e.detail.value;
+  }
+
+  protected async onSetForcedHostClick_() {
+    const url = URL.parse(this.forcedHost_);
+
+    // Check if the current URL is valid.
+    if (!url) {
+      this.currentHost_ = `Error: Invalid URL provided (${this.forcedHost_})`;
+      return;
+    }
+
+    // Verify that the host is a Google domain.
+    // LINT.IfChange(AllowedHosts)
+    if (!url.host.endsWith('.google.com') && !url.host.endsWith('.googlers.com')) {
+      this.currentHost_ =
+          `Error: URL must be a Google domain (.google.com or .googlers.com)`;
+      return;
+    }
+    // LINT.ThenChange(//components/contextual_tasks/public/features.cc:AllowedHosts)
+
+    await this.proxy_.handler.setForcedEmbeddedPageHost(url.href);
+    await this.refreshCurrentHost_();
+  }
+
+  protected async onResetForcedHostClick_() {
+    this.forcedHost_ = '';
+    await this.proxy_.handler.setForcedEmbeddedPageHost('');
+    await this.refreshCurrentHost_();
   }
 
   protected async onSubmitClick_() {

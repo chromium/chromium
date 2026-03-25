@@ -14,6 +14,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1225,6 +1226,38 @@ TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
       /*is_from_embedded_page=*/true,
       /*is_to_new_tab=*/false));
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest, ForcedEmbeddedPageHostOverride) {
+  // By default, there should be no override.
+  EXPECT_EQ("", contextual_tasks::GetForcedEmbeddedPageHost());
+
+  // Set an override and verify it's returned.
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+  EXPECT_EQ("test.google.com", contextual_tasks::GetForcedEmbeddedPageHost());
+
+  // Clearing the override should return to the default state.
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+  EXPECT_EQ("", contextual_tasks::GetForcedEmbeddedPageHost());
+}
+
+TEST_F(ContextualTasksUiServiceTest, IsAllowedHost_WithOverride) {
+  // Without override, standard domains should be allowed.
+  EXPECT_TRUE(
+      ContextualTasksUiService::IsAllowedHost(GURL("https://google.com")));
+  EXPECT_TRUE(
+      ContextualTasksUiService::IsAllowedHost(GURL("https://www.google.com")));
+
+  // Set an override to a specific testing domain.
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.c.googlers.com");
+
+  // The override domain should now be allowed.
+  EXPECT_TRUE(ContextualTasksUiService::IsAllowedHost(
+      GURL("https://test.c.googlers.com")));
+
+  // The standard domains should still be allowed.
+  EXPECT_TRUE(
+      ContextualTasksUiService::IsAllowedHost(GURL("https://google.com")));
 }
 
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {

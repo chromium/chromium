@@ -36,11 +36,7 @@ cr-textarea {
   margin-bottom: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :host {
-    color: var(--google-grey-200);
-  }
-}
+
 
 cr-slider {
   width: 160px;
@@ -58,7 +54,7 @@ cr-slider {
 }
 
 .model-options > span {
-  color: var(--google-grey-700);
+  color: var(--cr-secondary-text-color);
   font-size: 13px;
   width: 180px;
   text-align: left;

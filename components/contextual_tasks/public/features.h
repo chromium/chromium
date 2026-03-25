@@ -189,6 +189,9 @@ extern bool ShouldShowExpandedSecurityChip();
 // Tasks WebUi should be routed to.
 extern std::string GetForcedEmbeddedPageHost();
 
+// Allows overriding the embedded page host at runtime for debugging.
+extern void SetForcedEmbeddedPageHostOverride(const std::string& host);
+
 // Returns the domains for the sign in page.
 extern std::vector<std::string> GetContextualTasksSignInDomains();
 

@@ -45,6 +45,11 @@ interface ContextualTasksInternalsPageHandler {
   // Returns the relevant context for the given request.
   GetRelevantContext(GetRelevantContextRequest request) =>
       (GetRelevantContextResponse response);
+
+  // Sets the forced embedded page host.
+  SetForcedEmbeddedPageHost(url.mojom.Url host);
+  // Gets the forced embedded page host.
+  GetForcedEmbeddedPageHost() => (url.mojom.Url host);
 };
 
 // Renderer-side handler for internals WebUI page to process the updates from

@@ -8,9 +8,18 @@
 #include <vector>
 
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+
+namespace {
+// Allow runtime override of the forced embedded page host.
+std::string& GetForcedEmbeddedPageHostOverrideString() {
+  static base::NoDestructor<std::string> override_string;
+  return *override_string;
+}
+}  // namespace
 
 namespace contextual_tasks {
 
@@ -353,16 +362,24 @@ bool ShouldShowExpandedSecurityChip() {
 }
 
 std::string GetForcedEmbeddedPageHost() {
-  std::string host = kContextualTasksForcedEmbeddedPageHost.Get();
+  std::string host = !GetForcedEmbeddedPageHostOverrideString().empty()
+                         ? GetForcedEmbeddedPageHostOverrideString()
+                         : kContextualTasksForcedEmbeddedPageHost.Get();
 
   // If there's a non-empty host, ensure that it is only ever going to a
   // google.com domain. If not, return the default empty string.
+  // LINT.IfChange(AllowedHosts)
   if (!host.empty() && !(base::EndsWith(host, ".google.com") ||
                          base::EndsWith(host, ".googlers.com"))) {
     return kContextualTasksForcedEmbeddedPageHost.default_value;
   }
+  // LINT.ThenChange(//depot/chromium/chrome/browser/resources/contextual_tasks/app.ts:AllowedHosts)
 
   return host;
+}
+
+void SetForcedEmbeddedPageHostOverride(const std::string& host) {
+  GetForcedEmbeddedPageHostOverrideString() = host;
 }
 
 std::vector<std::string> GetContextualTasksSignInDomains() {

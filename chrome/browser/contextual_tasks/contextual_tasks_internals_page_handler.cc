@@ -9,11 +9,14 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "url/url_constants.h"
 
 ContextualTasksInternalsPageHandler::ContextualTasksInternalsPageHandler(
     contextual_tasks::ContextualTasksContextService* context_service,
@@ -71,14 +74,33 @@ void ContextualTasksInternalsPageHandler::GetRelevantContext(
           std::move(callback)));
 }
 
+void ContextualTasksInternalsPageHandler::SetForcedEmbeddedPageHost(
+    const GURL& host) {
+  // Extract just the host portion, e.g. "test.google.com" from the URL.
+  // If the passed URL is empty/invalid, this clears the override.
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(std::string(host.host()));
+}
+
+void ContextualTasksInternalsPageHandler::GetForcedEmbeddedPageHost(
+    GetForcedEmbeddedPageHostCallback callback) {
+  std::string host = contextual_tasks::GetForcedEmbeddedPageHost();
+  if (host.empty()) {
+    std::move(callback).Run(GURL());
+  } else {
+    // Wrap the string host into a valid URL so it can be passed via Mojo.
+    std::move(callback).Run(GURL(base::StrCat(
+        {url::kHttpsScheme, url::kStandardSchemeSeparator, host})));
+  }
+}
+
 void ContextualTasksInternalsPageHandler::OnLogMessageAdded(
     base::Time event_time,
     optimization_guide_common::mojom::LogSource log_source,
     const std::string& source_file,
     int source_line,
     const std::string& message) {
-  if (page_ && log_source ==
-      optimization_guide_common::mojom::LogSource::CONTEXTUAL_TASKS_CONTEXT) {
+  if (page_ && log_source == optimization_guide_common::mojom::LogSource::
+                                 CONTEXTUAL_TASKS_CONTEXT) {
     page_->OnLogMessageAdded(event_time, source_file, source_line, message);
   }
 }
