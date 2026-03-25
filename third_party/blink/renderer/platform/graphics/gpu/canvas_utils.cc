@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/gpu/graphics_context_3d_utils.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 
 #include "build/build_config.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -15,11 +15,13 @@ namespace blink {
 bool Accelerated2DCanvasFeatureEnabled(
     WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
   // Don't use accelerated canvas if compositor is in software mode.
-  if (!SharedGpuContext::IsGpuCompositingEnabled())
+  if (!SharedGpuContext::IsGpuCompositingEnabled()) {
     return false;
+  }
 
-  if (!RuntimeEnabledFeatures::Accelerated2dCanvasEnabled())
+  if (!RuntimeEnabledFeatures::Accelerated2dCanvasEnabled()) {
     return false;
+  }
 
   if (!context_provider_wrapper) {
     return false;
