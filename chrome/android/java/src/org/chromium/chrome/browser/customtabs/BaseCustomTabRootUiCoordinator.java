@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.reengagement.ReengagementNotificationControll
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -326,7 +325,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             appId,
                             browserName,
                             toastTemplateId,
-                            this::createMismatchNotificationChecker,
+                            () -> createMismatchNotificationChecker(appId),
                             new ChromePureJavaExceptionReporter());
         }
         // TODO(353517557): Do initialization necessary for ActivityType.AUTH_TAB
@@ -355,8 +354,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (!connection.isAppForAccountMismatchNotification(intent)) return null;
         if (appId == null) return null;
 
-        // Note: Signin 'Add Account' results may be lost if suppression state flips after restart.
-        // Trade-off accepted to avoid eager registration. crbug.com/479180239.
         if (isMismatchNotificationSuppressed()) {
             MismatchNotificationController.recordMismatchNoticeSuppressedHistogram(
                     MismatchNotificationController.SuppressedReason.FRE_COMPLETED_RECENTLY);
@@ -375,11 +372,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             return null;
         }
         return new MismatchNotificationChecker(
-                mActivity,
                 profile,
                 IdentityServicesProvider.get().getIdentityManager(profile),
-                SigninAndHistorySyncActivityLauncherImpl.get(),
-                (signinDelegate, accountId, lastShownTime, mimData, onClose) -> {
+                (accountId, lastShownTime, mimData, onClose) -> {
                     boolean show =
                             connection.shouldShowAccountMismatchNotification(
                                     intent, profile, accountId, lastShownTime, mimData);
@@ -387,8 +382,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         MismatchNotificationController.get(
                                         mWindowAndroid,
                                         profile,
-                                        connection.getAppAccountName(intent),
-                                        signinDelegate)
+                                        connection.getAppAccountName(intent))
                                 .showSignedOutMessage(mActivity, onClose);
                     }
                     return show;
