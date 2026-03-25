@@ -31,7 +31,9 @@ enum class EntryPoint {
   ImageRemixIPH = 7,
   // Gemini was opened via the edit menu to explain the selection.
   EditMenu = 8,
-  kMaxValue = EditMenu,
+  // Gemini was opened directly from the omnibox badge, skipping the AI Hub.
+  DirectOmniboxBadge = 9,
+  kMaxValue = DirectOmniboxBadge,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiEntryPoint)
 

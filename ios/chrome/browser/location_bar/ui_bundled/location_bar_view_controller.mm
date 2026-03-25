@@ -1150,7 +1150,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     [self.geminiHandler
         startGeminiFlowWithStartupState:
             [[GeminiStartupState alloc]
-                initWithEntryPoint:gemini::EntryPoint::OmniboxChip]];
+                initWithEntryPoint:gemini::EntryPoint::DirectOmniboxBadge]];
   } else {
     RecordAIHubIconTapped();
     [self.pageActionMenuHandler showPageActionMenu];
