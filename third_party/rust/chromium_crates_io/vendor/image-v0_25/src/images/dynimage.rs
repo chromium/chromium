@@ -1674,8 +1674,9 @@ pub fn write_buffer_with_format<W: Write + Seek>(
 ///
 /// Try [`ImageReader`] for more advanced uses.
 pub fn load_from_memory(buffer: &[u8]) -> ImageResult<DynamicImage> {
-    let format = free_functions::guess_format(buffer)?;
-    load_from_memory_with_format(buffer, format)
+    ImageReader::new(io::Cursor::new(buffer))
+        .with_guessed_format()?
+        .decode()
 }
 
 /// Create a new image from a byte slice

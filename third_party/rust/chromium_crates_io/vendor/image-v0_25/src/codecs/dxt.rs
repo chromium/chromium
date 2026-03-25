@@ -80,7 +80,7 @@ impl<R: Read> DxtDecoder<R> {
         height: u32,
         variant: DxtVariant,
     ) -> Result<DxtDecoder<R>, ImageError> {
-        if width % 4 != 0 || height % 4 != 0 {
+        if !width.is_multiple_of(4) || !height.is_multiple_of(4) {
             // TODO: this is actually a bit of a weird case. We could return `DecodingError` but
             // it's not really the format that is wrong However, the encoder should surely return
             // `EncodingError` so it would be the logical choice for symmetry.
@@ -289,7 +289,7 @@ fn decode_dxt1_block(source: &[u8], dest: &mut [u8]) {
 /// Decode a row of DXT1 data to four rows of RGB data.
 /// `source.len()` should be a multiple of 8, otherwise this panics.
 fn decode_dxt1_row(source: &[u8], dest: &mut [u8]) {
-    assert!(source.len() % 8 == 0);
+    assert!(source.len().is_multiple_of(8));
     let block_count = source.len() / 8;
     assert!(dest.len() >= block_count * 48);
 
@@ -310,7 +310,7 @@ fn decode_dxt1_row(source: &[u8], dest: &mut [u8]) {
 /// Decode a row of DXT3 data to four rows of RGBA data.
 /// `source.len()` should be a multiple of 16, otherwise this panics.
 fn decode_dxt3_row(source: &[u8], dest: &mut [u8]) {
-    assert!(source.len() % 16 == 0);
+    assert!(source.len().is_multiple_of(16));
     let block_count = source.len() / 16;
     assert!(dest.len() >= block_count * 64);
 
@@ -331,7 +331,7 @@ fn decode_dxt3_row(source: &[u8], dest: &mut [u8]) {
 /// Decode a row of DXT5 data to four rows of RGBA data.
 /// `source.len()` should be a multiple of 16, otherwise this panics.
 fn decode_dxt5_row(source: &[u8], dest: &mut [u8]) {
-    assert!(source.len() % 16 == 0);
+    assert!(source.len().is_multiple_of(16));
     let block_count = source.len() / 16;
     assert!(dest.len() >= block_count * 64);
 

@@ -1,7 +1,10 @@
 //! Types describing image metadata
 pub(crate) mod cicp;
 
-use std::io::{Cursor, Read};
+use std::{
+    io::{Cursor, Read},
+    num::NonZeroU32,
+};
 
 use byteorder_lite::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 
@@ -156,6 +159,15 @@ impl Orientation {
 enum ExifEndian {
     Big,
     Little,
+}
+
+/// The number of times animated image should loop over.
+#[derive(Clone, Copy)]
+pub enum LoopCount {
+    /// Loop the image Infinitely
+    Infinite,
+    /// Loop the image within Finite times.
+    Finite(NonZeroU32),
 }
 
 #[cfg(all(test, feature = "jpeg"))]

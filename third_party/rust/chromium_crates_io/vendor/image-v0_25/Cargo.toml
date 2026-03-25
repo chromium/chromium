@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.85.0"
+rust-version = "1.88.0"
 name = "image"
-version = "0.25.9"
+version = "0.25.10"
 authors = ["The image-rs Developers"]
 build = false
 exclude = [
@@ -130,6 +130,11 @@ path = "benches/blur.rs"
 harness = false
 
 [[bench]]
+name = "convert"
+path = "benches/convert.rs"
+harness = false
+
+[[bench]]
 name = "copy_from"
 path = "benches/copy_from.rs"
 harness = false
@@ -161,7 +166,7 @@ version = "1.1"
 optional = true
 
 [dependencies.dav1d]
-version = "0.10.3"
+version = "0.11.0"
 optional = true
 
 [dependencies.exr]
@@ -178,7 +183,7 @@ version = "0.2.0"
 optional = true
 
 [dependencies.moxcms]
-version = "0.7.4"
+version = "0.8.0"
 
 [dependencies.mp4parse]
 version = "0.17.0"
@@ -196,7 +201,7 @@ version = "0.4"
 optional = true
 
 [dependencies.ravif]
-version = "0.12"
+version = "0.13"
 optional = true
 default-features = false
 
@@ -215,7 +220,7 @@ features = ["derive"]
 optional = true
 
 [dependencies.tiff]
-version = "0.10.3"
+version = "0.11.2"
 optional = true
 
 [dependencies.zune-core]

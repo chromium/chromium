@@ -125,6 +125,8 @@ pub enum ExtendedColorType {
     Rgb4,
     /// Pixel is 4-bit RGB with an alpha channel
     Rgba4,
+    /// Pixel contains 5-bit R, G and B channels packed into 2 bytes
+    Rgb5x1,
     /// Pixel is 8-bit luminance
     L8,
     /// Pixel is 8-bit luminance with an alpha channel
@@ -186,6 +188,7 @@ impl ExtendedColorType {
             ExtendedColorType::Rgb1
             | ExtendedColorType::Rgb2
             | ExtendedColorType::Rgb4
+            | ExtendedColorType::Rgb5x1
             | ExtendedColorType::Rgb8
             | ExtendedColorType::Rgb16
             | ExtendedColorType::Rgb32F
@@ -219,6 +222,7 @@ impl ExtendedColorType {
             ExtendedColorType::La4 => 8,
             ExtendedColorType::Rgb4 => 12,
             ExtendedColorType::Rgba4 => 16,
+            ExtendedColorType::Rgb5x1 => 16,
             ExtendedColorType::L8 => 8,
             ExtendedColorType::La8 => 16,
             ExtendedColorType::Rgb8 => 24,

@@ -7,6 +7,7 @@
 
 use std::borrow::Cow;
 use std::io::{BufRead, Seek, Write};
+use std::num::NonZeroU32;
 
 use png::{BlendOp, DeflateCompression, DisposeOp};
 
@@ -16,6 +17,7 @@ use crate::error::{
     DecodingError, ImageError, ImageResult, LimitError, LimitErrorKind, ParameterError,
     ParameterErrorKind, UnsupportedError, UnsupportedErrorKind,
 };
+use crate::metadata::LoopCount;
 use crate::utils::vec_try_with_capacity;
 use crate::{
     AnimationDecoder, DynamicImage, GenericImage, GenericImageView, ImageBuffer, ImageDecoder,
@@ -237,8 +239,6 @@ impl<R: BufRead + Seek> ImageDecoder for PngDecoder<R> {
     }
 
     fn read_image(mut self, buf: &mut [u8]) -> ImageResult<()> {
-        use byteorder_lite::{BigEndian, ByteOrder, NativeEndian};
-
         assert_eq!(u64::try_from(buf.len()), Ok(self.total_bytes()));
         self.reader.next_frame(buf).map_err(ImageError::from_png)?;
         // PNG images are big endian. For 16 bit per channel and larger types,
@@ -249,9 +249,8 @@ impl<R: BufRead + Seek> ImageDecoder for PngDecoder<R> {
 
         match bpc {
             1 => (), // No reodering necessary for u8
-            2 => buf.chunks_exact_mut(2).for_each(|c| {
-                let v = BigEndian::read_u16(c);
-                NativeEndian::write_u16(c, v);
+            2 => buf.as_chunks_mut::<2>().0.iter_mut().for_each(|c| {
+                *c = u16::from_be_bytes(*c).to_ne_bytes();
             }),
             _ => unreachable!(),
         }
@@ -513,6 +512,16 @@ impl<R: BufRead + Seek> ApngDecoder<R> {
 }
 
 impl<'a, R: BufRead + Seek + 'a> AnimationDecoder<'a> for ApngDecoder<R> {
+    fn loop_count(&self) -> LoopCount {
+        match self.inner.reader.info().animation_control() {
+            None => LoopCount::Infinite,
+            Some(actl) => match NonZeroU32::new(actl.num_plays) {
+                None => LoopCount::Infinite,
+                Some(n) => LoopCount::Finite(n),
+            },
+        }
+    }
+
     fn into_frames(self) -> Frames<'a> {
         struct FrameIterator<R: BufRead + Seek>(ApngDecoder<R>);
 
@@ -752,7 +761,7 @@ impl<W: Write> ImageEncoder for PngEncoder<W> {
                 let mut reordered;
                 let buf = if cfg!(target_endian = "little") {
                     reordered = vec_try_with_capacity(buf.len())?;
-                    reordered.extend(buf.chunks_exact(2).flat_map(|le| [le[1], le[0]]));
+                    reordered.extend(buf.as_chunks::<2>().0.iter().flat_map(|le| [le[1], le[0]]));
                     &reordered
                 } else {
                     buf

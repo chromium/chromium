@@ -119,12 +119,14 @@ fn process_halved_chroma_row_cgco<
 
     let bias_y = range.bias_y as i32;
     let bias_uv = range.bias_uv as i32;
-    let y_iter = y_plane.chunks_exact(2);
-    let rgb_chunks = rgba.chunks_exact_mut(CHANNELS * 2);
+    let (y_iter, y_left) = y_plane.as_chunks::<2>();
+    let mut rgb_chunks = rgba.chunks_exact_mut(CHANNELS * 2);
 
     let scale_coef = ((max_value as f32 / range.range_y as f32) * (1 << PRECISION) as f32) as i32;
 
-    for (((y_src, &u_src), &v_src), rgb_dst) in y_iter.zip(u_plane).zip(v_plane).zip(rgb_chunks) {
+    for (((y_src, &u_src), &v_src), rgb_dst) in
+        y_iter.iter().zip(u_plane).zip(v_plane).zip(&mut rgb_chunks)
+    {
         let y_value0: i32 = y_src[0].as_() - bias_y;
         let cg_value: i32 = u_src.as_() - bias_uv;
         let co_value: i32 = v_src.as_() - bias_uv;
@@ -154,11 +156,11 @@ fn process_halved_chroma_row_cgco<
 
     // Process remainder if width is odd.
     if image.width & 1 != 0 {
-        let y_left = y_plane.chunks_exact(2).remainder();
-        let rgb_chunks = rgba
-            .chunks_exact_mut(CHANNELS * 2)
+        let rgb_chunks = rgb_chunks
             .into_remainder()
-            .chunks_exact_mut(CHANNELS);
+            .as_chunks_mut::<CHANNELS>()
+            .0
+            .iter_mut();
         let u_iter = u_plane.iter().rev();
         let v_iter = v_plane.iter().rev();
 
@@ -170,11 +172,7 @@ fn process_halved_chroma_row_cgco<
             let co_value = v_src.as_() - bias_uv;
 
             ycgco_execute_limited::<V, PRECISION, CHANNELS, BIT_DEPTH>(
-                rgb_dst.try_into().unwrap(),
-                y_value,
-                cg_value,
-                co_value,
-                scale_coef,
+                rgb_dst, y_value, cg_value, co_value, scale_coef,
             );
         }
     }
@@ -249,7 +247,7 @@ where
 
     // All branches on generic const will be optimized out.
     for (((y_src, u_src), v_src), rgb) in y_iter.zip(u_iter).zip(v_iter).zip(rgb_iter) {
-        let rgb_chunks = rgb.chunks_exact_mut(CHANNELS);
+        let rgb_chunks = rgb.as_chunks_mut::<CHANNELS>().0.iter_mut();
         match yuv_range {
             YuvIntensityRange::Tv => {
                 let y_coef =
@@ -262,11 +260,7 @@ where
                     let co_value = v_src.as_() - bias_uv;
 
                     ycgco_execute_limited::<V, PRECISION, CHANNELS, BIT_DEPTH>(
-                        rgb_dst.try_into().unwrap(),
-                        y_value,
-                        cg_value,
-                        co_value,
-                        y_coef,
+                        rgb_dst, y_value, cg_value, co_value, y_coef,
                     );
                 }
             }
@@ -279,10 +273,7 @@ where
                     let co_value = v_src.as_() - bias_uv;
 
                     ycgco_execute_full::<V, PRECISION, CHANNELS, BIT_DEPTH>(
-                        rgb_dst.try_into().unwrap(),
-                        y_value,
-                        cg_value,
-                        co_value,
+                        rgb_dst, y_value, cg_value, co_value,
                     );
                 }
             }

@@ -1,7 +1,7 @@
 use crate::animation::Frames;
 use crate::color::{ColorType, ExtendedColorType};
 use crate::error::ImageResult;
-use crate::metadata::Orientation;
+use crate::metadata::{LoopCount, Orientation};
 
 /// The trait that all decoders implement
 pub trait ImageDecoder {
@@ -199,6 +199,13 @@ pub trait ImageDecoderRect: ImageDecoder {
 pub trait AnimationDecoder<'a> {
     /// Consume the decoder producing a series of frames.
     fn into_frames(self) -> Frames<'a>;
+    /// Loop count of the animated image.
+    ///
+    /// By default, indicates the animation should run once. Formats may implement other defaults
+    /// and read such metadata from the file.
+    fn loop_count(&self) -> LoopCount {
+        LoopCount::Finite(core::num::NonZeroU32::new(1).unwrap())
+    }
 }
 
 #[cfg(test)]

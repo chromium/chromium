@@ -26,7 +26,7 @@ use rgb::AsPixels;
 /// Writes one image into the chosen output.
 pub struct AvifEncoder<W> {
     inner: W,
-    encoder: Encoder,
+    encoder: Encoder<'static>,
 }
 
 /// An enumeration over supported AVIF color spaces
@@ -130,6 +130,12 @@ impl<W: Write> ImageEncoder for AvifEncoder<W> {
         self.inner.write_all(&data.avif_file)?;
         Ok(())
     }
+
+    fn set_exif_metadata(&mut self, exif: Vec<u8>) -> Result<(), UnsupportedError> {
+        let encoder = core::mem::replace(&mut self.encoder, Encoder::new());
+        self.encoder = encoder.with_exif(exif);
+        Ok(())
+    }
 }
 
 impl<W: Write> AvifEncoder<W> {
@@ -188,7 +194,7 @@ impl<W: Write> AvifEncoder<W> {
                 Err(PodCastError::TargetAlignmentGreaterAndInputNotAligned) => {
                     // Sad, but let's allocate.
                     // bytemuck checks alignment _before_ slop but size mismatch before this..
-                    if buf.len() % size_of::<Channel>() != 0 {
+                    if !buf.len().is_multiple_of(size_of::<Channel>()) {
                         Err(ImageError::Parameter(ParameterError::from_kind(
                             ParameterErrorKind::DimensionMismatch,
                         )))

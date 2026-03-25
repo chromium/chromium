@@ -6,6 +6,55 @@
 
 ## Changes
 
+### Version 0.25.10
+
+Features:
+- Added `GenericImage::copy_from_samples` that can be implemented for images
+  that can be efficiently filled from a matrix-layout of samples. Its default
+  implementation will *not* defer to `copy_from`, consider implementing this if
+  you specialized the latter.
+- Added `GenericImageView::to_pixel_view` that can be implemented to describe
+  the buffer in terms our `FlatSamples` matrix layout, if applicable. This
+  allows algorithms over generic images to run a specialized version where they
+  can be more efficient over an raw input slice.
+- Added `ImageBuffer::from_raw_bgr{,a}` to efficiently byte-swap images into
+  the RGBA layout of the buffer (#2596).
+- Added `ExtendedColorType::Rgb5x1` to represent 5-bit colors as from TGA (#2609).
+- Added `metadata::LoopCount` and `AnimationDecoder::loop_count` to query if
+  animations should repeat in a uniform manner (gif, webp, avif) (#2719, #2786).
+- `load_from_memory` now utilizes format detection hooks if any are applicable.
+
+Structural changes:
+- Various changes that reduce the compile time of `image` on codegen by
+  reducing the number of monomorphizations (#2804, #2800, #2807).
+- `GenericImage::copy_from`'s default implementation tries `copy_from_samples`
+  first if the source can be successfully cast with `to_pixel_view`.
+- `<ImageBuffer as GenericImage>::copy_from` is now must faster for
+  `ImageBuffer` when the source implements `GenericImageView::to_pixel_view`.
+- `<SubImage<_> as GenericImage>::copy_from` inherits the previously mentioned
+  optimizations for pixel sources when the inner type provides them. It also
+  provides `to_pixel_view` based on the inner type.
+- `ImageBuffer::as_flat_samples` no longer requires `AsRef<[P::Subpixel]>` for
+  the underlying container, just `Deref` (#2777).
+
+Bug fixes:
+- Fixed a panic in TGA where indices have more bits than mapped colors (#2673).
+
+Notable decoder changes:
+- Bump `tiff` to `0.11`, supporting planar layout images (#2743).
+- ICC profiles can now be written for TIFF files (#2746)
+- Update `ravif` to `0.13`, supporting EXIF (#2733).
+- Update `jpeg-encoder` to `0.7` bringing SIMD acceleration (#2736).
+- The `pnm` decoder decodes binary data quicker with fewer allocations (#2797).
+- The `tga` decoder handles 5-bit data and colormaps correctly (#2608, #2609).
+
+Compatibility notes (new section):
+- Bump rust-version to `1.88`.
+- Registered hooks now normalize the file extension they are registered against
+  to ascii-lowercase. It is no longer necessary to register all such variants.
+  This may conflate two hooks that previously hooked the same format with
+  different casing.
+
 ### Version 0.25.9
 
 Features:

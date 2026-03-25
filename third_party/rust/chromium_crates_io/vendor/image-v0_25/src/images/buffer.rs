@@ -10,7 +10,7 @@ use crate::color::{FromColor, FromPrimitive, Luma, LumaA, Rgb, Rgba};
 use crate::error::{
     ImageResult, ParameterError, ParameterErrorKind, UnsupportedError, UnsupportedErrorKind,
 };
-use crate::flat::{FlatSamples, SampleLayout};
+use crate::flat::{FlatSamples, SampleLayout, ViewOfPixel};
 use crate::math::Rect;
 use crate::metadata::cicp::{CicpApplicable, CicpPixelCast, CicpRgb, ColorComponentForCicp};
 use crate::traits::{EncodableLayout, Pixel, PixelWithColorType};
@@ -862,10 +862,7 @@ where
     /// Return a view on the raw sample buffer.
     ///
     /// See [`into_flat_samples`](#method.into_flat_samples) for more details.
-    pub fn as_flat_samples(&self) -> FlatSamples<&[P::Subpixel]>
-    where
-        Container: AsRef<[P::Subpixel]>,
-    {
+    pub fn as_flat_samples(&self) -> FlatSamples<&[P::Subpixel]> {
         let layout = self.sample_layout();
         FlatSamples {
             samples: self.data.as_ref(),
@@ -1238,6 +1235,10 @@ where
         *self.get_pixel(x, y)
     }
 
+    fn to_pixel_view(&self) -> Option<ViewOfPixel<'_, Self::Pixel>> {
+        self.as_flat_samples().into_view().ok()
+    }
+
     /// Returns the pixel located at (x, y), ignoring bounds checking.
     #[inline(always)]
     unsafe fn unsafe_get_pixel(&self, x: u32, y: u32) -> P {
@@ -1278,6 +1279,61 @@ where
     /// DEPRECATED: This method will be removed. Blend the pixel directly instead.
     fn blend_pixel(&mut self, x: u32, y: u32, p: P) {
         self.get_pixel_mut(x, y).blend(&p);
+    }
+
+    fn copy_from_samples(
+        &mut self,
+        view: ViewOfPixel<'_, Self::Pixel>,
+        x: u32,
+        y: u32,
+    ) -> ImageResult<()> {
+        let (width, height) = view.dimensions();
+        let pix_stride = usize::from(<Self::Pixel as Pixel>::CHANNEL_COUNT);
+        Rect::from_image_at(&view, x, y).test_in_bounds(self)?;
+
+        if width == 0 || height == 0 || pix_stride == 0 {
+            return Ok(());
+        }
+
+        // Since this image is not empty, all its indices fit into `usize` as they address the
+        // memory resident buffer of `self`.
+        let row_len = width as usize * pix_stride;
+        let img_sh = self.width as usize;
+
+        let (sw, sh) = view.strides_wh();
+        let view_samples: &[_] = view.samples();
+        let inner = self.inner_pixels_mut();
+
+        let img_pixel_indices_unchecked =
+            |x: u32, y: u32| (y as usize * img_sh + x as usize) * pix_stride;
+
+        // Can we use row-by-row byte copy?
+        if sw == pix_stride {
+            for j in 0..height {
+                let start = img_pixel_indices_unchecked(x, j + y);
+                let img_row = &mut inner[start..][..row_len];
+                let view_row = &view_samples[j as usize * sh..][..row_len];
+                img_row.copy_from_slice(view_row);
+            }
+
+            return Ok(());
+        }
+
+        // Fallback behavior.
+        for j in 0..height {
+            let img_start = img_pixel_indices_unchecked(x, j + y);
+            let img_row = &mut inner[img_start..][..row_len];
+            let pixels = img_row.chunks_exact_mut(pix_stride);
+
+            let view_start = j as usize * sh;
+
+            for (i, sp) in pixels.enumerate() {
+                let view_pixel = &view_samples[i * sw + view_start..][..pix_stride];
+                sp.copy_from_slice(view_pixel);
+            }
+        }
+
+        Ok(())
     }
 
     fn copy_within(&mut self, source: Rect, x: u32, y: u32) -> bool {
@@ -1403,6 +1459,58 @@ impl<P: Pixel> ImageBuffer<P, Vec<P::Subpixel>> {
     /// We may want to export this but under what name?
     pub(crate) fn copy_color_space_from<O: Pixel, C>(&mut self, other: &ImageBuffer<O, C>) {
         self.color = other.color;
+    }
+}
+
+impl<S, Container> ImageBuffer<Rgb<S>, Container>
+where
+    Rgb<S>: PixelWithColorType<Subpixel = S>,
+    Container: DerefMut<Target = [S]>,
+{
+    /// Construct an image by swapping `Bgr` channels into an `Rgb` order.
+    pub fn from_raw_bgr(width: u32, height: u32, container: Container) -> Option<Self> {
+        let mut img = Self::from_raw(width, height, container)?;
+
+        for pix in img.pixels_mut() {
+            pix.0.reverse();
+        }
+
+        Some(img)
+    }
+
+    /// Return the underlying raw buffer after converting it into `Bgr` channel order.
+    pub fn into_raw_bgr(mut self) -> Container {
+        for pix in self.pixels_mut() {
+            pix.0.reverse();
+        }
+
+        self.into_raw()
+    }
+}
+
+impl<S, Container> ImageBuffer<Rgba<S>, Container>
+where
+    Rgba<S>: PixelWithColorType<Subpixel = S>,
+    Container: DerefMut<Target = [S]>,
+{
+    /// Construct an image by swapping `BgrA` channels into an `RgbA` order.
+    pub fn from_raw_bgra(width: u32, height: u32, container: Container) -> Option<Self> {
+        let mut img = Self::from_raw(width, height, container)?;
+
+        for pix in img.pixels_mut() {
+            pix.0[..3].reverse();
+        }
+
+        Some(img)
+    }
+
+    /// Return the underlying raw buffer after converting it into `BgrA` channel order.
+    pub fn into_raw_bgra(mut self) -> Container {
+        for pix in self.pixels_mut() {
+            pix.0[..3].reverse();
+        }
+
+        self.into_raw()
     }
 }
 
@@ -1769,8 +1877,8 @@ mod test {
     use crate::math::Rect;
     use crate::metadata::Cicp;
     use crate::metadata::CicpTransform;
-    use crate::GenericImage as _;
     use crate::ImageFormat;
+    use crate::{GenericImage as _, GenericImageView as _};
     use crate::{Luma, LumaA, Pixel, Rgb, Rgba};
     use num_traits::Zero;
 
@@ -2130,6 +2238,160 @@ mod test {
 
         let result = target.copy_from_color_space(&source, options);
         assert!(matches!(result, Err(crate::ImageError::Parameter(_))));
+    }
+
+    /// We specialize copy_from on types that provide `as_samples` so test that.
+    #[test]
+    fn copy_from_subimage_to_middle() {
+        let mut source = RgbImage::new(16, 16);
+        let mut target = RgbImage::new(16, 16);
+
+        source.put_pixel(8, 8, Rgb([255, 8, 8]));
+        source.put_pixel(9, 8, Rgb([255, 9, 8]));
+        source.put_pixel(9, 9, Rgb([255, 9, 9]));
+
+        let view = source.view(8, 8, 2, 2);
+        assert!(target.copy_from(&*view, 4, 4).is_ok());
+
+        // Check the pixel was copied.
+        assert_eq!(*target.get_pixel(4, 4), Rgb([255, 8, 8]));
+        assert_eq!(*target.get_pixel(5, 4), Rgb([255, 9, 8]));
+        assert_eq!(*target.get_pixel(5, 5), Rgb([255, 9, 9]));
+
+        // Check that were the only copied pixel.
+        assert_eq!(
+            target.iter().copied().map(usize::from).sum::<usize>(),
+            3 * (255 + 8 + 9)
+        );
+    }
+
+    #[test]
+    fn copy_from_band() {
+        let source = RgbImage::from_fn(16, 8, |x, y| Rgb([x as u8, y as u8, 0]));
+        let mut target = RgbImage::new(16, 16);
+
+        assert!(target.copy_from(&source, 0, 4).is_ok());
+
+        let lhs = source.chunks_exact(48);
+        let rhs = target.chunks_exact(48).skip(4).take(8);
+
+        assert!(lhs.eq(rhs));
+    }
+
+    #[test]
+    fn copy_from_pixel() {
+        let bg = Rgb([255, 0, 128]);
+        let samples = crate::flat::FlatSamples::with_monocolor(&bg, 4, 4);
+        let source = samples.as_view().unwrap();
+
+        let mut target = RgbImage::new(16, 16);
+        assert!(target.copy_from(&source, 4, 4).is_ok());
+
+        for i in 4..8 {
+            for j in 4..8 {
+                assert_eq!(*target.get_pixel(i, j), bg);
+            }
+        }
+
+        assert_eq!(
+            target.iter().copied().map(usize::from).sum::<usize>(),
+            16 * (255 + 128)
+        );
+    }
+
+    #[test]
+    fn copy_from_strided() {
+        #[rustfmt::skip]
+        let sample_data = [
+            1, 0xff, 0, 0, 2, 0xff,
+            3, 0xff, 0, 0, 4, 0xff
+        ];
+
+        let samples = crate::flat::FlatSamples {
+            samples: &sample_data,
+            layout: crate::flat::SampleLayout {
+                channels: 2,
+                channel_stride: 1,
+                width: 2,
+                width_stride: 4,
+                height: 2,
+                height_stride: 6,
+            },
+            color_hint: None,
+        };
+
+        let source = samples.as_view::<LumaA<u8>>().unwrap();
+        let mut target = crate::GrayAlphaImage::new(16, 16);
+        assert!(target.copy_from(&source, 4, 4).is_ok());
+
+        assert_eq!(*target.get_pixel(4, 4), LumaA([1, 0xff]));
+        assert_eq!(*target.get_pixel(5, 4), LumaA([2, 0xff]));
+        assert_eq!(*target.get_pixel(4, 5), LumaA([3, 0xff]));
+        assert_eq!(*target.get_pixel(5, 5), LumaA([4, 0xff]));
+
+        assert_eq!(
+            target.iter().copied().map(usize::from).sum::<usize>(),
+            sample_data.iter().copied().map(usize::from).sum::<usize>(),
+        );
+    }
+
+    #[test]
+    fn copy_from_strided_subimage() {
+        #[rustfmt::skip]
+        let sample_data = [
+            1, 0xff, 0, 0, 2, 0xff,
+            3, 0xff, 0, 0, 4, 0xff
+        ];
+
+        let samples = crate::flat::FlatSamples {
+            samples: &sample_data,
+            layout: crate::flat::SampleLayout {
+                channels: 2,
+                channel_stride: 1,
+                width: 2,
+                width_stride: 4,
+                height: 2,
+                height_stride: 6,
+            },
+            color_hint: None,
+        };
+
+        let view = samples.as_view::<LumaA<u8>>().unwrap();
+        let source = view.view(1, 0, 1, 2);
+
+        let mut target = crate::GrayAlphaImage::new(16, 16);
+        assert!(target.copy_from(&*source, 4, 4).is_ok());
+
+        assert_eq!(*target.get_pixel(4, 4), LumaA([2, 0xff]));
+        assert_eq!(*target.get_pixel(4, 5), LumaA([4, 0xff]));
+
+        assert_eq!(
+            target.iter().copied().map(usize::from).sum::<usize>(),
+            2usize + 0xff + 4 + 0xff
+        );
+    }
+
+    #[test]
+    fn copy_from_subimage_subimage() {
+        let mut source = RgbImage::new(16, 16);
+        let mut target = RgbImage::new(16, 16);
+
+        source.put_pixel(8, 8, Rgb([255, 8, 8]));
+        source.put_pixel(9, 8, Rgb([255, 9, 8]));
+        source.put_pixel(9, 9, Rgb([255, 9, 9]));
+
+        let view = source.view(8, 8, 2, 2);
+        let view = view.view(1, 0, 1, 1);
+        assert!(target.copy_from(&*view, 4, 4).is_ok());
+
+        // Check the pixel was copied.
+        assert_eq!(*target.get_pixel(4, 4), Rgb([255, 9, 8]));
+
+        // Check that was the only copied pixel.
+        assert_eq!(
+            target.iter().copied().map(usize::from).sum::<usize>(),
+            255 + 9 + 8
+        );
     }
 }
 

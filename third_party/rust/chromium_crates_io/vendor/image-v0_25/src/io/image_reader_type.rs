@@ -162,7 +162,7 @@ impl<'a, R: 'a + BufRead + Seek> ImageReader<R> {
                 {
                     let hooks = DECODING_HOOKS.read().unwrap();
                     if let Some(hooks) = hooks.as_ref() {
-                        if let Some(hook) = hooks.get(&ext) {
+                        if let Some(hook) = hooks.get(&ext.to_ascii_lowercase()) {
                             return hook(GenericReader(BufReader::new(Box::new(reader))));
                         }
                     }

@@ -100,7 +100,7 @@ impl<R: Read> Read for FarbfeldReader<R> {
             bytes_written += 1;
             self.current_offset += 1;
         } else {
-            for channel_out in buf.chunks_exact_mut(2) {
+            for channel_out in buf.as_chunks_mut::<2>().0 {
                 consume_channel(&mut self.inner, channel_out)?;
                 bytes_written += 2;
                 self.current_offset += 2;
@@ -166,10 +166,10 @@ impl<R: Read + Seek> Seek for FarbfeldReader<R> {
     }
 }
 
-fn consume_channel<R: Read>(from: &mut R, mut to: &mut [u8]) -> io::Result<()> {
+fn consume_channel<R: Read>(from: &mut R, to: &mut [u8; 2]) -> io::Result<()> {
     let mut ibuf = [0u8; 2];
     from.read_exact(&mut ibuf)?;
-    to.write_all(&u16::from_be_bytes(ibuf).to_ne_bytes())?;
+    to.copy_from_slice(&u16::from_be_bytes(ibuf).to_ne_bytes());
 
     Ok(())
 }
@@ -280,9 +280,9 @@ impl<W: Write> FarbfeldEncoder<W> {
         self.w.write_all(&width.to_be_bytes())?;
         self.w.write_all(&height.to_be_bytes())?;
 
-        for channel in data.chunks_exact(2) {
+        for &channel in data.as_chunks::<2>().0 {
             self.w
-                .write_all(&u16::from_ne_bytes(channel.try_into().unwrap()).to_be_bytes())?;
+                .write_all(&u16::from_ne_bytes(channel).to_be_bytes())?;
         }
 
         Ok(())

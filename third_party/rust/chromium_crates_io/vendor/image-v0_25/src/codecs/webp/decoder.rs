@@ -1,5 +1,7 @@
 use std::io::{BufRead, Read, Seek};
 
+use image_webp::LoopCount;
+
 use crate::buffer::ConvertBuffer;
 use crate::error::{DecodingError, ImageError, ImageResult};
 use crate::metadata::Orientation;
@@ -100,6 +102,13 @@ impl<R: BufRead + Seek> ImageDecoder for WebPDecoder<R> {
 }
 
 impl<'a, R: 'a + BufRead + Seek> AnimationDecoder<'a> for WebPDecoder<R> {
+    fn loop_count(&self) -> crate::metadata::LoopCount {
+        match self.inner.loop_count() {
+            LoopCount::Forever => crate::metadata::LoopCount::Infinite,
+            LoopCount::Times(n) => crate::metadata::LoopCount::Finite(n.into()),
+        }
+    }
+
     fn into_frames(self) -> Frames<'a> {
         struct FramesInner<R: Read + Seek> {
             decoder: WebPDecoder<R>,

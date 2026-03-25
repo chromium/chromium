@@ -30,6 +30,7 @@
 use std::io::{self, BufRead, Cursor, Read, Seek, Write};
 use std::marker::PhantomData;
 use std::mem;
+use std::num::NonZeroU32;
 
 use gif::ColorOutput;
 use gif::{DisposalMethod, Frame};
@@ -40,6 +41,7 @@ use crate::error::{
     DecodingError, EncodingError, ImageError, ImageResult, LimitError, LimitErrorKind,
     ParameterError, ParameterErrorKind, UnsupportedError, UnsupportedErrorKind,
 };
+use crate::metadata::LoopCount;
 use crate::traits::Pixel;
 use crate::{
     AnimationDecoder, ExtendedColorType, ImageBuffer, ImageDecoder, ImageEncoder, ImageFormat,
@@ -422,6 +424,15 @@ impl<R: Read> Iterator for GifFrameIterator<R> {
 }
 
 impl<'a, R: BufRead + Seek + 'a> AnimationDecoder<'a> for GifDecoder<R> {
+    fn loop_count(&self) -> LoopCount {
+        match self.reader.repeat() {
+            gif::Repeat::Finite(n @ 1..) => {
+                LoopCount::Finite(NonZeroU32::new(n.into()).expect("repeat is non-zero"))
+            }
+            gif::Repeat::Finite(0) | gif::Repeat::Infinite => LoopCount::Infinite,
+        }
+    }
+
     fn into_frames(self) -> animation::Frames<'a> {
         animation::Frames::new(Box::new(GifFrameIterator::new(self)))
     }

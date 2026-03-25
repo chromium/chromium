@@ -609,6 +609,22 @@ impl<Buffer> FlatSamples<Buffer> {
         P: Pixel,
         Buffer: AsRef<[P::Subpixel]>,
     {
+        FlatSamples {
+            samples: self.samples.as_ref(),
+            layout: self.layout,
+            color_hint: self.color_hint,
+        }
+        .into_view()
+    }
+
+    /// Convert this descriptor into a readable image.
+    ///
+    /// An owned version of [`Self::as_view`] that uses the original buffer type.
+    pub(crate) fn into_view<P>(self) -> Result<View<Buffer, P>, Error>
+    where
+        P: Pixel,
+        Buffer: AsRef<[P::Subpixel]>,
+    {
         if self.layout.channels != P::CHANNEL_COUNT {
             return Err(Error::ChannelCountMismatch(
                 self.layout.channels,
@@ -616,17 +632,12 @@ impl<Buffer> FlatSamples<Buffer> {
             ));
         }
 
-        let as_ref = self.samples.as_ref();
-        if !self.layout.fits(as_ref.len()) {
+        if !self.layout.fits(self.samples.as_ref().len()) {
             return Err(Error::TooLarge);
         }
 
         Ok(View {
-            inner: FlatSamples {
-                samples: as_ref,
-                layout: self.layout,
-                color_hint: self.color_hint,
-            },
+            inner: self,
             phantom: PhantomData,
         })
     }
@@ -994,6 +1005,9 @@ where
     phantom: PhantomData<P>,
 }
 
+/// Type alias for a view based on a pixel's channels.
+pub type ViewOfPixel<'lt, P> = View<&'lt [<P as Pixel>::Subpixel], P>;
+
 /// A mutable owning version of a flat buffer.
 ///
 /// While this wraps a buffer similar to `ImageBuffer`, this is mostly intended as a utility. The
@@ -1015,6 +1029,9 @@ where
     inner: FlatSamples<Buffer>,
     phantom: PhantomData<P>,
 }
+
+/// Type alias for a mutable view based on a pixel's channels.
+pub type ViewMutOfPixel<'lt, P> = ViewMut<&'lt mut [<P as Pixel>::Subpixel], P>;
 
 /// Denotes invalid flat sample buffers when trying to convert to stricter types.
 ///
@@ -1164,6 +1181,12 @@ where
     /// conversion from `FlatSamples`–the resulting slice may still contain holes.
     pub fn image_slice(&self) -> &[P::Subpixel] {
         &self.samples().as_ref()[..self.min_length()]
+    }
+
+    pub(crate) fn strides_wh(&self) -> (usize, usize) {
+        // Note `c` stride must be `1` for a valid `View` so we can ignore it here.
+        let (_, w, h) = self.inner.layout.strides_cwh();
+        (w, h)
     }
 
     /// Return the mutable portion of the buffer that holds sample values.
@@ -1413,6 +1436,17 @@ where
 
         *P::from_slice(&buffer[..channels])
     }
+
+    fn to_pixel_view(&self) -> Option<ViewOfPixel<'_, Self::Pixel>> {
+        Some(View {
+            inner: FlatSamples {
+                samples: self.inner.samples.as_ref(),
+                layout: self.inner.layout,
+                color_hint: None,
+            },
+            phantom: PhantomData,
+        })
+    }
 }
 
 impl<Buffer, P: Pixel> GenericImageView for ViewMut<Buffer, P>
@@ -1445,6 +1479,17 @@ where
             });
 
         *P::from_slice(&buffer[..channels])
+    }
+
+    fn to_pixel_view(&self) -> Option<ViewOfPixel<'_, Self::Pixel>> {
+        Some(View {
+            inner: FlatSamples {
+                samples: self.inner.samples.as_ref(),
+                layout: self.inner.layout,
+                color_hint: None,
+            },
+            phantom: PhantomData,
+        })
     }
 }
 

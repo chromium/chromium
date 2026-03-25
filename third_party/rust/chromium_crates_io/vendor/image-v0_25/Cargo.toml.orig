@@ -1,11 +1,11 @@
 [package]
 name = "image"
-version = "0.25.9"
+version = "0.25.10"
 edition = "2021"
 resolver = "2"
 
 # note: when changed, also update test runner in `.github/workflows/rust.yml`
-rust-version = "1.85.0"
+rust-version = "1.88.0"
 
 license = "MIT OR Apache-2.0"
 description = "Imaging library. Provides basic image processing and encoders/decoders for common image formats."
@@ -37,22 +37,22 @@ rustdoc-args = ["--cfg", "docsrs"]
 [dependencies]
 bytemuck = { version = "1.8.0", features = ["extern_crate_alloc"] } # includes cast_vec
 byteorder-lite = "0.1.0"
-moxcms = { version = "0.7.4" }
+moxcms = "0.8.0"
 num-traits = { version = "0.2.0" }
 
 # Optional dependencies
 color_quant = { version = "1.1", optional = true }
-dav1d = { version = "0.10.3", optional = true }
+dav1d = { version = "0.11.0", optional = true }
 exr = { version = "1.74.0", default-features = false, optional = true }
 gif = { version = "0.14.0", optional = true }
 image-webp = { version = "0.2.0", optional = true }
 mp4parse = { version = "0.17.0", optional = true }
 png = { version = "0.18.0", optional = true }
 qoi = { version = "0.4", optional = true }
-ravif = { version = "0.12", default-features = false, optional = true }
+ravif = { version = "0.13", default-features = false, optional = true }
 rayon = { version = "1.7.0", optional = true }
 rgb = { version = "0.8.48", default-features = false, optional = true }
-tiff = { version = "0.10.3", optional = true }
+tiff = { version = "0.11.2", optional = true }
 zune-core = { version = "0.5.0", default-features = false, optional = true }
 zune-jpeg = { version = "0.5.5", optional = true }
 serde = { version = "1.0.214", optional = true, features = ["derive"] }
@@ -115,6 +115,11 @@ harness = false
 [[bench]]
 path = "benches/blur.rs"
 name = "blur"
+harness = false
+
+[[bench]]
+path = "benches/convert.rs"
+name = "convert"
 harness = false
 
 # because of https://github.com/image-rs/image/pull/2583

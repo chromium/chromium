@@ -40,7 +40,7 @@ pub(crate) fn expand_bits(bit_depth: u8, row_size: u32, buf: &[u8]) -> Vec<u8> {
     let mask = (1u8 << bit_depth as usize) - 1;
     let scaling_factor = 255 / ((1 << bit_depth as usize) - 1);
     let bit_width = row_size * u32::from(bit_depth);
-    let skip = if bit_width % 8 == 0 {
+    let skip = if bit_width.is_multiple_of(8) {
         0
     } else {
         (8 - bit_width % 8) / u32::from(bit_depth)
@@ -61,6 +61,53 @@ pub(crate) fn expand_bits(bit_depth: u8, row_size: u32, buf: &[u8]) -> Vec<u8> {
         }
     }
     p
+}
+
+#[inline(always)]
+pub(crate) fn interleave_planes(out: &mut [u8], color: crate::ColorType, planes: &[&[u8]]) {
+    #[track_caller]
+    pub(crate) fn trampoline<const PLANES: usize, const N: usize>(
+        out: &mut [u8],
+        planes: &[&[u8]],
+    ) {
+        interleave_planes_inner::<PLANES, N>(
+            out.as_chunks_mut::<N>().0,
+            <[_; PLANES]>::try_from(planes)
+                .unwrap()
+                .map(|arr| arr.as_chunks::<N>().0),
+        )
+    }
+
+    assert_eq!(planes.len(), usize::from(color.channel_count()));
+
+    match color {
+        crate::ColorType::L8 => trampoline::<1, 1>(out, planes),
+        crate::ColorType::La8 => trampoline::<2, 1>(out, planes),
+        crate::ColorType::Rgb8 => trampoline::<3, 1>(out, planes),
+        crate::ColorType::Rgba8 => trampoline::<4, 1>(out, planes),
+        crate::ColorType::L16 => trampoline::<1, 2>(out, planes),
+        crate::ColorType::La16 => trampoline::<2, 2>(out, planes),
+        crate::ColorType::Rgb16 => trampoline::<3, 2>(out, planes),
+        crate::ColorType::Rgba16 => trampoline::<4, 2>(out, planes),
+        crate::ColorType::Rgb32F => trampoline::<3, 4>(out, planes),
+        crate::ColorType::Rgba32F => trampoline::<4, 4>(out, planes),
+    }
+}
+
+#[inline(always)]
+fn interleave_planes_inner<const PLANES: usize, const N: usize>(
+    out: &mut [[u8; N]],
+    planes: [&[[u8; N]]; PLANES],
+) {
+    let mut iters = planes.map(|plane| plane.iter().copied());
+    for out in out.as_chunks_mut::<PLANES>().0 {
+        let vals = iters.each_mut().map(Iterator::next);
+
+        // I'd like to use array::zip once stable.
+        for i in 0..PLANES {
+            out[i] = vals[i].unwrap_or(out[i]);
+        }
+    }
 }
 
 /// Checks if the provided dimensions would cause an overflow.

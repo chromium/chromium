@@ -128,8 +128,8 @@ fn reshape_plane(source: &[u8], stride: usize, width: usize, height: usize) -> V
         .chunks_exact_mut(width)
         .zip(source.chunks_exact(stride))
     {
-        for (dst, src) in shaped_row.iter_mut().zip(src_row.chunks_exact(2)) {
-            *dst = u16::from_ne_bytes([src[0], src[1]]);
+        for (dst, src) in shaped_row.iter_mut().zip(src_row.as_chunks::<2>().0) {
+            *dst = u16::from_ne_bytes(*src);
         }
     }
     target_plane
@@ -454,7 +454,7 @@ impl<R: Read> ImageDecoder for AvifDecoder<R> {
                     buf.chunks_exact_mut(width as usize * 4),
                     plane.as_ref().chunks_exact(stride),
                 ) {
-                    for (rgba, a_src) in buf.chunks_exact_mut(4).zip(slice) {
+                    for (rgba, a_src) in buf.as_chunks_mut::<4>().0.iter_mut().zip(slice) {
                         rgba[3] = *a_src;
                     }
                 }
@@ -468,10 +468,9 @@ impl<R: Read> ImageDecoder for AvifDecoder<R> {
                 // If buffer from Decoder is unaligned
                 let mut aligned_store = vec![0u16; buf.len() / 2];
                 self.process_16bit_picture(&mut aligned_store, yuv_range, matrix_strategy)?;
-                for (dst, src) in buf.chunks_exact_mut(2).zip(aligned_store.iter()) {
-                    let bytes = src.to_ne_bytes();
-                    dst[0] = bytes[0];
-                    dst[1] = bytes[1];
+                let buf_chunks = buf.as_chunks_mut::<2>().0.iter_mut();
+                for (dst, src) in buf_chunks.zip(aligned_store.iter()) {
+                    *dst = src.to_ne_bytes();
                 }
             }
         }
@@ -640,7 +639,7 @@ impl<R: Read> AvifDecoder<R> {
                 target.chunks_exact_mut(width as usize * 4),
                 a_plane_view.data.as_ref().chunks_exact(a_plane_view.stride),
             ) {
-                for (rgba, a_src) in buf.chunks_exact_mut(4).zip(slice) {
+                for (rgba, a_src) in buf.as_chunks_mut::<4>().0.iter_mut().zip(slice) {
                     rgba[3] = *a_src;
                 }
             }

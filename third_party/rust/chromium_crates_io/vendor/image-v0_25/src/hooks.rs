@@ -13,6 +13,7 @@ use crate::{ImageDecoder, ImageResult};
 pub(crate) trait ReadSeek: Read + Seek {}
 impl<T: Read + Seek> ReadSeek for T {}
 
+/// Stores ascii lowercase extension to hook mapping
 pub(crate) static DECODING_HOOKS: RwLock<Option<HashMap<OsString, DecodingHook>>> =
     RwLock::new(None);
 
@@ -72,6 +73,7 @@ pub type DecodingHook =
 
 /// Register a new decoding hook or returns false if one already exists for the given format.
 pub fn register_decoding_hook(extension: OsString, hook: DecodingHook) -> bool {
+    let extension = extension.to_ascii_lowercase();
     let mut hooks = DECODING_HOOKS.write().unwrap();
     if hooks.is_none() {
         *hooks = Some(HashMap::new());
@@ -87,11 +89,12 @@ pub fn register_decoding_hook(extension: OsString, hook: DecodingHook) -> bool {
 
 /// Returns whether a decoding hook has been registered for the given format.
 pub fn decoding_hook_registered(extension: &OsStr) -> bool {
+    let extension = extension.to_ascii_lowercase();
     DECODING_HOOKS
         .read()
         .unwrap()
         .as_ref()
-        .map(|hooks| hooks.contains_key(extension))
+        .map(|hooks| hooks.contains_key(&extension))
         .unwrap_or(false)
 }
 
@@ -132,8 +135,83 @@ pub fn register_format_detection_hook(
     signature: &'static [u8],
     mask: Option<&'static [u8]>,
 ) {
+    let extension = extension.to_ascii_lowercase();
     GUESS_FORMAT_HOOKS
         .write()
         .unwrap()
         .push((signature, mask.unwrap_or(&[]), extension));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{load_from_memory, ColorType, DynamicImage, ImageReader};
+    use std::io::Cursor;
+
+    const MOCK_HOOK_EXTENSION: &str = "MOCKHOOK";
+
+    const MOCK_IMAGE_OUTPUT: [u8; 9] = [255, 0, 0, 0, 255, 0, 0, 0, 255];
+    struct MockDecoder {}
+    impl ImageDecoder for MockDecoder {
+        fn dimensions(&self) -> (u32, u32) {
+            ((&MOCK_IMAGE_OUTPUT.len() / 3) as u32, 1)
+        }
+        fn color_type(&self) -> ColorType {
+            ColorType::Rgb8
+        }
+        fn read_image(self, buf: &mut [u8]) -> ImageResult<()> {
+            buf[..MOCK_IMAGE_OUTPUT.len()].copy_from_slice(&MOCK_IMAGE_OUTPUT);
+            Ok(())
+        }
+        fn read_image_boxed(self: Box<Self>, buf: &mut [u8]) -> ImageResult<()> {
+            (*self).read_image(buf)
+        }
+    }
+    fn is_mock_decoder_output(image: DynamicImage) -> bool {
+        image.as_rgb8().unwrap().as_raw() == &MOCK_IMAGE_OUTPUT
+    }
+
+    #[test]
+    fn decoding_hook() {
+        register_decoding_hook(
+            MOCK_HOOK_EXTENSION.into(),
+            Box::new(|_| Ok(Box::new(MockDecoder {}))),
+        );
+
+        let image = ImageReader::open("tests/images/hook/extension.MoCkHoOk")
+            .unwrap()
+            .decode()
+            .unwrap();
+
+        assert!(is_mock_decoder_output(image));
+    }
+
+    #[test]
+    fn detection_hook() {
+        register_decoding_hook(
+            MOCK_HOOK_EXTENSION.into(),
+            Box::new(|_| Ok(Box::new(MockDecoder {}))),
+        );
+
+        register_format_detection_hook(
+            MOCK_HOOK_EXTENSION.into(),
+            &[b'H', b'E', b'A', b'D', 0, 0, 0, 0, b'M', b'O', b'C', b'K'],
+            Some(&[0xff, 0xff, 0xff, 0xff, 0, 0, 0, 0, 0xff, 0xff, 0xff, 0xff]),
+        );
+
+        const TEST_INPUT_IMAGE: [u8; 16] = [
+            b'H', b'E', b'A', b'D', b'J', b'U', b'N', b'K', b'M', b'O', b'C', b'K', b'm', b'o',
+            b'r', b'e',
+        ];
+        let image = ImageReader::new(Cursor::new(TEST_INPUT_IMAGE))
+            .with_guessed_format()
+            .unwrap()
+            .decode()
+            .unwrap();
+
+        assert!(is_mock_decoder_output(image));
+
+        let image_via_free_function = load_from_memory(&TEST_INPUT_IMAGE).unwrap();
+        assert!(is_mock_decoder_output(image_via_free_function));
+    }
 }

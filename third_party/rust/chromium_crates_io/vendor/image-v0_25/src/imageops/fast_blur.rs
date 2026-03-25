@@ -128,7 +128,7 @@ fn boxes_for_gauss(sigma: f32, n: usize) -> Vec<usize> {
 
 #[inline]
 fn ceil_to_odd(x: usize) -> usize {
-    if x % 2 == 0 {
+    if x.is_multiple_of(2) {
         x + 1
     } else {
         x
@@ -190,25 +190,16 @@ fn box_blur_vertical_pass_strategy<T: Pixel, P: Primitive>(
     height: u32,
     radius: usize,
 ) {
-    if T::CHANNEL_COUNT == 1 {
-        box_blur_vertical_pass_impl::<P, 1>(
-            src, src_stride, dst, dst_stride, width, height, radius,
-        );
-    } else if T::CHANNEL_COUNT == 2 {
-        box_blur_vertical_pass_impl::<P, 2>(
-            src, src_stride, dst, dst_stride, width, height, radius,
-        );
-    } else if T::CHANNEL_COUNT == 3 {
-        box_blur_vertical_pass_impl::<P, 3>(
-            src, src_stride, dst, dst_stride, width, height, radius,
-        );
-    } else if T::CHANNEL_COUNT == 4 {
-        box_blur_vertical_pass_impl::<P, 4>(
-            src, src_stride, dst, dst_stride, width, height, radius,
-        );
-    } else {
-        unimplemented!("More than 4 channels is not yet implemented");
-    }
+    box_blur_vertical_pass_impl::<P>(
+        src,
+        src_stride,
+        dst,
+        dst_stride,
+        width,
+        height,
+        radius,
+        T::CHANNEL_COUNT as usize,
+    );
 }
 
 fn box_blur_horizontal_pass_impl<T, const CN: usize>(
@@ -329,12 +320,13 @@ fn box_blur_horizontal_pass_impl<T, const CN: usize>(
             let section_length = max_x_before_clamping - half_kernel;
             let dst = &mut dst[half_kernel * CN..(half_kernel * CN + section_length * CN)];
 
-            for ((dst, src_previous), src_next) in dst
-                .chunks_exact_mut(CN)
-                .zip(data_section.chunks_exact(CN))
-                .zip(advanced_kernel_part.chunks_exact(CN))
+            let dst_chunks = dst.as_chunks_mut::<CN>().0.iter_mut();
+            let data_section_chunks = data_section.as_chunks::<CN>().0.iter();
+            let advanced_kernel_part_chunks = advanced_kernel_part.as_chunks::<CN>().0.iter();
+            for ((dst_chunk, src_previous), src_next) in dst_chunks
+                .zip(data_section_chunks)
+                .zip(advanced_kernel_part_chunks)
             {
-                let dst_chunk = &mut dst[..CN];
                 dst_chunk[0] = rounding_saturating_mul(weight0, weight);
                 if CN > 1 {
                     dst_chunk[1] = rounding_saturating_mul(weight1, weight);
@@ -415,7 +407,8 @@ fn box_blur_horizontal_pass_impl<T, const CN: usize>(
     }
 }
 
-fn box_blur_vertical_pass_impl<T: Primitive, const CN: usize>(
+#[allow(clippy::too_many_arguments)]
+fn box_blur_vertical_pass_impl<T: Primitive>(
     src: &[T],
     src_stride: usize,
     dst: &mut [T],
@@ -423,6 +416,7 @@ fn box_blur_vertical_pass_impl<T: Primitive, const CN: usize>(
     width: u32,
     height: u32,
     radius: usize,
+    n: usize,
 ) {
     assert!(width > 0, "Width must be sanitized before this method");
     assert!(height > 0, "Height must be sanitized before this method");
@@ -435,7 +429,7 @@ fn box_blur_vertical_pass_impl<T: Primitive, const CN: usize>(
 
     let weight = 1f32 / (radius * 2 + 1) as f32;
 
-    let buf_size = width as usize * CN;
+    let buf_size = width as usize * n;
 
     let buf_cap = buf_size;
 
@@ -462,8 +456,8 @@ fn box_blur_vertical_pass_impl<T: Primitive, const CN: usize>(
         let next = (y + half_kernel + 1).min(height_bound) * src_stride;
         let previous = (y as i64 - half_kernel as i64).max(0) as usize * src_stride;
 
-        let next_row = &src[next..next + width as usize * CN];
-        let previous_row = &src[previous..previous + width as usize * CN];
+        let next_row = &src[next..next + width as usize * n];
+        let previous_row = &src[previous..previous + width as usize * n];
 
         for (((src_next, src_previous), buffer), dst) in next_row
             .iter()

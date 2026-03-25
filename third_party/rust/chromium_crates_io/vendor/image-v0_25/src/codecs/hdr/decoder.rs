@@ -119,8 +119,6 @@ const SIGNATURE_LENGTH: usize = 10;
 #[derive(Debug)]
 pub struct HdrDecoder<R> {
     r: R,
-    width: u32,
-    height: u32,
     meta: HdrMetadata,
 }
 
@@ -143,17 +141,22 @@ impl Rgbe8Pixel {
     /// Converts `Rgbe8Pixel` into `Rgb<f32>` linearly
     #[inline]
     pub(crate) fn to_hdr(self) -> Rgb<f32> {
-        if self.e == 0 {
-            Rgb([0.0, 0.0, 0.0])
+        // Directly construct the exponent 2.0^{e - 128 - 8}; because the normal
+        // exponent value range of f32, 1..=254, is slightly smaller than the
+        // range for rgbe8 (1..=255), a special case is needed to create the
+        // subnormal intermediate value 2^{e - 128} for e=1; the branch also
+        // implements the special case mapping of e=0 to exp=0.0.
+        let exp = f32::from_bits(if self.e > 1 {
+            ((self.e - 1) as u32) << 23
         } else {
-            //            let exp = f32::ldexp(1., self.e as isize - (128 + 8)); // unstable
-            let exp = f32::exp2(<f32 as From<_>>::from(self.e) - (128.0 + 8.0));
-            Rgb([
-                exp * <f32 as From<_>>::from(self.c[0]),
-                exp * <f32 as From<_>>::from(self.c[1]),
-                exp * <f32 as From<_>>::from(self.c[2]),
-            ])
-        }
+            (self.e as u32) << 22
+        }) * 0.00390625;
+
+        Rgb([
+            exp * <f32 as From<_>>::from(self.c[0]),
+            exp * <f32 as From<_>>::from(self.c[1]),
+            exp * <f32 as From<_>>::from(self.c[2]),
+        ])
     }
 }
 
@@ -246,8 +249,6 @@ impl<R: Read> HdrDecoder<R> {
         Ok(HdrDecoder {
             r: reader,
 
-            width,
-            height,
             meta: HdrMetadata {
                 width,
                 height,
@@ -260,36 +261,6 @@ impl<R: Read> HdrDecoder<R> {
     pub fn metadata(&self) -> HdrMetadata {
         self.meta.clone()
     }
-
-    /// Consumes decoder and returns a vector of transformed pixels
-    fn read_image_transform<T: Send, F: Send + Sync + Fn(Rgbe8Pixel) -> T>(
-        mut self,
-        f: F,
-        output_slice: &mut [T],
-    ) -> ImageResult<()> {
-        assert_eq!(
-            output_slice.len(),
-            self.width as usize * self.height as usize
-        );
-
-        // Don't read anything if image is empty
-        if self.width == 0 || self.height == 0 {
-            return Ok(());
-        }
-
-        let chunks_iter = output_slice.chunks_mut(self.width as usize);
-
-        let mut buf = vec![Default::default(); self.width as usize];
-        for chunk in chunks_iter {
-            // read_scanline overwrites the entire buffer or returns an Err,
-            // so not resetting the buffer here is ok.
-            read_scanline(&mut self.r, &mut buf[..])?;
-            for (dst, &pix) in chunk.iter_mut().zip(buf.iter()) {
-                *dst = f(pix);
-            }
-        }
-        Ok(())
-    }
 }
 
 impl<R: Read> ImageDecoder for HdrDecoder<R> {
@@ -301,14 +272,28 @@ impl<R: Read> ImageDecoder for HdrDecoder<R> {
         ColorType::Rgb32F
     }
 
-    fn read_image(self, buf: &mut [u8]) -> ImageResult<()> {
+    fn read_image(mut self, buf: &mut [u8]) -> ImageResult<()> {
         assert_eq!(u64::try_from(buf.len()), Ok(self.total_bytes()));
 
-        let mut img = vec![Rgb([0.0, 0.0, 0.0]); self.width as usize * self.height as usize];
-        self.read_image_transform(|pix| pix.to_hdr(), &mut img[..])?;
+        // Don't read anything if image is empty
+        if self.meta.width == 0 || self.meta.height == 0 {
+            return Ok(());
+        }
 
-        for (i, Rgb(data)) in img.into_iter().enumerate() {
-            buf[(i * 12)..][..12].copy_from_slice(bytemuck::cast_slice(&data));
+        let mut scanline = vec![Default::default(); self.meta.width as usize];
+
+        const PIXEL_SIZE: usize = size_of::<Rgb<f32>>();
+        let line_bytes = self.meta.width as usize * PIXEL_SIZE;
+
+        let chunks_iter = buf.chunks_exact_mut(line_bytes);
+        for chunk in chunks_iter {
+            // read_scanline overwrites the entire buffer or returns an Err,
+            // so not resetting the buffer here is ok.
+            read_scanline(&mut self.r, &mut scanline[..])?;
+            let dst_chunks = chunk.as_chunks_mut::<PIXEL_SIZE>().0.iter_mut();
+            for (dst, &pix) in dst_chunks.zip(scanline.iter()) {
+                dst.copy_from_slice(bytemuck::cast_slice(&pix.to_hdr().0));
+            }
         }
 
         Ok(())
@@ -520,6 +505,7 @@ impl HdrMetadata {
         // parse known attributes
         match maybe_key_value {
             Some(("FORMAT", val)) => {
+                #[allow(clippy::collapsible_match)] // clippy wants confusing guard syntax here
                 if val.trim() != "32-bit_rle_rgbe" {
                     // XYZE isn't supported yet
                     return Err(ImageError::Unsupported(

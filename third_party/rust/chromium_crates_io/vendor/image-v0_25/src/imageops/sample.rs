@@ -1213,7 +1213,7 @@ impl GaussianBlurParameters {
     #[inline]
     fn round_to_nearest_odd(x: f32) -> u32 {
         let n = x.round() as u32;
-        if n % 2 != 0 {
+        if !n.is_multiple_of(2) {
             n
         } else {
             let lower = n - 1;
@@ -1237,7 +1237,7 @@ impl GaussianBlurParameters {
 
     fn kernel_size_from_sigma(sigma: f32) -> u32 {
         let possible_size = (((((sigma - 0.8) / 0.3) + 1.) * 2.) + 1.).max(3.) as u32;
-        if possible_size % 2 == 0 {
+        if possible_size.is_multiple_of(2) {
             return possible_size + 1;
         }
         possible_size
@@ -1435,7 +1435,8 @@ where
     I::Pixel: 'static,
 {
     let mut transient = vec![0f32; image.width() as usize * image.height() as usize * CN];
-    for (pixel, dst) in image.pixels().zip(transient.chunks_exact_mut(CN)) {
+    let transient_chunks = transient.as_chunks_mut::<CN>().0.iter_mut();
+    for (pixel, dst) in image.pixels().zip(transient_chunks) {
         let px = pixel.2.channels();
         match CN {
             1 => {
@@ -1521,40 +1522,10 @@ where
     }
 
     let mut out = image.buffer_like();
-    for (dst, src) in out.pixels_mut().zip(transient_dst.chunks_exact_mut(CN)) {
-        match CN {
-            1 => {
-                let v0 = NumCast::from(FloatNearest(src[0])).unwrap();
-                #[allow(deprecated)]
-                let t = Pixel::from_channels(v0, v0, v0, v0);
-                *dst = t;
-            }
-            2 => {
-                let v0 = NumCast::from(FloatNearest(src[0])).unwrap();
-                let v1 = NumCast::from(FloatNearest(src[1])).unwrap();
-                #[allow(deprecated)]
-                let t = Pixel::from_channels(v0, v1, v0, v0);
-                *dst = t;
-            }
-            3 => {
-                let v0 = NumCast::from(FloatNearest(src[0])).unwrap();
-                let v1 = NumCast::from(FloatNearest(src[1])).unwrap();
-                let v2 = NumCast::from(FloatNearest(src[2])).unwrap();
-                #[allow(deprecated)]
-                let t = Pixel::from_channels(v0, v1, v2, v0);
-                *dst = t;
-            }
-            4 => {
-                let v0 = NumCast::from(FloatNearest(src[0])).unwrap();
-                let v1 = NumCast::from(FloatNearest(src[1])).unwrap();
-                let v2 = NumCast::from(FloatNearest(src[2])).unwrap();
-                let v3 = NumCast::from(FloatNearest(src[3])).unwrap();
-                #[allow(deprecated)]
-                let t = Pixel::from_channels(v0, v1, v2, v3);
-                *dst = t;
-            }
-            _ => unreachable!(),
-        }
+    let transient_dst_chunks = transient_dst.as_chunks_mut::<CN>().0.iter_mut();
+    for (dst, src) in out.pixels_mut().zip(transient_dst_chunks) {
+        let pix = src.map(|v| NumCast::from(FloatNearest(v)).unwrap());
+        *dst = *Pixel::from_slice(&pix);
     }
 
     out
