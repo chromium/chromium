@@ -213,6 +213,24 @@
             ]
         }
     ],
+    "AccessibilityAnnotatorLiveTabContext": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityAnnotatorLiveTabContext"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityCheckJavaNodeCacheFreshness": [
         {
             "platforms": [

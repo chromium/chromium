@@ -12,6 +12,7 @@ BASE_FEATURE(kAccessibilityAnnotatorFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAccessibilityAnnotatorGetEntities,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAccessibilityAnnotatorLiveTabContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,
                    kContentAnnotatorMaxPendingUrls,
