@@ -171,11 +171,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
               document, EditElement(), parameters_.placeholder_for_day,
               day_range_);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldDayOfMonthFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -186,11 +181,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeHour11FieldElement>(
               document, EditElement(), hour23_range_, step);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldHourFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -201,11 +191,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeHour12FieldElement>(
               document, EditElement(), hour23_range_, step);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldHourFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -216,11 +201,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeHour23FieldElement>(
               document, EditElement(), hour23_range_, step);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldHourFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -231,11 +211,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeHour24FieldElement>(
               document, EditElement(), hour23_range_, step);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldHourFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -246,11 +221,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeMinuteFieldElement>(
               document, EditElement(), minute_range_, step);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldMinuteFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -290,12 +260,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           break;
       }
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          min_month == max_month && min_month == date_value_.Month() &&
-          date_value_.GetType() != DateComponents::kMonth) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -309,11 +273,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeAMPMFieldElement>(
               document, EditElement(), parameters_.locale.TimeAMPMLabels());
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldAMPMFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -324,11 +283,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeSecondFieldElement>(
               document, EditElement(), second_range_, step);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldSecondFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
 
       if (NeedMillisecondField()) {
         VisitLiteral(parameters_.locale.LocalizedDecimalSeparator());
@@ -344,11 +298,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeMillisecondFieldElement>(
               document, EditElement(), millisecond_range_, step);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldMillisecondFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
@@ -393,11 +342,6 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
           MakeGarbageCollected<DateTimeYearFieldElement>(
               document, EditElement(), year_params);
       EditElement().AddField(field);
-      if (!RuntimeEnabledFeatures::SkipDateTimeFieldDisableChecksEnabled() &&
-          ShouldYearFieldDisabled()) {
-        field->SetValueAsDate(date_value_);
-        field->SetDisabled();
-      }
       return;
     }
 
