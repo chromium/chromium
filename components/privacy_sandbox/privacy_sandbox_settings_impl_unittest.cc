@@ -447,16 +447,12 @@ TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {
 }
 
 struct PrivateAggregationDebugModeTestCase {
-  using TupleT = std::tuple<bool, bool, bool, bool>;
+  using TupleT = std::tuple<bool, bool>;
 
   explicit PrivateAggregationDebugModeTestCase(TupleT t)
-      : cookies_blocked_by_user_setting(std::get<0>(t)),
-        cookie_controls_mode_ui_pref(std::get<1>(t)),
-        site_exception_user_setting_defined(std::get<2>(t)),
-        ignore_site_exception_feature_enabled(std::get<3>(t)) {}
+      : site_exception_user_setting_defined(std::get<0>(t)),
+        ignore_site_exception_feature_enabled(std::get<1>(t)) {}
 
-  bool cookies_blocked_by_user_setting = false;
-  bool cookie_controls_mode_ui_pref = false;
   bool site_exception_user_setting_defined = false;
   bool ignore_site_exception_feature_enabled = false;
 };
@@ -474,20 +470,14 @@ INSTANTIATE_TEST_SUITE_P(
     PrivacySandboxSettingsPrivateAggregationDebugModeTest,
     testing::ConvertGenerator<PrivateAggregationDebugModeTestCase::TupleT>(
         testing::Combine(testing::Bool(),
-                         testing::Bool(),
-                         testing::Bool(),
                          testing::Bool())),
     // Creates a human-readable name for each test. Per gtest docs, test names
     // must contain only alphanumeric characters.
     [](const testing::TestParamInfo<PrivateAggregationDebugModeTestCase>& info)
         -> std::string {
       return base::StringPrintf(
-          "AndExplicitUserSetting%s"
-          "AndCookieControlsModePref%s"
           "AndSiteExceptionUserSetting%s"
           "AndIgnoreSiteException%s",
-          info.param.cookies_blocked_by_user_setting ? "Blocks3pc" : "IsNotSet",
-          info.param.cookie_controls_mode_ui_pref ? "On" : "Off",
           info.param.site_exception_user_setting_defined ? "Defined"
                                                          : "NotDefined",
           info.param.ignore_site_exception_feature_enabled ? "On" : "Off");
@@ -498,26 +488,15 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
        IsPrivateAggregationDebugModeAllowed) {
   // Debug Mode should be disabled when third-party cookies are blocked,
-  // unless all of the following are true:
-  //   1. The bypass feature is enabled.
-  //   2. Third-party cookies were blocked due to the 3PCD experiment.
-  //   3. Third-party cookies were not blocked due to an explicit user setting.
+  // unless they are allowed due to an explicit user site exception.
   //
   // Additionally, if third-party cookies are re-enabled with a top-level site
   // exception, that will allow for debug mode unless the ignore site exception
   // feature is enabled.
-  //
-  // Note that `test_case.cookie_controls_mode_pref` does not affect the value
-  // of `expect_debug_mode`.
   const PrivateAggregationDebugModeTestCase& test_case = GetParam();
-  const bool expect_debug_mode =
-      test_case.site_exception_user_setting_defined &&
-      !test_case.ignore_site_exception_feature_enabled;
 
   base::test::ScopedFeatureList feature_list;
-  std::vector<base::test::FeatureRef> enabled_features = {
-      content_settings::features::kTrackingProtection3pcd};
-  std::vector<base::test::FeatureRef> disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features, disabled_features = {};
   if (test_case.ignore_site_exception_feature_enabled) {
     enabled_features.emplace_back(
         kPrivateAggregationDebugReportingIgnoreSiteExceptions);
@@ -532,15 +511,10 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
   prefs()->SetUserPref(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                        base::Value(true));
 
-  prefs()->SetUserPref(prefs::kCookieControlsMode,
-                       std::make_unique<base::Value>(static_cast<int>(
-                           test_case.cookie_controls_mode_ui_pref)));
-  if (test_case.cookies_blocked_by_user_setting) {
-    host_content_settings_map()->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString("https://embedded.com"),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-        ContentSetting::CONTENT_SETTING_BLOCK);
-  }
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
   if (test_case.site_exception_user_setting_defined) {
     host_content_settings_map()->SetContentSettingCustomScope(
         ContentSettingsPattern::FromString("https://embedded.com"),
@@ -548,12 +522,11 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
         ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
-  const bool is_debug_mode_allowed =
-      privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
-          url::Origin::Create(GURL("https://test.com")),
-          url::Origin::Create(GURL("https://embedded.com")));
-
-  EXPECT_EQ(is_debug_mode_allowed, expect_debug_mode);
+  EXPECT_EQ(privacy_sandbox_settings()->IsPrivateAggregationDebugModeAllowed(
+                url::Origin::Create(GURL("https://test.com")),
+                url::Origin::Create(GURL("https://embedded.com"))),
+            test_case.site_exception_user_setting_defined &&
+                !test_case.ignore_site_exception_feature_enabled);
 }
 #endif
 
