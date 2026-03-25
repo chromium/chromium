@@ -123,7 +123,7 @@ void AddCustomMessageRule(
 
 void ReportAnalysisConnectorWarningBypass(
     Profile* profile,
-    const enterprise_connectors::ContentAnalysisInfo& content_analysis_info,
+    const enterprise_connectors::ContentAnalysisInfoBase& content_analysis_info,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,

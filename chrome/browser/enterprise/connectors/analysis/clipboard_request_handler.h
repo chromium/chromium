@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CLIPBOARD_REQUEST_HANDLER_H_
 
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
-#include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 
 class Profile;
 
@@ -90,6 +90,7 @@ class ClipboardRequestHandler : public RequestHandlerBase {
   ContentMetaData::CopiedTextSource clipboard_source_;
   std::string source_content_area_email_;
   std::string content_transfer_method_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // The response obtained by `OnContentAnalysisResponse()`. This might be left
   // unchanged in error cases where a proper response couldn't be obtained.

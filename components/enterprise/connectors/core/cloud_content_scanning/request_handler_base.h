@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_REQUEST_HANDLER_BASE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_REQUEST_HANDLER_BASE_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_REQUEST_HANDLER_BASE_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_REQUEST_HANDLER_BASE_H_
 
 #include <string>
 #include <vector>
@@ -12,11 +12,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/content_analysis_info_base.h"
 
 namespace enterprise_connectors {
 
@@ -32,9 +31,8 @@ namespace enterprise_connectors {
 // reported.
 class RequestHandlerBase {
  public:
-  RequestHandlerBase(ContentAnalysisInfo* content_analysis_info,
+  RequestHandlerBase(ContentAnalysisInfoBase* content_analysis_info,
                      BinaryUploadService* upload_service,
-                     Profile* profile,
                      GURL url,
                      DeepScanAccessPoint access_point);
 
@@ -74,9 +72,8 @@ class RequestHandlerBase {
   // Returns the BinaryUploadService used to upload content for deep scanning.
   BinaryUploadService* GetBinaryUploadService();
 
-  raw_ptr<ContentAnalysisInfo> content_analysis_info_ = nullptr;
+  raw_ptr<ContentAnalysisInfoBase> content_analysis_info_ = nullptr;
   base::WeakPtr<BinaryUploadService> upload_service_ = nullptr;
-  raw_ptr<Profile> profile_ = nullptr;
   GURL url_;
   DeepScanAccessPoint access_point_;
 
@@ -90,4 +87,4 @@ class RequestHandlerBase {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_REQUEST_HANDLER_BASE_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_REQUEST_HANDLER_BASE_H_

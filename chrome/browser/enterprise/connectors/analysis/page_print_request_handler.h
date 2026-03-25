@@ -9,8 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
-#include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -88,6 +88,7 @@ class PagePrintRequestHandler : public RequestHandlerBase {
 
   std::string printer_name_;
   std::string page_content_type_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // The response obtained by `OnContentAnalysisResponse()`. This might be left
   // unchanged in error cases where a proper response couldn't be obtained.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
@@ -11,14 +11,12 @@
 namespace enterprise_connectors {
 
 RequestHandlerBase::RequestHandlerBase(
-    ContentAnalysisInfo* content_analysis_info,
+    ContentAnalysisInfoBase* content_analysis_info,
     BinaryUploadService* upload_service,
-    Profile* profile,
     GURL url,
     DeepScanAccessPoint access_point)
     : content_analysis_info_(content_analysis_info),
       upload_service_(upload_service ? upload_service->AsWeakPtr() : nullptr),
-      profile_(profile),
       url_(url),
       access_point_(access_point) {}
 

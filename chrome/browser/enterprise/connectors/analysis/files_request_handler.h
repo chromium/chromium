@@ -11,13 +11,16 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_opening_job.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 #include "components/file_access/scoped_file_access.h"
+
+class Profile;
 
 namespace enterprise_connectors {
 
@@ -160,6 +163,7 @@ class FilesRequestHandler : public RequestHandlerBase {
   std::string source_;
   std::string destination_;
   std::string content_transfer_method_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   CompletionCallback callback_;
 

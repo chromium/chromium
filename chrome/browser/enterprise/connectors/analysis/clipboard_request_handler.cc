@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
@@ -77,7 +78,6 @@ ClipboardRequestHandler::ClipboardRequestHandler(
     CompletionCallback callback)
     : RequestHandlerBase(content_analysis_info,
                          upload_service,
-                         profile,
                          std::move(url),
                          access_point),
       type_(type),
@@ -86,6 +86,7 @@ ClipboardRequestHandler::ClipboardRequestHandler(
       clipboard_source_(std::move(clipboard_source)),
       source_content_area_email_(std::move(source_content_area_email)),
       content_transfer_method_(std::move(content_transfer_method)),
+      profile_(profile),
       callback_(std::move(callback)) {}
 
 void ClipboardRequestHandler::ReportWarningBypass(
@@ -117,7 +118,8 @@ bool ClipboardRequestHandler::UploadDataImpl() {
       base::BindOnce(&ClipboardRequestHandler::OnContentAnalysisResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  content_analysis_info_->InitializeRequest(request.get(), true);
+  content_analysis_info_->InitializeRequest(
+      request.get(), /*include_enterprise_only_fields=*/true);
   request->set_analysis_connector(BULK_DATA_ENTRY);
   if (type_ == Type::kImage) {
     request->set_image_paste(true);

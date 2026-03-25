@@ -133,6 +133,8 @@ source_set("cloud_content_scanning") {
     "cloud_content_scanning/multipart_uploader.h",
     "cloud_content_scanning/multipart_uploader_base.cc",
     "cloud_content_scanning/multipart_uploader_base.h",
+    "cloud_content_scanning/request_handler_base.cc",
+    "cloud_content_scanning/request_handler_base.h",
     "cloud_content_scanning/resumable_uploader.cc",
     "cloud_content_scanning/resumable_uploader.h",
     "cloud_content_scanning/resumable_uploader_base.cc",

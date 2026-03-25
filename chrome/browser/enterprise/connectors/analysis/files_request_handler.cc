@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -94,13 +95,13 @@ FilesRequestHandler::FilesRequestHandler(
     CompletionCallback callback)
     : RequestHandlerBase(content_analysis_info,
                          upload_service,
-                         profile,
                          url,
                          access_point),
       paths_(paths),
       source_(source),
       destination_(destination),
       content_transfer_method_(content_transfer_method),
+      profile_(profile),
       callback_(std::move(callback)) {
   results_.resize(paths_.size());
   file_info_.resize(paths_.size());
@@ -219,7 +220,8 @@ FilesRequestHandler::PrepareFileRequest(size_t index) {
       base::BindOnce(&FilesRequestHandler::FileRequestStartCallback,
                      weak_ptr_factory_.GetWeakPtr(), index));
   enterprise_connectors::FileAnalysisRequestBase* request_raw = request.get();
-  content_analysis_info_->InitializeRequest(request_raw, true);
+  content_analysis_info_->InitializeRequest(
+      request_raw, /*include_enterprise_only_fields=*/true);
   request_raw->set_analysis_connector(
       AccessPointToEnterpriseConnector(access_point_));
   request_raw->set_source(source_);
