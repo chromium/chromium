@@ -280,11 +280,6 @@ TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
   // showing the confirmation bubble.
   histogram_tester.ExpectTotalCount(
       "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow", 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.VirtualCardEnrollBubble.ConfirmationResult.CardEnrolled",
-      VirtualCardEnrollmentBubbleResult::VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED,
-      1);
 }
 
 // Test that on getting client-side timeout, virtual card bubble is closed in
@@ -299,24 +294,6 @@ TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
       payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout);
   EXPECT_EQ(GetBubbleViews(), nullptr);
   EXPECT_FALSE(controller()->IsIconVisible());
-}
-
-// Tests that the correct confirmation result metric is logged when the
-// confirmation bubble is closed after the card is not enrolled.
-TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
-       Metric_CloseConfirmationBubble_CardNotEnrolled) {
-  base::HistogramTester histogram_tester;
-
-  ShowBubble();
-  controller()->OnAcceptButton(/*did_switch_to_loading_state=*/true);
-  controller()->ShowConfirmationBubbleView(
-      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
-  controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.VirtualCardEnrollBubble.ConfirmationResult.CardNotEnrolled",
-      VirtualCardEnrollmentBubbleResult::VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED,
-      1);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

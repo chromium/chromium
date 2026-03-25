@@ -161,9 +161,6 @@ void LogVirtualCardEnrollmentConfirmationViewShown(bool is_shown,
 // Logs the loading or confirmation views results when the view is closed.
 void LogVirtualCardEnrollmentLoadingViewResult(
     VirtualCardEnrollmentBubbleResult result);
-void LogVirtualCardEnrollmentConfirmationViewResult(
-    VirtualCardEnrollmentBubbleResult result,
-    bool is_card_enrolled);
 
 // Helper function used to convert VirtualCardEnrollmentBubbleSource enum to
 // name suffix.

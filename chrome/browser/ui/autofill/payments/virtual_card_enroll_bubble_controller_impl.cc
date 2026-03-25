@@ -252,8 +252,6 @@ void VirtualCardEnrollBubbleControllerImpl::LogBubbleCloseMetrics(
         LogVirtualCardEnrollmentLoadingViewResult(get_metric(closed_reason));
         return true;
       case EnrollmentStatus::kCompleted:
-        LogVirtualCardEnrollmentConfirmationViewResult(
-            get_metric(closed_reason), confirmation_ui_params_->is_success);
         return true;
       case EnrollmentStatus::kNone:
         return false;
