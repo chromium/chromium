@@ -1896,7 +1896,7 @@
     {
       // https://issues.chromium.org/40675832: CSS `text-decoration-skip-ink: all` value
       name: "CSSTextDecorationSkipInkAll",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/434361099
