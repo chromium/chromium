@@ -484,6 +484,13 @@ be describing additional metrics about the same event.
     <summary>
       The status of the distillation
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -534,6 +541,13 @@ be describing additional metrics about the same event.
       Records the UI entry point that the user clicked to open the Read Anything
       side panel.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Shown" enum="Boolean">
     <summary>
