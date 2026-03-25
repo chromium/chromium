@@ -392,16 +392,6 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
   }
 }
 
-EventResult CalculateEventResult(const AnalysisSettings& settings,
-                                 bool allowed_by_scan_result,
-                                 bool should_warn) {
-  bool wait_for_verdict =
-      settings.block_until_verdict == BlockUntilVerdict::kBlock;
-  return (allowed_by_scan_result || !wait_for_verdict)
-             ? EventResult::ALLOWED
-             : (should_warn ? EventResult::WARNED : EventResult::BLOCKED);
-}
-
 BinaryUploadService* GetBinaryUploadServiceForConnector(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& settings) {

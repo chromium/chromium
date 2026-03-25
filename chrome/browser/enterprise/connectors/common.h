@@ -84,12 +84,6 @@ bool ResultIsFailClosed(ScanRequestUploadResult result);
 bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
                               ScanRequestUploadResult upload_result);
 
-// Calculates the event result that is experienced by the user.
-// If data is allowed to be accessed immediately, the result will indicate that
-// the user was allowed to use the data independent of the scanning result.
-EventResult CalculateEventResult(const AnalysisSettings& settings,
-                                 bool allowed_by_scan_result,
-                                 bool should_warn);
 
 // Returns the appropriate BinaryUploadService for the given `profile` and
 // `settings`. This can be a cloud or local service.
