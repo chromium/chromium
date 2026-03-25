@@ -19,24 +19,23 @@
     gap: 16px;
   }
 
-  cr-chip {
+  cr-button {
     --chip-icon-size_: var(--cr-icon-size);
-    --color-chip-border: transparent;
-    --color-chip-icon: var(--cr-secondary-text-color);
-    --cr-chip-border-radius: 4px;
-    --cr-chip-height: 36px;
+    --cr-button-border-color: transparent;
+    --cr-button-text-color: var(--cr-secondary-text-color);
+    --cr-button-height: 36px;
+    border-radius: 4px;
     display: flex;
-    flex-direction: column;
+    justify-content: flex-start;
   }
 
-  cr-chip span {
+  cr-button span {
     font-weight: normal;
   }
 
-  cr-chip cr-icon {
+  cr-button cr-icon {
     width: var(--chip-icon-size_);
     height: var(--chip-icon-size_);
-    margin-inline-start: 8px;
     margin-inline-end: 10px;
   }
 
@@ -51,12 +50,12 @@
 <hr>
 <div class="chips-container">
   <template is="dom-repeat" items="[[chips]]">
-    <cr-chip on-click="onDataChipClick_">
+    <cr-button on-click="onDataChipClick_">
       <cr-icon icon="[[item.icon]]"></cr-icon>
       <span>[[item.label]]</span>
       <span class="counter" hidden$="[[!item.count]]">
         ([[item.count]])
       </span>
-    </cr-chip>
+    </cr-button>
   </template>
 </div>

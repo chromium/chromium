@@ -75,7 +75,7 @@ suite('YourSavedInfoPage', function() {
     const cards = yourSavedInfoPage.shadowRoot!.querySelectorAll(
         'category-reference-card');
     for (const card of cards) {
-      const chips = card.shadowRoot!.querySelectorAll('cr-chip');
+      const chips = card.shadowRoot!.querySelectorAll('cr-button');
       for (const chip of chips) {
         const labelSpan = chip.querySelector('span:not(.counter)');
         if (labelSpan && labelSpan.textContent === chipLabel) {
@@ -223,7 +223,7 @@ suite('YourSavedInfoPage', function() {
             loadTimeData.getString('contactInfoTitle')}"]`);
     assertTrue(!!card);
     const chips: HTMLElement[] =
-        Array.from(card.shadowRoot!.querySelectorAll('cr-chip'));
+        Array.from(card.shadowRoot!.querySelectorAll('cr-button'));
     const chip: HTMLElement = chips.find(chip => {
       const labelSpan = chip.querySelector('span:not(.counter)');
       return labelSpan &&
@@ -306,7 +306,7 @@ suite('DataChipsVisibility', function() {
         yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(cardSelector);
     assertTrue(!!card);
     const chips: HTMLElement[] =
-        Array.from(card.shadowRoot!.querySelectorAll('cr-chip'));
+        Array.from(card.shadowRoot!.querySelectorAll('cr-button'));
     return chips.map(chip => chip.querySelector('span')!.textContent);
   }
 
