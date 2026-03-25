@@ -75,11 +75,6 @@ struct GlicInvokeOptions {
   std::variant<DefaultConversation, NewConversation, ConversationId>
       conversation = DefaultConversation();
 
-  // Whether or not to automatically submit the conversation turn.
-  // Note: This is "best effort", not all invocations (e.g., multi-prompts)
-  // support automatic submission.
-  bool auto_submit = false;
-
   // The feature mode to use for the invocation, triggering specific client
   // behaviours like actuation or image generation.
   std::optional<glic::mojom::FeatureMode> feature_mode;

@@ -18,12 +18,15 @@ namespace glic {
 
 constexpr base::TimeDelta kDefaultTimeout = base::Minutes(1);
 
-GlicInvokeHandler::GlicInvokeHandler(GlicInstanceImpl& instance,
-                                     tabs::TabInterface* tab,
-                                     GlicInvokeOptions options,
-                                     CompletionCallback completion_callback)
+GlicInvokeHandler::GlicInvokeHandler(
+    GlicInstanceImpl& instance,
+    tabs::TabInterface* tab,
+    GlicInvokeOptions options,
+    std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
+    CompletionCallback completion_callback)
     : instance_(instance),
       options_(std::move(options)),
+      auto_submit_passkey_(auto_submit_passkey),
       completion_callback_(std::move(completion_callback)) {
   if (tab && GlicInstanceHelper::From(tab)) {
     tab_destruction_subscription_ =
@@ -67,9 +70,16 @@ void GlicInvokeHandler::SendToClient() {
     return;
   }
 
-  instance_->host().Invoke(CreateMojoOptions(),
-                           base::BindOnce(&GlicInvokeHandler::OnSuccess,
-                                          weak_ptr_factory_.GetWeakPtr()));
+  if (auto_submit_passkey_) {
+    instance_->host().InvokeWithAutoSubmit(
+        *auto_submit_passkey_, CreateMojoOptions(),
+        base::BindOnce(&GlicInvokeHandler::OnSuccess,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    instance_->host().Invoke(CreateMojoOptions(),
+                             base::BindOnce(&GlicInvokeHandler::OnSuccess,
+                                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void GlicInvokeHandler::OnTabClosed(tabs::TabInterface* tab) {
@@ -110,7 +120,7 @@ mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {
     mojo_options->context = std::move(options_.additional_context);
   }
 
-  mojo_options->auto_submit = options_.auto_submit;
+  mojo_options->auto_submit = auto_submit_passkey_.has_value();
   mojo_options->feature_mode =
       options_.feature_mode.value_or(mojom::FeatureMode::kUnspecified);
   mojo_options->disable_zero_state_suggestions = options_.disable_zss;

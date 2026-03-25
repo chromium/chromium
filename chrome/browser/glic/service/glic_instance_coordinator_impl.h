@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
@@ -135,6 +136,9 @@ class GlicInstanceCoordinatorImpl
   void Shutdown() override;
   void Close(const CloseOptions& options) override;
   void Invoke(tabs::TabInterface* tab, GlicInvokeOptions options);
+  void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
+                            tabs::TabInterface* tab,
+                            GlicInvokeOptions options);
   void CloseInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
   void CloseAndShutdownInstanceWithFrame(
@@ -187,6 +191,11 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* GetInstanceImplForTab(const tabs::TabInterface* tab) const;
 
  private:
+  void InvokeInternal(
+      std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
+      tabs::TabInterface* tab,
+      GlicInvokeOptions options);
+
   void OnTabEvent(const GlicTabEvent& event);
   // Returns a pointer to an instance with the given conversation id or nullptr
   // if no such instance exists.

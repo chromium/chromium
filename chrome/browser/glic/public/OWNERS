@@ -1,0 +1,2 @@
+per-file glic_passkeys.h=set noparent
+per-file glic_passkeys.h=file://chrome/browser/glic/API_OWNERS

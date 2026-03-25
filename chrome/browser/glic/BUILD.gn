@@ -53,6 +53,7 @@ source_set("glic") {
     "public/glic_invoke_options.h",
     "public/glic_keyed_service.h",
     "public/glic_keyed_service_factory.h",
+    "public/glic_passkeys.h",
     "public/glic_side_panel_coordinator.cc",
     "public/glic_side_panel_coordinator.h",
     "service/glic_instance_helper.cc",

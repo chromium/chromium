@@ -100,3 +100,7 @@ file://third_party/crashpad/crashpad/OWNERS
 
 # Cronet
 file://components/cronet/CRONET_OWNERS
+
+# Gemini in Chrome API owners are responsible for making sure new usage of
+# sensitive features (e.g. auto submit) are properly reviewed/approved.
+file://chrome/browser/glic/API_OWNERS

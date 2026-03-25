@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host_metrics.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -414,12 +415,18 @@ class Host : public GlicSharingManagerProvider {
   void NotifySkillToInvokeChanged(mojom::SkillPtr skill);
 
   void Invoke(mojom::InvokeOptionsPtr options, base::OnceClosure callback);
+  void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
+                            mojom::InvokeOptionsPtr options,
+                            base::OnceClosure callback);
 
   void NotifyContextualSkillsChanged(
       std::vector<mojom::SkillPreviewPtr> contextual_skill_previews);
 
  private:
   friend class HostManager;
+
+  void InvokeInternal(mojom::InvokeOptionsPtr options,
+                      base::OnceClosure callback);
 
   void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
   void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
