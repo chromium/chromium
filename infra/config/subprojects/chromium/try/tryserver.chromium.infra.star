@@ -302,7 +302,7 @@ try_.builder(
 try_.builder(
     name = "linux-autotest-tester",
     description_html = "Make sure tools/autotest.py remains functional on Linux",
-    executable = "recipe:chromium/generic_script_runner",
+    executable = "recipe:chromium/autotest_runner",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -317,21 +317,18 @@ try_.builder(
     contact_team_email = "pdeio-chrome-test-infra-mx@google.com",
     execution_timeout = 2 * time.hour,
     properties = {
-        "scripts": [
+        "tests": [
             {
-                "step_name": "Turn off telemetry",
-                "script": "vpython3",
-                "args": ["third_party/depot_tools/infra_lib/telemetry", "--disable"],
+                "step_name": "Run all tests in a directory",
+                "args": "base/strings",
             },
             {
-                "step_name": "Set up out/Default directory",
-                "script": "gn",
-                "args": ["gen", "out/Default"],
+                "step_name": "Run a specific file",
+                "args": "base/pickle_unittest.cc",
             },
             {
-                "step_name": "test directory",
-                "script": "vpython3",
-                "args": ["tools/autotest.py", "--output-dir", "out/Default", "--run-all", "base/strings"],
+                "step_name": "Run by test name",
+                "args": "StringUtilTest.IsStringUTF8",
             },
         ],
     },
@@ -347,7 +344,7 @@ try_.builder(
 try_.builder(
     name = "win-autotest-tester",
     description_html = "Make sure tools/autotest.py remains functional on Windows",
-    executable = "recipe:chromium/generic_script_runner",
+    executable = "recipe:chromium/autotest_runner",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -362,21 +359,18 @@ try_.builder(
     contact_team_email = "pdeio-chrome-test-infra-mx@google.com",
     execution_timeout = 2 * time.hour,
     properties = {
-        "scripts": [
+        "tests": [
             {
-                "step_name": "Turn off telemetry",
-                "script": "vpython3.bat",
-                "args": ["third_party/depot_tools/infra_lib/telemetry", "--disable"],
+                "step_name": "Run all tests in a directory",
+                "args": "base/strings",
             },
             {
-                "step_name": "Set up out/Default directory",
-                "script": "gn",
-                "args": ["gen", "out/Default"],
+                "step_name": "Run a specific file",
+                "args": "base/pickle_unittest.cc",
             },
             {
-                "step_name": "test directory",
-                "script": "vpython3.bat",
-                "args": ["tools/autotest.py", "--output-dir", "out/Default", "--run-all", "base/strings"],
+                "step_name": "Run by test name",
+                "args": "StringUtilTest.IsStringUTF8",
             },
         ],
     },
@@ -392,7 +386,7 @@ try_.builder(
 try_.builder(
     name = "mac-autotest-tester",
     description_html = "Make sure tools/autotest.py remains functional on Mac",
-    executable = "recipe:chromium/generic_script_runner",
+    executable = "recipe:chromium/autotest_runner",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -408,21 +402,18 @@ try_.builder(
     contact_team_email = "pdeio-chrome-test-infra-mx@google.com",
     execution_timeout = 2 * time.hour,
     properties = {
-        "scripts": [
+        "tests": [
             {
-                "step_name": "Turn off telemetry",
-                "script": "vpython3",
-                "args": ["third_party/depot_tools/infra_lib/telemetry", "--disable"],
+                "step_name": "Run all tests in a directory",
+                "args": "base/strings",
             },
             {
-                "step_name": "Set up out/Default directory",
-                "script": "gn",
-                "args": ["gen", "out/Default"],
+                "step_name": "Run a specific file",
+                "args": "base/pickle_unittest.cc",
             },
             {
-                "step_name": "test directory",
-                "script": "vpython3",
-                "args": ["tools/autotest.py", "--output-dir", "out/Default", "--run-all", "base/strings"],
+                "step_name": "Run by test name",
+                "args": "StringUtilTest.IsStringUTF8",
             },
         ],
     },

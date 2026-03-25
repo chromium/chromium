@@ -155,6 +155,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/autotest_runner",
+)
+
+build_recipe(
     name = "recipe:chromium/builder_config_verifier",
 )
 
