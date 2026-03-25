@@ -57,7 +57,29 @@ class TabStateStorageService : public KeyedService,
   // A scoped helper to batch storage operations. All operations performed on
   // the service while this object is alive will be batched and committed
   // when all ScopedBatches are destroyed.
-  using ScopedBatch = base::ScopedClosureRunner;
+  class ScopedBatch {
+   public:
+    ScopedBatch();
+    ~ScopedBatch();
+
+    ScopedBatch(ScopedBatch&&);
+    ScopedBatch& operator=(ScopedBatch&&);
+
+    ScopedBatch(const ScopedBatch&) = delete;
+    ScopedBatch& operator=(const ScopedBatch&) = delete;
+
+    // Registers a callback to be invoked upon the changes in this ScopedBatch
+    // being committed.
+    void AddCallback(base::OnceClosure callback);
+
+   private:
+    friend class TabStateStorageService;
+    explicit ScopedBatch(base::ScopedClosureRunner runner,
+                         TabStateStorageUpdaterBuilder* builder);
+
+    base::ScopedClosureRunner runner_;
+    raw_ptr<TabStateStorageUpdaterBuilder> builder_;
+  };
 
   TabStateStorageService(const base::FilePath& profile_path,
                          bool support_off_the_record_data,

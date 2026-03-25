@@ -48,6 +48,8 @@ StorageId GetOrCreateStorageId(
 
 }  // namespace
 
+using ScopedBatch = TabStateStorageService::ScopedBatch;
+
 TabStateStorageService::OpenBatches::OpenBatches(
     TabStateStorageService& service,
     TabStoragePackager* packager)
@@ -90,16 +92,32 @@ void TabStateStorageService::WaitForAllPendingOperations(
   tab_backend_.WaitForAllPendingOperations(std::move(on_idle));
 }
 
-TabStateStorageService::ScopedBatch
-TabStateStorageService::CreateScopedBatch() {
+ScopedBatch::ScopedBatch(base::ScopedClosureRunner runner,
+                         TabStateStorageUpdaterBuilder* builder)
+    : runner_(std::move(runner)), builder_(builder) {}
+
+ScopedBatch::ScopedBatch() = default;
+ScopedBatch::~ScopedBatch() = default;
+
+ScopedBatch::ScopedBatch(ScopedBatch&&) = default;
+ScopedBatch& ScopedBatch::operator=(ScopedBatch&&) = default;
+
+void ScopedBatch::AddCallback(base::OnceClosure callback) {
+  if (builder_) {
+    builder_->AddCallback(std::move(callback));
+  }
+}
+
+ScopedBatch TabStateStorageService::CreateScopedBatch() {
   if (!open_batches_) {
     open_batches_.emplace(*this, packager_.get());
   }
   open_batches_->batch_cnt++;
 
-  return base::ScopedClosureRunner(
-      base::BindOnce(&TabStateStorageService::OnScopedBatchDestroyed,
-                     weak_ptr_factory_.GetWeakPtr()));
+  return ScopedBatch(base::ScopedClosureRunner(base::BindOnce(
+                         &TabStateStorageService::OnScopedBatchDestroyed,
+                         weak_ptr_factory_.GetWeakPtr())),
+                     &open_batches_->builder);
 }
 
 void TabStateStorageService::OnScopedBatchDestroyed() {

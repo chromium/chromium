@@ -51,6 +51,7 @@ StorageCollectionSynchronizer::StorageCollectionSynchronizer(
     : collection_(collection), service_(service) {}
 
 void StorageCollectionSynchronizer::FullSave() {
+  auto batch = service_->CreateScopedBatch();
   service_->Save(collection_);
   CollectionSaveCrawler crawler(service_);
   DirectChildWalker walker(collection_, &crawler);
