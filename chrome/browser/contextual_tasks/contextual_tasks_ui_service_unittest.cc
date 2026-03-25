@@ -187,6 +187,7 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
         .WillByDefault([]() {
           FeatureEligibility eligibility;
           eligibility.contextual_tasks_enabled = true;
+          eligibility.cobrowse_eligible = true;
           eligibility.aim_eligible = true;
           eligibility.context_sharing_enabled = true;
           return eligibility;

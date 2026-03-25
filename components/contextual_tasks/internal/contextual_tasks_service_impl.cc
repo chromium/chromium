@@ -221,6 +221,7 @@ ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
 FeatureEligibility ContextualTasksServiceImpl::GetFeatureEligibility() {
   return {base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks),
           aim_eligibility_service_->IsAimEligible(),
+          aim_eligibility_service_->IsCobrowseEligible(),
           contextual_search::ContextualSearchService::IsContextSharingEnabled(
               pref_service_)};
 }

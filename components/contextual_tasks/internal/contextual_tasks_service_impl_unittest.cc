@@ -22,6 +22,7 @@
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/internal/composite_context_decorator.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -62,6 +63,7 @@ class MockAimEligibilityService : public AimEligibilityService {
                               "en-US",
                               {}) {}
   MOCK_METHOD(bool, IsAimEligible, (), (const, override));
+  MOCK_METHOD(bool, IsCobrowseEligible, (), (const, override));
 
   // The following methods are marked as pure virtual in AimEligibilityService,
   // as they are implemented in ChromeAimEligibilityService which is the one
@@ -1475,27 +1477,56 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask_NotFound) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetFeatureEligibility) {
-  // Test case 1: Feature flag enabled, AIM eligible.
+  // Setup default pref to true for context sharing.
+  pref_service_.SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  // Test case 1: All features enabled.
   feature_list_.InitAndEnableFeature(kContextualTasks);
   EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
       .WillOnce(Return(true));
   EXPECT_TRUE(service_->GetFeatureEligibility().IsEligible());
 
   // Test case 2: Feature flag enabled, AIM not eligible.
   EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
       .WillOnce(Return(false));
-  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
-
-  feature_list_.Reset();
-  // Test case 3: Feature flag disabled, AIM eligible.
-  feature_list_.InitAndDisableFeature(kContextualTasks);
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
       .WillOnce(Return(true));
   EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
 
-  // Test case 4: Feature flag disabled, AIM not eligible.
+  // Test case 3: Feature flag enabled, Cobrowse not eligible.
   EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
       .WillOnce(Return(false));
+  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
+
+  // Test case 4: Feature flag enabled, Context sharing not eligible.
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
+      .WillOnce(Return(true));
+  pref_service_.SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
+
+  feature_list_.Reset();
+  // Test case 5: Feature flag disabled, everything else eligible.
+  pref_service_.SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+  feature_list_.InitAndDisableFeature(kContextualTasks);
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
+      .WillOnce(Return(true));
   EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
 }
 

@@ -129,6 +129,15 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
     }
     return true;
   }
+  bool IsCobrowseEligible() const override {
+    if (!IsAimLocallyEligible()) {
+      return false;
+    }
+    if (IsServerEligibilityEnabled()) {
+      return is_server_eligible_;
+    }
+    return true;
+  }
 
  private:
   bool is_locally_eligible_;
