@@ -6,6 +6,7 @@
 
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_dragged_tabs_container.h"
@@ -94,11 +95,16 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     int available_width =
         size_bounds.width().value() - region_horizontal_padding;
 
+    // If collapsed, only one child should be shown per row. Otherwise, fit as
+    // many as possible.
     children_on_row =
-        std::min(children_on_row,
-                 static_cast<int>(std::floor((available_width - child_width) /
-                                             (child_width + kTabPadding)) +
-                                  1));
+        tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() && is_collapsed
+            ? 1
+            : std::min(
+                  children_on_row,
+                  static_cast<int>(std::floor((available_width - child_width) /
+                                              (child_width + kTabPadding)) +
+                                   1));
 
     // Allocate extra space to the tabs.
     available_width -=
