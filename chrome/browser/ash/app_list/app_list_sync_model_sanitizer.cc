@@ -49,10 +49,10 @@ void AppListSyncModelSanitizer::SanitizePageBreaks(
   for (size_t i = 0; i < sync_items.size(); ++i) {
     const AppListSyncableService::SyncItem* item = sync_items[i];
     const std::string item_id = item->item_id;
+    auto it = resolved_duplicate_positions.find(item_id);
     syncer::StringOrdinal item_ordinal =
-        resolved_duplicate_positions.count(item_id)
-            ? resolved_duplicate_positions[item_id]
-            : item->item_ordinal;
+        it != resolved_duplicate_positions.end() ? it->second
+                                                 : item->item_ordinal;
     // `AppListSyncableService::GetSortedTopLevelSyncItems()` filters out items
     // with an invalid position.
     DCHECK(item_ordinal.IsValid());
@@ -122,7 +122,7 @@ void AppListSyncModelSanitizer::SanitizePageBreaks(
       if (last_valid_position.Equals(item_ordinal)) {
         ResolveDuplicatePositionsStartingAtIndex(
             sync_items, i, last_valid_position, &resolved_duplicate_positions);
-        DCHECK(resolved_duplicate_positions.count(item_id));
+        DCHECK(resolved_duplicate_positions.contains(item_id));
 
         item_ordinal = resolved_duplicate_positions[item_id];
         page_breaks_to_add.push_back(
