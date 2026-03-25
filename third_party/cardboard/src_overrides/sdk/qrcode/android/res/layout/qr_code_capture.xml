@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Camera source preview -->
+    <com.google.cardboard.sdk.qrcode.camera.CameraSourcePreview
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- QR code scanning help footer -->
+        <LinearLayout
+            android:id="@+id/footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true">
+
+            <!-- Instructions bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:background="@color/footer_light_grey">
+
+                <!-- QR code sample image. Corresponds to g.co/cardboard QR code -->
+                <ImageView
+                    android:src="@drawable/qr_sample"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_weight="0"/>
+
+                <TextView
+                    style="@style/text_16sp_sans_serif"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="4dp"
+                    android:paddingLeft="24dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/reading_qr_code_instructions"
+                    android:textColor="#DE000000"/>
+            </LinearLayout>
+
+            <!-- Skip bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:orientation="horizontal"
+                android:background="@color/footer_medium_grey">
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+                <TextView
+                    style="@style/text_14sp_sans_serif_medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/cannot_find_symbol"
+                    android:textColor="@color/darker_gray"/>
+                <View
+                    style="@style/vertical_divider"
+                    android:background="#1F000000"
+                    android:layout_width="1dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"/>
+                <TextView
+                    android:id="@+id/skip"
+                    style="@style/text_14sp_sans_serif_medium"
+                    android:textColor="@color/darker_gray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/skip_scanning"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:onClick="skipQrCodeCapture"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- White tick marks -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_above="@id/footer"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/tick_marks" />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>
