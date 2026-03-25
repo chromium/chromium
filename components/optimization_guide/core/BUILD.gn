@@ -375,59 +375,59 @@ source_set("ondevice") {
   }
 }
 
-source_set("manifest_broker") {
-  sources = [
-    "model_execution/manifest_broker/manifest.cc",
-    "model_execution/manifest_broker/manifest.h",
-  ]
-  if (build_with_model_execution) {
-    sources += [
+if (build_with_model_execution) {
+  source_set("manifest_broker") {
+    sources = [
+      "model_execution/manifest_broker/manifest.cc",
+      "model_execution/manifest_broker/manifest.h",
       "model_execution/manifest_broker/manifest_asset_manager.cc",
       "model_execution/manifest_broker/manifest_asset_manager.h",
+      "model_execution/manifest_broker/manifest_solution_factory.cc",
+      "model_execution/manifest_broker/manifest_solution_factory.h",
+    ]
+    deps = [
+      ":features",
+      ":ondevice",
+      "//base",
+      "//components/optimization_guide/core:features",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/optimization_guide/public/mojom",
+      "//components/prefs",
+      "//services/on_device_model/public/cpp",
     ]
   }
-  deps = [
-    ":ondevice",
-    "//base",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/optimization_guide/public/mojom",
-    "//components/prefs",
-  ]
-  if (build_with_model_execution) {
-    deps += [ ":features" ]
+
+  static_library("manifest_broker_dev_support") {
+    sources = [
+      "model_execution/manifest_broker/test/example_manifest.cc",
+      "model_execution/manifest_broker/test/example_manifest.h",
+      "model_execution/manifest_broker/test/manifest_builder.cc",
+      "model_execution/manifest_broker/test/manifest_builder.h",
+    ]
+    deps = [
+      ":manifest_broker",
+      "//base",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/optimization_guide/public/mojom",
+    ]
   }
-}
 
-static_library("manifest_broker_dev_support") {
-  sources = [
-    "model_execution/manifest_broker/test/example_manifest.cc",
-    "model_execution/manifest_broker/test/example_manifest.h",
-    "model_execution/manifest_broker/test/manifest_builder.cc",
-    "model_execution/manifest_broker/test/manifest_builder.h",
-  ]
-  deps = [
-    ":manifest_broker",
-    "//base",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/optimization_guide/public/mojom",
-  ]
-}
-
-static_library("manifest_broker_test_support") {
-  testonly = true
-  sources = [
-    "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.cc",
-    "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h",
-  ]
-  deps = [
-    ":manifest_broker",
-    ":manifest_broker_dev_support",
-    ":model_execution_test_support",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gmock",
-  ]
-}
+  static_library("manifest_broker_test_support") {
+    testonly = true
+    sources = [
+      "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.cc",
+      "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h",
+    ]
+    deps = [
+      ":manifest_broker",
+      ":manifest_broker_dev_support",
+      ":model_execution_test_support",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gmock",
+    ]
+  }
+}  # if (build_with_model_execution)
 
 static_library("core") {
   sources = [
@@ -440,7 +440,6 @@ static_library("core") {
     ":features",
     ":filters",
     ":hints",
-    ":manifest_broker",
     ":model_execution",
     ":ondevice",
     ":prediction",
@@ -458,6 +457,9 @@ static_library("core") {
       # TODO: crbug.com/421262905 - Don't provide compression_utils
       "//third_party/zlib/google:compression_utils",
     ]
+  }
+  if (build_with_model_execution) {
+    public_deps += [ ":manifest_broker" ]
   }
 }
 

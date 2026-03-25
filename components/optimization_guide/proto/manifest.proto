@@ -8,6 +8,9 @@ edition = "2023";
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/common_types.proto";
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+import "components/optimization_guide/proto/on_device_model_execution_config.proto";
+import "components/optimization_guide/proto/text_safety_model_metadata.proto";
 
 option optimize_for = LITE_RUNTIME;
 option features.field_presence = IMPLICIT;
@@ -88,9 +91,23 @@ message SolutionRecipe {
   // The identifier of a SafetyModelRecipe that provides the safety model for
   // this use case.  May be empty if no safety model is required.
   string safety_model_recipe_id = 2 [features.field_presence = EXPLICIT];
-  // Which file contains the configuration proto for this use case.
-  // e.g. an "OnDeviceModelExecutionFeatureConfig"
+  // Which file contains a serialized SolutionConfig for this use case.
   FileReference config_file = 3;
+}
+
+// Contents of a SolutionRecipe's config file. These messages are opaque to the
+// ModelBroker, and are provided as-is to clients.
+message SolutionConfig {
+  // Configuration for using the model via an OnDeviceSession object.
+  // This also contains a feature_metadata field that can be used to store
+  // arbitrary feature-specific data, used independently of OnDeviceSession.
+  OnDeviceModelExecutionFeatureConfig feature = 1;
+  // Configuration for using the safety model via a SafetyChecker object.
+  // This is optional, and may not be set if no safety model is required.
+  FeatureTextSafetyConfiguration safety = 2;
+  // Model version information, primarily for logging via MQLS.
+  // This is optional, and may not be set if not needed for logging.
+  OnDeviceModelVersions model_versions = 3;
 }
 
 // A collection of recipes that can be loaded from Assets.
