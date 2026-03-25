@@ -200,6 +200,7 @@ class NavigationInterceptorTest : public RenderViewHostTestHarness {
 
  protected:
   base::test::ScopedFeatureList features_;
+  GURL base_url_{"https://idp.example/"};
 };
 
 TEST_F(NavigationInterceptorTest, SerializedHeaderFormat) {
@@ -227,6 +228,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(
           Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
@@ -278,6 +280,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(
           Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
@@ -416,6 +419,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(
           Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
@@ -494,7 +498,7 @@ TEST_F(NavigationInterceptorTest, RequestBuilderBuildsRequest) {
       {"params", kParamsJson},
       {"fields", std::vector<std::string>{"name", "email"}},
   });
-  auto result = builder.Build(parsed_dictionary);
+  auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->size(), 1u);
@@ -527,7 +531,7 @@ TEST_F(NavigationInterceptorTest, RequestBuilderParsesAllFields) {
       {"fields",
        std::vector<std::string>{"name", "email", "picture", "tel", "username"}},
   });
-  auto result = builder.Build(parsed_dictionary);
+  auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_TRUE(result.has_value());
   const auto& idp_options = (*result)[0]->providers[0];
@@ -543,7 +547,7 @@ TEST_F(NavigationInterceptorTest, RequestBuilderHandlesMissingFields) {
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "123"},
   });
-  auto result = builder.Build(parsed_dictionary);
+  auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_TRUE(result.has_value());
   const auto& idp_options = (*result)[0]->providers[0];
@@ -557,7 +561,7 @@ TEST_F(NavigationInterceptorTest, RequestBuilderMissingParams) {
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "123"},
   });
-  auto result = builder.Build(parsed_dictionary);
+  auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_TRUE(result.has_value());
   const auto& idp_options = (*result)[0]->providers[0];
@@ -572,7 +576,7 @@ TEST_F(NavigationInterceptorTest,
       {"config_url", "https://idp.example/fedcm.json"},
       {"client_id", "123"},
   });
-  auto result = builder.Build(parsed_dictionary);
+  auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ((*result)[0]->context, blink::mojom::RpContext::kSignIn);
@@ -596,7 +600,7 @@ TEST_F(NavigationInterceptorTest, RequestBuilderParsesContext) {
         {"client_id", "123"},
         {"context", test_case.context_str},
     });
-    auto result = builder.Build(parsed_dictionary);
+    auto result = builder.Build(base_url_, parsed_dictionary);
 
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ((*result)[0]->context, test_case.context_enum);
@@ -611,7 +615,31 @@ TEST_F(NavigationInterceptorTest,
       {"client_id", "123"},
       {"context", "invalid"},
   });
-  auto result = builder.Build(parsed_dictionary);
+  auto result = builder.Build(base_url_, parsed_dictionary);
+
+  ASSERT_FALSE(result.has_value());
+}
+
+TEST_F(NavigationInterceptorTest, RequestBuilderSupportsRelativeUrl) {
+  webid::NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = webid::EncodeParams({
+      {"config_url", "fedcm.json"},
+      {"client_id", "123"},
+  });
+  auto result = builder.Build(base_url_, parsed_dictionary);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ((*result)[0]->providers[0]->config->config_url,
+            GURL("https://idp.example/fedcm.json"));
+}
+
+TEST_F(NavigationInterceptorTest, RequestBuilderDisallowsCrossOriginUrl) {
+  webid::NavigationInterceptor::RequestBuilder builder;
+  auto parsed_dictionary = webid::EncodeParams({
+      {"config_url", "https://cross-origin.idp.example/fedcm.json"},
+      {"client_id", "123"},
+  });
+  auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_FALSE(result.has_value());
 }
@@ -622,7 +650,7 @@ TEST_F(NavigationInterceptorTest,
   auto parsed_dictionary = webid::EncodeParams({
       {"client_id", "123"},
   });
-  auto result = builder.Build(parsed_dictionary);
+  auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_FALSE(result.has_value());
 }
@@ -633,7 +661,7 @@ TEST_F(NavigationInterceptorTest,
   auto parsed_dictionary = webid::EncodeParams({
       {"config_url", "https://idp.example/fedcm.json"},
   });
-  auto result = builder.Build(parsed_dictionary);
+  auto result = builder.Build(base_url_, parsed_dictionary);
 
   ASSERT_FALSE(result.has_value());
 }

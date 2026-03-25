@@ -35,7 +35,8 @@ class CONTENT_EXPORT NavigationInterceptor
     ~RequestBuilder() = default;
     CONTENT_EXPORT std::optional<
         std::vector<blink::mojom::IdentityProviderGetParametersPtr>>
-    Build(const net::structured_headers::Dictionary& dictionary);
+    Build(const GURL& base_url,
+          const net::structured_headers::Dictionary& dictionary);
   };
 
   class ResponseBuilder {

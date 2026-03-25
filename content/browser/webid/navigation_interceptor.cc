@@ -244,7 +244,8 @@ void NavigationInterceptor::OnHeaderParsed(
   }
 
   RequestBuilder request_builder;
-  auto idp_get_params_vector = request_builder.Build(*result);
+  auto idp_get_params_vector =
+      request_builder.Build(navigation_handle()->GetURL(), *result);
 
   if (!idp_get_params_vector) {
     // The header was available, parsed, but contained an invalid set of
@@ -282,6 +283,7 @@ const char* NavigationInterceptor::GetNameForLogging() {
 
 std::optional<std::vector<blink::mojom::IdentityProviderGetParametersPtr>>
 NavigationInterceptor::RequestBuilder::Build(
+    const GURL& base_url,
     const net::structured_headers::Dictionary& dictionary) {
   auto get_string =
       [&dictionary](const std::string& key) -> std::optional<std::string> {
@@ -293,8 +295,15 @@ NavigationInterceptor::RequestBuilder::Build(
     return it->second.member[0].item.GetString();
   };
 
-  auto config_url = get_string("config_url");
-  if (!config_url) {
+  auto config_url_str = get_string("config_url");
+  if (!config_url_str) {
+    return std::nullopt;
+  }
+  GURL config_url = base_url.Resolve(*config_url_str);
+  if (!config_url.is_valid()) {
+    return std::nullopt;
+  }
+  if (!url::IsSameOriginWith(base_url, config_url)) {
     return std::nullopt;
   }
 
@@ -340,7 +349,8 @@ NavigationInterceptor::RequestBuilder::Build(
   }
 
   auto idp_config = blink::mojom::IdentityProviderConfig::New();
-  idp_config->config_url = GURL(*config_url);
+  idp_config->config_url = config_url;
+
   idp_config->client_id = *client_id;
 
   idp_options->config = std::move(idp_config);
