@@ -1,0 +1,65 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='My Documents' hierarchicalLevel=3
+++++++++staticText name='My Documents'
+++++++++++inlineTextBox name='My Documents'
+++++++tree name='My Documents' setSize=2
+++++++++treeItem collapsed name='Projects' hierarchicalLevel=1 setSize=2 posInSet=1 selected=false
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Projects'
+++++++++++++inlineTextBox name='Projects'
+++++++++++group setSize=3
+++++++++++++treeItem name='project-1.docx' hierarchicalLevel=2 setSize=3 posInSet=1 selected=false
+++++++++++++++none ignored
+++++++++++++++++staticText name='%E2%97%A6 '
+++++++++++++++++++inlineTextBox name='%E2%97%A6 '
+++++++++++++++staticText name='project-1.docx'
+++++++++++++++++inlineTextBox name='project-1.docx'
+++++++++++++treeItem collapsed name='Project 3' hierarchicalLevel=2 setSize=3 posInSet=2 selected=false
+++++++++++++++none ignored
+++++++++++++++++staticText name='%E2%97%A6 '
+++++++++++++++++++inlineTextBox name='%E2%97%A6 '
+++++++++++++++staticText name='Project 3'
+++++++++++++++++inlineTextBox name='Project 3'
+++++++++++++++group setSize=1
+++++++++++++++++treeItem name='project-3A.docx' hierarchicalLevel=3 setSize=1 posInSet=1 selected=false
+++++++++++++++++++none ignored
+++++++++++++++++++++staticText name='%E2%96%A0 '
+++++++++++++++++++++++inlineTextBox name='%E2%96%A0 '
+++++++++++++++++++staticText name='project-3A.docx'
+++++++++++++++++++++inlineTextBox name='project-3A.docx'
+++++++++++++treeItem name='project-4.docx' hierarchicalLevel=2 setSize=3 posInSet=3 selected=false
+++++++++++++++none ignored
+++++++++++++++++staticText name='%E2%97%A6 '
+++++++++++++++++++inlineTextBox name='%E2%97%A6 '
+++++++++++++++staticText name='project-4.docx'
+++++++++++++++++inlineTextBox name='project-4.docx'
+++++++++treeItem collapsed name='Reports File or Folder Selected: ' hierarchicalLevel=1 setSize=2 posInSet=2 selected=false
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Reports'
+++++++++++++inlineTextBox name='Reports'
+++++++++++group setSize=1
+++++++++++++treeItem collapsed name='report-1' hierarchicalLevel=2 setSize=1 posInSet=1 selected=false
+++++++++++++++none ignored
+++++++++++++++++staticText name='%E2%97%A6 '
+++++++++++++++++++inlineTextBox name='%E2%97%A6 '
+++++++++++++++staticText name='report-1'
+++++++++++++++++inlineTextBox name='report-1'
+++++++++++++++group setSize=1
+++++++++++++++++treeItem name='report-1A.docx' hierarchicalLevel=3 setSize=1 posInSet=1 selected=false
+++++++++++++++++++none ignored
+++++++++++++++++++++staticText name='%E2%96%A0 '
+++++++++++++++++++++++inlineTextBox name='%E2%96%A0 '
+++++++++++++++++++staticText name='report-1A.docx'
+++++++++++++++++++++inlineTextBox name='report-1A.docx'
+++++++++++paragraph
+++++++++++++labelText
+++++++++++++++staticText name='File or Folder Selected: '
+++++++++++++++++inlineTextBox name='File or Folder Selected: '
+++++++++++++++textField name='File or Folder Selected:' restriction=readOnly
+++++++++++++++++genericContainer

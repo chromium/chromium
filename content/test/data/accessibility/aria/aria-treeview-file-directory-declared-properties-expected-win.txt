@@ -1,0 +1,36 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_HEADING name='My Documents'
+++++ROLE_SYSTEM_STATICTEXT name='My Documents'
+++ROLE_SYSTEM_OUTLINE name='My Documents' setsize:2
+++++ROLE_SYSTEM_OUTLINEITEM name='Projects' COLLAPSED setsize:2 posinset:1
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 '
+++++++ROLE_SYSTEM_STATICTEXT name='Projects'
+++++++ROLE_SYSTEM_GROUPING setsize:3
+++++++++ROLE_SYSTEM_OUTLINEITEM name='project-1.docx' setsize:3 posinset:1
+++++++++++ROLE_SYSTEM_STATICTEXT name='%E2%97%A6 '
+++++++++++ROLE_SYSTEM_STATICTEXT name='project-1.docx'
+++++++++ROLE_SYSTEM_OUTLINEITEM name='Project 3' COLLAPSED setsize:3 posinset:2
+++++++++++ROLE_SYSTEM_STATICTEXT name='%E2%97%A6 '
+++++++++++ROLE_SYSTEM_STATICTEXT name='Project 3'
+++++++++++ROLE_SYSTEM_GROUPING setsize:1
+++++++++++++ROLE_SYSTEM_OUTLINEITEM name='project-3A.docx' setsize:1 posinset:1
+++++++++++++++ROLE_SYSTEM_STATICTEXT name='%E2%96%A0 '
+++++++++++++++ROLE_SYSTEM_STATICTEXT name='project-3A.docx'
+++++++++ROLE_SYSTEM_OUTLINEITEM name='project-4.docx' setsize:3 posinset:3
+++++++++++ROLE_SYSTEM_STATICTEXT name='%E2%97%A6 '
+++++++++++ROLE_SYSTEM_STATICTEXT name='project-4.docx'
+++++ROLE_SYSTEM_OUTLINEITEM name='Reports' COLLAPSED setsize:2 posinset:2
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 '
+++++++ROLE_SYSTEM_STATICTEXT name='Reports'
+++++++ROLE_SYSTEM_GROUPING setsize:1
+++++++++ROLE_SYSTEM_OUTLINEITEM name='report-1' COLLAPSED setsize:1 posinset:1
+++++++++++ROLE_SYSTEM_STATICTEXT name='%E2%97%A6 '
+++++++++++ROLE_SYSTEM_STATICTEXT name='report-1'
+++++++++++ROLE_SYSTEM_GROUPING setsize:1
+++++++++++++ROLE_SYSTEM_OUTLINEITEM name='report-1A.docx' setsize:1 posinset:1
+++++++++++++++ROLE_SYSTEM_STATICTEXT name='%E2%96%A0 '
+++++++++++++++ROLE_SYSTEM_STATICTEXT name='report-1A.docx'
+++IA2_ROLE_PARAGRAPH
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='File or Folder Selected: '
+++++++ROLE_SYSTEM_TEXT name='File or Folder Selected:' READONLY FOCUSABLE

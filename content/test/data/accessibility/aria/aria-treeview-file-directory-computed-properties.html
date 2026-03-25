@@ -1,0 +1,87 @@
+<!--
+@MAC-ALLOW:AXARIASetSize
+@MAC-ALLOW:AXARIAPosInSet
+@MAC-ALLOW:AXIndex
+@WIN-ALLOW:setsize*
+@WIN-ALLOW:posinset*
+@BLINK-ALLOW:hierarchicalLevel*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+    <!-- HTML snippet based on W3C Treeview (File Directory using Computed Properties) Pattern -->
+    <!-- https://www.w3.org/WAI/ARIA/apg/patterns/treeview/examples/treeview-1a/ -->
+    <!-- The HTML snippet is slightly modified to remove unnecessary noise -->
+    <h3 id="tree_label">
+    My Documents
+    </h3>
+    <ul role="tree" aria-labelledby="tree_label">
+    <li role="treeitem"
+        aria-expanded="false"
+        aria-selected="false">
+        <span>
+        Projects
+        </span>
+        <ul role="group">
+        <li role="treeitem"
+            aria-selected="false"
+            class="doc">
+            project-1.docx
+        </li>
+        <li role="treeitem"
+            aria-expanded="false"
+            aria-selected="false">
+            <span>
+            Project 3
+            </span>
+            <ul role="group">
+            <li role="treeitem"
+                aria-selected="false"
+                class="doc">
+                project-3A.docx
+            </li>
+            </ul>
+        </li>
+        <li role="treeitem"
+            aria-selected="false"
+            class="doc">
+            project-4.docx
+        </li>
+        </ul>
+    </li>
+    <li role="treeitem"
+        aria-expanded="false"
+        aria-selected="false">
+        <span>
+        Reports
+        </span>
+        <ul role="group">
+        <li role="treeitem"
+            aria-expanded="false"
+            aria-selected="false">
+            <span>
+            report-1
+            </span>
+            <ul role="group">
+            <li role="treeitem"
+                aria-selected="false"
+                class="doc">
+                report-1A.docx
+            </li>
+        </li>
+        </ul>
+    </li>
+    </ul>
+    <p>
+    <label>
+        File or Folder Selected:
+        <input id="last_action"
+            type="text"
+            size="15"
+            readonly="">
+    </label>
+    </p>
+</body>
+</html>

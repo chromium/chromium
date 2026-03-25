@@ -1190,6 +1190,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaTreeviewFileDirectoryComputedProperties() {
+        performAriaTest("aria-treeview-file-directory-computed-properties.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTreeviewFileDirectoryDeclaredProperties() {
+        performAriaTest("aria-treeview-file-directory-declared-properties.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaTree() {
         performAriaTest("aria-tree.html");
     }

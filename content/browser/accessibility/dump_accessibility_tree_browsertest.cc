@@ -1927,6 +1927,20 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTreeGrid) {
   RunAriaTest(FILE_PATH_LITERAL("aria-treegrid.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityAriaTreeviewFileDirectoryComputedProperties) {
+  RunAriaTest(FILE_PATH_LITERAL(
+      "aria-treeview-file-directory-computed-properties.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityAriaTreeviewFileDirectoryDeclaredProperties) {
+  RunAriaTest(FILE_PATH_LITERAL(
+      "aria-treeview-file-directory-declared-properties.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaTreeDiscontinuous) {
   RunAriaTest(FILE_PATH_LITERAL("aria-tree-discontinuous.html"));
