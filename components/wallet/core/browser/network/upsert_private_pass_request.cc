@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/version_info/version_info.h"
 #include "components/wallet/core/browser/proto/api_v1.pb.h"
@@ -110,6 +111,10 @@ net::HttpRequestHeaders UpsertPrivatePassRequest::GetRequestHeaders() const {
 WalletRequest::WalletNetworkRequestType
 UpsertPrivatePassRequest::GetRequestType() const {
   return WalletRequest::WalletNetworkRequestType::kUpsertPrivatePass;
+}
+
+base::TimeDelta UpsertPrivatePassRequest::GetTimeout() const {
+  return base::Milliseconds(6500);
 }
 
 void UpsertPrivatePassRequest::OnResponse(

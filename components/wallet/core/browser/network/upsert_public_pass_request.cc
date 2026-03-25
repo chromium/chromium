@@ -7,6 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/wallet/core/browser/proto/api_v1.pb.h"
@@ -37,6 +38,10 @@ std::string UpsertPublicPassRequest::GetRequestContent() const {
 WalletRequest::WalletNetworkRequestType
 UpsertPublicPassRequest::GetRequestType() const {
   return WalletRequest::WalletNetworkRequestType::kUpsertPass;
+}
+
+base::TimeDelta UpsertPublicPassRequest::GetTimeout() const {
+  return base::Milliseconds(6500);
 }
 
 void UpsertPublicPassRequest::OnResponse(

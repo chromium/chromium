@@ -183,6 +183,7 @@ void WalletHttpClientImpl::SendRequestInternal(
   loader_ptr->AttachStringForUpload(request->GetRequestContent(),
                                     "application/x-protobuf");
   loader_ptr->SetAllowHttpErrorResults(true);
+  loader_ptr->SetTimeoutDuration(request->GetTimeout());
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&WalletHttpClientImpl::OnSimpleLoaderComplete,

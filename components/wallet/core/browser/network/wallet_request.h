@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/proto/client_info.pb.h"
@@ -46,6 +47,9 @@ class WalletRequest {
 
   // Returns the type of the request.
   virtual WalletNetworkRequestType GetRequestType() const = 0;
+
+  // Returns the timeout for the HTTP request.
+  virtual base::TimeDelta GetTimeout() const = 0;
 
   // Handles the response from the server.
   virtual void OnResponse(WalletHttpClient::HttpResponse http_response) && = 0;

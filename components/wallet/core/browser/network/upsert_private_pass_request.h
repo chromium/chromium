@@ -28,6 +28,7 @@ class UpsertPrivatePassRequest : public WalletRequest {
   std::string GetRequestContent() const override;
   net::HttpRequestHeaders GetRequestHeaders() const override;
   WalletNetworkRequestType GetRequestType() const override;
+  base::TimeDelta GetTimeout() const override;
   void OnResponse(WalletHttpClient::HttpResponse http_response) && override;
 
  private:
