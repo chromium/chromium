@@ -23,12 +23,29 @@ namespace {
 // be considered familiar.
 const base::TimeDelta kMinAgeOfInitialVisitForFamiliarity = base::Hours(24);
 
+std::set<GURL>& GetFamiliarUrlsForTesting() {
+  static base::NoDestructor<std::set<GURL>> familiar_urls_for_testing;
+  return *familiar_urls_for_testing;
+}
+
+bool IsUrlFamiliarForTesting(const GURL& url) {
+  return GetFamiliarUrlsForTesting().contains(url);  // IN-TEST
+}
+
 }  // anonymous namespace
 
 SiteFamiliarityFetcher::SiteFamiliarityFetcher(Profile* profile)
     : profile_(profile) {}
 
 SiteFamiliarityFetcher::~SiteFamiliarityFetcher() = default;
+
+void SiteFamiliarityFetcher::SetUrlFamiliarForTesting(const GURL& url) {
+  GetFamiliarUrlsForTesting().insert(url);  // IN-TEST
+}
+
+void SiteFamiliarityFetcher::ResetFamiliarUrlsForTesting() {
+  GetFamiliarUrlsForTesting().clear();  // IN-TEST
+}
 
 void SiteFamiliarityFetcher::Start(const GURL& url,
                                    SiteFamiliarityFetcher::Callback callback) {
@@ -38,6 +55,11 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
   fetched_history_ = false;
   fetched_sb_list_ = false;
   weak_factory_.InvalidateWeakPtrs();
+
+  if (IsUrlFamiliarForTesting(fetch_url_)) {
+    OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
+    return;
+  }
 
   if (fetch_url_.scheme() == url::kDataScheme) {
     // Data URLs normally stay in the process of their initiator, and in those

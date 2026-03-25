@@ -45,6 +45,14 @@ class SiteFamiliarityFetcher {
   // The GURL for which site familiarity is being computed.
   const GURL& fetch_url() { return fetch_url_; }
 
+  // Set a URL as familiar for testing purposes.
+  static void SetUrlFamiliarForTesting(const GURL& url);
+
+  // Clears the set of URLs explicitly marked as familiar for testing.
+  // Should be called during test TearDown to prevent cross-test pollution.
+  // TODO: crbug.com/493200120 - Rewrite this using an RAII scoped helper.
+  static void ResetFamiliarUrlsForTesting();
+
  private:
   // Initiates safe-browsing-high-confidence-allowlist request.
   void StartFetchingSafeBrowsingHighConfidenceAllowlist();

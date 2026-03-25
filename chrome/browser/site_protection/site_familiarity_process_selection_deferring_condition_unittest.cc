@@ -15,6 +15,7 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -97,6 +98,7 @@ class SiteFamiliarityProcessSelectionDeferringConditionTest
   }
 
   void TearDown() override {
+    site_protection::SiteFamiliarityFetcher::ResetFamiliarUrlsForTesting();
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
 
@@ -173,6 +175,74 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
   EXPECT_EQ(condition.OnWillSelectFinalProcess(base::OnceClosure()),
             content::ProcessSelectionDeferringCondition::Result::kProceed);
   CheckSiteUnfamiliar(navigation_handle);
+}
+
+// Test that data URLs explicitly marked as familiar for testing are considered
+// familiar.
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
+       FamiliarityHeuristic_DataUrl_FamiliarForTesting) {
+  // All data: URLs are always marked as unfamiliar by SiteFamiliarityFetcher.
+  GURL kDataUrl("data:text/html,foo");
+  content::MockNavigationHandle navigation_handle(kDataUrl, main_rfh());
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+  EXPECT_EQ(condition.OnWillSelectFinalProcess(base::OnceClosure()),
+            content::ProcessSelectionDeferringCondition::Result::kProceed);
+  CheckSiteUnfamiliar(navigation_handle);
+
+  // Set data: URL as familiar.
+  site_protection::SiteFamiliarityFetcher::SetUrlFamiliarForTesting(kDataUrl);
+  SiteFamiliarityProcessSelectionDeferringCondition condition_familiar(
+      navigation_handle);
+  EXPECT_EQ(condition_familiar.OnWillSelectFinalProcess(base::OnceClosure()),
+            content::ProcessSelectionDeferringCondition::Result::kProceed);
+  // Site is familiar despite being a data: URL.
+  CheckSiteFamiliar(navigation_handle);
+}
+
+// Test that standard https URLs explicitly marked as unfamiliar for testing are
+// considered familiar.
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
+       FamiliarityHeuristic_HttpsUrl_FamiliarForTesting) {
+  // A standard URL that is unfamiliar.
+  GURL kTestUrl("https://www.example.com");
+  content::MockNavigationHandle navigation_handle(kTestUrl, main_rfh());
+  BuildAndWaitForConditionToRunCallback(navigation_handle);
+  CheckSiteUnfamiliar(navigation_handle);
+
+  // Set URL as familiar.
+  site_protection::SiteFamiliarityFetcher::SetUrlFamiliarForTesting(kTestUrl);
+  SiteFamiliarityProcessSelectionDeferringCondition condition_familiar(
+      navigation_handle);
+  EXPECT_EQ(condition_familiar.OnWillSelectFinalProcess(base::OnceClosure()),
+            content::ProcessSelectionDeferringCondition::Result::kProceed);
+  // Site is familiar without meeting history/site engagement/SB list
+  // requirements.
+  CheckSiteFamiliar(navigation_handle);
+}
+
+// Test that web-safe non-http URLs (like blob:) explicitly marked as familiar
+// for testing are considered familiar.
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
+       FamiliarityHeuristic_BlobUrl_FamiliarForTesting) {
+  // All blob: URLs are marked as unfamiliar.
+  GURL kBlobUrl(
+      "blob:https://example.org/40a5fb5a-d56d-4a33-b4e2-0acf6a8e5f64");
+  content::MockNavigationHandle navigation_handle(kBlobUrl, main_rfh());
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+  EXPECT_EQ(condition.OnWillSelectFinalProcess(base::OnceClosure()),
+            content::ProcessSelectionDeferringCondition::Result::kProceed);
+  CheckSiteUnfamiliar(navigation_handle);
+
+  // Set URL as familiar.
+  site_protection::SiteFamiliarityFetcher::SetUrlFamiliarForTesting(kBlobUrl);
+  SiteFamiliarityProcessSelectionDeferringCondition condition_familiar(
+      navigation_handle);
+  EXPECT_EQ(condition_familiar.OnWillSelectFinalProcess(base::OnceClosure()),
+            content::ProcessSelectionDeferringCondition::Result::kProceed);
+  // Site is now considered familiar.
+  CheckSiteFamiliar(navigation_handle);
 }
 
 // Test that chrome-extension:// URLs are considered familiar.
