@@ -20,23 +20,29 @@
 
 namespace autofill {
 
+namespace {
+
+constexpr int kThrobberSize = 24;
+
+}  // namespace
+
 PopupLoadingView::PopupLoadingView(int expected_number_of_suggestions) {
   SetUseDefaultFillLayout(true);
 
   const gfx::Size expected_size =
       CalculateSizeOfSuggestions(expected_number_of_suggestions);
 
-  AddChildView(
+  views::BoxLayoutView* container_view = AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .SetPreferredSize(expected_size)
-          .AddChild(views::Builder<views::Throbber>().CustomConfigure(
-              base::BindOnce([](views::Throbber* throbber) {
-                throbber->Start();
-              })))
           .Build());
+
+  views::Throbber* throbber = container_view->AddChildView(
+      std::make_unique<views::Throbber>(kThrobberSize));
+  throbber->Start();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kProgressIndicator);
 }
