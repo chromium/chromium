@@ -1138,7 +1138,6 @@ void CanvasNon2DResourceProviderSharedImage::RasterRecord(
   if (!is_accelerated_) {
     EnsureSkiaCanvas();
     skia_canvas_->drawPicture(std::move(last_recording));
-    skgpu::ganesh::FlushAndSubmit(GetSkSurface());
     return;
   }
 
@@ -1923,7 +1922,6 @@ void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
 
   EnsureSkiaCanvas();
   skia_canvas_->drawPicture(std::move(last_recording));
-  skgpu::ganesh::FlushAndSubmit(GetSkSurface());
 }
 
 bool CanvasResourceProviderSharedImage::IsGpuContextLost() const {
