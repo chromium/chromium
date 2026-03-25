@@ -164,7 +164,6 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
   base::ObserverList<
       Observer,
       /*check_empty=*/false,
-      /*reentrancy=*/
       base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       observers_;
 };
