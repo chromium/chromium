@@ -49,7 +49,10 @@ class ChromeVisibilityObserver : public BrowserCollectionObserver {
   // example, when user switching between two browser windows.
   base::TimeDelta visibility_gap_timeout_;
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+  // TODO(crbug.com/495383290): remove when the ChromeVisibilityObserver is no
+  // longer outliving the GlobalBrowserCollection it observes.
+  base::ScopedObservation<GlobalBrowserCollection,
+                          BrowserCollectionObserver>::LeakedDanglingUntriaged
       browser_collection_observation_{this};
 
   base::WeakPtrFactory<ChromeVisibilityObserver> weak_factory_{this};
