@@ -485,6 +485,17 @@ public class OmniboxResourceProvider {
     }
 
     /**
+     * Returns the background color for the toolbar pill for tablets. Because tablets always ignore
+     * any branded theme, can collapse to if incog or not.
+     */
+    public static @ColorInt int getTabletToolbarTextBoxBackgroundColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        return brandedColorScheme == BrandedColorScheme.INCOGNITO
+                ? context.getColor(R.color.toolbar_text_box_background_incognito)
+                : context.getColor(R.color.toolbar_text_box_bg_color);
+    }
+
+    /**
      * Resolves the attribute based on the current theme.
      *
      * @param context The {@link Context} used to retrieve resources.

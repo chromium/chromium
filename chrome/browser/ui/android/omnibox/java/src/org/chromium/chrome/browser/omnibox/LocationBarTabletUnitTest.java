@@ -20,6 +20,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorInt;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +42,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -73,6 +77,8 @@ public class LocationBarTabletUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         LinearLayout contentView = new LinearLayout(mActivity);
         mLocationBarTablet = new LocationBarTablet(mActivity, null);
+        mLocationBarTablet.setBackgroundResource(
+                R.drawable.modern_toolbar_tablet_text_box_background);
         LayoutParams params =
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         contentView.addView(mLocationBarTablet, params);
@@ -313,5 +319,68 @@ public class LocationBarTabletUnitTest {
                 ShadowToast.showedCustomToast(
                         mActivity.getResources().getString(stringId), R.id.toast_text));
         ToastManager.resetForTesting();
+    }
+
+    @Test
+    public void testUpdateVisualsForState_unfocused() {
+        // TODO(https://crbug.com/495794043): Replace with a render test.
+        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.INCOGNITO);
+
+        LayerDrawable background = (LayerDrawable) mLocationBarTablet.getBackground();
+        GradientDrawable unfocusedRect =
+                (GradientDrawable) background.findDrawableByLayerId(R.id.unfocused_bg);
+
+        @ColorInt
+        int expectedIncognitoColor =
+                OmniboxResourceProvider.getTabletToolbarTextBoxBackgroundColor(
+                        mActivity, BrandedColorScheme.INCOGNITO);
+        assertEquals(expectedIncognitoColor, unfocusedRect.getColor().getDefaultColor());
+
+        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
+        @ColorInt
+        int expectedAppDefaultColor =
+                OmniboxResourceProvider.getTabletToolbarTextBoxBackgroundColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(expectedAppDefaultColor, unfocusedRect.getColor().getDefaultColor());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateVisualsForState_focused() {
+        // TODO(https://crbug.com/495794043): Replace with a render test.
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.INCOGNITO);
+
+        LayerDrawable background = (LayerDrawable) mLocationBarTablet.getBackground();
+        GradientDrawable outerRect =
+                (GradientDrawable) background.findDrawableByLayerId(R.id.focused_popup_bg);
+        GradientDrawable innerRect =
+                (GradientDrawable) background.findDrawableByLayerId(R.id.focused_popup_inner_bg);
+
+        @ColorInt
+        int expectedIncognitoOuterColor =
+                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                        mActivity, BrandedColorScheme.INCOGNITO);
+        assertEquals(expectedIncognitoOuterColor, outerRect.getColor().getDefaultColor());
+
+        @ColorInt
+        int expectedIncognitoInnerColor =
+                OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                        mActivity, BrandedColorScheme.INCOGNITO);
+        assertEquals(expectedIncognitoInnerColor, innerRect.getColor().getDefaultColor());
+
+        mLocationBarTablet.updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
+
+        @ColorInt
+        int expectedAppDefaultOuterColor =
+                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(expectedAppDefaultOuterColor, outerRect.getColor().getDefaultColor());
+
+        @ColorInt
+        int expectedAppDefaultInnerColor =
+                OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(expectedAppDefaultInnerColor, innerRect.getColor().getDefaultColor());
     }
 }

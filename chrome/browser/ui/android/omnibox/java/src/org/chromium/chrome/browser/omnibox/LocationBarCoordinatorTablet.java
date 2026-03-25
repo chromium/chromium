@@ -23,12 +23,9 @@ public class LocationBarCoordinatorTablet implements LocationBarCoordinator.SubC
         mLocationBarTablet = null;
     }
 
-    /**
-     * Sets the color of the background.
-     *
-     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
-     */
+    /** Sets the color of the background. */
     public void tintBackground(@ColorInt int color) {
+        // TODO(https://crbug.com/495787471): We should be able to completely remove this method.
         mLocationBarTablet.getBackground().mutate().setTint(color);
     }
 }
