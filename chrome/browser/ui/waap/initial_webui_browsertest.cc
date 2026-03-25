@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
@@ -18,7 +19,6 @@
 #include "chrome/common/webui_url_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/mapping/metrics_mapping_features.h"
 #include "components/metrics/mapping/metrics_name_mapping.pb.h"
@@ -502,5 +502,28 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsDropBrowserTest,
   // as-is).
   histogram_tester.ExpectTotalCount(kTestMetricName, 0);
 }
+
+// TODO(crbug.com/493786816): Add test case for startup metrics verification
+// once flaky behaviors on ChromeOS are fixed.
+// Note: On ChromeOS when run with `WebUIReloadButtonDeferBrowserViewShow=true`,
+// the `UserSessionManager::LaunchBrowser()` function is responsible for
+// triggering startup metrics profiling by calling
+// `metrics::BeginFirstWebContentsProfiling()`. However, it contains an explicit
+// guard that only triggers profiling if the browser window is "active"
+// according to the window manager:
+// ```cpp
+//   aura::Window* active_window = ash::window_util::GetActiveWindow();
+//   bool is_browser_window_active =
+//       active_window && active_window->GetProperty(chromeos::kAppTypeKey) ==
+//                            chromeos::AppType::BROWSER;
+//   if (is_browser_window_active) {
+//     metrics::BeginFirstWebContentsProfiling();
+//   }
+// ```
+// When the deferral feature is enabled, `is_browser_window_active` evaluates to
+// false at this initial trigger point. Hence,
+// `metrics::BeginFirstWebContentsProfiling()` is skipped, and the startup
+// metrics, such as `Startup.FirstWebContents.NonEmptyPaint3`, are never
+// recorded.
 
 }  // namespace waap

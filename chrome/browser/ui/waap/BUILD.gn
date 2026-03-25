@@ -30,18 +30,14 @@ static_library("waap") {
 }
 
 source_set("manager") {
-  public = [
-    "initial_web_ui_manager.h",
-  ]
-  sources = [
-    "initial_web_ui_manager.cc",
-  ]
+  public = [ "initial_web_ui_manager.h" ]
+  sources = [ "initial_web_ui_manager.cc" ]
   deps = [
     ":window_metrics_manager",
     "//base",
     "//chrome/browser/ui:ui_features",
-    "//chrome/common:chrome_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/common:chrome_features",
     "//ui/base/unowned_user_data",
     "//ui/views",
   ]
@@ -80,12 +76,14 @@ source_set("waap_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "initial_web_ui_manager_unittest.cc",
     "initial_webui_window_metrics_manager_unittest.cc",
     "waap_ui_metrics_recorder_unittest.cc",
     "waap_ui_metrics_service_unittest.cc",
     "waap_utils_unittest.cc",
   ]
   deps = [
+    ":manager",
     ":waap",
     ":waap_utils",
     ":window_metrics_manager",
