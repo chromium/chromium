@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 
@@ -16,6 +12,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -314,7 +311,8 @@ bool V4L2StatelessVideoDecoderBackend::SubmitSlice(
   // will exist in the secure buffer.
   if (data) {
     void* mapping = dec_surface->input_buffer().GetPlaneMapping(0);
-    memcpy(reinterpret_cast<uint8_t*>(mapping) + bytes_used, data, size);
+    UNSAFE_TODO(
+        memcpy(reinterpret_cast<uint8_t*>(mapping) + bytes_used, data, size));
   }
   dec_surface->input_buffer().SetPlaneBytesUsed(0, bytes_used + size);
   return true;

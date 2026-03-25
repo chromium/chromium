@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 
 #include <drm_fourcc.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -428,8 +424,8 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
     // Set SVP (secure video pipeline) mode.
     struct v4l2_ext_control ctrl;
     struct v4l2_ext_controls ctrls;
-    memset(&ctrls, 0, sizeof(ctrls));
-    memset(&ctrl, 0, sizeof(ctrl));
+    UNSAFE_TODO(memset(&ctrls, 0, sizeof(ctrls)));
+    UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
     ctrl.id = V4L2_CID_MPEG_MTK_SET_SECURE_MODE;
     ctrl.value = 1;
 
@@ -544,8 +540,8 @@ void V4L2VideoDecoder::AllocateSecureBufferCB(SecureBufferAllocatedCB callback,
   // what we pass into the callback is all valid.
   struct v4l2_ext_control ctrl;
   struct v4l2_ext_controls ctrls;
-  memset(&ctrls, 0, sizeof(ctrls));
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrls, 0, sizeof(ctrls)));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = V4L2_CID_MPEG_MTK_GET_SECURE_HANDLE;
   ctrl.value = secure_fd.get();
 
@@ -776,14 +772,14 @@ CroStatus V4L2VideoDecoder::SetExtCtrlsInit(const gfx::Size& size,
 #endif
 
   struct v4l2_ext_control ctrl;
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
 
   // Formats require codec specific parameters be passed before the
   // CAPTURE queue will report the proper decoded formats.
   if (input_format_fourcc_ == V4L2_PIX_FMT_H264_SLICE) {
     // For H264 the SPS data is sent in to indicate bit_depth content.
     VLOGF(1) << "Setting EXT_CTRLS for H264";
-    memset(&v4l2_h264_sps, 0, sizeof(v4l2_h264_sps));
+    UNSAFE_TODO(memset(&v4l2_h264_sps, 0, sizeof(v4l2_h264_sps)));
     v4l2_h264_sps.bit_depth_luma_minus8 = (bit_depth == 10u) ? 2 : 0;
     v4l2_h264_sps.bit_depth_chroma_minus8 = (bit_depth == 10u) ? 2 : 0;
     v4l2_h264_sps.chroma_format_idc = 1;  // 4:2:0
@@ -798,7 +794,7 @@ CroStatus V4L2VideoDecoder::SetExtCtrlsInit(const gfx::Size& size,
     // set the size and chroma format since that should be all the information
     // needed in order to know the format.
     VLOGF(1) << "Setting EXT_CTRLS for HEVC";
-    memset(&v4l2_hevc_sps, 0, sizeof(v4l2_hevc_sps));
+    UNSAFE_TODO(memset(&v4l2_hevc_sps, 0, sizeof(v4l2_hevc_sps)));
     v4l2_hevc_sps.pic_width_in_luma_samples = size.width();
     v4l2_hevc_sps.pic_height_in_luma_samples = size.height();
     v4l2_hevc_sps.bit_depth_luma_minus8 = (bit_depth == 10u) ? 2 : 0;
@@ -813,7 +809,7 @@ CroStatus V4L2VideoDecoder::SetExtCtrlsInit(const gfx::Size& size,
   } else if (input_format_fourcc_ == V4L2_PIX_FMT_VP8_FRAME) {
     // VP8 only supports 8 bit, so only send necessary num_dct_parts
     VLOGF(1) << "Setting EXT_CTRLS for VP8";
-    memset(&v4l2_vp8_frame, 0, sizeof(v4l2_vp8_frame));
+    UNSAFE_TODO(memset(&v4l2_vp8_frame, 0, sizeof(v4l2_vp8_frame)));
     v4l2_vp8_frame.num_dct_parts = 1;
 
     ctrl.id = V4L2_CID_STATELESS_VP8_FRAME;
@@ -824,7 +820,7 @@ CroStatus V4L2VideoDecoder::SetExtCtrlsInit(const gfx::Size& size,
   } else if (input_format_fourcc_ == V4L2_PIX_FMT_VP9_FRAME) {
     // VP9 requires the profile, bit depth , and flags
     VLOGF(1) << "Setting EXT_CTRLS for VP9";
-    memset(&v4l2_vp9_frame, 0, sizeof(v4l2_vp9_frame));
+    UNSAFE_TODO(memset(&v4l2_vp9_frame, 0, sizeof(v4l2_vp9_frame)));
     v4l2_vp9_frame.bit_depth = (bit_depth == 10u) ? 10 : 8;
     v4l2_vp9_frame.profile = (bit_depth == 10u) ? 2 : 0;
     v4l2_vp9_frame.flags =
@@ -841,7 +837,7 @@ CroStatus V4L2VideoDecoder::SetExtCtrlsInit(const gfx::Size& size,
     // formats on the CAPTURE queue. And flags has to be set for profile 0
     // with subsampling=4:2:0 since kernel v6.19.
     VLOGF(1) << "Setting EXT_CTRLS for AV1";
-    memset(&v4l2_av1_sequence, 0, sizeof(v4l2_av1_sequence));
+    UNSAFE_TODO(memset(&v4l2_av1_sequence, 0, sizeof(v4l2_av1_sequence)));
     v4l2_av1_sequence.bit_depth = (bit_depth == 10u) ? 10 : 8;
     v4l2_av1_sequence.flags = V4L2_AV1_SEQUENCE_FLAG_SUBSAMPLING_X |
                               V4L2_AV1_SEQUENCE_FLAG_SUBSAMPLING_Y;
@@ -857,7 +853,7 @@ CroStatus V4L2VideoDecoder::SetExtCtrlsInit(const gfx::Size& size,
   }
 
   struct v4l2_ext_controls ext_ctrls;
-  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
+  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
   ext_ctrls.count = ctrls.size();
   ext_ctrls.controls = ctrls.data();
   ext_ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "v4l2_video_decoder_delegate_vp8.h"
 
 #include <linux/v4l2-controls.h>
@@ -15,6 +10,7 @@
 #include <algorithm>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -132,7 +128,7 @@ bool V4L2VideoDecoderDelegateVP8::SubmitDecode(
     scoped_refptr<VP8Picture> pic,
     const Vp8ReferenceFrameVector& reference_frames) {
   struct v4l2_ctrl_vp8_frame v4l2_frame_hdr;
-  memset(&v4l2_frame_hdr, 0, sizeof(v4l2_frame_hdr));
+  UNSAFE_TODO(memset(&v4l2_frame_hdr, 0, sizeof(v4l2_frame_hdr)));
 
   const auto& frame_hdr = pic->frame_hdr;
 #define FHDR_TO_V4L2_FHDR(a) v4l2_frame_hdr.a = frame_hdr->a
@@ -186,7 +182,8 @@ bool V4L2VideoDecoderDelegateVP8::SubmitDecode(
   for (size_t i = 0; i < frame_hdr->num_of_dct_partitions &&
                      i < std::size(v4l2_frame_hdr.dct_part_sizes);
        ++i)
-    v4l2_frame_hdr.dct_part_sizes[i] = frame_hdr->dct_partition_sizes[i];
+    UNSAFE_TODO(v4l2_frame_hdr.dct_part_sizes[i] =
+                    frame_hdr->dct_partition_sizes[i]);
 
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       VP8PictureToV4L2DecodeSurface(pic.get());
@@ -219,13 +216,13 @@ bool V4L2VideoDecoderDelegateVP8::SubmitDecode(
   }
 
   struct v4l2_ext_control ctrl;
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = V4L2_CID_STATELESS_VP8_FRAME;
   ctrl.size = sizeof(v4l2_frame_hdr);
   ctrl.ptr = &v4l2_frame_hdr;
 
   struct v4l2_ext_controls ext_ctrls;
-  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
+  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
   ext_ctrls.count = 1;
   ext_ctrls.controls = &ctrl;
   dec_surface->PrepareSetCtrls(&ext_ctrls);

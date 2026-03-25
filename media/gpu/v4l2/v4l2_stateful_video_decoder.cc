@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 
@@ -15,6 +11,7 @@
 #include <sys/eventfd.h>
 #include <sys/ioctl.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -98,7 +95,8 @@ void WaitOnceForEvents(int device_fd,
 
       // Dequeue the event otherwise it'll be stuck in the driver forever.
       struct v4l2_event event;
-      memset(&event, 0, sizeof(event));  // Must do: v4l2_event has a union.
+      UNSAFE_TODO(memset(&event, 0,
+                         sizeof(event)));  // Must do: v4l2_event has a union.
       if (HandledIoctl(device_fd, VIDIOC_DQEVENT, &event) != kIoctlOk) {
         PLOG(ERROR) << "Failed dequeing an event";
         return;
@@ -175,8 +173,8 @@ scoped_refptr<media::DecoderBuffer> ReassembleFragments(
   uint8_t* dst = temp_buffer.data();
   for (const auto& fragment : fragments) {
     auto fragment_span = base::span(*fragment);
-    memcpy(dst, fragment_span.data(), fragment_span.size());
-    dst += fragment_span.size();
+    UNSAFE_TODO(memcpy(dst, fragment_span.data(), fragment_span.size()));
+    UNSAFE_TODO(dst += fragment_span.size());
   }
 
   auto reassembled_frame =
@@ -1151,7 +1149,8 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
       auto media_buffer_span = base::span(*media_buffer);
       CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0),
                media_buffer_span.size());
-      memcpy(dst, media_buffer_span.data(), media_buffer_span.size());
+      UNSAFE_TODO(
+          memcpy(dst, media_buffer_span.data(), media_buffer_span.size()));
       v4l2_buffer->SetPlaneBytesUsed(0, media_buffer_span.size());
       VLOGF(4) << "Enqueuing " << media_buffer_span.size() << " bytes.";
       v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
@@ -1313,9 +1312,11 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
     }
 
     CHECK_GE(nalu.data.data(), data);
-    CHECK_LE(nalu.data.data(), data + data_size);
-    const auto nalu_size = nalu.data.data() - data + nalu.data.size();
-    VLOGF(4) << "H264NALU type " << kKnownNALUNames[nalu.nal_unit_type]
+    CHECK_LE(nalu.data.data(), UNSAFE_TODO(data + data_size));
+    const auto nalu_size =
+        UNSAFE_TODO(nalu.data.data() - data) + nalu.data.size();
+    VLOGF(4) << "H264NALU type "
+             << UNSAFE_TODO(kKnownNALUNames[nalu.nal_unit_type])
              << ", NALU size=" << nalu_size
              << " bytes, payload size=" << nalu.data.size() << " bytes";
 
@@ -1380,7 +1381,9 @@ H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
                                  .is_start_of_new_frame = true,
                                  .nalu_size = nalu_size};
       default:
-        VLOGF(4) << "Unsupported NALU " << kKnownNALUNames[nalu.nal_unit_type];
+        VLOGF(4) << "Unsupported NALU "
+                 << UNSAFE_TODO(kKnownNALUNames[nalu.nal_unit_type]);
+        break;
     }
   }
 }

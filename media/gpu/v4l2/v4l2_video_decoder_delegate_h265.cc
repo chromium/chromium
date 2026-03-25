@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h265.h"
 
@@ -16,6 +12,7 @@
 #include <tuple>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -82,7 +79,8 @@ V4L2VideoDecoderDelegateH265::FillInV4L2DPB(
     const H265Picture::Vector& ref_pic_set_st_curr_before) {
   std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces;
 
-  memset(v4l2_decode_param->dpb, 0, sizeof(v4l2_decode_param->dpb));
+  UNSAFE_TODO(
+      memset(v4l2_decode_param->dpb, 0, sizeof(v4l2_decode_param->dpb)));
   unsigned int i = 0;
   for (const auto& pic : ref_pic_list) {
     if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
@@ -102,7 +100,7 @@ V4L2VideoDecoderDelegateH265::FillInV4L2DPB(
       ref_surfaces.push_back(dec_surface);
     }
 
-    v4l2_decode_param->dpb[i++] = {
+    UNSAFE_TODO(v4l2_decode_param->dpb[i++]) = {
         .timestamp = index,
         .flags = static_cast<__u8>(
             pic->IsLongTermRef() ? V4L2_HEVC_DPB_ENTRY_LONG_TERM_REFERENCE : 0),
@@ -134,8 +132,8 @@ V4L2VideoDecoderDelegateH265::FillInV4L2DPB(
     for (unsigned int j = 0; j < v4l2_decode_param->num_active_dpb_entries;
          j++) {
       if (pic->pic_order_cnt_val_ ==
-          v4l2_decode_param->dpb[j].pic_order_cnt_val) {
-        v4l2_decode_param->poc_st_curr_before[i++] = j;
+          UNSAFE_TODO(v4l2_decode_param->dpb[j]).pic_order_cnt_val) {
+        UNSAFE_TODO(v4l2_decode_param->poc_st_curr_before[i++]) = j;
         break;
       }
     }
@@ -156,8 +154,8 @@ V4L2VideoDecoderDelegateH265::FillInV4L2DPB(
     for (unsigned int j = 0; j < v4l2_decode_param->num_active_dpb_entries;
          j++) {
       if (pic->pic_order_cnt_val_ ==
-          v4l2_decode_param->dpb[j].pic_order_cnt_val) {
-        v4l2_decode_param->poc_st_curr_after[i++] = j;
+          UNSAFE_TODO(v4l2_decode_param->dpb[j]).pic_order_cnt_val) {
+        UNSAFE_TODO(v4l2_decode_param->poc_st_curr_after[i++]) = j;
         break;
       }
     }
@@ -178,8 +176,8 @@ V4L2VideoDecoderDelegateH265::FillInV4L2DPB(
     for (unsigned int j = 0; j < v4l2_decode_param->num_active_dpb_entries;
          j++) {
       if (pic->pic_order_cnt_val_ ==
-          v4l2_decode_param->dpb[j].pic_order_cnt_val) {
-        v4l2_decode_param->poc_lt_curr[i++] = j;
+          UNSAFE_TODO(v4l2_decode_param->dpb[j]).pic_order_cnt_val) {
+        UNSAFE_TODO(v4l2_decode_param->poc_lt_curr[i++]) = j;
         break;
       }
     }
@@ -213,7 +211,7 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
   std::vector<struct v4l2_ext_control> ctrls;
 
   struct v4l2_ctrl_hevc_sps v4l2_sps;
-  memset(&v4l2_sps, 0, sizeof(v4l2_sps));
+  UNSAFE_TODO(memset(&v4l2_sps, 0, sizeof(v4l2_sps)));
 
   int highest_tid = sps->sps_max_sub_layers_minus1;
 
@@ -266,14 +264,14 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
   SET_V4L2_SPS_FLAG_IF(strong_intra_smoothing_enabled_flag,
                        V4L2_HEVC_SPS_FLAG_STRONG_INTRA_SMOOTHING_ENABLED);
 #undef SET_V4L2_SPS_FLAG_IF
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = V4L2_CID_STATELESS_HEVC_SPS;
   ctrl.size = sizeof(v4l2_sps);
   ctrl.ptr = &v4l2_sps;
   ctrls.push_back(ctrl);
 
   struct v4l2_ctrl_hevc_pps v4l2_pps;
-  memset(&v4l2_pps, 0, sizeof(v4l2_pps));
+  UNSAFE_TODO(memset(&v4l2_pps, 0, sizeof(v4l2_pps)));
   // In the order of |struct v4l2_ctrl_hevc_pps|
 #define PPS_TO_V4L2PPS(a) v4l2_pps.a = pps->a
   v4l2_pps.pic_parameter_set_id = pps->pps_pic_parameter_set_id;
@@ -299,7 +297,8 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                   std::remove_reference_t<decltype(pps->column_width_minus1)>>,
           "column_width_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_columns_minus1; ++i) {
-        v4l2_pps.column_width_minus1[i] = pps->column_width_minus1[i];
+        UNSAFE_TODO(v4l2_pps.column_width_minus1[i]) =
+            pps->column_width_minus1[i];
       }
 
       static_assert(
@@ -308,7 +307,7 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                   std::remove_reference_t<decltype(pps->row_height_minus1)>>,
           "row_height_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_rows_minus1; ++i) {
-        v4l2_pps.row_height_minus1[i] = pps->row_height_minus1[i];
+        UNSAFE_TODO(v4l2_pps.row_height_minus1[i]) = pps->row_height_minus1[i];
       }
     }
   }
@@ -364,14 +363,14 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                        V4L2_HEVC_PPS_FLAG_UNIFORM_SPACING);
 #undef SET_V4L2_PPS_FLAG_IF
 
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = V4L2_CID_STATELESS_HEVC_PPS;
   ctrl.size = sizeof(v4l2_pps);
   ctrl.ptr = &v4l2_pps;
   ctrls.push_back(ctrl);
 
   struct v4l2_ctrl_hevc_scaling_matrix v4l2_scaling_matrix;
-  memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix));
+  UNSAFE_TODO(memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix)));
   struct H265ScalingListData checker;
 
   // TODO(jkardatzke): Optimize storage of the 32x32 since only indices 0 and 3
@@ -410,7 +409,7 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
       for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId0Count;
            ++j) {
-        v4l2_scaling_matrix.scaling_list_4x4[i][j] =
+        UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_4x4[i][j]) =
             scaling_list.GetScalingList4x4EntryInRasterOrder(/*matrix_id=*/i,
                                                              /*raster_idx=*/j);
       }
@@ -419,7 +418,7 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
       for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
            ++j) {
-        v4l2_scaling_matrix.scaling_list_8x8[i][j] =
+        UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_8x8[i][j]) =
             scaling_list.GetScalingList8x8EntryInRasterOrder(/*matrix_id=*/i,
                                                              /*raster_idx=*/j);
       }
@@ -428,7 +427,7 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
       for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
            ++j) {
-        v4l2_scaling_matrix.scaling_list_16x16[i][j] =
+        UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_16x16[i][j]) =
             scaling_list.GetScalingList16x16EntryInRasterOrder(
                 /*matrix_id=*/i,
                 /*raster_idx=*/j);
@@ -439,23 +438,23 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
          i += 3) {
       for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
            ++j) {
-        v4l2_scaling_matrix.scaling_list_32x32[i / 3][j] =
+        UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_32x32[i / 3][j]) =
             scaling_list.GetScalingList32x32EntryInRasterOrder(
                 /*matrix_id=*/i,
                 /*raster_idx=*/j);
       }
     }
 
-    memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
-           scaling_list.scaling_list_dc_coef_16x16.data(),
-           sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));
+    UNSAFE_TODO(memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
+                       scaling_list.scaling_list_dc_coef_16x16.data(),
+                       sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16)));
     v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0] =
         scaling_list.scaling_list_dc_coef_32x32[0];
     v4l2_scaling_matrix.scaling_list_dc_coef_32x32[1] =
         scaling_list.scaling_list_dc_coef_32x32[3];
   }
 
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = V4L2_CID_STATELESS_HEVC_SCALING_MATRIX;
   ctrl.size = sizeof(v4l2_scaling_matrix);
   ctrl.ptr = &v4l2_scaling_matrix;
@@ -494,14 +493,14 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                     ref_pic_set_st_curr_after, ref_pic_set_st_curr_before);
   dec_surface->SetReferenceSurfaces(ref_surfaces);
 
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = V4L2_CID_STATELESS_HEVC_DECODE_PARAMS;
   ctrl.size = sizeof(v4l2_decode_param);
   ctrl.ptr = &v4l2_decode_param;
   ctrls.push_back(ctrl);
 
   struct v4l2_ext_controls ext_ctrls;
-  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
+  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
   ext_ctrls.count = ctrls.size();
   ext_ctrls.controls = ctrls.data();
   dec_surface->PrepareSetCtrls(&ext_ctrls);
@@ -545,9 +544,9 @@ H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitSlice(
                : Status::kFail;
   }
   auto data_copy = base::HeapArray<uint8_t>::Uninit(data_copy_size);
-  memset(data_copy.data(), 0, data_copy_size);
+  UNSAFE_TODO(memset(data_copy.data(), 0, data_copy_size));
   data_copy[2] = 0x01;
-  memcpy(data_copy.data() + 3, data, size);
+  UNSAFE_TODO(memcpy(data_copy.data() + 3, data, size));
   return surface_handler_->SubmitSlice(dec_surface.get(), data_copy.data(),
                                        data_copy_size)
              ? Status::kOk

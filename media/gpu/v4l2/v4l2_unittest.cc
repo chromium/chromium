@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <drm.h>
 #include <fcntl.h>
 #include <gbm.h>
@@ -16,6 +11,7 @@
 #include <algorithm>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/memory_mapped_file.h"
@@ -139,7 +135,7 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
 
     // VGEM in the version name describes a virtual driver which
     // is not what is desired for the tests.
-    if (strncmp(version->name, "vgem", 4)) {
+    if (UNSAFE_TODO(strncmp(version->name, "vgem", 4))) {
       drm_path = name;
       break;
     }

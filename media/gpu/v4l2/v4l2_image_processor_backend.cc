@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 
@@ -21,6 +17,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
@@ -296,7 +293,7 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
 
   // Try to set input format.
   struct v4l2_format format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   format.fmt.pix_mp.width = input_config.size.width();
   format.fmt.pix_mp.height = input_config.size.height();
@@ -318,14 +315,14 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
   }
   std::vector<ColorPlaneLayout> input_planes(pix_mp.num_planes);
   for (size_t i = 0; i < pix_mp.num_planes; ++i) {
-    input_planes[i].stride = pix_mp.plane_fmt[i].bytesperline;
+    input_planes[i].stride = UNSAFE_TODO(pix_mp.plane_fmt[i]).bytesperline;
     // offset will be specified for a buffer in each VIDIOC_QBUF.
     input_planes[i].offset = 0;
-    input_planes[i].size = pix_mp.plane_fmt[i].sizeimage;
+    input_planes[i].size = UNSAFE_TODO(pix_mp.plane_fmt[i]).sizeimage;
   }
 
   // Try to set output format.
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   v4l2_pix_format_mplane& out_pix_mp = format.fmt.pix_mp;
   out_pix_mp.width = output_config.size.width();
@@ -333,8 +330,10 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
   out_pix_mp.pixelformat = output_config.fourcc.ToV4L2PixFmt();
   out_pix_mp.num_planes = output_config.planes.size();
   for (size_t i = 0; i < output_config.planes.size(); ++i) {
-    out_pix_mp.plane_fmt[i].sizeimage = output_config.planes[i].size;
-    out_pix_mp.plane_fmt[i].bytesperline = output_config.planes[i].stride;
+    UNSAFE_TODO(out_pix_mp.plane_fmt[i]).sizeimage =
+        output_config.planes[i].size;
+    UNSAFE_TODO(out_pix_mp.plane_fmt[i]).bytesperline =
+        output_config.planes[i].stride;
   }
   if (device->Ioctl(VIDIOC_S_FMT, &format) != 0 ||
       format.fmt.pix_mp.pixelformat != output_config.fourcc.ToV4L2PixFmt()) {
@@ -354,10 +353,10 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
   }
   std::vector<ColorPlaneLayout> output_planes(out_pix_mp.num_planes);
   for (size_t i = 0; i < pix_mp.num_planes; ++i) {
-    output_planes[i].stride = pix_mp.plane_fmt[i].bytesperline;
+    output_planes[i].stride = UNSAFE_TODO(pix_mp.plane_fmt[i]).bytesperline;
     // offset will be specified for a buffer in each VIDIOC_QBUF.
     output_planes[i].offset = 0;
-    output_planes[i].size = pix_mp.plane_fmt[i].sizeimage;
+    output_planes[i].size = UNSAFE_TODO(pix_mp.plane_fmt[i]).sizeimage;
   }
 
   // Capabilities check.
@@ -450,7 +449,7 @@ bool V4L2ImageProcessorBackend::TryOutputFormat(uint32_t input_pixelformat,
 
   // Set input format.
   struct v4l2_format format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   format.fmt.pix_mp.width = input_size.width();
   format.fmt.pix_mp.height = input_size.height();
@@ -463,7 +462,7 @@ bool V4L2ImageProcessorBackend::TryOutputFormat(uint32_t input_pixelformat,
   }
 
   // Try output format.
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   format.fmt.pix_mp.width = output_size->width();
   format.fmt.pix_mp.height = output_size->height();
@@ -601,7 +600,7 @@ bool V4L2ImageProcessorBackend::ReconfigureV4L2Format(const gfx::Size& size,
                                                       enum v4l2_buf_type type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct v4l2_format format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = type;
   if (device_->Ioctl(VIDIOC_G_FMT, &format) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_G_FMT";

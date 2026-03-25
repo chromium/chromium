@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/v4l2/v4l2_vp9_helpers.h"
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
 #include "media/base/decoder_buffer.h"
@@ -47,8 +44,8 @@ TEST(V4L2VP9HelpersTest, CheckSuperFrameIndexSize) {
       if (!(mask & (1 << i))) {
         continue;
       }
-      frame_sizes.push_back(kFrameSizes[i]);
-      buffer_size += kFrameSizes[i];
+      frame_sizes.push_back(UNSAFE_TODO(kFrameSizes[i]));
+      buffer_size += UNSAFE_TODO(kFrameSizes[i]);
       expected_bytes_per_framesize = i + 1;
     }
 
@@ -57,7 +54,7 @@ TEST(V4L2VP9HelpersTest, CheckSuperFrameIndexSize) {
     std::vector<uint8_t> tmp_buffer(buffer_size);
     size_t offset = 0;
     for (const uint32_t frame_size : frame_sizes) {
-      uint8_t* header = tmp_buffer.data() + offset;
+      uint8_t* header = UNSAFE_TODO(tmp_buffer.data() + offset);
       *header = 0x8f;
       offset += frame_size;
     }
@@ -94,7 +91,8 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     IvfFrameHeader ivf_frame_header;
     const uint8_t* ivf_payload;
     ASSERT_TRUE(ivf_parser.ParseNextFrame(&ivf_frame_header, &ivf_payload));
-    buffers[i] = base::span(ivf_payload, ivf_frame_header.frame_size);
+    buffers[i] =
+        UNSAFE_TODO(base::span(ivf_payload, ivf_frame_header.frame_size));
   }
 
   std::vector<uint32_t> frame_sizes;
@@ -105,7 +103,8 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     // |merged_buffer| is composed of [0, i] frames.
     const size_t offset = merged_buffer.size();
     merged_buffer.resize(offset + buffers[i].size());
-    memcpy(merged_buffer.data() + offset, buffers[i].data(), buffers[i].size());
+    UNSAFE_TODO(memcpy(merged_buffer.data() + offset, buffers[i].data(),
+                       buffers[i].size()));
 
     auto decoder_buffer = DecoderBuffer::CopyFrom(merged_buffer);
     AppendSideData(*decoder_buffer, frame_sizes);

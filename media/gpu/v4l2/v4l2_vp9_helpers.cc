@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/v4l2_vp9_helpers.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 
@@ -71,33 +67,33 @@ bool OverwriteShowFrame(base::span<uint8_t> frame_data,
 
   size_t offset = 0;
   for (size_t i = 0; i < frame_sizes.size(); ++i) {
-    uint8_t* header = frame_data.data() + offset;
+    uint8_t* header = UNSAFE_TODO(frame_data.data() + offset);
 
     // See VP9 Spec Annex B.
-    const uint8_t frame_marker = (*header >> 6);
+    const uint8_t frame_marker = UNSAFE_TODO(*header >> 6);
     if (frame_marker != 0b10) {
       LOG(ERROR) << "Invalid frame marker: " << static_cast<int>(frame_marker);
       return false;
     }
-    const uint8_t profile = (*header >> 4) & 0b11;
+    const uint8_t profile = UNSAFE_TODO((*header >> 4) & 0b11);
     if (profile == 3) {
       LOG(ERROR) << "Unsupported profile";
       return false;
     }
 
-    const bool show_existing_frame = (*header >> 3) & 1;
+    const bool show_existing_frame = UNSAFE_TODO((*header >> 3) & 1);
     const bool show_frame = i == frame_sizes.size() - 1;
     int bit = 0;
     if (show_existing_frame) {
-      header++;
+      UNSAFE_TODO(header++);
       bit = 6;
     } else {
       bit = 1;
     }
     if (show_frame) {
-      *header |= (1u << bit);
+      UNSAFE_TODO(*header |= (1u << bit));
     } else {
-      *header &= ~(1u << bit);
+      UNSAFE_TODO(*header &= ~(1u << bit));
     }
 
     offset += frame_sizes[i];
@@ -120,9 +116,10 @@ bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
   std::vector<uint8_t> superframe_index = CreateSuperFrameIndex(frame_sizes);
   const size_t vp9_superframe_size = buffer->size() + superframe_index.size();
   auto vp9_superframe = base::HeapArray<uint8_t>::Uninit(vp9_superframe_size);
-  memcpy(vp9_superframe.data(), base::span(*buffer).data(), buffer->size());
-  memcpy(vp9_superframe.data() + buffer->size(), superframe_index.data(),
-         superframe_index.size());
+  UNSAFE_TODO(memcpy(vp9_superframe.data(), base::span(*buffer).data(),
+                     buffer->size()));
+  UNSAFE_TODO(memcpy(vp9_superframe.data() + buffer->size(),
+                     superframe_index.data(), superframe_index.size()));
 
   if (!OverwriteShowFrame(vp9_superframe, frame_sizes)) {
     return false;

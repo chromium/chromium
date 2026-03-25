@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 
@@ -31,7 +27,7 @@ std::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device) {
       V4L2ImageProcessorBackend::GetSupportedInputFormats();
 
   struct v4l2_fmtdesc fmtdesc;
-  memset(&fmtdesc, 0, sizeof(fmtdesc));
+  UNSAFE_TODO(memset(&fmtdesc, 0, sizeof(fmtdesc)));
   fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   while (vda_device->Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0) {
     if (std::ranges::contains(processor_input_formats, fmtdesc.pixelformat)) {

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 
 #include <linux/v4l2-controls.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
@@ -101,8 +97,10 @@ void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
                 "mismatch in number of segmentation features");
   for (size_t j = 0; j < kV4L2VP9SegmentationFeaturesLength; j++) {
     for (size_t i = 0; i < V4L2_VP9_SEG_LVL_MAX; i++) {
-      if (vp9_seg_params.feature_enabled[j][i])
-        v4l2_seg->feature_enabled[j] |= V4L2_VP9_SEGMENT_FEATURE_ENABLED(i);
+      if (UNSAFE_TODO(vp9_seg_params.feature_enabled[j][i])) {
+        UNSAFE_TODO(v4l2_seg->feature_enabled[j] |=
+                    V4L2_VP9_SEGMENT_FEATURE_ENABLED(i));
+      }
     }
   }
 
@@ -155,7 +153,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
   DCHECK(frame_hdr);
   struct v4l2_ctrl_vp9_frame v4l2_frame_params;
-  memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params));
+  UNSAFE_TODO(memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params)));
 
 #define SET_FLAG_IF(cond, flag) \
   v4l2_frame_params.flags |= ((frame_hdr->cond) ? (flag) : 0)

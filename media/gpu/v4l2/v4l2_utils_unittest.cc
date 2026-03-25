@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/v4l2_utils.h"
 
 #include <cstring>
 #include <sstream>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
@@ -30,7 +26,7 @@ v4l2_format V4L2FormatVideoOutput(uint32_t width,
                                   uint32_t bytesperline,
                                   uint32_t sizeimage) {
   v4l2_format format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
   struct v4l2_pix_format* pix = &format.fmt.pix;
   pix->width = width;
@@ -52,7 +48,7 @@ v4l2_format V4L2FormatVideoOutputMplane(uint32_t width,
                                         std::vector<uint32_t> bytesperlines,
                                         std::vector<uint32_t> sizeimages) {
   v4l2_format format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   struct v4l2_pix_format_mplane* pix_mp = &format.fmt.pix_mp;
   if (bytesperlines.size() != sizeimages.size() ||
@@ -68,8 +64,9 @@ v4l2_format V4L2FormatVideoOutputMplane(uint32_t width,
   pix_mp->field = field;
   pix_mp->num_planes = bytesperlines.size();
   for (size_t i = 0; i < pix_mp->num_planes; ++i) {
-    pix_mp->plane_fmt[i].bytesperline = bytesperlines[i];
-    pix_mp->plane_fmt[i].sizeimage = sizeimages[i];
+    UNSAFE_TODO(pix_mp->plane_fmt[i]).bytesperline =
+        UNSAFE_TODO(bytesperlines[i]);
+    UNSAFE_TODO(pix_mp->plane_fmt[i]).sizeimage = UNSAFE_TODO(sizeimages[i]);
   }
   return format;
 }

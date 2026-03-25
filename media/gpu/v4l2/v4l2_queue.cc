@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/v4l2_queue.h"
 
 #include <errno.h>
@@ -17,6 +12,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
@@ -47,7 +43,7 @@ struct v4l2_format BuildV4L2Format(const enum v4l2_buf_type type,
                                    const gfx::Size& size,
                                    size_t buffer_size) {
   struct v4l2_format format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = type;
   format.fmt.pix_mp.pixelformat = fourcc;
   format.fmt.pix_mp.width = size.width();
@@ -135,7 +131,7 @@ std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(
   std::vector<base::ScopedFD> dmabuf_fds;
   for (size_t i = 0; i < num_planes; ++i) {
     struct v4l2_exportbuffer expbuf;
-    memset(&expbuf, 0, sizeof(expbuf));
+    UNSAFE_TODO(memset(&expbuf, 0, sizeof(expbuf)));
     expbuf.type = buf_type;
     expbuf.index = index;
     expbuf.plane = i;
@@ -154,7 +150,7 @@ std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(
 }  // namespace
 
 V4L2ExtCtrl::V4L2ExtCtrl(uint32_t id) {
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = id;
 }
 
@@ -242,8 +238,8 @@ V4L2Buffer::V4L2Buffer(const IoctlAsCallback& ioctl_cb,
   DCHECK(V4L2_TYPE_IS_MULTIPLANAR(type));
   DCHECK_LE(format.fmt.pix_mp.num_planes, std::size(v4l2_planes_));
 
-  memset(&v4l2_buffer_, 0, sizeof(v4l2_buffer_));
-  memset(v4l2_planes_, 0, sizeof(v4l2_planes_));
+  UNSAFE_TODO(memset(&v4l2_buffer_, 0, sizeof(v4l2_buffer_)));
+  UNSAFE_TODO(memset(v4l2_planes_, 0, sizeof(v4l2_planes_)));
   v4l2_buffer_.m.planes = v4l2_planes_;
   // Just in case we got more planes than we want.
   v4l2_buffer_.length =
@@ -259,7 +255,8 @@ V4L2Buffer::~V4L2Buffer() {
   if (v4l2_buffer_.memory == V4L2_MEMORY_MMAP) {
     for (size_t i = 0; i < plane_mappings_.size(); i++) {
       if (plane_mappings_[i] != nullptr) {
-        munmap(plane_mappings_[i], v4l2_buffer_.m.planes[i].length);
+        munmap(plane_mappings_[i],
+               UNSAFE_TODO(v4l2_buffer_.m.planes[i].length));
       }
     }
   }
@@ -295,9 +292,9 @@ void* V4L2Buffer::GetPlaneMapping(const size_t plane) {
     return nullptr;
   }
 
-  p = mmap_cb_.Run(nullptr, v4l2_buffer_.m.planes[plane].length,
+  p = mmap_cb_.Run(nullptr, UNSAFE_TODO(v4l2_buffer_.m.planes[plane].length),
                    PROT_READ | PROT_WRITE, MAP_SHARED,
-                   v4l2_buffer_.m.planes[plane].m.mem_offset);
+                   UNSAFE_TODO(v4l2_buffer_.m.planes[plane].m.mem_offset));
   if (p == MAP_FAILED) {
     VPLOGF(1) << "mmap() failed: ";
     return nullptr;
@@ -310,7 +307,7 @@ void* V4L2Buffer::GetPlaneMapping(const size_t plane) {
 size_t V4L2Buffer::GetMemoryUsage() const {
   size_t usage = 0;
   for (size_t i = 0; i < v4l2_buffer_.length; i++) {
-    usage += v4l2_buffer_.m.planes[i].length;
+    usage += UNSAFE_TODO(v4l2_buffer_.m.planes[i].length);
   }
   return usage;
 }
@@ -493,9 +490,9 @@ V4L2BufferRefBase::V4L2BufferRefBase(const struct v4l2_buffer& v4l2_buffer,
   DCHECK_LE(v4l2_buffer.length, std::size(v4l2_planes_));
   DCHECK(return_to_);
 
-  memcpy(&v4l2_buffer_, &v4l2_buffer, sizeof(v4l2_buffer_));
-  memcpy(v4l2_planes_, v4l2_buffer.m.planes,
-         sizeof(struct v4l2_plane) * v4l2_buffer.length);
+  UNSAFE_TODO(memcpy(&v4l2_buffer_, &v4l2_buffer, sizeof(v4l2_buffer_)));
+  UNSAFE_TODO(memcpy(v4l2_planes_, v4l2_buffer.m.planes,
+                     sizeof(struct v4l2_plane) * v4l2_buffer.length));
   v4l2_buffer_.m.planes = v4l2_planes_;
 }
 
@@ -573,7 +570,7 @@ bool V4L2BufferRefBase::CheckNumFDsForFormat(const size_t num_fds) const {
     // Assume that an fd is a duplicate of a previous plane's fd if offset != 0.
     // Otherwise, if offset == 0, return error as it is likely pointing to
     // a new plane.
-    if (planes[i].data_offset == 0) {
+    if (UNSAFE_TODO(planes[i].data_offset == 0)) {
       VLOGF(1) << "Additional dmabuf fds point to a new buffer.";
       return false;
     }
@@ -684,8 +681,8 @@ bool V4L2WritableBufferRef::QueueUserPtr(const std::vector<void*>& ptrs,
   }
 
   for (size_t i = 0; i < ptrs.size(); i++) {
-    self.buffer_data_->v4l2_buffer_.m.planes[i].m.userptr =
-        reinterpret_cast<unsigned long>(ptrs[i]);
+    UNSAFE_TODO(self.buffer_data_->v4l2_buffer_.m.planes[i].m.userptr =
+                    reinterpret_cast<unsigned long>(ptrs[i]));
   }
 
   return std::move(self).DoQueue(request_ref, nullptr);
@@ -710,7 +707,8 @@ bool V4L2WritableBufferRef::QueueDMABuf(const std::vector<base::ScopedFD>& fds,
 
   size_t num_planes = self.PlanesCount();
   for (size_t i = 0; i < num_planes; i++) {
-    self.buffer_data_->v4l2_buffer_.m.planes[i].m.fd = fds[i].get();
+    UNSAFE_TODO(self.buffer_data_->v4l2_buffer_.m.planes[i].m.fd =
+                    fds[i].get());
   }
 
   return std::move(self).DoQueue(request_ref, nullptr);
@@ -756,7 +754,8 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> frame,
 
   size_t num_planes = self.PlanesCount();
   for (size_t i = 0; i < num_planes; i++) {
-    self.buffer_data_->v4l2_buffer_.m.planes[i].m.fd = planes[i].fd.get();
+    UNSAFE_TODO(self.buffer_data_->v4l2_buffer_.m.planes[i].m.fd =
+                    planes[i].fd.get());
   }
 
   return std::move(self).DoQueue(request_ref, std::move(frame));
@@ -782,7 +781,8 @@ bool V4L2WritableBufferRef::QueueDMABuf(
 
   size_t num_planes = self.PlanesCount();
   for (size_t i = 0; i < num_planes; i++) {
-    self.buffer_data_->v4l2_buffer_.m.planes[i].m.fd = planes[i].fd.get();
+    UNSAFE_TODO(self.buffer_data_->v4l2_buffer_.m.planes[i].m.fd =
+                    planes[i].fd.get());
   }
 
   return std::move(self).DoQueue(request_ref, nullptr);
@@ -828,7 +828,7 @@ size_t V4L2WritableBufferRef::GetPlaneSize(const size_t plane) const {
     return 0;
   }
 
-  return buffer_data_->v4l2_buffer_.m.planes[plane].length;
+  return UNSAFE_TODO(buffer_data_->v4l2_buffer_.m.planes[plane].length);
 }
 
 void V4L2WritableBufferRef::SetPlaneSize(const size_t plane,
@@ -838,7 +838,8 @@ void V4L2WritableBufferRef::SetPlaneSize(const size_t plane,
 
   enum v4l2_memory memory = Memory();
   if (memory == V4L2_MEMORY_MMAP) {
-    DCHECK_EQ(buffer_data_->v4l2_buffer_.m.planes[plane].length, size);
+    DCHECK_EQ(UNSAFE_TODO(buffer_data_->v4l2_buffer_.m.planes[plane].length),
+              size);
     return;
   }
   DCHECK(memory == V4L2_MEMORY_USERPTR || memory == V4L2_MEMORY_DMABUF);
@@ -848,7 +849,7 @@ void V4L2WritableBufferRef::SetPlaneSize(const size_t plane,
     return;
   }
 
-  buffer_data_->v4l2_buffer_.m.planes[plane].length = size;
+  UNSAFE_TODO(buffer_data_->v4l2_buffer_.m.planes[plane].length = size);
 }
 
 void* V4L2WritableBufferRef::GetPlaneMapping(const size_t plane) {
@@ -888,7 +889,8 @@ void V4L2WritableBufferRef::SetPlaneBytesUsed(const size_t plane,
     return;
   }
 
-  buffer_data_->v4l2_buffer_.m.planes[plane].bytesused = bytes_used;
+  UNSAFE_TODO(buffer_data_->v4l2_buffer_.m.planes[plane].bytesused =
+                  bytes_used);
 }
 
 size_t V4L2WritableBufferRef::GetPlaneBytesUsed(const size_t plane) const {
@@ -900,7 +902,7 @@ size_t V4L2WritableBufferRef::GetPlaneBytesUsed(const size_t plane) const {
     return 0;
   }
 
-  return buffer_data_->v4l2_buffer_.m.planes[plane].bytesused;
+  return UNSAFE_TODO(buffer_data_->v4l2_buffer_.m.planes[plane].bytesused);
 }
 
 void V4L2WritableBufferRef::SetPlaneDataOffset(const size_t plane,
@@ -913,7 +915,8 @@ void V4L2WritableBufferRef::SetPlaneDataOffset(const size_t plane,
     return;
   }
 
-  buffer_data_->v4l2_buffer_.m.planes[plane].data_offset = data_offset;
+  UNSAFE_TODO(buffer_data_->v4l2_buffer_.m.planes[plane].data_offset =
+                  data_offset);
 }
 
 size_t V4L2WritableBufferRef::BufferId() const {
@@ -1007,7 +1010,7 @@ size_t V4L2ReadableBuffer::GetPlaneBytesUsed(const size_t plane) const {
     return 0;
   }
 
-  return buffer_data_->v4l2_planes_[plane].bytesused;
+  return UNSAFE_TODO(buffer_data_->v4l2_planes_[plane]).bytesused;
 }
 
 size_t V4L2ReadableBuffer::GetPlaneDataOffset(const size_t plane) const {
@@ -1019,7 +1022,7 @@ size_t V4L2ReadableBuffer::GetPlaneDataOffset(const size_t plane) const {
     return 0;
   }
 
-  return buffer_data_->v4l2_planes_[plane].data_offset;
+  return UNSAFE_TODO(buffer_data_->v4l2_planes_[plane]).data_offset;
 }
 
 size_t V4L2ReadableBuffer::BufferId() const {
@@ -1127,7 +1130,7 @@ std::optional<struct v4l2_format> V4L2Queue::TryFormat(uint32_t fourcc,
 std::pair<std::optional<struct v4l2_format>, int> V4L2Queue::GetFormat() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct v4l2_format format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.type = type_;
   if (ioctl_cb_.Run(VIDIOC_G_FMT, &format) != 0) {
     VPQLOGF(2) << "Failed to get format";
@@ -1442,12 +1445,12 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
   }
 
   struct v4l2_buffer v4l2_buffer;
-  memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
+  UNSAFE_TODO(memset(&v4l2_buffer, 0, sizeof(v4l2_buffer)));
   // WARNING: do not change this to a vector or something smaller than
   // VIDEO_MAX_PLANES (the maximum number of planes V4L2 supports). The
   // element overhead is small and may avoid memory corruption bugs.
   struct v4l2_plane planes[VIDEO_MAX_PLANES];
-  memset(planes, 0, sizeof(planes));
+  UNSAFE_TODO(memset(planes, 0, sizeof(planes)));
   v4l2_buffer.type = type_;
   v4l2_buffer.memory = memory_;
   v4l2_buffer.m.planes = planes;
@@ -1609,7 +1612,7 @@ bool V4L2Queue::SetBufferFdForSecureHandle(uint64_t secure_handle,
         return false;
       }
       buf.queued_buffer_indexes.emplace_back(v4l2_buffer->index);
-      v4l2_buffer->m.planes[0].m.fd = buf.fd.get();
+      UNSAFE_TODO(v4l2_buffer->m.planes[0].m.fd = buf.fd.get());
       return true;
     }
   }
@@ -1622,7 +1625,8 @@ bool V4L2Queue::SendCommand(__u32 command) {
   // deprecating V4L2StatefulVideoDecoderBackend.
 
   struct v4l2_decoder_cmd cmd;
-  memset(&cmd, 0, sizeof(cmd));  // Must use memset() due to unions.
+  UNSAFE_TODO(
+      memset(&cmd, 0, sizeof(cmd)));  // Must use memset() due to unions.
   cmd.cmd = command;
   const bool success = ioctl_cb_.Run(VIDIOC_DECODER_CMD, &cmd) == kIoctlOk;
   PLOG_IF(ERROR, !success) << "Failed to issue command " << command
