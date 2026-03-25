@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/intents/model/intent_type.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
-#import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -249,16 +248,6 @@ UserActivityType UserActivityTypeOf(NSUserActivity* user_activity) {
 }
 
 - (void)execute {
-  if (self.isColdStart) {
-    [self executeFromColdStart];
-  } else {
-    [self executeFromWarmStart];
-  }
-}
-
-#pragma mark - Private
-
-- (void)executeFromWarmStart {
   SceneState* sceneState = [self sceneStateFromSessionID];
   CHECK(sceneState);
   Browser* browser =
@@ -274,13 +263,92 @@ UserActivityType UserActivityTypeOf(NSUserActivity* user_activity) {
     return;
   }
 
-  UserActivityBrowserAgent* userActivityBrowserAgent =
-      UserActivityBrowserAgent::FromBrowser(browser);
-  userActivityBrowserAgent->ContinueUserActivity(_userActivity, YES);
+  [self handleUserActivityWithSceneState:sceneState];
 }
 
-- (void)executeFromColdStart {
-  // TODO(crbug.com/462018636): Handle cold start with userActivity.
+#pragma mark - Private
+
+- (void)handleUserActivityWithSceneState:(SceneState*)sceneState {
+  switch (_userActivityType) {
+    case UserActivityType::kHandoff:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kSpotlight:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kSearchInChrome:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenInChrome:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenInIncognito:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kAddBookmarkToChrome:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kAddReadingListItemToChrome:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenLatestTab:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenReadingList:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenBookmarks:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenRecentTabs:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenTabGrid:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kVoiceSearch:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenNewTab:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kPlayDinoGame:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kSetChromeDefaultBrowser:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kViewHistory:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenNewIncognitoTab:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kManagePaymentMethods:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kRunSafetyCheck:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kManagePasswords:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kManageSettings:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenLensFromIntents:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kClearBrowsingData:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kCredentialExchange:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kInvalid:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+  }
 }
 
 @end
