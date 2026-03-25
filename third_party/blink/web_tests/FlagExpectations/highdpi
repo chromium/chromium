@@ -126,7 +126,6 @@ crbug.com/424473138 external/wpt/scroll-animations/css/view-timeline-with-transf
 crbug.com/424473138 external/wpt/scroll-animations/scroll-timelines/current-time-root-scroller.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/scroll-timelines/progress-based-effect-delay.tentative.html [ Failure ]
-crbug.com/424473138 external/wpt/scroll-animations/scroll-timelines/scroll-timeline-range.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-2.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-3.html [ Failure ]
 crbug.com/424473138 external/wpt/scroll-animations/view-timelines/sticky/view-timeline-sticky-offscreen-6.html [ Failure ]

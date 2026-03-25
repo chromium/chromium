@@ -32,6 +32,7 @@ struct TimelineOffset {
   NamedRange name = NamedRange::kNone;
   Length offset = Length::Fixed();
   std::optional<String> style_dependent_offset;
+  std::optional<float> zoom;
 
   bool operator==(const TimelineOffset& other) const {
     return name == other.name && offset == other.offset &&

@@ -72,9 +72,12 @@ String TimelineOffset::ToString() const {
 
 bool TimelineOffset::UpdateOffset(Element* element, CSSValue* value) {
   Length new_offset = ResolveLength(element, value);
+  float new_zoom = 1.0f;
   if (const auto* style = element->GetComputedStyle()) {
-    new_offset = new_offset.Zoom(style->EffectiveZoom());
+    new_zoom = style->EffectiveZoom();
+    new_offset = new_offset.Zoom(new_zoom);
   }
+  zoom = new_zoom;
 
   if (new_offset != offset) {
     offset = new_offset;
@@ -127,20 +130,23 @@ std::optional<TimelineOffset> TimelineOffset::Create(
   DCHECK(list.length());
   NamedRange range_name = NamedRange::kNone;
   Length offset = Length::Percent(default_percent);
-  std::optional<String> style_dependent_offset_str;
+
+  // Extract the range name and offset CSSValue from the parsed list.
+  const CSSValue* css_offset_value = nullptr;
   if (list.Item(0).IsIdentifierValue()) {
     range_name = To<CSSIdentifierValue>(list.Item(0)).ConvertTo<NamedRange>();
     if (list.length() == 2u) {
-      const CSSValue* css_offset_value = &list.Item(1);
-      offset = ResolveLength(element, css_offset_value);
-      if (IsStyleDependent(css_offset_value)) {
-        style_dependent_offset_str = css_offset_value->CssText();
-      }
+      css_offset_value = &list.Item(1);
     }
   } else {
-    const CSSValue* css_offset_value = &list.Item(0);
+    css_offset_value = &list.Item(0);
+  }
+
+  // Resolve the offset and store CSS text for values that need re-resolution.
+  std::optional<String> style_dependent_offset_str;
+  if (css_offset_value) {
     offset = ResolveLength(element, css_offset_value);
-    if (IsStyleDependent(css_offset_value)) {
+    if (IsStyleDependent(css_offset_value) || offset.IsFixed()) {
       style_dependent_offset_str = css_offset_value->CssText();
     }
   }
@@ -188,6 +194,7 @@ std::optional<TimelineOffset> TimelineOffset::Create(
       std::optional<double> number = css_value->GetValueIfKnown();
       CHECK(number.has_value());
       parsed_offset = Length::Fixed(number.value());
+      style_dependent_offset_str = css_value->CssText();
     } else if (css_value->IsPercentage()) {
       std::optional<double> number = css_value->GetValueIfKnown();
       CHECK(number.has_value());

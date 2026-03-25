@@ -2722,11 +2722,11 @@ void Animation::SetCompositorPending(CompositorPendingReason reason) {
 }
 
 const Animation::RangeBoundary* Animation::rangeStart() {
-  return ToRangeBoundary(range_start_, GetKeyframeEffectTargetZoom());
+  return ToRangeBoundary(range_start_, RangeOffsetZoom(range_start_));
 }
 
 const Animation::RangeBoundary* Animation::rangeEnd() {
-  return ToRangeBoundary(range_end_, GetKeyframeEffectTargetZoom());
+  return ToRangeBoundary(range_end_, RangeOffsetZoom(range_end_));
 }
 
 void Animation::setRangeStart(const Animation::RangeBoundary* range_start,
@@ -2739,6 +2739,14 @@ void Animation::setRangeEnd(const Animation::RangeBoundary* range_end,
                             ExceptionState& exception_state) {
   SetRangeEndInternal(
       GetEffectiveTimelineOffset(range_end, 1, exception_state));
+}
+
+float Animation::RangeOffsetZoom(
+    const std::optional<TimelineOffset>& offset) const {
+  if (offset && offset->zoom) {
+    return *offset->zoom;
+  }
+  return GetKeyframeEffectTargetZoom();
 }
 
 std::optional<TimelineOffset> Animation::GetEffectiveTimelineOffset(
@@ -2921,8 +2929,23 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
   return !needs_update;
 }
 
+void Animation::ApplyZoomToTimelineOffset(
+    std::optional<TimelineOffset>& offset) {
+  // Only apply zoom for API-set offsets (which have style_dependent_offset
+  // storing the original CSS text). CSS-set offsets from MapAnimationRange/
+  // ConvertLength are already in physical pixels.
+  if (!offset || !offset->style_dependent_offset || !offset->offset.IsFixed() ||
+      offset->zoom) {
+    return;
+  }
+  float zoom = GetKeyframeEffectTargetZoom();
+  offset->offset = offset->offset.Zoom(zoom);
+  offset->zoom = zoom;
+}
+
 void Animation::SetRangeStartInternal(
-    const std::optional<TimelineOffset>& range_start) {
+    std::optional<TimelineOffset> range_start) {
+  ApplyZoomToTimelineOffset(range_start);
   auto_align_start_time_ = true;
   if (range_start_ != range_start) {
     range_start_ = range_start;
@@ -2936,8 +2959,8 @@ void Animation::SetRangeStartInternal(
   }
 }
 
-void Animation::SetRangeEndInternal(
-    const std::optional<TimelineOffset>& range_end) {
+void Animation::SetRangeEndInternal(std::optional<TimelineOffset> range_end) {
+  ApplyZoomToTimelineOffset(range_end);
   auto_align_start_time_ = true;
   if (range_end_ != range_end) {
     range_end_ = range_end;

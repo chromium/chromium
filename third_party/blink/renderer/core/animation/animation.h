@@ -262,8 +262,8 @@ class CORE_EXPORT Animation : public EventTarget,
   const std::optional<TimelineOffset>& GetRangeEndInternal() const {
     return range_end_;
   }
-  void SetRangeStartInternal(const std::optional<TimelineOffset>& range_start);
-  void SetRangeEndInternal(const std::optional<TimelineOffset>& range_end);
+  void SetRangeStartInternal(std::optional<TimelineOffset> range_start);
+  void SetRangeEndInternal(std::optional<TimelineOffset> range_end);
 
   // This method is only called during style update of a CSS animation.
   // Preventing an endpoint from stomping a value set via the rangeStart or
@@ -618,6 +618,8 @@ class CORE_EXPORT Animation : public EventTarget,
   // Returns the effective zoom for the keyframe effect's target, or 1.f if
   // there is no keyframe effect or no target with computed style.
   float GetKeyframeEffectTargetZoom() const;
+  float RangeOffsetZoom(const std::optional<TimelineOffset>& offset) const;
+  void ApplyZoomToTimelineOffset(std::optional<TimelineOffset>& offset);
 
   String id_;
 
