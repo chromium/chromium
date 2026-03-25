@@ -2070,6 +2070,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="IsConsumerAutoUpdateToggleEligible@chrome/browser/metrics/update_engine_metrics_provider.cc"/>
   <int value="-536788605"
       label="OnSessionStateChanged@chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.cc"/>
+  <int value="-511033371"
+      label="ParseFileSystemURL@chrome/browser/ash/fusebox/fusebox_server.cc"/>
   <int value="-331991081"
       label="PopulateOnboardingTime@chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.cc"/>
   <int value="-209803414"
@@ -2082,6 +2084,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="OnProcessSnapshotRefreshed@chrome/browser/task_manager/providers/vm/vm_process_task_provider.cc"/>
   <int value="56661016"
       label="ShowSystemDialog@chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.cc"/>
+  <int value="169014653"
+      label="ShowImpl@chrome/browser/ash/login/screens/perks_discovery_screen.cc"/>
   <int value="364261213"
       label="GetDictationDefaultLocale@chrome/browser/ash/accessibility/accessibility_manager.cc"/>
   <int value="481917096"
