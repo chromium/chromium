@@ -180,16 +180,12 @@ public class ProfileDataCacheWithBadgeRenderTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !TextUtils.isEmpty(
-                            mProfileDataCache
-                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
-                                    .getFullName());
+                            mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getFullName());
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
-                            mProfileDataCache
-                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
-                                    .getImage());
+                            mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getImage());
                 });
     }
 
@@ -207,16 +203,12 @@ public class ProfileDataCacheWithBadgeRenderTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !TextUtils.isEmpty(
-                            mProfileDataCache
-                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
-                                    .getFullName());
+                            mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getFullName());
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
-                            mProfileDataCache
-                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
-                                    .getImage());
+                            mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getImage());
                 });
     }
 }

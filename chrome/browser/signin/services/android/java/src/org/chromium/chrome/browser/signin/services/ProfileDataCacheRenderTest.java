@@ -42,6 +42,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -137,9 +138,8 @@ public class ProfileDataCacheRenderTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mProfileDataCache.addObserver(mObserver));
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         CriteriaHelper.pollUiThread(
-                () -> mProfileDataCache.hasProfileDataForTesting(TestAccounts.ACCOUNT1.getEmail()));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> checkImageIsScaled(TestAccounts.ACCOUNT1.getEmail()));
+                () -> mProfileDataCache.hasProfileDataForTesting(TestAccounts.ACCOUNT1.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> checkImageIsScaled(TestAccounts.ACCOUNT1.getId()));
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }
 
@@ -160,13 +160,12 @@ public class ProfileDataCacheRenderTest {
                                     /* badgeConfig= */ null);
 
                     final DisplayableProfileData profileData =
-                            mProfileDataCache.getProfileDataOrDefault(
-                                    TestAccounts.ACCOUNT1.getEmail());
+                            mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
                     Assert.assertEquals(
                             TestAccounts.ACCOUNT1.getFullName(), profileData.getFullName());
                     Assert.assertEquals(
                             TestAccounts.ACCOUNT1.getGivenName(), profileData.getGivenName());
-                    checkImageIsScaled(TestAccounts.ACCOUNT1.getEmail());
+                    checkImageIsScaled(TestAccounts.ACCOUNT1.getId());
                 });
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }
@@ -180,9 +179,9 @@ public class ProfileDataCacheRenderTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         mProfileDataCache.hasProfileDataForTesting(
-                                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()));
+                                TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
         ThreadUtils.runOnUiThreadBlocking(
-                () -> checkImageIsScaled(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()));
+                () -> checkImageIsScaled(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
         mRenderTestRule.render(mImageView, "profile_data_cache_placeholder" + mImageSize);
     }
 
@@ -193,15 +192,13 @@ public class ProfileDataCacheRenderTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mProfileDataCache.addObserver(mObserver));
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         CriteriaHelper.pollUiThread(
-                () -> mProfileDataCache.hasProfileDataForTesting(TestAccounts.ACCOUNT1.getEmail()));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> checkImageIsScaled(TestAccounts.ACCOUNT1.getEmail()));
+                () -> mProfileDataCache.hasProfileDataForTesting(TestAccounts.ACCOUNT1.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> checkImageIsScaled(TestAccounts.ACCOUNT1.getId()));
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }
 
-    private void checkImageIsScaled(String accountName) {
-        DisplayableProfileData displayableProfileData =
-                mProfileDataCache.getProfileDataOrDefault(accountName);
+    private void checkImageIsScaled(CoreAccountId accountId) {
+        DisplayableProfileData displayableProfileData = mProfileDataCache.getById(accountId);
         Drawable profileDataImage = displayableProfileData.getImage();
         assertEquals(mImageSize, profileDataImage.getIntrinsicHeight());
         assertEquals(mImageSize, profileDataImage.getIntrinsicWidth());

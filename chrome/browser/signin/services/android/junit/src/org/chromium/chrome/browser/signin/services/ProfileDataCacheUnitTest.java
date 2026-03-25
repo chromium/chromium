@@ -33,6 +33,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -81,49 +82,59 @@ public class ProfileDataCacheUnitTest {
     @Test
     public void accountInfoIsUpdatedWithOnlyFullName() {
         final String fullName = "full name1";
-        final AccountInfo accountWithFullName =
-                new AccountInfo.Builder(TestAccounts.TEST_ACCOUNT_NO_NAME)
-                        .fullName(fullName)
-                        .build();
-        final String accountEmail = accountWithFullName.getEmail();
-        mProfileDataCache.addObserver(mObserverMock);
-        Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(accountEmail));
-        Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
-        Assert.assertNull(mProfileDataCache.getProfileDataOrDefault(accountEmail).getFullName());
+        final CoreAccountId accountId = TestAccounts.TEST_ACCOUNT_NO_NAME.getId();
+        final String accountEmail = TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail();
 
-        mAccountManagerTestRule.addAccount(accountWithFullName);
+        Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(accountId));
+
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        Assert.assertTrue(mProfileDataCache.getAccounts().isFulfilled());
+        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountId));
+        Assert.assertEquals(accountEmail, mProfileDataCache.getById(accountId).getAccountEmail());
+        Assert.assertNull(mProfileDataCache.getById(accountId).getFullName());
+
+        mAccountManagerTestRule.addAccount(
+                new AccountInfo.Builder(TestAccounts.TEST_ACCOUNT_NO_NAME)
+                        .fullName(fullName)
+                        .build());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountId));
         Assert.assertEquals(1, mProfileDataCache.getAccounts().getResult().size());
-        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountEmail));
-        Assert.assertEquals(
-                fullName, mProfileDataCache.getProfileDataOrDefault(accountEmail).getFullName());
+        Assert.assertEquals(accountEmail, mProfileDataCache.getById(accountId).getAccountEmail());
+        Assert.assertEquals(fullName, mProfileDataCache.getById(accountId).getFullName());
+        Assert.assertNull(mProfileDataCache.getById(accountId).getGivenName());
     }
 
     @Test
     public void accountInfoIsUpdatedWithOnlyGivenName() {
         final String givenName = "given name1";
-        final AccountInfo accountWithGivenName =
-                new AccountInfo.Builder(TestAccounts.TEST_ACCOUNT_NO_NAME)
-                        .givenName(givenName)
-                        .build();
-        final String accountEmail = accountWithGivenName.getEmail();
-        mProfileDataCache.addObserver(mObserverMock);
-        Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
-        Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(accountEmail));
-        Assert.assertNull(mProfileDataCache.getProfileDataOrDefault(accountEmail).getGivenName());
+        final CoreAccountId accountId = TestAccounts.TEST_ACCOUNT_NO_NAME.getId();
+        final String accountEmail = TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail();
 
-        mAccountManagerTestRule.addAccount(accountWithGivenName);
+        Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(accountId));
+
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountEmail));
-        Assert.assertEquals(
-                accountEmail, mProfileDataCache.getAccounts().getResult().get(0).getAccountEmail());
-        Assert.assertEquals(
-                givenName, mProfileDataCache.getAccounts().getResult().get(0).getGivenName());
-        Assert.assertEquals(
-                givenName, mProfileDataCache.getProfileDataOrDefault(accountEmail).getGivenName());
+        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountId));
+        Assert.assertEquals(accountEmail, mProfileDataCache.getById(accountId).getAccountEmail());
+        Assert.assertNull(mProfileDataCache.getById(accountId).getGivenName());
+
+        mAccountManagerTestRule.addAccount(
+                new AccountInfo.Builder(TestAccounts.TEST_ACCOUNT_NO_NAME)
+                        .givenName(givenName)
+                        .build());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountId));
+        Assert.assertEquals(1, mProfileDataCache.getAccounts().getResult().size());
+        Assert.assertEquals(accountEmail, mProfileDataCache.getById(accountId).getAccountEmail());
+        Assert.assertEquals(givenName, mProfileDataCache.getById(accountId).getGivenName());
+        Assert.assertNull(mProfileDataCache.getById(accountId).getFullName());
     }
 
     @Test
@@ -136,7 +147,7 @@ public class ProfileDataCacheUnitTest {
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertFalse(
                 mProfileDataCache.hasProfileDataForTesting(
-                        TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()));
+                        TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
 
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
@@ -144,7 +155,7 @@ public class ProfileDataCacheUnitTest {
 
         Assert.assertTrue(
                 mProfileDataCache.hasProfileDataForTesting(
-                        TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()));
+                        TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
         Assert.assertFalse(mProfileDataCache.getAccounts().getResult().isEmpty());
         Assert.assertEquals(
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(),
@@ -212,7 +223,9 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertNotNull(mProfileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
+        Assert.assertTrue(
+                mProfileDataCache.hasProfileDataForTesting(
+                        TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
     }
 
     @Test
@@ -223,7 +236,9 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertNotNull(mProfileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
+        Assert.assertTrue(
+                mProfileDataCache.hasProfileDataForTesting(
+                        TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
     }
 
     @Test
@@ -239,7 +254,9 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertNotNull(mProfileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
+        Assert.assertTrue(
+                mProfileDataCache.hasProfileDataForTesting(
+                        TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
     }
 
     @Test
@@ -255,7 +272,9 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertNotNull(mProfileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
+        Assert.assertTrue(
+                mProfileDataCache.hasProfileDataForTesting(
+                        TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
     }
 
     @Test

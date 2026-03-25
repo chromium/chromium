@@ -183,7 +183,11 @@ public class ProfileDataCache implements IdentityManager.Observer {
      * @return The {@link DisplayableProfileData} containing the profile data corresponding to the
      *     given account or a {@link DisplayableProfileData} with a placeholder image and null full
      *     and given name.
+     * @deprecated Use {@link #getById} instead.
+     *     <p>TODO(crbug.com/494147426) Remove this method when all usages are migrated to {@link
+     *     #getById}.
      */
+    @Deprecated
     public DisplayableProfileData getProfileDataOrDefault(@Nullable String accountEmail) {
         DisplayableProfileData profileData =
                 accountEmail != null ? mAccountsCache.getByEmail(accountEmail) : null;
@@ -314,9 +318,18 @@ public class ProfileDataCache implements IdentityManager.Observer {
         fireOnProfileDataUpdated(displayableProfileData);
     }
 
+    /** Checks if the cache contains profile data for the given account ID. */
+    public boolean hasProfileDataForTesting(CoreAccountId accountId) {
+        return mAccountsCache.getByAccountId(accountId) != null;
+    }
+
     /**
      * @return Whether the cache contains non-default profile data for the given account.
+     * @deprecated Use {@link #hasProfileDataForTesting(CoreAccountId)} instead.
+     *     <p>TODO(crbug.com/494147426) Remove this method when all usages are migrated to {@link
+     *     #hasProfileDataForTesting(CoreAccountId)}.
      */
+    @Deprecated
     public boolean hasProfileDataForTesting(String accountEmail) {
         return mAccountsCache.getByEmail(accountEmail) != null;
     }
