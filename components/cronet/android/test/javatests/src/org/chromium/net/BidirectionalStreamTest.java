@@ -47,6 +47,7 @@ import org.chromium.net.impl.CronetBidirectionalStream;
 import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.JavaCronetProvider;
+import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.TestLogger;
 import org.chromium.net.impl.UrlResponseInfoImpl;
@@ -1659,7 +1660,9 @@ public class BidirectionalStreamTest {
             FailureType failureType, ResponseStep failureStep, boolean expectError) {
         // Use a fresh CronetEngine each time so Http2 session is not reused.
         ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
+                (ExperimentalCronetEngine.Builder)
+                        new NativeCronetProvider(mTestRule.getTestFramework().getContext())
+                                .createBuilder();
         // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             CronetTestUtil.setMockCertVerifierForTesting(

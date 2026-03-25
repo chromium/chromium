@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetUrlRequestContextTest.TestBadLibraryLoader;
+import org.chromium.net.impl.NativeCronetProvider;
 
 /* This test class is equivalent to CronetUrlRequestContext except that
 it does not use CronetTestRule. */
@@ -29,7 +30,8 @@ public class CronetUrlRequestContextNoTestRuleTest {
     @SmallTest
     public void testSetLibraryLoaderIsEnforcedByDefaultEmbeddedProvider() throws Exception {
         CronetEngine.Builder builder =
-                new CronetEngine.Builder(ApplicationProvider.getApplicationContext());
+                new NativeCronetProvider(ApplicationProvider.getApplicationContext())
+                        .createBuilder();
         TestBadLibraryLoader loader = new TestBadLibraryLoader();
         builder.setLibraryLoader(loader);
 

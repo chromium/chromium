@@ -29,6 +29,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
+import org.chromium.net.impl.NativeCronetProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -277,7 +278,9 @@ public class NQETest {
                             .build();
 
             ExperimentalCronetEngine.Builder cronetEngineBuilder =
-                    new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
+                    (ExperimentalCronetEngine.Builder)
+                            new NativeCronetProvider(mTestRule.getTestFramework().getContext())
+                                    .createBuilder();
             assertThat(RttThroughputValues.INVALID_RTT_THROUGHPUT).isLessThan(0);
             Executor listenersExecutor =
                     Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
