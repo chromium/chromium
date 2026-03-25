@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -428,6 +429,21 @@ void DumpAccessibilityEventsViewsTestBase::SetFilters(
 }
 
 void DumpAccessibilityEventsViewsTestBase::OnDiffFailed() {}
+
+bool DumpAccessibilityEventsViewsTestBase::WaitForCapturedEvent(
+    const std::string& event_prefix) {
+  if (!event_recorder_) {
+    return false;
+  }
+  return base::test::RunUntil([&]() {
+    for (const auto& log : event_recorder_->GetEventLogs()) {
+      if (log.starts_with(event_prefix)) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
 
 base::FilePath DumpAccessibilityEventsViewsTestBase::GetExpectationFilePath(
     const std::string& test_name) const {

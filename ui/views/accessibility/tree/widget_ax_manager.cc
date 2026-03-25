@@ -38,6 +38,8 @@ bool ShouldSerializeEvent(Event event_type) {
     // TODO(crbug.com/40672441): kFocus is only needed here for tests while
     // are migrating to ViewsAX.
     case Event::kFocus:
+    case Event::kTooltipClosed:
+    case Event::kTooltipOpened:
     case Event::kWindowActivated:
     case Event::kWindowDeactivated:
     case Event::kWindowVisibilityChanged:
@@ -92,8 +94,6 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kStateChanged:
     case Event::kTextChanged:
     case Event::kTextSelectionChanged:
-    case Event::kTooltipClosed:
-    case Event::kTooltipOpened:
     case Event::kValueChanged:
       return false;
     default:
@@ -145,7 +145,24 @@ void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
   pending_events_.push_back({view_ax.GetUniqueId(), event_type});
   pending_data_updates_.insert(view_ax.GetUniqueId());
 
-  SchedulePendingUpdate();
+  // kTooltipClosed fires just before the tooltip widget is destroyed (see
+  // TooltipAura::Hide).  Since SchedulePendingUpdate uses PostTask with a weak
+  // pointer, the callback would be invalidated when the widget is destroyed,
+  // silently dropping the event.  Flush synchronously to ensure the event
+  // reaches BrowserAccessibilityManager before the widget is torn down.
+  //
+  // kTooltipOpened is also flushed synchronously.  The tooltip widget's views
+  // are already in place when Show() fires kTooltipOpened (`widget_->Show()`
+  // precedes the event in TooltipAura::Show), so the tree is ready for
+  // serialization.  Flushing synchronously ensures platform events
+  // (EVENT_OBJECT_SHOW / UIA_ToolTipOpenedEventId) fire before callers that
+  // check for them (e.g. event recorders in tests) run their next step.
+  if (event_type == ax::mojom::Event::kTooltipClosed ||
+      event_type == ax::mojom::Event::kTooltipOpened) {
+    SendPendingUpdate();
+  } else {
+    SchedulePendingUpdate();
+  }
 }
 
 void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
@@ -353,13 +370,12 @@ gfx::NativeWindow WidgetAXManager::GetTopLevelNativeWindow() {
 }
 
 bool WidgetAXManager::CanFireAccessibilityEvents() const {
-  // Use IsVisible() instead of IsActive() so that popup widgets (e.g. menus,
-  // tooltips) that are shown inactive via ShowInactive() can still fire
-  // accessibility events. Also check IsNativeWidgetInitialized() because this
-  // method can be called during Widget::Init() before the native widget's
-  // window has a layer.
-  // TODO(crbug.com/40672441): This probably allows events from being fired from background
-  // windows. Confirm this is the behavior we want.
+  // Use IsVisible() rather than IsActive().  Tooltip, menu, and other non-
+  // activatable widgets are visible to the user and must fire accessibility
+  // events for assistive technology to track them.  IsActive() is always false
+  // for TYPE_TOOLTIP widgets, which would silently drop all events.
+  // Also check IsNativeWidgetInitialized() because this method can be called
+  // during Widget::Init() before the native widget's window has a layer.
   return widget_ && widget_->IsNativeWidgetInitialized() &&
          widget_->IsVisible();
 }

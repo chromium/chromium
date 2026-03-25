@@ -128,10 +128,22 @@ AXTreeUpdate BrowserAccessibilityManagerWin::GetEmptyDocument() {
 }
 
 HWND BrowserAccessibilityManagerWin::GetParentHWND() const {
-  AXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
-  if (!delegate)
-    return NULL;
-  return delegate->AccessibilityGetAcceleratedWidget();
+  if (!delegate()) {
+    return nullptr;
+  }
+
+  // For views-sourced managers (e.g. WidgetAXManager), each widget can
+  // resolve its own HWND directly — there is no root-frame hierarchy.
+  // For web content, walk up to the root frame manager's delegate.
+  if (!delegate()->AccessibilityIsWebContentSource()) {
+    return delegate()->AccessibilityGetAcceleratedWidget();
+  }
+
+  AXPlatformTreeManagerDelegate* root_delegate = GetDelegateFromRootManager();
+  if (!root_delegate) {
+    return nullptr;
+  }
+  return root_delegate->AccessibilityGetAcceleratedWidget();
 }
 
 void BrowserAccessibilityManagerWin::UserIsReloading() {
@@ -299,6 +311,15 @@ void BrowserAccessibilityManagerWin::FireSourceEvent(
       // which will fire generated text-changed events.
       if (!node->IsWebContent())
         EnqueueTextChangedEvent(*node);
+      break;
+    case ax::mojom::Event::kTooltipClosed:
+      FireWinAccessibilityEvent(EVENT_OBJECT_HIDE, node);
+      FireUiaAccessibilityEvent(UIA_ToolTipClosedEventId, node);
+      break;
+    case ax::mojom::Event::kTooltipOpened:
+      // SUBTREE_CREATED already fires EVENT_OBJECT_SHOW for the new tooltip
+      // node, so only fire the UIA-specific tooltip event here.
+      FireUiaAccessibilityEvent(UIA_ToolTipOpenedEventId, node);
       break;
     default:
       break;
@@ -720,6 +741,12 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
         // ignored state may hide/show a popup by exposing it to the tree or
         // not.
         break;
+      case UIA_ToolTipOpenedEventId:
+      case UIA_ToolTipClosedEventId:
+        // Don't suppress ToolTipOpened/ToolTipClosed events since tooltip
+        // widgets transition from invisible (ignored) to visible (unignored)
+        // when they appear, and assistive technologies rely on these events.
+        break;
       default:
         return;
     }
@@ -1139,12 +1166,17 @@ void BrowserAccessibilityManagerWin::EnqueueSelectionChangedEvent(
 
 gfx::Rect BrowserAccessibilityManagerWin::GetViewBoundsInScreenCoordinates()
     const {
-  AXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
-  if (!delegate) {
+  // For views-sourced managers, use own delegate directly (no root-frame
+  // hierarchy).  For web content, walk up to the root frame manager.
+  AXPlatformTreeManagerDelegate* target_delegate =
+      (delegate() && !delegate()->AccessibilityIsWebContentSource())
+          ? delegate()
+          : GetDelegateFromRootManager();
+  if (!target_delegate) {
     return gfx::Rect();
   }
 
-  gfx::Rect bounds = delegate->AccessibilityGetViewBounds();
+  gfx::Rect bounds = target_delegate->AccessibilityGetViewBounds();
 
   // On Windows, we cannot directly multiply the bounds in screen DIPs by the
   // display's scale factor to get screen physical coordinates like we can on

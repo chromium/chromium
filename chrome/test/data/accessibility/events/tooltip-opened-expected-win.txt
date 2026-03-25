@@ -1,0 +1,1 @@
+EVENT_OBJECT_SHOW on class=TooltipViewAura role=ROLE_SYSTEM_TOOLTIP name="Test tooltip text"
