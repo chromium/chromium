@@ -134,6 +134,11 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return r.decided_by_related_website_sets_;
   }
 
+  static bool autorevocation_bypassed_by_user(
+      const content_settings::RuleMetaData& r) {
+    return r.autorevocation_bypassed_by_user_;
+  }
+
   static const base::Value& rule_options(
       const content_settings::RuleMetaData& r) {
     return r.rule_options_;

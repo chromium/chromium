@@ -29,6 +29,7 @@ RuleMetaData RuleMetaData::Clone() const {
   clone.tpcd_metadata_cohort_ = tpcd_metadata_cohort_;
   clone.tpcd_metadata_elected_dtrp_ = tpcd_metadata_elected_dtrp_;
   clone.decided_by_related_website_sets_ = decided_by_related_website_sets_;
+  clone.autorevocation_bypassed_by_user_ = autorevocation_bypassed_by_user_;
   clone.rule_options_ = rule_options_.Clone();
   return clone;
 }

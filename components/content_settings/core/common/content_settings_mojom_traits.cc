@@ -93,6 +93,8 @@ bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
   out->SetExpirationAndLifetime(expiration, lifetime);
   out->set_decided_by_related_website_sets(
       data.decided_by_related_website_sets());
+  out->set_autorevocation_bypassed_by_user(
+      data.autorevocation_bypassed_by_user());
 
   return data.ReadLastModified(&out->last_modified_) &&
          data.ReadLastUsed(&out->last_used_) &&

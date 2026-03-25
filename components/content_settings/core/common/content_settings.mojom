@@ -70,6 +70,7 @@ struct RuleMetaData {
   TpcdMetadataRuleSource tpcd_metadata_rule_source;
   TpcdMetadataCohort tpcd_metadata_cohort;
   bool decided_by_related_website_sets;
+  bool autorevocation_bypassed_by_user;
   mojo_base.mojom.Value rule_options;
 };
 
