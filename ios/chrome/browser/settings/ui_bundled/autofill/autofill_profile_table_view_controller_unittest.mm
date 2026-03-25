@@ -70,6 +70,15 @@ class AutofillProfileTableViewControllerTest
         initWithBrowser:browser_.get()];
   }
 
+  void SetUp() override {
+    LegacyChromeTableViewControllerTest::SetUp();
+    feature_list_.InitWithFeatures(
+        {autofill::features::kAutofillAiCreateEntityDataManager,
+         autofill::features::kAutofillAiWithDataSchema,
+         autofill::features::kAutofillAiReauthRequired},
+        /*disabled_features=*/{});
+  }
+
   void TearDown() override {
     [base::apple::ObjCCastStrict<AutofillProfileTableViewController>(
         controller()) settingsWillBeDismissed];
@@ -114,6 +123,7 @@ class AutofillProfileTableViewControllerTest
     return GetApplicationContext()->GetLocalState();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -127,12 +137,20 @@ TEST_F(AutofillProfileTableViewControllerTest, TestInitialization) {
   CheckController();
 
   // Expect only the header section.
-  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(3, NumberOfSections());
   // Expect header section to contain one row (the address Autofill toggle).
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   // Expect subtitle section to contain one row (the address Autofill toggle
   // subtitle).
   EXPECT_NE(nil, [controller.tableViewModel footerForSectionIndex:0]);
+  // Expect header section to contain one row (the enhanced Autofill toggle).
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  EXPECT_EQ(nil, [controller.tableViewModel footerForSectionIndex:1]);
+  // Expect header section to contain one row (the user verification toggle).
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
+  // Expect subtitle section to contain one row (the use verification toggle
+  // subtitle).
+  EXPECT_NE(nil, [controller.tableViewModel footerForSectionIndex:2]);
 
   // Check the footer of the first section.
   CheckSectionFooterWithId(IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_SUBLABEL, 0);
@@ -145,10 +163,11 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
   CreateController();
   CheckController();
 
-  // Expect two sections (header, and addresses section).
-  EXPECT_EQ(2, NumberOfSections());
+  // Expect four sections (address toggle, enhanced autofill, user verification,
+  // addresses).
+  EXPECT_EQ(4, NumberOfSections());
   // Expect address section to contain one row (the address itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  EXPECT_EQ(1, NumberOfItemsInSection(3));
 }
 
 // Checks if there is a plus address section when
@@ -164,9 +183,10 @@ TEST_F(AutofillProfileTableViewControllerTest, TestPlusAddressSection) {
       LegacyChromeTableViewControllerTest::controller();
   CheckController();
 
-  // Expect only the header section.
-  EXPECT_EQ(2, NumberOfSections());
-  // Expect header section to contain one row.
+  // Expect 4 sections (address toggle, plus address, enhanced autofill, user
+  // verification).
+  EXPECT_EQ(4, NumberOfSections());
+  // Expect plus address section to contain one row.
   EXPECT_EQ(1, NumberOfItemsInSection(1));
   // Expect subtitle section to contain one row.
   EXPECT_NE(nil, [controller.tableViewModel footerForSectionIndex:1]);
@@ -188,7 +208,7 @@ TEST_F(AutofillProfileTableViewControllerTest,
   CheckController();
 
   AutofillProfileItem* item = base::apple::ObjCCastStrict<AutofillProfileItem>(
-      GetTableViewItem(/*section=*/1, /*item=*/0));
+      GetTableViewItem(/*section=*/3, /*item=*/0));
 
   EXPECT_NSEQ(@"Montreal", item.detailText);
 }
@@ -207,7 +227,7 @@ TEST_F(AutofillProfileTableViewControllerTest,
   CheckController();
 
   AutofillProfileItem* item = base::apple::ObjCCastStrict<AutofillProfileItem>(
-      GetTableViewItem(/*section=*/1, /*item=*/0));
+      GetTableViewItem(/*section=*/3, /*item=*/0));
 
   EXPECT_NSEQ(@"Montreal", item.detailText);
 }
@@ -224,7 +244,7 @@ TEST_F(AutofillProfileTableViewControllerTest,
   CheckController();
 
   AutofillProfileItem* item = base::apple::ObjCCastStrict<AutofillProfileItem>(
-      GetTableViewItem(/*section=*/1, /*item=*/0));
+      GetTableViewItem(/*section=*/3, /*item=*/0));
 
   EXPECT_NSEQ(@"Canada", item.detailText);
 }
@@ -233,10 +253,6 @@ TEST_F(AutofillProfileTableViewControllerTest,
 // enabled.
 TEST_F(AutofillProfileTableViewControllerTest,
        TestEnhancedAutofillMenuPresent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAiWithDataSchema);
-
   CreateController();
   CheckController();
 
