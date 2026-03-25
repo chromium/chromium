@@ -17,7 +17,7 @@ template <>
 struct COMPONENT_EXPORT(WEBNN_MOJOM_TRAITS)
     StructTraits<webnn::mojom::OperandDescriptorDataView,
                  webnn::OperandDescriptor> {
-  static webnn::mojom::DataType data_type(
+  static webnn::OperandDataType data_type(
       const webnn::OperandDescriptor& descriptor);
   static const std::vector<uint32_t>& shape(
       const webnn::OperandDescriptor& descriptor) {
