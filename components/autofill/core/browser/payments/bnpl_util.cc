@@ -356,7 +356,9 @@ TextWithLink GetBnplUiFooterTextForAi(
       IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT);
   size_t offset = 0;
   text_with_link.text = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE,
+      base::FeatureList::IsEnabled(features::kAutofillEnablePayNowPayLaterTabs)
+          ? IDS_AUTOFILL_CARD_BNPL_PAY_LATER_OPTIONS_AI_FOOTNOTE
+          : IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE,
       payments_settings_link_text, &offset);
 
   text_with_link.offset =

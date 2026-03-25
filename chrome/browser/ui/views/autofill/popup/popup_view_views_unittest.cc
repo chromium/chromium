@@ -2728,6 +2728,10 @@ TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesLoadingState) {
 }
 
 TEST_F(PopupViewViewsTest, Show_A11yAnnouncesBnplFootnote) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePayNowPayLaterTabs);
+
   controller().set_suggestions({SuggestionType::kBnplFootnote});
   CreateView();
   base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
@@ -2735,7 +2739,7 @@ TEST_F(PopupViewViewsTest, Show_A11yAnnouncesBnplFootnote) {
   test_api(view()).SetA11yAnnouncer(announcement.Get());
 
   std::u16string expected_announcement_text = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE,
+      IDS_AUTOFILL_CARD_BNPL_PAY_LATER_OPTIONS_AI_FOOTNOTE,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT));
   EXPECT_CALL(announcement, Run(expected_announcement_text, true));
@@ -2743,6 +2747,10 @@ TEST_F(PopupViewViewsTest, Show_A11yAnnouncesBnplFootnote) {
 }
 
 TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesBnplFootnote) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePayNowPayLaterTabs);
+
   controller().set_suggestions({SuggestionType::kCreditCardEntry});
   CreateAndShowView();
   base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
@@ -2750,7 +2758,7 @@ TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesBnplFootnote) {
   test_api(view()).SetA11yAnnouncer(announcement.Get());
 
   std::u16string expected_announcement_text = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE,
+      IDS_AUTOFILL_CARD_BNPL_PAY_LATER_OPTIONS_AI_FOOTNOTE,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT));
   EXPECT_CALL(announcement, Run(expected_announcement_text, true));

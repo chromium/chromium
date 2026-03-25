@@ -318,6 +318,57 @@ TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsBold) {
 
   const std::u16string kExpectedFullFooterText =
       u"Content from the checkout page is shared with Google to offer "
+      u"these options. Payment plans are subject to eligibility. To hide "
+      u"pay later options in autofill, go to payment settings.";
+  const std::u16string kExpectedBoldAiText =
+      u"Content from the checkout page is shared with Google to offer "
+      u"these options.";
+  const std::u16string kLinkText = u"payment settings";
+  const size_t kLinkOffset = kExpectedFullFooterText.find(kLinkText);
+
+  EXPECT_THAT(
+      GetBnplUiFooterTextForAi(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      testing::FieldsAre(
+          kExpectedFullFooterText, gfx::Range(0, kExpectedBoldAiText.length()),
+          gfx::Range(kLinkOffset, kLinkOffset + kLinkText.length()), _));
+}
+
+TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsNotBold) {
+  ON_CALL(
+      static_cast<MockPaymentsDataManager&>(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      IsAutofillAmountExtractionAiTermsSeenPrefEnabled)
+      .WillByDefault(Return(true));
+
+  const std::u16string kExpectedFullFooterText =
+      u"Content from the checkout page is shared with Google to offer "
+      u"these options. Payment plans are subject to eligibility. To hide "
+      u"pay later options in autofill, go to payment settings.";
+  const std::u16string kLinkText = u"payment settings";
+  const size_t kLinkOffset = kExpectedFullFooterText.find(kLinkText);
+
+  EXPECT_THAT(
+      GetBnplUiFooterTextForAi(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      testing::FieldsAre(
+          kExpectedFullFooterText, gfx::Range(0, 0),
+          gfx::Range(kLinkOffset, kLinkOffset + kLinkText.length()), _));
+}
+
+TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsBold_TabsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnablePayNowPayLaterTabs);
+
+  ON_CALL(
+      static_cast<MockPaymentsDataManager&>(
+          autofill_client().GetPersonalDataManager().payments_data_manager()),
+      IsAutofillAmountExtractionAiTermsSeenPrefEnabled)
+      .WillByDefault(Return(false));
+
+  const std::u16string kExpectedFullFooterText =
+      u"Content from the checkout page is shared with Google to offer "
       u"these options. To hide pay later options in autofill, go to payment "
       u"settings.";
   const std::u16string kExpectedBoldAiText =
@@ -334,7 +385,11 @@ TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsBold) {
           gfx::Range(kLinkOffset, kLinkOffset + kLinkText.length()), _));
 }
 
-TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsNotBold) {
+TEST_F(BnplUtilTest, GetBnplUiFooterTextForAi_AiTermsNotBold_TabsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnablePayNowPayLaterTabs);
+
   ON_CALL(
       static_cast<MockPaymentsDataManager&>(
           autofill_client().GetPersonalDataManager().payments_data_manager()),
