@@ -60,10 +60,7 @@ public class NQETest {
         mNativeTestServer =
                 NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
         mNativeTestServer.start();
-        // Use a large file (~20KB) to guarantee the response not to be contained
-        // within a single packet. This is necessary to guarantee a throughput
-        // observation even with a deferred observation window.
-        mUrl = mNativeTestServer.getFileURL("/laptop.png");
+        mUrl = mNativeTestServer.getFileURL("/echo?status=200");
     }
 
     @After
@@ -374,7 +371,7 @@ public class NQETest {
 
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
-        cronetEngine.configureNetworkQualityEstimatorForTesting(true, true, true);
+        cronetEngine.configureNetworkQualityEstimatorForTesting(true, true, false);
 
         cronetEngine.addRttListener(rttListener);
         cronetEngine.addThroughputListener(throughputListener);
