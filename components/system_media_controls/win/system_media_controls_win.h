@@ -9,6 +9,7 @@
 #include <windows.media.control.h>
 #include <wrl/client.h>
 
+#include "base/memory/safety_checks.h"
 #include "base/observer_list.h"
 #include "components/system_media_controls/system_media_controls.h"
 
@@ -21,6 +22,9 @@ namespace internal {
 // Implementation of SystemMediaControls that connects to Windows's System Media
 // Transport Controls.
 class SystemMediaControlsWin : public SystemMediaControls {
+  // TODO(https://crbug.com/495108488): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   SystemMediaControlsWin(int window);
 
