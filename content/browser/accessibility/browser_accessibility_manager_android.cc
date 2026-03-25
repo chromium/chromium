@@ -994,7 +994,9 @@ BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
       GetFromAXNode(focus_position->GetAnchor()));
   selection_range.focus_offset = focus_position->text_offset();
 
-  return selection_range;
+  return (selection_range.focus_object && selection_range.anchor_object)
+             ? std::make_optional(selection_range)
+             : std::nullopt;
 }
 
 void BrowserAccessibilityManagerAndroid::MaybeUpdateTextPositionForSelection(
