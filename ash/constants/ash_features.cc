@@ -1304,9 +1304,6 @@ BASE_FEATURE(kNearbyPresence, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables a limit on the number of notifications that can show.
 BASE_FEATURE(kNotificationLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables a bugfix for devices with a null custom top row property.
-BASE_FEATURE(kNullTopRowFix, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Night Light feature.
 BASE_FEATURE(kNightLight, base::FEATURE_ENABLED_BY_DEFAULT);
 
