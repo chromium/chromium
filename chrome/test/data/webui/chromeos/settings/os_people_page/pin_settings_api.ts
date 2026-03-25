@@ -184,6 +184,24 @@ export class PinSettingsApi implements PinSettingsApiInterface {
     await assertAsync(() => this.setupPinDialog() === null);
   }
 
+  async setPinButFailsComplexity(weakPin: string, okPin: string):
+      Promise<void> {
+    const pinDialog = await this.openPinSetupDialog();
+
+    await pinDialog.enterPin(weakPin);
+
+    // The complexity check is asynchronous. We expect it to disable the submit
+    // button and show an ERROR.
+    await assertAsync(() => !pinDialog.canSubmit() && pinDialog.hasError());
+
+    // Enter a strong PIN and verify the error clears.
+    await pinDialog.enterPin(okPin);
+    await assertAsync(() => pinDialog.canSubmit() && !pinDialog.hasError());
+
+    await pinDialog.cancel();
+    await assertAsync(() => this.setupPinDialog() === null);
+  }
+
   async setPinWithWarning(weakPin: string): Promise<void> {
     const pinDialog = await this.openPinSetupDialog();
 

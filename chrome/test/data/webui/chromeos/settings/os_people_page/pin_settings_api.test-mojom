@@ -40,6 +40,10 @@ interface PinSettingsApi {
   // rejected with an error message.
   SetPinButTooLong(string long_pin, string ok_pin) => ();
 
+  // Verifies that |weak_pin| is rejected by the complexity policy with an error,
+  // but that |ok_pin| can be successfully entered afterward.
+  SetPinButFailsComplexity(string weak_pin, string ok_pin) => ();
+
   // Verifies that PIN setup works with |weak_pin| but with a warning.
   SetPinWithWarning(string weak) => ();
 

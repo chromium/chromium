@@ -15,7 +15,7 @@ import './pin_keyboard.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {ConfigureResult, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactorConfig, ConfigureResult, LocalAuthFactorsComplexity, PinComplexity, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from './lock_screen_constants.js';
@@ -38,12 +38,23 @@ export enum MessageType {
   CONTAINS_NONDIGIT = 'configurePinNondigit',
   MISMATCH = 'configurePinMismatched',
   INTERNAL_ERROR = 'internalError',
+  COMPLEXITY_NONE = 'configurePinComplexityErrorNone',
+  COMPLEXITY_LOW = 'configurePinComplexityErrorLow',
+  COMPLEXITY_MEDIUM = 'configurePinComplexityErrorMedium',
+  COMPLEXITY_HIGH = 'configurePinComplexityErrorHigh',
 }
 
 export enum ProblemType {
   WARNING = 'warning',
   ERROR = 'error',
 }
+
+const ComplexityErrorMap = {
+  [LocalAuthFactorsComplexity.kNone]: MessageType.COMPLEXITY_NONE,
+  [LocalAuthFactorsComplexity.kLow]: MessageType.COMPLEXITY_LOW,
+  [LocalAuthFactorsComplexity.kMedium]: MessageType.COMPLEXITY_MEDIUM,
+  [LocalAuthFactorsComplexity.kHigh]: MessageType.COMPLEXITY_HIGH,
+} as Record<LocalAuthFactorsComplexity, MessageType>;
 
 const SetupPinKeyboardElementBase = I18nMixin(PolymerElement);
 
@@ -65,9 +76,12 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   static get properties() {
     return {
       /**
-       * The token to be used to call into the PinFactorEditor mojo service.
+       * Auth token for making mojo calls into the backend.
        */
-      authToken: String,
+      authToken: {
+        type: String,
+        observer: 'fetchLocalAuthFactorsComplexity_',
+      },
 
       /**
        * The current PIN keyboard value.
@@ -167,6 +181,11 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
         type: Boolean,
         value: false,
       },
+
+      localAuthFactorsComplexity_: {
+        type: LocalAuthFactorsComplexity,
+        value: LocalAuthFactorsComplexity.kUnset,
+      },
     };
   }
 
@@ -185,6 +204,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   private problemClass_: ProblemType|''|undefined;
   private pinHasPassedMinimumLength_: boolean;
   private isSetPinCallPending_: boolean;
+  private localAuthFactorsComplexity_: LocalAuthFactorsComplexity;
   private credentialRequirements_: CredentialRequirements|undefined;
 
   override focus(): void {
@@ -307,6 +327,14 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
 
     // Initial PIN setup.
     if (!this.isConfirmStep) {
+      // Use the new flow if AuthFactorsComplexity policy is set.
+      if (this.localAuthFactorsComplexity_ !==
+          LocalAuthFactorsComplexity.kUnset) {
+        this.checkPinComplexity_(newPin);
+        return;
+      }
+
+      // Old quickUnlockPrivate flow.
       this.quickUnlockPrivateCheckCredential_(newPin);
       return;
     }
@@ -405,6 +433,67 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     this.resetState();
     this.dispatchEvent(new Event('set-pin-done'));
     recordLockScreenProgress(LockScreenProgress.CONFIRM_PIN);
+  }
+
+  private async checkPinComplexity_(pin: string): Promise<void> {
+    if (typeof this.authToken !== 'string') {
+      fireAuthTokenInvalidEvent(this);
+      return;
+    }
+
+    let pinComplexity: PinComplexity;
+    try {
+      pinComplexity = await PinFactorEditor.getRemote().checkPinComplexity(
+          this.authToken, pin);
+    } catch (e) {
+      switch (e) {
+        case ConfigureResult.kInvalidTokenError:
+          fireAuthTokenInvalidEvent(this);
+          return;
+        default:
+          // The only error this API should return is `kInvalidTokenError`.
+          assertNotReached();
+      }
+    }
+
+    if (pinComplexity === PinComplexity.kOk) {
+      this.enableSubmit = true;
+      this.hideProblem_();
+      return;
+    }
+
+    this.enableSubmit = false;
+    const messageId = ComplexityErrorMap[this.localAuthFactorsComplexity_];
+    this.showProblem_(messageId, ProblemType.ERROR);
+  }
+
+  private async fetchLocalAuthFactorsComplexity_(): Promise<void> {
+    if (typeof this.authToken !== 'string') {
+      fireAuthTokenInvalidEvent(this);
+      return;
+    }
+
+    try {
+      const newValue =
+          await AuthFactorConfig.getRemote().getLocalAuthFactorsComplexity(
+              this.authToken!);
+      if (newValue === this.localAuthFactorsComplexity_) {
+        return;
+      }
+      this.localAuthFactorsComplexity_ = newValue;
+
+      const messageId = ComplexityErrorMap[this.localAuthFactorsComplexity_];
+      this.showProblem_(messageId, ProblemType.WARNING);
+    } catch (e) {
+      switch (e) {
+        case ConfigureResult.kInvalidTokenError:
+          fireAuthTokenInvalidEvent(this);
+          break;
+        default:
+          // The only error this API should return is `kInvalidTokenError`.
+          assertNotReached();
+      }
+    }
   }
 
   /**
