@@ -19,7 +19,8 @@ import type {Rect} from '../post_message_handler.js';
  *     threadframe where the composebox is.
  */
 export function getNonOccludedClipPath(
-    composeboxBounds: Rect|null, occluders: Rect[], padding: number): string {
+    composeboxBounds: Rect|null, occluders: Rect[], padding: number,
+    viewWidth: number, viewHeight: number, borderRadius: number = 0): string {
   // If no composebox bounds, return an empty clip path.
   if (!composeboxBounds) {
     return '';
@@ -121,37 +122,56 @@ export function getNonOccludedClipPath(
     }
   }
 
-  // 4. Polygon Construction
+  // 4. Path Construction
   // Finally, now that visibleSegments represents the portions of the composebox
   // that are not occluded and should be clickable, construct the clip path to
-  // cut a hole in the <webview> for these visible segments.
+  // cut a hole in the <webview> for these visible segments using path().
   // Sort segments Left-to-Right to prevent crossing lines
   visibleSegments.sort((a, b) => a.start - b.start);
 
   // Start Outer Box (Clockwise)
-  let path = `0% 0%, 100% 0%, 100% 100%, 0% 100%`;
+  let path = `M 0 0 H ${viewWidth} V ${viewHeight} H 0 Z`;
 
-  // Enter Canal to the start of the hole (Bottom of the search box)
-  // A canal is a long thin rectangle that runs from the edge of the screen to
-  // the start of the hole. Since a clip-path needs to be one continuous line,
-  // the canal is drawn first, then the holes, then the canal again to close it
-  // off.
-  path += `, 0px ${holeBottom}px`;
-
-  // Draw Holes (Counter-Clockwise: BL -> BR -> TR -> TL)
-  // This winding order is critical for the "subtraction" to work
   for (const seg of visibleSegments) {
-    path += ',' +
-        ` ${seg.start}px ${holeBottom}px,` +
-        ` ${seg.end}px ${holeBottom}px,` +
-        ` ${seg.end}px ${holeTop}px,` +
-        ` ${seg.start}px ${holeTop}px,` +
-        ` ${seg.start}px ${holeBottom}px`;
+    const leftRounded = seg.start === hole.left && borderRadius > 0;
+    const rightRounded = seg.end === hole.right && borderRadius > 0;
+    const r = borderRadius;
+
+    const startX = rightRounded ? seg.end - r : seg.end;
+    const startY = holeTop;
+
+    path += ` M ${startX} ${startY}`;
+
+    if (leftRounded) {
+      path += ` H ${seg.start + r}`;
+      path += ` A ${r} ${r} 0 0 0 ${seg.start} ${holeTop + r}`;
+    } else {
+      path += ` H ${seg.start}`;
+    }
+
+    if (leftRounded) {
+      path += ` V ${holeBottom - r}`;
+      path += ` A ${r} ${r} 0 0 0 ${seg.start + r} ${holeBottom}`;
+    } else {
+      path += ` V ${holeBottom}`;
+    }
+
+    if (rightRounded) {
+      path += ` H ${seg.end - r}`;
+      path += ` A ${r} ${r} 0 0 0 ${seg.end} ${holeBottom - r}`;
+    } else {
+      path += ` H ${seg.end}`;
+    }
+
+    if (rightRounded) {
+      path += ` V ${holeTop + r}`;
+      path += ` A ${r} ${r} 0 0 0 ${seg.end - r} ${holeTop}`;
+    } else {
+      path += ` V ${holeTop}`;
+    }
+
+    path += ' Z';
   }
 
-  // Exit Canal and Close
-  path += `, 0px ${holeBottom}px, 0% 100%`;
-
-  // Apply
-  return `clip-path: polygon(${path});`;
+  return `clip-path: path('${path}');`;
 }

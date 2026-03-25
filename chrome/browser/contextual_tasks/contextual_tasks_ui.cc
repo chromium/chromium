@@ -430,6 +430,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("enableFileHint", contextual_tasks::GetEnableFileHint());
   source->AddBoolean("enableComposeboxJumpFix",
                      contextual_tasks::GetEnableComposeboxJumpFix());
+  source->AddBoolean("roundedClipPathEnabled",
+                     contextual_tasks::IsRoundedClipPathEnabled());
 
   source->AddString(
       "composeboxSource",

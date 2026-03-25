@@ -64,6 +64,9 @@ BASE_DECLARE_FEATURE(kContextualTasksAnimatedCaret);
 // Fixes the composebox jump.
 BASE_DECLARE_FEATURE(kContextualTasksComposeboxJumpFix);
 
+// Enables the use of a rounded clip-path for the composebox.
+BASE_DECLARE_FEATURE(kContextualTasksRoundedClipPath);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
@@ -264,6 +267,9 @@ extern bool GetEnableComposeboxJumpFix();
 
 // Returns the UI option to expand contextual tasks side panel to tab.
 extern ExpandButtonOption GetExpandButtonOption();
+
+// Returns whether the rounded clip-path is enabled.
+extern bool IsRoundedClipPathEnabled();
 
 namespace flag_descriptions {
 

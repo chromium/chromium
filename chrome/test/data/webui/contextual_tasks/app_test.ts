@@ -1081,7 +1081,7 @@ suite('ContextualTasksAppTest', function() {
     // Verify clip-path on webview
     const clipPath = webview.style.clipPath;
     assertTrue(
-        clipPath.includes('polygon'), 'clip-path should contain polygon');
+        clipPath.includes('path'), 'clip-path should contain path');
   });
 
   test('sets isFrameLoading to false when content load finishes', async () => {

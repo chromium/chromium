@@ -67,6 +67,10 @@ const CHROME_TASK_PARAM_KEY = 'chrome_task_id';
 // on the elements might not be included in the bounding box).
 const OCCLUDER_EXTRA_PADDING_PX = 15;
 
+// LINT.IfChange(ComposeboxBorderRadius)
+const COMPOSEBOX_BORDER_RADIUS_PX = 24;
+// LINT.ThenChange(//depot/chromium/chrome/browser/resources/contextual_tasks/composebox.css:ComposeboxBorderRadius)
+
 export interface ContextualTasksAppElement {
   $: {
     threadFrame: chrome.webviewTag.WebView,
@@ -867,10 +871,18 @@ export class ContextualTasksAppElement extends CrLitElement {
     const composeboxBounds = this.forcedComposeboxBounds_ ??
         this.getComposeboxBoundsRelativeToThreadFrame_();
 
+    const frameRect = this.$.threadFrame.getBoundingClientRect();
+
     // If occluders are present, set the clip path and a z-index that ensures
     // the thread frame is above the occluders.
+    const roundedClipPathEnabled =
+        loadTimeData.getBoolean('roundedClipPathEnabled');
+    const borderRadius =
+        roundedClipPathEnabled ? COMPOSEBOX_BORDER_RADIUS_PX : 0;
+
     return getNonOccludedClipPath(
-               composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX) +
+               composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX,
+               frameRect.width, frameRect.height, borderRadius) +
         'z-index: 100;';
   }
 
