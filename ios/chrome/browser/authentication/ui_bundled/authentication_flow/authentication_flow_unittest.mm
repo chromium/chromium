@@ -94,20 +94,16 @@ class AuthenticationFlowTest : public PlatformTest {
     std::ignore =
         AuthenticationServiceFactory::GetForProfile(personal_profile_.get());
 
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
-      managed_profile1_ = CreateProfile(
-          *GetApplicationContext()
-               ->GetAccountProfileMapper()
-               ->FindProfileNameForGaiaID(managed_identity1_.gaiaId));
-      managed_browser1_ =
-          std::make_unique<TestBrowser>(managed_profile1_.get());
-      managed_profile2_ = CreateProfile(
-          *GetApplicationContext()
-               ->GetAccountProfileMapper()
-               ->FindProfileNameForGaiaID(managed_identity2_.gaiaId));
-      managed_browser2_ =
-          std::make_unique<TestBrowser>(managed_profile2_.get());
-    }
+    managed_profile1_ = CreateProfile(
+        *GetApplicationContext()
+             ->GetAccountProfileMapper()
+             ->FindProfileNameForGaiaID(managed_identity1_.gaiaId));
+    managed_browser1_ = std::make_unique<TestBrowser>(managed_profile1_.get());
+    managed_profile2_ = CreateProfile(
+        *GetApplicationContext()
+             ->GetAccountProfileMapper()
+             ->FindProfileNameForGaiaID(managed_identity2_.gaiaId));
+    managed_browser2_ = std::make_unique<TestBrowser>(managed_profile2_.get());
 
     run_loop_ = std::make_unique<base::RunLoop>();
   }
@@ -275,8 +271,7 @@ class AuthenticationFlowTest : public PlatformTest {
                              /*shouldHandOverToFlowInProfile=*/YES);
 
     NSString* hosted_domain = GetHostedDomainFromEmail(identity.userEmail);
-    const bool should_switch_profile =
-        hosted_domain.length && AreSeparateProfilesForManagedAccountsEnabled();
+    const bool should_switch_profile = hosted_domain.length;
 
     PostSignInActionSet postSignInActions;
     if (should_switch_profile && adds_history_screen_post_profile_switch) {
@@ -292,28 +287,23 @@ class AuthenticationFlowTest : public PlatformTest {
 
     ProfileIOS* final_profile = personal_profile_;
     Browser* final_browser = personal_browser_.get();
-    if (AreSeparateProfilesForManagedAccountsEnabled()) {
-      if (identity == managed_identity1_) {
-        final_profile = managed_profile1_;
-        final_browser = managed_browser1_.get();
-      } else if (identity == managed_identity2_) {
-        final_profile = managed_profile2_;
-        final_browser = managed_browser2_.get();
-      }
+    if (identity == managed_identity1_) {
+      final_profile = managed_profile1_;
+      final_browser = managed_browser1_.get();
+    } else if (identity == managed_identity2_) {
+      final_profile = managed_profile2_;
+      final_browser = managed_browser2_.get();
     }
 
     if (hosted_domain.length) {
-      if (AreSeparateProfilesForManagedAccountsEnabled()) {
-        OCMStub([performer_mock_
-                    fetchProfileSeparationPolicies:personal_profile_.get()
-                                       forIdentity:identity])
-            .andDo(^(NSInvocation*) {
-              [authentication_flow_
-                  didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
-            });
-      }
+      OCMStub([performer_mock_
+                  fetchProfileSeparationPolicies:personal_profile_.get()
+                                     forIdentity:identity])
+          .andDo(^(NSInvocation*) {
+            [authentication_flow_
+                didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
+          });
 
-      BOOL migrationDisabled = AreSeparateProfilesForManagedAccountsEnabled();
       auto showManagedConfirmationForHostedDomainCallback = ^(NSInvocation*) {
         managed_confirmation_dialog_shown_count_++;
         [authentication_flow_
@@ -324,53 +314,50 @@ class AuthenticationFlowTest : public PlatformTest {
                                                 identity:identity
                                           viewController:view_controller_mock_
                                                  browser:personal_browser_.get()
-                               skipBrowsingDataMigration:migrationDisabled
+                               skipBrowsingDataMigration:YES
                               mergeBrowsingDataByDefault:NO
-                   browsingDataMigrationDisabledByPolicy:migrationDisabled])
+                   browsingDataMigrationDisabledByPolicy:YES])
           .andDo(showManagedConfirmationForHostedDomainCallback);
 
-      if (AreSeparateProfilesForManagedAccountsEnabled()) {
-        __block ChangeProfileContinuation continuation;
-        auto switchToProfileWithIdentityCallback = ^(NSInvocation*) {
-          base::OnceClosure completion = base::BindOnce(
-              [](Browser* final_browser,
-                 ChangeProfileContinuation continuation) {
-                CHECK(continuation);
-                // TODO
-                std::move(continuation)
-                    .Run(final_browser->GetSceneState(), base::DoNothing());
+      __block ChangeProfileContinuation continuation;
+      auto switchToProfileWithIdentityCallback = ^(NSInvocation*) {
+        base::OnceClosure completion = base::BindOnce(
+            [](Browser* final_browser, ChangeProfileContinuation continuation) {
+              CHECK(continuation);
+              // TODO
+              std::move(continuation)
+                  .Run(final_browser->GetSceneState(), base::DoNothing());
+            },
+            final_browser, std::move(continuation));
+        [authentication_flow_
+            didSwitchToProfileWithNewProfileBrowser:final_browser
+                                         completion:std::move(completion)];
+      };
+      __block ReadyForProfileSwitchingCompletion switchingReadyCompletion =
+          base::BindOnce(
+              [](ChangeProfileContinuation* continuation,
+                 ChangeProfileContinuation continuation_from_delegate) {
+                *continuation = std::move(continuation_from_delegate);
               },
-              final_browser, std::move(continuation));
-          [authentication_flow_
-              didSwitchToProfileWithNewProfileBrowser:final_browser
-                                           completion:std::move(completion)];
-        };
-        __block ReadyForProfileSwitchingCompletion switchingReadyCompletion =
-            base::BindOnce(
-                [](ChangeProfileContinuation* continuation,
-                   ChangeProfileContinuation continuation_from_delegate) {
-                  *continuation = std::move(continuation_from_delegate);
-                },
-                &continuation);
-        id delegateChecker = [OCMArg
-            checkWithBlock:^(id<AuthenticationFlowDelegate> request_helper) {
-              CHECK(request_helper);
-              [request_helper
-                  authenticationFlowWillSwitchProfileWithReadyCompletion:
-                      std::move(switchingReadyCompletion)];
-              return true;
-            }];
-        OCMExpect(
-            [performer_mock_
-                switchToProfileWithIdentity:identity
-                                 sceneState:personal_browser_->GetSceneState()
-                                     reason:ChangeProfileReason::
-                                                kManagedAccountSignIn
-                                   delegate:delegateChecker
-                          postSignInActions:postSignInActions
-                                accessPoint:access_point])
-            .andDo(switchToProfileWithIdentityCallback);
-      }
+              &continuation);
+      id delegateChecker = [OCMArg
+          checkWithBlock:^(id<AuthenticationFlowDelegate> request_helper) {
+            CHECK(request_helper);
+            [request_helper
+                authenticationFlowWillSwitchProfileWithReadyCompletion:
+                    std::move(switchingReadyCompletion)];
+            return true;
+          }];
+      OCMExpect(
+          [performer_mock_
+              switchToProfileWithIdentity:identity
+                               sceneState:personal_browser_->GetSceneState()
+                                   reason:ChangeProfileReason::
+                                              kManagedAccountSignIn
+                                 delegate:delegateChecker
+                        postSignInActions:postSignInActions
+                              accessPoint:access_point])
+          .andDo(switchToProfileWithIdentityCallback);
       auto registerUserPolicyCallback = ^(NSInvocation*) {
         [authentication_flow_in_profile_
             didRegisterForUserPolicyWithDMToken:kFakeDMToken
@@ -519,9 +506,7 @@ TEST_F(AuthenticationFlowTest,
       signin_metrics::SigninAccountType::kManaged, 1);
   // Iff the signin involved a profile switch, the management confirmation
   // dialog should still be shown.
-  const int expected_count =
-      AreSeparateProfilesForManagedAccountsEnabled() ? 1 : 0;
-  EXPECT_EQ(expected_count, managed_confirmation_dialog_shown_count_);
+  EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 }
 
 // Tests that the managed confirmation dialog is only show once per account,
