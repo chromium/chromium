@@ -645,7 +645,7 @@ bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
 }
 
 bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
-  return IsEnabledForProfile(profile) &&
+  return IsProfileEligible(profile) &&
          IsTrustFirstOnboardingGatedFeatureEnabled(
              profile, features::kGlicContextMenu,
              features::kGlicContextMenuWithOnboarding);

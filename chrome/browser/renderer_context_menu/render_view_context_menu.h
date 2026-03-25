@@ -449,6 +449,8 @@ class RenderViewContextMenu
   void OnSupervisedUserURLFilterChecked(
       supervised_user::WebFilteringResult result);
 
+  void MaybeAppendOpenGlicItem();
+
   // Opens the Lens overlay to search a region defined by the given bounds of
   // the view and the image to be searched. Tab bounds and view bounds are
   // relative to the screen and in DP, while image bounds are relative to the
