@@ -237,9 +237,16 @@ IN_PROC_BROWSER_TEST_F(
                   CheckChipVisible(/*visible=*/false));
 }
 
+// TODO(crbug.com/495319330): Re-enable the test when it's fixed.
+#if defined(ADDRESS_SANITIZER) && defined(_WIN32)
+#define MAYBE_VisibleWhileNotEditingOmnibox \
+  DISABLED_VisibleWhileNotEditingOmnibox
+#else
+#define MAYBE_VisibleWhileNotEditingOmnibox VisibleWhileNotEditingOmnibox
+#endif
 IN_PROC_BROWSER_TEST_F(
     AiModePageActionControllerHideEntryPointOnEditInteractiveUiTest,
-    VisibleWhileNotEditingOmnibox) {
+    MAYBE_VisibleWhileNotEditingOmnibox) {
   RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(),
                   OpenOmniboxPopupByTypingASingleZero(),
                   SendKeyPress(kOmniboxElementId, ui::VKEY_BACK),
