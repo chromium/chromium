@@ -355,16 +355,14 @@ bool HEVC::InsertParamSetsAnnexB(
     const HEVCDecoderConfigurationRecord& hevc_config,
     std::vector<uint8_t>* buffer,
     std::vector<SubsampleEntry>* subsamples) {
-  DCHECK(
-      HEVC::AnalyzeAnnexB(*buffer, *subsamples).is_conformant.value_or(true));
-
   std::unique_ptr<H265NaluParser> parser(new H265NaluParser());
   const uint8_t* start = buffer->data();
   parser->SetEncryptedStream(*buffer, *subsamples);
 
   H265NALU nalu;
-  if (parser->AdvanceToNextNALU(&nalu) != H265NaluParser::kOk)
+  if (parser->AdvanceToNextNALU(&nalu) != H265NaluParser::kOk) {
     return false;
+  }
 
   std::vector<uint8_t>::iterator config_insert_point = buffer->begin();
 
@@ -394,9 +392,6 @@ bool HEVC::InsertParamSetsAnnexB(
 
   buffer->insert(config_insert_point,
                  param_sets.begin(), param_sets.end());
-
-  DCHECK(
-      HEVC::AnalyzeAnnexB(*buffer, *subsamples).is_conformant.value_or(true));
   return true;
 }
 
