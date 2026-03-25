@@ -513,6 +513,9 @@ class CONTENT_EXPORT DatabaseConnection {
   // transaction is ultimately committed or rolled back.
   bool sync_active_blobs_after_transaction_ = false;
 
+  // Set from `OnWalFileWritten()`; used to avoid no-op checkpointing on idle.
+  bool is_wal_dirty_ = false;
+
   // A snapshot of the set of legacy blobs that are stored as standalone files
   // on disk. This is used to track which standalone files need to be deleted
   // from disk. This is lazily initialized the first time a r/w txn is created.

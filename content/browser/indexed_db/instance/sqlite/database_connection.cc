@@ -1268,18 +1268,20 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
 // static
 void DatabaseConnection::OnWalFileWritten(base::WeakPtr<DatabaseConnection> db,
                                           int wal_file_page_count) {
+  // `WeakPtr::IsValid()` is not thread-safe, and this may be called from the
+  // cleanup task runner, but only after `db` has been invalidated in
+  // `GetCleanupTask()`.
+  if (!db.MaybeValid()) {
+    return;
+  }
+
+  db->is_wal_dirty_ = true;
+
   // The default is to auto-checkpoint after 1000 pages, and each page is 4096
   // bytes. We mainly rely on `PerformIdleMaintenance()` to checkpoint at times
   // where the database (and the whole bucket thread) are not in use. However,
   // we still want to prevent excessively large WAL files.
-  if (wal_file_page_count < 10000) {
-    return;
-  }
-
-  // `WeakPtr::IsValid()` is not thread-safe, and this may be called from the
-  // cleanup task runner, but only after `db` has been invalidated in
-  // `GetCleanupTask()`.
-  if (db.MaybeValid()) {
+  if (wal_file_page_count >= 10000) {
     db->Checkpoint(/*truncate=*/true);
   }
 }
@@ -1300,7 +1302,11 @@ bool DatabaseConnection::Checkpoint(bool truncate) {
     active_blob->ReleaseDatabaseResources();
   }
 
-  return db_->CheckpointDatabase(truncate);
+  bool success = db_->CheckpointDatabase(truncate);
+  if (success) {
+    is_wal_dirty_ = false;
+  }
+  return success;
 }
 
 void DatabaseConnection::PerformIdleMaintenance() {
@@ -1311,8 +1317,9 @@ void DatabaseConnection::PerformIdleMaintenance() {
     db_->TrimMemory();
     return;
   }
-
-  Checkpoint(/*truncate=*/false);
+  if (is_wal_dirty_) {
+    Checkpoint(/*truncate=*/false);
+  }
 }
 
 bool DatabaseConnection::IsZygotic() const {
