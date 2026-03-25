@@ -22,6 +22,11 @@ namespace viz {
 // RendererType.
 class VizPixelTest : public cc::PixelTest {
  public:
+  static constexpr char kGraphiteStr[] = "_graphite";
+  static constexpr char kANGLEMetalStr[] = "_angle_metal";
+
+  static bool IsANGLEMetal();
+
   explicit VizPixelTest(RendererType type);
 
   // cc::PixelTest implementation.

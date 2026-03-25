@@ -612,7 +612,6 @@ viz_source_set("unit_tests") {
     "display/overdraw_tracker_unittest.cc",
     "display/overlay_candidate_factory_unittest.cc",
     "display/readback_pixeltest.cc",
-    "display/renderer_pixeltest.cc",
     "display/resolved_frame_data_unittest.cc",
     "display/software_renderer_unittest.cc",
     "display/surface_aggregator_pixeltest.cc",
@@ -661,6 +660,17 @@ viz_source_set("unit_tests") {
     "surfaces/surface_unittest.cc",
     "transitions/transferable_resource_tracker_unittest.cc",
   ]
+
+  if (!is_android) {
+    sources += [
+      "display/renderer_pixeltest.cc",
+      "display/renderer_pixeltest_delegated_ink.cc",
+      "display/renderer_pixeltest_intersecting_quad.cc",
+      "display/renderer_pixeltest_utils.cc",
+      "display/renderer_pixeltest_utils.h",
+      "display/renderer_pixeltest_video.cc",
+    ]
+  }
 
   if (!use_aura && !is_mac && !is_win) {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]

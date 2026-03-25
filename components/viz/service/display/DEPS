@@ -72,7 +72,7 @@ specific_include_rules = {
     "+chromecast/media/service/mojom/video_geometry_setter.mojom.h",
     "+mojo/public",
   ],
-  ".*_(unit|pixel|perf)test\.cc": [
+  ".*_(unit|pixel|perf)test.*\.cc": [
     "+cc/test",
     "+components/viz/client",
     "+components/viz/service/display_embedder",

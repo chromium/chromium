@@ -10,6 +10,12 @@
 namespace viz {
 
 // static
+bool VizPixelTest::IsANGLEMetal() {
+  return gl::GetGLImplementationParts() ==
+         gl::GLImplementationParts(gl::ANGLEImplementation::kMetal);
+}
+
+// static
 cc::PixelTest::GraphicsBackend VizPixelTest::RenderTypeToBackend(
     RendererType renderer_type) {
   if (renderer_type == RendererType::kSkiaVk) {
