@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
@@ -32,6 +33,11 @@ class MultiInstanceProtoMigrationController {
     private static final String TAG = "MultiInstMigration";
     private static final int INVALID_MODE = -1;
 
+    /** Total number of migration attempts allowed. Includes the first attempt plus two retries. */
+    private static final int MIGRATION_ATTEMPT_LIMIT = 3;
+
+    static final String MIGRATION_ATTEMPTS_HISTOGRAM = "Android.MultiInstance.MigrationAttempts";
+
     private static final MultiInstanceProtoMigrationController sInstance =
             new MultiInstanceProtoMigrationController();
 
@@ -43,6 +49,18 @@ class MultiInstanceProtoMigrationController {
 
     boolean migrate() {
         SharedPreferencesManager prefs = MultiInstanceSharedPreferences.getInstance();
+
+        int attemptCount =
+                prefs.readInt(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 0);
+        if (attemptCount == MIGRATION_ATTEMPT_LIMIT) {
+            RecordHistogram.recordExactLinearHistogram(
+                    MIGRATION_ATTEMPTS_HISTOGRAM,
+                    MIGRATION_ATTEMPT_LIMIT,
+                    MIGRATION_ATTEMPT_LIMIT + 1);
+            return false;
+        }
+
         try {
             MultiInstanceData.Builder builder = MultiInstanceData.newBuilder();
             Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
@@ -86,7 +104,9 @@ class MultiInstanceProtoMigrationController {
                         key)) {
                     builder.setMultiWindowModeCycleStartTime((Long) val);
                 } else if (MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE
-                        .equals(key)) {
+                                .equals(key)
+                        || MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS
+                                .equals(key)) {
                 } else {
                     // 2. Migrate per-instance data to protobuf(prefix matching).
                     int instanceId = parseInstanceId(key);
@@ -125,9 +145,14 @@ class MultiInstanceProtoMigrationController {
             prefs.writeBoolean(
                     MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE, true);
             cleanupOldKeys(prefs);
+            RecordHistogram.recordExactLinearHistogram(
+                    MIGRATION_ATTEMPTS_HISTOGRAM, attemptCount + 1, MIGRATION_ATTEMPT_LIMIT + 1);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Migration failed", e);
+            prefs.writeInt(
+                    MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS,
+                    attemptCount + 1);
             return false;
         }
     }
@@ -298,6 +323,7 @@ class MultiInstanceProtoMigrationController {
             }
 
             editor.remove(MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE);
+            editor.remove(MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS);
             editor.commit();
             MultiInstancePersistentStore.deleteProtoFile();
         } catch (Exception e) {
@@ -409,9 +435,7 @@ class MultiInstanceProtoMigrationController {
     private void cleanupOldKeys(SharedPreferencesManager prefs) {
         // Remove global keys.
         for (String key : MultiInstancePreferenceKeys.getAllGlobalKeys()) {
-            if (!key.equals(MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE)) {
-                prefs.removeKey(key);
-            }
+            prefs.removeKey(key);
         }
 
         // Remove prefixed keys.

@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceProtoMigrationController.MIGRATION_ATTEMPTS_HISTOGRAM;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.InstanceData;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.MultiInstanceData;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.WindowModeData;
@@ -109,6 +112,10 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
         assertNull(data);
 
         // 3. Start migration.
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(MIGRATION_ATTEMPTS_HISTOGRAM, 1)
+                        .build();
         assertTrue(MultiInstanceProtoMigrationController.getInstance().migrate());
 
         // 4. Verify all data has successfully migrated to protobuf.
@@ -134,6 +141,9 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
                 assertFalse("Key should have been cleaned up: " + key, mPrefs.contains(key));
             }
         }
+
+        // 6. Verify migration attempt count histogram recorded.
+        watcher.assertExpected();
     }
 
     @Test
@@ -188,6 +198,10 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
         assertNull(data);
 
         // 3. Start migration.
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(MIGRATION_ATTEMPTS_HISTOGRAM, 1)
+                        .build();
         assertTrue(MultiInstanceProtoMigrationController.getInstance().migrate());
 
         // 4. Verify all data has successfully migrated to protobuf.
@@ -214,6 +228,9 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
             String key = prefix.createKey(INSTANCE_ID_0);
             assertFalse("Key should have been cleaned up: " + key, mPrefs.contains(key));
         }
+
+        // 6. Verify migration attempt count histogram recorded.
+        watcher.assertExpected();
     }
 
     @Test
@@ -289,6 +306,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
                         .putWindowModes(MODE, windowModeData)
                         .build();
         MultiInstancePersistentStore.initializeFromMigration(data);
+        mPrefs.writeInt(MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 1);
 
         // 2. Start downgrade.
         MultiInstanceProtoMigrationController.getInstance().downgrade();
@@ -398,6 +416,9 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
                         MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE,
                         false));
         assertNull(MultiInstancePersistentStore.sData);
+        assertFalse(
+                mPrefs.contains(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS));
     }
 
     @Test
@@ -415,5 +436,75 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
                 MultiInstanceManager.INVALID_WINDOW_ID,
                 MultiInstanceProtoMigrationController.parseInstanceId(
                         MultiInstancePreferenceKeys.MULTI_WINDOW_START_TIME));
+    }
+
+    @Test
+    public void testMigrateRetryLimit() {
+        // 1. Set attempt count to limit (3).
+        mPrefs.writeInt(MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 3);
+
+        // 2. Migration should return false immediately.
+        assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+
+        // 3. Set attempt count to 2.
+        mPrefs.writeInt(MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 2);
+
+        // 4. Migration should be allowed.
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(MIGRATION_ATTEMPTS_HISTOGRAM, 3)
+                        .build();
+        assertTrue(MultiInstanceProtoMigrationController.getInstance().migrate());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testMigrateRetryIncrementOnFailure() {
+        // 1. Force a failure by putting a wrong type in SharedPreferences.
+        // MULTI_INSTANCE_MAX_INSTANCE_LIMIT is expected to be Integer, but we put Long.
+        mPrefs.writeLong(MultiInstancePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT, 5L);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(MIGRATION_ATTEMPTS_HISTOGRAM, 3)
+                        .build();
+
+        // 2. Attempt migration. It should fail and return false.
+        assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+
+        // 3. Verify attempt count is incremented to 1.
+        assertEquals(
+                1,
+                mPrefs.readInt(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 0));
+
+        // 4. Attempt retry migration. It should fail again.
+        assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+
+        // 5. Verify attempt count is incremented to 2.
+        assertEquals(
+                2,
+                mPrefs.readInt(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 0));
+
+        // 6. Attempt retry migration again. It should fail again.
+        assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+
+        // 7. Verify attempt count is incremented to 3.
+        assertEquals(
+                3,
+                mPrefs.readInt(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 0));
+
+        // 8. Attempt migration again. It should return false immediately due to limit.
+        assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+
+        // 9. Verify attempt count remains 2 (not incremented further).
+        assertEquals(
+                3,
+                mPrefs.readInt(
+                        MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 0));
+
+        // 10. Verify migration attempt count histogram recorded.
+        watcher.assertExpected();
     }
 }

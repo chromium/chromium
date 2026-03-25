@@ -90,6 +90,9 @@ public final class MultiInstancePreferenceKeys {
     public static final String MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE =
             "Chrome.MultiInstance.ProtoMigrationComplete";
 
+    public static final String MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS =
+            "Chrome.MultiInstance.ProtoMigrationAttempts";
+
     /** Returns All global (non-prefixed) keys used for multi-instance. */
     public static List<String> getAllGlobalKeys() {
         return Arrays.asList(
@@ -102,8 +105,7 @@ public final class MultiInstancePreferenceKeys {
                 MULTI_INSTANCE_MAX_ACTIVE_INSTANCE_COUNT,
                 MULTI_INSTANCE_MAX_INSTANCE_COUNT,
                 MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO,
-                MULTI_WINDOW_MODE_CYCLE_START_TIME,
-                MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE);
+                MULTI_WINDOW_MODE_CYCLE_START_TIME);
     }
 
     /** Returns All prefixes used for per-instance data. */
@@ -162,7 +164,8 @@ public final class MultiInstancePreferenceKeys {
                 MULTI_WINDOW_MODE_START_TIME.pattern(),
                 MULTI_WINDOW_MODE_ACTIVITIES.pattern(),
                 MULTI_WINDOW_MODE_DURATION_MS.pattern(),
-                MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE);
+                MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE,
+                MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS);
     }
 
     private MultiInstancePreferenceKeys() {}
