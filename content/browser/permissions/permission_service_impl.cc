@@ -347,7 +347,10 @@ void PermissionServiceImpl::RequestPermissions(
 
   RequestPermissionsInternal(
       browser_context,
-      PermissionRequestDescription(std::move(permissions), user_gesture),
+      PermissionRequestDescription(
+          std::move(permissions),
+          user_gesture &&
+              context_->render_frame_host()->HasTransientUserActivation()),
       std::move(callback));
 }
 
