@@ -42,6 +42,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -860,7 +861,7 @@ void ContextualTasksComposeboxHandler::HandleFileUpload(bool is_image) {
     std::vector<base::FilePath::StringType> extensions;
     net::GetExtensionsForMimeType("image/*", &extensions);
     file_types.extensions.push_back(extensions);
-  } else {
+  } else if (!lens::features::IsLensSendRawFileMediaTypesEnabled()) {
     file_types.extensions = {{FILE_PATH_LITERAL("pdf")}};
   }
   file_types.include_all_files = true;
