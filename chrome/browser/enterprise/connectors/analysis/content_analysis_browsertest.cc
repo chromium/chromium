@@ -22,25 +22,6 @@
 namespace enterprise_connectors {
 namespace {
 
-// TODO(crbug.com/488379628): Remove this once `ContentAnalysisDelegate::Data`
-// has a components/ version.
-test::ContentAnalysisBrowserTestBase::Data ConvertData(
-    const ContentAnalysisDelegate::Data& data) {
-  test::ContentAnalysisBrowserTestBase::Data new_data;
-
-  new_data.url = data.url;
-  new_data.text = data.text;
-  new_data.image = data.image;
-  new_data.paths = data.paths;
-  new_data.page = data.page.Duplicate();
-  new_data.reason = data.reason;
-  new_data.clipboard_source = data.clipboard_source;
-  new_data.settings.block_until_verdict = data.settings.block_until_verdict;
-  new_data.settings.tags = data.settings.tags;
-
-  return new_data;
-}
-
 class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
                                    public test::ContentAnalysisBrowserTestBase {
  public:
@@ -123,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, PasteAllowed) {
                                                      ->GetActiveWebContents()
                                                      ->GetLastCommittedURL(),
                                                  &data, BULK_DATA_ENTRY));
-  ExpectScanningRequest(ConvertData(data), text());
+  ExpectScanningRequest(data, text());
 
   base::RunLoop run_loop;
   ContentAnalysisDelegate::CreateForWebContents(

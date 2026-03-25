@@ -19,10 +19,8 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/content_analysis_data.h"
 #include "components/enterprise/connectors/core/content_analysis_delegate_base.h"
-#include "url/gurl.h"
-
-class Profile;
 
 namespace content {
 class WebContent;
@@ -74,8 +72,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
  public:
   // Used as an input to CreateForWebContents() to describe what data needs
   // deeper scanning.  Any members can be empty.
-  struct Data {
+  struct Data : public enterprise_connectors::ContentAnalysisData {
     Data();
+    Data(const Data&) = delete;
+    Data& operator=(const Data&) = delete;
     Data(Data&& other);
     Data& operator=(Data&& other);
     ~Data();
@@ -84,48 +84,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
     // `content::ClipboardPasteData` object.
     void AddClipboardData(
         const content::ClipboardPasteData& clipboard_paste_data);
-
-    // URL of the page that is to receive sensitive data.
-    GURL url;
-
-    // UTF-8 encoded text data to scan, such as plain text, URLs, HTML, etc.
-    std::vector<std::string> text;
-
-    // Binary image data to scan, such as png, svg, etc (here we assume the data
-    // struct holds one image only).
-    std::string image;
-
-    // List of files to scan.
-    std::vector<base::FilePath> paths;
-
-    // Page to be printed to scan.
-    base::ReadOnlySharedMemoryRegion page;
-
-    // Printer name of the page being sent to, empty for non-print actions.
-    std::string printer_name;
-
-    // TODO(b/283108167): Delete or send printer type information to local
-    // service partner.
-    //  Printer type of the page being sent to, the default value is UNKNOWN.
-    ContentMetaData::PrintMetadata::PrinterType printer_type =
-        ContentMetaData::PrintMetadata::UNKNOWN;
-
-    // The reason the scanning should happen. This should be populated at the
-    // same time as fields like `text`, `paths`, `page`, etc. so that caller
-    // code can let enterprise code know the user action triggering content
-    // analysis.
-    ContentAnalysisRequest::Reason reason = ContentAnalysisRequest::UNKNOWN;
-
-    // The clipboard source of data being pasted into the browser. Empty for
-    // non-clipboard pastes, and clipboard pastes in special cases (ex. OTR).
-    ContentMetaData::CopiedTextSource clipboard_source;
-
-    // The email for the content area user of the source of clipboard data.
-    // Only populated for Workspace sites.
-    std::string source_content_area_email;
-
-    // The settings to use for the analysis of the data in this struct.
-    AnalysisSettings settings;
   };
 
   // Result of deep scanning.  Each Result contains the verdicts of deep scans

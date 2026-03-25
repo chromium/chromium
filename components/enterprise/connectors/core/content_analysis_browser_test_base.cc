@@ -89,8 +89,7 @@ std::string GetMultipartBody(const net::test_server::HttpRequest& request) {
   return request.content.substr(data_start, data_end - data_start);
 }
 
-AnalysisConnector GetAnalysisConnector(
-    const ContentAnalysisBrowserTestBase::Data& data) {
+AnalysisConnector GetAnalysisConnector(const ContentAnalysisData& data) {
   if (!data.text.empty() || !data.image.empty()) {
     return BULK_DATA_ENTRY;
   } else if (!data.paths.empty()) {
@@ -126,20 +125,6 @@ std::unique_ptr<net::test_server::HttpResponse> AllowResponse(
 
 }  // namespace
 
-ContentAnalysisBrowserTestBase::Data::Data() = default;
-ContentAnalysisBrowserTestBase::Data::Data(const Data& other) {
-  url = other.url;
-  text = other.text;
-  image = other.image;
-  paths = other.paths;
-  page = other.page.Duplicate();
-  reason = other.reason;
-  clipboard_source = other.clipboard_source;
-  settings.block_until_verdict = other.settings.block_until_verdict;
-  settings.tags = other.settings.tags;
-}
-ContentAnalysisBrowserTestBase::Data::~Data() = default;
-
 ContentAnalysisBrowserTestBase::ContentAnalysisBrowserTestBase(
     net::EmbeddedTestServer* embedded_test_server)
     : embedded_test_server_(embedded_test_server) {}
@@ -168,7 +153,7 @@ ContentAnalysisBrowserTestBase::HandleRequest(
 }
 
 void ContentAnalysisBrowserTestBase::ExpectScanningRequest(
-    const Data& data,
+    const ContentAnalysisData& data,
     const std::string& body) {
   ContentAnalysisRequest request;
   request.set_analysis_connector(GetAnalysisConnector(data));

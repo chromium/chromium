@@ -11,6 +11,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/content_analysis_data.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace enterprise_connectors::test {
@@ -28,23 +29,8 @@ class ContentAnalysisBrowserTestBase {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
 
-  // TODO(crbug.com/488379628): Make this correspond to
-  // `ContentAnalysisDelegate::Data` once it has a components/ version.
-  struct Data {
-    Data();
-    Data(const Data&);
-    ~Data();
-
-    GURL url;
-    std::vector<std::string> text;
-    std::string image;
-    std::vector<base::FilePath> paths;
-    base::ReadOnlySharedMemoryRegion page;
-    ContentAnalysisRequest::Reason reason = ContentAnalysisRequest::UNKNOWN;
-    ContentMetaData::CopiedTextSource clipboard_source;
-    AnalysisSettings settings;
-  };
-  void ExpectScanningRequest(const Data& data, const std::string& body);
+  void ExpectScanningRequest(const ContentAnalysisData& data,
+                             const std::string& body);
 
  private:
   // Returns true if `received_request` matches `expected_request`.
