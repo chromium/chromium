@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/legacy/v4l2_video_decoder_backend_stateful.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -100,7 +96,7 @@ V4L2StatefulVideoDecoderBackend::~V4L2StatefulVideoDecoderBackend() {
   }
 
   struct v4l2_event_subscription sub;
-  memset(&sub, 0, sizeof(sub));
+  UNSAFE_TODO(memset(&sub, 0, sizeof(sub)));
   sub.type = V4L2_EVENT_SOURCE_CHANGE;
   if (device_->Ioctl(VIDIOC_UNSUBSCRIBE_EVENT, &sub) != 0) {
     VLOGF(1) << "Cannot unsubscribe to event";
@@ -125,7 +121,7 @@ bool V4L2StatefulVideoDecoderBackend::Initialize() {
   }
 
   struct v4l2_event_subscription sub;
-  memset(&sub, 0, sizeof(sub));
+  UNSAFE_TODO(memset(&sub, 0, sizeof(sub)));
   sub.type = V4L2_EVENT_SOURCE_CHANGE;
   if (device_->Ioctl(VIDIOC_SUBSCRIBE_EVENT, &sub) != 0) {
     VLOGF(1) << "Cannot subscribe to event";
@@ -260,10 +256,10 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
     return;
   }
 
-  uint8_t* dst =
+  uint8_t* dst = UNSAFE_TODO(
       static_cast<uint8_t*>(current_input_buffer_->GetPlaneMapping(0)) +
-      bytes_used;
-  memcpy(dst, data, bytes_to_copy);
+      bytes_used);
+  UNSAFE_TODO(memcpy(dst, data, bytes_to_copy));
   current_input_buffer_->SetPlaneBytesUsed(0, bytes_used + bytes_to_copy);
   current_decode_request_->bytes_used += bytes_to_copy;
 

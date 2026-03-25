@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/mt21/mt21_decompressor.h"
 
 #include <sched.h>
 #include <stdlib.h>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/v4l2/mt21/mt21_util.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
@@ -40,7 +36,7 @@ void MT21ToMM21(const uint8_t* src,
 
   // Handle high-entropy passthrough subblocks.
   for (T& subblock : subblock_bins[1]) {
-    memcpy(subblock.dest, subblock.src, subblock.len);
+    UNSAFE_TODO(memcpy(subblock.dest, subblock.src, subblock.len));
   }
 
   // Vector decompress as many blocks as possible.

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
 
 #include <linux/videodev2.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -44,7 +40,7 @@ double GetUserFrameRate() {
 bool FrameRateControlPresent(
     const media::V4L2FrameRateControl::IoctlAsCallback& ioctl_cb) {
   struct v4l2_streamparm parms;
-  memset(&parms, 0, sizeof(parms));
+  UNSAFE_TODO(memset(&parms, 0, sizeof(parms)));
   parms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
   // Try to set the framerate to 30fps to see if the control is available.
@@ -109,7 +105,7 @@ void V4L2FrameRateControl::UpdateFrameRate() {
     current_frame_duration_avg_ms_ = frame_duration_avg.InMilliseconds();
 
     struct v4l2_streamparm parms;
-    memset(&parms, 0, sizeof(parms));
+    UNSAFE_TODO(memset(&parms, 0, sizeof(parms)));
     parms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     parms.parm.output.timeperframe.numerator = current_frame_duration_avg_ms_;
     parms.parm.output.timeperframe.denominator = 1000L;

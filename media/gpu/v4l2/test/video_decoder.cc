@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/test/video_decoder.h"
 
 #include <linux/videodev2.h>
+
 #include <algorithm>
 #include <vector>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/base/video_types.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
@@ -53,7 +50,7 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
 
   struct v4l2_format fmt;
 
-  memset(&fmt, 0, sizeof(fmt));
+  UNSAFE_TODO(memset(&fmt, 0, sizeof(fmt)));
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
   v4l2_ioctl_->GetFmt(&fmt);
@@ -214,7 +211,8 @@ VideoDecoder::BitDepth VideoDecoder::ConvertToYUV(
         << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
 
     const uint8_t* src = static_cast<uint8_t*>(planes[0].start_addr);
-    const uint8_t* src_uv = src + src_size.width() * src_size.height();
+    const uint8_t* src_uv =
+        UNSAFE_TODO(src + src_size.width() * src_size.height());
 
     libyuv::NV12ToI420(src, src_size.width(), src_uv, src_size.width(),
                        &dest_y[0], dest_full_stride, &dest_u[0],

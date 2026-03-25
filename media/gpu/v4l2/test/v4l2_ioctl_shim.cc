@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
@@ -17,6 +13,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -139,15 +136,18 @@ MmappedBuffer::MmappedBuffer(const base::PlatformFile ioctl_fd,
     : num_planes_(v4l2_buffer.length), buffer_id_(0) {
   for (uint32_t i = 0; i < num_planes_; ++i) {
     void* start_addr =
-        mmap(nullptr, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
-             MAP_SHARED, ioctl_fd, v4l2_buffer.m.planes[i].m.mem_offset);
+        mmap(nullptr, UNSAFE_TODO(v4l2_buffer.m.planes[i]).length,
+             PROT_READ | PROT_WRITE, MAP_SHARED, ioctl_fd,
+             UNSAFE_TODO(v4l2_buffer.m.planes[i]).m.mem_offset);
 
     LOG_IF(FATAL, start_addr == MAP_FAILED)
-        << "Failed to mmap buffer of length(" << v4l2_buffer.m.planes[i].length
-        << ") and offset(" << std::hex << v4l2_buffer.m.planes[i].m.mem_offset
+        << "Failed to mmap buffer of length("
+        << UNSAFE_TODO(v4l2_buffer.m.planes[i]).length << ") and offset("
+        << std::hex << UNSAFE_TODO(v4l2_buffer.m.planes[i]).m.mem_offset
         << ").";
 
-    mmapped_planes_.emplace_back(start_addr, v4l2_buffer.m.planes[i].length);
+    mmapped_planes_.emplace_back(start_addr,
+                                 UNSAFE_TODO(v4l2_buffer.m.planes[i]).length);
   }
 }
 
@@ -361,7 +361,7 @@ V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
   PCHECK(decode_fd_.IsValid()) << "Failed to find available decode device.";
 
   struct v4l2_capability cap;
-  memset(&cap, 0, sizeof(cap));
+  UNSAFE_TODO(memset(&cap, 0, sizeof(cap)));
 
   const bool ret = Ioctl(VIDIOC_QUERYCAP, &cap);
   DCHECK(ret);
@@ -386,7 +386,7 @@ V4L2IoctlShim::~V4L2IoctlShim() = default;
 bool V4L2IoctlShim::QueryCtrl(const uint32_t ctrl_id) const {
   struct v4l2_queryctrl query_ctrl;
 
-  memset(&query_ctrl, 0, sizeof(query_ctrl));
+  UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
   query_ctrl.id = ctrl_id;
 
   return Ioctl(VIDIOC_QUERYCTRL, &query_ctrl);
@@ -395,7 +395,7 @@ bool V4L2IoctlShim::QueryCtrl(const uint32_t ctrl_id) const {
 bool V4L2IoctlShim::EnumFrameSizes(uint32_t fourcc) const {
   struct v4l2_frmsizeenum frame_size;
 
-  memset(&frame_size, 0, sizeof(frame_size));
+  UNSAFE_TODO(memset(&frame_size, 0, sizeof(frame_size)));
   frame_size.pixel_format = fourcc;
 
   return Ioctl(VIDIOC_ENUM_FRAMESIZES, &frame_size);
@@ -412,7 +412,7 @@ void V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
     }
   }
 
-  memset(&fmt, 0, sizeof(fmt));
+  UNSAFE_TODO(memset(&fmt, 0, sizeof(fmt)));
   fmt.type = queue->type();
   fmt.fmt.pix_mp.pixelformat = queue->fourcc();
   if (queue->type() == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
@@ -450,7 +450,7 @@ void V4L2IoctlShim::ReqBufs(std::unique_ptr<V4L2Queue>& queue,
                             uint32_t count) const {
   struct v4l2_requestbuffers reqbuf;
 
-  memset(&reqbuf, 0, sizeof(reqbuf));
+  UNSAFE_TODO(memset(&reqbuf, 0, sizeof(reqbuf)));
   reqbuf.count = count;
   reqbuf.type = queue->type();
   reqbuf.memory = queue->memory();
@@ -478,7 +478,7 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
   struct v4l2_buffer v4l2_buffer;
   std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
 
-  memset(&v4l2_buffer, 0, sizeof v4l2_buffer);
+  UNSAFE_TODO(memset(&v4l2_buffer, 0, sizeof v4l2_buffer));
   v4l2_buffer.type = queue->type();
   v4l2_buffer.memory = queue->memory();
   v4l2_buffer.index = buffer_id;
@@ -488,9 +488,11 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
   scoped_refptr<MmappedBuffer> buffer = queue->GetBuffer(buffer_id);
 
   for (uint32_t i = 0; i < queue->num_planes(); ++i) {
-    v4l2_buffer.m.planes[i].length = buffer->mmapped_planes()[i].length;
-    v4l2_buffer.m.planes[i].bytesused = buffer->mmapped_planes()[i].bytes_used;
-    v4l2_buffer.m.planes[i].data_offset = 0;
+    UNSAFE_TODO(v4l2_buffer.m.planes[i]).length =
+        UNSAFE_TODO(buffer->mmapped_planes()[i]).length;
+    UNSAFE_TODO(v4l2_buffer.m.planes[i]).bytesused =
+        UNSAFE_TODO(buffer->mmapped_planes()[i]).bytes_used;
+    UNSAFE_TODO(v4l2_buffer.m.planes[i]).data_offset = 0;
   }
 
   // Request API related setting is needed only for OUTPUT queue.
@@ -514,7 +516,7 @@ void V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
   struct v4l2_buffer v4l2_buffer;
   std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
 
-  memset(&v4l2_buffer, 0, sizeof v4l2_buffer);
+  UNSAFE_TODO(memset(&v4l2_buffer, 0, sizeof v4l2_buffer));
   v4l2_buffer.type = queue->type();
   v4l2_buffer.memory = queue->memory();
   v4l2_buffer.m.planes = planes.data();
@@ -652,8 +654,9 @@ bool V4L2IoctlShim::FindMediaDevice(struct v4l2_capability* cap) {
     // drivers didn't fill in the bus_info field for the media device.
     if (strlen(reinterpret_cast<const char*>(cap->bus_info)) > 0 &&
         strlen(reinterpret_cast<const char*>(media_info.bus_info)) > 0 &&
-        !strcmp(reinterpret_cast<const char*>(cap->bus_info),
-                reinterpret_cast<const char*>(media_info.bus_info))) {
+        UNSAFE_TODO(
+            !strcmp(reinterpret_cast<const char*>(cap->bus_info),
+                    reinterpret_cast<const char*>(media_info.bus_info)))) {
       LOG(INFO) << "Using \"" << media_info.bus_info
                 << "\" driver with /dev/media" << base::NumberToString(i)
                 << ".";
@@ -664,8 +667,9 @@ bool V4L2IoctlShim::FindMediaDevice(struct v4l2_capability* cap) {
     // Fall back to matching the video device and the media controller by the
     // |driver| field. This is needed because the mtk-vcodec driver does not
     // always fill the |card| and |bus_info| fields properly.
-    if (!strcmp(reinterpret_cast<const char*>(cap->driver),
-                reinterpret_cast<const char*>(media_info.driver))) {
+    if (UNSAFE_TODO(
+            !strcmp(reinterpret_cast<const char*>(cap->driver),
+                    reinterpret_cast<const char*>(media_info.driver)))) {
       LOG(INFO) << "Using \"" << media_info.driver
                 << "\" driver with /dev/media" << base::NumberToString(i)
                 << ".";
@@ -682,7 +686,7 @@ bool V4L2IoctlShim::FindMediaDevice(struct v4l2_capability* cap) {
 bool V4L2IoctlShim::QueryFormat(enum v4l2_buf_type type,
                                 uint32_t fourcc) const {
   struct v4l2_fmtdesc fmtdesc;
-  memset(&fmtdesc, 0, sizeof(fmtdesc));
+  UNSAFE_TODO(memset(&fmtdesc, 0, sizeof(fmtdesc)));
   fmtdesc.type = type;
 
   while (Ioctl(VIDIOC_ENUM_FMT, &fmtdesc)) {
@@ -705,7 +709,7 @@ void V4L2IoctlShim::QueryAndMmapQueueBuffers(
     struct v4l2_buffer v4l_buffer;
     std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
 
-    memset(&v4l_buffer, 0, sizeof(v4l_buffer));
+    UNSAFE_TODO(memset(&v4l_buffer, 0, sizeof(v4l_buffer)));
     v4l_buffer.type = queue->type();
     v4l_buffer.memory = queue->memory();
     v4l_buffer.index = i;

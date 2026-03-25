@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/v4l2_device.h"
 
 #include <errno.h>
@@ -24,6 +19,7 @@
 #include <algorithm>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
@@ -175,7 +171,7 @@ bool V4L2Device::IsValid() {
 
 std::string V4L2Device::GetDriverName() {
   struct v4l2_capability caps;
-  memset(&caps, 0, sizeof(caps));
+  UNSAFE_TODO(memset(&caps, 0, sizeof(caps)));
   if (Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP"
               << ", caps check failed: 0x" << std::hex << caps.capabilities;
@@ -273,8 +269,8 @@ gfx::Size V4L2Device::AllocatedSizeFromV4L2Format(
     bytesperline =
         base::checked_cast<int>(format.fmt.pix_mp.plane_fmt[0].bytesperline);
     for (size_t i = 0; i < format.fmt.pix_mp.num_planes; ++i) {
-      sizeimage +=
-          base::checked_cast<int>(format.fmt.pix_mp.plane_fmt[i].sizeimage);
+      sizeimage += base::checked_cast<int>(
+          UNSAFE_TODO(format.fmt.pix_mp.plane_fmt[i]).sizeimage);
     }
     visible_size.SetSize(base::checked_cast<int>(format.fmt.pix_mp.width),
                          base::checked_cast<int>(format.fmt.pix_mp.height));
@@ -356,14 +352,14 @@ bool V4L2Device::Poll(bool poll_device, bool* event_pending) {
   nfds_t nfds;
   int pollfd = -1;
 
-  pollfds[0].fd = device_poll_interrupt_fd_.get();
-  pollfds[0].events = POLLIN | POLLERR;
+  UNSAFE_TODO(pollfds[0]).fd = device_poll_interrupt_fd_.get();
+  UNSAFE_TODO(pollfds[0]).events = POLLIN | POLLERR;
   nfds = 1;
 
   if (poll_device) {
     DVLOGF(5) << "adding device fd to poll() set";
-    pollfds[nfds].fd = device_fd_.get();
-    pollfds[nfds].events = POLLIN | POLLOUT | POLLERR | POLLPRI;
+    UNSAFE_TODO(pollfds[nfds]).fd = device_fd_.get();
+    UNSAFE_TODO(pollfds[nfds]).events = POLLIN | POLLOUT | POLLERR | POLLPRI;
     pollfd = nfds;
     nfds++;
   }
@@ -372,7 +368,8 @@ bool V4L2Device::Poll(bool poll_device, bool* event_pending) {
     VPLOGF(1) << "poll() failed";
     return false;
   }
-  *event_pending = (pollfd != -1 && pollfds[pollfd].revents & POLLPRI);
+  *event_pending =
+      (pollfd != -1 && UNSAFE_TODO(pollfds[pollfd]).revents & POLLPRI);
   return true;
 }
 
@@ -443,7 +440,7 @@ VideoEncodeAccelerator::SupportedRateControlMode
 V4L2Device::GetSupportedRateControlMode() {
   auto rate_control_mode = VideoEncodeAccelerator::kNoMode;
   v4l2_queryctrl query_ctrl;
-  memset(&query_ctrl, 0, sizeof(query_ctrl));
+  UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
   query_ctrl.id = V4L2_CID_MPEG_VIDEO_BITRATE_MODE;
   if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl)) {
     DPLOG(WARNING) << "QUERYCTRL for bitrate mode failed";
@@ -451,7 +448,7 @@ V4L2Device::GetSupportedRateControlMode() {
   }
 
   v4l2_querymenu query_menu;
-  memset(&query_menu, 0, sizeof(query_menu));
+  UNSAFE_TODO(memset(&query_menu, 0, sizeof(query_menu)));
   query_menu.id = query_ctrl.id;
   for (query_menu.index = query_ctrl.minimum;
        base::checked_cast<int>(query_menu.index) <= query_ctrl.maximum;
@@ -672,7 +669,7 @@ void V4L2Device::SchedulePoll() {
 std::optional<struct v4l2_event> V4L2Device::DequeueEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   struct v4l2_event event;
-  memset(&event, 0, sizeof(event));
+  UNSAFE_TODO(memset(&event, 0, sizeof(event)));
 
   if (Ioctl(VIDIOC_DQEVENT, &event) != 0) {
     // The ioctl will fail if there are no pending events. This is part of the
@@ -737,18 +734,18 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
     // drivers didn't fill in the bus_info field for the media device.
     if (strlen(reinterpret_cast<const char*>(caps.bus_info)) > 0 &&
         strlen(reinterpret_cast<const char*>(media_info.bus_info)) > 0 &&
-        strncmp(reinterpret_cast<const char*>(caps.bus_info),
-                reinterpret_cast<const char*>(media_info.bus_info),
-                sizeof(caps.bus_info))) {
+        UNSAFE_TODO(strncmp(reinterpret_cast<const char*>(caps.bus_info),
+                            reinterpret_cast<const char*>(media_info.bus_info),
+                            sizeof(caps.bus_info)))) {
       continue;
     }
 
     // Fall back to matching the video device and the media controller by the
     // driver field. The mtk-vcodec driver does not fill the card and bus fields
     // properly, so those won't work.
-    if (strncmp(reinterpret_cast<const char*>(caps.driver),
-                reinterpret_cast<const char*>(media_info.driver),
-                sizeof(caps.driver))) {
+    if (UNSAFE_TODO(strncmp(reinterpret_cast<const char*>(caps.driver),
+                            reinterpret_cast<const char*>(media_info.driver),
+                            sizeof(caps.driver)))) {
       continue;
     }
 
@@ -771,7 +768,7 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
 
 bool V4L2Device::IsCtrlExposed(uint32_t ctrl_id) {
   struct v4l2_queryctrl query_ctrl;
-  memset(&query_ctrl, 0, sizeof(query_ctrl));
+  UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
   query_ctrl.id = ctrl_id;
 
   return Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) == 0;
@@ -786,7 +783,7 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
     return true;
 
   struct v4l2_ext_controls ext_ctrls;
-  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
+  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
   ext_ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
   ext_ctrls.count = 0;
   const bool use_modern_s_ext_ctrls =
@@ -818,9 +815,9 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
 std::optional<struct v4l2_ext_control> V4L2Device::GetCtrl(uint32_t ctrl_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   struct v4l2_ext_control ctrl;
-  memset(&ctrl, 0, sizeof(ctrl));
+  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   struct v4l2_ext_controls ext_ctrls;
-  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
+  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
 
   ctrl.id = ctrl_id;
   ext_ctrls.controls = &ctrl;
@@ -843,7 +840,7 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
     // set the GOP to the maximum supported value.
     if (gop_length == 0) {
       v4l2_query_ext_ctrl queryctrl;
-      memset(&queryctrl, 0, sizeof(queryctrl));
+      UNSAFE_TODO(memset(&queryctrl, 0, sizeof(queryctrl)));
 
       queryctrl.id = V4L2_CTRL_CLASS_MPEG | V4L2_CID_MPEG_VIDEO_GOP_SIZE;
       if (Ioctl(VIDIOC_QUERY_EXT_CTRL, &queryctrl) == 0) {

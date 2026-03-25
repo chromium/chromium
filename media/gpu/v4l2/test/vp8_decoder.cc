@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/test/vp8_decoder.h"
 
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -340,8 +336,8 @@ struct v4l2_ctrl_vp8_frame Vp8Decoder::SetupFrameHeaders(
   for (size_t i = 0; i < frame_hdr.num_of_dct_partitions &&
                      i < std::size(v4l2_frame_headers.dct_part_sizes);
        ++i) {
-    v4l2_frame_headers.dct_part_sizes[i] =
-        static_cast<size_t>(frame_hdr.dct_partition_sizes[i]);
+    UNSAFE_TODO(v4l2_frame_headers.dct_part_sizes[i]) =
+        static_cast<size_t>(UNSAFE_TODO(frame_hdr.dct_partition_sizes[i]));
   }
 
   v4l2_frame_headers.entropy = FillV4L2VP8EntropyHeader(frame_hdr.entropy_hdr);

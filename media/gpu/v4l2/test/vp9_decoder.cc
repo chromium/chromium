@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
 #include <linux/v4l2-controls.h>
@@ -16,6 +11,7 @@
 #include <bitset>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -91,9 +87,11 @@ void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
                 "mismatch in number of segmentation features");
 
   for (size_t j = 0; j < std::size(vp9_seg_params.feature_enabled); j++) {
-    for (size_t i = 0; i < std::size(vp9_seg_params.feature_enabled[j]); i++) {
-      if (vp9_seg_params.feature_enabled[j][i]) {
-        v4l2_seg->feature_enabled[j] |= V4L2_VP9_SEGMENT_FEATURE_ENABLED(i);
+    for (size_t i = 0;
+         i < std::size(UNSAFE_TODO(vp9_seg_params.feature_enabled[j])); i++) {
+      if (UNSAFE_TODO(vp9_seg_params.feature_enabled[j][i])) {
+        UNSAFE_TODO(v4l2_seg->feature_enabled[j]) |=
+            V4L2_VP9_SEGMENT_FEATURE_ENABLED(i);
       }
     }
   }
@@ -411,7 +409,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
   struct v4l2_ctrl_vp9_frame v4l2_frame_params;
-  memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params));
+  UNSAFE_TODO(memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params)));
 
   SetupFrameParams(frame_hdr, &v4l2_frame_params);
 

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/v4l2/test/h265_decoder.h"
 
 #include <linux/videodev2.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -94,7 +91,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
 // Translates decoder SPS structure into |v4l2_ctrl_hevc_sps| structure.
 v4l2_ctrl_hevc_sps SetupSPSCtrl(const H265SPS* sps) {
   struct v4l2_ctrl_hevc_sps v4l2_sps;
-  memset(&v4l2_sps, 0, sizeof(v4l2_sps));
+  UNSAFE_TODO(memset(&v4l2_sps, 0, sizeof(v4l2_sps)));
 
   int highest_tid = sps->sps_max_sub_layers_minus1;
 
@@ -157,7 +154,7 @@ v4l2_ctrl_hevc_sps SetupSPSCtrl(const H265SPS* sps) {
 // Translates decoder PPS structure into |v4l2_ctrl_hevc_pps| structure.
 v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
   struct v4l2_ctrl_hevc_pps v4l2_pps;
-  memset(&v4l2_pps, 0, sizeof(v4l2_pps));
+  UNSAFE_TODO(memset(&v4l2_pps, 0, sizeof(v4l2_pps)));
 
   // Translates values using the |v4l2_ctrl_hevc_pps| struct order
 #define PPS_TO_V4L2PPS(a) v4l2_pps.a = pps->a
@@ -181,7 +178,8 @@ v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
                   std::remove_reference_t<decltype(pps->column_width_minus1)>>,
           "column_width_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_columns_minus1; ++i) {
-        v4l2_pps.column_width_minus1[i] = pps->column_width_minus1[i];
+        UNSAFE_TODO(v4l2_pps.column_width_minus1[i]) =
+            UNSAFE_TODO(pps->column_width_minus1[i]);
       }
 
       static_assert(
@@ -190,7 +188,8 @@ v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
                   std::remove_reference_t<decltype(pps->row_height_minus1)>>,
           "row_height_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_rows_minus1; ++i) {
-        v4l2_pps.row_height_minus1[i] = pps->row_height_minus1[i];
+        UNSAFE_TODO(v4l2_pps.row_height_minus1[i]) =
+            UNSAFE_TODO(pps->row_height_minus1[i]);
       }
     }
   }
@@ -254,7 +253,7 @@ v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
 v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
                                                  const H265PPS* pps) {
   struct v4l2_ctrl_hevc_scaling_matrix v4l2_scaling_matrix;
-  memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix));
+  UNSAFE_TODO(memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix)));
   struct H265ScalingListData checker;
 
   static_assert(
@@ -290,7 +289,7 @@ v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
     for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
       for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId0Count;
            ++j) {
-        v4l2_scaling_matrix.scaling_list_4x4[i][j] =
+        UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_4x4[i][j]) =
             scaling_list.GetScalingList4x4EntryInRasterOrder(/*matrix_id=*/i,
                                                              /*raster_idx=*/j);
       }
@@ -299,7 +298,7 @@ v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
     for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
       for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
            ++j) {
-        v4l2_scaling_matrix.scaling_list_8x8[i][j] =
+        UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_8x8[i][j]) =
             scaling_list.GetScalingList8x8EntryInRasterOrder(/*matrix_id=*/i,
                                                              /*raster_idx=*/j);
       }
@@ -308,7 +307,7 @@ v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
     for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
       for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
            ++j) {
-        v4l2_scaling_matrix.scaling_list_16x16[i][j] =
+        UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_16x16[i][j]) =
             scaling_list.GetScalingList16x16EntryInRasterOrder(
                 /*matrix_id=*/i,
                 /*raster_idx=*/j);
@@ -319,20 +318,20 @@ v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
          i += 3) {
       for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
            ++j) {
-        v4l2_scaling_matrix.scaling_list_32x32[i / 3][j] =
+        UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_32x32[i / 3][j]) =
             scaling_list.GetScalingList32x32EntryInRasterOrder(
                 /*matrix_id=*/i,
                 /*raster_idx=*/j);
       }
     }
 
-    memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
-           scaling_list.scaling_list_dc_coef_16x16.data(),
-           sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));
-    v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0] =
-        scaling_list.scaling_list_dc_coef_32x32[0];
-    v4l2_scaling_matrix.scaling_list_dc_coef_32x32[1] =
-        scaling_list.scaling_list_dc_coef_32x32[3];
+    UNSAFE_TODO(memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
+                       scaling_list.scaling_list_dc_coef_16x16.data(),
+                       sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16)));
+    UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0]) =
+        UNSAFE_TODO(scaling_list.scaling_list_dc_coef_32x32[0]);
+    UNSAFE_TODO(v4l2_scaling_matrix.scaling_list_dc_coef_32x32[1]) =
+        UNSAFE_TODO(scaling_list.scaling_list_dc_coef_32x32[3]);
   }
 
   return v4l2_scaling_matrix;
@@ -346,7 +345,7 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
     const H265Picture::Vector& ref_pic_set_st_curr_before,
     scoped_refptr<H265Picture> curr_pic) {
   struct v4l2_ctrl_hevc_decode_params v4l2_decode_params;
-  memset(&v4l2_decode_params, 0, sizeof(v4l2_decode_params));
+  UNSAFE_TODO(memset(&v4l2_decode_params, 0, sizeof(v4l2_decode_params)));
 
   v4l2_decode_params.pic_order_cnt_val = curr_pic->pic_order_cnt_val_,
   v4l2_decode_params.short_term_ref_pic_set_size =
@@ -371,7 +370,8 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
            ? V4L2_HEVC_DECODE_PARAM_FLAG_NO_OUTPUT_OF_PRIOR
            : 0)),
 
-  memset(v4l2_decode_params.dpb, 0, sizeof(v4l2_decode_params.dpb));
+  UNSAFE_TODO(
+      memset(v4l2_decode_params.dpb, 0, sizeof(v4l2_decode_params.dpb)));
   unsigned int i = 0;
   for (const auto& pic : ref_pic_list) {
     if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {
@@ -387,7 +387,8 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
 
     constexpr size_t kTimestampToNanoSecs = 1000;
 
-    struct v4l2_hevc_dpb_entry& entry = v4l2_decode_params.dpb[i++];
+    struct v4l2_hevc_dpb_entry& entry =
+        UNSAFE_TODO(v4l2_decode_params.dpb[i++]);
     entry = {
         .timestamp = pic->ref_ts_nsec_ * kTimestampToNanoSecs,
         .flags = static_cast<__u8>(
@@ -420,8 +421,8 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
     for (unsigned int j = 0; j < v4l2_decode_params.num_active_dpb_entries;
          j++) {
       if (pic->pic_order_cnt_val_ ==
-          v4l2_decode_params.dpb[j].pic_order_cnt_val) {
-        v4l2_decode_params.poc_st_curr_before[i++] = j;
+          UNSAFE_TODO(v4l2_decode_params.dpb[j]).pic_order_cnt_val) {
+        UNSAFE_TODO(v4l2_decode_params.poc_st_curr_before[i++]) = j;
         break;
       }
     }
@@ -442,8 +443,8 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
     for (unsigned int j = 0; j < v4l2_decode_params.num_active_dpb_entries;
          j++) {
       if (pic->pic_order_cnt_val_ ==
-          v4l2_decode_params.dpb[j].pic_order_cnt_val) {
-        v4l2_decode_params.poc_st_curr_after[i++] = j;
+          UNSAFE_TODO(v4l2_decode_params.dpb[j]).pic_order_cnt_val) {
+        UNSAFE_TODO(v4l2_decode_params.poc_st_curr_after[i++]) = j;
         break;
       }
     }
@@ -464,8 +465,8 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
     for (unsigned int j = 0; j < v4l2_decode_params.num_active_dpb_entries;
          j++) {
       if (pic->pic_order_cnt_val_ ==
-          v4l2_decode_params.dpb[j].pic_order_cnt_val) {
-        v4l2_decode_params.poc_lt_curr[i++] = j;
+          UNSAFE_TODO(v4l2_decode_params.dpb[j]).pic_order_cnt_val) {
+        UNSAFE_TODO(v4l2_decode_params.poc_lt_curr[i++]) = j;
         break;
       }
     }
@@ -651,8 +652,9 @@ bool H265Decoder::ProcessCurrentSlice() {
   std::vector<uint8_t> slice_data = {0x00, 0x00, 0x01};
 
   slice_data.insert(
-      slice_data.end(), curr_slice_hdr_->nalu_data.get(),
-      (curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size).get());
+      slice_data.end(), (curr_slice_hdr_->nalu_data).get(),
+      UNSAFE_TODO(
+          (curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size).get()));
 
   scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
   OUTPUT_buffer->mmapped_planes()[0].CopyInSlice(
@@ -750,9 +752,9 @@ bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
       return false;
     }
     if (curr_st_ref_pic_set.used_by_curr_pic_s0[i]) {
-      poc_st_curr_before_[j++] = poc.ValueOrDefault(0);
+      UNSAFE_TODO(poc_st_curr_before_[j++]) = poc.ValueOrDefault(0);
     } else {
-      poc_st_foll_[k++] = poc.ValueOrDefault(0);
+      UNSAFE_TODO(poc_st_foll_[k++]) = poc.ValueOrDefault(0);
     }
   }
   num_poc_st_curr_before_ = j;
@@ -764,9 +766,9 @@ bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
       return false;
     }
     if (curr_st_ref_pic_set.used_by_curr_pic_s1[i]) {
-      poc_st_curr_after_[j++] = poc.ValueOrDefault(0);
+      UNSAFE_TODO(poc_st_curr_after_[j++]) = poc.ValueOrDefault(0);
     } else {
-      poc_st_foll_[k++] = poc.ValueOrDefault(0);
+      UNSAFE_TODO(poc_st_foll_[k++]) = poc.ValueOrDefault(0);
     }
   }
   num_poc_st_curr_after_ = j;
@@ -791,12 +793,12 @@ bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
       return false;
     }
     if (slice_hdr->used_by_curr_pic_lt[i]) {
-      poc_lt_curr_[j] = poc_lt.ValueOrDefault(0);
-      curr_delta_poc_msb_present_flag_[j++] =
+      UNSAFE_TODO(poc_lt_curr_[j]) = poc_lt.ValueOrDefault(0);
+      UNSAFE_TODO(curr_delta_poc_msb_present_flag_[j++]) =
           slice_hdr->delta_poc_msb_present_flag[i];
     } else {
-      poc_lt_foll_[k] = poc_lt.ValueOrDefault(0);
-      foll_delta_poc_msb_present_flag_[k++] =
+      UNSAFE_TODO(poc_lt_foll_[k]) = poc_lt.ValueOrDefault(0);
+      UNSAFE_TODO(foll_delta_poc_msb_present_flag_[k++]) =
           slice_hdr->delta_poc_msb_present_flag[i];
     }
   }
@@ -842,54 +844,54 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
   // which is covered in the spec.
   int total_ref_pics = 0;
   for (int i = 0; i < num_poc_lt_curr_; ++i) {
-    if (!curr_delta_poc_msb_present_flag_[i]) {
-      ref_pic_set_lt_curr_[i] = dpb_.GetPicByPocMaskedAndMark(
-          poc_lt_curr_[i], sps->max_pic_order_cnt_lsb - 1,
+    if (!UNSAFE_TODO(curr_delta_poc_msb_present_flag_[i])) {
+      UNSAFE_TODO(ref_pic_set_lt_curr_[i]) = dpb_.GetPicByPocMaskedAndMark(
+          UNSAFE_TODO(poc_lt_curr_[i]), sps->max_pic_order_cnt_lsb - 1,
           H265Picture::kLongTermCurr);
     } else {
-      ref_pic_set_lt_curr_[i] =
-          dpb_.GetPicByPocAndMark(poc_lt_curr_[i], H265Picture::kLongTermCurr);
+      UNSAFE_TODO(ref_pic_set_lt_curr_[i]) = dpb_.GetPicByPocAndMark(
+          UNSAFE_TODO(poc_lt_curr_[i]), H265Picture::kLongTermCurr);
     }
 
-    if (ref_pic_set_lt_curr_[i]) {
+    if (UNSAFE_TODO(ref_pic_set_lt_curr_[i])) {
       total_ref_pics++;
     }
   }
   for (int i = 0; i < num_poc_lt_foll_; ++i) {
-    if (!foll_delta_poc_msb_present_flag_[i]) {
-      ref_pic_set_lt_foll[i] = dpb_.GetPicByPocMaskedAndMark(
-          poc_lt_foll_[i], sps->max_pic_order_cnt_lsb - 1,
+    if (!UNSAFE_TODO(foll_delta_poc_msb_present_flag_[i])) {
+      UNSAFE_TODO(ref_pic_set_lt_foll[i]) = dpb_.GetPicByPocMaskedAndMark(
+          UNSAFE_TODO(poc_lt_foll_[i]), sps->max_pic_order_cnt_lsb - 1,
           H265Picture::kLongTermFoll);
     } else {
-      ref_pic_set_lt_foll[i] =
-          dpb_.GetPicByPocAndMark(poc_lt_foll_[i], H265Picture::kLongTermFoll);
+      UNSAFE_TODO(ref_pic_set_lt_foll[i]) = dpb_.GetPicByPocAndMark(
+          UNSAFE_TODO(poc_lt_foll_[i]), H265Picture::kLongTermFoll);
     }
 
-    if (ref_pic_set_lt_foll[i]) {
+    if (UNSAFE_TODO(ref_pic_set_lt_foll[i])) {
       total_ref_pics++;
     }
   }
 
   // Equation 8-7.
   for (int i = 0; i < num_poc_st_curr_before_; ++i) {
-    ref_pic_set_st_curr_before_[i] = dpb_.GetPicByPocAndMark(
-        poc_st_curr_before_[i], H265Picture::kShortTermCurrBefore);
+    UNSAFE_TODO(ref_pic_set_st_curr_before_[i]) = dpb_.GetPicByPocAndMark(
+        UNSAFE_TODO(poc_st_curr_before_[i]), H265Picture::kShortTermCurrBefore);
 
-    if (ref_pic_set_st_curr_before_[i]) {
+    if (UNSAFE_TODO(ref_pic_set_st_curr_before_[i])) {
       total_ref_pics++;
     }
   }
   for (int i = 0; i < num_poc_st_curr_after_; ++i) {
-    ref_pic_set_st_curr_after_[i] = dpb_.GetPicByPocAndMark(
-        poc_st_curr_after_[i], H265Picture::kShortTermCurrAfter);
-    if (ref_pic_set_st_curr_after_[i]) {
+    UNSAFE_TODO(ref_pic_set_st_curr_after_[i]) = dpb_.GetPicByPocAndMark(
+        UNSAFE_TODO(poc_st_curr_after_[i]), H265Picture::kShortTermCurrAfter);
+    if (UNSAFE_TODO(ref_pic_set_st_curr_after_[i])) {
       total_ref_pics++;
     }
   }
   for (int i = 0; i < num_poc_st_foll_; ++i) {
-    ref_pic_set_st_foll[i] =
-        dpb_.GetPicByPocAndMark(poc_st_foll_[i], H265Picture::kShortTermFoll);
-    if (ref_pic_set_st_foll[i]) {
+    UNSAFE_TODO(ref_pic_set_st_foll[i]) = dpb_.GetPicByPocAndMark(
+        UNSAFE_TODO(poc_st_foll_[i]), H265Picture::kShortTermFoll);
+    if (UNSAFE_TODO(ref_pic_set_st_foll[i])) {
       total_ref_pics++;
     }
   }
@@ -924,16 +926,19 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
       for (int i = 0;
            i < num_poc_st_curr_before_ && r_idx < num_rps_curr_temp_list0;
            ++i, ++r_idx) {
-        ref_pic_list_temp0[r_idx] = ref_pic_set_st_curr_before_[i];
+        UNSAFE_TODO(ref_pic_list_temp0[r_idx]) =
+            UNSAFE_TODO(ref_pic_set_st_curr_before_[i]);
       }
       for (int i = 0;
            i < num_poc_st_curr_after_ && r_idx < num_rps_curr_temp_list0;
            ++i, ++r_idx) {
-        ref_pic_list_temp0[r_idx] = ref_pic_set_st_curr_after_[i];
+        UNSAFE_TODO(ref_pic_list_temp0[r_idx]) =
+            UNSAFE_TODO(ref_pic_set_st_curr_after_[i]);
       }
       for (int i = 0; i < num_poc_lt_curr_ && r_idx < num_rps_curr_temp_list0;
            ++i, ++r_idx) {
-        ref_pic_list_temp0[r_idx] = ref_pic_set_lt_curr_[i];
+        UNSAFE_TODO(ref_pic_list_temp0[r_idx]) =
+            UNSAFE_TODO(ref_pic_set_lt_curr_[i]);
       }
     }
 
@@ -942,9 +947,10 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
       ref_pic_list0_.push_back(
           slice_hdr->ref_pic_lists_modification
                   .ref_pic_list_modification_flag_l0
-              ? ref_pic_list_temp0[slice_hdr->ref_pic_lists_modification
-                                       .list_entry_l0[r_idx]]
-              : ref_pic_list_temp0[r_idx]);
+              ? UNSAFE_TODO(
+                    ref_pic_list_temp0[slice_hdr->ref_pic_lists_modification
+                                           .list_entry_l0[r_idx]])
+              : UNSAFE_TODO(ref_pic_list_temp0[r_idx]));
     }
 
     if (slice_hdr->IsBSlice()) {
@@ -959,16 +965,19 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
         for (int i = 0;
              i < num_poc_st_curr_after_ && r_idx < num_rps_curr_temp_list1;
              ++i, r_idx++) {
-          ref_pic_list_temp1[r_idx] = ref_pic_set_st_curr_after_[i];
+          UNSAFE_TODO(ref_pic_list_temp1[r_idx]) =
+              UNSAFE_TODO(ref_pic_set_st_curr_after_[i]);
         }
         for (int i = 0;
              i < num_poc_st_curr_before_ && r_idx < num_rps_curr_temp_list1;
              ++i, r_idx++) {
-          ref_pic_list_temp1[r_idx] = ref_pic_set_st_curr_before_[i];
+          UNSAFE_TODO(ref_pic_list_temp1[r_idx]) =
+              UNSAFE_TODO(ref_pic_set_st_curr_before_[i]);
         }
         for (int i = 0; i < num_poc_lt_curr_ && r_idx < num_rps_curr_temp_list1;
              ++i, r_idx++) {
-          ref_pic_list_temp1[r_idx] = ref_pic_set_lt_curr_[i];
+          UNSAFE_TODO(ref_pic_list_temp1[r_idx]) =
+              UNSAFE_TODO(ref_pic_set_lt_curr_[i]);
         }
       }
 
@@ -978,9 +987,10 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
         ref_pic_list1_.push_back(
             slice_hdr->ref_pic_lists_modification
                     .ref_pic_list_modification_flag_l1
-                ? ref_pic_list_temp1[slice_hdr->ref_pic_lists_modification
-                                         .list_entry_l1[r_idx]]
-                : ref_pic_list_temp1[r_idx]);
+                ? UNSAFE_TODO(
+                      ref_pic_list_temp1[slice_hdr->ref_pic_lists_modification
+                                             .list_entry_l1[r_idx]])
+                : UNSAFE_TODO(ref_pic_list_temp1[r_idx]));
       }
     }
   }

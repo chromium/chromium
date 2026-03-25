@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY) && \
@@ -343,7 +339,7 @@ TEST(MT21UtilTest, TestVectorSolidColorBlocks) {
     ASSERT_TRUE(dest_buf[i] == 0x80);
   }
 
-  memset(dest_buf, 0, 64 * 16);
+  UNSAFE_TODO(memset(dest_buf, 0, 64 * 16));
   VectorDecompressSubblockHelper<MT21UVSubblock>(uv_subblocks, 0, scratch);
   for (int i = 0; i < 64 * 16; i++) {
     if (i % 2) {

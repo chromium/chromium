@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/v4l2/test/h264_decoder.h"
 
@@ -14,6 +10,7 @@
 
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -113,7 +110,8 @@ v4l2_ctrl_h264_sps SetupSPSCtrl(const H264SPS* sps) {
   static_assert(std::extent<decltype(v4l2_sps.offset_for_ref_frame)>() ==
                 std::tuple_size<decltype(sps->offset_for_ref_frame)>::value);
   for (size_t i = 0; i < std::size(v4l2_sps.offset_for_ref_frame); i++)
-    v4l2_sps.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
+    UNSAFE_TODO(v4l2_sps.offset_for_ref_frame[i]) =
+        UNSAFE_TODO(sps->offset_for_ref_frame[i]);
 
   v4l2_sps.offset_for_non_ref_pic = sps->offset_for_non_ref_pic;
   v4l2_sps.offset_for_top_to_bottom_field = sps->offset_for_top_to_bottom_field;
@@ -225,16 +223,20 @@ v4l2_ctrl_h264_scaling_matrix SetupScalingMatrix(const H264SPS* sps,
   static_assert(std::extent<decltype(matrix.scaling_list_4x4), 1>() ==
                 std::extent<decltype(zigzag_4x4)>());
   for (size_t i = 0; i < std::size(matrix.scaling_list_4x4); ++i) {
-    for (size_t j = 0; j < std::size(matrix.scaling_list_4x4[i]); ++j) {
-      matrix.scaling_list_4x4[i][zigzag_4x4[j]] = scaling_list4x4[i][j];
+    for (size_t j = 0; j < std::size(UNSAFE_TODO(matrix.scaling_list_4x4[i]));
+         ++j) {
+      UNSAFE_TODO(matrix.scaling_list_4x4[i][zigzag_4x4[j]]) =
+          UNSAFE_TODO(scaling_list4x4[i][j]);
     }
   }
 
   static_assert(std::extent<decltype(matrix.scaling_list_8x8), 1>() ==
                 std::extent<decltype(zigzag_8x8)>());
   for (size_t i = 0; i < std::size(matrix.scaling_list_8x8); ++i) {
-    for (size_t j = 0; j < std::size(matrix.scaling_list_8x8[i]); ++j) {
-      matrix.scaling_list_8x8[i][zigzag_8x8[j]] = scaling_list8x8[i][j];
+    for (size_t j = 0; j < std::size(UNSAFE_TODO(matrix.scaling_list_8x8[i]));
+         ++j) {
+      UNSAFE_TODO(matrix.scaling_list_8x8[i][zigzag_8x8[j]]) =
+          UNSAFE_TODO(scaling_list8x8[i][j]);
     }
   }
 
@@ -272,7 +274,8 @@ v4l2_ctrl_h264_decode_params SetupDecodeParams(
   size_t i = 0;
   constexpr size_t kTimestampToNanoSecs = 1000;
   for (const auto& element : dpb) {
-    struct v4l2_h264_dpb_entry& entry = v4l2_decode_params.dpb[i++];
+    struct v4l2_h264_dpb_entry& entry =
+        UNSAFE_TODO(v4l2_decode_params.dpb[i++]);
     entry = {.reference_ts = element.second.ref_ts_nsec * kTimestampToNanoSecs,
              .pic_num = static_cast<unsigned short>(element.second.pic_num),
              .frame_num = static_cast<unsigned short>(element.second.frame_num),
@@ -496,10 +499,11 @@ VideoDecoder::Result H264Decoder::SubmitSlice() {
   std::vector<uint8_t> slice_data(
       sizeof(V4L2_STATELESS_H264_START_CODE_ANNEX_B) - 1);
   slice_data[2] = V4L2_STATELESS_H264_START_CODE_ANNEX_B;
-  slice_data.insert(slice_data.end(), (curr_slice_hdr_->nalu_data).get(),
-                    (curr_slice_hdr_->nalu_data +
-                     base::checked_cast<size_t>(curr_slice_hdr_->nalu_size))
-                        .get());
+  slice_data.insert(
+      slice_data.end(), (curr_slice_hdr_->nalu_data).get(),
+      UNSAFE_TODO((curr_slice_hdr_->nalu_data +
+                   base::checked_cast<size_t>(curr_slice_hdr_->nalu_size))
+                      .get()));
 
   scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
   OUTPUT_buffer->mmapped_planes()[0].CopyIn(&slice_data[0], slice_data.size());

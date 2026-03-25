@@ -5,16 +5,13 @@
 #ifndef MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 #define MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <linux/videodev2.h>
 #include <string.h>
 
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -55,8 +52,8 @@ class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
       LOG_ASSERT((bytes_used + frame_size) < length)
           << "Not enough memory allocated to copy into.";
 
-      memcpy(static_cast<uint8_t*>(start_addr) + bytes_used, frame_data,
-             frame_size);
+      UNSAFE_TODO(memcpy(static_cast<uint8_t*>(start_addr) + bytes_used,
+                         frame_data, frame_size));
       bytes_used += frame_size;
     }
 
