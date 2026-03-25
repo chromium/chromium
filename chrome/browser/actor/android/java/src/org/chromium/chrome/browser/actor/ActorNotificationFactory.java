@@ -105,12 +105,12 @@ public class ActorNotificationFactory {
 
     private static NotificationWrapper buildRunningNotification(
             NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
+        String body = context.getString(R.string.actor_notification_body_working, task.getTitle());
         builder.setOngoing(true)
                 .setContentTitle(
                         context.getString(R.string.actor_notification_title_working_on_task))
-                .setContentText(
-                        context.getString(
-                                R.string.actor_notification_body_working, task.getTitle()));
+                .setContentText(body)
+                .setBigTextStyle(body);
         addViewAction(builder, context, task);
         addPauseAction(builder, context, id, task);
         return builder.buildNotificationWrapper();
@@ -118,11 +118,11 @@ public class ActorNotificationFactory {
 
     private static NotificationWrapper buildPausedNotification(
             NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
+        String body = context.getString(R.string.actor_notification_body_paused, task.getTitle());
         builder.setOngoing(true)
                 .setContentTitle(context.getString(R.string.actor_notification_title_task_paused))
-                .setContentText(
-                        context.getString(
-                                R.string.actor_notification_body_paused, task.getTitle()));
+                .setContentText(body)
+                .setBigTextStyle(body);
         addViewAction(builder, context, task);
         addResumeAction(builder, context, id, task);
         return builder.buildNotificationWrapper();
@@ -130,13 +130,14 @@ public class ActorNotificationFactory {
 
     private static NotificationWrapper buildUserInputNotification(
             NotificationWrapperBuilder builder, Context context, ActorTask task) {
+        String body =
+                context.getString(R.string.actor_notification_body_user_input, task.getTitle());
         builder.setPriorityBeforeO(Notification.PRIORITY_HIGH)
                 .setOngoing(true)
                 .setContentTitle(
                         context.getString(R.string.actor_notification_title_check_your_task))
-                .setContentText(
-                        context.getString(
-                                R.string.actor_notification_body_user_input, task.getTitle()))
+                .setContentText(body)
+                .setBigTextStyle(body)
                 .setContentIntent(createTabRoutingIntent(context, task));
         addViewAction(builder, context, task);
         return builder.buildNotificationWrapper();
@@ -144,24 +145,25 @@ public class ActorNotificationFactory {
 
     private static NotificationWrapper buildSuccessNotification(
             NotificationWrapperBuilder builder, Context context, ActorTask task) {
+        String body = context.getString(R.string.actor_notification_body_finished, task.getTitle());
         builder.setAutoCancel(true)
                 .setOngoing(false)
                 .setContentTitle(
                         context.getString(R.string.actor_notification_title_task_completed))
-                .setContentText(
-                        context.getString(
-                                R.string.actor_notification_body_finished, task.getTitle()));
+                .setContentText(body)
+                .setBigTextStyle(body);
         addViewAction(builder, context, task);
         return builder.buildNotificationWrapper();
     }
 
     private static NotificationWrapper buildInterruptedNotification(
             NotificationWrapperBuilder builder, Context context, ActorTask task) {
+        String body =
+                context.getString(R.string.actor_notification_body_interrupted, task.getTitle());
         return builder.setOngoing(true)
                 .setContentTitle(context.getString(R.string.actor_notification_title_task_paused))
-                .setContentText(
-                        context.getString(
-                                R.string.actor_notification_body_interrupted, task.getTitle()))
+                .setContentText(body)
+                .setBigTextStyle(body)
                 .buildNotificationWrapper();
     }
 

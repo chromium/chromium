@@ -73,6 +73,10 @@ public class ActorNotificationFactoryTest {
                 "Content text should match template with task title",
                 mContext.getString(R.string.actor_notification_body_working, TASK_TITLE),
                 shadowNotification.getContentText());
+        assertEquals(
+                "Big text should match content text",
+                mContext.getString(R.string.actor_notification_body_working, TASK_TITLE),
+                notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertTrue(
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
@@ -106,6 +110,10 @@ public class ActorNotificationFactoryTest {
                 "Content text should match template with task title",
                 mContext.getString(R.string.actor_notification_body_paused, TASK_TITLE),
                 shadowNotification.getContentText());
+        assertEquals(
+                "Big text should match content text",
+                mContext.getString(R.string.actor_notification_body_paused, TASK_TITLE),
+                notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertTrue(
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
@@ -139,6 +147,10 @@ public class ActorNotificationFactoryTest {
                 "Content text should match template with task title",
                 mContext.getString(R.string.actor_notification_body_user_input, TASK_TITLE),
                 shadowNotification.getContentText());
+        assertEquals(
+                "Big text should match content text",
+                mContext.getString(R.string.actor_notification_body_user_input, TASK_TITLE),
+                notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertTrue(
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
@@ -169,6 +181,10 @@ public class ActorNotificationFactoryTest {
                 "Content text should match template with task title",
                 mContext.getString(R.string.actor_notification_body_finished, TASK_TITLE),
                 shadowNotification.getContentText());
+        assertEquals(
+                "Big text should match content text",
+                mContext.getString(R.string.actor_notification_body_finished, TASK_TITLE),
+                notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertFalse(
                 "Notification should not be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
@@ -202,6 +218,10 @@ public class ActorNotificationFactoryTest {
                 "Content text should match interrupted template",
                 mContext.getString(R.string.actor_notification_body_interrupted, TASK_TITLE),
                 shadowNotification.getContentText());
+        assertEquals(
+                "Big text should match content text",
+                mContext.getString(R.string.actor_notification_body_interrupted, TASK_TITLE),
+                notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertTrue(
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
