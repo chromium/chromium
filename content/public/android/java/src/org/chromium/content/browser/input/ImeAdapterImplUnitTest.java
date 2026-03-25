@@ -77,7 +77,7 @@ public class ImeAdapterImplUnitTest {
     @Before
     public void setUp() {
         ImeAdapterImplJni.setInstanceForTesting(mImeAdapterImplJni);
-        when(mImeAdapterImplJni.init(any())).thenReturn(1L);
+        when(mImeAdapterImplJni.create(any())).thenReturn(1L);
         Mockito.doAnswer(
                         (Answer<Object>)
                                 invocation -> {

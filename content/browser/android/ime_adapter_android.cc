@@ -74,10 +74,10 @@ input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
 
 }  // anonymous namespace
 
-static int64_t JNI_ImeAdapterImpl_Init(JNIEnv* env, WebContents* web_contents) {
+static int64_t JNI_ImeAdapterImpl_Create(JNIEnv* env,
+                                         WebContents* web_contents) {
   DCHECK(web_contents);
   auto* ime_adapter = new ImeAdapterAndroid(web_contents);
-  ime_adapter->Initialize();
   return reinterpret_cast<intptr_t>(ime_adapter);
 }
 
@@ -289,6 +289,10 @@ void ImeAdapterAndroid::OnRenderFrameMetadataChangedAfterActivation(
   old_viewport_size_ = new_viewport_size;
   Java_ImeAdapterImpl_onResizeScrollableViewport(env, obj,
                                                  surface_height_reduced);
+}
+
+void ImeAdapterAndroid::Initialize(JNIEnv* env) {
+  RenderWidgetHostConnector::Initialize();
 }
 
 bool ImeAdapterAndroid::SendKeyEvent(JNIEnv* env,

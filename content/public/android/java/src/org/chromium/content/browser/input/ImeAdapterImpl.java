@@ -346,8 +346,9 @@ public class ImeAdapterImpl
                             }
                         });
         mInputMethodManagerWrapper = wrapper;
-        mNativeImeAdapterAndroid = ImeAdapterImplJni.get().init(mWebContents);
+        mNativeImeAdapterAndroid = ImeAdapterImplJni.get().create(mWebContents);
         sNativeHelperMap.put(mNativeImeAdapterAndroid, new WeakReference<>(this));
+        ImeAdapterImplJni.get().initialize(mNativeImeAdapterAndroid);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
         if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)) {
             mAutocorrectManager = new AutocorrectManager(this);
@@ -2036,7 +2037,9 @@ public class ImeAdapterImpl
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("WebContents*") WebContents webContents);
+        long create(@JniType("WebContents*") WebContents webContents);
+
+        void initialize(long nativeImeAdapterAndroid);
 
         boolean sendKeyEvent(
                 long nativeImeAdapterAndroid,

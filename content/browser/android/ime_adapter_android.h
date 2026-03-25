@@ -51,6 +51,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   void Destroy(JNIEnv* env);
 
   // Called from java -> native
+  void Initialize(JNIEnv* env);
   bool SendKeyEvent(JNIEnv* env,
                     const base::android::JavaRef<jobject>& original_key_event,
                     int type,

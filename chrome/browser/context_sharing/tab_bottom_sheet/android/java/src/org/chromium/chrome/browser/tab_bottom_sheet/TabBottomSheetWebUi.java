@@ -37,6 +37,9 @@ public class TabBottomSheetWebUi {
 
     @SuppressLint("ClickableViewAccessibility")
     void setWebContents(@Nullable WebContents webContents) {
+        if (mWebContents == webContents) {
+            return;
+        }
         mWebContents = webContents;
         if (mWebContents != null) {
             ContentView contentView = ContentView.createContentView(mContext, null);
