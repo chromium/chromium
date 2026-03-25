@@ -13,7 +13,7 @@
 #include "base/no_destructor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_minimal_jni/JavaExceptionReporter_jni.h"
+#include "base/java_exception_reporter_jni/JavaExceptionReporter_jni.h"
 
 using jni_zero::JavaRef;
 

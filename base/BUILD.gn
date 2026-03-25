@@ -1433,13 +1433,16 @@ component("base") {
       "android/unguessable_token_android.h",
     ]
     deps += [
-      ":base_minimal_jni($default_toolchain)",
       ":callback_jni($default_toolchain)",
       ":command_line_jni($default_toolchain)",
+      ":java_exception_reporter_jni($default_toolchain)",
       ":jni_android_jni($default_toolchain)",
+      ":jni_callback_jni($default_toolchain)",
+      ":jni_utils_jni($default_toolchain)",
       ":library_loader_jni($default_toolchain)",
       ":metrics_jni($default_toolchain)",
       ":tasks_minimal_jni($default_toolchain)",
+      ":token_jni($default_toolchain)",
     ]
     public_deps += [
       ":uuid_jni($default_toolchain)",
@@ -4737,20 +4740,6 @@ if (is_android || is_robolectric) {
 }  # is_android || is_robolectric
 
 if (is_android) {
-  # JNI supported in Robolectric tests.
-  generate_jni("base_minimal_jni") {
-    enable_definition_macros = true
-    sources = [
-      "android/java/src/org/chromium/base/IntStringCallback.java",
-      "android/java/src/org/chromium/base/JNIUtils.java",
-      "android/java/src/org/chromium/base/JavaExceptionReporter.java",
-      "android/java/src/org/chromium/base/JniCallbackImpl.java",
-      "android/java/src/org/chromium/base/Token.java",
-      "android/java/src/org/chromium/base/TokenBase.java",
-      "android/java/src/org/chromium/base/UnguessableToken.java",
-    ]
-  }
-
   # JNI not supported in Robolectric.
   generate_jni("base_jni") {
     sources = [
@@ -4768,8 +4757,69 @@ if (is_android) {
       "android/java/src/org/chromium/base/PowerMonitorReading.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
     ]
+  }
 
-    public_deps = [ ":base_minimal_jni" ]
+  generate_jni("jni_callback_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/IntStringCallback.java",
+      "android/java/src/org/chromium/base/JniCallbackImpl.java",
+    ]
+  }
+  android_library("jni_callback_java") {
+    public_deps = [ ":jni_callback_jni_java" ]
+    sources = [
+      "android/java/src/org/chromium/base/IntStringCallback.java",
+      "android/java/src/org/chromium/base/JniCallbackImpl.java",
+      "android/java/src/org/chromium/base/JniOnceCallback.java",
+      "android/java/src/org/chromium/base/JniOnceCallback2.java",
+      "android/java/src/org/chromium/base/JniOnceRunnable.java",
+      "android/java/src/org/chromium/base/JniRepeatingCallback.java",
+      "android/java/src/org/chromium/base/JniRepeatingCallback2.java",
+      "android/java/src/org/chromium/base/JniRepeatingRunnable.java",
+    ]
+    deps = [
+      ":callback_java",
+      ":lifetime_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("java_exception_reporter_jni") {
+    sources =
+        [ "android/java/src/org/chromium/base/JavaExceptionReporter.java" ]
+  }
+  android_library("java_exception_reporter_java") {
+    public_deps = [ ":java_exception_reporter_jni_java" ]
+    sources =
+        [ "android/java/src/org/chromium/base/JavaExceptionReporter.java" ]
+    deps = [
+      ":jni_android_java",
+      ":pii_elider_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("token_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/Token.java",
+      "android/java/src/org/chromium/base/TokenBase.java",
+      "android/java/src/org/chromium/base/UnguessableToken.java",
+    ]
+  }
+  android_library("token_java") {
+    public_deps = [ ":token_jni_java" ]
+    sources = [
+      "android/java/src/org/chromium/base/Token.java",
+      "android/java/src/org/chromium/base/TokenBase.java",
+      "android/java/src/org/chromium/base/UnguessableToken.java",
+    ]
+    deps = [
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
   }
 
   generate_jar_jni("uuid_jni") {
@@ -4903,8 +4953,6 @@ if (is_android) {
 
     deps = [
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-      "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -4925,17 +4973,8 @@ if (is_android) {
       "android/java/src/org/chromium/base/FieldTrialList.java",
       "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
       "android/java/src/org/chromium/base/InputHintChecker.java",
-      "android/java/src/org/chromium/base/IntStringCallback.java",
       "android/java/src/org/chromium/base/IntentUtils.java",
-      "android/java/src/org/chromium/base/JavaExceptionReporter.java",
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
-      "android/java/src/org/chromium/base/JniCallbackImpl.java",
-      "android/java/src/org/chromium/base/JniOnceCallback.java",
-      "android/java/src/org/chromium/base/JniOnceCallback2.java",
-      "android/java/src/org/chromium/base/JniOnceRunnable.java",
-      "android/java/src/org/chromium/base/JniRepeatingCallback.java",
-      "android/java/src/org/chromium/base/JniRepeatingCallback2.java",
-      "android/java/src/org/chromium/base/JniRepeatingRunnable.java",
       "android/java/src/org/chromium/base/LocaleUtils.java",
       "android/java/src/org/chromium/base/MathUtils.java",
       "android/java/src/org/chromium/base/PackageManagerUtils.java",
@@ -4945,9 +4984,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/PowerMonitorReading.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/RequiredCallback.java",
-      "android/java/src/org/chromium/base/Token.java",
-      "android/java/src/org/chromium/base/TokenBase.java",
-      "android/java/src/org/chromium/base/UnguessableToken.java",
       "android/java/src/org/chromium/base/UserData.java",
       "android/java/src/org/chromium/base/UserDataHost.java",
       "android/java/src/org/chromium/base/ValueChangedCallback.java",
@@ -4967,7 +5003,6 @@ if (is_android) {
     public_deps = [
       ":activity_state_java",
       ":base_jni_java",
-      ":base_minimal_jni_java",
       ":base_switches_java",
       ":build_info_java",
       ":bundle_utils_java",
@@ -4978,7 +5013,9 @@ if (is_android) {
       ":features_java",
       ":file_provider_utils_java",
       ":file_utils_java",
+      ":java_exception_reporter_java",
       ":jni_android_java",
+      ":jni_callback_java",
       ":jni_utils_java",
       ":library_loader_java",
       ":lifetime_java",
@@ -4995,6 +5032,7 @@ if (is_android) {
       ":sys_utils_java",
       ":tasks_java",
       ":time_utils_java",
+      ":token_java",
       ":unowned_user_data_java",
       ":wrapped_class_loader_java",
     ]
@@ -5108,7 +5146,11 @@ if (is_android) {
     ]
   }
 
+  generate_jni("jni_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/JNIUtils.java" ]
+  }
   android_library("jni_utils_java") {
+    srcjar_deps = [ ":jni_utils_jni" ]
     sources = [ "android/java/src/org/chromium/base/JNIUtils.java" ]
     deps = [
       ":bundle_utils_java",

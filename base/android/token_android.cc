@@ -4,8 +4,8 @@
 
 #include "base/android/token_android.h"
 
-#include "base/base_minimal_jni/TokenBase_jni.h"
-#include "base/base_minimal_jni/Token_jni.h"
+#include "base/token_jni/TokenBase_jni.h"
+#include "base/token_jni/Token_jni.h"
 
 namespace base::android {
 

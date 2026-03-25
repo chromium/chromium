@@ -13,7 +13,7 @@
 #include "base/android/jni_string.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_minimal_jni/IntStringCallback_jni.h"
+#include "base/jni_callback_jni/IntStringCallback_jni.h"
 
 namespace base {
 namespace android {

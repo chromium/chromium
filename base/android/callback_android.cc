@@ -12,9 +12,9 @@
 #include "base/types/optional_ref.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_minimal_jni/JniCallbackImpl_jni.h"
-#include "base/callback_jni/Callback_jni.h"
 #include "base/callback_jni/Callback2_jni.h"
+#include "base/callback_jni/Callback_jni.h"
+#include "base/jni_callback_jni/JniCallbackImpl_jni.h"
 
 namespace base {
 namespace android {

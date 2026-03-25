@@ -11,7 +11,7 @@
 #include "base/synchronization/lock.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_minimal_jni/JNIUtils_jni.h"
+#include "base/jni_utils_jni/JNIUtils_jni.h"
 
 namespace base {
 namespace android {
