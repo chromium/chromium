@@ -360,8 +360,7 @@ V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
 
   PCHECK(decode_fd_.IsValid()) << "Failed to find available decode device.";
 
-  struct v4l2_capability cap;
-  UNSAFE_TODO(memset(&cap, 0, sizeof(cap)));
+  struct v4l2_capability cap = {};
 
   const bool ret = Ioctl(VIDIOC_QUERYCAP, &cap);
   DCHECK(ret);
@@ -384,25 +383,23 @@ V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
 V4L2IoctlShim::~V4L2IoctlShim() = default;
 
 bool V4L2IoctlShim::QueryCtrl(const uint32_t ctrl_id) const {
-  struct v4l2_queryctrl query_ctrl;
+  struct v4l2_queryctrl query_ctrl = {};
 
-  UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
   query_ctrl.id = ctrl_id;
 
   return Ioctl(VIDIOC_QUERYCTRL, &query_ctrl);
 }
 
 bool V4L2IoctlShim::EnumFrameSizes(uint32_t fourcc) const {
-  struct v4l2_frmsizeenum frame_size;
+  struct v4l2_frmsizeenum frame_size = {};
 
-  UNSAFE_TODO(memset(&frame_size, 0, sizeof(frame_size)));
   frame_size.pixel_format = fourcc;
 
   return Ioctl(VIDIOC_ENUM_FRAMESIZES, &frame_size);
 }
 
 void V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
-  struct v4l2_format fmt;
+  struct v4l2_format fmt = {};
 
   if (queue->type() == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
     // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
@@ -412,7 +409,7 @@ void V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
     }
   }
 
-  UNSAFE_TODO(memset(&fmt, 0, sizeof(fmt)));
+  fmt = {};
   fmt.type = queue->type();
   fmt.fmt.pix_mp.pixelformat = queue->fourcc();
   if (queue->type() == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
@@ -448,9 +445,8 @@ void V4L2IoctlShim::TryFmt(struct v4l2_format* fmt) const {
 
 void V4L2IoctlShim::ReqBufs(std::unique_ptr<V4L2Queue>& queue,
                             uint32_t count) const {
-  struct v4l2_requestbuffers reqbuf;
+  struct v4l2_requestbuffers reqbuf = {};
 
-  UNSAFE_TODO(memset(&reqbuf, 0, sizeof(reqbuf)));
   reqbuf.count = count;
   reqbuf.type = queue->type();
   reqbuf.memory = queue->memory();
@@ -475,10 +471,9 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
   LOG_ASSERT(queue->memory() == V4L2_MEMORY_MMAP)
       << "Only V4L2_MEMORY_MMAP is currently supported.";
 
-  struct v4l2_buffer v4l2_buffer;
+  struct v4l2_buffer v4l2_buffer = {};
   std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
 
-  UNSAFE_TODO(memset(&v4l2_buffer, 0, sizeof v4l2_buffer));
   v4l2_buffer.type = queue->type();
   v4l2_buffer.memory = queue->memory();
   v4l2_buffer.index = buffer_id;
@@ -513,10 +508,9 @@ void V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
 
   LOG_ASSERT(buffer_id != nullptr) << "|buffer_id| check failed.";
 
-  struct v4l2_buffer v4l2_buffer;
+  struct v4l2_buffer v4l2_buffer = {};
   std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
 
-  UNSAFE_TODO(memset(&v4l2_buffer, 0, sizeof v4l2_buffer));
   v4l2_buffer.type = queue->type();
   v4l2_buffer.memory = queue->memory();
   v4l2_buffer.m.planes = planes.data();
@@ -685,8 +679,7 @@ bool V4L2IoctlShim::FindMediaDevice(struct v4l2_capability* cap) {
 
 bool V4L2IoctlShim::QueryFormat(enum v4l2_buf_type type,
                                 uint32_t fourcc) const {
-  struct v4l2_fmtdesc fmtdesc;
-  UNSAFE_TODO(memset(&fmtdesc, 0, sizeof(fmtdesc)));
+  struct v4l2_fmtdesc fmtdesc = {};
   fmtdesc.type = type;
 
   while (Ioctl(VIDIOC_ENUM_FMT, &fmtdesc)) {
@@ -706,10 +699,9 @@ void V4L2IoctlShim::QueryAndMmapQueueBuffers(
   MmappedBuffers buffers;
 
   for (uint32_t i = 0; i < queue->num_buffers(); ++i) {
-    struct v4l2_buffer v4l_buffer;
+    struct v4l2_buffer v4l_buffer = {};
     std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
 
-    UNSAFE_TODO(memset(&v4l_buffer, 0, sizeof(v4l_buffer)));
     v4l_buffer.type = queue->type();
     v4l_buffer.memory = queue->memory();
     v4l_buffer.index = i;

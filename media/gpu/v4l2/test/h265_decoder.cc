@@ -90,8 +90,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
 
 // Translates decoder SPS structure into |v4l2_ctrl_hevc_sps| structure.
 v4l2_ctrl_hevc_sps SetupSPSCtrl(const H265SPS* sps) {
-  struct v4l2_ctrl_hevc_sps v4l2_sps;
-  UNSAFE_TODO(memset(&v4l2_sps, 0, sizeof(v4l2_sps)));
+  struct v4l2_ctrl_hevc_sps v4l2_sps = {};
 
   int highest_tid = sps->sps_max_sub_layers_minus1;
 
@@ -153,8 +152,7 @@ v4l2_ctrl_hevc_sps SetupSPSCtrl(const H265SPS* sps) {
 
 // Translates decoder PPS structure into |v4l2_ctrl_hevc_pps| structure.
 v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
-  struct v4l2_ctrl_hevc_pps v4l2_pps;
-  UNSAFE_TODO(memset(&v4l2_pps, 0, sizeof(v4l2_pps)));
+  struct v4l2_ctrl_hevc_pps v4l2_pps = {};
 
   // Translates values using the |v4l2_ctrl_hevc_pps| struct order
 #define PPS_TO_V4L2PPS(a) v4l2_pps.a = pps->a
@@ -252,8 +250,7 @@ v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
 // and PPS scaling matrix sizes.
 v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
                                                  const H265PPS* pps) {
-  struct v4l2_ctrl_hevc_scaling_matrix v4l2_scaling_matrix;
-  UNSAFE_TODO(memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix)));
+  struct v4l2_ctrl_hevc_scaling_matrix v4l2_scaling_matrix = {};
   struct H265ScalingListData checker;
 
   static_assert(
@@ -344,21 +341,20 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
     const H265Picture::Vector& ref_pic_set_st_curr_after,
     const H265Picture::Vector& ref_pic_set_st_curr_before,
     scoped_refptr<H265Picture> curr_pic) {
-  struct v4l2_ctrl_hevc_decode_params v4l2_decode_params;
-  UNSAFE_TODO(memset(&v4l2_decode_params, 0, sizeof(v4l2_decode_params)));
+  struct v4l2_ctrl_hevc_decode_params v4l2_decode_params = {};
 
-  v4l2_decode_params.pic_order_cnt_val = curr_pic->pic_order_cnt_val_,
+  v4l2_decode_params.pic_order_cnt_val = curr_pic->pic_order_cnt_val_;
   v4l2_decode_params.short_term_ref_pic_set_size =
-      static_cast<__u16>(slice_hdr->st_rps_bits),
+      static_cast<__u16>(slice_hdr->st_rps_bits);
   v4l2_decode_params.long_term_ref_pic_set_size =
-      static_cast<__u16>(slice_hdr->lt_rps_bits),
+      static_cast<__u16>(slice_hdr->lt_rps_bits);
 #if BUILDFLAG(IS_CHROMEOS)
   // .num_delta_pocs_of_ref_rps_idx is upstream but not yet pulled
   // into linux build sysroot.
   // TODO(b/261127809): Remove once linux-libc-dev package is updated to
   // at least v6.5 in the sysroots.
-      v4l2_decode_params.num_delta_pocs_of_ref_rps_idx =
-          static_cast<__u8>(slice_hdr->st_ref_pic_set.rps_idx_num_delta_pocs),
+  v4l2_decode_params.num_delta_pocs_of_ref_rps_idx =
+      static_cast<__u8>(slice_hdr->st_ref_pic_set.rps_idx_num_delta_pocs);
 #endif
   v4l2_decode_params.flags = static_cast<__u64>(
       (curr_pic->irap_pic_ ? V4L2_HEVC_DECODE_PARAM_FLAG_IRAP_PIC : 0) |
@@ -368,10 +364,8 @@ struct v4l2_ctrl_hevc_decode_params SetupDecodeParams(
            : 0) |
       (curr_pic->no_output_of_prior_pics_flag_
            ? V4L2_HEVC_DECODE_PARAM_FLAG_NO_OUTPUT_OF_PRIOR
-           : 0)),
+           : 0));
 
-  UNSAFE_TODO(
-      memset(v4l2_decode_params.dpb, 0, sizeof(v4l2_decode_params.dpb)));
   unsigned int i = 0;
   for (const auto& pic : ref_pic_list) {
     if (i >= V4L2_HEVC_DPB_ENTRIES_NUM_MAX) {

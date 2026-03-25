@@ -171,8 +171,7 @@ bool V4L2Device::IsValid() {
 }
 
 std::string V4L2Device::GetDriverName() {
-  struct v4l2_capability caps;
-  UNSAFE_TODO(memset(&caps, 0, sizeof(caps)));
+  struct v4l2_capability caps = {};
   if (Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP"
               << ", caps check failed: 0x" << std::hex << caps.capabilities;
@@ -439,16 +438,14 @@ std::vector<uint32_t> V4L2Device::PreferredInputFormat(Type type) const {
 VideoEncodeAccelerator::SupportedRateControlMode
 V4L2Device::GetSupportedRateControlMode() {
   auto rate_control_mode = VideoEncodeAccelerator::kNoMode;
-  v4l2_queryctrl query_ctrl;
-  UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
+  v4l2_queryctrl query_ctrl = {};
   query_ctrl.id = V4L2_CID_MPEG_VIDEO_BITRATE_MODE;
   if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl)) {
     DPLOG(WARNING) << "QUERYCTRL for bitrate mode failed";
     return rate_control_mode;
   }
 
-  v4l2_querymenu query_menu;
-  UNSAFE_TODO(memset(&query_menu, 0, sizeof(query_menu)));
+  v4l2_querymenu query_menu = {};
   query_menu.id = query_ctrl.id;
   for (query_menu.index = query_ctrl.minimum;
        base::checked_cast<int>(query_menu.index) <= query_ctrl.maximum;
@@ -668,8 +665,7 @@ void V4L2Device::SchedulePoll() {
 
 std::optional<struct v4l2_event> V4L2Device::DequeueEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  struct v4l2_event event;
-  UNSAFE_TODO(memset(&event, 0, sizeof(event)));
+  struct v4l2_event event = {};
 
   if (Ioctl(VIDIOC_DQEVENT, &event) != 0) {
     // The ioctl will fail if there are no pending events. This is part of the
@@ -689,7 +685,7 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
 
   requests_queue_creation_called_ = true;
 
-  struct v4l2_capability caps;
+  struct v4l2_capability caps = {};
   if (Ioctl(VIDIOC_QUERYCAP, &caps)) {
     VPLOGF(1) << "Failed to query device capabilities.";
     return nullptr;
@@ -767,8 +763,7 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
 }
 
 bool V4L2Device::IsCtrlExposed(uint32_t ctrl_id) {
-  struct v4l2_queryctrl query_ctrl;
-  UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
+  struct v4l2_queryctrl query_ctrl = {};
   query_ctrl.id = ctrl_id;
 
   return Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) == 0;
@@ -782,8 +777,7 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
   if (ctrls.empty())
     return true;
 
-  struct v4l2_ext_controls ext_ctrls;
-  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
+  struct v4l2_ext_controls ext_ctrls = {};
   ext_ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
   ext_ctrls.count = 0;
   const bool use_modern_s_ext_ctrls =
@@ -814,10 +808,8 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
 
 std::optional<struct v4l2_ext_control> V4L2Device::GetCtrl(uint32_t ctrl_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  struct v4l2_ext_control ctrl;
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
-  struct v4l2_ext_controls ext_ctrls;
-  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
+  struct v4l2_ext_control ctrl = {};
+  struct v4l2_ext_controls ext_ctrls = {};
 
   ctrl.id = ctrl_id;
   ext_ctrls.controls = &ctrl;
@@ -839,8 +831,7 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
     // does not support turning off periodic keyframe placement,
     // set the GOP to the maximum supported value.
     if (gop_length == 0) {
-      v4l2_query_ext_ctrl queryctrl;
-      UNSAFE_TODO(memset(&queryctrl, 0, sizeof(queryctrl)));
+      v4l2_query_ext_ctrl queryctrl = {};
 
       queryctrl.id = V4L2_CTRL_CLASS_MPEG | V4L2_CID_MPEG_VIDEO_GOP_SIZE;
       if (Ioctl(VIDIOC_QUERY_EXT_CTRL, &queryctrl) == 0) {

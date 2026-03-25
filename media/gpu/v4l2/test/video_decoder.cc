@@ -48,9 +48,7 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
   constexpr uint32_t kPreferredFormats[] = {
       V4L2_PIX_FMT_NV12, V4L2_PIX_FMT_MM21, V4L2_PIX_FMT_MT2T};
 
-  struct v4l2_format fmt;
-
-  UNSAFE_TODO(memset(&fmt, 0, sizeof(fmt)));
+  struct v4l2_format fmt = {};
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
   v4l2_ioctl_->GetFmt(&fmt);

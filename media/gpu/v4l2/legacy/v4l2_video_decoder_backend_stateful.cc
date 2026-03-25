@@ -95,8 +95,7 @@ V4L2StatefulVideoDecoderBackend::~V4L2StatefulVideoDecoderBackend() {
     VLOGF(1) << "Should not destroy backend during pending decode!";
   }
 
-  struct v4l2_event_subscription sub;
-  UNSAFE_TODO(memset(&sub, 0, sizeof(sub)));
+  struct v4l2_event_subscription sub = {};
   sub.type = V4L2_EVENT_SOURCE_CHANGE;
   if (device_->Ioctl(VIDIOC_UNSUBSCRIBE_EVENT, &sub) != 0) {
     VLOGF(1) << "Cannot unsubscribe to event";
@@ -120,8 +119,7 @@ bool V4L2StatefulVideoDecoderBackend::Initialize() {
     return false;
   }
 
-  struct v4l2_event_subscription sub;
-  UNSAFE_TODO(memset(&sub, 0, sizeof(sub)));
+  struct v4l2_event_subscription sub = {};
   sub.type = V4L2_EVENT_SOURCE_CHANGE;
   if (device_->Ioctl(VIDIOC_SUBSCRIBE_EVENT, &sub) != 0) {
     VLOGF(1) << "Cannot subscribe to event";

@@ -408,8 +408,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
 
-  struct v4l2_ctrl_vp9_frame v4l2_frame_params;
-  UNSAFE_TODO(memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params)));
+  struct v4l2_ctrl_vp9_frame v4l2_frame_params = {};
 
   SetupFrameParams(frame_hdr, &v4l2_frame_params);
 
