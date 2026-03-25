@@ -85,6 +85,13 @@ class SkillsUpdateObserverTest : public ChromeRenderViewHostTestHarness {
                                                                url);
   }
 
+  void SimulateSameDocumentNavigation(const GURL& url) {
+    std::unique_ptr<content::NavigationSimulator> simulator =
+        content::NavigationSimulator::CreateRendererInitiated(
+            url, web_contents()->GetPrimaryMainFrame());
+    simulator->CommitSameDocument();
+  }
+
   // Sets up an expectation for the mock Optimization Guide service.
   void ExpectOptimizationGuideDecision(
       const GURL& url,
@@ -255,4 +262,30 @@ TEST_F(SkillsUpdateObserverTest, GetContextualSkillPreviews) {
   EXPECT_EQ(previews[0]->id, "test_skill");
   EXPECT_EQ(previews[0]->name, "Test Skill");
   EXPECT_EQ(previews[0]->icon, "test_icon");
+}
+
+// Test that the contextual skills are updated on same document navigations.
+TEST_F(SkillsUpdateObserverTest, SameDocumentNavigationUpdatesSkills) {
+  GURL url1("https://www.example1.com");
+  GURL url2("https://www.example1.com/watch");
+
+  skills::proto::SkillsList skills1;
+  skills1.add_skills()->set_name("Skill 1");
+  ExpectOptimizationGuideDecision(
+      url1, optimization_guide::OptimizationGuideDecision::kTrue, skills1);
+
+  SimulateNavigation(url1);
+  const skills::proto::SkillsList* result1 = observer_->contextual_skills();
+  EXPECT_EQ(result1->skills_size(), 1);
+  EXPECT_EQ(result1->skills(0).name(), "Skill 1");
+
+  skills::proto::SkillsList skills2;
+  skills2.add_skills()->set_name("Skill 2");
+  ExpectOptimizationGuideDecision(
+      url2, optimization_guide::OptimizationGuideDecision::kTrue, skills2);
+
+  SimulateSameDocumentNavigation(url2);
+  const skills::proto::SkillsList* result2 = observer_->contextual_skills();
+  EXPECT_EQ(result2->skills_size(), 1);
+  EXPECT_EQ(result2->skills(0).name(), "Skill 2");
 }

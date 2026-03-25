@@ -74,8 +74,7 @@ void SkillsUpdateObserver::DidFinishNavigation(
   }
 
   if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
+      !navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
 
