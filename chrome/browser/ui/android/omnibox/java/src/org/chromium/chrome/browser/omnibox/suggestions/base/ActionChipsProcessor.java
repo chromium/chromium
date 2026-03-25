@@ -65,7 +65,6 @@ public class ActionChipsProcessor {
                                     isSelected ->
                                             action.onActionFocusedFromKeyboard(
                                                     isSelected, mActionDelegate))
-                            .with(ChipProperties.SELECTED, false)
                             .with(ChipProperties.ICON, action.icon.chipIconRes)
                             .with(ChipProperties.APPLY_ICON_TINT, action.icon.tintWithTextColor)
                             .with(
