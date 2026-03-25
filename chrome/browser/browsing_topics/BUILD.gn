@@ -27,7 +27,6 @@ source_set("impl") {
     "//components/content_settings/browser",
     "//components/history/core/browser",
     "//components/keyed_service/core",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/privacy_sandbox",
