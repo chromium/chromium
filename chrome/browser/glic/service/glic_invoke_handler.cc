@@ -82,6 +82,9 @@ bool GlicInvokeHandler::RequiresAutoSubmitIncompatibleFre() const {
   if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
     return false;
   }
+  if (options_.fre_override != mojom::FreOverride::kUnspecified) {
+    return options_.fre_override != mojom::FreOverride::kTrustFirstInline;
+  }
   return GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
              instance_->profile()) &&
          features::kGlicTrustFirstOnboardingArmParam.Get() == 1;
