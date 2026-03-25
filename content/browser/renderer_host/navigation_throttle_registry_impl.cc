@@ -60,7 +60,6 @@ NavigationThrottleRegistryBase::~NavigationThrottleRegistryBase() = default;
 NavigationThrottleRegistryImpl::NavigationThrottleRegistryImpl(
     NavigationRequest* navigation_request)
     : navigation_request_(CHECK_DEREF(navigation_request)),
-      weak_navigation_request_(navigation_request->GetWeakPtr()),
       navigation_throttle_runner_(CreateNavigationThrottleRunner(
           this,
           navigation_request->GetNavigationId(),
@@ -319,9 +318,6 @@ bool NavigationThrottleRegistryImpl::IsHTTPOrHTTPS() {
 void NavigationThrottleRegistryImpl::OnEventProcessed(
     NavigationThrottleEvent event,
     NavigationThrottle::ThrottleCheckResult result) {
-  if (!weak_navigation_request_) {
-    return;
-  }
   navigation_request_->OnNavigationEventProcessed(event, result);
 }
 

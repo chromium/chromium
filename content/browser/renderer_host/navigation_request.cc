@@ -6211,7 +6211,6 @@ void NavigationRequest::OnFailureChecksComplete(
 void NavigationRequest::OnWillProcessResponseChecksComplete(
     NavigationThrottle::ThrottleCheckResult result) {
   DCHECK(result.action() != NavigationThrottle::DEFER);
-  base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
 
   // If the NavigationThrottles allowed the navigation to continue, have the
   // processing of the response resume in the network stack.
@@ -6276,15 +6275,14 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
             url_loader_client_endpoints_, response_body_,
             std::move(*data_pipe_pair));
       }
+      base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
       download_manager->InterceptNavigation(
           std::move(resource_request), redirect_chain_, response_head_.Clone(),
           std::move(response_body_), std::move(url_loader_client_endpoints_),
           ssl_info_.has_value() ? ssl_info_->cert_status : 0,
           frame_tree_node_->frame_tree_node_id(),
           from_download_cross_origin_redirect_);
-      if (!this_ptr) {
-        return;
-      }
+      CHECK(this_ptr);
 
       auto completion_status =
           network::URLLoaderCompletionStatus(net::ERR_ABORTED);
@@ -8258,19 +8256,18 @@ void NavigationRequest::OnWillProcessResponseProcessed(
   DCHECK_NE(NavigationThrottle::BLOCK_REQUEST, result.action());
   DCHECK_NE(NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE, result.action());
   DCHECK(processing_navigation_throttle_);
-  base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
   processing_navigation_throttle_ = false;
   if (result.action() != NavigationThrottle::PROCEED) {
     SetState(CANCELING);
   }
 
+  base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
   if (complete_callback_for_testing_ &&
       std::move(complete_callback_for_testing_).Run(result)) {
     return;
   }
-  if (this_ptr) {
-    OnWillProcessResponseChecksComplete(result);
-  }
+  CHECK(this_ptr);
+  OnWillProcessResponseChecksComplete(result);
   // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
   // deleted by the previous calls.
 }
