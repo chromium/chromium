@@ -187,7 +187,6 @@
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/common/constants.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/pref_names.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/device_statistics_scheduler.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -558,61 +557,6 @@ namespace {
 
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
-
-// Deprecated 01/2025.
-inline constexpr char kCompactModeEnabled[] = "compact_mode";
-
-// Deprecated 01/2025.
-inline constexpr char kSafeBrowsingAutomaticDeepScanningIPHSeen[] =
-    "safebrowsing.automatic_deep_scanning_iph_seen";
-inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
-    "safe_browsing.automatic_deep_scan_performed";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 01/2025.
-inline constexpr char kUsedPolicyCertificates[] =
-    "policy.used_policy_certificates";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Deprecated 02/2025.
-inline constexpr char kDefaultSearchProviderKeywordsUseExtendedList[] =
-    "default_search_provider.keywords_use_extended_list";
-
-#if BUILDFLAG(IS_ANDROID)
-// Deprecated 2/2025.
-inline constexpr char kLocalPasswordsMigrationWarningShownTimestamp[] =
-    "local_passwords_migration_warning_shown_timestamp";
-inline constexpr char kLocalPasswordMigrationWarningShownAtStartup[] =
-    "local_passwords_migration_warning_shown_at_startup";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 2/2025.
-inline constexpr char kLiveCaptionUserMicrophoneEnabled[] =
-    "accessibility.captions.user_microphone_captioning_enabled";
-inline constexpr char kUserMicrophoneCaptionLanguageCode[] =
-    "accessibility.captions.user_microphone_language_code";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Deprecated 03/2025.
-inline constexpr char kPasswordChangeFlowNoticeAgreement[] =
-    "password_manager.password_change_flow_notice_agreement";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 02/2025.
-constexpr char kScannerFeedbackEnabled[] = "ash.scanner.feedback_enabled";
-constexpr char kHmrFeedbackAllowed[] = "settings.mahi_feedback_allowed";
-constexpr char kSharedStorage[] = "shared_storage";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 03/2025.
-constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Deprecated 03/2025.
-inline constexpr char kRecurrentSSLInterstitial[] =
-    "profile.ssl_recurrent_interstitial";
 
 // Deprecated 04/2025.
 inline constexpr char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
@@ -1131,55 +1075,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-  // Deprecated 01/2025.
-  registry->RegisterBooleanPref(kCompactModeEnabled, false);
-
-  // Deprecated 01/2025.
-  registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanningIPHSeen,
-                                false);
-  registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanPerformed, false);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 01/2025.
-  registry->RegisterBooleanPref(kUsedPolicyCertificates, false);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Deprecated 02/2025.
-  registry->RegisterBooleanPref(kDefaultSearchProviderKeywordsUseExtendedList,
-                                false);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Deprecated 02/2025.
-  registry->RegisterTimePref(kLocalPasswordsMigrationWarningShownTimestamp,
-                             base::Time());
-  registry->RegisterBooleanPref(kLocalPasswordMigrationWarningShownAtStartup,
-                                false);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 02/2025.
-  registry->RegisterBooleanPref(kLiveCaptionUserMicrophoneEnabled, false);
-  registry->RegisterStringPref(kUserMicrophoneCaptionLanguageCode, "");
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 02/2025.
-  registry->RegisterBooleanPref(kScannerFeedbackEnabled, true);
-  registry->RegisterBooleanPref(kHmrFeedbackAllowed, true);
-  registry->RegisterDictionaryPref(kSharedStorage);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Deprecated 03/2025.
-  registry->RegisterBooleanPref(kPasswordChangeFlowNoticeAgreement, false);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 03/2025.
-  registry->RegisterBooleanPref(kSunfishEnabled, true);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Deprecated 03/2025
-  registry->RegisterDictionaryPref(kRecurrentSSLInterstitial);
-
   // Deprecated 04/2025.
   registry->RegisterIntegerPref(
       kDefaultSearchProviderChoiceScreenShuffleMilestone, 0);
@@ -2479,56 +2374,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs);
 #endif
-
-  // Added 01/2025.
-  profile_prefs->ClearPref(kCompactModeEnabled);
-
-  // Added 01/2025.
-  profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanPerformed);
-  profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanningIPHSeen);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 01/2025.
-  profile_prefs->ClearPref(kUsedPolicyCertificates);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Added 02/2025.
-  profile_prefs->ClearPref(kDefaultSearchProviderKeywordsUseExtendedList);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Added 02/2025.
-  profile_prefs->ClearPref(kLocalPasswordsMigrationWarningShownTimestamp);
-  profile_prefs->ClearPref(kLocalPasswordMigrationWarningShownAtStartup);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 02/2025.
-  profile_prefs->ClearPref(kLiveCaptionUserMicrophoneEnabled);
-  profile_prefs->ClearPref(kUserMicrophoneCaptionLanguageCode);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 02/2025.
-  profile_prefs->ClearPref(kScannerFeedbackEnabled);
-  profile_prefs->ClearPref(kHmrFeedbackAllowed);
-  profile_prefs->ClearPref(kSharedStorage);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Added 03/2025.
-  profile_prefs->ClearPref(kPasswordChangeFlowNoticeAgreement);
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Added 03/2025.
-  profile_prefs->ClearPref(prefs::kChildAccountStatusKnown);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 03/2025.
-  profile_prefs->ClearPref(kSunfishEnabled);
-#endif
-
-  // Added 03/2025.
-  profile_prefs->ClearPref(kRecurrentSSLInterstitial);
 
   // Added 04/2025.
   profile_prefs->ClearPref(kDefaultSearchProviderChoiceScreenShuffleMilestone);
