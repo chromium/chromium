@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 CpuPerformance --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial"
+  content="A4uP/SIDUHnDrVhKtBeAO/CfQPIhtEFdJls30AGmtEGDU/wOP+8HJUwkbyBN+eQkNstDXwmxyo/zCw/n/4mXygQAAABWeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQ3B1UGVyZm9ybWFuY2UiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=" />
+<title>CPU Performance API - interface exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+'use strict';
+
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this, {
+    'Navigator': ['cpuPerformance'],
+  });
+}, "CPU Performance API interface in Origin-Trial enabled document.");
+
+test(t => {
+  const kNavigatorCPUPerformance = 5675;
+  assert_false(internals.isUseCounted(document, kNavigatorCPUPerformance),
+    'NavigatorCPUPerformance should not be counted before access.');
+
+  // Accessing the attribute should trigger the UseCounter.
+  const tier = navigator.cpuPerformance;
+  assert_between_inclusive(tier, 0, 4,
+    'navigator.cpuPerformance should be a valid small integer.');
+
+  assert_true(internals.isUseCounted(document, kNavigatorCPUPerformance),
+    'NavigatorCPUPerformance should be counted after access.');
+}, "CPU Performance API UseCounter in Origin-Trial enabled document.");
+</script>
