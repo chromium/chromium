@@ -244,11 +244,15 @@ TEST_F(NativeViewHostMacTest, ContentViewPositionAndSize) {
   CreateHost();
   toplevel()->SetBounds(gfx::Rect(0, 0, 100, 100));
 
+  int client_height = toplevel()->GetClientAreaBoundsInScreen().height();
+
   native_host()->ShowWidget(5, 10, 100, 100, 200, 200);
-  EXPECT_NSEQ(NSMakeRect(5, -38, 100, 100), native_view_.frame);
+  EXPECT_NSEQ(NSMakeRect(5, client_height - 10 - 100, 100, 100),
+              native_view_.frame);
 
   native_host()->ShowWidget(10, 25, 50, 50, 50, 50);
-  EXPECT_NSEQ(NSMakeRect(10, -3, 50, 50), native_view_.frame);
+  EXPECT_NSEQ(NSMakeRect(10, client_height - 25 - 50, 50, 50),
+              native_view_.frame);
 
   DestroyHost();
 }
