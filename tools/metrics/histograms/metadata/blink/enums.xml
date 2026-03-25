@@ -6491,6 +6491,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5850" label="LazyLoadVideoLoadingAttributeEager"/>
   <int value="5851" label="LazyLoadAudioLoadingAttributeLazy"/>
   <int value="5852" label="LazyLoadAudioLoadingAttributeEager"/>
+  <int value="5853" label="ResourceTimingWorkerMatchedSourceType"/>
+  <int value="5854" label="ResourceTimingWorkerFinalSourceType"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

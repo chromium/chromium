@@ -5167,6 +5167,8 @@ enum WebFeature {
   kLazyLoadVideoLoadingAttributeEager = 5850,
   kLazyLoadAudioLoadingAttributeLazy = 5851,
   kLazyLoadAudioLoadingAttributeEager = 5852,
+  kResourceTimingWorkerMatchedSourceType = 5853,
+  kResourceTimingWorkerFinalSourceType = 5854,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

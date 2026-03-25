@@ -122,6 +122,16 @@ PerformanceResourceTiming::PerformanceResourceTiming(
   if (!server_timing_.empty()) {
     UseCounter::Count(context, WebFeature::kPerformanceServerTiming);
   }
+  if (info_->service_worker_router_info) {
+    if (info_->service_worker_router_info->matched_source_type) {
+      UseCounter::Count(context,
+                        WebFeature::kResourceTimingWorkerMatchedSourceType);
+    }
+    if (info_->service_worker_router_info->actual_source_type) {
+      UseCounter::Count(context,
+                        WebFeature::kResourceTimingWorkerFinalSourceType);
+    }
+  }
 }
 
 PerformanceResourceTiming::~PerformanceResourceTiming() = default;
