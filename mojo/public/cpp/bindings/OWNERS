@@ -1,0 +1,3 @@
+# Performance team evaluates new uses of mojo::DirectReceiver
+per-file direct_receiver.h=nafisabedin@google.com
+per-file direct_receiver.h=pasko@chromium.org
