@@ -1023,6 +1023,8 @@ BASE_FEATURE(kPrivacyGuideForceAvailable, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_PDF)
 BASE_FEATURE(kPdfGlicSummarize, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kPdfGlicSummarizeArm{&kPdfGlicSummarize, "arm",
+                                                   1};
 BASE_FEATURE(kPdfGlicSummarizeFre, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -1488,7 +1490,6 @@ BASE_FEATURE(kCameraCloudStorage, base::FEATURE_ENABLED_BY_DEFAULT);
 // by policies: removing local storage, saving downloads and screen captures to
 // the cloud, and related UX changes, primarily in the Files App.
 BASE_FEATURE(kSkyVault, base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
