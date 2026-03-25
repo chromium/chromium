@@ -52,7 +52,7 @@ class JsCheckerEsLintTest(unittest.TestCase):
     self.assertEqual(line, message.get('line'))
 
   def testPrimitiveWrappersCheck(self):
-    results = self._runChecks('const a = new Number(1);', 'js')
+    results = self._runChecks('const a = new Number(1);\n', 'js')
     self._assertError(results, 'no-new-wrappers', 1)
 
     results = self._runChecks(

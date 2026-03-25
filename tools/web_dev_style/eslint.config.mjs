@@ -106,6 +106,9 @@ export default [
       // Ignore generated checked-in JS file.
       'ios/tools/documents_statistics_viewer/tsc/viewer.js',
 
+      // No point checking minify_js expected output tests.
+      'ui/webui/resources/tools/tests/minify_js/*_expected.js',
+
       // ESLint is disabled for camera_app_ui and recorder_app_ui as they used
       // a custom eslint plugin that does not work with the latest eslint, and
       // they had complex eslint rc files that have not been updated to the
@@ -130,7 +133,9 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
     },
-
+    plugins: {
+      '@stylistic': stylistic,
+    },
     rules: {
       // Enabled checks.
       'brace-style': ['error', '1tbs'],
@@ -218,6 +223,8 @@ export default [
         }
       ],
 
+      '@stylistic/eol-last': ['error'],
+
       // TODO(dpapad): Add more checks according to our styleguide.
     },
   },
@@ -257,8 +264,6 @@ export default [
       // parameter.
       'no-array-constructor': 'off',
       '@typescript-eslint/no-array-constructor': 'error',
-
-      '@stylistic/eol-last': ['error'],
 
       // https://google.github.io/styleguide/tsguide.html#automatic-semicolon-insertion
       semi: 'off',
