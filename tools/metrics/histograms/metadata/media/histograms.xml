@@ -4325,7 +4325,7 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     HRESULT code if MediaFoundationCdmModule::GetCdmFactory call fails when
-    querying Widevine CDM capability.
+    querying {KeySystem} CDM capability.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
@@ -4421,10 +4421,10 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    When hardware secure decryption is enabled, whether Widevine hardware secure
-    decryption is actually supported by the platform (device). Reported at most
-    once per browser session when EME query is triggered by a website, and when
-    Widevine hardware secure CDM was registered.
+    When hardware secure decryption is enabled, whether {KeySystem} hardware
+    secure decryption is actually supported by the platform (device). Reported
+    at most once per browser session when EME query is triggered by a website,
+    and when {KeySystem} hardware secure CDM was registered.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
@@ -4434,10 +4434,10 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    When hardware secure decryption is enabled and supported by Widevine,
+    When hardware secure decryption is enabled and supported by {KeySystem},
     whether {VideoCodec} video codec is supported by the platform (device).
     Reported at most once per browser session when EME query is triggered by a
-    website, and when Widevine hardware secure CDM was registered.
+    website, and when {KeySystem} hardware secure CDM was registered.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
   <token key="VideoCodec" variants="VideoCodec"/>
