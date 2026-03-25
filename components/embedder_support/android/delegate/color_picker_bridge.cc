@@ -52,7 +52,12 @@ ColorPickerBridge::ColorPickerBridge(
   Java_ColorPickerBridge_showColorPicker(env, j_color_chooser_, initial_color);
 }
 
-ColorPickerBridge::~ColorPickerBridge() = default;
+ColorPickerBridge::~ColorPickerBridge() {
+  if (!j_color_chooser_.is_null()) {
+    JNIEnv* env = AttachCurrentThread();
+    Java_ColorPickerBridge_detach(env, j_color_chooser_);
+  }
+}
 
 void ColorPickerBridge::End() {
   if (!j_color_chooser_.is_null()) {

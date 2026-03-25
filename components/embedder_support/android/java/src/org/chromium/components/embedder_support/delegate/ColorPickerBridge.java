@@ -27,22 +27,27 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("web_contents_delegate_android")
 @NullMarked
 public class ColorPickerBridge {
-    private final long mNativeDialog;
+    private long mNativeColorPicker;
     private final ColorPickerCoordinator mColorPickerCoordinator;
 
     @CalledByNative
     static @Nullable ColorPickerBridge create(
-            long nativeDialog, @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
+            long nativeColorPicker, @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         Context context = windowAndroid.getContext().get();
         if (ContextUtils.activityFromContext(context) == null) return null;
         assumeNonNull(context);
-        return new ColorPickerBridge(nativeDialog, context);
+        return new ColorPickerBridge(nativeColorPicker, context);
     }
 
-    private ColorPickerBridge(long nativeDialog, Context context) {
-        mNativeDialog = nativeDialog;
+    private ColorPickerBridge(long nativeColorPicker, Context context) {
+        mNativeColorPicker = nativeColorPicker;
         mColorPickerCoordinator = ColorPickerCoordinator.create(context, this::onDialogDismissed);
+    }
+
+    @CalledByNative
+    private void detach() {
+        mNativeColorPicker = 0;
     }
 
     @CalledByNative
@@ -63,7 +68,9 @@ public class ColorPickerBridge {
     }
 
     void onDialogDismissed(int newColor) {
-        ColorPickerBridgeJni.get().onColorChosen(mNativeDialog, newColor);
+        if (mNativeColorPicker != 0) {
+            ColorPickerBridgeJni.get().onColorChosen(mNativeColorPicker, newColor);
+        }
     }
 
     @NativeMethods
