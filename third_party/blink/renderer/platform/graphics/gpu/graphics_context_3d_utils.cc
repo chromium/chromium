@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/graphics_context_3d_utils.h"
 
 #include "build/build_config.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
@@ -13,7 +12,7 @@
 
 namespace blink {
 
-bool GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled(
+bool Accelerated2DCanvasFeatureEnabled(
     WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
   // Don't use accelerated canvas if compositor is in software mode.
   if (!SharedGpuContext::IsGpuCompositingEnabled())
@@ -32,7 +31,7 @@ bool GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled(
              .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS];
 }
 
-bool GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
+bool IsScanoutSupportedForCanvasWithFormat(
     viz::SharedImageFormat format,
     const gpu::Capabilities& capabilities) {
   if (format == viz::SinglePlaneFormat::kRGBA_8888) {

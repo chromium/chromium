@@ -1557,7 +1557,7 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
 
   // Avoid creating |contextProvider| until we're sure we want to try use it,
   // since it costs us GPU memory.
-  return GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled(
+  return Accelerated2DCanvasFeatureEnabled(
       SharedGpuContext::ContextProviderWrapper().get());
 }
 

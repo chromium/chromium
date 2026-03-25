@@ -1447,8 +1447,7 @@ std::unique_ptr<T> CanvasResourceProvider::CreateSharedImageProviderBase(
 
   const bool is_mappable_shared_image_allowed =
       is_gpu_compositing_enabled &&
-      GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
-          format, capabilities);
+      IsScanoutSupportedForCanvasWithFormat(format, capabilities);
 
   if (raster_mode == RasterMode::kCPU && !is_mappable_shared_image_allowed) {
     return nullptr;

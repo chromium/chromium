@@ -521,7 +521,7 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
 }
 
 bool OffscreenCanvas::ShouldAccelerate2dContext() const {
-  return GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled(
+  return Accelerated2DCanvasFeatureEnabled(
       SharedGpuContext::ContextProviderWrapper().get());
 }
 
