@@ -176,21 +176,8 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testBeginInput_tracksProfileChanges() {
-        mCoordinator.beginInput(createSession());
-        assertNotNull(mCoordinator.getMediatorForTesting());
-        assertNotEquals(mMediator, mCoordinator.getMediatorForTesting());
-
-        FuseboxMediator previousMediator = mCoordinator.getMediatorForTesting();
-        mCoordinator.beginInput(createSession(mock(Profile.class)));
-        assertNotNull(mCoordinator.getMediatorForTesting());
-        assertNotEquals(previousMediator, mMediator);
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled_mediatorInitialized() {
-        mCoordinator.setMediatorForTesting(mMediator, mProfile);
+        mCoordinator.setMediatorForTesting(mMediator);
 
         mCoordinator.beginInput(createSession());
         verify(mMediator).beginInput(any());
@@ -202,7 +189,7 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled_disabledByServer() {
-        mCoordinator.setMediatorForTesting(mMediator, mProfile);
+        mCoordinator.setMediatorForTesting(mMediator);
 
         doReturn(false).when(mComposebox).isFuseboxEligible();
         mCoordinator.beginInput(createSession());
@@ -239,7 +226,7 @@ public class FuseboxCoordinatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_basedOnPageClassification() {
         mCoordinator.beginInput(createSession());
-        mCoordinator.setMediatorForTesting(mMediator, mProfile);
+        mCoordinator.setMediatorForTesting(mMediator);
         final Set<PageClassification> supportedPageClassifications =
                 EnumSet.of(
                         PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
@@ -263,7 +250,7 @@ public class FuseboxCoordinatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNonGoogleDse() {
         mCoordinator.beginInput(createSession());
-        mCoordinator.setMediatorForTesting(mMediator, mProfile);
+        mCoordinator.setMediatorForTesting(mMediator);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mCoordinator.beginInput(createSession());
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
@@ -276,7 +263,7 @@ public class FuseboxCoordinatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNtpAiModeButtonPress() {
         mCoordinator.beginInput(createSession());
-        mCoordinator.setMediatorForTesting(mMediator, mProfile);
+        mCoordinator.setMediatorForTesting(mMediator);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
         mCoordinator.beginInput(createSession());
@@ -287,7 +274,7 @@ public class FuseboxCoordinatorUnitTest {
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void testWrappingChange() {
         mCoordinator.beginInput(createSession());
-        mCoordinator.setMediatorForTesting(mMediator, mProfile);
+        mCoordinator.setMediatorForTesting(mMediator);
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
 
         mCoordinator.onFuseboxTextWrappingChanged(true);
@@ -319,7 +306,7 @@ public class FuseboxCoordinatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNotifyOmniboxSessionEnded() {
         mCoordinator.beginInput(createSession());
-        mCoordinator.setMediatorForTesting(mMediator, mProfile);
+        mCoordinator.setMediatorForTesting(mMediator);
 
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mAutocompleteInput.setModelMode(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
