@@ -5414,11 +5414,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "help-app-launcher-search",
-    "owners": [ "//ash/webui/help_app_ui/OWNERS", "//chrome/browser/ash/app_list/search/OWNERS" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "help-app-onboarding-revamp",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     "expiry_milestone": 145
@@ -5554,15 +5549,6 @@
     ],
     "expiry_milestone": 150
   },
-
-  {
-    "name": "hybrid-charger-notifications",
-    "owners": [
-      "mwoj@google.com",
-      "cros-sw-perf@google.com"
-    ],
-    "expiry_milestone": 144
-  },
   {
     "name": "hybrid-passkeys-in-context-menu",
     "owners": [
@@ -5594,14 +5580,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "improved-password-change-service",
-    "owners": [
-      "atsvirchkova@google.com",
-      "vsemeniuk@google.com"
-    ],
-    "expiry_milestone": 144
-  },
-  {
     "name": "in-flow-trusted-vault-key-retrieval-android",
     "owners": [ "izuzic@google.com", "anki-team@google.com" ],
     "expiry_milestone": 149
@@ -5614,13 +5592,6 @@
   {
     "name": "in-product-help-demo-mode-choice",
     "owners": [ "dtrainor@chromium.org", "nyquist@chromium.org" ],
-    // This flag is used by teams as they develop in-product help integrations,
-    // as well as by QA; this feature is difficult to test without this.
-    "expiry_milestone": -1
-  },
-  {
-    "name": "in-product-help-use-client-config",
-    "owners": [ "shaktisahu@chromium.org", "haileywang@chromium.org" ],
     // This flag is used by teams as they develop in-product help integrations,
     // as well as by QA; this feature is difficult to test without this.
     "expiry_milestone": -1
@@ -5667,11 +5638,6 @@
     "expiry_milestone": 146
   },
   {
-    "name": "instant-hotspot-rebrand",
-    "owners": [ "rudranshd@chromium.org", "joeantonetti@chromium.org", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "instant-tethering",
     "owners": [ "hansberry@chromium.org", "khorimoto@chromium.org", "chromeos-cross-device-eng@google.com" ],
     // Though Instant Tethering is now a launched feature, it is only marked enabled on select,
@@ -5700,13 +5666,6 @@
     "name": "ios-best-features-screen",
     "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 148
-  },
-  {
-    "name": "ios-breadcrumbs",
-    "owners": [ "michaeldo@chromium.org", "bling-flags@google.com" ],
-    // Breadcrumbs is not a launching feature, but rather a tool used on
-    // pre-stable channels for diagnosing crashes.
-    "expiry_milestone": -1
   },
   {
     "name": "ios-browser-edit-menu-metrics",
@@ -6226,13 +6185,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "list-all-display-modes",
-    "owners": [ "//ui/display/OWNERS" ],
-    // This flag is used for debugging and development purposes to list all
-    // external displays' modes without any exclusions.'
-    "expiry_milestone": -1
-  },
-  {
     "name": "load-all-tabs-at-startup",
     "owners": [
       "ckitagawa@chromium.org",
@@ -6397,11 +6349,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "media-picker-adoption",
-    "owners": [ "finnur@google.com", "beverloo@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "media-playback-while-not-visible-permission-policy",
     "owners": [ "gabrielbrito@microsoft.com", "stevebe@microsoft.com"],
     "expiry_milestone": 142
@@ -6468,11 +6415,6 @@
     "expiry_milestone":150
   },
   {
-    "name": "migrate-account-prefs-on-mobile",
-    "owners": ["ankushkush@google.com", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "migrate-ios-keychain-accessibility",
     "owners": [ "marq@chromium.org", "fedegermi@google.com" ],
     "expiry_milestone": 150
@@ -6481,12 +6423,6 @@
     "name": "migrate-syncing-user-to-signed-in",
     "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
-    "owners": ["jlebel@chromium.org", "chrome-signin-team@google.com"],
-    // Used for automated testing of Gaia cookie restoration in iOS.
-    "expiry_milestone": -1
   },
   {
     "name": "mobile-ntp-promo-on-desktop",
@@ -6559,11 +6495,6 @@
   {
     "name": "multi-instance-shared-prefs-migration",
     "owners": [ "zheliooo@google.com", "aishwaryarj@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
-    "name": "multicast-in-direct-sockets",
-    "owners": [ "//content/browser/direct_sockets/OWNERS" ],
     "expiry_milestone": 160
   },
   {
@@ -6654,11 +6585,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "notification-permission-rationale-bottom-sheet",
-    "owners": ["shaktisahu@chromium.org", "salg@chromium.org"],
-    "expiry_milestone": 114
-  },
-  {
     "name": "notification-permission-rationale-dialog",
     "owners": ["shaktisahu@chromium.org", "salg@chromium.org"],
     "expiry_milestone": 114
@@ -6738,11 +6664,6 @@
     "name": "ntp-drive-module",
     "owners": [ "mahmadi@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 125
-  },
-  {
-    "name": "ntp-drive-module-no-sync-requirement",
-    "owners": [ "rtatum@google.com", "tiborg@chromium.org" ],
-    "expiry_milestone": 150
   },
   {
     "name": "ntp-drive-module-segmentation",
@@ -6890,11 +6811,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "omnibox-aim-shortcut-typed-state",
-    "owners": [ "jianli@chromium.org", "chrome-mobile-search@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "omnibox-allow-ai-mode-matches",
     "owners": ["manukh@chromium.org", "chrome-desktop-search@google.com"],
     "expiry_milestone": 150
@@ -6973,11 +6889,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "omnibox-grouping-framework-zps",
-    "owners": ["stkhapugin@chromium.org", "manukh@chromium.org", "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "omnibox-hide-contextual-group-headers",
     "owners": ["mfacey@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 150
@@ -7053,11 +6964,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "omnibox-mobile-parity-update-v3",
-    "owners": [ "jlebel@google.com", "stkhapugin@google.com",  "chrome-mobile-search@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "omnibox-most-visited-tiles-horizontal-render-group",
     "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com"],
     "expiry_milestone": 140
@@ -7108,11 +7014,6 @@
     "expiry_milestone": 300
   },
   {
-    "name": "omnibox-on-clobber-focus-type-on-ios",
-    "owners": [ "ananyaseelam@google.com", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "omnibox-on-device-head-suggestions",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
     "expiry_milestone": 150
@@ -7131,24 +7032,6 @@
     "name": "omnibox-remove-search-ready-omnibox",
     "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 160
-  },
-  {
-    "name": "omnibox-report-assisted-query-stats",
-    "owners": [ "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "omnibox-report-searchbox-stats",
-    "owners": [ "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "omnibox-restore-invisible-focus-only",
-    "owners": [
-      "agale@google.com",
-      "chrome-desktop-search@google.com"
-    ],
-    "expiry_milestone": 150
   },
   {
     "name": "omnibox-rich-autocompletion-promising",
