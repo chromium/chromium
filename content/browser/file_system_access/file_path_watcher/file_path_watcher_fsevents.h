@@ -14,6 +14,7 @@
 
 #include "base/apple/scoped_dispatch_object.h"
 #include "base/files/file_path.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.h"
@@ -28,6 +29,9 @@ namespace content {
 // directory. See file_path_watcher_mac.cc for the code that decides when to
 // use which one.
 class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
+  // TODO(https://crbug.com/495782021): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   using ChangeEvent = FilePathWatcherFSEventsChangeTracker::ChangeEvent;
 
