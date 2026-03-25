@@ -454,7 +454,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
     requires(std::is_void_v<R>)
   {
     *this = internal::ToDoNothingCallback<false, R, Args...>(std::move(tag));
-    return this;
+    return *this;
   }
 
   // Internal constructor for `base::BindRepeating()`.
