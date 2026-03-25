@@ -22,7 +22,7 @@ work - e.g. ones based on `git-new-workdir`).
 
 ## Checking the state of the world
 
-Before creating a CL stack, check for open CLs with the [`cratesio-autoupdate`
+Before creating a set of CLs, check for open CLs with the [`cratesio-autoupdate`
 tag](https://chromium-review.googlesource.com/q/hashtag:%22cratesio-autoupdate%22+(status:open%20OR%20status:merged)).
 Such CLs tend to conflict, so coordinate with owners of any open CLs.
 
@@ -44,8 +44,11 @@ $ tools/crates/create_update_cl.py auto
 In `auto` mode, it runs `gnrt update` to discover crate updates and then for
 each update creates a new local git branch (and a Gerrit CL unless invoked with
 `--no-upload`). Each branch contains an update created by `gnrt update <old
-crate id>`, `gnrt vendor`, and `gnrt gen`. Depending on how many crates are
-updated, the script may need 10-15 minutes to run.
+crate id>`, `gnrt vendor`, and `gnrt gen`. By default, each branch is
+independent and based on `origin/main` (or whatever is specified via
+`--upstream-branch`). If you want to create a chain of dependent CLs, you can
+use the `--chained` flag. Depending on how many crates are updated, the script
+may need 10-15 minutes to run.
 
 The script should Just Work in most cases, but sometimes it may fail when
 dealing with a specific crate update.  See [Recovering from script

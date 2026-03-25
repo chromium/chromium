@@ -259,10 +259,20 @@ def FindUpdateableCrates(args) -> List[str]:
     return sorted(crate_updates)
 
 
-def FindSizeOfCrateUpdate(old_crate_id: str, new_crate_id: str,
-                          only_minor_updates: bool) -> int:
-    """Runs `gnrt update <crate_id>` and returns how many crates this would
-    update.  (`crate_id` typically looks like "syn@2.0.50".  This function is
+def GetAffectedCrateIds(diff: CratesDiff) -> Set[str]:
+    """Returns a set of all crate IDs that are affected by the given diff."""
+    affected = set()
+    for u in diff.updates:
+        affected.add(u.old_crate_id)
+    affected.update(diff.added_crate_ids)
+    affected.update(diff.removed_crate_ids)
+    return affected
+
+
+def FindDiffOfCrateUpdate(old_crate_id: str, new_crate_id: str,
+                          only_minor_updates: bool) -> CratesDiff:
+    """Runs `gnrt update <crate_id>` and returns the diff of this update.
+    (`crate_id` typically looks like "syn@2.0.50".  This function is
     idempotent - at the end it runs `git reset --hard` to undo any changes.)"""
 
     print(
@@ -275,8 +285,7 @@ def FindSizeOfCrateUpdate(old_crate_id: str, new_crate_id: str,
                     check_exitcode=False)
     new_crate_ids = crate_utils.GetCurrentCrateIds()
     Git("reset", "--hard")
-    diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
-    return diff.size()
+    return DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
 
 
 def FormatMarkdownItem(item: str) -> str:
@@ -363,7 +372,7 @@ Disable-Rts: True
 def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
                 upstream_branch: str, branch_number: int):
     """Runs `gnrt update <crate_id>` and other follow-up commands to actually
-    update the crate."""
+    update the crate. Returns a tuple of (new_branch, diff)."""
 
     only_minor_updates = not DoArgsAskForBreakingChanges(args.remaining_args)
 
@@ -383,7 +392,7 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
     if old_crate_ids == new_crate_ids:
         print("  `gnrt update` resulted in no changes - "\
               "maybe other steps will handle this crate...")
-        return upstream_branch
+        return upstream_branch, CratesDiff([], [], [])
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
     title = CreateCommitTitle(old_crate_id, new_crate_id)
     description = CreateCommitDescription(title, diff)
@@ -401,7 +410,7 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
                     "--cc=chrome-rust-experiments+autoupdate@google.com")
 
     FinishUpdatingCrate(args, title, diff)
-    return new_branch
+    return new_branch, diff
 
 
 def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
@@ -680,36 +689,78 @@ def AutoUpdate(args):
         print("There were no updates - exiting early...")
         return 0
 
-    update_sizes = dict()
+    update_diffs = dict()
     for (old_crate_id, new_crate_id) in todo_crate_updates:
-        update_sizes[old_crate_id] = FindSizeOfCrateUpdate(
+        update_diffs[old_crate_id] = FindDiffOfCrateUpdate(
             old_crate_id, new_crate_id, only_minor_updates)
 
     # Filter out crates that are not updateable on their own
     # (they need to be updated together with another crate).
     todo_crate_updates = [
-        update for update in todo_crate_updates if update_sizes[update[0]] != 0
+        update for update in todo_crate_updates
+        if update_diffs[update[0]].size() != 0
     ]
 
     # Start with small updates in an attempt to keep CLs small.
     todo_crate_updates = sorted(
         todo_crate_updates,
-        key=lambda crate_update: update_sizes[crate_update[0]])
+        key=lambda crate_update: update_diffs[crate_update[0]].size())
 
     print(f"** Updating {len(todo_crate_updates)} crates! "
           f"Expect this to take about {len(todo_crate_updates) * 2} minutes.")
 
+    # Map from crate_id -> (branch_name, branch_number)
+    crate_to_branch = {}
+
     branch_number = 1
     while todo_crate_updates:
-        old_crate_ids = crate_utils.GetCurrentCrateIds()
+        actually_updated_crate_ids = set()
         for (old_crate_id, new_crate_id) in todo_crate_updates:
-            upstream_branch = UpdateCrate(args, old_crate_id, new_crate_id,
-                                          upstream_branch, branch_number)
+            # Determine the upstream for this crate update.
+            if args.chained:
+                current_upstream = upstream_branch
+            else:
+                current_upstream = args.upstream_branch
+                diff = update_diffs[old_crate_id]
+                affected_ids = GetAffectedCrateIds(diff)
+                best_upstream_branch = None
+                best_upstream_num = -1
+                for crate_id in affected_ids:
+                    if crate_id in crate_to_branch:
+                        prev_branch, prev_num = crate_to_branch[crate_id]
+                        if prev_num > best_upstream_num:
+                            best_upstream_num = prev_num
+                            best_upstream_branch = prev_branch
+                if best_upstream_branch:
+                    print(f"Note: Crate {old_crate_id} affects crates already "
+                          f"modified in {best_upstream_branch}. Chaining to "
+                          f"avoid conflicts.")
+                    current_upstream = best_upstream_branch
+
+            # Try to update the crate. UpdateCrate returns a new branch name on
+            # success (plus the diff), or the passed-in upstream_branch if no
+            # changes were made.
+            new_branch, diff = UpdateCrate(args, old_crate_id, new_crate_id,
+                                           current_upstream, branch_number)
+
+            # If the update was successful, we need to track which crates were
+            # updated so we don't try to update them again in the next pass.
+            # This is necessary for both chained and independent CLs.
+            if diff.size() > 0:
+                for u in diff.updates:
+                    actually_updated_crate_ids.add(u.old_crate_id)
+
+                if args.chained:
+                    upstream_branch = new_branch
+                else:
+                    # Update the crate_to_branch map with all affected crates
+                    # from the ACTUAL diff (which might be different if we
+                    # chained).
+                    affected_ids = GetAffectedCrateIds(diff)
+                    for crate_id in affected_ids:
+                        crate_to_branch[crate_id] = (new_branch, branch_number)
             branch_number += 1
 
-        new_crate_ids = crate_utils.GetCurrentCrateIds()
-        diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
-        actually_updated_crate_ids = set([u.old_crate_id for u in diff.updates])
         missed_crate_updates = [
             (old_crate_id, new_crate_id)
             for (old_crate_id, new_crate_id) in todo_crate_updates
@@ -770,6 +821,14 @@ def main():
         "--upstream-branch",
         default="origin/main",
         help="The upstream branch on which to base the series of CLs.")
+    parser_auto.add_argument(
+        "--chained",
+        action="store_true",
+        default=False,
+        help=
+        "Defaults to a chain of dependent CLs instead of attempting to "\
+        "create independent CLs."
+    )
     parser_auto.add_argument("--skip",
                              default=[],
                              action="append",
