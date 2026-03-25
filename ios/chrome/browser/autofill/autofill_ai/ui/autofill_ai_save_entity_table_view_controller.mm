@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/filling/field_filling_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
@@ -37,8 +38,13 @@ NSArray<TableViewTextEditItem*>* CreateItemsFromEntity(
     TableViewTextEditItem* item = [[TableViewTextEditItem alloc] init];
     item.fieldNameLabelText =
         autofill::DisplayNameForAutofillAiAttributeType(attribute.type());
-    item.textFieldValue =
-        base::SysUTF16ToNSString(attribute.GetCompleteInfo(locale));
+
+    std::u16string value = attribute.GetCompleteInfo(locale);
+    if (attribute.masked()) {
+      // If the attribute is masked, the obfuscated value is shown.
+      value = autofill::GetObfuscatedValue(value, /*visible_suffix_length=*/4);
+    }
+    item.textFieldValue = base::SysUTF16ToNSString(value);
     item.textFieldEnabled = NO;
     item.hideIcon = YES;
     [items addObject:item];
