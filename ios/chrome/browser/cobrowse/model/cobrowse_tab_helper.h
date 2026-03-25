@@ -24,6 +24,12 @@ class CobrowseTabHelper : public web::WebStateObserver,
     virtual bool CanShowAssistantForWebState(web::WebState* web_state) = 0;
     virtual void ConfigureAssistantContextForWebState(
         web::WebState* web_state) = 0;
+
+    // Returns whether a cobrowse session is currently active.
+    virtual bool IsSessionActive() = 0;
+
+    // Sets whether a cobrowse session is currently active.
+    virtual void SetSessionActive(bool active) = 0;
   };
 
   CobrowseTabHelper(const CobrowseTabHelper&) = delete;
@@ -38,6 +44,7 @@ class CobrowseTabHelper : public web::WebStateObserver,
   void SetDelegate(Delegate* delegate);
 
   // WebStateObserver:
+  void WasShown(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -47,6 +54,9 @@ class CobrowseTabHelper : public web::WebStateObserver,
 
   explicit CobrowseTabHelper(web::WebState* web_state,
                              TemplateURLService* template_url_service);
+
+  // Returns whether the assistant should be hidden for `url`.
+  bool ShouldHideAssistantForURL(const GURL& url);
 
   // The delegate for this tab helper.
   raw_ptr<Delegate> delegate_ = nullptr;

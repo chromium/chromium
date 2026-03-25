@@ -27,6 +27,8 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   // CobrowseTabHelper::Delegate:
   bool CanShowAssistantForWebState(web::WebState* web_state) override;
   void ConfigureAssistantContextForWebState(web::WebState* web_state) override;
+  bool IsSessionActive() override;
+  void SetSessionActive(bool active) override;
 
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) override;
@@ -42,6 +44,9 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
 
   // The context for the Cobrowse flow.
   __strong CobrowseContext* context_ = nil;
+
+  // Whether a cobrowse session is currently active for this browser.
+  bool is_session_active_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_MODEL_COBROWSE_BROWSER_AGENT_H_

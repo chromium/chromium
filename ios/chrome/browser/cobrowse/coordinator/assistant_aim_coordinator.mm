@@ -113,6 +113,10 @@
 
 - (void)assistantAIMViewControllerDidTapClose:
     (AssistantAIMViewController*)viewController {
+  CobrowseBrowserAgent* browserAgent =
+      CobrowseBrowserAgent::FromBrowser(self.browser);
+  CHECK(browserAgent);
+  browserAgent->SetSessionActive(false);
   [self dismissAssistantContainerAnimated:YES];
 }
 

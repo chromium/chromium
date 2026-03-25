@@ -62,6 +62,14 @@ void CobrowseBrowserAgent::ConfigureAssistantContextForWebState(
       [[CobrowseContext alloc] initWithURL:opener->GetLastCommittedURL()]);
 }
 
+bool CobrowseBrowserAgent::IsSessionActive() {
+  return is_session_active_;
+}
+
+void CobrowseBrowserAgent::SetSessionActive(bool active) {
+  is_session_active_ = active;
+}
+
 #pragma mark - TabsDependencyInstaller
 
 void CobrowseBrowserAgent::OnWebStateInserted(web::WebState* web_state) {
