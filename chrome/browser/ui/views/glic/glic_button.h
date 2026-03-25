@@ -58,19 +58,15 @@ class MenuRunner;
 }  // namespace views
 
 namespace glic {
-inline constexpr int kHighlightMargin = 2;
-inline constexpr int kHighlightCornerRadius = 8;
+inline constexpr int kIconLeftMargin = 4;
 inline constexpr int kCloseButtonMargin = 6;
 inline constexpr int kLabelRightMargin = 8;
-inline constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
-inline constexpr ui::ColorId kTextDisabledOnHighlight = kTextOnHighlight;
 inline constexpr ui::ColorId kTextDisabled = ui::kColorLabelForegroundDisabled;
 
 inline constexpr ui::ColorId kForeground =
     kColorNewTabButtonForegroundFrameActive;
 inline constexpr ui::ColorId kForegroundOnAltBackground =
     ui::kColorSysOnSurface;
-inline constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
 
 inline constexpr int kCollapsedWidth = 41;
 inline constexpr int kSplitFlatEdgetRadius = 2;
@@ -114,7 +110,7 @@ class GlicButton : public GlicBaseShim<T>,
       animation_.Show();
 
       if (to_or_from_nudge) {
-        StartOpacityAnimationsForNudge(duration, new_state);
+        StartOpacityAnimationsForNudge(new_state);
       }
     }
 
@@ -138,14 +134,11 @@ class GlicButton : public GlicBaseShim<T>,
       return DurationMs(500);
     }
 
-    void StartOpacityAnimationsForNudge(base::TimeDelta duration,
-                                        WidthState new_state) {
+    void StartOpacityAnimationsForNudge(WidthState new_state) {
       if (button_->close_button() == nullptr) {
         return;
       }
       const bool show = (new_state == WidthState::kNudge);
-      const float final_highlight_opacity =
-          show && HighlightNudgeEnabled() ? 1 : 0;
       const float final_close_button_opacity = show ? 1 : 0;
       const base::TimeDelta close_button_fade_start =
           show ? DurationMs(333) : base::TimeDelta();
@@ -154,10 +147,6 @@ class GlicButton : public GlicBaseShim<T>,
 
       views::AnimationBuilder()
           .Once()
-          // Highlight opacity, linear.
-          .SetOpacity(button_->highlight_view(), final_highlight_opacity,
-                      kNudgeTween)
-          .SetDuration(duration)
           // Close button opacity, linear.
           .At(close_button_fade_start)
           .SetOpacity(button_->close_button(), final_close_button_opacity)
@@ -357,11 +346,6 @@ class GlicButton : public GlicBaseShim<T>,
       if (hovered_callback_) {
         hovered_callback_.Run();
       }
-
-      MaybeFadeHighlightOnHover(0);
-    } else if (old_state == views::Button::ButtonState::STATE_HOVERED &&
-               this->GetState() == views::Button::ButtonState::STATE_NORMAL) {
-      MaybeFadeHighlightOnHover(1);
     }
 
     UpdateTextAndBackgroundColors();
@@ -540,25 +524,25 @@ class GlicButton : public GlicBaseShim<T>,
     image_view->SetImageSize({icon_size_, icon_size_});
     image_view->SetPaintToLayer();
     image_view->layer()->SetFillsBoundsOpaquely(false);
+    image_view->SetProperty(views::kMarginsKey,
+                            gfx::Insets().set_left(kIconLeftMargin));
 
-    CreateIconAndLabelContainer();
+    this->label()->SetPaintToLayer();
+    this->label()->layer()->SetFillsBoundsOpaquely(false);
+    this->label()->SetSubpixelRenderingEnabled(false);
 
     if (!this->label()->layer()) {
       // Make sure label() has a layer even if its text is empty, so we can use
       // the same opacity animation whether or not the label has text.
       this->label()->SetPaintToLayer();
     }
-    this->label()->SetProperty(views::kMarginsKey,
-                               gfx::Insets().set_right(kLabelRightMargin));
-
     if (close_button() != nullptr) {
       close_button()->SetProperty(
           views::kMarginsKey,
-          gfx::Insets().set_left_right(
-              HighlightNudgeEnabled() ? kCloseButtonMargin : 0,
-              kCloseButtonMargin));
+          gfx::Insets().set_left_right(0, kCloseButtonMargin));
       SetCloseButtonVisible(false);
     }
+    SetLabelMargins();
 
     this->SetTooltipText(tooltip);
     this->GetViewAccessibility().SetName(tooltip);
@@ -580,9 +564,7 @@ class GlicButton : public GlicBaseShim<T>,
         base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
         features::kGlicButtonPressedForceSolidIcon.Get() && glic_panel_is_open_;
     const ui::ImageModel& model =
-        (solid_icon_for_pressed_state || IsHighlightVisible())
-            ? icon_for_highlight_
-            : normal_icon_;
+        solid_icon_for_pressed_state ? icon_for_highlight_ : normal_icon_;
 
     this->SetImageModel(views::Button::STATE_NORMAL, model);
     this->SetImageModel(views::Button::STATE_HOVERED, model);
@@ -727,18 +709,11 @@ class GlicButton : public GlicBaseShim<T>,
       return;
     }
 
-    const bool highlight_visible = IsHighlightVisible();
-    if (highlight_visible || ShouldUseAltIcon()) {
+    if (ShouldUseAltIcon()) {
       SetBackgroundFrameActiveColorId(ui::kColorSysBase);
 
-      if (highlight_visible) {
-        SetForegroundFrameActiveColorId(kTextOnHighlight);
-        this->SetTextColor(views::Button::STATE_DISABLED,
-                           kTextDisabledOnHighlight);
-      } else {
         SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
         this->SetTextColor(views::Button::STATE_DISABLED, kTextDisabled);
-      }
     } else {
       SetBackgroundFrameActiveColorId(
           kColorNewTabButtonCRBackgroundFrameActive);
@@ -754,83 +729,24 @@ class GlicButton : public GlicBaseShim<T>,
     UpdateColors();
   }
 
-  bool IsHighlightVisible() const {
-    return HighlightNudgeEnabled() && GetIsShowingNudge() &&
-           this->GetState() != views::Button::STATE_HOVERED;
-  }
-
-  void CreateIconAndLabelContainer() {
-    // Restructure the button to place a "highlight" view behind the icon and
-    // label. It's separate from icon_and_label_container so that its opacity
-    // can be animated independently.
-    //
-    // parent (layout: FillLayout)
-    // +-> highlight_view_
-    // +-> container (layout: horizontal BoxLayout)
-    //     +-> image_container_view()
-    //     +-> label()
-
-    std::optional<size_t> icon_index =
-        this->GetIndexOf(this->image_container_view());
-    CHECK(icon_index);
-    auto* parent =
-        this->AddChildViewAt(std::make_unique<views::View>(), *icon_index);
-    parent->SetProperty(views::kMarginsKey, gfx::Insets(kHighlightMargin));
-    // Don't steal hover events
-    parent->SetCanProcessEventsWithinSubtree(false);
-    parent->SetLayoutManager(std::make_unique<views::FillLayout>());
-    icon_label_highlight_view_ = parent;
-
-    highlight_view_ = parent->AddChildView(std::make_unique<views::View>());
-    highlight_view_->SetBackground(views::CreateRoundedRectBackground(
-        kHighlightColorId, kHighlightCornerRadius, 0));
-    highlight_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
-    highlight_view_->layer()->SetFillsBoundsOpaquely(false);
-    highlight_view_->layer()->SetOpacity(0);
-
-    views::View* icon_and_label_container =
-        parent->AddChildView(std::make_unique<views::View>());
-    icon_and_label_container->SetPaintToLayer();
-    icon_and_label_container->layer()->SetFillsBoundsOpaquely(false);
-    auto* const layout_manager = icon_and_label_container->SetLayoutManager(
-        std::make_unique<views::BoxLayout>());
-    layout_manager->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kStart);
-
-    // Reparent icon and label.
-    icon_and_label_container->AddChildView(
-        this->RemoveChildViewT(this->image_container_view()));
-    std::unique_ptr<views::Label> label_internal =
-        this->RemoveChildViewT(this->label());
-
-    label_internal->SetPaintToLayer();
-    label_internal->SetSkipSubpixelRenderingOpacityCheck(true);
-    label_internal->layer()->SetFillsBoundsOpaquely(false);
-    label_internal->SetSubpixelRenderingEnabled(false);
-
-    icon_and_label_container->AddChildView(std::move(label_internal));
-  }
-
   void SetCloseButtonVisible(bool visible) {
     if (close_button() == nullptr) {
       return;
     }
 
     close_button()->SetVisible(visible);
-
-    gfx::Insets highlight_margins(kHighlightMargin);
-    if (visible) {
-      // Nudge text and close button are shown together, and the close button is
-      // responsible for all the spacing between them.
-      highlight_margins.set_right(0);
-    } else if (ShouldShowLabel()) {
-      // Close button is hidden. If there's label text, give it extra space.
-      highlight_margins.set_right(4);
-    }
-    icon_label_highlight_view_->SetProperty(views::kMarginsKey,
-                                            highlight_margins);
-
+    SetLabelMargins();
     this->PreferredSizeChanged();
+  }
+
+  void SetLabelMargins() {
+    int right = kLabelRightMargin;
+    if ((!close_button() || !close_button()->GetVisible()) &&
+        ShouldShowLabel()) {
+      right += 4;
+    }
+    this->label()->SetProperty(views::kMarginsKey,
+                               gfx::Insets().set_right(right));
   }
 
   void ShowNudge() {
@@ -940,16 +856,6 @@ class GlicButton : public GlicBaseShim<T>,
         .SetDuration(duration);
   }
 
-  void MaybeFadeHighlightOnHover(float final_opacity) {
-    if (GetIsShowingNudge() && HighlightNudgeEnabled()) {
-      const base::TimeDelta kFadeDuration = DurationMs(170);
-      views::AnimationBuilder()
-          .Once()
-          .SetOpacity(highlight_view_, final_opacity)
-          .SetDuration(kFadeDuration);
-    }
-  }
-
   int CalculateExpandedWidth() {
     int nudge_text_width = 0;
     // May be unset in tests.
@@ -998,7 +904,6 @@ class GlicButton : public GlicBaseShim<T>,
     return this->GetLayoutManager()->GetPreferredSize(this);
   }
 
-  views::View* highlight_view() { return highlight_view_; }
   WidthState width_state() { return width_state_; }
 
   virtual void OnLabelVisibilityChanged() {}
@@ -1033,15 +938,9 @@ class GlicButton : public GlicBaseShim<T>,
         icon_size_);
   }
 
-  static bool HighlightNudgeEnabled() {
-    return EntrypointVariationsEnabled() &&
-           features::kGlicEntrypointVariationsHighlightNudge.Get();
-  }
-
   ui::ImageModel GetIconForHighlight() {
-    return ui::ImageModel::FromVectorIcon(
-        GlicVectorIcon(),
-        HighlightNudgeEnabled() ? kTextOnHighlight : kForeground, icon_size_);
+    return ui::ImageModel::FromVectorIcon(GlicVectorIcon(), kForeground,
+                                          icon_size_);
   }
 
   // Helper for making animation durations instant if animations are disabled.
@@ -1062,12 +961,6 @@ class GlicButton : public GlicBaseShim<T>,
   // Start and end values for width animations.
   int start_width_ = 0;
   int end_width_ = 0;
-
-  // View to be drawn behind the icon and label with a background color.
-  raw_ptr<views::View> highlight_view_ = nullptr;
-
-  // Container view for the icon and label, and the highlight drawn behind them.
-  raw_ptr<views::View> icon_label_highlight_view_ = nullptr;
 
   // Holds the incoming nudge text until the point in the animation when it can
   // be applied.

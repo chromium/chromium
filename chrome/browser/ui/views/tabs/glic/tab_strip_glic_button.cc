@@ -55,13 +55,8 @@ const base::FeatureParam<bool> kAdjustMargins{
     &features::kGlicButtonAltLabel, "glic-button-alt-label-adjust-margins",
     true};
 
-constexpr int kHighlightMargin = 2;
-constexpr int kHighlightCornerRadius = 8;
 constexpr int kLabelRightMargin = 8;
 constexpr int kCloseButtonMargin = 6;
-constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
-constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
-constexpr ui::ColorId kTextDisabledOnHighlight = kTextOnHighlight;
 constexpr ui::ColorId kTextDisabled = ui::kColorLabelForegroundDisabled;
 
 constexpr ui::ColorId kForeground = kColorNewTabButtonForegroundFrameActive;
@@ -109,11 +104,6 @@ bool ShouldUseAltIcon() {
   // LINT.ThenChange(//chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.cc:ShouldUseGlicButtonAltIconBackgroundColor)
 }
 
-bool HighlightNudgeEnabled() {
-  return EntrypointVariationsEnabled() &&
-         features::kGlicEntrypointVariationsHighlightNudge.Get();
-}
-
 const gfx::VectorIcon& GlicVectorIcon() {
   return glic::GlicVectorIconManager::GetVectorIcon(
       IDR_GLIC_BUTTON_VECTOR_ICON);
@@ -130,13 +120,12 @@ ui::ImageModel GetNormalIcon() {
 }
 
 ui::ImageModel GetIconForHighlight() {
-  return ui::ImageModel::FromVectorIcon(
-      GlicVectorIcon(),
-      HighlightNudgeEnabled() ? kTextOnHighlight : kForeground, kIconSize);
+  return ui::ImageModel::FromVectorIcon(GlicVectorIcon(), kForeground,
+                                        kIconSize);
 }
 
 gfx::Insets GetIconMargins(bool label_shown) {
-  int left = 6 - kHighlightMargin;
+  int left = 6;
   int right = 4;
 
   if (label_shown) {
@@ -185,7 +174,7 @@ class TabStripGlicButton::WidthAnimationController
     animation_.Show();
 
     if (to_or_from_nudge) {
-      StartOpacityAnimationsForNudge(duration, new_state);
+      StartOpacityAnimationsForNudge(new_state);
     }
   }
 
@@ -209,11 +198,8 @@ class TabStripGlicButton::WidthAnimationController
     return DurationMs(500);
   }
 
-  void StartOpacityAnimationsForNudge(base::TimeDelta duration,
-                                      WidthState new_state) {
+  void StartOpacityAnimationsForNudge(WidthState new_state) {
     const bool show = (new_state == WidthState::kNudge);
-    const float final_highlight_opacity =
-        show && HighlightNudgeEnabled() ? 1 : 0;
     const float final_close_button_opacity = show ? 1 : 0;
     const base::TimeDelta close_button_fade_start =
         show ? DurationMs(333) : base::TimeDelta();
@@ -222,10 +208,6 @@ class TabStripGlicButton::WidthAnimationController
 
     views::AnimationBuilder()
         .Once()
-        // Highlight opacity, linear.
-        .SetOpacity(button_->highlight_view(), final_highlight_opacity,
-                    kNudgeTween)
-        .SetDuration(duration)
         // Close button opacity, linear.
         .At(close_button_fade_start)
         .SetOpacity(button_->close_button(), final_close_button_opacity)
@@ -293,19 +275,15 @@ TabStripGlicButton::TabStripGlicButton(
   image_view->SetPaintToLayer();
   image_view->layer()->SetFillsBoundsOpaquely(false);
 
-  CreateIconAndLabelContainer();
-
   if (!label()->layer()) {
     // Make sure label() has a layer even if its text is empty, so we can use
     // the same opacity animation whether or not the label has text.
     label()->SetPaintToLayer();
   }
-  SetLabelMargins();
   close_button()->SetProperty(
-      views::kMarginsKey, gfx::Insets().set_left_right(
-                              HighlightNudgeEnabled() ? kCloseButtonMargin : 0,
-                              kCloseButtonMargin));
+      views::kMarginsKey, gfx::Insets().set_left_right(0, kCloseButtonMargin));
   SetCloseButtonVisible(false);
+  SetLabelMargins();
 
   set_context_menu_controller(this);
 
@@ -486,10 +464,6 @@ void TabStripGlicButton::StateChanged(ButtonState old_state) {
     if (hovered_callback_) {
       hovered_callback_.Run();
     }
-
-    MaybeFadeHighlightOnHover(0);
-  } else if (old_state == STATE_HOVERED && GetState() == STATE_NORMAL) {
-    MaybeFadeHighlightOnHover(1);
   }
 
   UpdateTextAndBackgroundColors();
@@ -626,17 +600,11 @@ void TabStripGlicButton::UpdateTextAndBackgroundColors() {
     return;
   }
 
-  const bool highlight_visible = IsHighlightVisible();
-  if (highlight_visible || ShouldUseAltIcon()) {
+  if (ShouldUseAltIcon()) {
     SetBackgroundFrameActiveColorId(ui::kColorSysBase);
 
-    if (highlight_visible) {
-      SetForegroundFrameActiveColorId(kTextOnHighlight);
-      SetTextColor(STATE_DISABLED, kTextDisabledOnHighlight);
-    } else {
       SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
       SetTextColor(STATE_DISABLED, kTextDisabled);
-    }
   } else {
     SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
     SetForegroundFrameActiveColorId(kForeground);
@@ -668,29 +636,12 @@ void TabStripGlicButton::UpdateIcon() {
       base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
       features::kGlicButtonPressedForceSolidIcon.Get() && glic_panel_is_open_;
   const ui::ImageModel& model =
-      (solid_icon_for_pressed_state || IsHighlightVisible())
-          ? icon_for_highlight_
-          : normal_icon_;
+      solid_icon_for_pressed_state ? icon_for_highlight_ : normal_icon_;
 
   SetImageModel(views::Button::STATE_NORMAL, model);
   SetImageModel(views::Button::STATE_HOVERED, model);
   SetImageModel(views::Button::STATE_PRESSED, model);
   SetImageModel(views::Button::STATE_DISABLED, model);
-}
-
-void TabStripGlicButton::MaybeFadeHighlightOnHover(float final_opacity) {
-  if (GetIsShowingNudge() && HighlightNudgeEnabled()) {
-    const base::TimeDelta kFadeDuration = DurationMs(170);
-    views::AnimationBuilder()
-        .Once()
-        .SetOpacity(highlight_view_, final_opacity)
-        .SetDuration(kFadeDuration);
-  }
-}
-
-bool TabStripGlicButton::IsHighlightVisible() const {
-  return HighlightNudgeEnabled() && GetIsShowingNudge() &&
-         GetState() != STATE_HOVERED;
 }
 
 void TabStripGlicButton::ShowNudge() {
@@ -829,63 +780,9 @@ int TabStripGlicButton::CalculateExpandedWidth() {
   return new_width;
 }
 
-void TabStripGlicButton::CreateIconAndLabelContainer() {
-  // Restructure the button to place a "highlight" view behind the icon and
-  // label. It's separate from icon_and_label_container so that its opacity can
-  // be animated independently.
-  //
-  // parent (layout: FillLayout)
-  // +-> highlight_view_
-  // +-> container (layout: horizontal BoxLayout)
-  //     +-> image_container_view()
-  //     +-> label()
-
-  std::optional<size_t> icon_index = GetIndexOf(image_container_view());
-  CHECK(icon_index);
-  auto* parent = AddChildViewAt(std::make_unique<views::View>(), *icon_index);
-  parent->SetProperty(views::kMarginsKey, gfx::Insets(kHighlightMargin));
-  // Don't steal hover events
-  parent->SetCanProcessEventsWithinSubtree(false);
-  parent->SetLayoutManager(std::make_unique<views::FillLayout>());
-  icon_label_highlight_view_ = parent;
-
-  highlight_view_ = parent->AddChildView(std::make_unique<views::View>());
-  highlight_view_->SetBackground(views::CreateRoundedRectBackground(
-      kHighlightColorId, kHighlightCornerRadius, 0));
-  highlight_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
-  highlight_view_->layer()->SetFillsBoundsOpaquely(false);
-  highlight_view_->layer()->SetOpacity(0);
-
-  views::View* icon_and_label_container =
-      parent->AddChildView(std::make_unique<views::View>());
-  icon_and_label_container->SetPaintToLayer();
-  icon_and_label_container->layer()->SetFillsBoundsOpaquely(false);
-  auto* const layout_manager = icon_and_label_container->SetLayoutManager(
-      std::make_unique<views::BoxLayout>());
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
-
-  // Reparent icon and label.
-  icon_and_label_container->AddChildView(
-      RemoveChildViewT(image_container_view()));
-  icon_and_label_container->AddChildView(RemoveChildViewT(label()));
-}
-
 void TabStripGlicButton::SetCloseButtonVisible(bool visible) {
   close_button()->SetVisible(visible);
-
-  gfx::Insets highlight_margins(kHighlightMargin);
-  if (visible) {
-    // Nudge text and close button are shown together, and the close button is
-    // responsible for all the spacing between them.
-    highlight_margins.set_right(0);
-  } else if (ShouldShowLabel()) {
-    // Close button is hidden. If there's label text, give it extra space.
-    highlight_margins.set_right(4);
-  }
-  icon_label_highlight_view_->SetProperty(views::kMarginsKey,
-                                          highlight_margins);
-
+  SetLabelMargins();
   PreferredSizeChanged();
 }
 
@@ -966,9 +863,14 @@ void TabStripGlicButton::SetLabelMargins() {
       kAdjustMargins.Get()) {
     bottom += 1;
   }
-  label()->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets().set_right(kLabelRightMargin).set_bottom(bottom));
+
+  int right = kLabelRightMargin;
+  if (!close_button()->GetVisible() && ShouldShowLabel()) {
+    right += 4;
+  }
+
+  label()->SetProperty(views::kMarginsKey,
+                       gfx::Insets().set_right(right).set_bottom(bottom));
 }
 
 // TODO(crbug.com/485257764): Remove once TabStripGlicButton inherits from
