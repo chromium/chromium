@@ -115,6 +115,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.graphics.Rect;
 import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.CharacterStyle;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
 import android.view.MotionEvent;
@@ -2043,17 +2045,19 @@ public class TouchToFillPaymentMethodViewTest {
         TextView termsLabel =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
         assertThat(termsLabel.getText().toString(), is(BNPL_AI_TERMS));
-        assertNotNull(termsLabel.getMovementMethod());
-        SpannableString spannableString = (SpannableString) termsLabel.getText();
+        assertFalse(termsLabel.isClickable());
+        assertFalse(termsLabel.isLongClickable());
+        assertNull(termsLabel.getMovementMethod());
+        Spanned spanned = (Spanned) termsLabel.getText();
 
-        ClickableSpan[] unclickableSpans =
-                spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
-        assertEquals("There should be exactly one clickable span", 1, unclickableSpans.length);
-        unclickableSpans[0].onClick(termsLabel);
+        CharacterStyle[] unclickableSpans =
+                spanned.getSpans(0, spanned.length(), CharacterStyle.class);
+        assertEquals(
+                "There should be exactly one character style span", 1, unclickableSpans.length);
+        termsLabel.performClick();
         verify(actionCallback, never()).run();
 
-        StyleSpan[] styleSpans =
-                spannableString.getSpans(0, spannableString.length(), StyleSpan.class);
+        StyleSpan[] styleSpans = spanned.getSpans(0, spanned.length(), StyleSpan.class);
         assertEquals("There should be no style span", 0, styleSpans.length);
     }
 
@@ -2080,18 +2084,17 @@ public class TouchToFillPaymentMethodViewTest {
         TextView termsLabel =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
         assertThat(termsLabel.getText().toString(), is(BNPL_AI_TERMS));
-        assertNotNull(termsLabel.getMovementMethod());
-        SpannableString spannableString = (SpannableString) termsLabel.getText();
+        assertFalse(termsLabel.isClickable());
+        assertFalse(termsLabel.isLongClickable());
+        assertNull(termsLabel.getMovementMethod());
+        Spanned spanned = (Spanned) termsLabel.getText();
 
-        ClickableSpan[] unclickableSpans =
-                spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
-        assertEquals("There should be exactly one clickable span", 1, unclickableSpans.length);
-        unclickableSpans[0].onClick(termsLabel);
+        // Verify there are two spans: one for an unclickable link and another for the bolded text.
+        CharacterStyle[] unclickableSpans =
+                spanned.getSpans(0, spanned.length(), CharacterStyle.class);
+        assertEquals("There should be exactly two style spans", 2, unclickableSpans.length);
+        termsLabel.performClick();
         verify(actionCallback, never()).run();
-
-        StyleSpan[] styleSpans =
-                spannableString.getSpans(0, spannableString.length(), StyleSpan.class);
-        assertEquals("There should be exactly one style span", 1, styleSpans.length);
     }
 
     @Test
@@ -2117,18 +2120,18 @@ public class TouchToFillPaymentMethodViewTest {
         TextView termsLabel =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
         assertThat(termsLabel.getText().toString(), is(BNPL_TERMS));
-        assertNotNull(termsLabel.getMovementMethod());
-        SpannableString spannableString = (SpannableString) termsLabel.getText();
+        assertFalse(termsLabel.isClickable());
+        assertFalse(termsLabel.isLongClickable());
+        assertNull(termsLabel.getMovementMethod());
+        Spanned spanned = (Spanned) termsLabel.getText();
 
-        ClickableSpan[] unclickableSpans =
-                spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
-        assertEquals("There should be exactly one clickable span", 1, unclickableSpans.length);
-        unclickableSpans[0].onClick(termsLabel);
+        // Verify there is just one span for the unclickable link.
+        CharacterStyle[] unclickableSpans =
+                spanned.getSpans(0, spanned.length(), CharacterStyle.class);
+        assertEquals(
+                "There should be exactly one character style span", 1, unclickableSpans.length);
+        termsLabel.performClick();
         verify(actionCallback, never()).run();
-
-        StyleSpan[] styleSpans =
-                spannableString.getSpans(0, spannableString.length(), StyleSpan.class);
-        assertEquals("There should be no style span", 0, styleSpans.length);
     }
 
     @Test
@@ -2154,6 +2157,8 @@ public class TouchToFillPaymentMethodViewTest {
         TextView termsLabel =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
         assertThat(termsLabel.getText().toString(), is(BNPL_AI_TERMS));
+        assertTrue(termsLabel.isClickable());
+        assertFalse(termsLabel.isLongClickable());
         assertNotNull(termsLabel.getMovementMethod());
         SpannableString spannableString = (SpannableString) termsLabel.getText();
 
@@ -2191,6 +2196,8 @@ public class TouchToFillPaymentMethodViewTest {
         TextView termsLabel =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
         assertThat(termsLabel.getText().toString(), is(BNPL_AI_TERMS));
+        assertTrue(termsLabel.isClickable());
+        assertFalse(termsLabel.isLongClickable());
         assertNotNull(termsLabel.getMovementMethod());
         SpannableString spannableString = (SpannableString) termsLabel.getText();
 
@@ -2228,7 +2235,10 @@ public class TouchToFillPaymentMethodViewTest {
         TextView termsLabel =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
         assertThat(termsLabel.getText().toString(), is(BNPL_TERMS));
+        assertTrue(termsLabel.isClickable());
+        assertFalse(termsLabel.isLongClickable());
         assertNotNull(termsLabel.getMovementMethod());
+
         SpannableString spannableString = (SpannableString) termsLabel.getText();
         ClickableSpan[] spans =
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);

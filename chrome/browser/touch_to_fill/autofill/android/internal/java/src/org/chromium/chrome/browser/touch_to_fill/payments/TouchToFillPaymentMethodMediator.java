@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_SELECTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_LINK_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
@@ -98,9 +99,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextPaint;
-import android.text.style.ClickableSpan;
+import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
-import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
@@ -1592,16 +1592,12 @@ class TouchToFillPaymentMethodMediator {
                                 SpanApplier.applySpans(
                                         termsString,
                                         spanInfos.toArray(new SpanApplier.SpanInfo[0])))
+                        .with(TERMS_LINK_ENABLED, !isProgressUi)
                         .build());
     }
 
-    private static ClickableSpan createGrayedOutLinkSpan(Context context) {
-        return new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                // This is intentionally left empty as there are no click events when disabled.
-            }
-
+    private static CharacterStyle createGrayedOutLinkSpan(Context context) {
+        return new CharacterStyle() {
             @Override
             public void updateDrawState(TextPaint textPaint) {
                 // Resolves the standard link color, just like ChromeClickableSpan does.

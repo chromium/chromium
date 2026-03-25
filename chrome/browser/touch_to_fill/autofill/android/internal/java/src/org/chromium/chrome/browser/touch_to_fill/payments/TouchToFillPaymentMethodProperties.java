@@ -445,7 +445,9 @@ class TouchToFillPaymentMethodProperties {
     static class BnplSelectionProgressTermsProperties {
         static final PropertyModel.ReadableObjectPropertyKey<CharSequence> TERMS_TEXT =
                 new PropertyModel.ReadableObjectPropertyKey("terms_text");
-        static final PropertyKey[] ALL_KEYS = {TERMS_TEXT};
+        static final PropertyModel.ReadableBooleanPropertyKey TERMS_LINK_ENABLED =
+                new PropertyModel.ReadableBooleanPropertyKey("terms_link_enabled");
+        static final PropertyKey[] ALL_KEYS = {TERMS_TEXT, TERMS_LINK_ENABLED};
 
         private BnplSelectionProgressTermsProperties() {}
     }

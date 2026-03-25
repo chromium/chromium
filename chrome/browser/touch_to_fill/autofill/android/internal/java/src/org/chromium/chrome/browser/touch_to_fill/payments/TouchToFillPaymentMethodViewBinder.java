@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_LINK_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
@@ -828,10 +829,16 @@ class TouchToFillPaymentMethodViewBinder {
      */
     static void bindBnplSelectionProgressTermsView(
             PropertyModel model, View view, PropertyKey propertyKey) {
+        TextView termsLabel = view.findViewById(R.id.bnpl_terms_label);
         if (propertyKey == TERMS_TEXT) {
-            TextView termsLabel = view.findViewById(R.id.bnpl_terms_label);
             termsLabel.setText(model.get(TERMS_TEXT));
-            termsLabel.setMovementMethod(LinkMovementMethod.getInstance());
+        } else if (propertyKey == TERMS_LINK_ENABLED) {
+            if (model.get(TERMS_LINK_ENABLED)) {
+                termsLabel.setMovementMethod(LinkMovementMethod.getInstance());
+            } else {
+                termsLabel.setClickable(false);
+            }
+            termsLabel.setLongClickable(false);
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

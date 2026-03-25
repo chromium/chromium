@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -148,6 +147,7 @@ import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.CharacterStyle;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
 import android.view.View;
@@ -1286,7 +1286,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         SpannableString spannable = (SpannableString) termsText;
         ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
         assertEquals("There should be exactly one clickable span", 1, spans.length);
-        assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ false);
+        assertExpectedBnplSelectionScreenTermsLink(spans[0]);
 
         // Verify no bold span for AI terms.
         StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
@@ -1324,7 +1324,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         SpannableString spannable = (SpannableString) termsText;
         ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
         assertEquals("There should be exactly one clickable span", 1, spans.length);
-        assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ false);
+        assertExpectedBnplSelectionScreenTermsLink(spans[0]);
 
         // Verify the bold span for AI terms.
         StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
@@ -1368,7 +1368,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         SpannableString spannable = (SpannableString) termsText;
         ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
         assertEquals("There should be exactly one clickable span", 1, spans.length);
-        assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ false);
+        assertExpectedBnplSelectionScreenTermsLink(spans[0]);
     }
 
     @Test
@@ -1395,13 +1395,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         // Verify the expecteed terms is SpannableString type.
         assertTrue("Terms text should be a SpannableString", termsText instanceof SpannableString);
         SpannableString spannable = (SpannableString) termsText;
-        ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
-        assertEquals("There should be exactly one clickable span", 1, spans.length);
-        assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ true);
-
-        // Verify no bold span for AI terms.
-        StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
-        assertEquals(0, styleSpans.length);
+        CharacterStyle[] spans = spannable.getSpans(0, spannable.length(), CharacterStyle.class);
+        assertEquals("There should be exactly one character style span", 1, spans.length);
+        assertExpectedBnplProgressScreenTermsLink(spans[0]);
     }
 
     @Test
@@ -1427,10 +1423,12 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         // Verify the expecteed terms is SpannableString type.
         assertTrue("Terms text should be a SpannableString", termsText instanceof SpannableString);
+
+        // Verify there are two spans: one for an unclickable link and another for the bolded text.
         SpannableString spannable = (SpannableString) termsText;
-        ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
-        assertEquals("There should be exactly one clickable span", 1, spans.length);
-        assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ true);
+        CharacterStyle[] spans = spannable.getSpans(0, spannable.length(), CharacterStyle.class);
+        assertEquals("There should be exactly two style spans", 2, spans.length);
+        assertExpectedBnplProgressScreenTermsLink(spans[1]);
 
         // Verify the bold span for AI terms.
         StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
@@ -1464,9 +1462,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         // Verify the expecteed terms is SpannableString type.
         assertTrue("Terms text should be a SpannableString", termsText instanceof SpannableString);
         SpannableString spannable = (SpannableString) termsText;
-        ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
-        assertEquals("There should be exactly one clickable span", 1, spans.length);
-        assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ true);
+        CharacterStyle[] spans = spannable.getSpans(0, spannable.length(), CharacterStyle.class);
+        assertEquals("There should be exactly one character style span", 1, spans.length);
+        assertExpectedBnplProgressScreenTermsLink(spans[0]);
     }
 
     @Test
@@ -3374,26 +3372,25 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(termsModel.get().get(TERMS_LABEL_TEXT_ID), is(textId));
     }
 
-    private void assertExpectedBnplTermsLink(ClickableSpan span, boolean isInProgress) {
+    private void assertExpectedBnplSelectionScreenTermsLink(ClickableSpan span) {
         TextPaint paint = new TextPaint();
         span.updateDrawState(paint);
         float alpha = Color.alpha(paint.getColor()) / 255f;
 
-        if (isInProgress) {
-            assertEquals(
-                    "Link should be grayed out (38% opacity) in progress screen",
-                    0.38f, alpha, 0.01f);
+        assertEquals("Link should be fully opaque on the selection screen", 1.0f, alpha, 0.01f);
 
-            // Verify the ClickableSpan is not clickable.
-            span.onClick(new View(mActivity));
-            verify(mDelegateMock, never()).showPaymentMethodSettings();
-        } else {
-            assertEquals("Link should be fully opaque on the selection screen", 1.0f, alpha, 0.01f);
+        // Verify the ClickableSpan is clickable.
+        span.onClick(new View(mActivity));
+        verify(mDelegateMock, times(1)).showPaymentMethodSettings();
+    }
 
-            // Verify the ClickableSpan is clickable.
-            span.onClick(new View(mActivity));
-            verify(mDelegateMock, times(1)).showPaymentMethodSettings();
-        }
+    private void assertExpectedBnplProgressScreenTermsLink(CharacterStyle span) {
+        TextPaint paint = new TextPaint();
+        span.updateDrawState(paint);
+        float alpha = Color.alpha(paint.getColor()) / 255f;
+
+        assertEquals(
+                "Link should be grayed out (38% opacity) in progress screen", 0.38f, alpha, 0.01f);
     }
 
     private static Optional<PropertyModel> getIbanModelByAutofillName(ModelList items, Iban iban) {
