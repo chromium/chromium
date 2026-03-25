@@ -21,6 +21,7 @@ import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.etree_util as etree_util
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+import chromium_src.tools.metrics.common.utf8_encoding as utf8_encoding
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
 
@@ -174,6 +175,8 @@ def main():
                       action="store_true",
                       help="Remove the backup file after a successful run.")
   args = parser.parse_args()
+
+  utf8_encoding.setup_stdout_and_stderr_utf8_encoding()
 
   status = 0
   if 'enums.xml' in args.filepath:
