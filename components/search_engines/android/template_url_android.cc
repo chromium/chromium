@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "build/branding_buildflags.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "url/android/gurl_android.h"
@@ -113,6 +114,17 @@ static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetNewTabURL(
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return base::android::ConvertUTF8ToJavaString(env,
                                                 template_url->new_tab_url());
+}
+
+static std::string JNI_TemplateUrl_GetProvidingExtensionId(
+    JNIEnv* env,
+    int64_t template_url_ptr) {
+  TemplateURL* template_url = ToTemplateURL(template_url_ptr);
+  if (template_url->type() != TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION &&
+      template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
+    return {};
+  }
+  return template_url->GetExtensionId();
 }
 
 static jni_zero::ScopedJavaLocalRef<jbyteArray>

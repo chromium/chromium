@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -130,6 +131,15 @@ public class TemplateUrl {
         return TemplateUrlJni.get().requiresRemovalConfirmation(mTemplateUrlPtr);
     }
 
+    /**
+     * @return The extension id of the search engine if the search engine is provided by an
+     *     extension, otherwise return null.
+     */
+    public @Nullable String getProvidingExtensionId() {
+        String extensionId = TemplateUrlJni.get().getProvidingExtensionId(mTemplateUrlPtr);
+        return extensionId.isEmpty() ? null : extensionId;
+    }
+
     public long getNativePtr() {
         return mTemplateUrlPtr;
     }
@@ -177,5 +187,8 @@ public class TemplateUrl {
         boolean requiresRemovalConfirmation(long templateUrlPtr);
 
         byte @Nullable [] getBuiltInSearchEngineIcon(long templateUrlPtr);
+
+        @JniType("std::string")
+        String getProvidingExtensionId(long templateUrlPtr);
     }
 }
