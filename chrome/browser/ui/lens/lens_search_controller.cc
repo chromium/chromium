@@ -357,6 +357,26 @@ void LensSearchController::IssueTextSearchRequest(
     StartLensSession(invocation_source, suppress_contextualization);
   }
 
+  // If routing to contextual tasks, ignore fetching context via the Lens
+  // contextualization controller. Instead, the context will be uploaded by
+  // the Lens query flow router using a session handle.
+  if (should_route_to_contextual_tasks()) {
+    auto lens_selection_type = lens::UNKNOWN_SELECTION_TYPE;
+    if (is_zero_prefix_suggestion) {
+      lens_selection_type = lens::MULTIMODAL_SUGGEST_ZERO_PREFIX;
+    } else if (match_type ==
+               AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED) {
+      lens_selection_type = lens::MULTIMODAL_SEARCH;
+    } else {
+      lens_selection_type = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
+    }
+    CHECK(query_router_);
+    query_router_->SendContextualTextQuery(
+        /*query_start_time=*/base::Time::Now(), query_text, lens_selection_type,
+        additional_query_parameters, invocation_source);
+    return;
+  }
+
   // TODO(crbug.com/404941800): This flow should not start the overlay once
   // contextualization is separated from the overlay.
   lens_overlay_controller_->IssueTextSearchRequest(
