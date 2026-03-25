@@ -25,6 +25,10 @@ typedef NS_ENUM(NSInteger, ActuationAppInterfaceErrorCode) {
 + (void)executeActionWithProto:(NSData*)actionProto
                     completion:(void (^)(NSError* error))completion;
 
+// Fetches the latest Annotated Page Content (APC) via the PageContextWrapper
+// and returns the serialized optimization_guide::proto::PageContext.
++ (NSData*)fetchLatestAPC;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTUATION_MODEL_ACTUATION_APP_INTERFACE_H_

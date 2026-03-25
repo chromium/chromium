@@ -77,10 +77,10 @@ void ActuationService::ExecuteAction(
     return;
   }
 
-  // TODO(crbug.com/472289603): `tool` is destroyed immediately after
-  // `Execute` returns. If Execute needs to call back into this service,
-  // the `tool` will no longer be available.
+  // The `tool` is moved into the callback to ensure it stays alive until
+  // the async operation completes.
   std::unique_ptr<ActuationTool> tool = std::move(create_tool_result.value());
+  ActuationTool* tool_ptr = tool.get();
 
   // Start a Begin log when the Execute call starts.
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> entry =
@@ -89,7 +89,8 @@ void ActuationService::ExecuteAction(
           base::StringPrintf("Execute Tool: %s", tool_name.c_str()), {});
 
   ActuationCallback wrapped_callback = base::BindOnce(
-      [](std::unique_ptr<AggregatedJournal::PendingAsyncEntry> entry,
+      [](std::unique_ptr<ActuationTool> tool,
+         std::unique_ptr<AggregatedJournal::PendingAsyncEntry> entry,
          ActuationCallback callback, ActuationTool::ActuationResult result) {
         std::vector<JournalDetails> details;
         if (!result.has_value()) {
@@ -99,9 +100,15 @@ void ActuationService::ExecuteAction(
         }
         // End log when the Execute call finishes.
         entry->EndEntry(std::move(details));
-        std::move(callback).Run(std::move(result));
-      },
-      std::move(entry), std::move(callback));
 
-  tool->Execute(std::move(wrapped_callback));
+        std::move(callback).Run(std::move(result));
+
+        // `tool` is destroyed here when the lambda finishes.
+        //
+        // The lifetime of `tool` will be better managed once we set up the
+        // orchestration layer.
+      },
+      std::move(tool), std::move(entry), std::move(callback));
+
+  tool_ptr->Execute(std::move(wrapped_callback));
 }

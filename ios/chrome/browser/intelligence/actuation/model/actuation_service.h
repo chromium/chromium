@@ -8,8 +8,8 @@
 #import <memory>
 #import <string>
 
-#import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
 
@@ -45,6 +45,8 @@ class ActuationService : public KeyedService {
   raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<ActuationToolFactory> tool_factory_;
   std::unique_ptr<AggregatedJournal> journal_;
+
+  base::WeakPtrFactory<ActuationService> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTUATION_MODEL_ACTUATION_SERVICE_H_

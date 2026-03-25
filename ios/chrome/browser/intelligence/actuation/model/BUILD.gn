@@ -74,9 +74,14 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":model",
     "//base",
+    "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actuation/model/tools:click_tool",
+    "//ios/chrome/browser/intelligence/actuation/model/tools:java_script_features",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
   ]
 }
 
