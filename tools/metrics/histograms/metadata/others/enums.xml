@@ -69,6 +69,43 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="UnlockFailed"/>
 </enum>
 
+<!-- LINT.IfChange(GameControllerMacOutcome) -->
+
+<enum name="GameControllerMacOutcome">
+  <summary>
+    The outcome of a gamepad connection attempt for the GameController data
+    fetcher.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="No Extended Gamepad profile"/>
+  <int value="2" label="Handled by NintendoDataFetcher"/>
+  <int value="3" label="Xbox feature disabled"/>
+  <int value="4" label="PlayStation feature disabled"/>
+  <int value="5" label="Identified as HID device"/>
+  <int value="6" label="No slot available"/>
+  <int value="7" label="Already connected"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/gamepad/gamepad_uma.h:GameControllerMacOutcome) -->
+
+<!-- LINT.IfChange(GamepadPlatformMacOutcome) -->
+
+<enum name="GamepadPlatformMacOutcome">
+  <summary>
+    The outcome of a gamepad connection attempt for the GamepadPlatform data
+    fetcher.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Handled by GameController framework"/>
+  <int value="2" label="Handled by NintendoDataFetcher"/>
+  <int value="3" label="MFi gamepad handled by GameController"/>
+  <int value="4" label="No buttons or axes found"/>
+  <int value="5" label="No slot available"/>
+  <int value="6" label="Already connected"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/gamepad/gamepad_uma.h:GamepadPlatformMacOutcome) -->
+
 <!-- LINT.IfChange(GamepadUsbDeviceOpenMacResult) -->
 
 <enum name="GamepadUsbDeviceOpenMacResult">
@@ -334,6 +371,20 @@ chromium-metrics-reviews@google.com.
   <int value="2042034656" label="hookprocesscreation.dll"/>
   <int value="2068928877" label="libdivx.dll"/>
 </enum>
+
+<!-- LINT.IfChange(XboxMacOutcome) -->
+
+<enum name="XboxMacOutcome">
+  <summary>
+    The outcome of a gamepad connection attempt for the specialized Xbox data
+    fetcher.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="No slot available"/>
+  <int value="2" label="Already connected"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/gamepad/gamepad_uma.h:XboxMacOutcome) -->
 
 </enums>
 

@@ -175,6 +175,8 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   if (IsSupportedByGameController(vendor_int, product_int)) {
     VLOG(1) << "Gamepad (VID:" << vendor_int << ", PID:" << product_int
             << ") handled by GameControllerDataFetcherMac";
+    RecordGamepadPlatformMacOutcome(
+        GamepadPlatformMacOutcome::kHandledByGameController);
     return;
   }
 
@@ -185,6 +187,8 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   }
 
   if (devices_.contains(location_int)) {
+    RecordGamepadPlatformMacOutcome(
+        GamepadPlatformMacOutcome::kAlreadyConnected);
     return;
   }
 
@@ -192,8 +196,11 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
       gamepad_id_list.GetGamepadId(product_name, vendor_int, product_int);
 
   // Nintendo devices are handled by the Nintendo data fetcher.
-  if (NintendoController::IsNintendoController(gamepad_id))
+  if (NintendoController::IsNintendoController(gamepad_id)) {
+    RecordGamepadPlatformMacOutcome(
+        GamepadPlatformMacOutcome::kIsNintendoGamepad);
     return;
+  }
 
   // Record the device before excluding Made for iOS gamepads. This allows us to
   // recognize these devices even though the GameController API masks the vendor
@@ -203,14 +210,18 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   // The SteelSeries Nimbus and other Made for iOS gamepads should be handled
   // through the GameController interface.
   if (gamepad_id == GamepadId::kSteelSeriesProduct1420) {
+    RecordGamepadPlatformMacOutcome(GamepadPlatformMacOutcome::kIsMfiGamepad);
     return;
   }
 
   bool is_recognized = gamepad_id != GamepadId::kUnknownGamepad;
 
   PadState* state = GetPadState(location_int, is_recognized, product_name);
-  if (!state)
+  if (!state) {
+    RecordGamepadPlatformMacOutcome(
+        GamepadPlatformMacOutcome::kNoSlotAvailable);
     return;  // No available slot for this device
+  }
 
   state->mapper = GetGamepadStandardMappingFunction(
       product_name, vendor_int, product_int, /*hid_specification_version=*/0,
@@ -222,6 +233,8 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   auto new_device = std::make_unique<GamepadDeviceMac>(
       location_int, device, product_name, vendor_int, product_int);
   if (!new_device->AddButtonsAndAxes(&state->data)) {
+    RecordGamepadPlatformMacOutcome(
+        GamepadPlatformMacOutcome::kNoButtonsOrAxes);
     new_device->Shutdown();
     return;
   }
@@ -238,6 +251,7 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   state->data.connected = true;
 
   devices_.emplace(location_int, std::move(new_device));
+  RecordGamepadPlatformMacOutcome(GamepadPlatformMacOutcome::kSuccess);
 }
 
 bool GamepadPlatformDataFetcherMac::DisconnectUnrecognizedGamepad(

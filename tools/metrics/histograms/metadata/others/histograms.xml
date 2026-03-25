@@ -4667,6 +4667,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gamepad.ConnectedGamepadSource" enum="GamepadSource"
+    expires_after="2027-02-18">
+  <owner>robpitkin@google.com</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the data fetcher source when a new gamepad is detected and assigned
+    a device slot.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.DeduplicatedGamepadSource" enum="GamepadSource"
+    expires_after="2027-02-18">
+  <owner>robpitkin@google.com</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value identifying the data fetcher that ignored a
+    device because it is already handled by a more specialized data fetcher.
+  </summary>
+</histogram>
+
 <histogram name="Gamepad.KnownGamepadConnectedWithId"
     enum="GamepadVendorProduct" expires_after="2026-08-30">
   <owner>mattreynolds@chromium.org</owner>
@@ -4681,6 +4701,36 @@ chromium-metrics-reviews@google.com.
     product name in go/gamepad-ids. This histogram records a new entry when a
     device with a vendor and product ID matching a known gaming input device is
     detected during Gamepad API enumeration.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.Mac.GameController.ConnectionOutcome"
+    enum="GameControllerMacOutcome" expires_after="2027-02-24">
+  <owner>robpitkin@google.com</owner>
+  <owner>mattreynolds@chromium.org</owner>
+  <summary>
+    The outcome of a gamepad connection attempt in the macOS GameController data
+    fetcher. Recorded exactly once per recognized connection attempt.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.Mac.GamepadPlatform.ConnectionOutcome"
+    enum="GamepadPlatformMacOutcome" expires_after="2027-02-24">
+  <owner>robpitkin@google.com</owner>
+  <owner>mattreynolds@chromium.org</owner>
+  <summary>
+    The outcome of a gamepad connection attempt in the macOS GamepadPlatform
+    data fetcher. Recorded exactly once per recognized connection attempt.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.Mac.Xbox.ConnectionOutcome" enum="XboxMacOutcome"
+    expires_after="2027-02-24">
+  <owner>robpitkin@google.com</owner>
+  <owner>mattreynolds@chromium.org</owner>
+  <summary>
+    The outcome of a gamepad connection attempt in the macOS Xbox (USB) data
+    fetcher. Recorded exactly once per recognized connection attempt.
   </summary>
 </histogram>
 

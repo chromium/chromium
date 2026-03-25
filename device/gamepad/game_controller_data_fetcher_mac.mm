@@ -27,6 +27,7 @@
 #include "device/gamepad/game_controller_gamepad.h"
 #include "device/gamepad/gamepad_pad_state_provider.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
+#include "device/gamepad/gamepad_uma.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
@@ -122,11 +123,13 @@ namespace {
 
 const int kGCControllerPlayerIndexCount = 4;
 
-// Returns true if |controller| should be enumerated by this data fetcher.
-bool IsSupported(GCController* controller) {
+// Returns GameControllerMacOutcome::kSuccess if |controller| should be
+// enumerated by this data fetcher. Otherwise returns the reason it should not
+// be enumerated.
+GameControllerMacOutcome GetSupportOutcome(GCController* controller) {
   // We only support the extendedGamepad profile.
   if (!controller.extendedGamepad) {
-    return false;
+    return GameControllerMacOutcome::kNoExtendedGamepad;
   }
 
   // In macOS 10.15, support for some console gamepads was added to the Game
@@ -135,26 +138,29 @@ bool IsSupported(GCController* controller) {
   // supported in Chrome through other data fetchers and must be blocked here to
   // avoid double-enumeration.
   NSString* product_category = controller.productCategory;
-  if ([product_category isEqualToString:@"HID"] ||
-      [product_category isEqualToString:@"Switch Pro Controller"] ||
+  if ([product_category isEqualToString:@"Switch Pro Controller"] ||
       [product_category isEqualToString:@"Nintendo Switch JoyCon (L/R)"]) {
-    return false;
+    return GameControllerMacOutcome::kIsNintendoGamepad;
+  }
+
+  if ([product_category isEqualToString:@"HID"]) {
+    return GameControllerMacOutcome::kIsHidDevice;
   }
 
   if (!base::FeatureList::IsEnabled(
           features::kXboxUseGameControllerDataFetcherMac) &&
       [product_category isEqualToString:@"Xbox One"]) {
-    return false;
+    return GameControllerMacOutcome::kXboxFeatureDisabled;
   }
 
   if (!base::FeatureList::IsEnabled(
           features::kPlayStationUseGameControllerDataFetcherMac) &&
       ([product_category isEqualToString:@"DualShock 4"] ||
        [product_category isEqualToString:@"DualSense"])) {
-    return false;
+    return GameControllerMacOutcome::kPlayStationFeatureDisabled;
   }
 
-  return true;
+  return GameControllerMacOutcome::kSuccess;
 }
 
 }  // namespace
@@ -162,13 +168,16 @@ bool IsSupported(GCController* controller) {
 void GameControllerDataFetcherMac::GameControllerDataFetcherMacImpl::
     OnGameControllerConnect(GCController* controller) {
   DCHECK(owner_->polling_task_runner_->RunsTasksInCurrentSequence());
-  if (!IsSupported(controller)) {
+  GameControllerMacOutcome outcome = GetSupportOutcome(controller);
+  if (outcome != GameControllerMacOutcome::kSuccess) {
+    RecordGameControllerMacOutcome(outcome);
     return;
   }
 
   // Ignore controllers that have already been connected to.
   if (controller_to_source_id_.find(controller) !=
       controller_to_source_id_.end()) {
+    RecordGameControllerMacOutcome(GameControllerMacOutcome::kAlreadyConnected);
     return;
   }
 
@@ -192,6 +201,9 @@ void GameControllerDataFetcherMac::GameControllerDataFetcherMacImpl::
   if (state) {
     state->is_initialized = true;
     gamepad->InitializeStaticData(state->data);
+    RecordGameControllerMacOutcome(GameControllerMacOutcome::kSuccess);
+  } else {
+    RecordGameControllerMacOutcome(GameControllerMacOutcome::kNoSlotAvailable);
   }
 
   // Store the gamepad object.
@@ -339,8 +351,9 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
   bool player_indices[Gamepads::kItemsLengthCap];
   std::fill(player_indices, player_indices + Gamepads::kItemsLengthCap, false);
   for (GCController* controller in controllers) {
-    if (!IsSupported(controller))
+    if (GetSupportOutcome(controller) != GameControllerMacOutcome::kSuccess) {
       continue;
+    }
 
     int player_index = controller.playerIndex;
     if (player_index != GCControllerPlayerIndexUnset)
@@ -355,8 +368,9 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
   // In the second pass, assign indices to newly connected gamepads and fetch
   // the gamepad state.
   for (GCController* controller in controllers) {
-    if (!IsSupported(controller))
+    if (GetSupportOutcome(controller) != GameControllerMacOutcome::kSuccess) {
       continue;
+    }
 
     int player_index = controller.playerIndex;
     if (player_index == GCControllerPlayerIndexUnset) {

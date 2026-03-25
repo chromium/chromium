@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_id_list.h"
+#include "device/gamepad/gamepad_uma.h"
 
 namespace device {
 
@@ -174,6 +175,7 @@ bool XboxDataFetcher::TryOpenDevice(io_service_t service) {
   auto* controller = pending->controller.get();
   XboxControllerMac::OpenDeviceResult result = controller->OpenDevice(service);
   if (result == XboxControllerMac::OpenDeviceResult::kOpenSucceeded) {
+    RecordXboxMacOutcome(XboxMacOutcome::kSuccess);
     AddController(pending->controller.release());
     return true;
   }
@@ -292,9 +294,13 @@ void XboxDataFetcher::AddController(XboxControllerMac* controller) {
   DCHECK(!ControllerForLocation(controller->location_id()))
       << "Controller with location ID " << controller->location_id()
       << " already exists in the set of controllers.";
+  if (ControllerForLocation(controller->location_id())) {
+    RecordXboxMacOutcome(XboxMacOutcome::kAlreadyConnected);
+  }
   PadState* state = GetPadState(controller->location_id());
   if (!state) {
     delete controller;
+    RecordXboxMacOutcome(XboxMacOutcome::kNoSlotAvailable);
     return;  // No available slot for this device
   }
 

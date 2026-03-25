@@ -26,4 +26,18 @@ void RecordUnknownGamepad(GamepadSource source) {
   UMA_HISTOGRAM_ENUMERATION("Gamepad.UnknownGamepadConnected", source);
 }
 
+void RecordGameControllerMacOutcome(GameControllerMacOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION("Gamepad.Mac.GameController.ConnectionOutcome",
+                            outcome);
+}
+
+void RecordGamepadPlatformMacOutcome(GamepadPlatformMacOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION("Gamepad.Mac.GamepadPlatform.ConnectionOutcome",
+                            outcome);
+}
+
+void RecordXboxMacOutcome(XboxMacOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION("Gamepad.Mac.Xbox.ConnectionOutcome", outcome);
+}
+
 }  // namespace device
