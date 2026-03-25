@@ -1,4 +1,12 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++alertDialog
+++++++genericContainer ignored
+++++++++alertDialog description='Are you sure you want to discard all of your notes?' name='Confirmation' descriptionFrom=relatedElement
+++++++++++heading name='Confirmation'
+++++++++++++staticText name='Confirmation'
+++++++++++++++inlineTextBox name='Confirmation'
+++++++++++genericContainer
+++++++++++++paragraph
+++++++++++++++staticText name='Are you sure you want to discard all of your notes?'
+++++++++++++++++inlineTextBox name='Are you sure you want to discard all of your notes?'

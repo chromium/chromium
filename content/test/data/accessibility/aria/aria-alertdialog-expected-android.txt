@@ -1,2 +1,5 @@
 android.webkit.WebView focusable focused
-++android.app.AlertDialog
+++android.app.AlertDialog name='Confirmation' hint='Are you sure you want to discard all of your notes?'
+++++android.widget.TextView role_description='heading 2' heading interesting name='Confirmation'
+++++android.view.View
+++++++android.widget.TextView interesting name='Are you sure you want to discard all of your notes?'

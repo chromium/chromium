@@ -1,2 +1,7 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXGroup AXSubrole=AXApplicationAlertDialog AXRoleDescription='alert dialog'
+++AXGroup AXSubrole=AXApplicationAlertDialog AXRoleDescription='alert dialog' AXTitle='Confirmation'
+++++AXHeading AXRoleDescription='heading' AXTitle='Confirmation' AXValue=2
+++++++AXStaticText AXRoleDescription='text' AXValue='Confirmation'
+++++AXGroup AXRoleDescription='group'
+++++++AXGroup AXRoleDescription='group'
+++++++++AXStaticText AXRoleDescription='text' AXValue='Are you sure you want to discard all of your notes?'

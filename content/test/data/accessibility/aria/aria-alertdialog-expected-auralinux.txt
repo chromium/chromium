@@ -1,2 +1,7 @@
 [document web]
-++[alert] xml-roles:alertdialog
+++[alert] name='Confirmation' description='Are you sure you want to discard all of your notes?' labelled-by=[heading] described-by=[section] description-from:aria-describedby xml-roles:alertdialog
+++++[heading] name='Confirmation' label-for=[alert]
+++++++[static] name='Confirmation'
+++++[section] description-for=[alert]
+++++++[paragraph]
+++++++++[static] name='Are you sure you want to discard all of your notes?'
