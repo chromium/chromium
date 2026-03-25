@@ -33,6 +33,8 @@ class MappedMemoryManager;
 
 namespace gles2 {
 
+class GLES2ImplementationTest;
+
 // Manages buckets of QuerySync instances in mapped memory.
 class GLES2_IMPL_EXPORT QuerySyncManager {
  public:
@@ -119,6 +121,7 @@ class GLES2_IMPL_EXPORT QueryTracker {
  public:
   class GLES2_IMPL_EXPORT Query {
    public:
+    friend class GLES2ImplementationTest;
     enum State {
       kUninitialized,  // never used
       kActive,         // between begin - end
