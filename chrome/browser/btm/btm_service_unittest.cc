@@ -6,9 +6,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -42,12 +45,14 @@ class BtmService3pcExceptionsTest : public testing::Test {
 
  protected:
   BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      content_settings::features::kTrackingProtection3pcd};
   TestingProfile profile_;
   raw_ptr<content_settings::CookieSettings> cookie_settings_;
 
   void SetUp() override {
+    profile_.GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
     ASSERT_FALSE(Are3PcsGenerallyEnabled());
   }
 
@@ -55,9 +60,10 @@ class BtmService3pcExceptionsTest : public testing::Test {
   // `third_party_url` embedded by `first_party_url`.
   void Add3PCException(const GURL& first_party_url,
                        const GURL& third_party_url) {
-    cookie_settings_->SetTemporaryCookieGrantForHeuristic(
-        third_party_url, first_party_url, base::Days(1),
-        /*use_schemeless_patterns=*/false);
+    HostContentSettingsMapFactory::GetForProfile(&profile_)
+        ->SetContentSettingDefaultScope(third_party_url, first_party_url,
+                                        ContentSettingsType::COOKIES,
+                                        CONTENT_SETTING_ALLOW);
 
     auto* client = GetContentClientForTesting()->browser();
     ASSERT_TRUE(client->IsFullCookieAccessAllowed(
