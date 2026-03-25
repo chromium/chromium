@@ -1532,6 +1532,7 @@ TEST_P(CanvasRenderingContext2DTest, ContextDisposedBeforeCanvas) {
 
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedLowLatencyIsNotSingleBuffered) {
+  ScopedCanvasUtils scoped_canvas_utils;
   // Ensure that the context will create a SharedImage provider for the test to
   // be meaningful.
   SetUseMappableSharedImagesForCanvas2DForTesting(true);
@@ -1718,6 +1719,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
 
 TEST_P(CanvasRenderingContext2DTest,
        SoftwareCanvasIsCompositedIfMappableSharedImageIsUsed) {
+  ScopedCanvasUtils scoped_canvas_utils;
   SetUseMappableSharedImagesForCanvas2DForTesting(true);
 
   // Ensure that support for BGRA overlays is present, as otherwise compositing
@@ -1739,6 +1741,7 @@ TEST_P(CanvasRenderingContext2DTest,
 
 TEST_P(CanvasRenderingContext2DTest,
        SoftwareCanvasIsNotCompositedIfMappableSharedImageIsNotUsed) {
+  ScopedCanvasUtils scoped_canvas_utils;
   SetUseMappableSharedImagesForCanvas2DForTesting(false);
 
   CreateContext(kNonOpaque);
@@ -3523,6 +3526,9 @@ class CanvasRenderingContext2DTestLowLatency
     shared_image_caps.supports_scanout_shared_images = true;
     context_provider.SharedImageInterface()->SetCapabilities(shared_image_caps);
   }
+
+ private:
+  ScopedCanvasUtils scoped_canvas_utils_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestLowLatency);

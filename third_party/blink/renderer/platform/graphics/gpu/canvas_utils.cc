@@ -227,7 +227,7 @@ void SetLowLatencyUsageSupportedForWebGLForTesting(bool enable) {
   g_low_latency_usage_supported_for_webgl_for_testing = enable;
 }
 
-void ResetCanvasUtilsForTesting() {
+ScopedCanvasUtils::~ScopedCanvasUtils() {
   g_use_mappable_shared_images_for_canvas_2d_for_testing.reset();
   g_low_latency_usage_supported_for_canvas_2d_for_testing.reset();
   g_use_overlays_for_webgl_for_testing.reset();

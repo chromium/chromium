@@ -236,7 +236,6 @@ void SharedGpuContext::Reset() {
   this_ptr->shared_image_interface_provider_.reset();
   this_ptr->context_provider_wrapper_.reset();
   this_ptr->context_provider_factory_.Reset();
-  ResetCanvasUtilsForTesting();
 }
 
 bool SharedGpuContext::IsValidWithoutRestoringForTesting() {

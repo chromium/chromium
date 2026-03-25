@@ -147,6 +147,7 @@ TEST_F(HTMLCanvasElementModuleTest,
 TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   // TODO(crbug.com/922218): enable desynchronized on Mac.
 #if !BUILDFLAG(IS_MAC)
+  ScopedCanvasUtils scoped_canvas_utils;
   ScopedTestingPlatformSupport<LowLatencyTestPlatform> platform;
   SetLowLatencyUsageSupportedForCanvas2DForTesting(true);
 

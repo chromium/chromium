@@ -375,6 +375,7 @@ TEST_F(DrawingBufferTest, TransferableResourcesAreNotOverlayCandidates) {
 TEST_F(
     DrawingBufferTest,
     TransferableResourcesAreOverlayCandidatesWhenUseOverlaysForWebGLIsEnabled) {
+  ScopedCanvasUtils scoped_canvas_utils;
   SetUseOverlaysForWebGLForTesting(true);
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
@@ -728,6 +729,7 @@ TEST_F(DrawingBufferTest, VerifyLowLatencyRenderingIsNotSetByDefault) {
 TEST_F(
     DrawingBufferTest,
     VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrueAndLowLatencyUsageIsSupportedForWebGL) {
+  ScopedCanvasUtils scoped_canvas_utils;
   SetLowLatencyUsageSupportedForWebGLForTesting(true);
 
   gfx::Size initial_size(kInitialWidth, kInitialHeight);
