@@ -1836,6 +1836,8 @@ enum HostCapability {
   kShareAdditionalImageContext = 6,
   // Enables the PDF Zero State Web UI.
   kPdfZeroState = 7,
+  // Indicates that the host supports the invoke mechanism.
+  kInvoke = 8,
 };
 
 // A request to change the glic web client to a view suitable for tracking the

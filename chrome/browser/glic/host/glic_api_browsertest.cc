@@ -3573,6 +3573,8 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kPdfZeroState));
   }
+  expected_capabilities.Append(
+      std::to_underlying(mojom::HostCapability::kInvoke));
   ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
 }
 
