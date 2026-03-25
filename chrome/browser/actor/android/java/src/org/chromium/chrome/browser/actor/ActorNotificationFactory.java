@@ -145,11 +145,11 @@ public class ActorNotificationFactory {
 
     private static NotificationWrapper buildSuccessNotification(
             NotificationWrapperBuilder builder, Context context, ActorTask task) {
-        String body = context.getString(R.string.actor_notification_body_finished, task.getTitle());
+        String body = context.getString(R.string.actor_notification_body_complete, task.getTitle());
         builder.setAutoCancel(true)
                 .setOngoing(false)
                 .setContentTitle(
-                        context.getString(R.string.actor_notification_title_task_completed))
+                        context.getString(R.string.actor_notification_title_task_complete))
                 .setContentText(body)
                 .setBigTextStyle(body);
         addViewAction(builder, context, task);

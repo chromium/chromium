@@ -175,15 +175,15 @@ public class ActorNotificationFactoryTest {
 
         assertEquals(
                 "Content title should match task completed label",
-                mContext.getString(R.string.actor_notification_title_task_completed),
+                mContext.getString(R.string.actor_notification_title_task_complete),
                 shadowNotification.getContentTitle());
         assertEquals(
                 "Content text should match template with task title",
-                mContext.getString(R.string.actor_notification_body_finished, TASK_TITLE),
+                mContext.getString(R.string.actor_notification_body_complete, TASK_TITLE),
                 shadowNotification.getContentText());
         assertEquals(
                 "Big text should match content text",
-                mContext.getString(R.string.actor_notification_body_finished, TASK_TITLE),
+                mContext.getString(R.string.actor_notification_body_complete, TASK_TITLE),
                 notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         assertFalse(
                 "Notification should not be ongoing",
