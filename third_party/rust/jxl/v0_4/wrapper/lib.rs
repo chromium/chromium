@@ -4,13 +4,17 @@
 
 //! Minimal C++ wrapper for jxl-rs decoder.
 //!
-//! This thin wrapper provides C++-compatible types for the jxl-rs decoder.
-//! State tracking is handled by the C++ caller (JXLImageDecoder).
+//! Two decoder types are exposed:
+//!
+//! - `JxlRsFrameScanner`: lightweight frame-header-only scanner that discovers
+//!   frame count, durations, and seek offsets without decoding any pixels.
+//! - `JxlRsDecoder`: full pixel decoder with a state-machine API,
+//!   plus seeking and progressive flush support.
 
 use jxl::api::{
     check_signature, Endianness, JxlBasicInfo, JxlColorEncoding, JxlColorProfile, JxlColorType,
     JxlDataFormat, JxlDecoderInner, JxlDecoderOptions, JxlOutputBuffer, JxlPixelFormat,
-    JxlProgressiveMode, ProcessingResult,
+    JxlProgressiveMode, ProcessingResult, VisibleFrameInfo,
 };
 use jxl::headers::extra_channels::ExtraChannel;
 
@@ -49,7 +53,7 @@ mod ffi {
         is_grayscale: bool,
     }
 
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Clone, Default)]
     struct JxlRsFrameHeader {
         duration_ms: f64,
         name_length: u32,
@@ -62,14 +66,54 @@ mod ffi {
         bytes_consumed: usize,
     }
 
+    /// Information about a single visible frame discovered by the scanner.
+    #[derive(Debug, Clone, Default)]
+    struct JxlRsVisibleFrameInfo {
+        /// Duration in milliseconds.
+        duration_ms: f64,
+        /// Whether this frame can be decoded independently (no dependencies).
+        is_keyframe: bool,
+        /// Whether this is the last frame in the codestream.
+        is_last: bool,
+        /// File byte offset to start feeding input from when seeking.
+        decode_start_file_offset: usize,
+    }
+
     extern "Rust" {
+        // ---- Frame scanner (lightweight, no pixel decoding) ----
+        type JxlRsFrameScanner;
+
+        fn jxl_rs_frame_scanner_create(pixel_limit: u64) -> Box<JxlRsFrameScanner>;
+
+        /// Feed data to the scanner. Returns Success when all frames have been
+        /// scanned (last frame seen), NeedMoreInput if more data is needed, or
+        /// Error on failure.
+        fn feed(
+            self: &mut JxlRsFrameScanner,
+            data: &[u8],
+            all_input: bool,
+        ) -> JxlRsProcessResult;
+
+        /// Get basic info (valid after first successful feed).
+        fn get_basic_info(self: &JxlRsFrameScanner) -> JxlRsBasicInfo;
+
+        /// Get ICC profile data.
+        fn get_icc_profile(self: &JxlRsFrameScanner) -> &[u8];
+
+        /// Number of visible frames discovered so far.
+        fn frame_count(self: &JxlRsFrameScanner) -> usize;
+
+        /// Get info for a specific frame index.
+        fn get_frame_info(self: &JxlRsFrameScanner, index: usize) -> JxlRsVisibleFrameInfo;
+
+        /// Whether basic info has been parsed.
+        fn has_basic_info(self: &JxlRsFrameScanner) -> bool;
+
+        // ---- Full pixel decoder ----
         type JxlRsDecoder;
 
         fn jxl_rs_decoder_create(pixel_limit: u64, premultiply_alpha: bool) -> Box<JxlRsDecoder>;
         fn jxl_rs_signature_check(data: &[u8]) -> bool;
-
-        /// Rewind decoder for animation loop replay.
-        fn rewind(self: &mut JxlRsDecoder);
 
         /// Set the output pixel format. Must be called after getting basic info.
         fn set_pixel_format(
@@ -85,24 +129,15 @@ mod ffi {
             all_input: bool,
         ) -> JxlRsProcessResult;
 
-        /// Parse until next frame header is available. Returns Success if no more frames.
+        /// Parse until next frame header is available.
         fn parse_frame_header(
             self: &mut JxlRsDecoder,
             data: &[u8],
             all_input: bool,
         ) -> JxlRsProcessResult;
 
-        /// Decode frame pixels into the provided buffer.
-        fn decode_frame(
-            self: &mut JxlRsDecoder,
-            data: &[u8],
-            all_input: bool,
-            buffer: &mut [u8],
-            width: u32,
-            height: u32,
-        ) -> JxlRsProcessResult;
-
-        /// Decode frame pixels with custom stride (for direct frame buffer decoding).
+        /// Decode frame pixels with custom stride (for direct frame buffer
+        /// decoding).
         fn decode_frame_with_stride(
             self: &mut JxlRsDecoder,
             data: &[u8],
@@ -113,8 +148,17 @@ mod ffi {
             row_stride: usize,
         ) -> JxlRsProcessResult;
 
-        /// Get basic info (valid after parse_basic_info succeeds, or a decode
-        /// call that yields BasicInfo).
+        /// Flush whatever pixels have been decoded so far into the buffer.
+        /// Used for progressive rendering.
+        fn flush_pixels(
+            self: &mut JxlRsDecoder,
+            buffer: &mut [u8],
+            width: u32,
+            height: u32,
+            row_stride: usize,
+        ) -> JxlRsProcessResult;
+
+        /// Get basic info (valid after parse_basic_info succeeds).
         fn get_basic_info(self: &JxlRsDecoder) -> JxlRsBasicInfo;
 
         /// Get frame header (valid after parse_frame_header succeeds).
@@ -126,12 +170,135 @@ mod ffi {
 
         /// Check if more frames are available.
         fn has_more_frames(self: &JxlRsDecoder) -> bool;
+
+        /// Seek the decoder to a specific frame discovered by the scanner.
+        /// Looks up the full seek target from the scanner's internal data
+        /// and configures the decoder. After calling this, provide input
+        /// starting from `get_frame_info(index).decode_start_file_offset`.
+        fn jxl_rs_seek_decoder_to_frame(
+            scanner: &JxlRsFrameScanner,
+            decoder: &mut JxlRsDecoder,
+            index: usize,
+        );
     }
 }
 
 use ffi::*;
 
-/// Thin wrapper around JxlDecoderInner.
+// ---------------------------------------------------------------------------
+// Frame Scanner
+// ---------------------------------------------------------------------------
+
+/// Lightweight scanner that discovers frame info without decoding pixels.
+pub struct JxlRsFrameScanner {
+    decoder: JxlDecoderInner,
+    icc_profile: Vec<u8>,
+    has_basic_info: bool,
+}
+
+fn jxl_rs_frame_scanner_create(pixel_limit: u64) -> Box<JxlRsFrameScanner> {
+    let mut opts = JxlDecoderOptions::default();
+    opts.scan_frames_only = true;
+    if pixel_limit > 0 {
+        opts.pixel_limit = Some(pixel_limit as usize);
+    }
+
+    Box::new(JxlRsFrameScanner {
+        decoder: JxlDecoderInner::new(opts),
+        icc_profile: Vec::new(),
+        has_basic_info: false,
+    })
+}
+
+impl JxlRsFrameScanner {
+    fn feed(&mut self, data: &[u8], all_input: bool) -> JxlRsProcessResult {
+        let mut input = data;
+        let len_before = input.len();
+
+        loop {
+            match self.decoder.process(&mut input, None) {
+                Ok(ProcessingResult::Complete { .. }) => {
+                    if !self.has_basic_info && self.decoder.basic_info().is_some() {
+                        self.has_basic_info = true;
+                        if let Some(profile) = self.decoder.output_color_profile() {
+                            if let Some(icc) = profile.try_as_icc() {
+                                if !icc.is_empty() {
+                                    self.icc_profile = icc.into_owned();
+                                }
+                            }
+                        }
+                    }
+
+                    if !self.decoder.has_more_frames() {
+                        return JxlRsProcessResult {
+                            status: JxlRsStatus::Success,
+                            bytes_consumed: len_before - input.len(),
+                        };
+                    }
+                }
+                Ok(ProcessingResult::NeedsMoreInput { .. }) => {
+                    return JxlRsProcessResult {
+                        status: if all_input {
+                            JxlRsStatus::Error
+                        } else {
+                            JxlRsStatus::NeedMoreInput
+                        },
+                        bytes_consumed: len_before - input.len(),
+                    };
+                }
+                Err(_) => {
+                    return JxlRsProcessResult {
+                        status: JxlRsStatus::Error,
+                        bytes_consumed: 0,
+                    };
+                }
+            }
+        }
+    }
+
+    fn get_basic_info(&self) -> JxlRsBasicInfo {
+        let mut info = self
+            .decoder
+            .basic_info()
+            .map(JxlRsBasicInfo::from)
+            .unwrap_or_default();
+
+        if let Some(profile) = self.decoder.embedded_color_profile() {
+            info.is_grayscale = matches!(
+                profile,
+                JxlColorProfile::Simple(JxlColorEncoding::GrayscaleColorSpace { .. })
+            );
+        }
+
+        info
+    }
+
+    fn get_icc_profile(&self) -> &[u8] {
+        &self.icc_profile
+    }
+
+    fn frame_count(&self) -> usize {
+        self.decoder.scanned_frames().len()
+    }
+
+    fn get_frame_info(&self, index: usize) -> JxlRsVisibleFrameInfo {
+        let frames = self.decoder.scanned_frames();
+        frames
+            .get(index)
+            .map(JxlRsVisibleFrameInfo::from)
+            .unwrap_or_default()
+    }
+
+    fn has_basic_info(&self) -> bool {
+        self.has_basic_info
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Full Pixel Decoder
+// ---------------------------------------------------------------------------
+
+/// Full pixel decoder with seeking and progressive flush support.
 pub struct JxlRsDecoder {
     decoder: JxlDecoderInner,
     pixel_format: Option<JxlPixelFormat>,
@@ -140,7 +307,7 @@ pub struct JxlRsDecoder {
 
 fn jxl_rs_decoder_create(pixel_limit: u64, premultiply_alpha: bool) -> Box<JxlRsDecoder> {
     let mut opts = JxlDecoderOptions::default();
-    opts.progressive_mode = JxlProgressiveMode::FullFrame;
+    opts.progressive_mode = JxlProgressiveMode::Pass;
     opts.premultiply_output = premultiply_alpha;
     if pixel_limit > 0 {
         opts.pixel_limit = Some(pixel_limit as usize);
@@ -162,10 +329,6 @@ fn jxl_rs_signature_check(data: &[u8]) -> bool {
 }
 
 impl JxlRsDecoder {
-    fn rewind(&mut self) {
-        let _ = self.decoder.rewind();
-    }
-
     fn set_pixel_format(&mut self, format: JxlRsPixelFormat, num_extra_channels: u32) {
         let pixel_format = match format {
             JxlRsPixelFormat::Rgba8 => JxlPixelFormat {
@@ -282,25 +445,15 @@ impl JxlRsDecoder {
         }
     }
 
-    fn extract_frame_header(&self) -> Option<JxlRsFrameHeader> {
-        let fh = self.decoder.frame_header()?;
-        Some(JxlRsFrameHeader {
-            duration_ms: fh.duration.unwrap_or(0.0),
-            name_length: fh.name.len() as u32,
-        })
-    }
-
-    fn decode_frame(
-        &mut self,
-        data: &[u8],
-        all_input: bool,
-        buffer: &mut [u8],
+    /// Build a JxlOutputBuffer for the given buffer dimensions.
+    /// Panics if the buffer is too small (programming error).
+    fn make_output_buffer<'a>(
+        &self,
+        buffer: &'a mut [u8],
         width: u32,
         height: u32,
-    ) -> JxlRsProcessResult {
-        let mut input = data;
-        let len_before = input.len();
-
+        row_stride: usize,
+    ) -> JxlOutputBuffer<'a> {
         let bytes_per_pixel = self
             .pixel_format
             .as_ref()
@@ -308,16 +461,23 @@ impl JxlRsDecoder {
             .map(|d| d.bytes_per_sample() * 4)
             .unwrap_or(4);
         let bytes_per_row = width as usize * bytes_per_pixel;
-        let expected_size = bytes_per_row * height as usize;
 
-        if buffer.len() < expected_size {
-            return JxlRsProcessResult {
-                status: JxlRsStatus::Error,
-                bytes_consumed: 0,
-            };
-        }
+        JxlOutputBuffer::new_with_stride(buffer, height as usize, bytes_per_row, row_stride)
+    }
 
-        let output = JxlOutputBuffer::new(buffer, height as usize, bytes_per_row);
+    fn decode_frame_with_stride(
+        &mut self,
+        data: &[u8],
+        all_input: bool,
+        buffer: &mut [u8],
+        width: u32,
+        height: u32,
+        row_stride: usize,
+    ) -> JxlRsProcessResult {
+        let mut input = data;
+        let len_before = input.len();
+
+        let output = self.make_output_buffer(buffer, width, height, row_stride);
 
         match self.decoder.process(&mut input, Some(&mut [output])) {
             Ok(ProcessingResult::Complete { .. }) => JxlRsProcessResult {
@@ -344,66 +504,20 @@ impl JxlRsDecoder {
         }
     }
 
-    fn decode_frame_with_stride(
+    fn flush_pixels(
         &mut self,
-        data: &[u8],
-        all_input: bool,
         buffer: &mut [u8],
         width: u32,
         height: u32,
         row_stride: usize,
     ) -> JxlRsProcessResult {
-        use std::mem::MaybeUninit;
+        let output = self.make_output_buffer(buffer, width, height, row_stride);
 
-        let mut input = data;
-        let len_before = input.len();
-
-        let bytes_per_pixel = self
-            .pixel_format
-            .as_ref()
-            .and_then(|f| f.color_data_format.as_ref())
-            .map(|d| d.bytes_per_sample() * 4)
-            .unwrap_or(4);
-        let bytes_per_row = width as usize * bytes_per_pixel;
-
-        // Validate buffer size with custom stride
-        let expected_size = row_stride * (height as usize - 1) + bytes_per_row;
-        if buffer.len() < expected_size {
-            return JxlRsProcessResult {
-                status: JxlRsStatus::Error,
-                bytes_consumed: 0,
-            };
-        }
-
-        // SAFETY: The buffer is valid for writes, and we've verified it has enough space.
-        // new_from_ptr allows custom stride (bytes_between_rows).
-        let output = unsafe {
-            JxlOutputBuffer::new_from_ptr(
-                buffer.as_mut_ptr() as *mut MaybeUninit<u8>,
-                height as usize,
-                bytes_per_row,
-                row_stride,
-            )
-        };
-
-        match self.decoder.process(&mut input, Some(&mut [output])) {
-            Ok(ProcessingResult::Complete { .. }) => JxlRsProcessResult {
+        match self.decoder.flush_pixels(&mut [output]) {
+            Ok(()) => JxlRsProcessResult {
                 status: JxlRsStatus::Success,
-                bytes_consumed: len_before - input.len(),
+                bytes_consumed: 0,
             },
-            Ok(ProcessingResult::NeedsMoreInput { .. }) => {
-                if all_input {
-                    JxlRsProcessResult {
-                        status: JxlRsStatus::Error,
-                        bytes_consumed: 0,
-                    }
-                } else {
-                    JxlRsProcessResult {
-                        status: JxlRsStatus::NeedMoreInput,
-                        bytes_consumed: len_before - input.len(),
-                    }
-                }
-            }
             Err(_) => JxlRsProcessResult {
                 status: JxlRsStatus::Error,
                 bytes_consumed: 0,
@@ -429,6 +543,14 @@ impl JxlRsDecoder {
         info
     }
 
+    fn extract_frame_header(&self) -> Option<JxlRsFrameHeader> {
+        let fh = self.decoder.frame_header()?;
+        Some(JxlRsFrameHeader {
+            duration_ms: fh.duration.unwrap_or(0.0),
+            name_length: fh.name.len() as u32,
+        })
+    }
+
     fn get_frame_header(&self) -> JxlRsFrameHeader {
         self.extract_frame_header().unwrap_or_default()
     }
@@ -440,6 +562,19 @@ impl JxlRsDecoder {
     fn has_more_frames(&self) -> bool {
         self.decoder.has_more_frames()
     }
+}
+
+/// Seek the decoder to a specific frame discovered by the scanner.
+/// The full seek target (including internal fields like remaining_in_box
+/// and visible_frames_to_skip) is looked up from the scanner's data.
+fn jxl_rs_seek_decoder_to_frame(
+    scanner: &JxlRsFrameScanner,
+    decoder: &mut JxlRsDecoder,
+    index: usize,
+) {
+    let frames = scanner.decoder.scanned_frames();
+    let frame = &frames[index];
+    decoder.decoder.start_new_frame(frame.seek_target);
 }
 
 impl Default for JxlRsBasicInfo {
@@ -458,6 +593,17 @@ impl Default for JxlRsBasicInfo {
             uses_original_profile: false,
             orientation: 1,
             is_grayscale: false,
+        }
+    }
+}
+
+impl From<&VisibleFrameInfo> for JxlRsVisibleFrameInfo {
+    fn from(f: &VisibleFrameInfo) -> Self {
+        Self {
+            duration_ms: f.duration_ms,
+            is_keyframe: f.is_keyframe,
+            is_last: f.is_last,
+            decode_start_file_offset: f.seek_target.decode_start_file_offset,
         }
     }
 }
@@ -489,15 +635,6 @@ impl From<&JxlBasicInfo> for JxlRsBasicInfo {
             // Note: is_grayscale is set by get_basic_info() after checking the
             // color profile, since JxlBasicInfo doesn't contain color info.
             is_grayscale: false,
-        }
-    }
-}
-
-impl Default for JxlRsFrameHeader {
-    fn default() -> Self {
-        Self {
-            duration_ms: 0.0,
-            name_length: 0,
         }
     }
 }

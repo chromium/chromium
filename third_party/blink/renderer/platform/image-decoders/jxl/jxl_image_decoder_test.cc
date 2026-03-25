@@ -736,6 +736,69 @@ TEST_F(JXLImageDecoderTest, FrameDurationCorrectDuringIncrementalLoad) {
   }
 }
 
+// Regression test: exercise multi-step incremental animation scanning and
+// decoding. This keeps frame timing growth and offset advancement paths active
+// while additional data is appended.
+TEST_F(JXLImageDecoderTest, IncrementalAnimationScanningAcrossDataUpdates) {
+  scoped_refptr<SharedBuffer> full_data =
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
+  ASSERT_TRUE(full_data);
+  Vector<char> full_data_vec = full_data->CopyAs<Vector<char>>();
+  ASSERT_GT(full_data_vec.size(), 0u);
+
+  constexpr wtf_size_t kExpectedFrameCount = 5;
+
+  // Find a partial-data cutoff that has discovered at least one frame timing
+  // but not all frames yet.
+  wtf_size_t first_cutoff = 0;
+  for (wtf_size_t cutoff = 512; cutoff < full_data_vec.size(); cutoff += 512) {
+    auto probe = CreateJXLDecoder();
+    scoped_refptr<SharedBuffer> partial_data =
+        SharedBuffer::Create(base::span(full_data_vec).first(cutoff));
+    probe->SetData(partial_data.get(), false);
+
+    if (probe->FrameCount() < kExpectedFrameCount &&
+        probe->FrameDurationAtIndex(0).InMilliseconds() > 0) {
+      first_cutoff = cutoff;
+      break;
+    }
+  }
+  ASSERT_GT(first_cutoff, 0u);
+
+  auto decoder = CreateJXLDecoder();
+
+  scoped_refptr<SharedBuffer> first_partial =
+      SharedBuffer::Create(base::span(full_data_vec).first(first_cutoff));
+  decoder->SetData(first_partial.get(), false);
+  wtf_size_t first_count = decoder->FrameCount();
+  EXPECT_LT(first_count, kExpectedFrameCount);
+  EXPECT_GT(decoder->FrameDurationAtIndex(0).InMilliseconds(), 0);
+
+  wtf_size_t second_cutoff =
+      std::min<wtf_size_t>(full_data_vec.size() - 1, first_cutoff + 1024);
+  ASSERT_GT(second_cutoff, first_cutoff);
+  scoped_refptr<SharedBuffer> second_partial =
+      SharedBuffer::Create(base::span(full_data_vec).first(second_cutoff));
+  decoder->SetData(second_partial.get(), false);
+
+  wtf_size_t second_count = decoder->FrameCount();
+  EXPECT_GE(second_count, first_count);
+  EXPECT_FALSE(decoder->Failed());
+
+  // Finish with all data and decode all frames to exercise the full decode
+  // progression after incremental metadata scanning.
+  decoder->SetData(full_data.get(), true);
+  EXPECT_EQ(kExpectedFrameCount, decoder->FrameCount());
+
+  for (wtf_size_t i = 0; i < kExpectedFrameCount; ++i) {
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(i);
+    ASSERT_TRUE(frame) << "Frame " << i << " is null";
+    EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus())
+        << "Frame " << i << " did not complete";
+  }
+  EXPECT_FALSE(decoder->Failed());
+}
+
 // Regression test: Animation frames with reference frame blending must render
 // correctly. This tests that frames which depend on previous frames (reference
 // frames) are properly composed. Without correct reference frame handling,
@@ -915,6 +978,102 @@ TEST_F(JXLImageDecoderTest, DecoderPreservedDuringIncrementalLoad) {
   EXPECT_GT(successful_partial_decodes, 0)
       << "Expected at least one successful partial decode during "
       << "incremental loading";
+}
+
+// Similar to jxl-rs compare_incremental: verify that progressive/incremental
+// decoding converges to the same final pixels as one-shot decoding.
+TEST_F(JXLImageDecoderTest, IncrementalStillDecodeMatchesOneShot) {
+  scoped_refptr<SharedBuffer> full_data =
+      ReadFileToSharedBuffer(kImagesDir, "zoltan.jxl");
+  ASSERT_TRUE(full_data);
+
+  auto one_shot = CreateJXLDecoder();
+  one_shot->SetData(full_data.get(), true);
+  ImageFrame* one_shot_frame = one_shot->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(one_shot_frame);
+  ASSERT_EQ(ImageFrame::kFrameComplete, one_shot_frame->GetStatus());
+  const unsigned one_shot_hash = HashBitmap(one_shot_frame->Bitmap());
+
+  Vector<char> full_data_vec = full_data->CopyAs<Vector<char>>();
+  auto incremental = CreateJXLDecoder();
+  bool saw_partial = false;
+
+  constexpr wtf_size_t kChunkSize = 64 * 1024;
+  for (wtf_size_t chunk_end = kChunkSize; chunk_end < full_data_vec.size();
+       chunk_end += kChunkSize) {
+    scoped_refptr<SharedBuffer> partial_data =
+        SharedBuffer::Create(base::span(full_data_vec).first(chunk_end));
+    incremental->SetData(partial_data.get(), false);
+
+    ImageFrame* frame = incremental->DecodeFrameBufferAtIndex(0);
+    if (frame && frame->GetStatus() == ImageFrame::kFramePartial) {
+      saw_partial = true;
+    }
+    EXPECT_FALSE(incremental->Failed());
+  }
+
+  incremental->SetData(full_data.get(), true);
+  ImageFrame* final_frame = incremental->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(final_frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, final_frame->GetStatus());
+  EXPECT_EQ(one_shot_hash, HashBitmap(final_frame->Bitmap()));
+  EXPECT_FALSE(incremental->Failed());
+  EXPECT_TRUE(saw_partial);
+}
+
+// Similar to jxl-rs compare_incremental for animations: with chunked input,
+// repeated decodes should still converge to the same final frame pixels as
+// one-shot decoding.
+TEST_F(JXLImageDecoderTest, IncrementalAnimationDecodeMatchesOneShot) {
+  scoped_refptr<SharedBuffer> full_data =
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
+  ASSERT_TRUE(full_data);
+
+  auto one_shot = CreateJXLDecoder();
+  one_shot->SetData(full_data.get(), true);
+  const wtf_size_t frame_count = one_shot->FrameCount();
+  ASSERT_EQ(5u, frame_count);
+
+  Vector<unsigned> one_shot_hashes;
+  one_shot_hashes.ReserveInitialCapacity(frame_count);
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
+    ImageFrame* frame = one_shot->DecodeFrameBufferAtIndex(i);
+    ASSERT_TRUE(frame) << "One-shot frame " << i << " is null";
+    ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus())
+        << "One-shot frame " << i << " is not complete";
+    one_shot_hashes.push_back(HashBitmap(frame->Bitmap()));
+  }
+
+  Vector<char> full_data_vec = full_data->CopyAs<Vector<char>>();
+  auto incremental = CreateJXLDecoder();
+
+  constexpr wtf_size_t kChunkSize = 1024;
+  for (wtf_size_t chunk_end = kChunkSize; chunk_end < full_data_vec.size();
+       chunk_end += kChunkSize) {
+    scoped_refptr<SharedBuffer> partial_data =
+        SharedBuffer::Create(base::span(full_data_vec).first(chunk_end));
+    incremental->SetData(partial_data.get(), false);
+
+    // Keep advancing scanner/metadata incrementally.
+    const wtf_size_t discovered = incremental->FrameCount();
+    EXPECT_GE(discovered, 1u);
+    EXPECT_LE(discovered, frame_count);
+    EXPECT_FALSE(incremental->Failed());
+  }
+
+  incremental->SetData(full_data.get(), true);
+  EXPECT_EQ(frame_count, incremental->FrameCount());
+
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
+    ImageFrame* frame = incremental->DecodeFrameBufferAtIndex(i);
+    ASSERT_TRUE(frame) << "Incremental frame " << i << " is null";
+    EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus())
+        << "Incremental frame " << i << " is not complete";
+    EXPECT_EQ(one_shot_hashes[i], HashBitmap(frame->Bitmap()))
+        << "Frame " << i
+        << " pixels differ between one-shot and incremental decode";
+  }
+  EXPECT_FALSE(incremental->Failed());
 }
 
 // Test that during incremental loading (not all data received), FrameCount()
