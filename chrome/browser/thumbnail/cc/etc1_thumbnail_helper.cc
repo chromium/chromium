@@ -101,9 +101,9 @@ void DeleteAllExceptForIdsTask(base::FilePath base_path_,
   base::FileEnumerator file_iter(base_path_, false,
                                  base::FileEnumerator::FILES);
   while (!file_iter.Next().empty()) {
-    base::FileEnumerator::FileInfo info = file_iter.GetInfo();
-    if (!safe_files.contains(info.GetName())) {
-      base::FilePath child = base_path_.Append(info.GetName());
+    base::FilePath name = file_iter.GetInfo().GetName();
+    if (name.Extension().empty() && !safe_files.contains(name)) {
+      base::FilePath child = base_path_.Append(name);
       base::DeleteFile(child);
     }
   }

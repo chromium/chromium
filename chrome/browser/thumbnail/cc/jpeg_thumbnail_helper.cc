@@ -23,6 +23,8 @@
 namespace thumbnail {
 namespace {
 
+constexpr char kJpegExtension[] = ".jpeg";
+
 SkBitmap ResizeBitmap(const SkBitmap& bitmap) {
   constexpr int kScale = 2;
   int width = bitmap.width() / kScale;
@@ -88,9 +90,9 @@ void DeleteAllExceptForIdsTask(base::FilePath base_path_,
   base::FileEnumerator file_iter(base_path_, false,
                                  base::FileEnumerator::FILES);
   while (!file_iter.Next().empty()) {
-    base::FileEnumerator::FileInfo info = file_iter.GetInfo();
-    if (!safe_files.contains(info.GetName())) {
-      base::FilePath child = base_path_.Append(info.GetName());
+    base::FilePath name = file_iter.GetInfo().GetName();
+    if (name.MatchesExtension(kJpegExtension) && !safe_files.contains(name)) {
+      base::FilePath child = base_path_.Append(name);
       base::DeleteFile(child);
     }
   }
@@ -170,7 +172,8 @@ base::FilePath JpegThumbnailHelper::GetJpegFilePath(TabId tab_id) {
 }
 
 base::FilePath JpegThumbnailHelper::GetJpegFileName(TabId tab_id) {
-  return base::FilePath(base::NumberToString(tab_id)).AddExtension(".jpeg");
+  return base::FilePath(base::NumberToString(tab_id))
+      .AddExtension(kJpegExtension);
 }
 
 }  // namespace thumbnail

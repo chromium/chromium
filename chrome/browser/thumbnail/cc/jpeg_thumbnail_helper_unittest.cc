@@ -201,9 +201,14 @@ TEST_F(JpegThumbnailHelperTest, DeleteThumbnail) {
 TEST_F(JpegThumbnailHelperTest, DeleteAllExceptForIds) {
   std::vector<int> tab_ids = {1, 2, 3, 4, 5};
   for (int tab_id : tab_ids) {
-    base::WriteFile(GetFile(tab_id), "dummy");
+    base::WriteFile(GetFile(tab_id), "thumbnail_data");
     EXPECT_TRUE(base::PathExists(GetFile(tab_id)));
   }
+
+  // Create a etc1 thumbnail file to make sure it is not deleted.
+  base::FilePath etc_file = GetFile(1).RemoveExtension();
+  base::WriteFile(etc_file, "thumbnail_data");
+  EXPECT_TRUE(base::PathExists(etc_file));
 
   GetInterface().DeleteAllExceptForIds({2, 4});
   task_environment_.RunUntilIdle();
@@ -213,6 +218,8 @@ TEST_F(JpegThumbnailHelperTest, DeleteAllExceptForIds) {
   EXPECT_FALSE(base::PathExists(GetFile(3)));
   EXPECT_TRUE(base::PathExists(GetFile(4)));
   EXPECT_FALSE(base::PathExists(GetFile(5)));
+
+  EXPECT_TRUE(base::PathExists(etc_file));
 }
 
 }  // namespace thumbnail
