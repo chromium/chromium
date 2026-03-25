@@ -722,6 +722,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Actor.OriginGating">
+  <owner>dylancutler@google.com</owner>
+  <owner>chrome-ai-security@google.com</owner>
+  <summary>
+    Metrics related to actor Origin Gating, a security feature controlling which
+    origins actors may interact with.
+  </summary>
+  <metric name="EngineState" enum="ActorEngineState">
+    <summary>
+      The ExecutionEngine::State when this metric is emitted. We want to see
+      where in the actor tool use lifecycle that these navigation confirmations
+      occur most frequently.
+    </summary>
+  </metric>
+  <metric name="ServerConfirmationResult" enum="ActorServerConfirmationResult">
+    <summary>
+      The result of confirming with the server if the actor may interact with
+      the origin of a URL that Chrome detects the actor navigating to. If the
+      result is kNotRequired then the origin was already previously evaluated.
+    </summary>
+  </metric>
+</event>
+
 <event name="AdFrameLoad">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>

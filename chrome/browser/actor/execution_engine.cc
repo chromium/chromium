@@ -66,6 +66,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/event_dispatcher.h"
@@ -91,7 +92,7 @@ static constexpr std::string_view kActionNavigationsApprovedByServerHistogram =
 
 BASE_FEATURE(kActorReloadCrashedTabBeforeAct, base::FEATURE_ENABLED_BY_DEFAULT);
 
-const RenderFrameHost* GetPrimaryMainFrame(
+RenderFrameHost* GetPrimaryMainFrame(
     content::NavigationHandle& navigation_handle) {
   return navigation_handle.GetWebContents()->GetPrimaryMainFrame();
 }
@@ -303,7 +304,9 @@ ExecutionEngine::ShouldDeferNavigation(
           base::BindOnce(
               &ExecutionEngine::CheckNavigationSensitiveUrlList, GetWeakPtr(),
               source_origin, navigation_handle.GetInitiatorOrigin(),
-              navigation_handle.GetURL(), skip_prompt, std::move(timer),
+              navigation_handle.GetURL(),
+              GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
+              skip_prompt, std::move(timer),
               std::move(callback).Then(base::BindOnce(
                   &ExecutionEngine::MaybeRecordNavigationConfirmationMetrics,
                   GetWeakPtr(), state(),
@@ -366,6 +369,7 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
     const url::Origin& source,
     const std::optional<url::Origin>& initiator,
     const GURL& destination_url,
+    ukm::SourceId ukm_source_id,
     bool skip_prompt,
     base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback) {
@@ -374,8 +378,8 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
   // the origin is allowed, we should proceed and not double prompt.
   if (origin_checker_.IsNavigationConfirmedByUser(destination_origin)) {
     OnNavigationSensitiveUrlListChecked(source, initiator, destination_origin,
-                                        skip_prompt, std::move(timer),
-                                        std::move(callback),
+                                        ukm_source_id, skip_prompt,
+                                        std::move(timer), std::move(callback),
                                         /*not_sensitive=*/true);
     return;
   }
@@ -384,7 +388,8 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
           destination_url, task_->GetProfile(),
           base::BindOnce(&ExecutionEngine::OnNavigationSensitiveUrlListChecked,
                          GetWeakPtr(), source, initiator, destination_origin,
-                         skip_prompt, std::move(timer), std::move(callback)));
+                         ukm_source_id, skip_prompt, std::move(timer),
+                         std::move(callback)));
   if (!sensitive_check_result.has_value()) {
     std::move(sensitive_check_result).error().Run(/*not_sensitive=*/true);
   }
@@ -394,6 +399,7 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
     const url::Origin& source,
     const std::optional<url::Origin>& initiator,
     const url::Origin& destination,
+    ukm::SourceId ukm_source_id,
     bool skip_prompt,
     base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback,
@@ -404,6 +410,12 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
       origin_checker_.IsNavigationAllowed(initiator, destination)) {
     LogNavigationGating(source, initiator, destination,
                         /*applied_gate=*/false);
+    ukm::builders::Actor_OriginGating builder(ukm_source_id);
+    builder
+        .SetServerConfirmationResult(static_cast<int64_t>(
+            ExecutionEngine::ActorServerConfirmationResult::kNotRequired))
+        .SetEngineState(static_cast<int64_t>(state_));
+    builder.Record(ukm::UkmRecorder::Get());
     std::move(callback).Run(/*may_continue=*/true);
     return;
   }
@@ -421,7 +433,7 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
   // origin and we should either confirm the navigation with the web client or
   // prompt the user depending on the feature state.
   if (not_sensitive) {
-    HandleNavigationToNewOrigin(destination, std::move(timer),
+    HandleNavigationToNewOrigin(destination, ukm_source_id, std::move(timer),
                                 std::move(callback));
     return;
   }
@@ -440,6 +452,7 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
 
 void ExecutionEngine::HandleNavigationToNewOrigin(
     const url::Origin& destination,
+    ukm::SourceId ukm_source_id,
     base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!kGlicConfirmNavigationToNewOrigins.Get()) {
@@ -452,12 +465,13 @@ void ExecutionEngine::HandleNavigationToNewOrigin(
                                       std::move(timer), std::move(callback));
     return;
   }
-  SendNavigationConfirmationRequest(destination, std::move(timer),
-                                    std::move(callback));
+  SendNavigationConfirmationRequest(destination, ukm_source_id,
+                                    std::move(timer), std::move(callback));
 }
 
 void ExecutionEngine::SendNavigationConfirmationRequest(
     const url::Origin& destination,
+    ukm::SourceId ukm_source_id,
     base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!task_->delegate()) {
@@ -467,7 +481,7 @@ void ExecutionEngine::SendNavigationConfirmationRequest(
   task_->delegate()->RequestToConfirmNavigation(
       task_->id(), destination,
       base::BindOnce(&ExecutionEngine::OnNavigationConfirmationDecision,
-                     GetWeakPtr(), destination, std::move(timer),
+                     GetWeakPtr(), destination, ukm_source_id, std::move(timer),
                      std::move(callback)));
 }
 
@@ -510,6 +524,7 @@ void ExecutionEngine::MaybeRecordNavigationConfirmationMetrics(
 
 void ExecutionEngine::OnNavigationConfirmationDecision(
     const url::Origin& destination,
+    ukm::SourceId ukm_source_id,
     base::ScopedUmaHistogramTimer timer,
     ExecutionEngine::NavigationDecisionCallback callback,
     webui::mojom::NavigationConfirmationResponsePtr response) {
@@ -518,8 +533,16 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
     // TODO(dylancutler): Separate Actor.NavigationGating.PermissionGranted into
     // separate histograms for different confirmation types.
     base::UmaHistogramBoolean(kPermissionGrantedHistogram, permission_granted);
+    ukm::builders::Actor_OriginGating builder(ukm_source_id);
+    builder
+        .SetServerConfirmationResult(static_cast<int64_t>(
+            response->result->get_permission_granted()
+                ? ExecutionEngine::ActorServerConfirmationResult::kAccepted
+                : ExecutionEngine::ActorServerConfirmationResult::kRejected))
+        .SetEngineState(static_cast<int64_t>(state_));
+    builder.Record(ukm::UkmRecorder::Get());
     if (permission_granted) {
-      origin_checker_.AllowNavigationTo(std::move(destination),
+      origin_checker_.AllowNavigationTo(destination,
                                         /*is_user_confirmed=*/false);
     }
     std::move(callback).Run(permission_granted);

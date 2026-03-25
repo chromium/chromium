@@ -138,6 +138,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
 
+<!-- LINT.IfChange(ActorEngineState) -->
+
+<enum name="ActorEngineState">
+  <int value="0" label="Init"/>
+  <int value="1" label="StartAction"/>
+  <int value="2" label="ToolCreateAndVerify"/>
+  <int value="3" label="UiPreInvoke"/>
+  <int value="4" label="ToolInvoke"/>
+  <int value="5" label="UiPostInvoke"/>
+  <int value="6" label="Complete"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/execution_engine.h:State) -->
+
 <!-- LINT.IfChange(ActorLoginAccountTypes) -->
 
 <enum name="ActorLoginAccountTypes">
@@ -186,6 +200,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorObservationOutcome) -->
+
+<!-- LINT.IfChange(ActorServerConfirmationResult) -->
+
+<enum name="ActorServerConfirmationResult">
+  <int value="0" label="NotRequired"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Rejected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/execution_engine.h:ActorServerConfirmationResult) -->
 
 <!-- LINT.IfChange(ActorTabObservationResult) -->
 
