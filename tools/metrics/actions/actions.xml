@@ -11194,6 +11194,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Logged when the back or forward button is clicked in the Contextual Tasks
+    full tab and results in a task switch.
+  </description>
+</action>
+
 <action name="ContextualTasks.TabChange.UserAction{ActionType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
