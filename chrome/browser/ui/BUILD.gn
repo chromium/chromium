@@ -3246,8 +3246,6 @@ static_library("ui") {
       "cocoa/confirm_quit_panel_controller.mm",
       "cocoa/dock_icon.h",
       "cocoa/dock_icon.mm",
-      "cocoa/first_run_dialog_controller.h",
-      "cocoa/first_run_dialog_controller.mm",
       "cocoa/fullscreen/fullscreen_menubar_tracker.h",
       "cocoa/fullscreen/fullscreen_menubar_tracker.mm",
       "cocoa/fullscreen/fullscreen_toolbar_animation_controller.h",
@@ -3355,7 +3353,6 @@ static_library("ui") {
       "//components/remote_cocoa/browser",
       "//device/fido/strings:strings_grit",
       "//extensions/components/native_app_window",
-      "//third_party/google_toolbox_for_mac",
       "//ui/accelerated_widget_mac",
     ]
     include_dirs = [ "$target_gen_dir" ]

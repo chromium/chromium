@@ -7854,7 +7854,6 @@ test("unit_tests") {
       "../browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller_unittest.mm",
       "../browser/ui/cocoa/confirm_quit_panel_controller_unittest.mm",
       "../browser/ui/cocoa/find_pasteboard_unittest.mm",
-      "../browser/ui/cocoa/first_run_dialog_controller_unittest.mm",
       "../browser/ui/cocoa/history_menu_bridge_unittest.mm",
       "../browser/ui/cocoa/history_menu_cocoa_controller_unittest.mm",
       "../browser/ui/cocoa/history_overlay_controller_unittest.mm",

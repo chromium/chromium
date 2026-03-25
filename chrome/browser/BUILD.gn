@@ -6352,7 +6352,6 @@ static_library("browser") {
       "//sandbox/policy",
       "//services/video_capture/public/mojom:constants",
       "//third_party/crashpad/crashpad/client",
-      "//third_party/google_toolbox_for_mac",
     ]
 
     # Any circular includes must depend on the target
