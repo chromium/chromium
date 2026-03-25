@@ -17,12 +17,7 @@
 
 namespace glic {
 
-class GlicContextMenuBrowserTest : public GlicBrowserTest {
- public:
-  GlicContextMenuBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kGlicContextMenu);
-  }
-
+class GlicContextMenuBrowserTestBase : public GlicBrowserTest {
  protected:
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu() {
     content::WebContents* web_contents =
@@ -33,6 +28,14 @@ class GlicContextMenuBrowserTest : public GlicBrowserTest {
         *web_contents->GetPrimaryMainFrame(), params);
     menu->Init();
     return menu;
+  }
+};
+
+class GlicContextMenuBrowserTest : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicContextMenuBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kGlic, features::kGlicContextMenu}, {});
   }
 
  private:
@@ -60,12 +63,32 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest, GlicInvokeStandard) {
   EXPECT_NE(nullptr, GetOnlyGlicInstance());
 }
 
-class GlicContextMenuArm2BrowserTest : public GlicContextMenuBrowserTest {
+class GlicContextMenuGlicDisabledBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicContextMenuGlicDisabledBrowserTest() {
+    feature_list_.InitWithFeatures({features::kGlicContextMenu},
+                                   {features::kGlic});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuGlicDisabledBrowserTest, GlicItemAbsent) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  auto menu = CreateContextMenu();
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+}
+
+class GlicContextMenuArm2BrowserTest : public GlicContextMenuBrowserTestBase {
  public:
   GlicContextMenuArm2BrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicContextMenu,
-        {{features::kGlicContextMenuArm.name, "arm2"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlic, {}},
+         {features::kGlicContextMenu,
+          {{features::kGlicContextMenuArm.name, "arm2"}}}},
+        {});
   }
 
  private:
