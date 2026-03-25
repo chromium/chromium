@@ -31,6 +31,10 @@ base::FilePath GetMultiProcessHostGlobalConfigDir();
 // desktop process, which is always run as the login user.
 base::FilePath GetPerUserConfigDir();
 
+// Similar to GetPerUserConfigDir(), but returns a relative path to the user's
+// home directory.
+base::FilePath GetPerUserConfigRelativeDir();
+
 }  // namespace remoting
 
 #endif  // REMOTING_BASE_FILE_PATH_UTIL_LINUX_H_

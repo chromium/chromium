@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/config_watcher.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
@@ -31,7 +32,6 @@ class Location;
 
 namespace remoting {
 
-class AutoThreadTaskRunner;
 class DesktopSession;
 class HostEventLogger;
 class ScreenResolution;

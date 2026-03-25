@@ -95,6 +95,9 @@ base::SingleThreadTaskExecutor* g_main_thread_task_executor = nullptr;
 // The active RunLoop.
 base::RunLoop* g_active_run_loop = nullptr;
 
+// TODO: crbug.com/475611769 - Add help about --gdm-managed and config migration
+// once GDM-managed host is feature complete.
+
 void PrintDefaultHelpMessage(const char* process_name) {
   // Optional args are shown first as the most common issue is needing to
   // generate the auth-code again and this ordering makes it easy to fix the

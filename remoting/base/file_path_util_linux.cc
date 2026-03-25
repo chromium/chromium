@@ -28,7 +28,11 @@ base::FilePath GetMultiProcessHostGlobalConfigDir() {
 }
 
 base::FilePath GetPerUserConfigDir() {
-  return base::GetHomeDir().Append(".config").Append(kConfigDir);
+  return base::GetHomeDir().Append(GetPerUserConfigRelativeDir());
+}
+
+base::FilePath GetPerUserConfigRelativeDir() {
+  return base::FilePath(".config").Append(kConfigDir);
 }
 
 }  // namespace remoting
