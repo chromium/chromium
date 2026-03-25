@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -60,6 +61,7 @@ class GlicInvokeHandler : public Host::Observer {
   void OnTabClosed(tabs::TabInterface* tab);
 
   const base::raw_ref<GlicInstanceImpl> instance_;
+  raw_ptr<tabs::TabInterface> tab_;
   GlicInvokeOptions options_;
   std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey_;
   CompletionCallback completion_callback_;
