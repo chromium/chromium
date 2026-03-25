@@ -589,9 +589,6 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
       builder.SetOverflowY(builder.OverflowY() == EOverflow::kVisible
                                ? EOverflow::kAuto
                                : builder.OverflowY());
-      if (builder.Display() == EDisplay::kContents) {
-        builder.SetDisplay(EDisplay::kNone);
-      }
 
       // See https://drafts.csswg.org/css-display/#unbox-html
       if (builder.Display() == EDisplay::kContents) {
