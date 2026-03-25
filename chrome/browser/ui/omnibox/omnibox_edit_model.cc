@@ -714,12 +714,6 @@ void OmniboxEditModel::EnterKeywordMode(
   DCHECK(template_url);
   controller_->StopAutocomplete(/*clear_result=*/false);
 
-  if (keyword_ != template_url->keyword()) {
-    // Note, this is not the only place that keyword mode can be entered, but
-    // it would be better to make it so than to add extra notification calls
-    // elsewhere. At present, the method is only meaningfully used for exit.
-    controller_->client()->OnKeywordModeChanged(true, template_url->keyword());
-  }
   SetKeyword(template_url->keyword());
   SetKeywordPlaceholder(placeholder_text);
   SetIsKeywordHint(false);

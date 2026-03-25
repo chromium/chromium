@@ -458,24 +458,6 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
   }
 }
 
-void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
-                                               const std::u16string& keyword) {
-  if (entered) {
-    // Note, entry into keyword mode is not sufficient signal to start lens and
-    // that is handled by separate explicit actions; but whenever the '@page'
-    // keyword mode is exited, lens should be closed.
-    return;
-  }
-
-  TemplateURL* template_url =
-      GetTemplateURLService()->GetTemplateURLForKeyword(keyword);
-  if (!template_url ||
-      template_url->starter_pack_id() !=
-          template_url_starter_pack_data::StarterPackId::kPage) {
-    return;
-  }
-}
-
 void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
     AutocompleteProviderClient* client) {
   if (!g_browser_process ||
