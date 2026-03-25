@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safety_checks.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
@@ -58,6 +59,10 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // Represents a tree of FrameNavigationEntries that make up this joint session
   // history item.
   struct TreeNode {
+    // TODO(https://crbug.com/495931147): Remove this macro.
+    ADVANCED_MEMORY_SAFETY_CHECKS();
+
+   public:
     TreeNode(TreeNode* parent, scoped_refptr<FrameNavigationEntry> frame_entry);
     ~TreeNode();
 
