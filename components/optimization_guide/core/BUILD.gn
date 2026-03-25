@@ -379,15 +379,23 @@ source_set("manifest_broker") {
   sources = [
     "model_execution/manifest_broker/manifest.cc",
     "model_execution/manifest_broker/manifest.h",
-    "model_execution/manifest_broker/manifest_asset_manager.cc",
-    "model_execution/manifest_broker/manifest_asset_manager.h",
   ]
+  if (build_with_model_execution) {
+    sources += [
+      "model_execution/manifest_broker/manifest_asset_manager.cc",
+      "model_execution/manifest_broker/manifest_asset_manager.h",
+    ]
+  }
   deps = [
     ":ondevice",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/public/mojom",
+    "//components/prefs",
   ]
+  if (build_with_model_execution) {
+    deps += [ ":features" ]
+  }
 }
 
 static_library("manifest_broker_dev_support") {
@@ -416,6 +424,7 @@ static_library("manifest_broker_test_support") {
     ":manifest_broker_dev_support",
     ":model_execution_test_support",
     "//base",
+    "//base/test:test_support",
     "//testing/gmock",
   ]
 }
