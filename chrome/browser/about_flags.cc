@@ -869,31 +869,44 @@ const FeatureEntry::FeatureVariation
 
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam
-    kWebUIOmniboxAimPopupAddContextNoContextualChips[] = {
+    kWebUIOmniboxAimPopupAddContextNoTextNoChips[] = {
         {"Omnibox_AddContextButtonVariant", "below_results"},
+        {"Omnibox_ShowContextMenuDescription", "false"},
         {"Omnibox_ShowRecentTabChip", "false"},
         {"Omnibox_ShowLensSearchChip", "false"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupHideClassicContextButton[] = {
         {"Omnibox_AddContextButtonVariant", "below_results"},
+        {"Omnibox_ShowContextMenuDescription", "false"},
         {"Omnibox_HideClassicContextButton", "true"},
         {"Omnibox_ShowRecentTabChip", "false"},
         {"Omnibox_ShowLensSearchChip", "false"},
 };
-const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextWithChips[] = {
-    {"Omnibox_AddContextButtonVariant", "below_results"},
-    {"Omnibox_ShowRecentTabChip", "true"},
-    {"Omnibox_ShowLensSearchChip", "true"},
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextShowTextNoChips[] = {
+        {"Omnibox_AddContextButtonVariant", "below_results"},
+        {"Omnibox_ShowContextMenuDescription", "true"},
+        {"Omnibox_ShowRecentTabChip", "false"},
+        {"Omnibox_ShowLensSearchChip", "false"},
+};
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextShowTextShowChips[] = {
+        {"Omnibox_AddContextButtonVariant", "below_results"},
+        {"Omnibox_ShowContextMenuDescription", "true"},
+        {"Omnibox_ShowRecentTabChip", "true"},
+        {"Omnibox_ShowLensSearchChip", "true"},
 };
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
-    {"- \"Add Context\" button, no contextual chips",
-     kWebUIOmniboxAimPopupAddContextNoContextualChips, nullptr},
-    {"- No \"Add Context\" button, no contextual chips",
+    {"- \"Add Context\" button without text, no contextual chips",
+     kWebUIOmniboxAimPopupAddContextNoTextNoChips, nullptr},
+    {"- No Classic \"Add Context\" button, no contextual chips",
      kWebUIOmniboxAimPopupHideClassicContextButton, nullptr},
-    {"- \"Add Context\" button, show contextual chips",
-     kWebUIOmniboxAimPopupAddContextWithChips, nullptr}};
+    {"- \"Add Context\" button with text, no contextual chips",
+     kWebUIOmniboxAimPopupAddContextShowTextNoChips, nullptr},
+    {"- \"Add Context\" button with text, show contextual chips",
+     kWebUIOmniboxAimPopupAddContextShowTextShowChips, nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
     {"SxS", "true"}};

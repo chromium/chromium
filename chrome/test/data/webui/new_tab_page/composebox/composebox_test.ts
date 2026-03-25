@@ -943,4 +943,28 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(1, testProxy.metrics.count(metricName, 0));
     assertEquals(1, testProxy.metrics.count(metricName, true));
   });
+
+  test('ShowContextMenuDescription', async () => {
+    loadTimeData.overrideValues({
+      composeboxShowContextMenuDescription: false,
+    });
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    let entrypoint = $$(testProxy.element, '#contextEntrypoint');
+    assertTrue(!!entrypoint);
+    assertFalse(entrypoint.hasAttribute('show-context-menu-description'));
+
+    testProxy.element.remove();
+
+    loadTimeData.overrideValues({
+      composeboxShowContextMenuDescription: true,
+    });
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    entrypoint = $$(testProxy.element, '#contextEntrypoint');
+    assertTrue(!!entrypoint);
+    assertTrue(entrypoint.hasAttribute('show-context-menu-description'));
+  });
 });

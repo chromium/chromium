@@ -170,6 +170,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   private eventTracker_ = new EventTracker();
   private hideContextButton_: boolean =
       loadTimeData.getBoolean('hideClassicContextButton');
+  private showContextMenuDescription_: boolean =
+      loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   private listenerIds_: number[] = [];
   private pageHandler_: SearchboxPageHandlerInterface;
   private popupCallbackRouter_: OmniboxPopupPageCallbackRouter;
@@ -607,6 +609,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   }
 
   protected computeShowContextEntrypointDescription_(): boolean {
+    if (!this.showContextMenuDescription_) {
+      return false;
+    }
     const toolChipsVisible = this.isContentSharingEnabled_ &&
         (this.computeShowRecentTabChip_() || this.isLensSearchEligible_);
     return !toolChipsVisible;

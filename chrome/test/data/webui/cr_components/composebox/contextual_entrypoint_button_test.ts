@@ -7,7 +7,8 @@ import 'chrome://resources/cr_components/composebox/contextual_entrypoint_button
 
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
-import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -95,6 +96,25 @@ suite('ContextualEntrypointButton', () => {
     // Assert narrow state.
     description = $$(testElement, '#description');
     assertFalse(!!description);
+  });
+
+  test('ShowContextMenuDescription', async () => {
+    loadTimeData.overrideValues({
+      addContext: 'Add tabs and more',
+    });
+
+    const testElement = createEntrypointButton();
+    testElement.showContextMenuDescription = false;
+    await microtasksFinished();
+
+    assertFalse(!!$$(testElement, '#description'));
+
+    testElement.showContextMenuDescription = true;
+    await microtasksFinished();
+
+    const description = $$(testElement, '#description');
+    assertTrue(!!description);
+    assertEquals('Add tabs and more', description.textContent.trim());
   });
 
   test('disables animations when --cr-animations-disabled is 1', async () => {
