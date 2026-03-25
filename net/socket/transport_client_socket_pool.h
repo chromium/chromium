@@ -237,7 +237,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   bool RequestInGroupWithHandleHasJobForTesting(
       const GroupId& group_id,
       const ClientSocketHandle* handle) const {
-    return group_map_.find(group_id)->second->RequestWithHandleHasJobForTesting(
+    return group_map_.find(group_id)->second.RequestWithHandleHasJobForTesting(
         handle);
   }
 
@@ -334,7 +334,12 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
     Group(const GroupId& group_id,
           TransportClientSocketPool* client_socket_pool);
+    Group(const Group&) = delete;
+    Group(Group&&) = delete;
     ~Group() override;
+
+    Group& operator=(const Group&) = delete;
+    Group& operator=(Group&&) = delete;
 
     // ConnectJob::Delegate methods:
     void OnConnectJobComplete(int result, ConnectJob* job) override;
@@ -564,7 +569,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     int64_t generation_ = 0;
   };
 
-  using GroupMap = std::map<GroupId, raw_ptr<Group, CtnExperimental>>;
+  using GroupMap = std::map<GroupId, Group>;
 
   struct CallbackResultPair {
     CallbackResultPair();
@@ -602,19 +607,19 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
   // TODO(mmenke): de-inline these.
   size_t NumNeverAssignedConnectJobsInGroup(const GroupId& group_id) const {
-    return group_map_.find(group_id)->second->never_assigned_job_count();
+    return group_map_.find(group_id)->second.never_assigned_job_count();
   }
 
   size_t NumUnassignedConnectJobsInGroup(const GroupId& group_id) const {
-    return group_map_.find(group_id)->second->unassigned_job_count();
+    return group_map_.find(group_id)->second.unassigned_job_count();
   }
 
   size_t NumConnectJobsInGroup(const GroupId& group_id) const {
-    return group_map_.find(group_id)->second->ConnectJobCount();
+    return group_map_.find(group_id)->second.ConnectJobCount();
   }
 
   size_t NumActiveSocketsInGroup(const GroupId& group_id) const {
-    return group_map_.find(group_id)->second->active_socket_count();
+    return group_map_.find(group_id)->second.active_socket_count();
   }
 
   bool HasGroup(const GroupId& group_id) const;
@@ -647,7 +652,10 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // at least one pending request. Returns true if any groups are stalled, and
   // if so (and if both |group| and |group_id| are not NULL), fills |group|
   // and |group_id| with data of the stalled group having highest priority.
-  bool FindTopStalledGroup(Group** group, GroupId* group_id) const;
+  //
+  // This is not const because it returns a non-const pointer to an object owned
+  // by `this`.
+  bool FindTopStalledGroup(Group** group, GroupId* group_id);
 
   // Removes |job| from |group|, which must already own |job|.
   void RemoveConnectJob(ConnectJob* job, Group* group);
