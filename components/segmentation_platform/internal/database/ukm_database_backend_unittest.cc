@@ -14,6 +14,8 @@
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/database/ukm_url_table.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
+#include "sql/database.h"
+#include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -130,6 +132,17 @@ class UkmDatabaseBackendTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<UkmDatabaseBackend> backend_;
 };
+
+// Checks that the database is always opened in exclusive locking mode. This is
+// required because functions doing only read statements do not use transactions
+// for performance reason. These function rely on the exclusive locking mode to
+// be atomic.
+TEST_F(UkmDatabaseBackendTest, DatabaseIsOpenedInExclusiveLockingMode) {
+  sql::Statement statement(
+      backend_->db().GetReadonlyStatement("PRAGMA locking_mode"));
+  ASSERT_TRUE(statement.Step());
+  EXPECT_EQ(statement.ColumnString(0), "exclusive");
+}
 
 TEST_F(UkmDatabaseBackendTest, EntriesWithoutUrls) {
   ukm::mojom::UkmEntryPtr entry1 = GetSampleUkmEntry();

@@ -144,8 +144,16 @@ bool UkmDatabaseBackend::InitDatabase() {
     result = false;
   }
   if (result) {
+    std::optional<sql::Transaction> transaction;
+    if (inhibit_transaction_ && !transaction.emplace(&db_).Begin()) {
+      status_ = Status::INIT_FAILED;
+      return false;
+    }
     result = metrics_table_.InitTable() && url_table_.InitTable() &&
              uma_metrics_table_.InitTable();
+    if (transaction && result) {
+      result = transaction->Commit();
+    }
   }
   status_ = result ? Status::INIT_SUCCESS : Status::INIT_FAILED;
 
@@ -158,6 +166,11 @@ bool UkmDatabaseBackend::InitDatabase() {
 void UkmDatabaseBackend::StoreUkmEntry(ukm::mojom::UkmEntryPtr entry) {
   SCOPED_UMA_HISTOGRAM_TIMER("SegmentationPlatform.Database.StoreUkmEntry");
   if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+
+  std::optional<sql::Transaction> transaction;
+  if (inhibit_transaction_ && !transaction.emplace(&db_).Begin()) {
     return;
   }
 
@@ -181,6 +194,11 @@ void UkmDatabaseBackend::StoreUkmEntry(ukm::mojom::UkmEntryPtr entry) {
     row.metric_value = metric_and_value.second;
     metrics_table_.AddUkmEvent(row);
   }
+
+  if (transaction) {
+    transaction->Commit();
+  }
+
   TrackChangesInTransaction(entry->metrics.size());
 }
 
@@ -191,6 +209,11 @@ void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
   SCOPED_UMA_HISTOGRAM_TIMER(
       "SegmentationPlatform.Database.UpdateUrlForUkmSource");
   if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+
+  std::optional<sql::Transaction> transaction;
+  if (inhibit_transaction_ && !transaction.emplace(&db_).Begin()) {
     return;
   }
 
@@ -214,6 +237,10 @@ void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
   source_to_url_[source_id] = url_id;
   // Update all entries in metrics table with the URL ID.
   metrics_table_.UpdateUrlIdForSource(source_id, url_id);
+
+  if (transaction) {
+    transaction->Commit();
+  }
 
   TrackChangesInTransaction(2);  // 2 updates above.
 }
@@ -245,6 +272,11 @@ void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls,
     return;
   }
 
+  std::optional<sql::Transaction> transaction;
+  if (inhibit_transaction_ && !transaction.emplace(&db_).Begin()) {
+    return;
+  }
+
   std::vector<UrlId> url_ids;
   for (const GURL& url : urls) {
     UrlId id = UkmUrlTable::GenerateUrlId(url);
@@ -256,6 +288,10 @@ void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls,
   }
   url_table_.RemoveUrls(url_ids);
   metrics_table_.DeleteEventsForUrls(url_ids);
+
+  if (transaction) {
+    transaction->Commit();
+  }
 
   // Force commit so that we don't store URLs longer than needed.
   RestartTransaction();
@@ -278,6 +314,11 @@ UkmDatabaseBackend::RunReadOnlyQueries(UkmDatabase::QueryList queries) {
   if (status_ != Status::INIT_SUCCESS) {
     return std::nullopt;
   }
+
+  // This function is read-only and therefore doesn't require a transaction.
+  // Since the database was opened in exclusive locking mode and the database
+  // operations are sequence-bound, the table cannot be modified concurrently
+  // while this function runs.
 
   processing::IndexedTensors result;
   for (const auto& index_and_query : queries) {
@@ -312,6 +353,7 @@ UkmDatabaseBackend::RunReadOnlyQueries(UkmDatabase::QueryList queries) {
               << " Result: " << outputs;
     }
   }
+
   return result;
 }
 
@@ -321,11 +363,20 @@ void UkmDatabaseBackend::CleanupOldEntries(base::Time ukm_time_limit,
     return;
   }
 
+  std::optional<sql::Transaction> transaction;
+  if (inhibit_transaction_ && !transaction.emplace(&db_).Begin()) {
+    return;
+  }
+
   std::vector<UrlId> deleted_urls =
       metrics_table_.DeleteEventsBeforeTimestamp(ukm_time_limit);
   url_table_.RemoveUrls(deleted_urls);
   url_table_.DeleteUrlsBeforeTimestamp(ukm_time_limit);
   uma_metrics_table_.DeleteEventsBeforeTimestamp(uma_time_limit);
+
+  if (transaction) {
+    transaction->Commit();
+  }
 
   // Force commit so that we don't store URLs longer than needed.
   RestartTransaction();
@@ -337,11 +388,21 @@ void UkmDatabaseBackend::CleanupItems(const std::string& profile_id,
     return;
   }
 
+  std::optional<sql::Transaction> transaction;
+  if (inhibit_transaction_ && !transaction.emplace(&db_).Begin()) {
+    return;
+  }
+
   // This needs to support clean up for UKM data.
   // Only `cleanup_items` with uma types should be sent to uma table.
   std::erase_if(cleanup_items,
                 [](const CleanupItem& item) { return !item.IsUma(); });
   uma_metrics_table_.CleanupItems(profile_id, cleanup_items);
+
+  if (transaction) {
+    transaction->Commit();
+  }
+
   TrackChangesInTransaction(cleanup_items.size());
 }
 
@@ -358,6 +419,11 @@ void UkmDatabaseBackend::RollbackTransactionForTesting() {
 void UkmDatabaseBackend::DeleteAllUrls() {
   CHECK_EQ(status_, Status::INIT_SUCCESS);
 
+  std::optional<sql::Transaction> transaction;
+  if (inhibit_transaction_ && !transaction.emplace(&db_).Begin()) {
+    return;
+  }
+
   // Remove all metrics associated with any URL, but retain the metrics that are
   // not keyed on URL.
   bool success = db_.Execute("DELETE FROM metrics WHERE url_id!=0");
@@ -367,6 +433,11 @@ void UkmDatabaseBackend::DeleteAllUrls() {
   success = success && db_.Execute("DROP TABLE urls");
   success = success && url_table_.InitTable();
   DCHECK(success);
+
+  if (transaction && success) {
+    transaction->Commit();
+  }
+
   RestartTransaction();
 }
 
