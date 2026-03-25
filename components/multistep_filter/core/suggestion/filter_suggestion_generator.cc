@@ -17,6 +17,7 @@
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/features.h"
+#include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 
 namespace multistep_filter {
@@ -35,7 +36,7 @@ void FilterSuggestionGenerator::GenerateSuggestion(
     const GURL& url,
     base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback) {
   annotation_index_client_->GetSupportedTaskTypesForDomain(
-      url.host(),
+      GetEtldPlusOne(url),
       base::BindOnce(&FilterSuggestionGenerator::OnSupportedTaskTypesFetched,
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }

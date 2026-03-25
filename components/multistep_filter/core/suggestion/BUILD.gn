@@ -9,6 +9,7 @@ source_set("suggestion") {
   ]
   deps = [
     "//components/multistep_filter/core:features",
+    "//components/multistep_filter/core:util",
     "//components/multistep_filter/core/annotation_index",
     "//components/multistep_filter/core/storage",
   ]
