@@ -116,7 +116,8 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     return accessibleElements;
   }
 
-  if (self.contextualPanelEntrypointView) {
+  if (self.contextualPanelEntrypointView &&
+      !self.contextualPanelEntrypointView.hidden) {
     [accessibleElements addObject:self.contextualPanelEntrypointView];
   }
 
@@ -128,7 +129,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     [accessibleElements addObject:self.badgeView];
   }
 
-  if (self.readerModeChipView) {
+  if (self.readerModeChipView && !self.readerModeChipView.hidden) {
     [accessibleElements addObject:self.readerModeChipView];
   }
 

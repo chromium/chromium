@@ -74,6 +74,9 @@ typedef NS_ENUM(int, TrailingButtonState) {
   kVoiceSearchButton,
 };
 
+// The scale factor of the steady view in fullscreen.
+const CGFloat kFullscreenScaleFactor = 0.87;
+
 // The size of the symbol image.
 const CGFloat kSymbolImagePointSize = 18.;
 
@@ -374,7 +377,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   CGFloat alphaValue = fmax((progress - 0.85) / 0.15, 0);
-  CGFloat scaleValue = 0.79 + 0.21 * progress;
+  CGFloat scaleValue =
+      IsChromeNextIaEnabled()
+          ? kFullscreenScaleFactor + (1 - kFullscreenScaleFactor) * progress
+          : 0.79 + 0.21 * progress;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
   self.locationBarSteadyView.badgesContainerView.placeholderView.alpha =
       alphaValue;
