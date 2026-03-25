@@ -672,9 +672,7 @@ void LanguageModelPromptBuilder::ToMojo(AudioBuffer* audio_buffer,
   }
   // TODO(crbug.com/382180351): Avoid a copy.
   audio_data->frame_count = bus->length();
-  audio_data->data = Vector<float>(bus->length());
-  std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
-              audio_data->data.begin());
+  audio_data->data.append_range(bus->Channel(0)->Span());
   OnPromptContentProcessed(mojom::blink::AILanguageModelPromptContent::NewAudio(
                                std::move(audio_data)),
                            entry);
@@ -701,9 +699,7 @@ void LanguageModelPromptBuilder::AudioToMojo(base::span<uint8_t> bytes,
           << bus->SampleRate() << "Hz, len:" << bus->length();
   // TODO(crbug.com/382180351): Avoid a copy.
   audio_data->frame_count = bus->length();
-  audio_data->data = Vector<float>(bus->length());
-  std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
-              audio_data->data.begin());
+  audio_data->data.append_range(bus->Channel(0)->Span());
   OnPromptContentProcessed(mojom::blink::AILanguageModelPromptContent::NewAudio(
                                std::move(audio_data)),
                            entry);
