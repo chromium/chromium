@@ -577,7 +577,7 @@ bool IsIPHGestureRecognitionImprovementEnabled() {
       kIPHGestureRecognitionAblation, kIPHGestureRecognitionImprovement, false);
 }
 
-BASE_FEATURE(kIOSOneTapMiniMapRestrictions, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSOneTapMiniMapRestrictions, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kIOSOneTapMiniMapRestrictionCrossValidateParamName[] =
     "ios-one-tap-minimap-cross-validate";
@@ -599,7 +599,7 @@ BASE_FEATURE_PARAM(int,
                    kIOSOneTapMiniMapRestrictionMinCharsParam,
                    &kIOSOneTapMiniMapRestrictions,
                    kIOSOneTapMiniMapRestrictionMinCharsParamName,
-                   0);
+                   14);
 const char kIOSOneTapMiniMapRestrictionMaxSectionsParamName[] =
     "ios-one-tap-minimap-max-section";
 BASE_FEATURE_PARAM(int,
@@ -620,7 +620,7 @@ constexpr base::FeatureParam<double>
     kIOSOneTapMiniMapRestrictionMinAlphanumProportionParam{
         &kIOSOneTapMiniMapRestrictions,
         /*name=*/kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName,
-        /*default_value=*/0};
+        /*default_value=*/0.8};
 
 bool IsNotificationCollisionManagementEnabled() {
   return base::FeatureList::IsEnabled(kNotificationCollisionManagement);
