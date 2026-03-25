@@ -55,6 +55,7 @@ class CONTENT_EXPORT DelegatedFrameHostClient {
   virtual void InvalidateLocalSurfaceIdOnEviction() = 0;
   virtual viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction() = 0;
   virtual bool ShouldShowStaleContentOnEviction() = 0;
+  virtual cc::DeadlinePolicy GetResizeDeadlinePolicy() const;
 };
 
 // The DelegatedFrameHost is used to host all of the RenderWidgetHostView state

@@ -324,6 +324,21 @@ bool BrowserCompositorMac::ShouldShowStaleContentOnEviction() {
   return false;
 }
 
+cc::DeadlinePolicy BrowserCompositorMac::GetResizeDeadlinePolicy() const {
+  // For remote windows (PWA app shim), use the default deadline to give the
+  // renderer time to produce a correctly-sized frame. With deadline=0, the
+  // compositor immediately shows stale content, which is highly visible
+  // because the entire window area is web content.
+  // https://crbug.com/493708175
+  //
+  // For in-process windows (regular browser tabs, content shell, popups),
+  // use deadline=0 to produce new content as quickly as possible.
+  if (client_->ShouldWaitRemoteCompositorFrameOnResize()) {
+    return cc::DeadlinePolicy::UseDefaultDeadline();
+  }
+  return cc::DeadlinePolicy::UseSpecifiedDeadline(0u);
+}
+
 void BrowserCompositorMac::DidNavigateMainFramePreCommit() {
   delegated_frame_host_->DidNavigateMainFramePreCommit();
 }

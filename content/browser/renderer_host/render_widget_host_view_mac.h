@@ -429,6 +429,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() override;
   display::ScreenInfo GetCurrentScreenInfo() const override;
   void SetCurrentDeviceScaleFactor(float device_scale_factor) override;
+  bool ShouldWaitRemoteCompositorFrameOnResize() const override;
 
   // AcceleratedWidgetMacNSView implementation.
   void AcceleratedWidgetCALayerParamsUpdated() override;
