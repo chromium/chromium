@@ -29,12 +29,12 @@ void GlicSyntheticTrialManager::SetSyntheticExperimentState(
   // If browser is already registered in a conflicting group then discard the
   // logs by marking them in a special group. This avoids combining logs from
   // multiple groups from different profiles.
+  auto it = synthetic_field_trial_groups_.find(trial_name);
   bool conflicting_group_registered =
-      synthetic_field_trial_groups_.count(trial_name) > 0 &&
-      synthetic_field_trial_groups_[trial_name] != group_name;
+      it != synthetic_field_trial_groups_.end() && it->second != group_name;
 
   if (conflicting_group_registered) {
-    if (synthetic_field_trial_groups_[trial_name] != "MultiProfileDetected") {
+    if (it->second != "MultiProfileDetected") {
       base::UmaHistogramBoolean(
           "Glic.ChromeClient.MultiProfileSyntheticTrialConflictDetected",
           conflicting_group_registered);
@@ -42,7 +42,7 @@ void GlicSyntheticTrialManager::SetSyntheticExperimentState(
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         trial_name, "MultiProfileDetected",
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
-    synthetic_field_trial_groups_[trial_name] = "MultiProfileDetected";
+    it->second = "MultiProfileDetected";
   } else {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         trial_name, group_name,
