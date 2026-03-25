@@ -1009,7 +1009,8 @@ class CORE_EXPORT LocalFrameView final
   // The internal version that does the work after the proper context and checks
   // have passed in the above function call.
   void UpdateLifecyclePhasesInternal(
-      DocumentLifecycle::LifecycleState target_state);
+      DocumentLifecycle::LifecycleState target_state,
+      DocumentUpdateReason reason);
   // Four lifecycle phases helper functions corresponding to StyleAndLayout,
   // Compositing, PrePaint, and Paint phases. If the return value is true, it
   // means further lifecycle phases need to be run. This is used to abort
@@ -1093,7 +1094,9 @@ class CORE_EXPORT LocalFrameView final
   void DeliverSynchronousIntersectionObservations();
 
   // https://drafts.csswg.org/cssom-view/#post-layout-snapshot
-  bool RunSnapshotPostLayoutStateSteps();
+  bool RunSnapshotPostLayoutStateSteps(
+      DocumentLifecycle::LifecycleState target_state,
+      DocumentUpdateReason reason);
 
   bool ShouldDeferLayoutSnap() const;
 

@@ -2342,7 +2342,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
     force_debug_info.emplace(&paint_debug_info_enabled_, true);
 
   // Run the lifecycle updates.
-  UpdateLifecyclePhasesInternal(target_state);
+  UpdateLifecyclePhasesInternal(target_state, reason);
 
   if (target_state == DocumentLifecycle::kPaintClean) {
     TRACE_EVENT0("blink", "LocalFrameView::DidFinishLifecycleUpdate");
@@ -2394,7 +2394,8 @@ cc::PropertyChangeForcesCommitCriteria LocalFrameView::ForceCommitCriteria()
 }
 
 void LocalFrameView::UpdateLifecyclePhasesInternal(
-    DocumentLifecycle::LifecycleState target_state) {
+    DocumentLifecycle::LifecycleState target_state,
+    DocumentUpdateReason reason) {
   // TODO(https://crbug.com/1196853): Switch to ScriptForbiddenScope once
   // failures are fixed.
   BlinkLifecycleScopeWillBeScriptForbidden forbid_script;
@@ -2448,7 +2449,8 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // https://github.com/w3c/csswg-drafts/issues/5261
     if (should_run_post_layout_snapshot_client_steps) {
       should_run_post_layout_snapshot_client_steps = false;
-      bool needs_to_repeat_lifecycle = RunSnapshotPostLayoutStateSteps();
+      bool needs_to_repeat_lifecycle =
+          RunSnapshotPostLayoutStateSteps(target_state, reason);
       if (needs_to_repeat_lifecycle) {
         continue;
       }
@@ -2605,7 +2607,28 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
          Lifecycle().GetState() == DocumentLifecycle::kPaintClean);
 }
 
-bool LocalFrameView::RunSnapshotPostLayoutStateSteps() {
+bool LocalFrameView::RunSnapshotPostLayoutStateSteps(
+    DocumentLifecycle::LifecycleState target_state,
+    DocumentUpdateReason reason) {
+  if (reason != DocumentUpdateReason::kBeginMainFrame &&
+      target_state != DocumentLifecycle::kPaintClean) {
+    switch (reason) {
+      case DocumentUpdateReason::kTest:
+        // Allow running snapshotting for unit tests because some tests target
+        // a phase before kPaintClean in order to test for intermediate states.
+        break;
+      case DocumentUpdateReason::kPrinting:
+        // Printing does not target kPaintClean, but still needs to do
+        // snapshotting. Otherwise, scroll-state(), anchor positioning, and
+        // scroll-timeline effects will be rendered incorrectly.
+        CHECK_EQ(target_state, DocumentLifecycle::kPrePaintClean);
+        break;
+      default:
+        // Snapshotting only happens after updating the rendering in the HTML
+        // event loop. That is equivalent to the target_state being kPaintClean.
+        return false;
+    }
+  }
   // TODO(crbug.com/1329159): Determine if the source for a view timeline has
   // changed, which may in turn require a fresh style/layout cycle.
 
