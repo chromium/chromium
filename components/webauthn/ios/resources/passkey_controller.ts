@@ -22,7 +22,13 @@ const GPM_AAGUID = new Uint8Array([
 ]);
 
 // The algorithm supported for passkey registration or assertion.
-const ES256 = -7;
+const ES256: COSEAlgorithmIdentifier = -7;
+
+// The supported AuthenticatorAttachment is 'platform'.
+const PLATFORM: AuthenticatorAttachment = 'platform';
+
+// The supported PublicKeyCredentialType is 'public-key'.
+const PUBLIC_KEY: PublicKeyCredentialType = 'public-key';
 
 // Checks whether provided aaguid is equal to Google Password Manager's aaguid.
 function isGpmAaguid(aaguid: Uint8Array): boolean {
@@ -259,7 +265,7 @@ function isPublicKeyCredential(credential: Credential):
     credential is PublicKeyCredential {
   // Verify that the Credential interface matches the webauthn spec as described
   // here: https://w3c.github.io/webappsec-credential-management/#credential
-  if (credential.type !== 'public-key' || typeof credential.id !== 'string') {
+  if (credential.type !== PUBLIC_KEY || typeof credential.id !== 'string') {
     return false;
   }
 
@@ -551,32 +557,115 @@ function deserializeExtensions(
   return result;
 }
 
+// JSON formatted authenticator response for passkey assertions.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface AuthenticatorAssertionResponseJSON {
+  clientDataJSON: string;
+  authenticatorData: string;
+  signature: string;
+  userHandle?: string;
+}
+
+// JSON formatted authenticator response for passkey attestations.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface AuthenticatorAttestationResponseJSON {
+  attestationObject: string;
+  authenticatorData: string;
+  clientDataJSON: string;
+  transports: AuthenticatorTransport[];
+  publicKey: string;
+  publicKeyAlgorithm: COSEAlgorithmIdentifier;
+}
+
+// Type containing both types of JSON formatted authenticator responses.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+type AuthenticatorRequestResponseJSON =
+    AuthenticatorAssertionResponseJSON|AuthenticatorAttestationResponseJSON;
+
+// JSON formatted authenticator response.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface AuthenticationResponseJSON {
+  id: string;
+  rawId: string;
+  response: AuthenticatorRequestResponseJSON;
+  authenticatorAttachment?: AuthenticatorAttachment;
+  clientExtensionResults: AuthenticationExtensionsClientOutputs;
+  type: PublicKeyCredentialType;
+}
+
+// Helper function to convert a list of string transports to
+// AuthenticatorTransport types.
+function toAuthenticatorTransports(transports: string[]):
+    AuthenticatorTransport[] {
+  return transports.map(transport => transport as AuthenticatorTransport);
+}
+
+// Helper function to serialize an AuthenticatorAttestationResponse.
+function toAuthenticatorAttestationResponseJSON(
+    response: AuthenticatorAttestationResponse):
+    AuthenticatorAttestationResponseJSON {
+  const publicKey = response.getPublicKey();
+  return {
+    clientDataJSON: bufferSourceToBase64URL(response.clientDataJSON),
+    authenticatorData: bufferSourceToBase64URL(response.getAuthenticatorData()),
+    attestationObject: bufferSourceToBase64URL(response.attestationObject),
+    transports: toAuthenticatorTransports(response.getTransports()),
+    publicKeyAlgorithm: response.getPublicKeyAlgorithm(),
+    publicKey: publicKey ? bufferSourceToBase64URL(publicKey) : '',
+  };
+}
+
+// Helper function to serialize an AuthenticatorAssertionResponse.
+function toAuthenticatorAssertionResponseJSON(
+    response: AuthenticatorAssertionResponse):
+    AuthenticatorAssertionResponseJSON {
+  const responseJson: AuthenticatorAssertionResponseJSON = {
+    clientDataJSON: bufferSourceToBase64URL(response.clientDataJSON),
+    authenticatorData: bufferSourceToBase64URL(response.authenticatorData),
+    signature: bufferSourceToBase64URL(response.signature),
+  };
+  if (response.userHandle) {
+    responseJson.userHandle = bufferSourceToBase64URL(response.userHandle);
+  }
+  return responseJson;
+}
+
+// Helper function to serialize an AuthenticatorResponse.
+function toAuthenticatorRequestResponseJSON(response: AuthenticatorResponse):
+    AuthenticatorRequestResponseJSON {
+  if ('attestationObject' in response) {
+    const attestationResponse = response as AuthenticatorAttestationResponse;
+    return toAuthenticatorAttestationResponseJSON(attestationResponse);
+  } else {
+    const assertionResponse = response as AuthenticatorAssertionResponse;
+    return toAuthenticatorAssertionResponseJSON(assertionResponse);
+  }
+}
+
 // Creates a PublicKeyCredential from the provided list of arguments.
-// The credential's type is always set to 'public-key'.
 function createPublicKeyCredential(
-    authenticatorAttachment: string, rawId: ArrayBuffer,
+    authenticatorAttachment: AuthenticatorAttachment, rawId: ArrayBuffer,
     response: AuthenticatorResponse,
     extensionOutputs: AuthenticationExtensionsClientOutputs):
     PublicKeyCredential {
   return {
     id: arrayBufferToBase64URL(rawId),
-    type: 'public-key',
+    type: PUBLIC_KEY,
     authenticatorAttachment: authenticatorAttachment,
     rawId: rawId,
     response: response,
     getClientExtensionResults(): AuthenticationExtensionsClientOutputs {
       return extensionOutputs;
     },
-    // TODO(crbug.com/487338357): Update returned object to match expected type
-    // and remove casting through `any`.
-    toJSON() {
+    toJSON(): AuthenticationResponseJSON {
       return {
         id: this.id,
-        type: this.type,
-        authenticatorAttachment: this.authenticatorAttachment,
-        rawId: this.rawId,
-        response: this.response,
-      } as unknown as any;
+        rawId: this.id,
+        response: toAuthenticatorRequestResponseJSON(this.response),
+        authenticatorAttachment: authenticatorAttachment,
+        clientExtensionResults: extensionOutputs,
+        type: PUBLIC_KEY,
+      };
     },
   };
 }
@@ -586,7 +675,7 @@ function createPublicKeyCredential(
 function createEmptyCredential(): PublicKeyCredential {
   const emptyArray = new ArrayBuffer(0);
   const emptyResponse: AuthenticatorResponse = {clientDataJSON: emptyArray};
-  return createPublicKeyCredential('', emptyArray, emptyResponse, {});
+  return createPublicKeyCredential(PLATFORM, emptyArray, emptyResponse, {});
 }
 
 // Returns whether a credential is non empty.
@@ -614,10 +703,10 @@ function createAuthenticatorAttestationResponse(
         null {
           return publicKeySpkiDer;
         },
-    getPublicKeyAlgorithm(): number {
+    getPublicKeyAlgorithm(): COSEAlgorithmIdentifier {
       return ES256;
     },
-    getTransports(): string[] {
+    getTransports(): AuthenticatorTransport[] {
       // Passkeys created by GPM have the 'hybrid' and 'internal' transports.
       return ['hybrid', 'internal'];
     },
@@ -915,7 +1004,7 @@ function resolveCredentialPromise(
     extensions: AuthenticationExtensionsClientOutputsJSON): void {
   const id = decodeBase64URLToArrayBuffer(id64);
   const credential: PublicKeyCredential = createPublicKeyCredential(
-      'platform', id, response, deserializeExtensions(extensions));
+      PLATFORM, id, response, deserializeExtensions(extensions));
 
   DeferredPublicKeyCredentialPromise.resolve(requestId, credential);
 }
