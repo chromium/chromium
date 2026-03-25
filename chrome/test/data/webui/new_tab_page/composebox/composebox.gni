@@ -6,6 +6,7 @@ composebox_test_files = [
   "composebox/composebox_autocomplete_test.ts",
   "composebox/composebox_context_menu_test.ts",
   "composebox/composebox_file_inputs_test.ts",
+  "composebox/composebox_input_test.ts",
   "composebox/composebox_test.ts",
   "composebox/composebox_upload_test.ts",
   "composebox/file_carousel_test.ts",

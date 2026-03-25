@@ -1,0 +1,323 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=./composebox_shared_style.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit composebox-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#textContainer {
+  display: flex;
+  flex-direction: row;
+  padding-block-start: var(--cr-composebox-text-container-padding-block-start, 8px);
+  padding-block-end: 0;
+  padding-inline: var(--text-input-inline-start-spacing) 0;
+}
+
+:host-context([show-model-picker_]:not([has-allowed-inputs_])) #textContainer {
+  padding-inline-start: 10px;
+}
+
+:host-context([searchbox-next-enabled][searchbox-layout-mode='Compact']) #textContainer {
+  --text-input-inline-start-spacing: 40px;
+  padding-block: 6px 2px;
+}
+
+#iconContainer {
+  --text-input-top-spacing: 8px;
+  align-items: center;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+}
+
+:host-context([searchbox-next-enabled][searchbox-layout-mode='Compact']) #iconContainer {
+  display: none;
+}
+
+:host-context([searchbox-next-enabled]) #iconContainer {
+  height: 44px;
+}
+
+#aimIcon {
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/search_spark.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: cover;
+  background-color: var(--color-composebox-input-icon);
+  height: 20px;
+  width: 20px;
+}
+
+@media (forced-colors: active) {
+  #aimIcon {
+    background-color: Highlight;
+    border-radius: 4px;
+  }
+}
+
+#inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+#input,
+#mirror,
+#smartCompose {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: var(--cr-composebox-font-size, inherit);
+  line-height: 24px;
+  padding-block: var(--text-input-top-spacing) 0;
+  padding-inline: 12px var(--text-input-inline-end-spacing);
+  width: 100%;
+}
+
+#mirror {
+  color: transparent;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  user-select: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+:host([entrypoint-name='ContextualTasks']) #mirror {
+  padding-block: 12px;
+  padding-inline-end: var(--text-input-inline-end-spacing);
+  padding-inline-start: 0;
+}
+
+#input,
+#smartCompose {
+  max-height: var(--text-input-max-height);
+  scrollbar-width: none;
+}
+
+:host-context(:not([searchbox-next-enabled])) #input {
+  transition: padding var(--height-expand-duration) var(--standard-curve);
+}
+
+#input {
+  background-color: inherit;
+  border: none;
+  color: var(--color-composebox-font-light);
+  field-sizing: content;
+  mask-image: linear-gradient(transparent 7px, black var(--text-input-top-spacing));
+  height: calc-size(fit-content, min(size + 4px, var(--text-input-max-height)));
+  outline: none;
+  position: relative;
+  resize: none;
+}
+
+:host(:not([disable-caret-color-animation])) #input {
+  caret-color: transparent;
+}
+
+#caret.caret-visible {
+  display: block;
+}
+
+#caret {
+  background-color: var(--google-blue-500);
+  display: none;
+  height: 24px;
+  pointer-events: none;
+  position: absolute;
+  top: -2px;
+  width: 2px;
+}
+
+:host([entrypoint-name='Omnibox']) #caret {
+  height: 18px;
+  top: 0;
+}
+
+#caret.animating {
+  animation: blink 1s step-end infinite, cycleColor step-end 4s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  49.9% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes cycleColor {
+  0% {
+    background-color: var(--google-blue-500);
+  }
+  25% {
+    background-color: var(--google-red-500);
+  }
+  50% {
+    background-color: var(--google-yellow-500);
+  }
+  75% {
+    background-color: var(--google-green-500);
+  }
+  100% {
+    background-color: var(--google-blue-500);
+  }
+}
+
+#input::placeholder {
+  color: var(--cr-composebox-input-placeholder-color, var(--color-composebox-type-ahead));
+}
+
+:host-context([searchbox-next-enabled]) #input::placeholder {
+  font-size: var(--cr-composebox-input-placeholder-font-size, 16px);
+  font-weight: 400;
+}
+
+#smartCompose {
+  pointer-events: none;
+  position: absolute;
+  overflow: scroll;
+  top: 0;
+  left: 0;
+}
+
+/* Fallback for when smartComposeInlineHint is empty or not set. Note that the
+   html checks this, but we keep this css logic just in case. */
+:host(:not([smart-compose-inline-hint])) #smartCompose {
+  display: none;
+}
+
+#invisibleText {
+  color: transparent;
+  white-space: pre-wrap;
+}
+
+#ghostText {
+  color: var(--color-composebox-type-ahead);
+  white-space: pre-wrap;
+}
+
+#tabChip {
+  align-items: center;
+  border: 1px solid var(--color-composebox-type-ahead-chip);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: var(--color-composebox-type-ahead-chip);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 24px;
+  margin-left: 4px;
+  padding: 6px 8px;
+}
+
+:host-context([expanding_]) #input,
+:host-context([expanding_]) #smartCompose {
+  --text-input-top-spacing: 12px;
+}
+
+:host-context([expanding_][is-collapsible]) #input {
+  --text-input-top-spacing: 24px;
+}
+
+:host-context([searchbox-next-enabled]) #input,
+:host-context([searchbox-next-enabled]) #smartCompose {
+  --text-input-top-spacing: 10px;
+}
+
+#input::-webkit-search-decoration,
+#input::-webkit-search-results-button,
+#input::-webkit-search-results-decoration,
+#input::-webkit-search-cancel-button{
+  display: none;
+}
+
+.action-icon {
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline);
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-background-hovered);
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-size: 36px;
+  position: absolute;
+  right: 16px;
+}
+
+:host-context([dir='rtl']) .action-icon {
+  left: 16px;
+  right: unset;
+}
+
+#cancelIcon {
+  --cr-icon-button-fill-color:
+      var(--color-composebox-cancel-button-light);
+  /* SVG is size 20 with 5px of padding so actual size is 10px */
+  /* TODO(crbug.com/460532414) Rename CSS variables to be more
+      distinguishable */
+  --cr-icon-button-icon-size: 20px;
+  position: absolute;
+  top: var(--composebox-cancel-button-top);
+  inset-inline-end: 12px;
+  /* Uses the same transitions as the submit button so they are in sync. */
+  transition: var(--submit-enabled-transition);
+}
+
+:host-context([searchbox-layout-mode='Compact']) {
+  /* Used in search-animated-glow-element. */
+  --search-animated-glow-drag-drop-placeholder-top: 16px;
+  /* Changes both composebox and voice-search's: */
+  --composebox-cancel-button-top: 10px;
+  /* Changes voicebox text top padding. */
+  --composebox-voice-search-top-padding: 9px;
+}
+
+:host-context([expanding_][is-collapsible]) #cancelIcon {
+  top: 16px;
+}
+
+/* Hide the cancel icon when the composebox is expanded and no text is present. */
+:host([is-collapsible]:not([submit-enabled])) #cancelIcon {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Controls the opacity of the icons when the composebox is expanded/collapsed. */
+.icon-fade {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+:host-context([expanding_]) .icon-fade {
+  opacity: 1;
+  transition: var(--icon-entry-transition);
+}
+
+:host-context([in-voice-search-mode_]) .icon-fade {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+@media (forced-colors: active) {
+  .action-icon {
+    border: var(--composebox-outline-hcm);
+  }
+}
