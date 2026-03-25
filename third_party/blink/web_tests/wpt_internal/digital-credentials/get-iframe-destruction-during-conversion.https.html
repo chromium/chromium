@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<title>Digital Credential tests: iframe destruction during request conversion</title>
+<link rel="help" href="https://wicg.github.io/digital-credentials/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<script type="module">
+  promise_test(async (t) => {
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+
+    // Give the iframe a dummy document
+    iframe.contentDocument.write("<body></body>");
+    iframe.contentDocument.close();
+
+    const credentialRequest = {
+        protocol: "openid4vp-v1-unsigned",
+        data: {
+          response_type: "vp_token",
+          client_id: "12345"
+        }
+    };
+
+    // Add a malicious getter that destroys the iframe during V8 conversion
+    Object.defineProperty(credentialRequest.data, 'nonce', {
+        get: function() {
+            iframe.remove();
+            return "test-nonce-" + Date.now();
+        },
+        enumerable: true
+    });
+
+    const options = {
+        digital: {
+            requests: [credentialRequest]
+        }
+    };
+
+    // Grant user activation to the iframe so it passes the initial checks
+    await test_driver.bless("user activation", null, iframe.contentWindow);
+
+    // Execute the request inside the iframe. The getter will remove the iframe
+    // before the C++ side tries to use the execution context for security checks.
+    // The promise will never settle because the execution context is destroyed.
+    iframe.contentWindow.navigator.credentials.get(options).catch(() => {});
+
+    // If the browser hasn't crashed by this point, the test is successful.
+    // Wait a short duration to ensure deferred execution clears.
+    await new Promise(resolve => t.step_timeout(resolve, 50));
+
+  }, "navigator.credentials.get() handles iframe detachment during object conversion securely.");
+</script>
+</body>

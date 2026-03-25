@@ -240,6 +240,11 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     std::unique_ptr<base::Value> digital_credential_request_data =
         converter->FromV8Value(request->data().V8Object(),
                                resolver->GetScriptState()->GetContext());
+    // The `ExecutionContext` might have been destroyed by malicious getters
+    // during the V8-to-C++ object conversion above. Bail out if it was.
+    if (!resolver->GetScriptState()->ContextIsValid()) {
+      return;
+    }
     if (!digital_credential_request_data) {
       return;
     }
@@ -326,6 +331,11 @@ void CreateDigitalIdentityCredentialInExternalSource(
     std::unique_ptr<base::Value> digital_credential_request_data =
         converter->FromV8Value(request->data().V8Object(),
                                resolver->GetScriptState()->GetContext());
+    // The `ExecutionContext` might have been destroyed by malicious getters
+    // during the V8-to-C++ object conversion above. Bail out if it was.
+    if (!resolver->GetScriptState()->ContextIsValid()) {
+      return;
+    }
     if (!digital_credential_request_data) {
       continue;
     }
