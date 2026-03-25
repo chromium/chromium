@@ -80,6 +80,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
 
   void Reset() override {
     input_stream_arguments_.NumFrameArguments = 0;
+    input_stream_arguments_.CompressedBitstream = {};
     bitstream_buffer_.reset();
   }
 
@@ -180,6 +181,8 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     }
     reference_frame_list_.WriteTo(&input_stream_arguments_.ReferenceFrames);
     CHECK(bitstream_buffer_);
+    input_stream_arguments_.CompressedBitstream.Size =
+        bitstream_buffer_->BytesWritten();
     bitstream_buffer_.reset();
     CHECK_LE(input_stream_arguments_.NumFrameArguments, 4u);
     return true;
@@ -378,8 +381,8 @@ std::unique_ptr<ScopedD3DBuffer> D3D12VideoDecoderWrapperImpl::GetBuffer(
       }
       input_stream_arguments_.CompressedBitstream = {
           .pBuffer = bitstream_buffer.Get(),
-          // The size of a buffer resource is its width.
-          .Size = bitstream_buffer->GetDesc().Width,
+          .Offset = 0,
+          .Size = 0,  // Will be correctly populated in SubmitSlice().
       };
       return std::make_unique<ScopedD3D12ResourceBuffer>(this, bitstream_buffer,
                                                          media_log_);
