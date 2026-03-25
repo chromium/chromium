@@ -1,4 +1,5 @@
 include_rules = [
+  "+base/i18n/time_formatting.h",
   "+components/keyed_service/core",
   "+components/safe_browsing/core/browser/realtime",
   "+components/safe_browsing/core/common",

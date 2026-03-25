@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/data_protection/utils.h"
 #include "components/enterprise/watermarking/content/watermark_text_container.h"
 #include "components/enterprise/watermarking/watermark.h"
 #include "components/tabs/public/tab_interface.h"

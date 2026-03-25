@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/data_protection/utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 
@@ -102,22 +103,6 @@ TEST_F(DataProtectionPageUserDataTest, NoRTURLLookupResponse) {
   ASSERT_TRUE(ud->settings().watermark_text.empty());
 }
 
-TEST_F(DataProtectionPageUserDataTest, NoThreatInfo) {
-  auto rt_lookup_response = std::make_unique<safe_browsing::RTLookupResponse>();
-
-  content::Page& page = web_contents_->GetPrimaryPage();
-  content::PageUserData<
-      enterprise_data_protection::DataProtectionPageUserData>::
-      CreateForPage(page, std::string(), UrlSettings(),
-                    std::move(rt_lookup_response));
-
-  auto* ud =
-      enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
-  ASSERT_TRUE(ud->settings().watermark_text.empty());
-  ASSERT_TRUE(ud->rt_lookup_response());
-  ASSERT_EQ(ud->rt_lookup_response()->threat_info_size(), 0);
-}
-
 TEST_F(DataProtectionPageUserDataTest, UpdateRTLookupResponse) {
   auto rt_lookup_response = BuildDummyResponse("first", true);
 
@@ -171,22 +156,6 @@ TEST_F(DataProtectionPageUserDataTest, MergedScreenshotState) {
   enterprise_data_protection::DataProtectionPageUserData::
       UpdateDataControlsScreenshotState(page, std::string(), false);
   ud = enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
-  ASSERT_FALSE(ud->settings().allow_screenshots);
-}
-
-TEST_F(DataProtectionPageUserDataTest,
-       MultipleMatchedRulesWithDifferentSubactions) {
-  auto rt_lookup_response = std::make_unique<safe_browsing::RTLookupResponse>();
-  AddDummyMatchedRule(*rt_lookup_response, "example", true);
-  AddDummyMatchedRule(*rt_lookup_response, "", false);
-
-  content::Page& page = web_contents_->GetPrimaryPage();
-  enterprise_data_protection::DataProtectionPageUserData::
-      UpdateRTLookupResponse(page, std::string(),
-                             std::move(rt_lookup_response));
-  auto* ud =
-      enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
-  ASSERT_NE(ud->settings().watermark_text.find("example"), std::string::npos);
   ASSERT_FALSE(ud->settings().allow_screenshots);
 }
 }  // namespace enterprise_data_protection

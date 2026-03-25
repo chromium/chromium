@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/enterprise/data_protection/data_protection_url_lookup_service.h"
+#include "components/enterprise/data_protection/utils.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"

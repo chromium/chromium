@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/data_protection/utils.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace tabs {
@@ -19,7 +20,6 @@ class TabInterface;
 }
 
 namespace enterprise_data_protection {
-struct UrlSettings;
 
 // Observes navigations in order to correctly set that tab's Data Protection
 // settings based on the SafeBrowsing verdict for said navigation.

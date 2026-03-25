@@ -8,10 +8,13 @@ source_set("data_protection") {
   sources = [
     "data_protection_url_lookup_service.cc",
     "data_protection_url_lookup_service.h",
+    "utils.cc",
+    "utils.h",
   ]
 
   deps = [
     "//base",
+    "//base:i18n",
     "//components/keyed_service/core",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
@@ -24,7 +27,10 @@ source_set("unit_tests") {
   testonly = true
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  sources = [ "data_protection_url_lookup_service_unittest.cc" ]
+  sources = [
+    "data_protection_url_lookup_service_unittest.cc",
+    "utils_unittest.cc",
+  ]
   deps = [
     ":data_protection",
     "//base",
