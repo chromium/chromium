@@ -47,7 +47,12 @@ void SplitViewIphController::OnSplitTabChanged(const SplitTabChange& change) {
         ->NotifyAdditionalConditionEvent(
             feature_engagement::events::kSplitViewCreated);
 
-    MaybeShowPromo(feature_engagement::kIPHSideBySidePinnableFeature);
+    const bool is_split_view_pinned =
+        browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+            prefs::kPinSplitTabButton);
+    if (!is_split_view_pinned) {
+      MaybeShowPromo(feature_engagement::kIPHSideBySidePinnableFeature);
+    }
   }
 }
 
