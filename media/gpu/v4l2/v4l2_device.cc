@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 #include <set>
 
 #include "base/compiler_specific.h"
@@ -348,28 +349,27 @@ int V4L2Device::Ioctl(int request, void* arg) {
 }
 
 bool V4L2Device::Poll(bool poll_device, bool* event_pending) {
-  struct pollfd pollfds[2];
+  std::array<struct pollfd, 2> pollfds;
   nfds_t nfds;
   int pollfd = -1;
 
-  UNSAFE_TODO(pollfds[0]).fd = device_poll_interrupt_fd_.get();
-  UNSAFE_TODO(pollfds[0]).events = POLLIN | POLLERR;
+  pollfds[0].fd = device_poll_interrupt_fd_.get();
+  pollfds[0].events = POLLIN | POLLERR;
   nfds = 1;
 
   if (poll_device) {
     DVLOGF(5) << "adding device fd to poll() set";
-    UNSAFE_TODO(pollfds[nfds]).fd = device_fd_.get();
-    UNSAFE_TODO(pollfds[nfds]).events = POLLIN | POLLOUT | POLLERR | POLLPRI;
+    pollfds[nfds].fd = device_fd_.get();
+    pollfds[nfds].events = POLLIN | POLLOUT | POLLERR | POLLPRI;
     pollfd = nfds;
     nfds++;
   }
 
-  if (HANDLE_EINTR(poll(pollfds, nfds, -1)) == -1) {
+  if (HANDLE_EINTR(poll(pollfds.data(), nfds, -1)) == -1) {
     VPLOGF(1) << "poll() failed";
     return false;
   }
-  *event_pending =
-      (pollfd != -1 && UNSAFE_TODO(pollfds[pollfd]).revents & POLLPRI);
+  *event_pending = (pollfd != -1 && pollfds[pollfd].revents & POLLPRI);
   return true;
 }
 
