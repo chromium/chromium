@@ -865,6 +865,54 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   content::RunAllPendingInMessageLoop();
 
   SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+
+  auto ensure_browser_visible = [](Browser* browser) {
+#if defined(TOOLKIT_VIEWS)
+    if (browser && browser->is_type_normal()) {
+      if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
+        if (auto* widget = browser_view->GetWidget()) {
+          if (!widget->IsVisible()) {
+            views::test::WidgetVisibleWaiter(widget).Wait();
+          }
+        }
+      }
+    }
+#endif
+  };
+
+  // Handle deferred activation. Only wait if a browser exists but hasn't become
+  // "active" yet.
+  if (!browser_ && chrome::GetTotalBrowserCount() > 0) {
+    auto browsers = GetAllBrowserWindowInterfaces();
+    BrowserWindowInterface* normal_window_interface = nullptr;
+    Browser* normal_browser = nullptr;
+    for (auto* window_interface : browsers) {
+      if (Browser* browser = window_interface->GetBrowserForMigrationOnly()) {
+        if (browser->is_type_normal()) {
+          normal_window_interface = window_interface;
+          normal_browser = browser;
+          break;
+        }
+      }
+    }
+
+    if (normal_browser) {
+      ensure_browser_visible(normal_browser);
+    }
+
+    SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+    // Fallback: if we still don't have a browser_, at least set it to the
+    // first normal one available, or the first available if none are normal,
+    // so tests like WebUIMochaBrowserTest that rely on browser() don't crash.
+    if (!browser_) {
+      if (normal_window_interface) {
+        SetBrowser(normal_window_interface);
+      } else if (!browsers.empty()) {
+        SetBrowser(browsers[0]);
+      }
+    }
+  }
+
   if (browser_ && !browser_->tab_strip_model()->empty()) {
     base::WeakPtr<content::WebContents> tab =
         browser_->tab_strip_model()->GetActiveWebContents()->GetWeakPtr();
@@ -872,6 +920,10 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
     if (tab) {
       SetInitialWebContents(tab.get());
     }
+  }
+
+  if (browser_) {
+    ensure_browser_visible(browser_->GetBrowserForMigrationOnly());
   }
 
 #if !BUILDFLAG(IS_ANDROID)
