@@ -37,10 +37,6 @@ namespace {
 class VerticalTabStripControllerBrowserTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
-  VerticalTabStripControllerBrowserTest() {
-    TabHoverCardController::set_disable_animations_for_testing(true);
-  }
-
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
     return {{features::kTabGroupsCollapseFreezing, {}},
@@ -151,7 +147,22 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_EQ(0, model->GetIndexOfTab(tab_to_move));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+class VerticalTabGroupHoverCardTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  VerticalTabGroupHoverCardTest() {
+    TabHoverCardController::set_disable_animations_for_testing(true);
+  }
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{features::kTabGroupsCollapseFreezing, {}},
+            {tabs::kVerticalTabs, {}},
+            {features::kTabGroupHoverCards, {}}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
                        TabGroupHeaderHoverCardUnnamed) {
   AppendTab();
   AppendTab();
@@ -195,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_TRUE(tab_title_views[1]->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
                        TabGroupHeaderHoverCardNamed) {
   // Create a group with some tabs and a name.
   AppendTab();
@@ -233,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_EQ(bubble->GetGroupTitleViewForTesting()->GetText(), expected_header);
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
                        TabGroupHeaderHoverCardWithExcessTabs) {
   // Create a group with more than kMaxTabs tabs.
   const size_t n_tabs = GroupCardData::kMaxTabs + 1;

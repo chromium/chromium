@@ -12,6 +12,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
@@ -311,8 +312,12 @@ void VerticalTabGroupHeaderView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void VerticalTabGroupHeaderView::OnMouseEntered(const ui::MouseEvent& event) {
-  SetHoverCardDataFrom(delegate_->GetTabGroup());
-  delegate_->UpdateHoverCard();
+  if (features::IsTabGroupHoverCardsEnabled()) {
+    SetHoverCardDataFrom(delegate_->GetTabGroup());
+    delegate_->UpdateHoverCard();
+  } else {
+    delegate_->HideHoverCard();
+  }
   UpdateEditorBubbleButtonVisibility();
 }
 
@@ -328,8 +333,10 @@ void VerticalTabGroupHeaderView::OnMouseExited(const ui::MouseEvent& event) {
 
 void VerticalTabGroupHeaderView::OnFocus() {
   UpdateEditorBubbleButtonVisibility();
-  SetHoverCardDataFrom(delegate_->GetTabGroup());
-  delegate_->UpdateHoverCard();
+  if (features::IsTabGroupHoverCardsEnabled()) {
+    SetHoverCardDataFrom(delegate_->GetTabGroup());
+    delegate_->UpdateHoverCard();
+  }
 }
 
 void VerticalTabGroupHeaderView::OnBlur() {
@@ -475,7 +482,12 @@ void VerticalTabGroupHeaderView::OnDataChanged(
 
   UpdateIsCollapsed();
   UpdateAccessibleName();
-  SetHoverCardDataFrom(delegate_->GetTabGroup());
+
+  if (features::IsTabGroupHoverCardsEnabled()) {
+    SetHoverCardDataFrom(delegate_->GetTabGroup());
+  } else {
+    UpdateTooltipText();
+  }
 }
 
 void VerticalTabGroupHeaderView::OnAttentionStateChanged(bool needs_attention) {

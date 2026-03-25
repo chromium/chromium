@@ -12049,8 +12049,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupMenuMoreEntryPointsName,
      flag_descriptions::kTabGroupMenuMoreEntryPointsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupMenuMoreEntryPoints)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"tab-group-hover-cards", flag_descriptions::kTabGroupHoverCardsName,
+     flag_descriptions::kTabGroupHoverCardsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabGroupHoverCards)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC)
     {"show-tab-groups-mac-system-menu",
      flag_descriptions::kShowTabGroupsMacSystemMenuName,

@@ -8814,6 +8814,7 @@ from previous Chrome versions.
   <int value="-1738015645" label="ForceAppLanguagePrompt:disabled"/>
   <int value="-1737769448" label="WebUITabStripTabDragIntegration:disabled"/>
   <int value="-1737637342" label="NtpRealboxIsTall:enabled"/>
+  <int value="-1736992465" label="TabGroupHoverCards:disabled"/>
   <int value="-1736655556" label="MantaService:enabled"/>
   <int value="-1736503278" label="CredentialManagementUnifiedUi:disabled"/>
   <int value="-1736075054" label="EnableFullscreenAppList:enabled"/>
@@ -15851,6 +15852,7 @@ from previous Chrome versions.
   <int value="632340413" label="network-settings-config"/>
   <int value="632456816" label="HistoryClustersOnDeviceClustering:enabled"/>
   <int value="632631179" label="ArcIdleManager:enabled"/>
+  <int value="633317946" label="TabGroupHoverCards:enabled"/>
   <int value="633442161" label="ExperimentalUi:disabled"/>
   <int value="633573061"
       label="UnifiedPasswordManagerSyncOnlyInGMSCore:enabled"/>

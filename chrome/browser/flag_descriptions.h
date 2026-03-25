@@ -4279,6 +4279,11 @@ inline constexpr char kTabGroupMenuMoreEntryPointsName[] =
 inline constexpr char kTabGroupMenuMoreEntryPointsDescription[] =
     "Add options to menus to facilitate tab group creation and interaction";
 
+inline constexpr char kTabGroupHoverCardsName[] =
+    "Tab group header hover cards";
+inline constexpr char kTabGroupHoverCardsDescription[] =
+    "Enables hover cards for tab group headers in the tab strip.";
+
 inline constexpr char kTextSafetyClassifierName[] = "Text Safety Classifier";
 inline constexpr char kTextSafetyClassifierDescription[] =
     "Enables text safety classifier for on-device models";

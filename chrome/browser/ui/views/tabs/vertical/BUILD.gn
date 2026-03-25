@@ -146,6 +146,7 @@ source_set("unit_tests") {
     ":impl",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/vertical",
     "//chrome/test:test_support",

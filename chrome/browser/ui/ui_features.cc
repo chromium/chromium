@@ -168,6 +168,12 @@ bool IsTabGroupMenuMoreEntryPointsEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupMenuMoreEntryPoints);
 }
 
+BASE_FEATURE(kTabGroupHoverCards, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabGroupHoverCardsEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupHoverCards);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables preview images in tab-hover cards.
@@ -179,8 +185,6 @@ BASE_FEATURE(kTabHoverCardImages,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
-
-BASE_FEATURE(kTabGroupHoverCards, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabModalUsesDesktopWidget, base::FEATURE_DISABLED_BY_DEFAULT);
 
