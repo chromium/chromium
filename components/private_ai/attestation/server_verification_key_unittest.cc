@@ -48,8 +48,8 @@ TEST_F(ServerVerificationKeyTest, GetProdKeys) {
 
   auto keys = GetServerVerificationKey();
   EXPECT_FALSE(keys.empty());
+  EXPECT_EQ(keys, GetAutopushKeysForTesting());
   EXPECT_EQ(keys, GetProdKeysForTesting());
-  EXPECT_NE(keys, GetAutopushKeysForTesting());
   EXPECT_NE(keys, GetDevKeysForTesting());
   EXPECT_NE(keys, GetStagingKeysForTesting());
 }
