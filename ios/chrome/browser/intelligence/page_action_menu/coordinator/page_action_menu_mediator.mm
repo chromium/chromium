@@ -133,6 +133,9 @@ const CGFloat kFeatureRowIconSize = 20;
 #pragma mark - PageActionMenuMutator
 
 - (BOOL)shouldShowFeatureEntryPoints {
+  if (IsPageActionMenuAuthFlowEnabled()) {
+    return YES;
+  }
   if (!_authenticationService) {
     return NO;
   }
