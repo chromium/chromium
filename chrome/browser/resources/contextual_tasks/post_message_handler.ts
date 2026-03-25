@@ -8,9 +8,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 
-const HANDSHAKE_INTERVAL_MS = 50;
-// 600 * 50ms = 30 seconds.
-const MAX_HANDSHAKE_ATTEMPTS = 600;
+const HANDSHAKE_INTERVAL_MS = 10;
+// 3000 * 10ms = 30 seconds.
+const MAX_HANDSHAKE_ATTEMPTS = 3000;
 
 export interface Rect {
   top: number;
