@@ -125,6 +125,7 @@ enum class WindowResizePrecheckResult {
   // The window can be successfully resized.
   kOk = 0,
 
+#if !BUILDFLAG(IS_ANDROID)
   // Window has size controls preventing resize. See
   // ui/views/widget/widget_delegate.h for more detail.
   kHasWindowSizeControls = 1,
@@ -136,8 +137,7 @@ enum class WindowResizePrecheckResult {
   // Window has a hit-test mask. See ui/views/widget/widget_delegate.h for more
   // detail.
   kWindowHasHitTestMask = 3,
-
-#if BUILDFLAG(IS_ANDROID)
+#else
   // The app must hold the browser role to change window bounds.
   kAndroidBrowserRoleNotHeld = 4,
 
