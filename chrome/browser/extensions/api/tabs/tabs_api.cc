@@ -136,6 +136,28 @@ constexpr char kWindowCreateCannotMoveIwaTabError[] =
     "The tab of an Isolated Web App cannot be moved to a new window.";
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+std::string WindowResizePrecheckResultToErrorMessage(
+    ui::WindowResizePrecheckResult result) {
+  switch (result) {
+    case ui::WindowResizePrecheckResult::kOk:
+      NOTREACHED();
+    case ui::WindowResizePrecheckResult::kAndroidBrowserRoleNotHeld:
+      return tabs_constants::kUnableToResizeErrorAndroidBrowserRoleNotHeld;
+    case ui::WindowResizePrecheckResult::kAndroidSdkTooLow:
+      return tabs_constants::kUnableToResizeErrorAndroidSdkTooLow;
+    case ui::WindowResizePrecheckResult::kAndroidNotAFreeformWindow:
+      return tabs_constants::kUnableToResizeErrorAndroidNotAFreeformWindow;
+    case ui::WindowResizePrecheckResult::kAndroidNullAppTask:
+      return tabs_constants::kUnableToResizeErrorAndroidNullAppTask;
+    case ui::WindowResizePrecheckResult::kAndroidNoActivity:
+      [[fallthrough]];
+    case ui::WindowResizePrecheckResult::kAndroidNullAconfigFlaggedApiDelegate:
+      return tabs_constants::kUnableToResizeErrorAndroidUnsupportedOperation;
+  }
+}
+#endif
+
 bool IsValidStateForWindowsCreateFunction(
     const windows::Create::Params::CreateData* create_data) {
   if (!create_data) {
@@ -1409,6 +1431,18 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
       return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
     }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (set_window_bounds ||
+      show_state == ui::mojom::WindowShowState::kMaximized ||
+      show_state == ui::mojom::WindowShowState::kNormal) {
+    ui::WindowResizePrecheckResult resize_precheck_result;
+    if (!browser_window->CanResize(resize_precheck_result)) {
+      return RespondNow(Error(
+          WindowResizePrecheckResultToErrorMessage(resize_precheck_result)));
+    }
+  }
+#endif
 
   // Parameters are valid. Now to perform the actual updates.
   MaybeSetLockedFullscreenState(*params, browser, is_locked_fullscreen);

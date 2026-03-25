@@ -7,6 +7,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_CONSTANTS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_CONSTANTS_H_
 
+#include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -65,6 +66,20 @@ inline constexpr char kGroupParamsError[] =
     "Cannot specify 'createProperties' along with a 'groupId'.";
 inline constexpr char kNotAllowedForDevToolsError[] =
     "Operation not allowed for DevTools windows";
+
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr char kUnableToResizeErrorAndroidSdkTooLow[] =
+    "Unable to resize: unsupported Android API level";
+inline constexpr char kUnableToResizeErrorAndroidBrowserRoleNotHeld[] =
+    "Unable to resize: this Android app is not the primary browser";
+inline constexpr char kUnableToResizeErrorAndroidNotAFreeformWindow[] =
+    "Unable to resize: the Android app isn't in desktop windowing mode";
+inline constexpr char kUnableToResizeErrorAndroidNullAppTask[] =
+    "Unable to resize: the Android Chrome app is being run in another app's "
+    "window";
+inline constexpr char kUnableToResizeErrorAndroidUnsupportedOperation[] =
+    "Unable to resize: operation not supported on this Android configuration";
+#endif
 
 }  // namespace tabs_constants
 }  // namespace extensions

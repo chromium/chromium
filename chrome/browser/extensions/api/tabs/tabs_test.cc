@@ -971,6 +971,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
             profile()),
         keys::kInvalidWindowBoundsError));
   }
+}
+
+// On Android this fails when Run() calls BaseWindow::CanResize() returns false
+// due to default Android Browser Tests not having free-form windows.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       UpdatingWindowBoundsSucceedsForValidBounds) {
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+
+  // Get the display bounds so we can test whether the window intersects.
+  gfx::Rect displays;
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
+    displays.Union(display.bounds());
+  }
+
+  int window_id = ExtensionTabUtil::GetWindowId(browser_window_interface());
+  gfx::Rect window_bounds =
+      browser_window_interface()->GetWindow()->GetBounds();
+
+  static const char kArgsUpdateFunction[] = "[%u, {\"left\": %d, \"top\": %d}]";
+  // We use a small value to move the window outside or inside the bounds.
+  int window_offset = window_bounds.size().width() * 0.1;
 
   {
     // Window bounds that intersect 50% or more with the display are valid.
@@ -985,6 +1007,52 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
                            profile(), api_test_utils::FunctionMode::kNone));
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       UpdateWindowStateFailsWhenNotResizable) {
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  std::vector<BrowserWindowInterface*> windows =
+      GetAllBrowserWindowInterfaces();
+  ASSERT_FALSE(windows.empty());
+  int window_id = ExtensionTabUtil::GetWindowId(windows[0]);
+
+  auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+  function->set_extension(extension.get());
+
+  // Attempting to maximize on Android triggers the CanResize() check. Since
+  // the standard test environment is not in desktop windowing mode (and may
+  // run on older SDKs), this is expected to fail. We verify that an error is
+  // returned without checking the exact string.
+  std::string error = utils::RunFunctionAndReturnError(
+      function.get(),
+      base::StringPrintf("[%u, {\"state\": \"maximized\"}]", window_id),
+      profile());
+  EXPECT_FALSE(error.empty());
+}
+
+// TODO(crbug.com/491868694) Remove once overlapping tests are enabled on
+// Android.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       UpdateWindowStateSucceedsWhenNoResizeNeeded) {
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  std::vector<BrowserWindowInterface*> windows =
+      GetAllBrowserWindowInterfaces();
+  ASSERT_FALSE(windows.empty());
+  int window_id = ExtensionTabUtil::GetWindowId(windows[0]);
+
+  auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+  function->set_extension(extension.get());
+
+  // A simple update that does not require resizing bypasses the CanResize()
+  // check, succeeding without an error code.
+  EXPECT_TRUE(utils::RunFunction(
+      function.get(),
+      base::StringPrintf("[%u, {\"drawAttention\": true}]", window_id),
+      profile(), api_test_utils::FunctionMode::kNone));
+}
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
