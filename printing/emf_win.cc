@@ -212,16 +212,27 @@ mojom::MetafileDataType PostScriptMetaFile::GetDataType() const {
 bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
   Emf::Enumerator emf_enum(*this, nullptr, nullptr);
   for (const Emf::Record& record : emf_enum) {
-    auto* emf_record = record.record();
+    const ENHMETARECORD* emf_record = record.record();
     if (emf_record->iType != EMR_GDICOMMENT) {
       continue;
     }
 
-    auto* comment = reinterpret_cast<const EMRGDICOMMENT*>(emf_record);
+    const auto* comment = reinterpret_cast<const EMRGDICOMMENT*>(emf_record);
     const char* data = reinterpret_cast<const char*>(comment->Data);
-    const uint16_t* ptr = reinterpret_cast<const uint16_t*>(data);
-    int ret = ExtEscape(hdc, PASSTHROUGH, 2 + *ptr, data, 0, nullptr);
-    DCHECK_EQ(*ptr, ret);
+    // First uint16_t element in `data` holds the size of the rest of `data`,
+    // which is the actual PostScript data. Windows requires this payload size +
+    // PS data structure.
+    const uint16_t ps_payload_size = *reinterpret_cast<const uint16_t*>(data);
+    const uint32_t data_size = 2 + ps_payload_size;
+    // Assume value used in PDFium's core/fxge/win32/cpsoutput.cpp is not going
+    // to change.
+    static constexpr uint16_t kExpectedPdfiumMax = 1024 + 2;
+    if (data_size != comment->cbData || data_size > kExpectedPdfiumMax) {
+      continue;
+    }
+
+    int ret = ExtEscape(hdc, PASSTHROUGH, data_size, data, 0, nullptr);
+    DCHECK_EQ(ps_payload_size, ret);
   }
   return true;
 }
