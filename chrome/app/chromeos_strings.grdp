@@ -463,7 +463,7 @@
     If you download the update over your mobile network, it could result in overage charges.
   </message>
   <message name="IDS_FJORD_WELCOME_MESSAGE" desc="Welcome message shown when user is setting up their device. Google Beam is the name of a product.">
-    Your Google Beam hardware is ready to set up
+    Set up Google Beam
   </message>
   <message name="IDS_REMORA_CONFIRM_MESSAGE" desc="Remora confirm message on the first OOBE screen">
     Your Google Meet hardware is ready to set up
