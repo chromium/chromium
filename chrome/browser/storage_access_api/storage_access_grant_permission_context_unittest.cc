@@ -46,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -193,6 +194,9 @@ class StorageAccessGrantPermissionContextTest
 
   base::test::TestFuture<content::PermissionResult> DecidePermission(
       bool user_gesture) {
+    if (user_gesture) {
+      content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+    }
     base::test::TestFuture<content::PermissionResult> future;
     permission_context_->DecidePermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
@@ -208,6 +212,7 @@ class StorageAccessGrantPermissionContextTest
   }
 
   content::PermissionResult RequestPermissionSync() {
+    content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
     base::test::TestFuture<content::PermissionResult> future;
     permission_context()->RequestPermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
@@ -537,6 +542,7 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
         StorageAccessGrantPermissionContext::GetImplicitGrantLimitForTesting();
     for (int grant_id = 0; grant_id < implicit_grant_limit; grant_id++) {
       base::test::TestFuture<content::PermissionResult> future;
+      content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
       permission_context()->DecidePermissionForTesting(
           std::make_unique<permissions::PermissionRequestData>(
               std::make_unique<permissions::ContentSettingPermissionResolver>(

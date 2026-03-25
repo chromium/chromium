@@ -436,7 +436,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
-  if (!request_data->user_gesture) {
+  if (!request_data->user_gesture || !rfh->HasTransientUserActivation()) {
     rfh->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "requestStorageAccess: Must be handling a user gesture to use.");

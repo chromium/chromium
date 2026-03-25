@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -86,6 +87,9 @@ class TopLevelStorageAccessPermissionContextTest
       bool user_gesture,
       const GURL& requester_url,
       const GURL& embedding_url) {
+    if (user_gesture) {
+      content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+    }
     base::test::TestFuture<content::PermissionResult> future;
     permission_context->DecidePermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(

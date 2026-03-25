@@ -85,10 +85,10 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     return;
   }
 
-  if (!request_data->user_gesture ||
+  if (!request_data->user_gesture || !rfh->HasTransientUserActivation() ||
       !request_data->requesting_origin.is_valid() ||
       !request_data->embedding_origin.is_valid()) {
-    if (!request_data->user_gesture) {
+    if (!request_data->user_gesture || !rfh->HasTransientUserActivation()) {
       rfh->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "requestStorageAccessFor: Must be handling a user gesture to use.");
