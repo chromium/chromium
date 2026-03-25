@@ -201,6 +201,12 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class metrics::CrOSPreConsentMetricsManagerTest;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeMetricsServiceAccessorTest,
+      MetricsReportingEnabled_RestructureMetricsConsentSettings_FeatureOff);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeMetricsServiceAccessorTest,
+      MetricsReportingEnabled_RestructureMetricsConsentSettings);
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServicesManagerClientTest,
                            ForceTrialsDisablesReporting);
 

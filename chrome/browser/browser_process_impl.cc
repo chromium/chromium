@@ -480,6 +480,8 @@ void BrowserProcessImpl::Init() {
 
   // This preference must be kept in sync with external values; update them
   // whenever the preference or its controlling policy changes.
+  // TODO(b/483043192): We'll need to make similar changes for the
+  // kMetricsReportingLevel pref.
   pref_change_registrar_.Add(metrics::prefs::kMetricsReportingEnabled,
                              base::BindRepeating(&ApplyMetricsReportingPolicy));
 
@@ -1288,6 +1290,11 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 GoogleUpdateSettings::GetCollectStatsConsent());
+  registry->RegisterIntegerPref(
+      metrics::prefs::kMetricsReportingLevel,
+      static_cast<int>(GoogleUpdateSettings::GetMetricsReportingLevel()));
+  registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingMigrationDone,
+                                false);
   registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingAllowed, true);
   registry->RegisterBooleanPref(prefs::kDevToolsRemoteDebuggingEnabled, false);
 

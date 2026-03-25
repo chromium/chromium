@@ -40,6 +40,7 @@
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_reporting_level.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/ntp_tiles/custom_links_manager_impl.h"
 #import "components/ntp_tiles/most_visited_sites.h"
@@ -385,6 +386,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterBooleanPref(prefs::kEulaAccepted, false);
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
+                                false);
+  registry->RegisterIntegerPref(
+      metrics::prefs::kMetricsReportingLevel,
+      static_cast<int>(metrics::MetricsReportingLevel::kNone));
+  registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingMigrationDone,
                                 false);
 
   // Deprecated 07/2025 (migrated to profile prefs).
