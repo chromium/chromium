@@ -200,7 +200,6 @@ static_library("browser") {
     "data_model/addresses/autofill_structured_address_component.h",
     "data_model/addresses/autofill_structured_address_component_store.cc",
     "data_model/addresses/autofill_structured_address_component_store.h",
-    "data_model/addresses/autofill_structured_address_constants.cc",
     "data_model/addresses/autofill_structured_address_constants.h",
     "data_model/addresses/autofill_structured_address_format_provider.cc",
     "data_model/addresses/autofill_structured_address_format_provider.h",

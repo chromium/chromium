@@ -33,7 +33,7 @@ std::u16string ReduceToInitials(const std::u16string& value) {
   }
 
   std::vector<std::u16string> middle_name_tokens =
-      base::SplitString(value, base::ASCIIToUTF16(kNameSeparators),
+      base::SplitString(value, kNameSeparators,
                         base::WhitespaceHandling::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY);
 

@@ -8,7 +8,7 @@
 namespace autofill {
 
 // List of name separators.
-extern const char kNameSeparators[];
+inline constexpr char16_t kNameSeparators[] = u" -";
 
 // Regular expression pattern to match separators as used in CJK names:
 // Included separators: \u002D, \u30FB, \u00B7, \u3000 or a simple space.
