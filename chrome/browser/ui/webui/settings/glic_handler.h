@@ -9,13 +9,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui.h"
 
-class Profile;
 namespace settings {
 
 class GlicHandler : public SettingsPageUIHandler,
@@ -35,30 +32,12 @@ class GlicHandler : public SettingsPageUIHandler,
 
   void SetWebUIForTesting(content::WebUI* web_ui);
 
-  // Returns whether the web actuation toggle should be shown for `profile`.
-  static bool ShouldShowWebActuationToggle(Profile* profile);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateShortcutSuspension);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateGlicShortcut);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, GetActorLoginPermissions);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, RevokeActorLoginPermission);
-  FRIEND_TEST_ALL_PREFIXES(GlicHandlerConsentBrowserTest,
-                           GetWebActuationToggleVisibility_ConsentAccepted);
-  FRIEND_TEST_ALL_PREFIXES(GlicHandlerConsentBrowserTest,
-                           GetWebActuationToggleVisibility_ConsentNotAccepted);
-  FRIEND_TEST_ALL_PREFIXES(
-      GlicHandlerConsentBrowserTest,
-      FireWebActuationToggleVisibilityChanged_ConsentAccepted);
-  FRIEND_TEST_ALL_PREFIXES(
-      GlicHandlerSubscriptionTierBrowserTest,
-      GetWebActuationToggleVisibility_SubscriptionTierIneligible);
-  FRIEND_TEST_ALL_PREFIXES(
-      GlicHandlerSubscriptionTierBrowserTest,
-      GetWebActuationToggleVisibility_SubscriptionTierEligible);
-  FRIEND_TEST_ALL_PREFIXES(
-      GlicHandlerSubscriptionTierBrowserTest,
-      FireWebActuationToggleVisibilityChanged_SubscriptionTierBecomesEligible);
+
   // ActorLoginPermissionsManager::Observer:
   void OnPermissionsChanged() override;
 
@@ -102,15 +81,6 @@ class GlicHandler : public SettingsPageUIHandler,
   // either on request or because it changed.
   void FireOnGlicDisallowedByAdminChanged();
 
-  // Sends the client whether the web actuation toggle should be visible.
-  void HandleGetWebActuationToggleVisibility(const base::ListValue& args);
-
-  // Notifies the client that the web actuation toggle visibility has changed.
-  void FireWebActuationToggleVisibilityChanged();
-
-  // Callback for when the web actuation preference changes.
-  void OnWebActuationPrefChanged();
-
   // Callback for when the ActorKeyedService notifies of a capability change.
   void OnWebActuationCapabilityChanged(bool can_act_on_web);
 
@@ -137,7 +107,6 @@ class GlicHandler : public SettingsPageUIHandler,
   base::ScopedObservation<actor_login::ActorLoginPermissionsManager,
                           actor_login::ActorLoginPermissionsManager::Observer>
       observation_{this};
-  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<GlicHandler> weak_ptr_factory_{this};
 };

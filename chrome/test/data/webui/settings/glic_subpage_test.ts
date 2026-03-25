@@ -28,15 +28,12 @@ suite('GlicSubpage', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
-  async function createGlicPage(
-      initialShortcut: string, webActuationVisible: boolean = false) {
+  async function createGlicPage(initialShortcut: string) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     glicBrowserProxy = new TestGlicBrowserProxy();
-    glicBrowserProxy.setWebActuationToggleVisibilityResponse(
-        webActuationVisible);
     glicBrowserProxy.setGlicShortcutResponse(initialShortcut);
     GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
 
@@ -47,12 +44,6 @@ suite('GlicSubpage', function() {
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
 
-    // Wait for the component to initialize and render completely:
-    // 1. First flush: renders the initial DOM template.
-    // 2. setTimeout: allows async browser proxy promises to resolve.
-    // 3. Second flush: renders any UI updates triggered by those promises.
-    await flushTasks();
-    await new Promise(resolve => setTimeout(resolve, 0));
     await flushTasks();
     disableAnimationForCrCollapseElements();
   }
@@ -759,11 +750,6 @@ suite('GlicSubpage', function() {
   });
 
   suite('WebActuationSettingFeatureEnabled', () => {
-    setup(async () => {
-      await createGlicPage(
-          /*initialShortcut=*/ '⌃A', /*webActuationVisible=*/ true);
-    });
-
     test('WebActuationSettingFeatureEnabled', () => {
       const webActuationToggle =
           $<SettingsToggleButtonElement>('webActuationToggle')!;
@@ -870,11 +856,6 @@ suite('GlicSubpage', function() {
   });
 
   suite('WebActuationToggleVisible', () => {
-    setup(async () => {
-      await createGlicPage(
-          /*initialShortcut=*/ '⌃A', /*webActuationVisible=*/ true);
-    });
-
     test('assert toggle is visible', () => {
       const webActuationToggle =
           $<SettingsToggleButtonElement>('webActuationToggle')!;
@@ -891,11 +872,6 @@ suite('GlicSubpage', function() {
   });
 
   suite('WebActuationToggleVisibleLocked', () => {
-    setup(async () => {
-      await createGlicPage(
-          /*initialShortcut=*/ '⌃A', /*webActuationVisible=*/ true);
-    });
-
     test('assert toggle is enterprise enforced', () => {
       const webActuationToggle =
           page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -910,30 +886,7 @@ suite('GlicSubpage', function() {
     });
   });
 
-  suite('SimulateWebActuationToggleVisibilityChanged', () => {
-    setup(async () => {
-      await createGlicPage(
-          /*initialShortcut=*/ '⌃A', /*webActuationVisible=*/ false);
-    });
-
-    test('ToggleVisibilityChangesFromEvent', async () => {
-      let webActuationToggle =
-          $<SettingsToggleButtonElement>('webActuationToggle')!;
-      assertFalse(isVisible(webActuationToggle));
-      webUIListenerCallback(
-          'glic-web-actuation-toggle-visibility-changed', true);
-      await flushTasks();
-      webActuationToggle =
-          $<SettingsToggleButtonElement>('webActuationToggle')!;
-      assertTrue(isVisible(webActuationToggle));
-    });
-  });
-
   suite('SimulateCanActOnWebOnAndOff', () => {
-    setup(async () => {
-      await createGlicPage(
-          /*initialShortcut=*/ '⌃A', /*webActuationVisible=*/ true);
-    });
     function waitOneTick() {
       return new Promise(resolve => setTimeout(resolve, 0));
     }

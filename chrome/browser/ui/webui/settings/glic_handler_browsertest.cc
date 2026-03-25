@@ -10,17 +10,9 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/buildflag.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager.h"
@@ -81,37 +73,8 @@ class GlicHandlerBrowserTest : public InProcessBrowserTest {
   content::TestWebUI* web_ui() { return web_ui_.get(); }
 
  private:
-  glic::GlicTestEnvironment glic_test_environment_;
   std::unique_ptr<GlicHandler> glic_handler_;
   std::unique_ptr<content::TestWebUI> web_ui_;
-};
-
-class GlicHandlerConsentBrowserTest : public GlicHandlerBrowserTest {
- public:
-  GlicHandlerConsentBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicActor,
-          {{"glic_actor_policy_control_exemption", "true"}}}},
-        /*disabled_features=*/{features::kGlicWebActuationSettingsToggle});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class GlicHandlerSubscriptionTierBrowserTest : public GlicHandlerBrowserTest {
- public:
-  GlicHandlerSubscriptionTierBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebActuationSetting, {}},
-         {features::kGlicActor,
-          {{"glic_actor_policy_control_exemption", "true"}}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/388101855): Remove buildflag when GlobalAcceleratorListener
@@ -209,103 +172,4 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, RevokeActorLoginPermission) {
   args.Append("user");
   glic_handler()->HandleRevokeActorLoginPermission(args);
 }
-
-IN_PROC_BROWSER_TEST_F(GlicHandlerConsentBrowserTest,
-                       GetWebActuationToggleVisibility_ConsentAccepted) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
-
-  glic_handler()->HandleGetWebActuationToggleVisibility(
-      base::ListValue().Append("callback_id"));
-
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ("callback_id", data.arg1()->GetString());
-  EXPECT_TRUE(data.arg3()->GetBool());
-}
-
-IN_PROC_BROWSER_TEST_F(GlicHandlerConsentBrowserTest,
-                       GetWebActuationToggleVisibility_ConsentNotAccepted) {
-  browser()->profile()->GetPrefs()->ClearPref(
-      glic::prefs::kGlicUserEnabledActuationOnWeb);
-
-  glic_handler()->HandleGetWebActuationToggleVisibility(
-      base::ListValue().Append("callback_id"));
-
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ("callback_id", data.arg1()->GetString());
-  EXPECT_FALSE(data.arg3()->GetBool());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    GlicHandlerSubscriptionTierBrowserTest,
-    GetWebActuationToggleVisibility_SubscriptionTierIneligible) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 0);
-
-  glic_handler()->HandleGetWebActuationToggleVisibility(
-      base::ListValue().Append("callback_id"));
-
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ("callback_id", data.arg1()->GetString());
-  EXPECT_FALSE(data.arg3()->GetBool());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    GlicHandlerSubscriptionTierBrowserTest,
-    GetWebActuationToggleVisibility_SubscriptionTierEligible) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-
-  glic_handler()->HandleGetWebActuationToggleVisibility(
-      base::ListValue().Append("callback_id"));
-
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ("callback_id", data.arg1()->GetString());
-  EXPECT_TRUE(data.arg3()->GetBool());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    GlicHandlerSubscriptionTierBrowserTest,
-    FireWebActuationToggleVisibilityChanged_SubscriptionTierBecomesEligible) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 0);
-  glic_handler()->AllowJavascript();
-  web_ui()->ClearTrackedCalls();
-  browser()->profile()->GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-
-  glic_handler()->FireWebActuationToggleVisibilityChanged();
-
-  ASSERT_FALSE(web_ui()->call_data().empty());
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-  EXPECT_EQ("glic-web-actuation-toggle-visibility-changed",
-            data.arg1()->GetString());
-  EXPECT_TRUE(data.arg2()->GetBool());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    GlicHandlerConsentBrowserTest,
-    FireWebActuationToggleVisibilityChanged_ConsentAccepted) {
-  browser()->profile()->GetPrefs()->ClearPref(
-      glic::prefs::kGlicUserEnabledActuationOnWeb);
-  glic_handler()->AllowJavascript();
-  web_ui()->ClearTrackedCalls();
-  browser()->profile()->GetPrefs()->SetBoolean(
-      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
-
-  glic_handler()->FireWebActuationToggleVisibilityChanged();
-
-  ASSERT_FALSE(web_ui()->call_data().empty());
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-  EXPECT_EQ("glic-web-actuation-toggle-visibility-changed",
-            data.arg1()->GetString());
-  EXPECT_TRUE(data.arg2()->GetBool());
-}
-
 }  // namespace settings
