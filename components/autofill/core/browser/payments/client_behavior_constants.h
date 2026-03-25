@@ -27,10 +27,10 @@ enum class ClientBehaviorConstants {
   // metadata (both card art image AND card product name to be shown).
   kShowingCardArtImageAndCardProductName = 2,
 
-  // For more information on this signal, see
-  // kAutofillEnableCvcStorageAndFilling flag. This enum is to be included in
-  // the client_behavior_signals as this retrieves the correct TOS in the footer
-  // for Chrome to offer to save a card's CVC.
+  // For more information on this signal, see kAutofillPaymentCvcStorage pref.
+  // This enum is to be included in the client_behavior_signals as this
+  // retrieves the correct TOS in the footer for Chrome to offer to save a
+  // card's CVC.
   kOfferingToSaveCvc = 3,
 
   // Some UIs are expected to show the account email appended to the legal

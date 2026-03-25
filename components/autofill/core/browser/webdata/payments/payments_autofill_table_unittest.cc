@@ -219,8 +219,6 @@ TEST_F(PaymentsAutofillTableTest, MaskedServerIbanMetadataNotUpdated) {
 }
 
 TEST_F(PaymentsAutofillTableTest, CreditCard) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   // Add a 'Work' credit card.
   CreditCard work_creditcard;
   work_creditcard.set_origin("https://www.example.com/");
@@ -329,26 +327,11 @@ TEST_F(PaymentsAutofillTableTest, CreditCard) {
   EXPECT_FALSE(db_creditcard);
 }
 
-TEST_F(PaymentsAutofillTableTest, AddCreditCardCvcWithFlagOff) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillEnableCvcStorageAndFilling);
-  CreditCard card = test::WithCvc(test::GetCreditCard());
-  EXPECT_TRUE(table_->AddCreditCard(card));
-  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
-  EXPECT_EQ(u"", db_card->cvc());
-
-  card.set_cvc(u"234");
-  EXPECT_TRUE(table_->UpdateCreditCard(card));
-  db_card = table_->GetCreditCard(card.guid());
-  EXPECT_EQ(u"", db_card->cvc());
-}
 
 // Tests that adding credit card with cvc, get credit card with cvc and update
 // credit card with only cvc change will not update credit_card table
 // modification_date.
 TEST_F(PaymentsAutofillTableTest, CreditCardCvc) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   const base::Time arbitrary_time = base::Time::Now();
 
   CreditCard card = test::WithCvc(test::GetCreditCard());
@@ -413,8 +396,6 @@ TEST_F(PaymentsAutofillTableTest, CreditCardCvc) {
 // Tests that update a credit card CVC that doesn't have CVC set initially
 // inserts a new CVC record.
 TEST_F(PaymentsAutofillTableTest, UpdateCreditCardCvc_Add) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card = test::GetCreditCard();
   ASSERT_TRUE(card.cvc().empty());
   ASSERT_TRUE(table_->AddCreditCard(card));
@@ -429,8 +410,6 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardCvc_Add) {
 // Tests that updating a credit card CVC that is different from CVC set
 // initially.
 TEST_F(PaymentsAutofillTableTest, UpdateCreditCardCvc_Update) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card = test::GetCreditCard();
   ASSERT_TRUE(card.cvc().empty());
   ASSERT_TRUE(table_->AddCreditCard(card));
@@ -455,8 +434,6 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardCvc_Update) {
 // record. This is necessary because if inserting a CVC, UPDATE is chosen over
 // INSERT, it will causes a crash.
 TEST_F(PaymentsAutofillTableTest, UpdateCreditCardCvc_Delete) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card = test::GetCreditCard();
   ASSERT_TRUE(card.cvc().empty());
   ASSERT_TRUE(table_->AddCreditCard(card));
@@ -481,8 +458,6 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardCvc_Delete) {
 }
 
 TEST_F(PaymentsAutofillTableTest, LocalCvcs_ClearAll) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card_1 = test::WithCvc(test::GetCreditCard());
   CreditCard card_2 = test::WithCvc(test::GetCreditCard2());
   EXPECT_TRUE(table_->AddCreditCard(card_1));
@@ -513,8 +488,6 @@ TEST_F(PaymentsAutofillTableTest, LocalCvcs_ClearAll) {
 }
 
 TEST_F(PaymentsAutofillTableTest, ClearLocalCvcsUpToMay2025_Test) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card_1 = test::WithCvc(test::GetCreditCard());
   CreditCard card_2 = test::WithCvc(test::GetCreditCard2());
   EXPECT_TRUE(table_->AddCreditCard(card_1));
@@ -666,8 +639,6 @@ TEST_F(PaymentsAutofillTableTest, AddServerCreditCardForTesting) {
 }
 
 TEST_F(PaymentsAutofillTableTest, UpdateCreditCard) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   // Add a credit card to the db.
   CreditCard credit_card;
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");
@@ -739,8 +710,6 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCard) {
 }
 
 TEST_F(PaymentsAutofillTableTest, UpdateCreditCardOriginOnly) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   // Add a credit card to the db.
   CreditCard credit_card;
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");
@@ -790,8 +759,6 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardOriginOnly) {
 // Tests that when the encryption key changes, the database is still functional
 // and does not crash (regression test for crbug.com/392169470).
 TEST_F(PaymentsAutofillTableTest, UpdateCreditCardWithChangedEncryptionKey) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   CreditCard creditcard = test::WithCvc(test::GetCreditCard(), u"123");
 
   // Reading the card after writing it obtains the original card.
@@ -830,12 +797,9 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardWithChangedEncryptionKey) {
 }
 
 TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
-  for (bool is_cvc_storage_flag_enabled : {true, false}) {
     base::test::ScopedFeatureList feature;
     feature.InitWithFeatureStates(
-        {{features::kAutofillEnableCvcStorageAndFilling,
-          is_cvc_storage_flag_enabled},
-         {features::kAutofillEnableCardInfoRuntimeRetrieval, true}});
+        {{features::kAutofillEnableCardInfoRuntimeRetrieval, true}});
 
     std::vector<CreditCard> inputs;
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -904,18 +868,6 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     outputs[0]->set_guid(std::string());
     outputs[1]->set_guid(std::string());
 
-    if (!is_cvc_storage_flag_enabled) {
-      // Verify that CVC values are not present on the output entries and then
-      // clear the same from the input entries to allow the comparison between
-      // input and output.
-      EXPECT_TRUE(outputs[0]->cvc().empty());
-      EXPECT_TRUE(outputs[0]->cvc_modification_date().is_null());
-      EXPECT_TRUE(outputs[1]->cvc().empty());
-      EXPECT_TRUE(outputs[1]->cvc_modification_date().is_null());
-
-      inputs[0].clear_cvc();
-      inputs[1].clear_cvc();
-    }
     EXPECT_EQ(inputs[0], *outputs[0]);
     EXPECT_EQ(inputs[1], *outputs[1]);
 
@@ -956,14 +908,10 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
               outputs[0]->card_creation_source());
     EXPECT_EQ(CreditCard::CardCreationSource::kCreationSourceNonChromePayments,
               outputs[1]->card_creation_source());
-
-    if (is_cvc_storage_flag_enabled) {
-      EXPECT_EQ(inputs[0].cvc(), outputs[0]->cvc());
-      EXPECT_EQ(now, outputs[0]->cvc_modification_date().ToTimeT());
-      EXPECT_EQ(inputs[1].cvc(), outputs[1]->cvc());
-      EXPECT_EQ(now, outputs[1]->cvc_modification_date().ToTimeT());
-    }
-  }
+    EXPECT_EQ(inputs[0].cvc(), outputs[0]->cvc());
+    EXPECT_EQ(now, outputs[0]->cvc_modification_date().ToTimeT());
+    EXPECT_EQ(inputs[1].cvc(), outputs[1]->cvc());
+    EXPECT_EQ(now, outputs[1]->cvc_modification_date().ToTimeT());
 }
 
 TEST_F(PaymentsAutofillTableTest, SetGetCardInfoEnrollmentState) {

@@ -724,9 +724,7 @@ CommonControllerBuilder::CreateAutofillWalletUsageDataTypeController(
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateAutofillWalletCredentialDataTypeController(
     syncer::SyncService* sync_service) {
-  if (!profile_autofill_web_data_service_.value() ||
-      !base::FeatureList::IsEnabled(
-          syncer::kSyncAutofillWalletCredentialData)) {
+  if (!profile_autofill_web_data_service_.value()) {
     return nullptr;
   }
   return CreateWalletDataTypeController(

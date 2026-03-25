@@ -23,7 +23,6 @@ namespace {
 using autofill::PaymentsDataChangedWaiter;
 using autofill::PaymentsDataManager;
 using autofill::ServerCvc;
-using syncer::kSyncAutofillWalletCredentialData;
 using wallet_helper::CreateDefaultSyncWalletCard;
 using wallet_helper::CreateDefaultSyncWalletCredential;
 using wallet_helper::CreateSyncPaymentsCustomerData;
@@ -83,9 +82,7 @@ class SingleClientWalletCredentialSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientWalletCredentialSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        kSyncAutofillWalletCredentialData,
-        autofill::features::kAutofillEnableCvcStorageAndFilling};
+    std::vector<base::test::FeatureRef> enabled_features;
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }

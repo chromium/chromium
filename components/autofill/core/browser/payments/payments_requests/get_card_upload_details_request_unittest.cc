@@ -103,9 +103,6 @@ TEST(GetCardUploadDetailsRequestTest,
 
 TEST(GetCardUploadDetailsRequestTest,
      GetDetailsIncludesClientBehaviorSignalsInChromeUserContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCvcStorageAndFilling);
 
   std::unique_ptr<GetCardUploadDetailsRequest> request =
       CreateGetCardUploadDetailsRequest(

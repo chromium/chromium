@@ -207,8 +207,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
                 ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
                     &SaveCardBubbleControllerImplTest::SetTestingFactories,
                     base::Unretained(this)))) {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kAutofillEnableCvcStorageAndFilling);
+
   }
 
   SaveCardBubbleControllerImplTest(SaveCardBubbleControllerImplTest&) = delete;
@@ -2076,8 +2075,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 
 class SaveCardBubbleControllerImplTestWithCvCStorageAndFilling
     : public SaveCardBubbleControllerImplTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillEnableCvcStorageAndFilling};
+
 };
 
 TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,

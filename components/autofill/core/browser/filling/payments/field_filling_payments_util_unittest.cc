@@ -171,8 +171,7 @@ class FieldFillingPaymentsUtilTest : public testing::Test {
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillEnableCvcStorageAndFilling};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that credit card related fields with the autocomplete attribute
@@ -1561,9 +1560,8 @@ TEST_F(FieldFillingPaymentsUtilTest,
 TEST_F(FieldFillingPaymentsUtilTest,
        WillFillCreditCardNumberOrCvc_CCNumberFieldNotEmpty_NotUserTyped) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSkipPreFilledFields);
   FormData form_data = test::GetFormData(
       {.fields = {
            {.role = CREDIT_CARD_NAME_FULL, .label = u"First Name on Card"},

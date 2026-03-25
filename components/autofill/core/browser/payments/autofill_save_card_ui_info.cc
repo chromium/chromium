@@ -143,21 +143,15 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
     case CardSaveType::kCardSaveOnly: {
       save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableCvcStorageAndFilling)) {
-        description_text = l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL);
-      }
+      description_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL);
       break;
     }
     case CardSaveType::kCardSaveWithCvc: {
       save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableCvcStorageAndFilling)) {
-        description_text = l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL);
-      }
+      description_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL);
       break;
     }
     case CardSaveType::kCvcSaveOnly: {
@@ -181,9 +175,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
     case CardSaveType::kCardSaveOnly: {
       save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
       save_card_prompt_title_id =
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableCvcStorageAndFilling) &&
-                  !is_for_bottom_sheet
+          !is_for_bottom_sheet
               ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL_ON_THIS_DEVICE
               : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
       description_text = l10n_util::GetStringUTF16(
@@ -191,8 +183,6 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
       break;
     }
     case CardSaveType::kCardSaveWithCvc: {
-      CHECK(base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling));
       save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
       save_card_prompt_title_id =
           !is_for_bottom_sheet
@@ -204,8 +194,6 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
       break;
     }
     case CardSaveType::kCvcSaveOnly: {
-      CHECK(base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling));
       save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL;
       description_text = l10n_util::GetStringUTF16(
@@ -331,11 +319,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       options.num_strikes.value_or(0), options.should_request_name_from_user,
       options.should_request_expiration_date_from_user);
   switch (options.card_save_type) {
-    case CardSaveType::kCardSaveWithCvc: {
-      CHECK(base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling));
-      [[fallthrough]];
-    }
+    case CardSaveType::kCardSaveWithCvc:
     case CardSaveType::kCardSaveOnly: {
       if (is_chrome_branding_enabled) {
         save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
@@ -369,8 +353,6 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       break;
     }
     case CardSaveType::kCvcSaveOnly: {
-      CHECK(base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling));
       save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD;
       description_text = l10n_util::GetStringFUTF16(

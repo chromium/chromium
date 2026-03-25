@@ -769,9 +769,7 @@ bool PaymentsAutofillTable::AddCreditCard(const CreditCard& credit_card) {
   }
 
   // If credit card contains cvc, will store cvc in local_stored_cvc table.
-  if (!credit_card.cvc().empty() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling)) {
+  if (!credit_card.cvc().empty()) {
     sql::Statement cvc_statement;
     InsertBuilder(db(), cvc_statement, kLocalStoredCvcTable,
                   {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
@@ -792,12 +790,7 @@ bool PaymentsAutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   if (!old_credit_card)
     return false;
 
-  bool cvc_result = false;
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling)) {
-    cvc_result = UpdateLocalCvc(credit_card.guid(), credit_card.cvc());
-  }
-
+  bool cvc_result = UpdateLocalCvc(credit_card.guid(), credit_card.cvc());
   // If only cvc is updated, we don't need to update credit_card table
   // date_modified field. Since we already checked if cvc updated, to ignore
   // cvc, we set old_credit_card cvc to new cvc.
@@ -910,13 +903,6 @@ bool PaymentsAutofillTable::GetCreditCards(
     std::unique_ptr<CreditCard> credit_card = GetCreditCard(guid);
     if (!credit_card)
       return false;
-    // Clear the CVC from the local `credit_card` entry if the CVC storage flag
-    // is disabled. This ensures CVC is not deleted if a user toggles flags back
-    // and forth, but is still inaccessible if the feature is disabled.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableCvcStorageAndFilling)) {
-      credit_card->clear_cvc();
-    }
     credit_cards->push_back(std::move(credit_card));
   }
 
@@ -1006,13 +992,9 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     card->set_benefit_source(ConvertToBenefitSource(s.ColumnInt(index++)));
     card->set_card_creation_source(
         static_cast<CreditCard::CardCreationSource>(s.ColumnInt(index++)));
-    // Add CVC to the the `card` if the CVC storage flag is enabled.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableCvcStorageAndFilling)) {
-      const ServerCvc& cvc = instrument_to_cvc[card->instrument_id()];
-      card->set_cvc(cvc.cvc);
-      card->set_cvc_modification_date(cvc.last_updated_timestamp);
-    }
+    const ServerCvc& cvc = instrument_to_cvc[card->instrument_id()];
+    card->set_cvc(cvc.cvc);
+    card->set_cvc_modification_date(cvc.last_updated_timestamp);
     credit_cards.push_back(std::move(card));
   }
   return s.Succeeded();

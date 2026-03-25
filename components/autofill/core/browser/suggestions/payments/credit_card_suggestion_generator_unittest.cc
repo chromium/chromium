@@ -4632,22 +4632,17 @@ TEST_P(SuggestionIphBubbleTest,
 }
 
 // Params of GetFilteredCardsToSuggestTest:
-// -- bool IsCvcStorageEnhancementEnabled: Indicates if the flag is enabled.
 // -- FieldType get_trigger_field_type: Indicates triggered field type.
 class GetFilteredCardsToSuggestTest
     : public PaymentsSuggestionGeneratorTest,
-      public testing::WithParamInterface<std::tuple<bool, FieldType, bool>> {
+      public testing::WithParamInterface<std::tuple<FieldType, bool>> {
  public:
-  bool IsCvcStorageEnhancementEnabled() { return std::get<0>(GetParam()); }
-  FieldType get_trigger_field_type() { return std::get<1>(GetParam()); }
-  bool IsCvcSavingSupported() { return std::get<2>(GetParam()); }
+  FieldType get_trigger_field_type() { return std::get<0>(GetParam()); }
+  bool IsCvcSavingSupported() { return std::get<1>(GetParam()); }
 
  private:
   void SetUp() override {
     PaymentsSuggestionGeneratorTest::SetUp();
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableCvcStorageAndFillingEnhancement,
-        IsCvcStorageEnhancementEnabled());
     autofill_client().set_is_cvc_saving_supported(IsCvcSavingSupported());
     // Create 2 local cards and 2 server cards.
     payments_data().ClearCreditCards();
@@ -4670,15 +4665,12 @@ class GetFilteredCardsToSuggestTest
     payments_data().AddServerCreditCard(server_card_1);
     payments_data().AddServerCreditCard(server_card_2);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     PaymentsSuggestionGeneratorTest,
     GetFilteredCardsToSuggestTest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(FieldType::CREDIT_CARD_VERIFICATION_CODE,
+    testing::Combine(testing::Values(FieldType::CREDIT_CARD_VERIFICATION_CODE,
                                      FieldType::CREDIT_CARD_NUMBER),
 #if BUILDFLAG(IS_IOS)
                      testing::Bool()
@@ -4708,9 +4700,8 @@ TEST_P(GetFilteredCardsToSuggestTest, GetFilteredCardsToSuggest) {
   if (get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE &&
       !IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
-  } else if (IsCvcStorageEnhancementEnabled() &&
-             get_trigger_field_type() ==
-                 FieldType::CREDIT_CARD_VERIFICATION_CODE) {
+  } else if (get_trigger_field_type() ==
+             FieldType::CREDIT_CARD_VERIFICATION_CODE) {
     // There are 3 suggestions, 1 for local card suggestion, followed by a
     // separator, and followed by "Manage payment methods..." which redirects to
     // the Chrome payment methods settings page.
@@ -4832,9 +4823,8 @@ TEST_P(GetFilteredCardsToSuggestTest, NoMatchCard) {
   if (get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE &&
       !IsCvcSavingSupported()) {
     EXPECT_THAT(suggestions, IsEmpty());
-  } else if (IsCvcStorageEnhancementEnabled() &&
-             get_trigger_field_type() ==
-                 FieldType::CREDIT_CARD_VERIFICATION_CODE) {
+  } else if (get_trigger_field_type() ==
+             FieldType::CREDIT_CARD_VERIFICATION_CODE) {
     // There are no suggestions.
     EXPECT_EQ(suggestions.size(), 0U);
   } else {
@@ -4870,21 +4860,22 @@ class CvcStorageAndFillingStandaloneFormEnhancementTest
   void SetUp() override {
     PaymentsSuggestionGeneratorTest::SetUp();
     autofill_client().set_is_cvc_saving_supported(IsCvcSavingSupported());
+#if !BUILDFLAG(IS_IOS)
     if (IsCvcStorageStandaloneFormEnhancementEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {features::kAutofillEnableCvcStorageAndFillingEnhancement,
-           features::
+          {features::
                kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {features::kAutofillEnableCvcStorageAndFillingEnhancement},
+          {},
           /*disabled_features=*/
           {features::
                kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement});
     }
+#endif
     // Create 2 local cards and 2 server cards.
     payments_data().ClearCreditCards();
     CreditCard local_card_1 =
@@ -4912,13 +4903,15 @@ class CvcStorageAndFillingStandaloneFormEnhancementTest
 
 INSTANTIATE_TEST_SUITE_P(PaymentsSuggestionGeneratorTest,
                          CvcStorageAndFillingStandaloneFormEnhancementTest,
-                         testing::Combine(testing::Bool(),
+                         testing::Combine(
 #if BUILDFLAG(IS_IOS)
-                                          testing::Bool()
+                             testing::Values(true),
+                             testing::Bool()
 #else
-                                          testing::Values(false)
+                             testing::Bool(),
+                             testing::Values(false)
 #endif
-                                              ));
+                                 ));
 
 // Tests that GetCreditCardSuggestions function correctly returns masked server
 // card suggestions when no VCN suggestions for a standalone cvc field.

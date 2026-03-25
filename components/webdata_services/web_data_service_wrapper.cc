@@ -226,11 +226,9 @@ WebDataServiceWrapper::WebDataServiceWrapper(
                        db_task_runner, profile_autofill_web_data_));
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
-    profile_autofill_web_data_->GetAutofillBackend(
-        base::BindOnce(&InitWalletCredentialSyncBridgeOnDBSequence,
-                       db_task_runner, profile_autofill_web_data_));
-  }
+  profile_autofill_web_data_->GetAutofillBackend(
+      base::BindOnce(&InitWalletCredentialSyncBridgeOnDBSequence,
+                     db_task_runner, profile_autofill_web_data_));
 
   const base::FilePath account_storage_path =
       context_path.Append(kAccountWebDataFilename);
@@ -262,11 +260,9 @@ WebDataServiceWrapper::WebDataServiceWrapper(
                      account_autofill_web_data_));
 #endif
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
-    account_autofill_web_data_->GetAutofillBackend(
-        base::BindOnce(&InitWalletCredentialSyncBridgeOnDBSequence,
-                       db_task_runner, account_autofill_web_data_));
-  }
+  account_autofill_web_data_->GetAutofillBackend(
+      base::BindOnce(&InitWalletCredentialSyncBridgeOnDBSequence,
+                     db_task_runner, account_autofill_web_data_));
 }
 
 WebDataServiceWrapper::~WebDataServiceWrapper() = default;

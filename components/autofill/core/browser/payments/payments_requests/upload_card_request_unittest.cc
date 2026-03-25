@@ -118,9 +118,6 @@ TEST(UploadCardRequestTest,
 }
 
 TEST(UploadCardRequestTest, UploadRequestIncludesClientBehaviorSignals) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCvcStorageAndFilling);
 
   std::unique_ptr<UploadCardRequest> request =
       CreateUploadCardRequest(UploadCardOptions().with_client_behavior_signals(

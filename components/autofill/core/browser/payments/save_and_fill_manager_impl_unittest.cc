@@ -411,11 +411,8 @@ TEST_F(SaveAndFillManagerImplTest,
   EXPECT_THAT(
       details.client_behavior_signals,
       Contains(ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling)) {
-    EXPECT_THAT(details.client_behavior_signals,
-                Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
-  }
+  EXPECT_THAT(details.client_behavior_signals,
+              Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
 }
 
 TEST_F(SaveAndFillManagerImplTest, UniqueAddress_SingleAddressCandidate) {
@@ -959,8 +956,6 @@ TEST_F(SaveAndFillManagerImplTest, HideDialog_CalledAfterServerSaveCompleted) {
 TEST_F(SaveAndFillManagerImplTest, OnDidCreateCard_Success_SaveServerCvc) {
   save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   prefs::SetPaymentCvcStorage(autofill_client().GetPrefs(), true);
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableCvcStorageAndFilling);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
@@ -989,8 +984,6 @@ TEST_F(SaveAndFillManagerImplTest,
        OnDidCreateCard_Success_DoNotAddServerCvcIfCvcIsEmpty) {
   save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   prefs::SetPaymentCvcStorage(autofill_client().GetPrefs(), true);
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableCvcStorageAndFilling);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
@@ -1018,8 +1011,6 @@ TEST_F(SaveAndFillManagerImplTest,
        OnDidCreateCard_Success_DoNotSaveServerCvcIfCvcStorageIsDisabled) {
   save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   prefs::SetPaymentCvcStorage(autofill_client().GetPrefs(), false);
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableCvcStorageAndFilling);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);

@@ -100,9 +100,7 @@ FetchCreditCardOrCvcFieldSuggestionDataSync(
                                require_non_empty_value_on_trigger_field,
                                /*include_virtual_cards=*/true);
 
-  if (kCvcFieldTypes.contains(trigger_field_type) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFillingEnhancement)) {
+  if (kCvcFieldTypes.contains(trigger_field_type)) {
     FilterCardsToSuggestForCvcFields(
         trigger_field_type,
         base::flat_set<std::string>(four_digit_combinations_in_dom),

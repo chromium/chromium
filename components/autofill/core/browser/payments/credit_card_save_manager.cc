@@ -1655,12 +1655,6 @@ void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {
 }
 
 bool CreditCardSaveManager::ShouldRequestCvcInclusiveLegalMessage() const {
-  // If the main CVC storage feature is disabled, we should never request the
-  // CVC-inclusive legal message.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling)) {
-    return false;
-  }
 #if BUILDFLAG(IS_IOS)
   // On iOS, we request the CVC-inclusive message if a CVC is already present,
   // or if the save prompt will be the infobar and detail page flow, where a CVC

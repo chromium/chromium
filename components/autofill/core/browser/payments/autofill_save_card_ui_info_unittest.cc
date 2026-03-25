@@ -166,9 +166,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // feature is enabled and the infobar is shown.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyUiForCardSaveOnlyWithNewTitleOnInfobar) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type = CardSaveType::kCardSaveOnly;
   options.num_strikes = 1;
@@ -188,9 +185,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // sheet is shown, even when the UI update feature is enabled.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyUiForCardSaveOnlyWithOldTitleOnBottomSheet) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillEnableCvcStorageAndFilling);
-
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type = CardSaveType::kCardSaveOnly;
   options.num_strikes = 0;
@@ -209,9 +203,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // corresponding feature flag is enabled.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyUiForCardSaveWithCvcAndDescription) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type = CardSaveType::kCardSaveWithCvc;
   // Set num_strikes to ensure an infobar is shown.
@@ -231,8 +222,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 
 // Tests that the correct title and description are shown for CVC-only saves.
 TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyUiForCvcSaveOnly) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type = CardSaveType::kCvcSaveOnly;
 
@@ -252,9 +241,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyUiForCvcSaveOnly) {
 // local-card-only-save bottom sheet.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyAttributesForCardSaveOnlyBottomSheet) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
       test::GetCreditCard());
@@ -274,9 +260,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // local-card-save-with-CVC bottom sheet.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyAttributesForCardSaveWithCvcBottomSheet) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
       test::GetCreditCard());
@@ -295,9 +278,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // local-CVC-only-save Message.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyAttributesForCvcSaveOnlyMessage) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
       test::GetCreditCard());
@@ -396,8 +376,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableWalletBranding},
-      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
-                             features::kAutofillEnableWalletBrandingV2});
+      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
       is_chrome_branded());
@@ -469,8 +448,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
-                             features::kAutofillEnableWalletBranding,
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding,
                              features::kAutofillEnableWalletBrandingV2});
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
@@ -504,8 +482,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveWithCvcBottomSheet) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
-                            features::kAutofillEnableWalletBranding},
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
       /*disabled_features=*/{});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
@@ -535,8 +512,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveWithCvcBottomSheet_WalletBrandingOff) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAutofillEnableCvcStorageAndFilling},
-                            {features::kAutofillEnableWalletBranding});
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
@@ -565,8 +541,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCvcSaveOnlyMessage) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
-                            features::kAutofillEnableWalletBranding},
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
       /*disabled_features=*/{});
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
@@ -589,9 +564,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCvcSaveOnlyMessage_WalletBrandingDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
       is_chrome_branded());
@@ -616,10 +589,8 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveOnlyBottomSheet_WalletBrandingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletBranding);
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
@@ -648,10 +619,8 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveOnlyBottomSheet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableWalletBranding,
-       features::kAutofillEnableWalletBrandingV2},
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding,
+                            features::kAutofillEnableWalletBrandingV2},
       /*disabled_features=*/{});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
@@ -715,10 +684,8 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveWithCvcBottomSheet_WalletBrandingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletBranding);
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
@@ -747,10 +714,8 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveWithCvcBottomSheet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableWalletBranding,
-       features::kAutofillEnableWalletBrandingV2},
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding,
+                            features::kAutofillEnableWalletBrandingV2},
       /*disabled_features=*/{});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
@@ -813,10 +778,8 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCvcSaveOnlyMessage_WalletBrandingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletBranding);
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
@@ -841,8 +804,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableWalletBranding},
+      {features::kAutofillEnableWalletBranding},
       /*disabled_features=*/{});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(

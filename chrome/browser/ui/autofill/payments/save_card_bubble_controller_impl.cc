@@ -311,9 +311,7 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
-  if (current_bubble_type_ == PaymentsBubbleType::kLocalSave &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling)) {
+  if (current_bubble_type_ == PaymentsBubbleType::kLocalSave) {
     CHECK_NE(options_.card_save_type,
              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly);
     return l10n_util::GetStringUTF16(

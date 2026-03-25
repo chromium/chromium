@@ -12,7 +12,6 @@
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "content/public/test/browser_test.h"
 
-using syncer::kSyncAutofillWalletCredentialData;
 using wallet_helper::CreateDefaultSyncWalletCard;
 using wallet_helper::CreateDefaultSyncWalletCredential;
 using wallet_helper::ExpectDefaultWalletCredentialValues;
@@ -28,9 +27,7 @@ class TwoClientWalletCredentialSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientWalletCredentialSyncTest() : SyncTest(TWO_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        kSyncAutofillWalletCredentialData,
-        autofill::features::kAutofillEnableCvcStorageAndFilling};
+    std::vector<base::test::FeatureRef> enabled_features;
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }

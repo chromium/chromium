@@ -1324,9 +1324,7 @@ void PaymentsDataManager::
 }
 
 bool PaymentsDataManager::IsPaymentCvcStorageEnabled() const {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableCvcStorageAndFilling) &&
-         prefs::IsPaymentCvcStorageEnabled(pref_service_);
+  return prefs::IsPaymentCvcStorageEnabled(pref_service_);
 }
 
 void PaymentsDataManager::SetPaymentsCvcStorageEnabled(bool enabled) {
@@ -1725,9 +1723,7 @@ void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,
     if (card->usage_history().modification_date() >= begin &&
         card->usage_history().modification_date() < end) {
       RemoveByGUID(card->guid());
-    } else if (base::FeatureList::IsEnabled(
-                   features::kAutofillEnableCvcStorageAndFilling) &&
-               card->cvc_modification_date() >= begin &&
+    } else if (card->cvc_modification_date() >= begin &&
                card->cvc_modification_date() < end) {
       UpdateLocalCvc(card->guid(), u"");
     }
