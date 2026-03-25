@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_android)
 
@@ -38,6 +39,7 @@ build_webui("build") {
 
   webui_context_type = "trusted"
   optimize = optimize_webui
+  generate_code_cache = enable_webui_generate_code_cache
   if (optimize) {
     optimize_webui_host = "webui-toolbar.top-chrome"
     optimize_webui_in_files = [
