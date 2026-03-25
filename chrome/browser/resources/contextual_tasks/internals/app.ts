@@ -130,6 +130,23 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
         this.onLogMessageAdded_.bind(this));
     this.refreshCurrentHost_();
     this.refreshEligibility_();
+    this.syncTabsWithUrlHash_();
+  }
+
+  private syncTabsWithUrlHash_() {
+    const tabUrlHashes = ['#model-selection', '#debugging', '#eligibility'];
+    const tabBox = this.shadowRoot.querySelector('cr-tab-box')!;
+
+    tabBox.addEventListener('selected-index-change', e => {
+      window.location.hash = tabUrlHashes[e.detail] || '';
+    });
+
+    if (window.location.hash.startsWith('#')) {
+      const entryIndex = tabUrlHashes.indexOf(window.location.hash);
+      if (entryIndex >= 0) {
+        tabBox.setAttribute('selected-index', String(entryIndex));
+      }
+    }
   }
 
   private async refreshEligibility_() {
