@@ -26,6 +26,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/scoped_hdc.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/device_event_log/device_event_log.h"
@@ -482,8 +483,9 @@ class MonitorDeviceCapsProvider {
 
  private:
   void CollectMonitorDeviceCaps() {
+    base::win::ScopedGetDC hdc_desktop(HWND_DESKTOP);
     ::EnumDisplayMonitors(
-        ::GetDC(HWND_DESKTOP), /*lprcClip=*/nullptr,
+        hdc_desktop, /*lprcClip=*/nullptr,
         [](HMONITOR hMonitor, HDC hdc, LPRECT lpRect, LPARAM lParam) -> BOOL {
           auto* monitors =
               reinterpret_cast<base::flat_map<HMONITOR, DeviceCaps>*>(lParam);
