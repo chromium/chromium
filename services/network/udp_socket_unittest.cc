@@ -675,8 +675,8 @@ TEST_F(UDPSocketTest, TestReadZeroByte) {
 TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
 #if BUILDFLAG(IS_MAC)
   // See https://crbug.com/354933441
-  if (base::mac::MacOSMajorVersion() == 15) {
-    GTEST_SKIP() << "Disabled on macOS Sequoia.";
+  if (base::mac::MacOSMajorVersion() >= 15) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia and later.";
   }
 #endif
 
