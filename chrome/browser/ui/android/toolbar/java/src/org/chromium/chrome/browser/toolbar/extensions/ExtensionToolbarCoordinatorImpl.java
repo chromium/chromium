@@ -45,8 +45,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     private LinearLayout mContainer;
     private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
-    private ExtensionsMenuAndAccessControlButtonCoordinator
-            mExtensionsMenuAndAccessControlButtonCoordinator;
+    private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
+    private ExtensionAccessControlButtonCoordinator mExtensionAccessControlButtonCoordinator;
 
     private final MenuButtonWidthConsumer mMenuButtonWidthConsumer = new MenuButtonWidthConsumer();
     private final ActionListWidthConsumer mActionListWidthConsumer = new ActionListWidthConsumer();
@@ -85,8 +85,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         rootView,
                         contextMenuPopulatorFactory,
                         selectionDropdownMenuDelegate);
-        mExtensionsMenuAndAccessControlButtonCoordinator =
-                new ExtensionsMenuAndAccessControlButtonCoordinator(
+        mExtensionsMenuCoordinator =
+                new ExtensionsMenuCoordinator(
                         context,
                         mContainer.findViewById(R.id.extensions_menu_button),
                         themeColorProvider,
@@ -94,13 +94,18 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         profile,
                         currentTabSupplier,
                         tabCreator,
+                        mExtensionsToolbarBridge);
+        mExtensionAccessControlButtonCoordinator =
+                new ExtensionAccessControlButtonCoordinator(
+                        currentTabSupplier,
                         mExtensionsToolbarBridge,
                         mContainer.findViewById(R.id.extensions_request_access_button));
     }
 
     @Override
     public void destroy() {
-        mExtensionsMenuAndAccessControlButtonCoordinator.destroy();
+        mExtensionAccessControlButtonCoordinator.destroy();
+        mExtensionsMenuCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
         mExtensionsToolbarBridge.destroy();
         mBridge.destroy();
@@ -129,7 +134,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
     @Override
     public void updateMenuButtonBackground(int backgroundResource) {
-        mExtensionsMenuAndAccessControlButtonCoordinator.updateButtonBackground(backgroundResource);
+        mExtensionsMenuCoordinator.updateButtonBackground(backgroundResource);
     }
 
     @Override

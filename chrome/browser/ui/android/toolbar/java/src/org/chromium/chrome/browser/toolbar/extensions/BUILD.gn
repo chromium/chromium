@@ -29,7 +29,6 @@ android_library("java") {
     "ExtensionActionListRecyclerView.java",
     "ExtensionActionPopup.java",
     "ExtensionToolbarCoordinatorImpl.java",
-    "ExtensionsMenuAndAccessControlButtonCoordinator.java",
     "ExtensionsMenuCoordinator.java",
     "ExtensionsMenuItemProperties.java",
     "ExtensionsMenuItemViewBinder.java",
@@ -75,7 +74,6 @@ robolectric_library("junit") {
     "ExtensionActionDragHelperTest.java",
     "ExtensionActionListAnchoredModelListTest.java",
     "ExtensionActionListMediatorTest.java",
-    "ExtensionsMenuAndAccessControlButtonCoordinatorTest.java",
     "ExtensionsMenuCoordinatorTest.java",
     "ExtensionsMenuMediatorTest.java",
   ]
