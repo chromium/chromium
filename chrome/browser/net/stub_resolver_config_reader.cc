@@ -148,25 +148,24 @@ bool ShouldUseDohFallback(net::SecureDnsMode secure_dns_mode,
     return false;
   }
 
-  // DoH fallback must be enabled.
-  if (!base::FeatureList::IsEnabled(
-          net::features::kAddAutomaticWithDohFallbackMode)) {
-    return false;
-  }
-
-  // Should use DoH fallback if local state pref enables it.
-  if (doh_config_source.AutomaticModeFallbackToDohEnabled()) {
-    return true;
+  // If the feature is enabled then return the boolean value of the pref.
+  // DoH fallback is a new setting introduced in the Bundled Security Settings
+  // for Secure DNS. If the new UI is enabled to make the setting available,
+  // then just check user choice in the pref.
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kBundledSecuritySettingsSecureDnsV2)) {
+    return doh_config_source.AutomaticModeFallbackToDohEnabled();
   }
 
   // Now consider forcing DoH fallback even though it is not enabled by the
   // user. We need to do this in order to test the feature before we include it
   // in a security bundle. See: crbug.com/490045356
 
-  // Do not force DoH fallback if ESB is not enabled.
-  if (!safe_browsing::IsEnhancedProtectionEnabled(local_state)) {
-    return false;
-  }
+  // TODO(crbug.com/492459244): A short study that enables
+  // kForceSecureDnsDohFallback should also only include ESB users (using
+  // starts_active=false).  Checking for ESB is not possible here, however,
+  // because it is a profile pref, and only local state is available.
+  // Move this method to a context where the profile pref is available.
 
   // Do not force DoH fallback if the fallback pref is managed.
   if (local_state.IsManagedPreference(

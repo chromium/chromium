@@ -782,8 +782,6 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
 
 TEST_F(NetworkServiceTest, AutomaticWithDohFallbackEnableDisable) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kAddAutomaticWithDohFallbackMode);
   const auto kConfig = net::DnsOverHttpsConfig();
 
   // Create valid DnsConfig.
