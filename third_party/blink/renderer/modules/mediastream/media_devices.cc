@@ -92,6 +92,9 @@ void SendLogMessage(const std::string& message) {
 }
 
 void LogDevicesEnumerated(
+    ScriptPromiseResolverWithTracker<EnumerateDevicesResult,
+                                     IDLSequence<MediaDeviceInfo>>*
+        result_tracker,
     const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
     const Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>&
         video_input_capabilities,
@@ -143,9 +146,10 @@ void LogDevicesEnumerated(
   video_caps_builder.Append("]");
 
   SendLogMessage(base::StringPrintf(
-      "DevicesEnumerated({audio_inputs=%zu}, {video_inputs=%zu}, "
+      "DevicesEnumerated({result_tracker=%p}, {audio_inputs=%zu}, "
+      "{video_inputs=%zu}, "
       "{audio_outputs=%zu}, {audio_capabilities=%s}, {video_capabilities=%s})",
-      num_audio_inputs, num_video_inputs, num_audio_outputs,
+      result_tracker, num_audio_inputs, num_video_inputs, num_audio_outputs,
       StringView(audio_caps_builder).Utf8().c_str(),
       StringView(video_caps_builder).Utf8().c_str()));
 }
@@ -506,11 +510,6 @@ ScriptPromise<IDLSequence<MediaDeviceInfo>> MediaDevices::enumerateDevices(
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateWebRTCMethodCount(RTCAPIName::kEnumerateDevices);
-  SendLogMessage(base::StringPrintf(
-      "enumerateDevices({request_audio_input_capabilities=%s})",
-      base::FeatureList::IsEnabled(kEnumerateDevicesRequestAudioCapabilities)
-          ? "true"
-          : "false"));
   if (!script_state->ContextIsValid()) {
     SendLogMessage("enumerateDevices() => (ERROR: Current frame is detached)");
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -525,6 +524,14 @@ ScriptPromise<IDLSequence<MediaDeviceInfo>> MediaDevices::enumerateDevices(
       script_state, "Media.MediaDevices.EnumerateDevices",
       kEnumerateDevicesTimeout);
   const auto promise = result_tracker->Promise();
+
+  SendLogMessage(base::StringPrintf(
+      "enumerateDevices({result_tracker=%p}, "
+      "{request_audio_input_capabilities=%s})",
+      result_tracker,
+      base::FeatureList::IsEnabled(kEnumerateDevicesRequestAudioCapabilities)
+          ? "true"
+          : "false"));
 
   enumerate_device_requests_.insert(result_tracker);
 
@@ -1187,11 +1194,11 @@ void MediaDevices::ContextDestroyed() {
     return;
   }
 
-  if (!enumerate_device_requests_.empty()) {
-    SendLogMessage(base::StringPrintf(
-        "ContextDestroyed() => (Canceling %zu pending enumerateDevices "
-        "requests due to frame destruction)",
-        enumerate_device_requests_.size()));
+  for (auto& result_tracker : enumerate_device_requests_) {
+    SendLogMessage(
+        base::StringPrintf("ContextDestroyed() => (Canceling "
+                           "enumerateDevices({result_tracker=%p}))",
+                           result_tracker.Get()));
   }
 
   is_execution_context_active_ = false;
@@ -1395,14 +1402,18 @@ void MediaDevices::DevicesEnumerated(
     Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
         audio_input_capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LogDevicesEnumerated(enumeration, video_input_capabilities,
+  LogDevicesEnumerated(result_tracker, enumeration, video_input_capabilities,
                        audio_input_capabilities);
 
-  if (!enumerate_device_requests_.Contains(result_tracker)) {
+  auto it = enumerate_device_requests_.find(result_tracker);
+  if (it == enumerate_device_requests_.end()) {
+    SendLogMessage(base::StringPrintf(
+        "DevicesEnumerated({result_tracker=%p}) => (ERROR: Request not found)",
+        result_tracker));
     return;
   }
 
-  enumerate_device_requests_.erase(result_tracker);
+  enumerate_device_requests_.erase(it);
 
   ScriptState* script_state = result_tracker->GetScriptState();
   if (!script_state || !ExecutionContext::From(script_state) ||
@@ -1474,14 +1485,13 @@ void MediaDevices::DevicesEnumerated(
 void MediaDevices::OnDispatcherHostConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  SendLogMessage(base::StringPrintf(
-      "OnDispatcherHostConnectionError() => (ERROR: Mojo connection lost. "
-      "Rejecting %zu pending enumerateDevices requests)",
-      enumerate_device_requests_.size()));
-
   for (ScriptPromiseResolverWithTracker<EnumerateDevicesResult,
                                         IDLSequence<MediaDeviceInfo>>*
            result_tracker : enumerate_device_requests_) {
+    SendLogMessage(base::StringPrintf(
+        "OnDispatcherHostConnectionError() => (ERROR: Mojo connection lost. "
+        "Rejecting enumerateDevices({result_tracker=%p}))",
+        result_tracker));
     result_tracker->Reject<DOMException>(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                            "enumerateDevices() failed."),
@@ -1503,10 +1513,9 @@ void MediaDevices::CheckIfEnumerateDevicesTimedOut(
   }
   if (enumerate_device_requests_.Contains(result_tracker)) {
     SendLogMessage(base::StringPrintf(
-        "enumerateDevices() => (ERROR: Promise timed out after %" PRId64
-        " seconds, result=%d)",
-        kEnumerateDevicesTimeout.InSeconds(),
-        static_cast<int>(EnumerateDevicesResult::kTimedOut)));
+        "enumerateDevices({result_tracker=%p}) => (Slow request: still pending "
+        "after %" PRId64 " seconds)",
+        result_tracker, kEnumerateDevicesTimeout.InSeconds()));
   }
 }
 
