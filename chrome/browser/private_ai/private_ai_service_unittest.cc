@@ -98,7 +98,7 @@ TEST_F(PrivateAiServiceTest, RequestOAuthTokenTransientError) {
   private_ai_service_->RequestOAuthToken(future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   EXPECT_EQ(future.Get<0>(),
             phosphor::GetAuthnTokensResult::kFailedOAuthTokenTransient);
@@ -115,7 +115,8 @@ TEST_F(PrivateAiServiceTest, RequestOAuthTokenPersistentError) {
   private_ai_service_->RequestOAuthToken(future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   EXPECT_EQ(future.Get<0>(),
             phosphor::GetAuthnTokensResult::kFailedOAuthTokenPersistent);
