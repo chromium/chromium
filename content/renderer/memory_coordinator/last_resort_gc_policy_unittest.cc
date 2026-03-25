@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/memory_coordinator/renderer_memory_coordinator_policy.h"
+#include "content/renderer/memory_coordinator/last_resort_gc_policy.h"
 
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
@@ -20,46 +20,23 @@ using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::Test;
 
-class RendererMemoryCoordinatorPolicyTest : public Test {
+class LastResortGCPolicyTest : public Test {
  protected:
-  RendererMemoryCoordinatorPolicyTest() = default;
-  ~RendererMemoryCoordinatorPolicyTest() override = default;
+  LastResortGCPolicyTest() = default;
+  ~LastResortGCPolicyTest() override = default;
 
   void FastForwardBy(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
   }
 
-  void NotifyV8HeapLastResortGC() { policy_.OnV8HeapLastResortGC(); }
-
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  ChildMemoryCoordinator coordinator_;
-  RendererMemoryCoordinatorPolicy policy_{coordinator_};
 };
 
-TEST_F(RendererMemoryCoordinatorPolicyTest,
-       MemoryCoordinatorLastResortGC_Disabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kMemoryCoordinatorLastResortGC);
-
-  // Create the consumer with the `ReleaseGCReferences::kYes` trait.
-  base::RegisteredMockMemoryConsumer consumer(
-      "Consumer", {.release_gc_references =
-                       base::MemoryConsumerTraits::ReleaseGCReferences::kYes});
-
-  // Does not get notified.
-  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
-  EXPECT_CALL(consumer, OnReleaseMemory()).Times(0);
-
-  NotifyV8HeapLastResortGC();
-}
-
-TEST_F(RendererMemoryCoordinatorPolicyTest,
-       MemoryCoordinatorLastResortGC_Enabled_NoTrait) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      kMemoryCoordinatorLastResortGC);
+TEST_F(LastResortGCPolicyTest, Enabled_NoTrait) {
+  ChildMemoryCoordinator coordinator;
+  LastResortGCPolicy policy{coordinator};
 
   // Create the consumer with the `ReleaseGCReferences::kNo` trait.
   base::RegisteredMockMemoryConsumer consumer(
@@ -70,13 +47,12 @@ TEST_F(RendererMemoryCoordinatorPolicyTest,
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
   EXPECT_CALL(consumer, OnReleaseMemory()).Times(0);
 
-  NotifyV8HeapLastResortGC();
+  policy.OnV8HeapLastResortGC();
 }
 
-TEST_F(RendererMemoryCoordinatorPolicyTest,
-       MemoryCoordinatorLastResortGC_Enabled_NoTimer) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      kMemoryCoordinatorLastResortGC);
+TEST_F(LastResortGCPolicyTest, Enabled_NoTimer) {
+  ChildMemoryCoordinator coordinator;
+  LastResortGCPolicy policy{coordinator};
 
   // Create the consumer with the `ReleaseGCReferences::kYes` trait.
   base::RegisteredMockMemoryConsumer consumer(
@@ -96,17 +72,19 @@ TEST_F(RendererMemoryCoordinatorPolicyTest,
     EXPECT_EQ(consumer.memory_limit(), 100);
   });
 
-  NotifyV8HeapLastResortGC();
+  policy.OnV8HeapLastResortGC();
 }
 
-TEST_F(RendererMemoryCoordinatorPolicyTest,
-       MemoryCoordinatorLastResortGC_Enabled_Timer) {
+TEST_F(LastResortGCPolicyTest, Enabled_Timer) {
   static constexpr int kTestRestoreLimitSeconds = 120;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kMemoryCoordinatorLastResortGC,
       {{"restore_limit_seconds",
         base::NumberToString(kTestRestoreLimitSeconds)}});
+
+  ChildMemoryCoordinator coordinator;
+  LastResortGCPolicy policy{coordinator};
 
   // Create the consumer with the `ReleaseGCReferences::kYes` trait.
   base::RegisteredMockMemoryConsumer consumer(
@@ -123,7 +101,7 @@ TEST_F(RendererMemoryCoordinatorPolicyTest,
   });
   EXPECT_CALL(consumer, OnReleaseMemory());
 
-  NotifyV8HeapLastResortGC();
+  policy.OnV8HeapLastResortGC();
   Mock::VerifyAndClearExpectations(&consumer);
 
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
@@ -133,7 +111,7 @@ TEST_F(RendererMemoryCoordinatorPolicyTest,
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
     EXPECT_EQ(consumer.memory_limit(), 100);
   });
-  FastForwardBy(base::Minutes(kTestRestoreLimitSeconds));
+  FastForwardBy(base::Seconds(1));
 }
 
 }  // namespace content

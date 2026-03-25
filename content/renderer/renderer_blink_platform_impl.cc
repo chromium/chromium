@@ -54,7 +54,7 @@
 #include "content/renderer/media/inspector_media_event_handler.h"
 #include "content/renderer/media/render_media_event_handler.h"
 #include "content/renderer/media/renderer_webaudiodevice_impl.h"
-#include "content/renderer/memory_coordinator/renderer_memory_coordinator_policy.h"
+#include "content/renderer/memory_coordinator/last_resort_gc_policy.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_navigation_metrics_manager.h"
@@ -1179,12 +1179,9 @@ bool RendererBlinkPlatformImpl::IsUserLevelMemoryPressureSignalEnabled() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void RendererBlinkPlatformImpl::OnV8HeapLastResortGC() {
-  // In --single-process mode, the RendererMemoryCoordinatorPolicy does not run.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess)) {
-    return;
+  if (auto* policy = LastResortGCPolicy::Get()) {
+    policy->OnV8HeapLastResortGC();
   }
-  RendererMemoryCoordinatorPolicy::Get().OnV8HeapLastResortGC();
 }
 
 }  // namespace content

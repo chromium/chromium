@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEMORY_COORDINATOR_RENDERER_MEMORY_COORDINATOR_POLICY_H_
-#define CONTENT_RENDERER_MEMORY_COORDINATOR_RENDERER_MEMORY_COORDINATOR_POLICY_H_
+#ifndef CONTENT_RENDERER_MEMORY_COORDINATOR_LAST_RESORT_GC_POLICY_H_
+#define CONTENT_RENDERER_MEMORY_COORDINATOR_LAST_RESORT_GC_POLICY_H_
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
@@ -19,17 +19,17 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kRestoreLimitSeconds);
 
 class ChildMemoryCoordinator;
 
-// The main policy that lives in renderer processes. Acts on memory consumers
-// in a single renderer, based on signals that comes from inside the renderer.
-class CONTENT_EXPORT RendererMemoryCoordinatorPolicy
-    : public MemoryCoordinatorPolicy {
+// A policy that is triggered when V8 is about to perform a last resort garbage
+// collection. It instructs memory consumers that retain references to the V8
+// heap to release as much memory as possible to help the impending GC and avoid
+// an out-of-memory (OOM) crash.
+class CONTENT_EXPORT LastResortGCPolicy : public MemoryCoordinatorPolicy {
  public:
-  // Returns the global instance instance. This will CHECK that the instance
-  // exists.
-  static RendererMemoryCoordinatorPolicy& Get();
+  // Returns the global instance, or null if it hasn't been instantiated.
+  static LastResortGCPolicy* Get();
 
-  explicit RendererMemoryCoordinatorPolicy(ChildMemoryCoordinator& coordinator);
-  ~RendererMemoryCoordinatorPolicy() override;
+  explicit LastResortGCPolicy(ChildMemoryCoordinator& coordinator);
+  ~LastResortGCPolicy() override;
 
   // Notifies the policy that V8 is about to run its last resort GC.
   void OnV8HeapLastResortGC();
@@ -45,4 +45,4 @@ class CONTENT_EXPORT RendererMemoryCoordinatorPolicy
 
 }  // namespace content
 
-#endif  // CONTENT_RENDERER_MEMORY_COORDINATOR_RENDERER_MEMORY_COORDINATOR_POLICY_H_
+#endif  // CONTENT_RENDERER_MEMORY_COORDINATOR_LAST_RESORT_GC_POLICY_H_

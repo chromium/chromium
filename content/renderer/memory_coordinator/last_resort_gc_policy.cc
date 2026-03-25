@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/memory_coordinator/renderer_memory_coordinator_policy.h"
+#include "content/renderer/memory_coordinator/last_resort_gc_policy.h"
 
 #include <optional>
 #include <string>
@@ -19,7 +19,7 @@ namespace content {
 
 namespace {
 
-RendererMemoryCoordinatorPolicy* g_instance = nullptr;
+LastResortGCPolicy* g_instance = nullptr;
 
 }  // namespace
 
@@ -31,13 +31,11 @@ BASE_FEATURE_PARAM(int,
                    0);
 
 // static
-RendererMemoryCoordinatorPolicy& RendererMemoryCoordinatorPolicy::Get() {
-  CHECK(g_instance);
-  return *g_instance;
+LastResortGCPolicy* LastResortGCPolicy::Get() {
+  return g_instance;
 }
 
-RendererMemoryCoordinatorPolicy::RendererMemoryCoordinatorPolicy(
-    ChildMemoryCoordinator& coordinator)
+LastResortGCPolicy::LastResortGCPolicy(ChildMemoryCoordinator& coordinator)
     : MemoryCoordinatorPolicy(coordinator.policy_manager()),
       coordinator_(coordinator) {
   CHECK(!g_instance);
@@ -45,17 +43,13 @@ RendererMemoryCoordinatorPolicy::RendererMemoryCoordinatorPolicy(
   coordinator_->policy_manager().AddPolicy(this);
 }
 
-RendererMemoryCoordinatorPolicy::~RendererMemoryCoordinatorPolicy() {
+LastResortGCPolicy::~LastResortGCPolicy() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
   coordinator_->policy_manager().RemovePolicy(this);
 }
 
-void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
-  if (!base::FeatureList::IsEnabled(kMemoryCoordinatorLastResortGC)) {
-    return;
-  }
-
+void LastResortGCPolicy::OnV8HeapLastResortGC() {
   // The V8 heap is full and can't free enough memory. To help the impending GC,
   // notify consumers that retain references to the v8 heap.
   manager().UpdateConsumers(
@@ -75,12 +69,11 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
   }
 
   auto restore_limit_delay = base::Seconds(kRestoreLimitSeconds.Get());
-  restore_limit_timer_.Start(
-      FROM_HERE, restore_limit_delay, this,
-      &RendererMemoryCoordinatorPolicy::OnRestoreLimitTimerFired);
+  restore_limit_timer_.Start(FROM_HERE, restore_limit_delay, this,
+                             &LastResortGCPolicy::OnRestoreLimitTimerFired);
 }
 
-void RendererMemoryCoordinatorPolicy::OnRestoreLimitTimerFired() {
+void LastResortGCPolicy::OnRestoreLimitTimerFired() {
   manager().UpdateConsumers(
       this,
       [](uint32_t consumer_id, std::optional<base::MemoryConsumerTraits> traits,
