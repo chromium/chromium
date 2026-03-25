@@ -168,6 +168,12 @@ void LensComposeboxHandler::NavigateUrl(const GURL& url) {
   mojo::ReportBadMessage("URL navigation is not implemented in Lens");
 }
 
+void LensComposeboxHandler::CloseLensOverlayFromWebUI(
+    composebox::mojom::LensOverlayDismissalSource dismissal_source) {
+  mojo::ReportBadMessage(
+      "CloseLensOverlayFromWebUI is not implemented in Lens");
+}
+
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
   mojo::ReportBadMessage("Delete autocomplete match not implemented in lens");

@@ -563,6 +563,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
            this.inputState.allowedInputTypes.length > 0);
       this.inToolMode_ =
           this.inputState.activeTool !== ComposeboxToolMode.kUnspecified;
+      this.dispatchEvent(new CustomEvent('input-state-changed', {
+        detail: {inputState: this.inputState},
+      }));
     }
 
     if (changedPrivateProperties.has('inputPlaceholderOverride') ||

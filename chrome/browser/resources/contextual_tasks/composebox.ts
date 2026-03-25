@@ -8,6 +8,7 @@ import '//resources/cr_components/localized_link/localized_link.js';
 
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
+import {LensOverlayDismissalSource} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from '//resources/cr_components/composebox/composebox_proxy.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
@@ -16,8 +17,8 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -129,6 +130,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       },
       selectedMatchIndex_: {type: Number},
       enableFileHint_: {type: Boolean},
+      lensButtonDisabled_: {type: Boolean},
     };
   }
 
@@ -161,6 +163,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected accessor selectedMatchIndex_: number = -1;
   protected accessor enableFileHint_: boolean =
       loadTimeData.getBoolean('enableFileHint');
+  protected accessor lensButtonDisabled_: boolean = false;
   protected searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
   private pageHandler_: PageHandlerRemote;
@@ -302,9 +305,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   get showLensButton_() {
-    // Lens should be hidden in the side panel if deep search is enabled.
-    return this.isSidePanel &&
-        this.inputState_?.activeTool !== ToolMode.kDeepSearch;
+    return this.isSidePanel;
   }
 
   protected getInputPlaceholder_() {
@@ -319,6 +320,17 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   // `showDropdown_`.
   protected onShowSuggestionActivityLink_(e: CustomEvent<boolean>) {
     this.showSuggestionsActivityLink_ = e.detail;
+  }
+
+  protected onInputStateChanged_(e: CustomEvent<{inputState: InputState}>) {
+    const disabledTypes = e.detail.inputState?.disabledInputTypes || [];
+    if (disabledTypes.includes(InputType.kLensImage)) {
+      this.pageHandler_.closeLensOverlayFromWebUI(
+          LensOverlayDismissalSource.kContextualTasksImageUploadsDisabled);
+      this.lensButtonDisabled_ = true;
+      return;
+    }
+    this.lensButtonDisabled_ = false;
   }
 
   protected onSuggestionsResultChanged_(e: CustomEvent<AutocompleteResult>) {

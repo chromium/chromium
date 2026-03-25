@@ -96,6 +96,7 @@ chromium-metrics-reviews@google.com.
   <int value="35" label="Contextual Tasks composebox query submitted"/>
   <int value="36" label="Contextual Tasks composebox context cleared"/>
   <int value="37" label="Contextual Tasks composebox lens button clicked"/>
+  <int value="38" label="Contextual Tasks image uploads disabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->

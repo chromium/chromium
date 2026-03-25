@@ -149,6 +149,18 @@ void ContextualTasksOmniboxClient::OnAutocompleteAccept(
 // case there is slight variation in the retrieved bytes in between calls.
 constexpr float kByteChangeTolerancePercent = 0.01;
 
+lens::LensOverlayDismissalSource ToLensOverlayDismissalSource(
+    composebox::mojom::LensOverlayDismissalSource dismissal_source) {
+  switch (dismissal_source) {
+    case composebox::mojom::LensOverlayDismissalSource::
+        kContextualTasksImageUploadsDisabled:
+      return lens::LensOverlayDismissalSource::
+          kContextualTasksImageUploadsDisabled;
+  }
+  NOTREACHED() << "Unknown dismissal source: "
+               << static_cast<int>(dismissal_source);
+}
+
 }  // namespace
 
 ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
@@ -1240,6 +1252,13 @@ void ContextualTasksComposeboxHandler::CloseLensOverlay(
     lens::LensOverlayDismissalSource dismissal_source) {
   if (auto* controller = GetLensSearchController()) {
     controller->CloseLensSync(dismissal_source);
+  }
+}
+
+void ContextualTasksComposeboxHandler::CloseLensOverlayFromWebUI(
+    composebox::mojom::LensOverlayDismissalSource dismissal_source) {
+  if (auto* controller = GetLensSearchController()) {
+    controller->CloseLensAsync(ToLensOverlayDismissalSource(dismissal_source));
   }
 }
 

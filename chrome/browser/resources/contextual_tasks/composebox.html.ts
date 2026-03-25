@@ -51,7 +51,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           carousel-on-top_
           entrypoint-name="ContextualTasks"
           searchbox-layout-mode="TallBottomContext"
-          .lensButtonDisabled="${false}"
+          .lensButtonDisabled="${this.lensButtonDisabled_}"
           .showLensButton="${this.showLensButton_}"
           .suggestionActivityEnabled="${false}"
           .disableCaretColorAnimation="${!this.caretAnimationsEnabled_}"
@@ -64,6 +64,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           @result-changed="${this.onSuggestionsResultChanged_}"
           @open-image-upload="${this.onOpenImageUpload_}"
           @open-file-upload="${this.onOpenFileUpload_}"
+          @input-state-changed="${this.onInputStateChanged_}"
           @show-suggestion-activity-link=
               "${this.onShowSuggestionActivityLink_}">
       </cr-composebox>

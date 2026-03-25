@@ -16,6 +16,10 @@ interface PageHandlerFactory {
                     pending_receiver<searchbox.mojom.PageHandler> searchbox_handler);
 };
 
+enum LensOverlayDismissalSource {
+  kContextualTasksImageUploadsDisabled,
+};
+
 // Browser-side handler for requests from NTP Composebox UI.
 interface PageHandler {
   // Called when the user enters/loses focus into the composebox.
@@ -31,6 +35,9 @@ interface PageHandler {
   // Called when a link within the composebox UI needs to be navigated
   // in the main browser window (e.g., the "Details" link in an error message).
   NavigateUrl(url.mojom.Url url);
+
+  // Called to close the Lens overlay.
+  CloseLensOverlayFromWebUI(LensOverlayDismissalSource dismissal_source);
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.
