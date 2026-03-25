@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/custom_password_heuristics.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
@@ -63,6 +64,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -150,6 +152,10 @@ TextControlElement::TextControlElement(const QualifiedName& tag_name,
                             .ShouldConsiderSelectionAsDirectional()
           ? kSelectionHasForwardDirection
           : kSelectionHasNoDirection;
+
+  if (IsTextControl()) {
+    SetHasCustomStyleCallbacks();
+  }
 }
 
 TextControlElement::~TextControlElement() = default;
@@ -1020,9 +1026,14 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
   // the last newline.
   AdjustPlaceholderBreakElement();
 
-  if (text_is_changed && GetLayoutObject()) {
-    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
-      cache->HandleTextFormControlChanged(this);
+  if (text_is_changed) {
+    MaybeSetHasCustomPasswordJS();
+
+    if (GetLayoutObject()) {
+      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+        cache->HandleTextFormControlChanged(this);
+      }
+    }
   }
 }
 
@@ -1477,6 +1488,49 @@ void TextControlElement::SetSkipNextSetValueAutoDiff(bool should_skip) {
 
 bool TextControlElement::ShouldSkipNextSetValueAutoDiff() const {
   return skip_next_set_value_auto_diff_;
+}
+
+void TextControlElement::DidRecalcStyle(const StyleRecalcChange change) {
+  HTMLFormControlElementWithState::DidRecalcStyle(change);
+  MaybeSetHasCustomPasswordCSS();
+}
+
+void TextControlElement::MaybeUpdateCustomPasswordHeuristicSource() {
+  MaybeSetHasCustomPasswordCSS();
+  MaybeSetHasCustomPasswordJS();
+}
+
+void TextControlElement::MaybeSetHasCustomPasswordCSS() {
+  if (!IsTextControl()) {
+    ClearCustomPasswordHeuristicSource();
+    return;
+  }
+
+  if (HasBeenHeuristicCustomPasswordField()) {
+    return;
+  }
+
+  if (const ComputedStyle* style = GetComputedStyle();
+      style && IsCSSSecurityMaskingEnabled(*style)) {
+    custom_password_heuristic_source_ =
+        CustomPasswordHeuristicSource::kHeuristicCSS;
+  }
+}
+
+void TextControlElement::MaybeSetHasCustomPasswordJS() {
+  if (!IsTextControl()) {
+    ClearCustomPasswordHeuristicSource();
+    return;
+  }
+
+  if (HasBeenHeuristicCustomPasswordField()) {
+    return;
+  }
+
+  if (IsLikelyJSCustomPasswordField(Value())) {
+    custom_password_heuristic_source_ =
+        CustomPasswordHeuristicSource::kHeuristicJS;
+  }
 }
 
 }  // namespace blink

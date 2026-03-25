@@ -407,6 +407,8 @@ void HTMLInputElement::InitializeTypeInParsing() {
 
   UpdateHasBeenPasswordField(new_type_name);
 
+  MaybeUpdateCustomPasswordHeuristicSource();
+
   UpdateWillValidateCache();
 
   if (!default_value.IsNull())
@@ -635,6 +637,8 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 
   UpdateHasBeenPasswordField(new_type_name);
 
+  MaybeUpdateCustomPasswordHeuristicSource();
+
   SetNeedsValidityCheck();
   if ((could_be_successful_submit_button || CanBeSuccessfulSubmitButton()) &&
       formOwner() && isConnected())
@@ -849,7 +853,7 @@ void HTMLInputElement::CollectStyleForPresentationAttribute(
 }
 
 void HTMLInputElement::DidRecalcStyle(const StyleRecalcChange change) {
-  HTMLElement::DidRecalcStyle(change);
+  TextControlElement::DidRecalcStyle(change);
   input_type_->DidRecalcStyle(change);
 }
 

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/custom_password_heuristics.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -72,7 +73,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_debug_utils.h"
-#include "third_party/blink/renderer/modules/content_extraction/ai_page_content_redaction_heuristics.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1158,20 +1158,45 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
   if (const auto* text_control_element =
           DynamicTo<TextControlElement>(form_control_element)) {
     // Don't include password values as they are sensitive.
-    if (const auto* input_element =
-            DynamicTo<HTMLInputElement>(text_control_element)) {
-      if (input_element->HasBeenPasswordField()) {
+    const auto* input_element =
+        DynamicTo<HTMLInputElement>(text_control_element);
+    bool is_native_password =
+        input_element && input_element->HasBeenPasswordField();
+    bool is_custom_password =
+        text_control_element->HasBeenHeuristicCustomPasswordField();
+    bool should_redact_value = false;
+
+    if (is_native_password || is_custom_password) {
+      if (text_control_element->Value().empty()) {
         form_control_data->redaction_decision =
-            input_element->Value().empty()
-                ? mojom::blink::AIPageContentRedactionDecision::
-                      kUnredacted_EmptyPassword
-                : mojom::blink::AIPageContentRedactionDecision::
-                      kRedacted_HasBeenPassword;
+            is_native_password ? mojom::blink::AIPageContentRedactionDecision::
+                                     kUnredacted_EmptyPassword
+                               : mojom::blink::AIPageContentRedactionDecision::
+                                     kUnredacted_EmptyCustomPassword;
+      } else {
+        if (is_native_password) {
+          form_control_data->redaction_decision = mojom::blink::
+              AIPageContentRedactionDecision::kRedacted_HasBeenPassword;
+        } else {
+          switch (text_control_element->GetCustomPasswordHeuristicSource()) {
+            case TextControlElement::CustomPasswordHeuristicSource::
+                kHeuristicCSS:
+              form_control_data->redaction_decision = mojom::blink::
+                  AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS;
+              break;
+            case TextControlElement::CustomPasswordHeuristicSource::
+                kHeuristicJS:
+              form_control_data->redaction_decision = mojom::blink::
+                  AIPageContentRedactionDecision::kRedacted_CustomPassword_JS;
+              break;
+            case TextControlElement::CustomPasswordHeuristicSource::kNone:
+              NOTREACHED();
+          }
+        }
+        should_redact_value = true;
       }
     }
-    if (form_control_data->redaction_decision !=
-        mojom::blink::AIPageContentRedactionDecision::
-            kRedacted_HasBeenPassword) {
+    if (!should_redact_value) {
       form_control_data->field_value =
           ReplaceUnpairedSurrogates(text_control_element->Value());
     }
@@ -1602,30 +1627,15 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
     return nullptr;
   }
 
-  ContentBuilder builder(options, *this);
+  ContentBuilder builder(options);
   return builder.Build(*frame);
 }
 
 AIPageContentAgent::ContentBuilder::ContentBuilder(
-    const mojom::blink::AIPageContentOptions& options,
-    const AIPageContentAgent& agent)
-    : options_(options), agent_(agent) {}
+    const mojom::blink::AIPageContentOptions& options)
+    : options_(options) {}
 
 AIPageContentAgent::ContentBuilder::~ContentBuilder() = default;
-
-std::optional<AIPageContentAgent::CustomPasswordSource>
-AIPageContentAgent::ExistingCustomPasswordReason(
-    const LayoutObject& object) const {
-  const DOMNodeId dom_node_id = DOMNodeIds::ExistingIdForNode(object.GetNode());
-  if (!dom_node_id) {
-    return std::nullopt;
-  }
-  auto it = custom_password_decision_.find(dom_node_id);
-  if (it == custom_password_decision_.end()) {
-    return std::nullopt;
-  }
-  return it->value;
-}
 
 namespace {
 
@@ -2079,7 +2089,6 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   } else if (const auto* form_control =
                  DynamicTo<HTMLFormControlElement>(object.GetNode())) {
     ProcessFormControlNode(*form_control, attributes);
-    ApplyCustomPasswordRedactionHeuristicsIfNeeded(object, attributes);
   } else if (element &&
              ProcessAriaFormControlNode(object, *element, attributes)) {
     // ProcessAriaFormControlNode sets the attribute type and data.
@@ -2166,95 +2175,6 @@ bool AIPageContentAgent::ContentBuilder::IsNodeIdAttributeTypeAllowlisted(
   // over auxiliary data structures here.
   return std::ranges::find(*options_->node_id_allowlist, attribute_type) !=
          options_->node_id_allowlist->end();
-}
-
-void AIPageContentAgent::ContentBuilder::
-    ApplyCustomPasswordRedactionHeuristicsIfNeeded(
-        const LayoutObject& object,
-        mojom::blink::AIPageContentAttributes& attributes) const {
-  // Only form controls have `form_control_data`. Keep this defensive because
-  // callers may evolve and still call this helper.
-  if (!attributes.form_control_data) {
-    return;
-  }
-
-  // Only text controls can meaningfully contain sensitive freeform text.
-  const auto* text_control_element =
-      DynamicTo<TextControlElement>(object.GetNode());
-  if (!text_control_element) {
-    return;
-  }
-
-  // If this is already treated as a real password field, do not override the
-  // existing decision. The built-in HTMLInputElement::HasBeenPasswordField()
-  // logic should remain authoritative.
-  switch (attributes.form_control_data->redaction_decision) {
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_HasBeenPassword:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kUnredacted_EmptyPassword:
-      return;
-    case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kUnredacted_EmptyCustomPassword:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_CustomPassword_CSS:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_CustomPassword_JS:
-      break;
-  }
-
-  const String value = text_control_element->Value();
-
-  const std::optional<AIPageContentAgent::CustomPasswordSource>
-      existing_custom_password_like_reason =
-          agent_.ExistingCustomPasswordReason(object);
-  bool is_custom_password = existing_custom_password_like_reason.has_value();
-  std::optional<AIPageContentAgent::CustomPasswordSource>
-      custom_password_like_reason = existing_custom_password_like_reason;
-  if (!is_custom_password && !value.empty()) {
-    if (IsCSSSecurityMaskingEnabled(object)) {
-      custom_password_like_reason =
-          AIPageContentAgent::CustomPasswordSource::kCSS;
-    } else if (IsLikelyJSCustomPasswordField(value)) {
-      custom_password_like_reason =
-          AIPageContentAgent::CustomPasswordSource::kJavaScript;
-    }
-    if (custom_password_like_reason) {
-      agent_.custom_password_decision_.Set(
-          DOMNodeIds::IdForNode(object.GetNode()),
-          *custom_password_like_reason);
-      is_custom_password = true;
-    }
-  }
-
-  if (!is_custom_password) {
-    return;
-  }
-
-  // Preserve the classification even when empty, but only redact when there is
-  // actual sensitive content present.
-  if (value.empty()) {
-    attributes.form_control_data->redaction_decision = mojom::blink::
-        AIPageContentRedactionDecision::kUnredacted_EmptyCustomPassword;
-    attributes.form_control_data->field_value =
-        ReplaceUnpairedSurrogates(value);
-    return;
-  }
-
-  // Clear any captured value from earlier processing and redact.
-  attributes.form_control_data->field_value = String();
-  CHECK(custom_password_like_reason);
-  switch (*custom_password_like_reason) {
-    case AIPageContentAgent::CustomPasswordSource::kCSS:
-      attributes.form_control_data->redaction_decision = mojom::blink::
-          AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS;
-      break;
-    case AIPageContentAgent::CustomPasswordSource::kJavaScript:
-      attributes.form_control_data->redaction_decision = mojom::blink::
-          AIPageContentRedactionDecision::kRedacted_CustomPassword_JS;
-      break;
-  }
 }
 
 void AIPageContentAgent::ContentBuilder::AddLabel(

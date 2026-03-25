@@ -67,6 +67,15 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // HTMLInputElement::tooShort() and HTMLTextAreaElement::tooShort().
   enum NeedsToCheckDirtyFlag { kCheckDirtyFlag, kIgnoreDirtyFlag };
 
+  // The source of a custom (non-native) password identification.
+  enum class CustomPasswordHeuristicSource : uint8_t {
+    kNone = 0,
+    // Identified via CSS -webkit-text-security property.
+    kHeuristicCSS = 1,
+    // Identified via JS masking heuristic (e.g. "••••a").
+    kHeuristicJS = 2,
+  };
+
   ~TextControlElement() override;
 
   void ForwardEvent(Event&);
@@ -174,6 +183,20 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // For example, when value contains a bidirectional character.
   virtual bool IsAutoDirectionalityFormAssociated() const = 0;
 
+  // Returns whether this element is or has ever been identified as a custom
+  // password field via heuristics (CSS -webkit-text-security or JS masking).
+  // This is distinct from native passwords (<input type=password>).
+  bool HasBeenHeuristicCustomPasswordField() const {
+    return custom_password_heuristic_source_ !=
+           CustomPasswordHeuristicSource::kNone;
+  }
+
+  // Returns the specific heuristic source that first identified this element
+  // as a custom password field.
+  CustomPasswordHeuristicSource GetCustomPasswordHeuristicSource() const {
+    return custom_password_heuristic_source_;
+  }
+
   // Set the value trimmed to the max length of the field and dispatch the input
   // and change events. If |value| is empty, the autofill state is always
   // set to WebAutofillState::kNotFilled.
@@ -234,6 +257,10 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
  protected:
   TextControlElement(const QualifiedName&, Document&);
+
+  // Element:
+  void DidRecalcStyle(const StyleRecalcChange) override;
+
   void RemovedFrom(ContainerNode&) override;
   void DisconnectAllOpaqueRanges();
   virtual HTMLElement* UpdatePlaceholderText() = 0;
@@ -274,6 +301,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#barred-from-constraint-validation
   bool ReadOnlyPreventsConstraintValidation() const final { return true; }
+
+  void MaybeUpdateCustomPasswordHeuristicSource();
 
  private:
   // Used by ComputeSelection() to specify which values are needed.
@@ -334,6 +363,17 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // This baseline is held until the first observable value mutation.
   void CaptureOpaqueRangePreEdit();
 
+  // Latch the element as a custom password field if not already identified.
+  // Checks the computed style and latches if CSS security masking is active.
+  void MaybeSetHasCustomPasswordCSS();
+  // Checks the current value and latches as a custom password field if it
+  // matches JS masking heuristics (e.g. "••••a").
+  void MaybeSetHasCustomPasswordJS();
+
+  void ClearCustomPasswordHeuristicSource() {
+    custom_password_heuristic_source_ = CustomPasswordHeuristicSource::kNone;
+  }
+
   // Held directly instead of looked up by ID for speed.
   // Not only is the lookup faster, but for simple text inputs it avoids
   // creating a number of TreeScope data structures to track elements by ID.
@@ -393,6 +433,11 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   // Indicate whether there is one scheduled selectionchange event.
   bool has_scheduled_selectionchange_event_ = false;
+
+  // Stores whether this element has been identified as a sensitive
+  // password-like field via CSS or JS heuristics.
+  CustomPasswordHeuristicSource custom_password_heuristic_source_ =
+      CustomPasswordHeuristicSource::kNone;
 
   FRIEND_TEST_ALL_PREFIXES(TextControlElementTest, IndexForPosition);
   FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, ValueWithHardLineBreaks);

@@ -386,6 +386,87 @@ TEST_F(HTMLInputElementTest, HasBeenPasswordField) {
   EXPECT_FALSE(input->HasBeenPasswordField());
 }
 
+TEST_F(HTMLInputElementTest, HeuristicCustomPasswordDetectionCSS) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=text>");
+  auto& input = TestElement();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(input.HasBeenHeuristicCustomPasswordField());
+
+  // Applying -webkit-text-security should trigger detection.
+  input.setAttribute(html_names::kStyleAttr,
+                     AtomicString("-webkit-text-security: disc;"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(input.HasBeenHeuristicCustomPasswordField());
+  EXPECT_EQ(input.GetCustomPasswordHeuristicSource(),
+            TextControlElement::CustomPasswordHeuristicSource::kHeuristicCSS);
+
+  // Removing the style should not clear the "has ever been" state.
+  input.removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(input.HasBeenHeuristicCustomPasswordField());
+  EXPECT_EQ(input.GetCustomPasswordHeuristicSource(),
+            TextControlElement::CustomPasswordHeuristicSource::kHeuristicCSS);
+}
+
+TEST_F(HTMLInputElementTest, HeuristicCustomPasswordDetectionCSSFromAttribute) {
+  // Detection during parsing/attribute setting.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=text style='-webkit-text-security: disc;'>");
+  UpdateAllLifecyclePhasesForTest();
+  auto& input = TestElement();
+  EXPECT_TRUE(input.HasBeenHeuristicCustomPasswordField());
+  EXPECT_EQ(input.GetCustomPasswordHeuristicSource(),
+            TextControlElement::CustomPasswordHeuristicSource::kHeuristicCSS);
+}
+
+TEST_F(HTMLInputElementTest, HeuristicCustomPasswordDetectionJS) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=text>");
+  auto& input = TestElement();
+
+  // Programmatic value change to a masked pattern.
+  input.SetValue("****a");
+  EXPECT_TRUE(input.HasBeenHeuristicCustomPasswordField());
+  EXPECT_EQ(input.GetCustomPasswordHeuristicSource(),
+            TextControlElement::CustomPasswordHeuristicSource::kHeuristicJS);
+}
+
+TEST_F(HTMLInputElementTest, HeuristicCustomPasswordDetectionJSFromAttribute) {
+  // Detection during parsing/attribute setting.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=text value='****a'>");
+  UpdateAllLifecyclePhasesForTest();
+  auto& input = TestElement();
+  EXPECT_TRUE(input.HasBeenHeuristicCustomPasswordField());
+  EXPECT_EQ(input.GetCustomPasswordHeuristicSource(),
+            TextControlElement::CustomPasswordHeuristicSource::kHeuristicJS);
+}
+
+TEST_F(HTMLInputElementTest, HeuristicCustomPasswordFieldTypeChange) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=text>");
+  auto& input = TestElement();
+
+  // Programmatic value change to a masked pattern.
+  input.SetValue("****a");
+  EXPECT_TRUE(input.HasBeenHeuristicCustomPasswordField());
+  EXPECT_EQ(input.GetCustomPasswordHeuristicSource(),
+            TextControlElement::CustomPasswordHeuristicSource::kHeuristicJS);
+
+  // Change type to a non-text control (e.g., checkbox). This should clear the
+  // heuristic state to align with native behavior.
+  input.setType(input_type_names::kCheckbox);
+  EXPECT_FALSE(input.HasBeenHeuristicCustomPasswordField());
+
+  // Change type back to text. The heuristic should be re-evaluated. Since the
+  // value "•••••" is still there, it should be identified again.
+  input.setType(input_type_names::kText);
+  EXPECT_TRUE(input.HasBeenHeuristicCustomPasswordField());
+  EXPECT_EQ(input.GetCustomPasswordHeuristicSource(),
+            TextControlElement::CustomPasswordHeuristicSource::kHeuristicJS);
+}
+
 struct PasswordFieldResetParam {
   const char* new_type;
   const char* temporary_value;

@@ -41,13 +41,6 @@ class MODULES_EXPORT AIPageContentAgent final
       public Supplement<Document>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
-  enum class CustomPasswordSource {
-    // Non-standard CSS masking via `-webkit-text-security`.
-    kCSS,
-    // JS sets a value that is mostly mask characters.
-    kJavaScript,
-  };
-
   static const char kSupplementName[];
   static AIPageContentAgent* From(Document&);
   static void BindReceiver(
@@ -93,16 +86,12 @@ class MODULES_EXPORT AIPageContentAgent final
                             GetAIPageContentCallback callback,
                             base::TimeTicks start_time) const;
 
-  std::optional<CustomPasswordSource> ExistingCustomPasswordReason(
-      const LayoutObject& object) const;
-
   // Synchronously services a single request.
   class ContentBuilder {
     STACK_ALLOCATED();
 
    public:
-    ContentBuilder(const mojom::blink::AIPageContentOptions& options,
-                   const AIPageContentAgent& agent);
+    explicit ContentBuilder(const mojom::blink::AIPageContentOptions& options);
     ~ContentBuilder();
 
     mojom::blink::AIPageContentPtr Build(LocalFrame& frame);
@@ -205,12 +194,6 @@ class MODULES_EXPORT AIPageContentAgent final
         mojom::blink::AIPageContentAttributes& attributes,
         std::optional<gfx::Rect> visible_bounding_box = std::nullopt);
 
-    // Applies custom password-like heuristics for text fields. This covers
-    // author-defined password controls which do not use <input type=password>.
-    void ApplyCustomPasswordRedactionHeuristicsIfNeeded(
-        const LayoutObject& object,
-        mojom::blink::AIPageContentAttributes& attributes) const;
-
     bool ShouldAddNodeGeometry(
         const LayoutObject& object,
         const mojom::blink::AIPageContentAttributes& attributes,
@@ -224,7 +207,6 @@ class MODULES_EXPORT AIPageContentAgent final
         interactive_dom_node_ids_;
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
-    const AIPageContentAgent& agent_;
 
     // Keyed by Node identity within a single extraction pass.
     HeapHashMap<Member<const Node>, int32_t> dom_node_to_z_order_;
@@ -252,15 +234,6 @@ class MODULES_EXPORT AIPageContentAgent final
   Member<AutoBuildHelper> auto_build_helper_;
   friend class AutoBuildHelper;
 #endif
-
-  // Persistent set of DOM node IDs determined to be password-like via heuristic
-  // redaction (e.g. `-webkit-text-security` or JS masking patterns).
-  //
-  // This is mutable so it can be updated by const extraction calls.
-  mutable HashMap<DOMNodeId,
-                  CustomPasswordSource,
-                  IntWithZeroKeyHashTraits<DOMNodeId>>
-      custom_password_decision_;
 };
 
 }  // namespace blink

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/content_extraction/ai_page_content_redaction_heuristics.h"
+#include "third_party/blink/renderer/core/html/custom_password_heuristics.h"
 
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -57,15 +56,11 @@ bool IsSecurityMaskCharacter(UChar c) {
 
 }  // namespace
 
-bool IsCSSSecurityMaskingEnabled(const LayoutObject& object) {
+bool IsCSSSecurityMaskingEnabled(const ComputedStyle& style) {
   // Checks the computed value of the non-standard CSS property
   // `-webkit-text-security`. Authors sometimes use this on non-password
   // elements to create custom masked "password-like" fields.
-  const ComputedStyle* style = object.Style();
-  if (!style) {
-    return false;
-  }
-  return style->TextSecurity() != ETextSecurity::kNone;
+  return style.TextSecurity() != ETextSecurity::kNone;
 }
 
 bool IsLikelyJSCustomPasswordField(const String& value) {

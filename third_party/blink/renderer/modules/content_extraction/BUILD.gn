@@ -10,8 +10,6 @@ blink_modules_sources("content_extraction") {
     "ai_page_content_agent.h",
     "ai_page_content_debug_utils.cc",
     "ai_page_content_debug_utils.h",
-    "ai_page_content_redaction_heuristics.cc",
-    "ai_page_content_redaction_heuristics.h",
     "document_chunker.cc",
     "document_chunker.h",
     "frame_metadata_observer_registry.cc",
