@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -13,6 +14,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/optional_ref.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotation_validator.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
@@ -80,12 +82,10 @@ class MockContentAnnotationValidator : public ContentAnnotationValidator {
       : ContentAnnotationValidator(base::DictValue()) {}
   ~MockContentAnnotationValidator() override = default;
 
-  MOCK_METHOD(std::optional<std::string>,
+  MOCK_METHOD(std::optional<base::DictValue>,
               Validate,
               (std::string),
               (const, override));
-
-  MOCK_METHOD(bool, IsValidatorEnabled, (), (const, override));
 };
 
 class MockPageEmbeddingsService
@@ -511,7 +511,7 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
 
   GURL url("https://example.com/full");
   base::Time base_time = base::Time::Now();
-  std::string data = "some extracted data";
+  std::string data = R"({"key": "value"})";
 
   // 2. Mock Classify to return a result that satisfies the `reached_annotation`
   // condition.
@@ -573,20 +573,23 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
   optimization_guide::OptimizationGuideModelExecutionResult mock_result(
       base::ok(any_proto), /*execution_info=*/nullptr);
 
-  // 5. Empty schema means no validation is performed.
-  EXPECT_CALL(*mock_validator_, IsValidatorEnabled()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_validator_, Validate).Times(0);
+  // 5. Validator is always called. Mock it to return the parsed value.
+  EXPECT_CALL(*mock_validator_, Validate(data))
+      .WillOnce(Return(std::move(
+          base::JSONReader::Read(data, base::JSON_PARSE_RFC)->GetDict())));
 
   ASSERT_NO_FATAL_FAILURE(std::move(captured_callback)
                               .Run(std::move(mock_result),
                                    /*log_entry=*/nullptr));
 
   // 6. Verify that the data is cached in the backend.
-  std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
+  base::optional_ref<
+      const AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data =
           accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
   ASSERT_TRUE(cached_data.has_value());
-  EXPECT_EQ(cached_data->annotations, data);
+  EXPECT_EQ(cached_data->annotations,
+            base::JSONReader::Read(data, base::JSON_PARSE_RFC)->GetDict());
   EXPECT_EQ(cached_data->page_title, "Test Title");
 }
 
@@ -751,14 +754,14 @@ TEST_F(ContentAnnotatorServiceTest,
       base::ok(any_proto), /*execution_info=*/nullptr);
 
   // 4. Mock validator to return nullopt (validation failed).
-  EXPECT_CALL(*mock_validator_, IsValidatorEnabled()).WillOnce(Return(true));
   EXPECT_CALL(*mock_validator_, Validate(data)).WillOnce(Return(std::nullopt));
 
   std::move(captured_callback)
       .Run(std::move(mock_result), /*log_entry=*/nullptr);
 
   // 5. Verify that NO data is cached in the backend.
-  std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
+  base::optional_ref<
+      const AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data =
           accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
   EXPECT_FALSE(cached_data.has_value());
@@ -817,19 +820,23 @@ TEST_F(ContentAnnotatorServiceTest,
   optimization_guide::OptimizationGuideModelExecutionResult mock_result(
       base::ok(any_proto), /*execution_info=*/nullptr);
 
-  // 5. Validator is disabled, but stripping should still happen.
-  EXPECT_CALL(*mock_validator_, IsValidatorEnabled).WillOnce(Return(false));
+  // 5. Mock validator to return the stripped data as a DictValue.
+  EXPECT_CALL(*mock_validator_, Validate(data))
+      .WillOnce(Return(std::move(
+          base::JSONReader::Read(data, base::JSON_PARSE_RFC)->GetDict())));
 
   ASSERT_NO_FATAL_FAILURE(std::move(captured_callback)
                               .Run(std::move(mock_result),
                                    /*log_entry=*/nullptr));
 
   // 6. Verify that the stripped data is cached in the backend.
-  std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
+  base::optional_ref<
+      const AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data =
           accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
   ASSERT_TRUE(cached_data.has_value());
-  EXPECT_EQ(cached_data->annotations, data);
+  EXPECT_EQ(cached_data->annotations,
+            base::JSONReader::Read(data, base::JSON_PARSE_RFC)->GetDict());
 }
 
 }  // namespace accessibility_annotator

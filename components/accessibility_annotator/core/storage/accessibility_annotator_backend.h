@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -41,8 +42,16 @@ class AccessibilityAnnotatorBackend
       public history::HistoryServiceObserver {
  public:
   struct ContentAnnotationsData {
+    ContentAnnotationsData();
+    ~ContentAnnotationsData();
+    ContentAnnotationsData(ContentAnnotationsData&& other);
+    ContentAnnotationsData& operator=(ContentAnnotationsData&& other);
+
+    ContentAnnotationsData(const ContentAnnotationsData&) = delete;
+    ContentAnnotationsData& operator=(const ContentAnnotationsData&) = delete;
+
     std::string page_title;
-    std::string annotations;
+    base::DictValue annotations;
   };
 
   AccessibilityAnnotatorBackend(
@@ -82,13 +91,13 @@ class AccessibilityAnnotatorBackend
       history::HistoryService* history_service) override;
 
   // Reads from Content Annotations cache.
-  std::optional<ContentAnnotationsData> GetContentAnnotationsCacheData(
-      const GURL& url) const;
+  base::optional_ref<const ContentAnnotationsData>
+  GetContentAnnotationsCacheData(const GURL& url) const;
 
   // Writes to Content Annotations cache.
   void SetContentAnnotationsCacheData(const GURL& url,
                                       std::string page_title,
-                                      std::string annotations);
+                                      base::DictValue annotations);
 
   // Pulls cache data into a base::Value for use in the debug UI.
   base::Value GetDebugUICacheData() const;

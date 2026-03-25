@@ -23,6 +23,9 @@
 
 namespace content_annotator_internals {
 
+using ::testing::Eq;
+using ::testing::Pointee;
+
 namespace {
 
 class MockPage : public accessibility_annotator_internals::mojom::Page {
@@ -97,8 +100,9 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
       AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
   ASSERT_TRUE(backend);
 
-  backend->SetContentAnnotationsCacheData(GURL("https://example.com"), "Title",
-                                          "{\"key\": \"value\"}");
+  backend->SetContentAnnotationsCacheData(
+      GURL("https://example.com"), "Title",
+      base::DictValue().Set("key", "value"));
 
   base::RunLoop run_loop;
   handler()->GetAnnotatedContent(
@@ -107,11 +111,11 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
         const base::ListValue& list = content.GetList();
         ASSERT_EQ(list.size(), 1u);
         const base::DictValue& entry = list[0].GetDict();
-        EXPECT_EQ(*entry.FindString("url"), "https://example.com/");
-        EXPECT_EQ(*entry.FindString("title"), "Title");
+        EXPECT_THAT(entry.FindString("url"), Pointee(Eq("https://example.com/")));
+        EXPECT_THAT(entry.FindString("title"), Pointee(Eq("Title")));
         const base::DictValue* annotations = entry.FindDict("annotations");
         ASSERT_TRUE(annotations);
-        EXPECT_EQ(*annotations->FindString("key"), "value");
+        EXPECT_THAT(annotations->FindString("key"), Pointee(Eq("value")));
         run_loop.Quit();
       }));
   run_loop.Run();

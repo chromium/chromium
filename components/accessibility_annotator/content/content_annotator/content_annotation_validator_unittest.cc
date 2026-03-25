@@ -8,9 +8,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace accessibility_annotator {
+
+using ::testing::Eq;
+using ::testing::Pointee;
 
 class ContentAnnotationValidatorTest : public testing::Test {
  public:
@@ -36,38 +40,16 @@ TEST_F(ContentAnnotationValidatorTest, CreateReturnsNullForMalformedSchema) {
   EXPECT_EQ(validator, nullptr);
 }
 
-TEST_F(ContentAnnotationValidatorTest, IsValidatorEnabled) {
-  {
-    std::unique_ptr<ContentAnnotationValidator> validator =
-        ContentAnnotationValidator::Create();
-    ASSERT_NE(validator, nullptr);
-    EXPECT_FALSE(validator->IsValidatorEnabled());
-  }
-  {
-    SetSchema("{}");
-    std::unique_ptr<ContentAnnotationValidator> validator =
-        ContentAnnotationValidator::Create();
-    ASSERT_NE(validator, nullptr);
-    EXPECT_FALSE(validator->IsValidatorEnabled());
-  }
-  {
-    SetSchema(R"({"cat": {"field": "string"}})");
-    std::unique_ptr<ContentAnnotationValidator> validator =
-        ContentAnnotationValidator::Create();
-    ASSERT_NE(validator, nullptr);
-    EXPECT_TRUE(validator->IsValidatorEnabled());
-  }
-}
-
-TEST_F(ContentAnnotationValidatorTest, ValidateFailsWithNoSchema) {
+TEST_F(ContentAnnotationValidatorTest, ValidateReturnsParsedDataWithNoSchema) {
   std::unique_ptr<ContentAnnotationValidator> validator =
       ContentAnnotationValidator::Create();
   ASSERT_NE(validator, nullptr);
   std::string data = R"({"key": "value"})";
 
-  // Validate returns nullopt if schema is empty.
-  std::optional<std::string> result = validator->Validate(data);
-  EXPECT_FALSE(result.has_value());
+  // Validate returns parsed base::DictValue if schema is empty.
+  std::optional<base::DictValue> result = validator->Validate(data);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(result->FindString("key"), Pointee(Eq("value")));
 }
 
 TEST_F(ContentAnnotationValidatorTest, ValidateRejectsInvalidJson) {
@@ -77,7 +59,7 @@ TEST_F(ContentAnnotationValidatorTest, ValidateRejectsInvalidJson) {
   ASSERT_NE(validator, nullptr);
   std::string data = "invalid json";
 
-  std::optional<std::string> result = validator->Validate(data);
+  std::optional<base::DictValue> result = validator->Validate(data);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -88,7 +70,7 @@ TEST_F(ContentAnnotationValidatorTest, ValidateRejectsHtmlChars) {
   ASSERT_NE(validator, nullptr);
   std::string data = R"({"key": "some <script>alert(1)</script> value"})";
 
-  std::optional<std::string> result = validator->Validate(data);
+  std::optional<base::DictValue> result = validator->Validate(data);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -100,7 +82,7 @@ TEST_F(ContentAnnotationValidatorTest, ValidateRejectsControlChars) {
 
   std::string data = "{\"key\": \"some \x01 value\"}";
 
-  std::optional<std::string> result = validator->Validate(data);
+  std::optional<base::DictValue> result = validator->Validate(data);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -112,9 +94,9 @@ TEST_F(ContentAnnotationValidatorTest, ValidateAllowsWhitespace) {
 
   std::string data = "{\"key\": \t\n\r\"some value\"}";
 
-  std::optional<std::string> result = validator->Validate(data);
-  EXPECT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), data);
+  std::optional<base::DictValue> result = validator->Validate(data);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(result->FindString("key"), Pointee(Eq("some value")));
 }
 
 }  // namespace accessibility_annotator

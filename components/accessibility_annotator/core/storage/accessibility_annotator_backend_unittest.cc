@@ -8,6 +8,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
+#include "base/types/optional_ref.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +16,9 @@
 
 namespace accessibility_annotator {
 namespace {
+
+using ::testing::Eq;
+using ::testing::Pointee;
 
 class AccessibilityAnnotatorBackendTest : public testing::Test {
  public:
@@ -39,14 +43,17 @@ class AccessibilityAnnotatorBackendTest : public testing::Test {
 TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
   GURL url("https://example.com/");
   std::string page_title = "Test Page Title";
-  std::string annotations = R"({"1": "value1"})";
+  base::DictValue annotations;
+  annotations.Set("1", "value1");
 
   // Cache should be empty initially.
   ASSERT_FALSE(backend_->GetContentAnnotationsCacheData(url).has_value());
 
-  backend_->SetContentAnnotationsCacheData(url, page_title, annotations);
+  backend_->SetContentAnnotationsCacheData(url, page_title,
+                                           annotations.Clone());
 
-  std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
+  base::optional_ref<
+      const AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data = backend_->GetContentAnnotationsCacheData(url);
   ASSERT_TRUE(cached_data.has_value());
   EXPECT_EQ(cached_data->page_title, page_title);
@@ -62,8 +69,11 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataEmpty) {
 TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
   GURL url("https://example.com/path?query=1&other=2");
   std::string page_title = "Test Page Title";
-  std::string annotations = R"({"1": "value1", "2": "value2"})";
-  backend_->SetContentAnnotationsCacheData(url, page_title, annotations);
+  base::DictValue annotations;
+  annotations.Set("1", "value1");
+  annotations.Set("2", "value2");
+  backend_->SetContentAnnotationsCacheData(url, page_title,
+                                           annotations.Clone());
 
   base::Value result = backend_->GetDebugUICacheData();
   ASSERT_TRUE(result.is_list());
@@ -71,13 +81,13 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
   ASSERT_EQ(list.size(), 1u);
 
   const base::DictValue& entry = list[0].GetDict();
-  EXPECT_EQ(*entry.FindString("url"), url.spec());
-  EXPECT_EQ(*entry.FindString("title"), page_title);
+  EXPECT_THAT(entry.FindString("url"), Pointee(Eq(url.spec())));
+  EXPECT_THAT(entry.FindString("title"), Pointee(Eq(page_title)));
 
   const base::DictValue* annotations_dict = entry.FindDict("annotations");
   ASSERT_TRUE(annotations_dict);
-  EXPECT_EQ(*annotations_dict->FindString("1"), "value1");
-  EXPECT_EQ(*annotations_dict->FindString("2"), "value2");
+  EXPECT_THAT(annotations_dict->FindString("1"), Pointee(Eq("value1")));
+  EXPECT_THAT(annotations_dict->FindString("2"), Pointee(Eq("value2")));
 }
 
 }  // namespace

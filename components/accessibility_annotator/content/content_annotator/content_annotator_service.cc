@@ -293,14 +293,11 @@ void ContentAnnotatorService::HandleModelExecutionResult(
           });
 
   if (extracted_data.has_value() && !extracted_data->empty()) {
-    std::string stripped_data = StripMarkdown(*extracted_data);
-    std::optional<std::string> data_to_cache =
-        validator_->IsValidatorEnabled()
-            ? validator_->Validate(std::move(stripped_data))
-            : std::move(stripped_data);
-    if (data_to_cache) {
+    std::optional<base::DictValue> validated_data =
+        validator_->Validate(StripMarkdown(*extracted_data));
+    if (validated_data.has_value()) {
       accessibility_annotator_backend_->SetContentAnnotationsCacheData(
-          url, std::move(page_title), std::move(*data_to_cache));
+          url, std::move(page_title), std::move(*validated_data));
     }
   }
 }

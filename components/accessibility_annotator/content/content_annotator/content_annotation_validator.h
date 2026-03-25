@@ -25,13 +25,11 @@ class ContentAnnotationValidator {
   ContentAnnotationValidator& operator=(const ContentAnnotationValidator&) =
       delete;
 
-  // Returns true if the validator was created with a non-empty schema.
-  virtual bool IsValidatorEnabled() const;
-
   // Validates the extracted data against the expected schema and sanitizes it.
-  // Returns the validated data as a JSON string, if acceptable.
+  // Returns the validated data as a base::DictValue, if acceptable.
   // Virtual for testing.
-  virtual std::optional<std::string> Validate(std::string extracted_data) const;
+  virtual std::optional<base::DictValue> Validate(
+      std::string extracted_data) const;
 
  private:
   base::DictValue schema_;

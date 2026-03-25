@@ -20,6 +20,19 @@
 
 namespace accessibility_annotator {
 
+AccessibilityAnnotatorBackend::ContentAnnotationsData::
+    ContentAnnotationsData() = default;
+
+AccessibilityAnnotatorBackend::ContentAnnotationsData::
+    ~ContentAnnotationsData() = default;
+
+AccessibilityAnnotatorBackend::ContentAnnotationsData::ContentAnnotationsData(
+    ContentAnnotationsData&& other) = default;
+
+AccessibilityAnnotatorBackend::ContentAnnotationsData&
+AccessibilityAnnotatorBackend::ContentAnnotationsData::operator=(
+    ContentAnnotationsData&& other) = default;
+
 AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
     history::HistoryService* history_service,
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
@@ -92,7 +105,7 @@ void AccessibilityAnnotatorBackend::OnHistoryServiceLoaded(
   // TODO(crbug.com/489690454): Query the history service for historical data.
 }
 
-std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>
+base::optional_ref<const AccessibilityAnnotatorBackend::ContentAnnotationsData>
 AccessibilityAnnotatorBackend::GetContentAnnotationsCacheData(
     const GURL& url) const {
   auto it = content_annotations_cache_.Peek(url);
@@ -105,11 +118,12 @@ AccessibilityAnnotatorBackend::GetContentAnnotationsCacheData(
 void AccessibilityAnnotatorBackend::SetContentAnnotationsCacheData(
     const GURL& url,
     std::string page_title,
-    std::string annotations) {
+    base::DictValue annotations) {
   // This automatically handles eviction of the oldest entries if full.
-  content_annotations_cache_.Put(
-      url,
-      ContentAnnotationsData{std::move(page_title), std::move(annotations)});
+  ContentAnnotationsData data;
+  data.page_title = std::move(page_title);
+  data.annotations = std::move(annotations);
+  content_annotations_cache_.Put(url, std::move(data));
 }
 
 base::Value AccessibilityAnnotatorBackend::GetDebugUICacheData() const {
@@ -119,14 +133,7 @@ base::Value AccessibilityAnnotatorBackend::GetDebugUICacheData() const {
     base::DictValue entry;
     entry.Set("url", item.first.spec());
     entry.Set("title", item.second.page_title);
-
-    std::optional<base::Value> json =
-        base::JSONReader::Read(item.second.annotations, base::JSON_PARSE_RFC);
-    if (json) {
-      entry.Set("annotations", std::move(*json));
-    } else {
-      entry.Set("annotations", base::Value(item.second.annotations));
-    }
+    entry.Set("annotations", item.second.annotations.Clone());
     result.Append(std::move(entry));
   }
   return base::Value(std::move(result));
