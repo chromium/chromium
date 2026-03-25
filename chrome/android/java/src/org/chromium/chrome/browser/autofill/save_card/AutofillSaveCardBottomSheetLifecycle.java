@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
@@ -32,7 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         void onIgnored();
     }
 
-    private final BottomSheetController mBottomSheetController;
+    private final AutofillSaveCardUiController mUiController;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;
     private ControllerDelegate mDelegate;
@@ -48,10 +47,10 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
      *     tab change.
      */
     AutofillSaveCardBottomSheetLifecycle(
-            BottomSheetController bottomSheetController,
+            AutofillSaveCardUiController uiController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel) {
-        mBottomSheetController = bottomSheetController;
+        mUiController = uiController;
         mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
     }
@@ -65,7 +64,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     void begin(ControllerDelegate delegate) {
         mDelegate = delegate;
 
-        mBottomSheetController.addObserver(this);
+        mUiController.addObserver(this);
         mLayoutStateProvider.addObserver(this);
         mTabModel.addObserver(this);
     }
@@ -74,7 +73,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     void end() {
         mTabModel.removeObserver(this);
         mLayoutStateProvider.removeObserver(this);
-        mBottomSheetController.removeObserver(this);
+        mUiController.removeObserver(this);
     }
 
     // Overrides EmptyBottomSheetObserver onSheetClosed method for BottomSheetController.

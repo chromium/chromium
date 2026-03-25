@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -39,7 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 
     private final AutofillSaveCardBottomSheetContent mContent;
     private final AutofillSaveCardBottomSheetLifecycle mLifecycle;
-    private final BottomSheetController mBottomSheetController;
+    private final AutofillSaveCardUiController mUiController;
     private final PropertyModel mModel;
     private final AutofillSaveCardBottomSheetCoordinator.NativeDelegate mDelegate;
     private final boolean mIsServerCard;
@@ -83,14 +82,14 @@ import java.lang.annotation.RetentionPolicy;
     AutofillSaveCardBottomSheetMediator(
             AutofillSaveCardBottomSheetContent content,
             AutofillSaveCardBottomSheetLifecycle lifecycle,
-            BottomSheetController bottomSheetController,
+            AutofillSaveCardUiController uiController,
             PropertyModel model,
             AutofillSaveCardBottomSheetCoordinator.NativeDelegate delegate,
             boolean isServerCard,
             boolean isLoadingDisabled) {
         mContent = content;
         mLifecycle = lifecycle;
-        mBottomSheetController = bottomSheetController;
+        mUiController = uiController;
         mModel = model;
         mDelegate = delegate;
         mIsServerCard = isServerCard;
@@ -99,7 +98,7 @@ import java.lang.annotation.RetentionPolicy;
 
     /** Requests to show the bottom sheet content. */
     void requestShowContent() {
-        if (mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
+        if (mUiController.requestShowContent(mContent, /* animate= */ true)) {
             mLifecycle.begin(this);
             mDelegate.onUiShown();
         } else {
@@ -141,7 +140,7 @@ import java.lang.annotation.RetentionPolicy;
     /** Hide the bottom sheet (if showing) and end the lifecycle. */
     void hide(@StateChangeReason int hideReason) {
         mLifecycle.end();
-        mBottomSheetController.hideContent(mContent, /* animate= */ true, hideReason);
+        mUiController.hideContent(mContent, /* animate= */ true, hideReason);
         if (mModel.get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE)) {
             // Reset loading state to false to prevent a race condition from recording the metric
             // twice.

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -17,6 +16,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -37,6 +38,7 @@ public class AutofillSaveCardBottomSheetBridge
     private final @Nullable Context mContext;
     private final @Nullable BottomSheetController mBottomSheetController;
     private final @Nullable LayoutStateProvider mLayoutStateProvider;
+    private final @Nullable BrowserControlsManager mBrowserControlsManager;
     private @Nullable AutofillSaveCardBottomSheetCoordinator mCoordinator;
 
     @CalledByNative
@@ -48,6 +50,7 @@ public class AutofillSaveCardBottomSheetBridge
         mContext = window.getContext().get();
         mBottomSheetController = BottomSheetControllerProvider.from(window);
         mLayoutStateProvider = LayoutManagerProvider.from(window);
+        mBrowserControlsManager = BrowserControlsManagerSupplier.getValueOrNullFrom(window);
     }
 
     /**
@@ -61,10 +64,15 @@ public class AutofillSaveCardBottomSheetBridge
      */
     @CalledByNative
     public void requestShowContent(AutofillSaveCardUiInfo uiInfo, boolean skipLoadingForFixFlow) {
-        if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
-        assertNonNull(mContext);
-        assertNonNull(mBottomSheetController);
-        assertNonNull(mLayoutStateProvider);
+        if (mNativeAutofillSaveCardBottomSheetBridge == 0
+                || mContext == null
+                || mBottomSheetController == null
+                || mLayoutStateProvider == null
+                || mBrowserControlsManager == null) {
+            // Likely only to happen when Chrome's window is being closed.
+            return;
+        }
+
         mCoordinator =
                 new AutofillSaveCardBottomSheetCoordinator(
                         mContext,
@@ -72,6 +80,7 @@ public class AutofillSaveCardBottomSheetBridge
                         skipLoadingForFixFlow,
                         mBottomSheetController,
                         mLayoutStateProvider,
+                        mBrowserControlsManager,
                         mTabModel,
                         /* delegate= */ this);
         mCoordinator.requestShowContent();

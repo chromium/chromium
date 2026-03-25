@@ -203,6 +203,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_PAGE_INFO_AS_APP_MENU_ITEM = "AndroidPageInfoAsAppMenuItem";
     public static final String ANDROID_PROGRESS_BAR_VISUAL_UPDATE =
             "AndroidProgressBarVisualUpdate";
+    public static final String ANDROID_SAVE_CARD_NON_BLOCKING_DIALOG =
+            "AndroidSaveCardNonBlockingDialog";
     public static final String ANDROID_SELF_OCCLUSION_TRACKING = "AndroidSelfOcclusionTracking";
     public static final String ANDROID_SETTINGS_CONTAINMENT = "AndroidSettingsContainment";
     public static final String ANDROID_SETUP_LIST = "AndroidSetupList";

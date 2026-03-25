@@ -411,6 +411,11 @@ found in the LICENSE file.
     <dimen name="autofill_bottom_sheet_loading_view_bottom_margin">64dp</dimen>
     <dimen name="autofill_bottom_sheet_logo_height">32dp</dimen>
 
+    <!-- Autofill "save card" anchored dialog dimensions. -->
+    <dimen name="anchored_dialog_elevation">3dp</dimen>
+    <dimen name="anchored_dialog_margin">18dp</dimen>
+    <dimen name="anchored_dialog_width">412dp</dimen>
+
     <!-- Autofill "virtual card number enrollment" bottom sheet dimensions. -->
     <dimen name="autofill_bottom_sheet_drag_handlebar_height">4dp</dimen>
     <dimen name="autofill_bottom_sheet_drag_handlebar_width">32dp</dimen>
