@@ -1228,8 +1228,7 @@ bool CopyAdditionalBidKeyFromIdlToMojo(
     return false;
   }
   output.additional_bid_key.emplace(ED25519_PUBLIC_KEY_LEN);
-  std::copy(decoded_key.begin(), decoded_key.end(),
-            output.additional_bid_key->begin());
+  base::span(*output.additional_bid_key).copy_from(decoded_key);
   return true;
 }
 
