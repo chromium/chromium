@@ -655,14 +655,6 @@ Feature::Availability SimpleFeature::GetEnvironmentAvailability(
       return CreateAvailability(AvailabilityResult::kIsAvailable);
     }
 
-    if (name().starts_with("userScripts") &&
-        // TODO(crbug.com/390138269): Remove dev mode restriction from
-        // userScripts API when feature is enabled.
-        base::FeatureList::IsEnabled(
-            extensions_features::kUserScriptUserExtensionToggle)) {
-      return CreateAvailability(AvailabilityResult::kIsAvailable);
-    }
-
     return CreateAvailability(AvailabilityResult::kRequiresDeveloperMode);
   }
 

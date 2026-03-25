@@ -43,21 +43,6 @@ UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
     store->RegisterKey(scripting::kRegisteredScriptsStorageKey);
   }
 
-  // The preference migrated is for any instance of an extension so we don't
-  // need to also migrate for any off the record contexts.
-  if (!browser_context_->IsOffTheRecord() &&
-      // Additionally only migrate if the feature is enabled and we haven't
-      // already completed the one-time migration.
-      base::FeatureList::IsEnabled(
-          extensions_features::kUserScriptUserExtensionToggle) &&
-      !ExtensionPrefs::Get(browser_context_)
-           ->GetPrefAsBoolean(kUserScriptsToggleMigratedPref)) {
-    ExtensionSystem::Get(browser_context_)
-        ->ready()
-        .Post(FROM_HERE,
-              base::BindOnce(&UserScriptManager::MigrateUserScriptExtensions,
-                             weak_factory_.GetWeakPtr()));
-  }
 }
 
 UserScriptManager::~UserScriptManager() = default;
@@ -112,12 +97,6 @@ void UserScriptManager::SetUserScriptSourceEnabledForExtensions(
 }
 
 void UserScriptManager::InitializeUserScriptState(const Extension& extension) {
-  // If the one-time migration for all extensions hasn't completed yet (e.g.
-  // this is during startup), migrate this extension.
-  if (!ExtensionPrefs::Get(browser_context_)
-           ->GetPrefAsBoolean(kUserScriptsToggleMigratedPref)) {
-    MigrateUserScriptExtension(extension);
-  }
 
   SetCurrentUserScriptAllowedState(util::GetBrowserContextId(browser_context_),
                                    extension.id(),
@@ -125,11 +104,6 @@ void UserScriptManager::InitializeUserScriptState(const Extension& extension) {
 }
 
 bool UserScriptManager::AreUserScriptsAllowed(const Extension& extension) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kUserScriptUserExtensionToggle)) {
-    return GetCurrentDeveloperMode(util::GetBrowserContextId(browser_context_));
-  }
-
   std::optional<bool> allowed_state = GetCurrentUserScriptAllowedState(
       util::GetBrowserContextId(browser_context_), extension.id());
   if (!allowed_state.has_value()) {
@@ -282,28 +256,6 @@ bool UserScriptManager::IsUserScriptPrefEnabled(
   return user_scripts_pref_allowed;
 }
 
-void UserScriptManager::MigrateUserScriptExtension(const Extension& extension) {
-  // If extension can't use the API, it doesn't need to be migrated.
-  if (!IsUserScriptsAPIPermissionAvailable(extension)) {
-    return;
-  }
 
-  // If the permission is *granted* and dev mode is on then user scripts allowed
-  // pref is set to true, otherwise false.
-  bool permission_granted = extension.permissions_data()->HasAPIPermission(
-      mojom::APIPermissionID::kUserScripts);
-  bool dev_mode_on =
-      GetCurrentDeveloperMode(util::GetBrowserContextId(browser_context_));
-  SetUserScriptPrefEnabled(extension.id(), permission_granted && dev_mode_on);
-}
-
-void UserScriptManager::MigrateUserScriptExtensions() {
-  for (auto& installed_extension : ExtensionRegistry::Get(browser_context_)
-                                       ->GenerateInstalledExtensionsSet()) {
-    MigrateUserScriptExtension(*installed_extension);
-  }
-  ExtensionPrefs::Get(browser_context_)
-      ->SetBooleanPref(kUserScriptsToggleMigratedPref, /*value=*/true);
-}
 
 }  // namespace extensions

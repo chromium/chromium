@@ -46,11 +46,6 @@ class UserScriptManager : public ExtensionRegistryObserver {
   // the extension.
   static constexpr PrefMap kUserScriptsAllowedPref = {
       "user_scripts_enabled", PrefType::kBool, PrefScope::kExtensionSpecific};
-  // Key corresponding to whether the migration from using the dev mode toggle
-  // to the per-extension toggle for enabling dynamic user scripts usage has
-  // completed.
-  static constexpr PrefMap kUserScriptsToggleMigratedPref = {
-      "migrated_user_scripts_toggle", PrefType::kBool, PrefScope::kProfile};
 
   UserScriptLoader* GetUserScriptLoaderByID(const mojom::HostID& host_id);
 
@@ -119,11 +114,7 @@ class UserScriptManager : public ExtensionRegistryObserver {
   // Get extension preference for userScripts API being allowed.
   bool IsUserScriptPrefEnabled(const ExtensionId& extension_id) const;
 
-  // Migrates an eligible extension to use the per-extension toggle.
-  void MigrateUserScriptExtension(const Extension& extension);
 
-  // Migrates all non-enabled extensions to use the per-extension toggle.
-  void MigrateUserScriptExtensions();
 
   // A map of ExtensionUserScriptLoader for each extension host, with one loader
   // per extension. Currently, each loader is lazily initialized and contains

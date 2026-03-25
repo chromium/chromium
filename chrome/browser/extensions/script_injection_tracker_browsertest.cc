@@ -1726,26 +1726,11 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest, ActiveTabGranted) {
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
-class UserScriptTrackerBrowserTest : public ScriptInjectionTrackerBrowserTest,
-                                     public testing::WithParamInterface<bool> {
- public:
-  UserScriptTrackerBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          extensions_features::kUserScriptUserExtensionToggle);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          extensions_features::kUserScriptUserExtensionToggle);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using UserScriptTrackerBrowserTest = ScriptInjectionTrackerBrowserTest;
 
 // Tests tracking of user scripts dynamically injected/declared via
 // `chrome.userScripts` API.
-IN_PROC_BROWSER_TEST_P(UserScriptTrackerBrowserTest,
+IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
                        UserScriptViaUserScriptsApi) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1841,7 +1826,7 @@ IN_PROC_BROWSER_TEST_P(UserScriptTrackerBrowserTest,
 
 // Tests tracking of user scripts dynamically injected/declared via
 // `chrome.userScripts` API only when extension requests host permissions.
-IN_PROC_BROWSER_TEST_P(UserScriptTrackerBrowserTest,
+IN_PROC_BROWSER_TEST_F(UserScriptTrackerBrowserTest,
                        UserScriptViaUserScriptsApi_HostPermissions) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1933,11 +1918,6 @@ IN_PROC_BROWSER_TEST_P(UserScriptTrackerBrowserTest,
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserScriptTrackerBrowserTest,
-                         // extensions_features::kUserScriptUserExtensionToggle
-                         testing::Bool());
 
 class ScriptInjectionTrackerAppBrowserTest : public PlatformAppBrowserTest {
  public:

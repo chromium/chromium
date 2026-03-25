@@ -252,10 +252,6 @@ BASE_DECLARE_FEATURE(kDisableExtensionsOnChromeUrlsSwitch);
 // for enterprise auditing.
 BASE_DECLARE_FEATURE(kEnterpriseExtensionDOMActivityTelemetry);
 
-// Changes the chrome.userScript API to be enabled by a per-extension toggle
-// rather than the developer mode toggle on chrome://extensions.
-BASE_DECLARE_FEATURE(kUserScriptUserExtensionToggle);
-
 // Forces the debugger API/feature to always be restricted by developer mode.
 // This ensures we're always testing the developer mode API/feature restriction
 // capability, even when no other API/feature might be restricted by it.

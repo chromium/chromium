@@ -2260,10 +2260,6 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(pref_names::kGlobalShortcutsUuid, std::string());
 
   registry->RegisterBooleanPref(
-      UserScriptManager::kUserScriptsToggleMigratedPref.name,
-      /*default_value=*/false);
-
-  registry->RegisterBooleanPref(
       pref_names::kExtensionInstallCloudPolicyChecksEnabled,
       /*default_value=*/false);
 

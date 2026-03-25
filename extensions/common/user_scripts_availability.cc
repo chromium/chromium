@@ -45,11 +45,6 @@ bool AreUserScriptsFeaturesAvailable(
     int context_id,
     bool check_developer_mode,
     const extensions::ContextData& context_data) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kUserScriptUserExtensionToggle)) {
-    return true;
-  }
-
   // An extension that no longer exists shouldn't have an API bound for it.
   if (!extension) {
     return false;
