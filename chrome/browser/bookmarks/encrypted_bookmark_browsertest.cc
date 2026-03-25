@@ -82,6 +82,20 @@ MATCHER(HasExpectedBookmarksCount, "") {
          arg->account_bookmark_bar_node()->children().size() == 1;
 }
 
+void AddMoreBookmarks(BookmarkModel* bookmark_model) {
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 2, u"Title 4",
+                         GURL("http://google.com/4"));
+  bookmark_model->AddURL(bookmark_model->account_bookmark_bar_node(), 1,
+                         u"Title 5", GURL("http://google.com/5"));
+}
+
+// Verify the number of bookmarks matches the number of bookmarks added in
+// AddBookmarks() and AddMoreBookmarks().
+MATCHER(HasAdditionalBookmarksCount, "") {
+  return arg->bookmark_bar_node()->children().size() == 3 &&
+         arg->account_bookmark_bar_node()->children().size() == 2;
+}
+
 class BaseEncryptedBookmarkBrowserTest : public PlatformBrowserTest {
  public:
   BaseEncryptedBookmarkBrowserTest() = default;
@@ -385,6 +399,121 @@ IN_PROC_BROWSER_TEST_F(SkipStage1AndStage2Test, BookmarksStillAvailable) {
 
   EXPECT_THAT(bookmark_model, HasExpectedBookmarksCount());
   EXPECT_TRUE(WaitUntilClearTextFilesDontExist(GetProfile()->GetPath()));
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+// Move back from stage 1 (write both, read clear) to encryption disabled.
+class MoveBackFromStage1Test : public BaseEncryptedBookmarkBrowserTest {
+ public:
+  MoveBackFromStage1Test() = default;
+
+  std::vector<bookmarks::BookmarkEncryptionStage>
+  GetEncryptionStagesForEachStep() override {
+    return {bookmarks::BookmarkEncryptionStage::kWriteBothReadOnlyClear,
+            bookmarks::BookmarkEncryptionStage::kDisabled};
+  }
+};
+
+// Move to stage 1 (write both, read clear).
+IN_PROC_BROWSER_TEST_F(MoveBackFromStage1Test, PRE_BookmarksStillAvailable) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(),
+           bookmarks::BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+  AddBookmarks(bookmark_model);
+
+  EXPECT_THAT(bookmark_model, HasExpectedBookmarksCount());
+  EXPECT_TRUE(WaitUntilClearTextFilesExist(GetProfile()->GetPath()));
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+// Move back to encryption disabled.
+IN_PROC_BROWSER_TEST_F(MoveBackFromStage1Test, BookmarksStillAvailable) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(),
+           bookmarks::BookmarkEncryptionStage::kDisabled);
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+  AddMoreBookmarks(bookmark_model);
+
+  EXPECT_THAT(bookmark_model, HasAdditionalBookmarksCount());
+  // All files always exist since we don't clean up encrypted files when going
+  // back to previous stage.
+  EXPECT_TRUE(WaitUntilClearTextFilesExist(GetProfile()->GetPath()));
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+// Move back from stage 2 (write both, read encrypted) to stage 1 (write both,
+// read clear).
+class MoveBackFromStage2Test : public BaseEncryptedBookmarkBrowserTest {
+ public:
+  MoveBackFromStage2Test() = default;
+
+  std::vector<bookmarks::BookmarkEncryptionStage>
+  GetEncryptionStagesForEachStep() override {
+    return {bookmarks::BookmarkEncryptionStage::kWriteBothReadPreferEncrypted,
+            bookmarks::BookmarkEncryptionStage::kWriteBothReadOnlyClear};
+  }
+};
+
+// Move to stage 2 (write both, read encrypted).
+IN_PROC_BROWSER_TEST_F(MoveBackFromStage2Test, PRE_BookmarksStillAvailable) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(),
+           bookmarks::BookmarkEncryptionStage::kWriteBothReadPreferEncrypted);
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+  AddBookmarks(bookmark_model);
+
+  EXPECT_THAT(bookmark_model, HasExpectedBookmarksCount());
+  EXPECT_TRUE(WaitUntilClearTextFilesExist(GetProfile()->GetPath()));
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+// Move back to stage 1 (write both, read clear).
+IN_PROC_BROWSER_TEST_F(MoveBackFromStage2Test, BookmarksStillAvailable) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(),
+           bookmarks::BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+  AddMoreBookmarks(bookmark_model);
+
+  EXPECT_THAT(bookmark_model, HasAdditionalBookmarksCount());
+  EXPECT_TRUE(WaitUntilClearTextFilesExist(GetProfile()->GetPath()));
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+// Move back from stage 3 (write only encrypted, read encrypted) to stage 2
+// (write both, read encrypted).
+class MoveBackFromStage3Test : public BaseEncryptedBookmarkBrowserTest {
+ public:
+  MoveBackFromStage3Test() = default;
+
+  std::vector<bookmarks::BookmarkEncryptionStage>
+  GetEncryptionStagesForEachStep() override {
+    return {bookmarks::BookmarkEncryptionStage::
+                kWriteOnlyEncryptedReadPreferEncrypted,
+            bookmarks::BookmarkEncryptionStage::kWriteBothReadPreferEncrypted};
+    NOTREACHED();
+  }
+};
+
+// Move to stage 3 (write only encrypted, read encrypted).
+IN_PROC_BROWSER_TEST_F(MoveBackFromStage3Test, PRE_BookmarksStillAvailable) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(),
+           bookmarks::BookmarkEncryptionStage::
+               kWriteOnlyEncryptedReadPreferEncrypted);
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+  AddBookmarks(bookmark_model);
+
+  EXPECT_THAT(bookmark_model, HasExpectedBookmarksCount());
+  EXPECT_TRUE(WaitUntilClearTextFilesDontExist(GetProfile()->GetPath()));
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+// Move back to stage 2 (write both, read encrypted).
+IN_PROC_BROWSER_TEST_F(MoveBackFromStage3Test, BookmarksStillAvailable) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(),
+           bookmarks::BookmarkEncryptionStage::kWriteBothReadPreferEncrypted);
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+  AddMoreBookmarks(bookmark_model);
+
+  EXPECT_THAT(bookmark_model, HasAdditionalBookmarksCount());
+  EXPECT_TRUE(WaitUntilClearTextFilesExist(GetProfile()->GetPath()));
   EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
 }
 
