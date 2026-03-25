@@ -150,7 +150,7 @@
 // Supports fetching virtual cards
 #define IOS_WEBVIEW_SUPPORTS_FETCHING_VIRTUAL_CARDS 1
 
-// Supports setDumpWithoutCrashingHandler.
-#define CWV_ENABLE_DUMP_WITHOUT_CRASHING_HANDLER 1
+// When enabled, -[CWVGlobalState setDumpWithoutCrashingHandler:] is made available.
+#define CWV_DUMP_WITHOUT_CRASHING_HANDLER_AVAILABLE 1
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

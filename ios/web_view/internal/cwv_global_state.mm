@@ -64,11 +64,9 @@
       base::SysNSStringToUTF8(clientSecret));
 }
 
-#if defined(CWV_ENABLE_DUMP_WITHOUT_CRASHING_HANDLER)
 - (void)setDumpWithoutCrashingHandler:(void (*)(void))handler {
   base::debug::SetDumpWithoutCrashingFunction(handler);
 }
-#endif  // defined(CWV_ENABLE_DUMP_WITHOUT_CRASHING_HANDLER)
 
 - (BOOL)isStarted {
 #if defined(CWV_UNIT_TEST)
