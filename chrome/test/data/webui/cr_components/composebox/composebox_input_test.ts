@@ -180,4 +180,63 @@ suite('ComposeboxScrollCaret', () => {
         window.getComputedStyle(input).getPropertyValue('field-sizing');
     assertEquals('content', fieldSizing);
   });
+
+  // The caret resize observer should only react to width changes on
+  // #inputWrapper, not height-only changes that can feed back into a layout loop
+  // e.g. Windows non-overlay scrollbar toggling.
+  test('CaretUpdatesOnInputWrapperWidthChange', async () => {
+    const input = inputElement.$.input as HTMLTextAreaElement;
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+    const inputWrapper =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
+    assertTrue(!!input);
+    assertTrue(!!caret);
+    assertTrue(!!inputWrapper);
+
+    input.value = 'Hello world';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    input.setSelectionRange(11, 11);
+    input.dispatchEvent(new Event('keyup', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    const caretTransformBefore = caret.style.transform;
+    assertTrue(caretTransformBefore.length > 0);
+
+    inputWrapper.style.width = '20px';
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    assertTrue(caretTransformBefore !== caret.style.transform);
+  });
+
+  test('CaretDoesNotUpdateOnHeightOnlyChange', async () => {
+    const input = inputElement.$.input as HTMLTextAreaElement;
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+    const inputWrapper =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
+    assertTrue(!!input);
+    assertTrue(!!caret);
+    assertTrue(!!inputWrapper);
+
+    input.value = 'Hey world';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    input.setSelectionRange(10, 10);
+    input.dispatchEvent(new Event('keyup', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    const caretTransformBefore = caret.style.transform;
+    const widthBefore = inputWrapper.clientWidth;
+
+    inputWrapper.style.paddingBottom = '10px';
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    assertEquals(widthBefore, inputWrapper.clientWidth);
+
+    assertEquals(caretTransformBefore, caret.style.transform);
+  });
 });
