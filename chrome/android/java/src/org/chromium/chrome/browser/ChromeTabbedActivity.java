@@ -327,6 +327,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.side_panel.SidePanelRegistryBridgeFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
@@ -921,6 +922,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 @TabLaunchType int type,
                                 @TabCreationState int creationState,
                                 boolean markedForSelection) {
+                            var sidePanelBridge =
+                                    SidePanelRegistryBridgeFactory.createTabScopedBridge(tab);
+                            if (sidePanelBridge != null) {
+                                tab.addObserver(sidePanelBridge);
+                            }
+
                             if (type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
                                     || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                                     || (type == TabLaunchType.FROM_RECENT_TABS

@@ -212,6 +212,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroidFactory;
+import org.chromium.chrome.browser.ui.side_panel.SidePanelRegistryBridgeFactory;
+import org.chromium.chrome.browser.ui.side_panel.WindowScopedSidePanelRegistryBridge;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinatorFactory;
 import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeature;
@@ -1889,13 +1891,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mSidePanelContainerCoordinator != null) {
             mSidePanelContainerCoordinator.init();
 
-            // Initialize SidePanelCoordinatorAndroid and associate it with a ChromeAndroidTask.
-            // This will allow SidePanelCoordinatorAndroid to access the native
-            // BrowserWindowInterface and ensure the lifecycle and destruction order for both are
-            // correct.
+            // Initialize SidePanelCoordinatorAndroid and a window-scoped SidePanelRegistry, and
+            // associate them with a ChromeAndroidTask.
+            // This will allow SidePanelCoordinatorAndroid and SidePanelRegistry to access the
+            // native BrowserWindowInterface and ensure the lifecycle and destruction order for both
+            // are correct.
             //
-            // Note that ChromeAndroidTask should be non-null here as ChromeAndroidTask is
-            // initialized immediately after native initialization, along with TabModel.
+            // Note:
+            //
+            // (1) ChromeAndroidTask should be non-null here as ChromeAndroidTask is initialized
+            // immediately after native initialization, along with TabModel;
+            //
+            // (2) The lifecycles of SidePanelCoordinatorAndroid and the window-scoped
+            // SidePanelRegistry are in sync with a native BrowserWindowInterface, but
+            // SidePanelCoordinatorAndroid doesn't own the SidePanelRegistry, or vice versa. This
+            // matches the WML implementation.
             var chromeAndroidTask = mChromeAndroidTaskSupplier.get();
             assert chromeAndroidTask != null
                     : "ChromeAndroidTask shouldn't be null when side panel is enabled";
@@ -1907,6 +1917,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     // TODO(crbug.com/491597112): pass mSidePanelContainerCoordinator
                     //  to SidePanelCoordinatorAndroidBridge.
                     SidePanelCoordinatorAndroidFactory::create);
+            chromeAndroidTask.addFeature(
+                    new ChromeAndroidTaskFeatureKey(
+                            WindowScopedSidePanelRegistryBridge.class,
+                            mProfileSupplier.get(),
+                            mWindowAndroid),
+                    SidePanelRegistryBridgeFactory::createWindowScopedBridge);
 
             // TODO(crbug.com/489548570): Remove SidePanelDevFeature when it's not needed.
             mSidePanelDevFeature =

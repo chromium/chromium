@@ -14,11 +14,16 @@ source_set("android") {
   sources = [
     "side_panel_coordinator_android.cc",
     "side_panel_coordinator_android.h",
+    "tab_scoped_side_panel_registry_bridge.cc",
+    "tab_scoped_side_panel_registry_bridge.h",
+    "window_scoped_side_panel_registry_bridge.cc",
+    "window_scoped_side_panel_registry_bridge.h",
   ]
 
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//third_party/jni_zero",
@@ -36,11 +41,15 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidFactory.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelRegistryBridgeFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/TabScopedSidePanelRegistryBridgeImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridgeImpl.java",
   ]
 
   deps = [
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/side_panel/android:java",
     "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -51,18 +60,28 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidImpl.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/TabScopedSidePanelRegistryBridgeImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridgeImpl.java",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "side_panel_coordinator_android_unittest.cc" ]
+  sources = [
+    "side_panel_coordinator_android_unittest.cc",
+    "tab_scoped_side_panel_registry_bridge_unittest.cc",
+    "window_scoped_side_panel_registry_bridge_unittest.cc",
+  ]
   deps = [
     ":android",
     "//base",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/test/android:native_unit_test_support_jni",
+    "//components/tabs:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
