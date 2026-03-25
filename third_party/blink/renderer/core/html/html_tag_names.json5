@@ -288,6 +288,10 @@
       name: "install",
       interfaceName: "HTMLInstallElement",
       runtimeEnabled: "InstallElement",
+      runtimeFlagHasOriginTrial: true,
+      // This element could be enabled in some documents but not others (due to
+      // origin trials), so we need custom type helpers.
+      noTypeHelpers: true,
     },
     {
       name: "kbd",

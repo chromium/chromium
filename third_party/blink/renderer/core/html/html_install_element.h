@@ -31,6 +31,9 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
  public:
   explicit HTMLInstallElement(Document&);
 
+  // HTMLElement:
+  bool IsHTMLInstallElement() const final { return true; }
+
   const String& InstallUrl() const;
   const String& ManifestId() const;
   void Trace(Visitor*) const override;
@@ -63,6 +66,29 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
   HeapMojoRemote<mojom::blink::WebInstallService> service_;
   // Controls whether the element should render as a launch button.
   bool show_as_launch_ = false;
+};
+// The custom type casting is required for the InstallElement OT because the
+// generated helpers code can lead to a compilation error or an
+// HTMLInstallElement appearing in a document that does not have the
+// InstallElement origin trial enabled (this would result in the creation of
+// an HTMLUnknownElement with the "install" tag name).
+template <>
+struct DowncastTraits<HTMLInstallElement> {
+  static bool AllowFrom(const HTMLElement& element) {
+    return element.IsHTMLInstallElement();
+  }
+  static bool AllowFrom(const Node& node) {
+    if (const HTMLElement* html_element = DynamicTo<HTMLElement>(node)) {
+      return html_element->IsHTMLInstallElement();
+    }
+    return false;
+  }
+  static bool AllowFrom(const Element& element) {
+    if (const HTMLElement* html_element = DynamicTo<HTMLElement>(element)) {
+      return html_element->IsHTMLInstallElement();
+    }
+    return false;
+  }
 };
 
 }  // namespace blink

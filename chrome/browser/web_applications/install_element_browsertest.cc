@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -739,6 +743,159 @@ IN_PROC_BROWSER_TEST_F(InstallElementAndApiInteractionBrowserTest,
   // Install() to skip all permission checks and auto-grant, resulting in
   // 'success' instead.
   EXPECT_EQ("AbortError", result.ExtractString());
+}
+
+namespace {
+
+// Generate token with the command:
+// tools/origin_trials/generate_token.py http://127.0.0.1:443 InstallElement
+// --expire-timestamp=2000000000
+constexpr std::string_view kOriginTrialToken =
+    "A/"
+    "qUr0mcpU7K4ignoZxYfDrPggav2I37fpbZqGOp73v10UL+"
+    "NJ3kAqF8fOjADfKFNxlUuyme9wnHRsoUjq3LgQIAAABVeyJvcmlnaW4iOiAiaHR0cDovLzEyNy"
+    "4wLjAuMTo0NDMiLCAiZmVhdHVyZSI6ICJJbnN0YWxsRWxlbWVudCIsICJleHBpcnkiOiAyMDAw"
+    "MDAwMDAwfQ==";
+constexpr char kTestOrigin[] = "http://127.0.0.1:443";
+
+enum class BaseFeatureStatus {
+  kDisabled,
+  kEnabled,
+  kDefault,
+};
+
+}  // namespace
+
+// Test suite for <install> element availability via Origin Trial.
+class InstallElementOriginTrialBrowserTest
+    : public InstallElementBrowserTest,
+      public testing::WithParamInterface<BaseFeatureStatus> {
+ protected:
+  InstallElementOriginTrialBrowserTest() {
+    // The base class enables the InstallElement feature by default;
+    // reset it so we can test Origin Trial enabling it.
+    scoped_feature_list_.Reset();
+    switch (GetParam()) {
+      case BaseFeatureStatus::kDisabled:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kBypassPepcSecurityForTesting},
+            {blink::features::kInstallElement});
+        break;
+      case BaseFeatureStatus::kEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kBypassPepcSecurityForTesting,
+             blink::features::kInstallElement},
+            {});
+        break;
+      case BaseFeatureStatus::kDefault:
+        // Only enable the bypass feature, let kInstallElement be at default.
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kBypassPepcSecurityForTesting}, {});
+        break;
+    }
+  }
+
+  ~InstallElementOriginTrialBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InstallElementBrowserTest::SetUpCommandLine(command_line);
+    // Add the public key following:
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/origin_trials_integration.md#manual-testing.
+    command_line->AppendSwitchASCII(
+        "origin-trial-public-key",
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+
+  void SetUpOnMainThread() override {
+    InstallElementBrowserTest::SetUpOnMainThread();
+    url_loader_interceptor_.emplace(base::BindRepeating(
+        &InstallElementOriginTrialBrowserTest::InterceptRequest,
+        base::Unretained(this)));
+  }
+
+  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+
+  void LoadPage(bool with_origin_trial_token) {
+    const GURL page = with_origin_trial_token
+                          ? GURL(kTestOrigin).Resolve("/origin_trial")
+                          : GURL(kTestOrigin).Resolve("/");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+  }
+
+  bool IsInstallElementAvailable() {
+    return content::EvalJs(web_contents(),
+                           "typeof HTMLInstallElement !== 'undefined'")
+        .ExtractBool();
+  }
+
+ private:
+  bool InterceptRequest(content::URLLoaderInterceptor::RequestParams* params) {
+    // Setting up origin trial header.
+    std::string headers =
+        "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
+    if (params->url_request.url.GetPath() == "/origin_trial") {
+      base::StrAppend(&headers, {"Origin-Trial: ", kOriginTrialToken, "\n"});
+    }
+    headers += '\n';
+    content::URLLoaderInterceptor::WriteResponse(headers, "",
+                                                 params->client.get());
+    return true;
+  }
+
+  std::optional<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         InstallElementOriginTrialBrowserTest,
+                         testing::Values(BaseFeatureStatus::kDisabled,
+                                         BaseFeatureStatus::kEnabled,
+                                         BaseFeatureStatus::kDefault));
+
+IN_PROC_BROWSER_TEST_P(InstallElementOriginTrialBrowserTest,
+                       WithoutOriginTrialToken) {
+  LoadPage(/*with_origin_trial_token=*/false);
+
+  switch (GetParam()) {
+    case BaseFeatureStatus::kDisabled:
+      // Feature is disabled, <install> element should not be available.
+      EXPECT_FALSE(IsInstallElementAvailable());
+      break;
+    case BaseFeatureStatus::kEnabled:
+      // Feature is enabled, <install> element should be available.
+      // This simulates testing via command line flag only, without an OT token.
+      EXPECT_TRUE(IsInstallElementAvailable());
+      break;
+    case BaseFeatureStatus::kDefault:
+      // When the feature is in its default state, <install> element
+      // availability depends on the presence of the token. In this case, there
+      // is no token, so it should *not* be available.
+      EXPECT_FALSE(IsInstallElementAvailable());
+      break;
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(InstallElementOriginTrialBrowserTest,
+                       WithOriginTrialToken) {
+  LoadPage(/*with_origin_trial_token=*/true);
+
+  switch (GetParam()) {
+    case BaseFeatureStatus::kDisabled:
+      // Feature is disabled, <install> element should not be available.
+      // Disabling via command line (or about:flags) should take precedence over
+      // the OT token. This lets the base::Feature flag act as a kill switch.
+      EXPECT_FALSE(IsInstallElementAvailable());
+      break;
+    case BaseFeatureStatus::kEnabled:
+      // Feature is enabled, <install> element should be available.
+      EXPECT_TRUE(IsInstallElementAvailable());
+      break;
+    case BaseFeatureStatus::kDefault:
+      // When the feature is in its default state, <install> element
+      // availability depends on the presence of the token. In this case, there
+      // is a valid token, so it should be available.
+      EXPECT_TRUE(IsInstallElementAvailable());
+      break;
+  }
 }
 
 }  // namespace web_app

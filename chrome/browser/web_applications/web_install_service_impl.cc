@@ -142,7 +142,8 @@ void WebInstallServiceImpl::CreateIfAllowed(
     mojo::PendingReceiver<blink::mojom::WebInstallService> receiver) {
   CHECK(render_frame_host);
 
-  CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppInstallation) ||
+        base::FeatureList::IsEnabled(blink::features::kInstallElement));
 
   // This class is created only on the primary main frame.
   if (!render_frame_host->IsInPrimaryMainFrame()) {
@@ -176,8 +177,8 @@ void WebInstallServiceImpl::IsInstalled(blink::mojom::InstallOptionsPtr options,
 
   auto* provider = WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
-  // `kWebAppInstallation` is guaranteed to be enabled at this point, however
-  // the provider may be null (e.g. Incognito).
+  // `kWebAppInstallation` or `kInstallElement` is guaranteed to be enabled at
+  // this point, however the provider may be null (e.g. Incognito).
   if (!provider) {
     std::move(callback).Run(false);
     return;

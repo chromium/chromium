@@ -623,6 +623,28 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableUserMediaElement(false);
   }
 
+  // InstallElement cannot be enabled without the support of the browser
+  // process.
+  if (!base::FeatureList::IsEnabled(blink::features::kInstallElement)) {
+    LOG_IF(WARNING, WebRuntimeFeatures::IsInstallElementEnabledByRuntimeFlag())
+        << "InstallElement cannot be enabled in this configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kInstallElement.name << " instead.";
+    WebRuntimeFeatures::EnableInstallElement(false);
+  }
+
+  // WebAppInstallation cannot be enabled without the support of the browser
+  // process.
+  if (!base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsWebAppInstallationEnabledByRuntimeFlag())
+        << "WebAppInstallation cannot be enabled in this configuration. Use "
+           "--"
+        << switches::kEnableFeatures << "="
+        << blink::features::kWebAppInstallation.name << " instead.";
+    WebRuntimeFeatures::EnableWebAppInstallation(false);
+  }
+
   // CSP Hashes in V1 cannot be enabled without the support of the network
   // service.
   if (!base::FeatureList::IsEnabled(

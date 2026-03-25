@@ -198,6 +198,9 @@ class CORE_EXPORT HTMLElement : public Element {
   // origin trial is over.
   virtual bool IsHTMLFencedFrameElement() const { return false; }
   virtual bool IsHTMLFrameSetElement() const { return false; }
+  // TODO(crbug.com/483423896): Remove this method when the install element
+  // trial is over.
+  virtual bool IsHTMLInstallElement() const { return false; }
   // TODO(crbug.com/443013457): Remove these 2 methods when the
   // permission/usermedia trials are over.
   virtual bool IsHTMLCapabilityElementBase() const { return false; }

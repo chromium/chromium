@@ -3323,6 +3323,11 @@
       // https://chromestatus.com/feature/5152834368700416
       name: "InstallElement",
       status: {"Android": "", "default": "test"},
+      origin_trial_feature_name: "InstallElement",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
+      public: true,
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "InstallOnDeviceSpeechRecognition",
@@ -6131,6 +6136,7 @@
       status: {"Android": "", "default": "test"},
       origin_trial_feature_name: "WebAppInstallation",
       origin_trial_os: ["win", "mac", "linux", "chromeos"],
+      public: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },

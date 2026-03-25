@@ -4876,6 +4876,23 @@
     "expires": "never"
   },
   {
+    "prefix": "install-element-disabled",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "ChromeOS"
+    ],
+    "bases": [],
+    "args": [
+      "--disable-features=InstallElement"
+    ],
+    "owners": [
+      "permissions-core@google.com"
+    ],
+    "expires": "never"
+  },
+  {
     "prefix": "unload-allowed",
     "platforms": [
       "Linux",

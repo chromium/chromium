@@ -558,12 +558,11 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   }
 
   if (trial_name == "WebAppInstallation") {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
     return base::FeatureList::IsEnabled(blink::features::kWebAppInstallation);
-#else
-    return false;
-#endif
+  }
+
+  if (trial_name == "InstallElement") {
+    return base::FeatureList::IsEnabled(blink::features::kInstallElement);
   }
   return true;
 }
