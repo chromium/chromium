@@ -39,40 +39,31 @@ display::mojom::DisplayConnectionType EnumTraits<
   NOTREACHED();
 }
 
-bool EnumTraits<display::mojom::DisplayConnectionType,
-                display::DisplayConnectionType>::
-    FromMojom(display::mojom::DisplayConnectionType type,
-              display::DisplayConnectionType* out) {
+display::DisplayConnectionType EnumTraits<display::mojom::DisplayConnectionType,
+                                          display::DisplayConnectionType>::
+    FromMojom(display::mojom::DisplayConnectionType type) {
   switch (type) {
     case display::mojom::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_NONE:
-      *out = display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_NONE;
-      return true;
+      return display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_NONE;
     case display::mojom::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_UNKNOWN:
-      *out = display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_UNKNOWN;
-      return true;
+      return display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_UNKNOWN;
     case display::mojom::DisplayConnectionType::
         DISPLAY_CONNECTION_TYPE_INTERNAL:
-      *out = display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_INTERNAL;
-      return true;
+      return display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_INTERNAL;
     case display::mojom::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_VGA:
-      *out = display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_VGA;
-      return true;
+      return display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_VGA;
     case display::mojom::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_HDMI:
-      *out = display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_HDMI;
-      return true;
+      return display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_HDMI;
     case display::mojom::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_DVI:
-      *out = display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_DVI;
-      return true;
+      return display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_DVI;
     case display::mojom::DisplayConnectionType::
         DISPLAY_CONNECTION_TYPE_DISPLAYPORT:
-      *out =
-          display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_DISPLAYPORT;
-      return true;
+      return display::DisplayConnectionType::
+          DISPLAY_CONNECTION_TYPE_DISPLAYPORT;
     case display::mojom::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_NETWORK:
-      *out = display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_NETWORK;
-      return true;
+      return display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_NETWORK;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -91,21 +82,18 @@ EnumTraits<display::mojom::HDCPState, display::HDCPState>::ToMojom(
 }
 
 // static
-bool EnumTraits<display::mojom::HDCPState, display::HDCPState>::FromMojom(
-    display::mojom::HDCPState type,
-    display::HDCPState* out) {
+display::HDCPState
+EnumTraits<display::mojom::HDCPState, display::HDCPState>::FromMojom(
+    display::mojom::HDCPState type) {
   switch (type) {
     case display::mojom::HDCPState::HDCP_STATE_UNDESIRED:
-      *out = display::HDCPState::HDCP_STATE_UNDESIRED;
-      return true;
+      return display::HDCPState::HDCP_STATE_UNDESIRED;
     case display::mojom::HDCPState::HDCP_STATE_DESIRED:
-      *out = display::HDCPState::HDCP_STATE_DESIRED;
-      return true;
+      return display::HDCPState::HDCP_STATE_DESIRED;
     case display::mojom::HDCPState::HDCP_STATE_ENABLED:
-      *out = display::HDCPState::HDCP_STATE_ENABLED;
-      return true;
+      return display::HDCPState::HDCP_STATE_ENABLED;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -130,27 +118,24 @@ display::mojom::ContentProtectionMethod EnumTraits<
 }
 
 // static
-bool EnumTraits<display::mojom::ContentProtectionMethod,
-                display::ContentProtectionMethod>::
-    FromMojom(display::mojom::ContentProtectionMethod type,
-              display::ContentProtectionMethod* out) {
+display::ContentProtectionMethod
+EnumTraits<display::mojom::ContentProtectionMethod,
+           display::ContentProtectionMethod>::
+    FromMojom(display::mojom::ContentProtectionMethod type) {
   switch (type) {
     case display::mojom::ContentProtectionMethod::
         CONTENT_PROTECTION_METHOD_NONE:
-      *out = display::ContentProtectionMethod::CONTENT_PROTECTION_METHOD_NONE;
-      return true;
+      return display::ContentProtectionMethod::CONTENT_PROTECTION_METHOD_NONE;
     case display::mojom::ContentProtectionMethod::
         CONTENT_PROTECTION_METHOD_HDCP_TYPE_0:
-      *out = display::ContentProtectionMethod::
+      return display::ContentProtectionMethod::
           CONTENT_PROTECTION_METHOD_HDCP_TYPE_0;
-      return true;
     case display::mojom::ContentProtectionMethod::
         CONTENT_PROTECTION_METHOD_HDCP_TYPE_1:
-      *out = display::ContentProtectionMethod::
+      return display::ContentProtectionMethod::
           CONTENT_PROTECTION_METHOD_HDCP_TYPE_1;
-      return true;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -171,24 +156,20 @@ display::mojom::PanelOrientation EnumTraits<
 }
 
 // static
-bool EnumTraits<display::mojom::PanelOrientation, display::PanelOrientation>::
-    FromMojom(display::mojom::PanelOrientation rotation,
-              display::PanelOrientation* out) {
+display::PanelOrientation
+EnumTraits<display::mojom::PanelOrientation, display::PanelOrientation>::
+    FromMojom(display::mojom::PanelOrientation rotation) {
   switch (rotation) {
     case display::mojom::PanelOrientation::NORMAL:
-      *out = display::PanelOrientation::kNormal;
-      return true;
+      return display::PanelOrientation::kNormal;
     case display::mojom::PanelOrientation::BOTTOM_UP:
-      *out = display::PanelOrientation::kBottomUp;
-      return true;
+      return display::PanelOrientation::kBottomUp;
     case display::mojom::PanelOrientation::LEFT_UP:
-      *out = display::PanelOrientation::kLeftUp;
-      return true;
+      return display::PanelOrientation::kLeftUp;
     case display::mojom::PanelOrientation::RIGHT_UP:
-      *out = display::PanelOrientation::kRightUp;
-      return true;
+      return display::PanelOrientation::kRightUp;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -211,28 +192,22 @@ display::mojom::PrivacyScreenState EnumTraits<
 }
 
 // static
-bool EnumTraits<display::mojom::PrivacyScreenState,
-                display::PrivacyScreenState>::
-    FromMojom(display::mojom::PrivacyScreenState state,
-              display::PrivacyScreenState* out) {
+display::PrivacyScreenState
+EnumTraits<display::mojom::PrivacyScreenState, display::PrivacyScreenState>::
+    FromMojom(display::mojom::PrivacyScreenState state) {
   switch (state) {
     case display::mojom::PrivacyScreenState::DISABLED:
-      *out = display::PrivacyScreenState::kDisabled;
-      return true;
+      return display::PrivacyScreenState::kDisabled;
     case display::mojom::PrivacyScreenState::ENABLED:
-      *out = display::PrivacyScreenState::kEnabled;
-      return true;
+      return display::PrivacyScreenState::kEnabled;
     case display::mojom::PrivacyScreenState::DISABLED_LOCKED:
-      *out = display::PrivacyScreenState::kDisabledLocked;
-      return true;
+      return display::PrivacyScreenState::kDisabledLocked;
     case display::mojom::PrivacyScreenState::ENABLED_LOCKED:
-      *out = display::PrivacyScreenState::kEnabledLocked;
-      return true;
+      return display::PrivacyScreenState::kEnabledLocked;
     case display::mojom::PrivacyScreenState::NOT_SUPPORTED:
-      *out = display::PrivacyScreenState::kNotSupported;
-      return true;
+      return display::PrivacyScreenState::kNotSupported;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -252,22 +227,19 @@ EnumTraits<display::mojom::VariableRefreshRateState,
 }
 
 // static
-bool EnumTraits<display::mojom::VariableRefreshRateState,
-                display::VariableRefreshRateState>::
-    FromMojom(display::mojom::VariableRefreshRateState state,
-              display::VariableRefreshRateState* out) {
+display::VariableRefreshRateState
+EnumTraits<display::mojom::VariableRefreshRateState,
+           display::VariableRefreshRateState>::
+    FromMojom(display::mojom::VariableRefreshRateState state) {
   switch (state) {
     case display::mojom::VariableRefreshRateState::kVrrDisabled:
-      *out = display::VariableRefreshRateState::kVrrDisabled;
-      return true;
+      return display::VariableRefreshRateState::kVrrDisabled;
     case display::mojom::VariableRefreshRateState::kVrrEnabled:
-      *out = display::VariableRefreshRateState::kVrrEnabled;
-      return true;
+      return display::VariableRefreshRateState::kVrrEnabled;
     case display::mojom::VariableRefreshRateState::kVrrNotCapable:
-      *out = display::VariableRefreshRateState::kVrrNotCapable;
-      return true;
+      return display::VariableRefreshRateState::kVrrNotCapable;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

@@ -32,7 +32,7 @@ using RunOnOsLoginDataView = app_management::mojom::RunOnOsLoginDataView;
 template <>
 struct EnumTraits<AppType, apps::AppType> {
   static AppType ToMojom(apps::AppType input);
-  static bool FromMojom(AppType input, apps::AppType* output);
+  static apps::AppType FromMojom(AppType input);
 };
 
 template <>
@@ -58,13 +58,13 @@ struct StructTraits<PermissionDataView, apps::PermissionPtr> {
 template <>
 struct EnumTraits<PermissionType, apps::PermissionType> {
   static PermissionType ToMojom(apps::PermissionType input);
-  static bool FromMojom(PermissionType input, apps::PermissionType* output);
+  static apps::PermissionType FromMojom(PermissionType input);
 };
 
 template <>
 struct EnumTraits<TriState, apps::TriState> {
   static TriState ToMojom(apps::TriState input);
-  static bool FromMojom(TriState input, apps::TriState* output);
+  static apps::TriState FromMojom(TriState input);
 };
 
 template <>
@@ -100,25 +100,25 @@ struct UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue> {
 template <>
 struct EnumTraits<InstallReason, apps::InstallReason> {
   static InstallReason ToMojom(apps::InstallReason input);
-  static bool FromMojom(InstallReason input, apps::InstallReason* output);
+  static apps::InstallReason FromMojom(InstallReason input);
 };
 
 template <>
 struct EnumTraits<InstallSource, apps::InstallSource> {
   static InstallSource ToMojom(apps::InstallSource input);
-  static bool FromMojom(InstallSource input, apps::InstallSource* output);
+  static apps::InstallSource FromMojom(InstallSource input);
 };
 
 template <>
 struct EnumTraits<WindowMode, apps::WindowMode> {
   static WindowMode ToMojom(apps::WindowMode input);
-  static bool FromMojom(WindowMode input, apps::WindowMode* output);
+  static apps::WindowMode FromMojom(WindowMode input);
 };
 
 template <>
 struct EnumTraits<RunOnOsLoginMode, apps::RunOnOsLoginMode> {
   static RunOnOsLoginMode ToMojom(apps::RunOnOsLoginMode input);
-  static bool FromMojom(RunOnOsLoginMode input, apps::RunOnOsLoginMode* output);
+  static apps::RunOnOsLoginMode FromMojom(RunOnOsLoginMode input);
 };
 
 template <>

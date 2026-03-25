@@ -32,19 +32,18 @@ EnumTraits<ui::mojom::TextEditCommand, ui::TextEditCommand>::ToMojom(
 // static
 #define TEXT_EDIT_COMMAND(UI, MOJOM)      \
   case ui::mojom::TextEditCommand::MOJOM: \
-    *output = ui::TextEditCommand::UI;    \
-    return true;
+    return ui::TextEditCommand::UI;
 
-bool EnumTraits<ui::mojom::TextEditCommand, ui::TextEditCommand>::FromMojom(
-    ui::mojom::TextEditCommand input,
-    ui::TextEditCommand* output) {
+ui::TextEditCommand
+EnumTraits<ui::mojom::TextEditCommand, ui::TextEditCommand>::FromMojom(
+    ui::mojom::TextEditCommand input) {
   switch (input) {
 #include "ui/base/ime/text_edit_commands.inc"
   }
 #undef TEXT_EDIT_COMMAND
 
   // Return `false` to indicate the conversion was not successful.
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

@@ -18,8 +18,8 @@ struct EnumTraits<display::mojom::Position,
                   display::DisplayPlacement::Position> {
   static display::mojom::Position ToMojom(
       display::DisplayPlacement::Position type);
-  static bool FromMojom(display::mojom::Position type,
-                        display::DisplayPlacement::Position* output);
+  static display::DisplayPlacement::Position FromMojom(
+      display::mojom::Position type);
 };
 
 template <>
@@ -27,8 +27,8 @@ struct EnumTraits<display::mojom::OffsetReference,
                   display::DisplayPlacement::OffsetReference> {
   static display::mojom::OffsetReference ToMojom(
       display::DisplayPlacement::OffsetReference type);
-  static bool FromMojom(display::mojom::OffsetReference type,
-                        display::DisplayPlacement::OffsetReference* output);
+  static display::DisplayPlacement::OffsetReference FromMojom(
+      display::mojom::OffsetReference type);
 };
 
 template <>

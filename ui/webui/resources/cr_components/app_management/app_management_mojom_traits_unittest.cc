@@ -31,9 +31,9 @@ TEST(AppManagementMojomTraitsTest, RoundTripAppType) {
     app_management::mojom::AppType serialized_app_type =
         mojo::EnumTraits<app_management::mojom::AppType,
                          apps::AppType>::ToMojom(app_type_in);
-    ASSERT_TRUE((mojo::EnumTraits<app_management::mojom::AppType,
-                                  apps::AppType>::FromMojom(serialized_app_type,
-                                                            &app_type_out)));
+    app_type_out =
+        mojo::EnumTraits<app_management::mojom::AppType,
+                         apps::AppType>::FromMojom(serialized_app_type);
     EXPECT_EQ(app_type_in, app_type_out);
   }
 }
@@ -145,10 +145,9 @@ TEST(AppManagementMojomTraitsTest, RoundTripInstallReason) {
     app_management::mojom::InstallReason serialized_install_reason =
         mojo::EnumTraits<app_management::mojom::InstallReason,
                          apps::InstallReason>::ToMojom(install_reason_in);
-    ASSERT_TRUE((mojo::EnumTraits<
-                 app_management::mojom::InstallReason,
-                 apps::InstallReason>::FromMojom(serialized_install_reason,
-                                                 &install_reason_out)));
+    install_reason_out = mojo::EnumTraits<
+        app_management::mojom::InstallReason,
+        apps::InstallReason>::FromMojom(serialized_install_reason);
     EXPECT_EQ(install_reason_in, install_reason_out);
   }
 }
@@ -165,10 +164,9 @@ TEST(AppManagementMojomTraitsTest, RoundTripInstallSource) {
     app_management::mojom::InstallSource serialized_install_source =
         mojo::EnumTraits<app_management::mojom::InstallSource,
                          apps::InstallSource>::ToMojom(install_source_in);
-    ASSERT_TRUE((mojo::EnumTraits<
-                 app_management::mojom::InstallSource,
-                 apps::InstallSource>::FromMojom(serialized_install_source,
-                                                 &install_source_out)));
+    install_source_out = mojo::EnumTraits<
+        app_management::mojom::InstallSource,
+        apps::InstallSource>::FromMojom(serialized_install_source);
     EXPECT_EQ(install_source_in, install_source_out);
   }
 }
@@ -184,10 +182,9 @@ TEST(AppManagementMojomTraitsTest, RoundTripWindowMode) {
     app_management::mojom::WindowMode serialized_window_mode =
         mojo::EnumTraits<app_management::mojom::WindowMode,
                          apps::WindowMode>::ToMojom(window_mode_in);
-    ASSERT_TRUE(
-        (mojo::EnumTraits<app_management::mojom::WindowMode,
-                          apps::WindowMode>::FromMojom(serialized_window_mode,
-                                                       &window_mode_out)));
+    window_mode_out =
+        mojo::EnumTraits<app_management::mojom::WindowMode,
+                         apps::WindowMode>::FromMojom(serialized_window_mode);
     EXPECT_EQ(window_mode_in, window_mode_out);
   }
 }

@@ -29,28 +29,22 @@ EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::ToMojom(
 }
 
 // static
-bool EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::FromMojom(
-    gl::mojom::GLImplementation input,
-    gl::GLImplementation* out) {
+gl::GLImplementation
+EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::FromMojom(
+    gl::mojom::GLImplementation input) {
   switch (input) {
     case gl::mojom::GLImplementation::kGLImplementationNone:
-      *out = gl::kGLImplementationNone;
-      return true;
+      return gl::kGLImplementationNone;
     case gl::mojom::GLImplementation::kGLImplementationEGLGLES2:
-      *out = gl::kGLImplementationEGLGLES2;
-      return true;
+      return gl::kGLImplementationEGLGLES2;
     case gl::mojom::GLImplementation::kGLImplementationMockGL:
-      *out = gl::kGLImplementationMockGL;
-      return true;
+      return gl::kGLImplementationMockGL;
     case gl::mojom::GLImplementation::kGLImplementationStubGL:
-      *out = gl::kGLImplementationStubGL;
-      return true;
+      return gl::kGLImplementationStubGL;
     case gl::mojom::GLImplementation::kGLImplementationDisabled:
-      *out = gl::kGLImplementationDisabled;
-      return true;
+      return gl::kGLImplementationDisabled;
     case gl::mojom::GLImplementation::kGLImplementationEGLANGLE:
-      *out = gl::kGLImplementationEGLANGLE;
-      return true;
+      return gl::kGLImplementationEGLANGLE;
   }
   NOTREACHED();
 }
@@ -87,43 +81,32 @@ EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::ToMojom(
 }
 
 // static
-bool EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::
-    FromMojom(gl::mojom::ANGLEImplementation input,
-              gl::ANGLEImplementation* out) {
+gl::ANGLEImplementation
+EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::FromMojom(
+    gl::mojom::ANGLEImplementation input) {
   switch (input) {
     case gl::mojom::ANGLEImplementation::kNone:
-      *out = gl::ANGLEImplementation::kNone;
-      return true;
+      return gl::ANGLEImplementation::kNone;
     case gl::mojom::ANGLEImplementation::kD3D9:
-      *out = gl::ANGLEImplementation::kD3D9;
-      return true;
+      return gl::ANGLEImplementation::kD3D9;
     case gl::mojom::ANGLEImplementation::kD3D11:
-      *out = gl::ANGLEImplementation::kD3D11;
-      return true;
+      return gl::ANGLEImplementation::kD3D11;
     case gl::mojom::ANGLEImplementation::kOpenGL:
-      *out = gl::ANGLEImplementation::kOpenGL;
-      return true;
+      return gl::ANGLEImplementation::kOpenGL;
     case gl::mojom::ANGLEImplementation::kOpenGLES:
-      *out = gl::ANGLEImplementation::kOpenGLES;
-      return true;
+      return gl::ANGLEImplementation::kOpenGLES;
     case gl::mojom::ANGLEImplementation::kNull:
-      *out = gl::ANGLEImplementation::kNull;
-      return true;
+      return gl::ANGLEImplementation::kNull;
     case gl::mojom::ANGLEImplementation::kVulkan:
-      *out = gl::ANGLEImplementation::kVulkan;
-      return true;
+      return gl::ANGLEImplementation::kVulkan;
     case gl::mojom::ANGLEImplementation::kSwiftShader:
-      *out = gl::ANGLEImplementation::kSwiftShader;
-      return true;
+      return gl::ANGLEImplementation::kSwiftShader;
     case gl::mojom::ANGLEImplementation::kMetal:
-      *out = gl::ANGLEImplementation::kMetal;
-      return true;
+      return gl::ANGLEImplementation::kMetal;
     case gl::mojom::ANGLEImplementation::kD3D11Warp:
-      *out = gl::ANGLEImplementation::kD3D11Warp;
-      return true;
+      return gl::ANGLEImplementation::kD3D11Warp;
     case gl::mojom::ANGLEImplementation::kDefault:
-      *out = gl::ANGLEImplementation::kDefault;
-      return true;
+      return gl::ANGLEImplementation::kDefault;
   }
   NOTREACHED();
 }

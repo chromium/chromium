@@ -17,8 +17,7 @@ template <>
 struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     EnumTraits<display::mojom::Rotation, display::Display::Rotation> {
   static display::mojom::Rotation ToMojom(display::Display::Rotation type);
-  static bool FromMojom(display::mojom::Rotation type,
-                        display::Display::Rotation* output);
+  static display::Display::Rotation FromMojom(display::mojom::Rotation type);
 };
 
 template <>
@@ -26,8 +25,8 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     EnumTraits<display::mojom::TouchSupport, display::Display::TouchSupport> {
   static display::mojom::TouchSupport ToMojom(
       display::Display::TouchSupport type);
-  static bool FromMojom(display::mojom::TouchSupport type,
-                        display::Display::TouchSupport* output);
+  static display::Display::TouchSupport FromMojom(
+      display::mojom::TouchSupport type);
 };
 
 template <>
@@ -36,8 +35,8 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
                display::Display::AccelerometerSupport> {
   static display::mojom::AccelerometerSupport ToMojom(
       display::Display::AccelerometerSupport type);
-  static bool FromMojom(display::mojom::AccelerometerSupport type,
-                        display::Display::AccelerometerSupport* output);
+  static display::Display::AccelerometerSupport FromMojom(
+      display::mojom::AccelerometerSupport type);
 };
 
 template <>

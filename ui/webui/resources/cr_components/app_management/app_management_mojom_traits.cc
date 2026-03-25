@@ -7,6 +7,8 @@
 #include <utility>
 #include <variant>
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
@@ -36,42 +38,30 @@ AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
   }
 }
 
-bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
-                                                   apps::AppType* output) {
+apps::AppType EnumTraits<AppType, apps::AppType>::FromMojom(AppType input) {
   switch (input) {
     case AppType::kUnknown:
-      *output = apps::AppType::kUnknown;
-      return true;
+      return apps::AppType::kUnknown;
     case AppType::kArc:
-      *output = apps::AppType::kArc;
-      return true;
+      return apps::AppType::kArc;
     case AppType::kCrostini:
-      *output = apps::AppType::kCrostini;
-      return true;
+      return apps::AppType::kCrostini;
     case AppType::kChromeApp:
-      *output = apps::AppType::kChromeApp;
-      return true;
+      return apps::AppType::kChromeApp;
     case AppType::kWeb:
-      *output = apps::AppType::kWeb;
-      return true;
+      return apps::AppType::kWeb;
     case AppType::kPluginVm:
-      *output = apps::AppType::kPluginVm;
-      return true;
+      return apps::AppType::kPluginVm;
     case AppType::kRemote:
-      *output = apps::AppType::kRemote;
-      return true;
+      return apps::AppType::kRemote;
     case AppType::kBorealis:
-      *output = apps::AppType::kBorealis;
-      return true;
+      return apps::AppType::kBorealis;
     case AppType::kSystemWeb:
-      *output = apps::AppType::kSystemWeb;
-      return true;
+      return apps::AppType::kSystemWeb;
     case AppType::kExtension:
-      *output = apps::AppType::kExtension;
-      return true;
+      return apps::AppType::kExtension;
     case AppType::kBruschetta:
-      *output = apps::AppType::kBruschetta;
-      return true;
+      return apps::AppType::kBruschetta;
   }
 }
 
@@ -120,37 +110,28 @@ PermissionType EnumTraits<PermissionType, apps::PermissionType>::ToMojom(
   }
 }
 
-bool EnumTraits<PermissionType, apps::PermissionType>::FromMojom(
-    PermissionType input,
-    apps::PermissionType* output) {
+apps::PermissionType
+EnumTraits<PermissionType, apps::PermissionType>::FromMojom(
+    PermissionType input) {
   switch (input) {
     case PermissionType::kUnknown:
-      *output = apps::PermissionType::kUnknown;
-      return true;
+      return apps::PermissionType::kUnknown;
     case PermissionType::kCamera:
-      *output = apps::PermissionType::kCamera;
-      return true;
+      return apps::PermissionType::kCamera;
     case PermissionType::kLocation:
-      *output = apps::PermissionType::kLocation;
-      return true;
+      return apps::PermissionType::kLocation;
     case PermissionType::kMicrophone:
-      *output = apps::PermissionType::kMicrophone;
-      return true;
+      return apps::PermissionType::kMicrophone;
     case PermissionType::kNotifications:
-      *output = apps::PermissionType::kNotifications;
-      return true;
+      return apps::PermissionType::kNotifications;
     case PermissionType::kContacts:
-      *output = apps::PermissionType::kContacts;
-      return true;
+      return apps::PermissionType::kContacts;
     case PermissionType::kStorage:
-      *output = apps::PermissionType::kStorage;
-      return true;
+      return apps::PermissionType::kStorage;
     case PermissionType::kPrinting:
-      *output = apps::PermissionType::kPrinting;
-      return true;
+      return apps::PermissionType::kPrinting;
     case PermissionType::kFileHandling:
-      *output = apps::PermissionType::kFileHandling;
-      return true;
+      return apps::PermissionType::kFileHandling;
   }
 }
 
@@ -165,18 +146,14 @@ TriState EnumTraits<TriState, apps::TriState>::ToMojom(apps::TriState input) {
   }
 }
 
-bool EnumTraits<TriState, apps::TriState>::FromMojom(TriState input,
-                                                     apps::TriState* output) {
+apps::TriState EnumTraits<TriState, apps::TriState>::FromMojom(TriState input) {
   switch (input) {
     case TriState::kAllow:
-      *output = apps::TriState::kAllow;
-      return true;
+      return apps::TriState::kAllow;
     case TriState::kBlock:
-      *output = apps::TriState::kBlock;
-      return true;
+      return apps::TriState::kBlock;
     case TriState::kAsk:
-      *output = apps::TriState::kAsk;
-      return true;
+      return apps::TriState::kAsk;
   }
 }
 
@@ -235,40 +212,29 @@ InstallReason EnumTraits<InstallReason, apps::InstallReason>::ToMojom(
   }
 }
 
-bool EnumTraits<InstallReason, apps::InstallReason>::FromMojom(
-    InstallReason input,
-    apps::InstallReason* output) {
+apps::InstallReason EnumTraits<InstallReason, apps::InstallReason>::FromMojom(
+    InstallReason input) {
   switch (input) {
     case InstallReason::kUnknown:
-      *output = apps::InstallReason::kUnknown;
-      return true;
+      return apps::InstallReason::kUnknown;
     case InstallReason::kSystem:
-      *output = apps::InstallReason::kSystem;
-      return true;
+      return apps::InstallReason::kSystem;
     case InstallReason::kPolicy:
-      *output = apps::InstallReason::kPolicy;
-      return true;
+      return apps::InstallReason::kPolicy;
     case InstallReason::kOem:
-      *output = apps::InstallReason::kOem;
-      return true;
+      return apps::InstallReason::kOem;
     case InstallReason::kDefault:
-      *output = apps::InstallReason::kDefault;
-      return true;
+      return apps::InstallReason::kDefault;
     case InstallReason::kSync:
-      *output = apps::InstallReason::kSync;
-      return true;
+      return apps::InstallReason::kSync;
     case InstallReason::kUser:
-      *output = apps::InstallReason::kUser;
-      return true;
+      return apps::InstallReason::kUser;
     case InstallReason::kSubApp:
-      *output = apps::InstallReason::kSubApp;
-      return true;
+      return apps::InstallReason::kSubApp;
     case InstallReason::kKiosk:
-      *output = apps::InstallReason::kKiosk;
-      return true;
+      return apps::InstallReason::kKiosk;
     case InstallReason::kCommandLine:
-      *output = apps::InstallReason::kCommandLine;
-      return true;
+      return apps::InstallReason::kCommandLine;
   }
 }
 
@@ -290,28 +256,21 @@ InstallSource EnumTraits<InstallSource, apps::InstallSource>::ToMojom(
   }
 }
 
-bool EnumTraits<InstallSource, apps::InstallSource>::FromMojom(
-    InstallSource input,
-    apps::InstallSource* output) {
+apps::InstallSource EnumTraits<InstallSource, apps::InstallSource>::FromMojom(
+    InstallSource input) {
   switch (input) {
     case InstallSource::kUnknown:
-      *output = apps::InstallSource::kUnknown;
-      return true;
+      return apps::InstallSource::kUnknown;
     case InstallSource::kSystem:
-      *output = apps::InstallSource::kSystem;
-      return true;
+      return apps::InstallSource::kSystem;
     case InstallSource::kSync:
-      *output = apps::InstallSource::kSync;
-      return true;
+      return apps::InstallSource::kSync;
     case InstallSource::kPlayStore:
-      *output = apps::InstallSource::kPlayStore;
-      return true;
+      return apps::InstallSource::kPlayStore;
     case InstallSource::kChromeWebStore:
-      *output = apps::InstallSource::kChromeWebStore;
-      return true;
+      return apps::InstallSource::kChromeWebStore;
     case InstallSource::kBrowser:
-      *output = apps::InstallSource::kBrowser;
-      return true;
+      return apps::InstallSource::kBrowser;
   }
 }
 
@@ -329,22 +288,17 @@ WindowMode EnumTraits<WindowMode, apps::WindowMode>::ToMojom(
   }
 }
 
-bool EnumTraits<WindowMode, apps::WindowMode>::FromMojom(
-    WindowMode input,
-    apps::WindowMode* output) {
+apps::WindowMode EnumTraits<WindowMode, apps::WindowMode>::FromMojom(
+    WindowMode input) {
   switch (input) {
     case WindowMode::kUnknown:
-      *output = apps::WindowMode::kUnknown;
-      return true;
+      return apps::WindowMode::kUnknown;
     case WindowMode::kWindow:
-      *output = apps::WindowMode::kWindow;
-      return true;
+      return apps::WindowMode::kWindow;
     case WindowMode::kBrowser:
-      *output = apps::WindowMode::kBrowser;
-      return true;
+      return apps::WindowMode::kBrowser;
     case WindowMode::kTabbedWindow:
-      *output = apps::WindowMode::kTabbedWindow;
-      return true;
+      return apps::WindowMode::kTabbedWindow;
   }
 }
 
@@ -360,19 +314,16 @@ RunOnOsLoginMode EnumTraits<RunOnOsLoginMode, apps::RunOnOsLoginMode>::ToMojom(
   }
 }
 
-bool EnumTraits<RunOnOsLoginMode, apps::RunOnOsLoginMode>::FromMojom(
-    RunOnOsLoginMode input,
-    apps::RunOnOsLoginMode* output) {
+apps::RunOnOsLoginMode
+EnumTraits<RunOnOsLoginMode, apps::RunOnOsLoginMode>::FromMojom(
+    RunOnOsLoginMode input) {
   switch (input) {
     case RunOnOsLoginMode::kUnknown:
-      *output = apps::RunOnOsLoginMode::kUnknown;
-      return true;
+      return apps::RunOnOsLoginMode::kUnknown;
     case RunOnOsLoginMode::kNotRun:
-      *output = apps::RunOnOsLoginMode::kNotRun;
-      return true;
+      return apps::RunOnOsLoginMode::kNotRun;
     case RunOnOsLoginMode::kWindowed:
-      *output = apps::RunOnOsLoginMode::kWindowed;
-      return true;
+      return apps::RunOnOsLoginMode::kWindowed;
   }
 }
 

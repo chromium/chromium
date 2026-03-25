@@ -21,8 +21,7 @@ template <>
 struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage> {
   static gfx::mojom::ContentColorUsage ToMojom(gfx::ContentColorUsage input);
-  static bool FromMojom(gfx::mojom::ContentColorUsage input,
-                        gfx::ContentColorUsage* output);
+  static gfx::ContentColorUsage FromMojom(gfx::mojom::ContentColorUsage input);
 };
 
 template <>

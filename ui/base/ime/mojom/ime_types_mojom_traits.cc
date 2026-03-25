@@ -32,13 +32,12 @@ EnumTraits<ui::mojom::TextInputAction, ui::TextInputAction>::ToMojom(
 
 #define MOJO_TO_UI_ACTION_CASE(name)     \
   case ui::mojom::TextInputAction::name: \
-    *out = ui::TextInputAction::name;    \
-    return true;
+    return ui::TextInputAction::name;
 
 // static
-bool EnumTraits<ui::mojom::TextInputAction, ui::TextInputAction>::FromMojom(
-    ui::mojom::TextInputAction input,
-    ui::TextInputAction* out) {
+ui::TextInputAction
+EnumTraits<ui::mojom::TextInputAction, ui::TextInputAction>::FromMojom(
+    ui::mojom::TextInputAction input) {
   switch (input) {
     MOJO_TO_UI_ACTION_CASE(kDefault);
     MOJO_TO_UI_ACTION_CASE(kEnter);
@@ -49,7 +48,7 @@ bool EnumTraits<ui::mojom::TextInputAction, ui::TextInputAction>::FromMojom(
     MOJO_TO_UI_ACTION_CASE(kSearch);
     MOJO_TO_UI_ACTION_CASE(kSend);
   }
-  return false;
+  NOTREACHED();
 }
 
 #undef MOJO_TO_UI_ACTION_CASE
@@ -77,15 +76,14 @@ EnumTraits<ui::mojom::TextInputMode, ui::TextInputMode>::ToMojom(
 
 #undef UI_TO_MOJO_MODE_CASE
 
-#define MOJO_TO_UI_MODE_CASE(name, mojo_name)         \
-  case ui::mojom::TextInputMode::mojo_name:           \
-    *out = ui::TextInputMode::TEXT_INPUT_MODE_##name; \
-    return true;
+#define MOJO_TO_UI_MODE_CASE(name, mojo_name) \
+  case ui::mojom::TextInputMode::mojo_name:   \
+    return ui::TextInputMode::TEXT_INPUT_MODE_##name;
 
 // static
-bool EnumTraits<ui::mojom::TextInputMode, ui::TextInputMode>::FromMojom(
-    ui::mojom::TextInputMode input,
-    ui::TextInputMode* out) {
+ui::TextInputMode
+EnumTraits<ui::mojom::TextInputMode, ui::TextInputMode>::FromMojom(
+    ui::mojom::TextInputMode input) {
   switch (input) {
     MOJO_TO_UI_MODE_CASE(DEFAULT, kDefault);
     MOJO_TO_UI_MODE_CASE(NONE, kNone);
@@ -138,13 +136,12 @@ EnumTraits<ui::mojom::TextInputType, ui::TextInputType>::ToMojom(
 
 #define MOJO_TO_UI_TYPE_CASE(name)     \
   case ui::mojom::TextInputType::name: \
-    *out = ui::TEXT_INPUT_TYPE_##name; \
-    return true;
+    return ui::TEXT_INPUT_TYPE_##name;
 
 // static
-bool EnumTraits<ui::mojom::TextInputType, ui::TextInputType>::FromMojom(
-    ui::mojom::TextInputType input,
-    ui::TextInputType* out) {
+ui::TextInputType
+EnumTraits<ui::mojom::TextInputType, ui::TextInputType>::FromMojom(
+    ui::mojom::TextInputType input) {
   switch (input) {
     MOJO_TO_UI_TYPE_CASE(NONE);
     MOJO_TO_UI_TYPE_CASE(TEXT);
@@ -165,11 +162,10 @@ bool EnumTraits<ui::mojom::TextInputType, ui::TextInputType>::FromMojom(
     MOJO_TO_UI_TYPE_CASE(DATE_TIME_FIELD);
     // Unfortunately we cannot use the macro due to the definition conflict.
     case ui::mojom::TextInputType::TYPE_NULL:
-      *out = ui::TEXT_INPUT_TYPE_NULL;
-      return true;
+      return ui::TEXT_INPUT_TYPE_NULL;
   }
 #undef MOJO_TO_UI_TYPE_CASE
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -219,25 +215,20 @@ EnumTraits<ui::mojom::ImeTextSpanType, ui::ImeTextSpan::Type>::ToMojom(
 }
 
 // static
-bool EnumTraits<ui::mojom::ImeTextSpanType, ui::ImeTextSpan::Type>::FromMojom(
-    ui::mojom::ImeTextSpanType type,
-    ui::ImeTextSpan::Type* out) {
+ui::ImeTextSpan::Type
+EnumTraits<ui::mojom::ImeTextSpanType, ui::ImeTextSpan::Type>::FromMojom(
+    ui::mojom::ImeTextSpanType type) {
   switch (type) {
     case ui::mojom::ImeTextSpanType::kComposition:
-      *out = ui::ImeTextSpan::Type::kComposition;
-      return true;
+      return ui::ImeTextSpan::Type::kComposition;
     case ui::mojom::ImeTextSpanType::kSuggestion:
-      *out = ui::ImeTextSpan::Type::kSuggestion;
-      return true;
+      return ui::ImeTextSpan::Type::kSuggestion;
     case ui::mojom::ImeTextSpanType::kMisspellingSuggestion:
-      *out = ui::ImeTextSpan::Type::kMisspellingSuggestion;
-      return true;
+      return ui::ImeTextSpan::Type::kMisspellingSuggestion;
     case ui::mojom::ImeTextSpanType::kAutocorrect:
-      *out = ui::ImeTextSpan::Type::kAutocorrect;
-      return true;
+      return ui::ImeTextSpan::Type::kAutocorrect;
     case ui::mojom::ImeTextSpanType::kGrammarSuggestion:
-      *out = ui::ImeTextSpan::Type::kGrammarSuggestion;
-      return true;
+      return ui::ImeTextSpan::Type::kGrammarSuggestion;
   }
 
   NOTREACHED();
@@ -260,19 +251,16 @@ ui::mojom::ImeTextSpanThickness EnumTraits<
 }
 
 // static
-bool EnumTraits<ui::mojom::ImeTextSpanThickness, ui::ImeTextSpan::Thickness>::
-    FromMojom(ui::mojom::ImeTextSpanThickness input,
-              ui::ImeTextSpan::Thickness* out) {
+ui::ImeTextSpan::Thickness
+EnumTraits<ui::mojom::ImeTextSpanThickness, ui::ImeTextSpan::Thickness>::
+    FromMojom(ui::mojom::ImeTextSpanThickness input) {
   switch (input) {
     case ui::mojom::ImeTextSpanThickness::kNone:
-      *out = ui::ImeTextSpan::Thickness::kNone;
-      return true;
+      return ui::ImeTextSpan::Thickness::kNone;
     case ui::mojom::ImeTextSpanThickness::kThin:
-      *out = ui::ImeTextSpan::Thickness::kThin;
-      return true;
+      return ui::ImeTextSpan::Thickness::kThin;
     case ui::mojom::ImeTextSpanThickness::kThick:
-      *out = ui::ImeTextSpan::Thickness::kThick;
-      return true;
+      return ui::ImeTextSpan::Thickness::kThick;
   }
 
   NOTREACHED();
@@ -300,26 +288,20 @@ ui::mojom::ImeTextSpanUnderlineStyle EnumTraits<
 }
 
 // static
-bool EnumTraits<ui::mojom::ImeTextSpanUnderlineStyle,
-                ui::ImeTextSpan::UnderlineStyle>::
-    FromMojom(ui::mojom::ImeTextSpanUnderlineStyle input,
-              ui::ImeTextSpan::UnderlineStyle* out) {
+ui::ImeTextSpan::UnderlineStyle EnumTraits<ui::mojom::ImeTextSpanUnderlineStyle,
+                                           ui::ImeTextSpan::UnderlineStyle>::
+    FromMojom(ui::mojom::ImeTextSpanUnderlineStyle input) {
   switch (input) {
     case ui::mojom::ImeTextSpanUnderlineStyle::kNone:
-      *out = ui::ImeTextSpan::UnderlineStyle::kNone;
-      return true;
+      return ui::ImeTextSpan::UnderlineStyle::kNone;
     case ui::mojom::ImeTextSpanUnderlineStyle::kSolid:
-      *out = ui::ImeTextSpan::UnderlineStyle::kSolid;
-      return true;
+      return ui::ImeTextSpan::UnderlineStyle::kSolid;
     case ui::mojom::ImeTextSpanUnderlineStyle::kDot:
-      *out = ui::ImeTextSpan::UnderlineStyle::kDot;
-      return true;
+      return ui::ImeTextSpan::UnderlineStyle::kDot;
     case ui::mojom::ImeTextSpanUnderlineStyle::kDash:
-      *out = ui::ImeTextSpan::UnderlineStyle::kDash;
-      return true;
+      return ui::ImeTextSpan::UnderlineStyle::kDash;
     case ui::mojom::ImeTextSpanUnderlineStyle::kSquiggle:
-      *out = ui::ImeTextSpan::UnderlineStyle::kSquiggle;
-      return true;
+      return ui::ImeTextSpan::UnderlineStyle::kSquiggle;
   }
 
   NOTREACHED();

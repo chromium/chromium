@@ -15,15 +15,14 @@ struct EnumTraits<display::mojom::DisplayConnectionType,
                   display::DisplayConnectionType> {
   static display::mojom::DisplayConnectionType ToMojom(
       display::DisplayConnectionType type);
-  static bool FromMojom(display::mojom::DisplayConnectionType type,
-                        display::DisplayConnectionType* out);
+  static display::DisplayConnectionType FromMojom(
+      display::mojom::DisplayConnectionType type);
 };
 
 template <>
 struct EnumTraits<display::mojom::HDCPState, display::HDCPState> {
   static display::mojom::HDCPState ToMojom(display::HDCPState type);
-  static bool FromMojom(display::mojom::HDCPState type,
-                        display::HDCPState* out);
+  static display::HDCPState FromMojom(display::mojom::HDCPState type);
 };
 
 template <>
@@ -31,16 +30,16 @@ struct EnumTraits<display::mojom::ContentProtectionMethod,
                   display::ContentProtectionMethod> {
   static display::mojom::ContentProtectionMethod ToMojom(
       display::ContentProtectionMethod type);
-  static bool FromMojom(display::mojom::ContentProtectionMethod type,
-                        display::ContentProtectionMethod* out);
+  static display::ContentProtectionMethod FromMojom(
+      display::mojom::ContentProtectionMethod type);
 };
 
 template <>
 struct EnumTraits<display::mojom::PanelOrientation, display::PanelOrientation> {
   static display::mojom::PanelOrientation ToMojom(
       display::PanelOrientation type);
-  static bool FromMojom(display::mojom::PanelOrientation type,
-                        display::PanelOrientation* out);
+  static display::PanelOrientation FromMojom(
+      display::mojom::PanelOrientation type);
 };
 
 template <>
@@ -48,8 +47,8 @@ struct EnumTraits<display::mojom::PrivacyScreenState,
                   display::PrivacyScreenState> {
   static display::mojom::PrivacyScreenState ToMojom(
       display::PrivacyScreenState type);
-  static bool FromMojom(display::mojom::PrivacyScreenState type,
-                        display::PrivacyScreenState* out);
+  static display::PrivacyScreenState FromMojom(
+      display::mojom::PrivacyScreenState type);
 };
 
 template <>
@@ -57,8 +56,8 @@ struct EnumTraits<display::mojom::VariableRefreshRateState,
                   display::VariableRefreshRateState> {
   static display::mojom::VariableRefreshRateState ToMojom(
       display::VariableRefreshRateState type);
-  static bool FromMojom(display::mojom::VariableRefreshRateState type,
-                        display::VariableRefreshRateState* out);
+  static display::VariableRefreshRateState FromMojom(
+      display::mojom::VariableRefreshRateState type);
 };
 
 template <>

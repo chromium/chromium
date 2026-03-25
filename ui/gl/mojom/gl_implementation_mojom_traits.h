@@ -15,16 +15,15 @@ template <>
 struct COMPONENT_EXPORT(GL_MOJOM)
     EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation> {
   static gl::mojom::GLImplementation ToMojom(gl::GLImplementation impl);
-  static bool FromMojom(gl::mojom::GLImplementation input,
-                        gl::GLImplementation* out);
+  static gl::GLImplementation FromMojom(gl::mojom::GLImplementation input);
 };
 
 template <>
 struct COMPONENT_EXPORT(GL_MOJOM)
     EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation> {
   static gl::mojom::ANGLEImplementation ToMojom(gl::ANGLEImplementation impl);
-  static bool FromMojom(gl::mojom::ANGLEImplementation input,
-                        gl::ANGLEImplementation* out);
+  static gl::ANGLEImplementation FromMojom(
+      gl::mojom::ANGLEImplementation input);
 };
 
 template <>

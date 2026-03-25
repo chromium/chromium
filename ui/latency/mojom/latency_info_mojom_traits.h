@@ -58,8 +58,8 @@ template <>
 struct COMPONENT_EXPORT(LATENCY_SHARED_MOJOM_TRAITS)
     EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType> {
   static ui::mojom::LatencyComponentType ToMojom(ui::LatencyComponentType type);
-  static bool FromMojom(ui::mojom::LatencyComponentType input,
-                        ui::LatencyComponentType* output);
+  static ui::LatencyComponentType FromMojom(
+      ui::mojom::LatencyComponentType input);
 };
 
 }  // namespace mojo

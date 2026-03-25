@@ -19,8 +19,7 @@ template <>
 struct EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult> {
   static gfx::mojom::CALayerResult ToMojom(
       gfx::CALayerResult ca_layer_error_codde);
-  static bool FromMojom(gfx::mojom::CALayerResult input,
-                        gfx::CALayerResult* out);
+  static gfx::CALayerResult FromMojom(gfx::mojom::CALayerResult input);
 };
 #endif
 

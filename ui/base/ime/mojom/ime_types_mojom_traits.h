@@ -20,7 +20,7 @@ template <>
 struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
     EnumTraits<ui::mojom::TextInputMode, ui::TextInputMode> {
   static ui::mojom::TextInputMode ToMojom(ui::TextInputMode text_input_mode);
-  static bool FromMojom(ui::mojom::TextInputMode input, ui::TextInputMode* out);
+  static ui::TextInputMode FromMojom(ui::mojom::TextInputMode input);
 };
 
 template <>
@@ -28,15 +28,14 @@ struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
     EnumTraits<ui::mojom::TextInputAction, ui::TextInputAction> {
   static ui::mojom::TextInputAction ToMojom(
       ui::TextInputAction text_input_action);
-  static bool FromMojom(ui::mojom::TextInputAction input,
-                        ui::TextInputAction* out);
+  static ui::TextInputAction FromMojom(ui::mojom::TextInputAction input);
 };
 
 template <>
 struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
     EnumTraits<ui::mojom::TextInputType, ui::TextInputType> {
   static ui::mojom::TextInputType ToMojom(ui::TextInputType text_input_type);
-  static bool FromMojom(ui::mojom::TextInputType input, ui::TextInputType* out);
+  static ui::TextInputType FromMojom(ui::mojom::TextInputType input);
 };
 
 template <>
@@ -85,8 +84,7 @@ struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
     EnumTraits<ui::mojom::ImeTextSpanType, ui::ImeTextSpan::Type> {
   static ui::mojom::ImeTextSpanType ToMojom(
       ui::ImeTextSpan::Type ime_text_span_type);
-  static bool FromMojom(ui::mojom::ImeTextSpanType input,
-                        ui::ImeTextSpan::Type* out);
+  static ui::ImeTextSpan::Type FromMojom(ui::mojom::ImeTextSpanType input);
 };
 
 template <>
@@ -94,8 +92,8 @@ struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
     EnumTraits<ui::mojom::ImeTextSpanThickness, ui::ImeTextSpan::Thickness> {
   static ui::mojom::ImeTextSpanThickness ToMojom(
       ui::ImeTextSpan::Thickness thickness);
-  static bool FromMojom(ui::mojom::ImeTextSpanThickness input,
-                        ui::ImeTextSpan::Thickness* out);
+  static ui::ImeTextSpan::Thickness FromMojom(
+      ui::mojom::ImeTextSpanThickness input);
 };
 
 template <>
@@ -104,8 +102,8 @@ struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
                ui::ImeTextSpan::UnderlineStyle> {
   static ui::mojom::ImeTextSpanUnderlineStyle ToMojom(
       ui::ImeTextSpan::UnderlineStyle underline_style);
-  static bool FromMojom(ui::mojom::ImeTextSpanUnderlineStyle input,
-                        ui::ImeTextSpan::UnderlineStyle* out);
+  static ui::ImeTextSpan::UnderlineStyle FromMojom(
+      ui::mojom::ImeTextSpanUnderlineStyle input);
 };
 
 }  // namespace mojo

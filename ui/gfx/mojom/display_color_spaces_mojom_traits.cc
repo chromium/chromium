@@ -26,21 +26,18 @@ EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage>::ToMojom(
 }
 
 // static
-bool EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage>::
-    FromMojom(gfx::mojom::ContentColorUsage input,
-              gfx::ContentColorUsage* output) {
+gfx::ContentColorUsage
+EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage>::FromMojom(
+    gfx::mojom::ContentColorUsage input) {
   switch (input) {
     case gfx::mojom::ContentColorUsage::kSRGB:
-      *output = gfx::ContentColorUsage::kSRGB;
-      return true;
+      return gfx::ContentColorUsage::kSRGB;
     case gfx::mojom::ContentColorUsage::kWideColorGamut:
-      *output = gfx::ContentColorUsage::kWideColorGamut;
-      return true;
+      return gfx::ContentColorUsage::kWideColorGamut;
     case gfx::mojom::ContentColorUsage::kHDR:
-      *output = gfx::ContentColorUsage::kHDR;
-      return true;
+      return gfx::ContentColorUsage::kHDR;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

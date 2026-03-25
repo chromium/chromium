@@ -68,76 +68,56 @@ EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::ToMojom(
 }
 
 // static
-bool EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::FromMojom(
-    gfx::mojom::CALayerResult input,
-    gfx::CALayerResult* out) {
+gfx::CALayerResult
+EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::FromMojom(
+    gfx::mojom::CALayerResult input) {
   switch (input) {
     case gfx::mojom::CALayerResult::kCALayerSuccess:  // = 0
-      *out = gfx::kCALayerSuccess;
-      return true;
+      return gfx::kCALayerSuccess;
     case gfx::mojom::CALayerResult::kCALayerFailedUnknown:  // = 1
-      *out = gfx::kCALayerFailedUnknown;
-      return true;
+      return gfx::kCALayerFailedUnknown;
     case gfx::mojom::CALayerResult::kCALayerFailedTextureNotCandidate:  // = 5
-      *out = gfx::kCALayerFailedTextureNotCandidate;
-      return true;
+      return gfx::kCALayerFailedTextureNotCandidate;
     case gfx::mojom::CALayerResult::kCALayerFailedTileNotCandidate:  // = 7
-      *out = gfx::kCALayerFailedTileNotCandidate;
-      return true;
+      return gfx::kCALayerFailedTileNotCandidate;
     case gfx::mojom::CALayerResult::kCALayerFailedQuadBlendMode:  // = 8
-      *out = gfx::kCALayerFailedQuadBlendMode;
-      return true;
+      return gfx::kCALayerFailedQuadBlendMode;
     case gfx::mojom::CALayerResult::kCALayerFailedQuadClipping:  // = 10
-      *out = gfx::kCALayerFailedQuadClipping;
-      return true;
+      return gfx::kCALayerFailedQuadClipping;
     case gfx::mojom::CALayerResult::kCALayerFailedDebugBoarder:  // = 11
-      *out = gfx::kCALayerFailedDebugBoarder;
-      return true;
+      return gfx::kCALayerFailedDebugBoarder;
     case gfx::mojom::CALayerResult::kCALayerFailedPictureContent:  // = 12
-      *out = gfx::kCALayerFailedPictureContent;
-      return true;
+      return gfx::kCALayerFailedPictureContent;
     case gfx::mojom::CALayerResult::kCALayerFailedSurfaceContent:  // = 14
-      *out = gfx::kCALayerFailedSurfaceContent;
-      return true;
+      return gfx::kCALayerFailedSurfaceContent;
     case gfx::mojom::CALayerResult::kCALayerFailedDifferentClipSettings:  // =
                                                                           // 16
-      *out = gfx::kCALayerFailedDifferentClipSettings;
-      return true;
+      return gfx::kCALayerFailedDifferentClipSettings;
     case gfx::mojom::CALayerResult::
         kCALayerFailedRenderPassBackdropFilters:  // = 19
-      *out = gfx::kCALayerFailedRenderPassBackdropFilters;
-      return true;
+      return gfx::kCALayerFailedRenderPassBackdropFilters;
     case gfx::mojom::CALayerResult::kCALayerFailedRenderPassPassMask:  // = 20
-      *out = gfx::kCALayerFailedRenderPassPassMask;
-      return true;
+      return gfx::kCALayerFailedRenderPassPassMask;
     case gfx::mojom::CALayerResult::
         kCALayerFailedRenderPassFilterOperation:  // = 21
-      *out = gfx::kCALayerFailedRenderPassFilterOperation;
-      return true;
+      return gfx::kCALayerFailedRenderPassFilterOperation;
     case gfx::mojom::CALayerResult::
         kCALayerFailedRenderPassSortingContextId:  // = 22
-      *out = gfx::kCALayerFailedRenderPassSortingContextId;
-      return true;
+      return gfx::kCALayerFailedRenderPassSortingContextId;
     case gfx::mojom::CALayerResult::
         kCALayerFailedTooManyRenderPassDrawQuads:  // = 23
-      *out = gfx::kCALayerFailedTooManyRenderPassDrawQuads;
-      return true;
+      return gfx::kCALayerFailedTooManyRenderPassDrawQuads;
     case gfx::mojom::CALayerResult::
         kCALayerFailedQuadRoundedCornerNotUniform:  // = 26
-      *out = gfx::kCALayerFailedQuadRoundedCornerNotUniform;
-      return true;
+      return gfx::kCALayerFailedQuadRoundedCornerNotUniform;
     case gfx::mojom::CALayerResult::kCALayerFailedTooManyQuads:  // = 27
-      *out = gfx::kCALayerFailedTooManyQuads;
-      return true;
+      return gfx::kCALayerFailedTooManyQuads;
     case gfx::mojom::CALayerResult::kCALayerFailedCopyRequests:  // = 31
-      *out = gfx::kCALayerFailedCopyRequests;
-      return true;
+      return gfx::kCALayerFailedCopyRequests;
     case gfx::mojom::CALayerResult::kCALayerFailedOverlayDisabled:  // = 32
-      *out = gfx::kCALayerFailedOverlayDisabled;
-      return true;
+      return gfx::kCALayerFailedOverlayDisabled;
     case gfx::mojom::CALayerResult::kCALayerFailedVideoCaptureEnabled:  // = 33
-      *out = gfx::kCALayerFailedVideoCaptureEnabled;
-      return true;
+      return gfx::kCALayerFailedVideoCaptureEnabled;
   }
 
   NOTREACHED() << "Invalid CALayer result: " << input;

@@ -4,6 +4,8 @@
 
 #include "ui/display/mojom/display_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 display::mojom::Rotation
@@ -22,22 +24,18 @@ EnumTraits<display::mojom::Rotation, display::Display::Rotation>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<display::mojom::Rotation, display::Display::Rotation>::
-    FromMojom(display::mojom::Rotation rotation,
-              display::Display::Rotation* out) {
+display::Display::Rotation
+EnumTraits<display::mojom::Rotation, display::Display::Rotation>::FromMojom(
+    display::mojom::Rotation rotation) {
   switch (rotation) {
     case display::mojom::Rotation::VALUE_0:
-      *out = display::Display::ROTATE_0;
-      return true;
+      return display::Display::ROTATE_0;
     case display::mojom::Rotation::VALUE_90:
-      *out = display::Display::ROTATE_90;
-      return true;
+      return display::Display::ROTATE_90;
     case display::mojom::Rotation::VALUE_180:
-      *out = display::Display::ROTATE_180;
-      return true;
+      return display::Display::ROTATE_180;
     case display::mojom::Rotation::VALUE_270:
-      *out = display::Display::ROTATE_270;
-      return true;
+      return display::Display::ROTATE_270;
   }
   NOTREACHED();
 }
@@ -56,19 +54,16 @@ EnumTraits<display::mojom::TouchSupport, display::Display::TouchSupport>::
   NOTREACHED();
 }
 
-bool EnumTraits<display::mojom::TouchSupport, display::Display::TouchSupport>::
-    FromMojom(display::mojom::TouchSupport touch_support,
-              display::Display::TouchSupport* out) {
+display::Display::TouchSupport
+EnumTraits<display::mojom::TouchSupport, display::Display::TouchSupport>::
+    FromMojom(display::mojom::TouchSupport touch_support) {
   switch (touch_support) {
     case display::mojom::TouchSupport::UNKNOWN:
-      *out = display::Display::TouchSupport::UNKNOWN;
-      return true;
+      return display::Display::TouchSupport::UNKNOWN;
     case display::mojom::TouchSupport::AVAILABLE:
-      *out = display::Display::TouchSupport::AVAILABLE;
-      return true;
+      return display::Display::TouchSupport::AVAILABLE;
     case display::mojom::TouchSupport::UNAVAILABLE:
-      *out = display::Display::TouchSupport::UNAVAILABLE;
-      return true;
+      return display::Display::TouchSupport::UNAVAILABLE;
   }
   NOTREACHED();
 }
@@ -88,20 +83,17 @@ EnumTraits<display::mojom::AccelerometerSupport,
   NOTREACHED();
 }
 
-bool EnumTraits<display::mojom::AccelerometerSupport,
-                display::Display::AccelerometerSupport>::
-    FromMojom(display::mojom::AccelerometerSupport accelerometer_support,
-              display::Display::AccelerometerSupport* out) {
+display::Display::AccelerometerSupport
+EnumTraits<display::mojom::AccelerometerSupport,
+           display::Display::AccelerometerSupport>::
+    FromMojom(display::mojom::AccelerometerSupport accelerometer_support) {
   switch (accelerometer_support) {
     case display::mojom::AccelerometerSupport::UNKNOWN:
-      *out = display::Display::AccelerometerSupport::UNKNOWN;
-      return true;
+      return display::Display::AccelerometerSupport::UNKNOWN;
     case display::mojom::AccelerometerSupport::AVAILABLE:
-      *out = display::Display::AccelerometerSupport::AVAILABLE;
-      return true;
+      return display::Display::AccelerometerSupport::AVAILABLE;
     case display::mojom::AccelerometerSupport::UNAVAILABLE:
-      *out = display::Display::AccelerometerSupport::UNAVAILABLE;
-      return true;
+      return display::Display::AccelerometerSupport::UNAVAILABLE;
   }
   NOTREACHED();
 }

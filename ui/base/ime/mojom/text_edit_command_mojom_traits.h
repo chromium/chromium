@@ -17,8 +17,7 @@ class COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
     EnumTraits<ui::mojom::TextEditCommand, ui::TextEditCommand> {
  public:
   static ui::mojom::TextEditCommand ToMojom(ui::TextEditCommand);
-  static bool FromMojom(ui::mojom::TextEditCommand input,
-                        ui::TextEditCommand* output);
+  static ui::TextEditCommand FromMojom(ui::mojom::TextEditCommand input);
 };
 
 }  // namespace mojo
