@@ -1054,6 +1054,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/settings/SettingsNavigationImpl.java",
   "java/src/org/chromium/chrome/browser/settings/WideDisplayPadding.java",
   "java/src/org/chromium/chrome/browser/settings/search/EmptyFragment.java",
+  "java/src/org/chromium/chrome/browser/settings/search/RecentSearchesFragment.java",
+  "java/src/org/chromium/chrome/browser/settings/search/RecentSearchesPreferenceCategory.java",
   "java/src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistry.java",
   "java/src/org/chromium/chrome/browser/settings/search/SearchResultsPreferenceFragment.java",
   "java/src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinator.java",

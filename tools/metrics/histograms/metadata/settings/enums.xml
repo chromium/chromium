@@ -104,6 +104,7 @@ chromium-metrics-reviews@google.com.
   <int value="894297033" label="SingleCategorySettings"/>
   <int value="903277107" label="FledgeBlockedSitesFragment"/>
   <int value="1015549581" label="AlwaysTranslateListFragment"/>
+  <int value="1068718433" label="RecentSearchesFragment"/>
   <int value="1118292269" label="(Obsolete) HomeModulesConfigSettings"/>
   <int value="1322563897" label="TopicsManageFragment"/>
   <int value="1370078648" label="AdaptiveToolbarSettingsFragment"/>

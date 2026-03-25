@@ -45,22 +45,16 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
          * Callback method invoked when a setting entry is selected.
          *
          * @param preferenceFragment Package name of the Fragment containing the chosen setting.
-         * @param key A unique key associated with the chosen setting.
-         * @param extras The additional args required to launch the pref.
          * @param highlight Whether or not to highlight the item.
-         * @param highlightKey The key to highlight if it is different from {@code key}.
-         * @param subViewPos Position of the view to highlight among the child views.
+         * @param entry Entry data from the index.
          */
         void onSelected(
                 @Nullable String preferenceFragment,
-                String key,
-                Bundle extras,
                 boolean highlight,
-                @Nullable String highlightKey,
-                int subViewPos);
+                SettingsIndexData.Entry entry);
     }
 
-    private @Nullable ArrayList<SettingsIndexData.Entry> mPreferenceData;
+    protected @Nullable ArrayList<SettingsIndexData.Entry> mPreferenceData;
     private @Nullable SelectedCallback mSelectedCallback;
 
     /**
@@ -93,9 +87,12 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
 
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(requireContext());
         setPreferenceScreen(screen);
+        buildPreferences(screen);
+    }
 
+    protected void buildPreferences(PreferenceScreen screen) {
         String prevGroup = null;
-        for (SettingsIndexData.Entry info : mPreferenceData) {
+        for (SettingsIndexData.Entry info : assumeNonNull(mPreferenceData)) {
             String group = info.header;
 
             // The results are grouped by the top level setting categories. Build the category
@@ -106,32 +103,29 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
                 prefGroup.setIconSpaceReserved(false);
                 screen.addPreference(prefGroup);
             }
-            Preference preference = new Preference(requireContext());
-            preference.setKey(info.key);
-            boolean useSummaryAsTitle = (info.title == null);
-            preference.setTitle(useSummaryAsTitle ? info.summary : info.title);
-            preference.setSummary(useSummaryAsTitle ? null : info.summary);
-            preference.setOnPreferenceClickListener(
-                    pref -> {
-                        // For top-level entries, open the fragment itself, not MainSettings,
-                        // and no need to scroll/highlight the item.
-                        String mainSettingsFragment = MainSettings.class.getName();
-                        var isMain = TextUtils.equals(info.parentFragment, mainSettingsFragment);
-                        String fragment = isMain ? info.fragment : info.parentFragment;
-                        assumeNonNull(mSelectedCallback)
-                                .onSelected(
-                                        fragment,
-                                        info.key,
-                                        info.extras,
-                                        !isMain,
-                                        info.highlightKey,
-                                        info.subViewPos);
-                        return true;
-                    });
-            preference.setIconSpaceReserved(false);
-            screen.addPreference(preference);
+            addPreference(screen, info);
             prevGroup = group;
         }
+    }
+
+    protected void addPreference(PreferenceScreen screen, SettingsIndexData.Entry info) {
+        Preference preference = new Preference(requireContext());
+        preference.setKey(info.key);
+        boolean useSummaryAsTitle = (info.title == null);
+        preference.setTitle(useSummaryAsTitle ? info.summary : info.title);
+        preference.setSummary(useSummaryAsTitle ? null : info.summary);
+        preference.setOnPreferenceClickListener(
+                pref -> {
+                    // For top-level entries, open the fragment itself, not MainSettings,
+                    // and no need to scroll/highlight the item.
+                    String mainSettingsFragment = MainSettings.class.getName();
+                    var isMain = TextUtils.equals(info.parentFragment, mainSettingsFragment);
+                    String fragment = isMain ? info.fragment : info.parentFragment;
+                    assumeNonNull(mSelectedCallback).onSelected(fragment, !isMain, info);
+                    return true;
+                });
+        preference.setIconSpaceReserved(false);
+        screen.addPreference(preference);
     }
 
     @Override

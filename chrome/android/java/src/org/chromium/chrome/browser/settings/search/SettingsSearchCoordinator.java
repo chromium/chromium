@@ -83,6 +83,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -153,8 +154,9 @@ public class SettingsSearchCoordinator
     private boolean mQueryEntered;
     private SettingsIndexData mIndexData;
 
-    // True if empty fragment is showing.
-    private boolean mShowingEmptyFragment;
+    // True if "Search performed" event should be logged. The event is logged when user newly
+    // taps into search box to perform the operation, not afterwards.
+    private boolean mShouldLogSearchPerformed;
 
     // True while local search (language, site settings) UI is enabled, so that settings search
     // should remain hidden across configuration changes.
@@ -193,6 +195,23 @@ public class SettingsSearchCoordinator
             this.params = params;
         }
     }
+
+    // Keeps the latest preference settings chosen by users from search results. Duplicated
+    // entries are removed, and the entries are ordered as they are inserted.
+    private static class RecentSearchQueue extends LinkedHashMap<String, SettingsIndexData.Entry> {
+        private static final int MAX_SIZE = 3;
+
+        private void add(SettingsIndexData.Entry entry) {
+            put(entry.key, entry);
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, SettingsIndexData.Entry> eldest) {
+            return size() > MAX_SIZE;
+        }
+    }
+
+    private final RecentSearchQueue mRecentSearches = new RecentSearchQueue();
 
     /**
      * @param activity {@link SettingsActivity} object
@@ -321,10 +340,12 @@ public class SettingsSearchCoordinator
         var emptyFragment = (EmptyFragment) fm.findFragmentByTag(EMPTY_FRAGMENT);
         if (emptyFragment != null) emptyFragment.setOpenHelpCenter(this::openHelpCenter);
 
-        var resultFragment =
-                (SearchResultsPreferenceFragment) fm.findFragmentByTag(RESULT_FRAGMENT);
-        if (resultFragment != null) {
-            resultFragment.setSelectedCallback(this::onResultSelected);
+        var fragment = (SearchResultsPreferenceFragment) fm.findFragmentByTag(RESULT_FRAGMENT);
+        if (fragment != null) {
+            fragment.setSelectedCallback(this::onResultSelected);
+            if (fragment instanceof RecentSearchesFragment rsf) {
+                rsf.setDeleteCallback(this::deleteRecentSearches);
+            }
         }
         // The restored query text triggers the text listener to perform search, replaces
         // the restored fragment immediately with the same results, causing a flash. Removing
@@ -381,7 +402,12 @@ public class SettingsSearchCoordinator
         }
         queryEdit.setText("");
         updateClearTextButton(queryEdit.getText());
-        clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
+        if (mRecentSearches.isEmpty()) {
+            clearFragment(
+                    R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
+        } else {
+            displayRecentSearches();
+        }
         queryEdit.requestFocus();
         KeyboardUtils.showKeyboard(queryEdit);
     }
@@ -759,7 +785,7 @@ public class SettingsSearchCoordinator
         setFragmentState(FS_SETTINGS);
         mBackActionCallback.setEnabled(false);
         if (mUseMultiColumn) mUpdateFirstVisibleTitle.onResult(0);
-        mShowingEmptyFragment = false;
+        mShouldLogSearchPerformed = false;
 
         updateHelpMenuVisibility();
         adjustTalkbackTraversalOrder(searchBox);
@@ -829,13 +855,18 @@ public class SettingsSearchCoordinator
     @SuppressWarnings("ReferenceEquality")
     private void clearFragmentWithCallback(
             int imageId, boolean addToBackStack, Runnable openHelpCenter, Runnable callback) {
-        Fragment emptyFragment = clearFragment(imageId, addToBackStack, openHelpCenter);
+        Fragment fragment;
+        if (mRecentSearches.isEmpty()) {
+            fragment = clearFragment(imageId, addToBackStack, openHelpCenter);
+        } else {
+            fragment = displayRecentSearches();
+        }
         var fragmentManager = getSettingsFragmentManager();
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new FragmentManager.FragmentLifecycleCallbacks() {
                     @Override
                     public void onFragmentResumed(FragmentManager fm, Fragment f) {
-                        if (f == emptyFragment) {
+                        if (f == fragment) {
                             fm.unregisterFragmentLifecycleCallbacks(this);
                             callback.run();
                         }
@@ -872,13 +903,36 @@ public class SettingsSearchCoordinator
                     },
                     false);
         }
-        mShowingEmptyFragment = true;
+        mShouldLogSearchPerformed = true;
         return emptyFragment;
     }
 
     private void openHelpCenter() {
         HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
                 .show(mActivity, mActivity.getString(R.string.help_context_settings), null);
+    }
+
+    private Fragment displayRecentSearches() {
+        var fragment = new RecentSearchesFragment();
+        fragment.setPreferenceData(new ArrayList<>(mRecentSearches.values()));
+        fragment.setDeleteCallback(this::deleteRecentSearches);
+        fragment.setSelectedCallback(this::onResultSelected);
+
+        // Get the FragmentManager and replace the current fragment in the container
+        FragmentManager fragmentManager = getSettingsFragmentManager();
+        fragmentManager
+                .beginTransaction()
+                .replace(getViewIdForSearchDisplay(), fragment, RESULT_FRAGMENT)
+                .addToBackStack(null)
+                .setReorderingAllowed(true)
+                .commit();
+        mShouldLogSearchPerformed = true;
+        return fragment;
+    }
+
+    private void deleteRecentSearches() {
+        mRecentSearches.clear();
+        clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
     }
 
     /** Returns the view ID where search results will be displayed. */
@@ -1231,7 +1285,7 @@ public class SettingsSearchCoordinator
             mQueryEntered = true;
             mSearchRunnable =
                     () -> {
-                        if (mShowingEmptyFragment) {
+                        if (mShouldLogSearchPerformed) {
                             RecordUserAction.record("Android.Settings.Search.Performed");
                         }
                         callback.onSearchResults(mIndexData.search(query));
@@ -1273,7 +1327,7 @@ public class SettingsSearchCoordinator
                 .replace(getViewIdForSearchDisplay(), resultsFragment, RESULT_FRAGMENT)
                 .setReorderingAllowed(true)
                 .commit();
-        mShowingEmptyFragment = false;
+        mShouldLogSearchPerformed = false;
         mResultUpdated = true;
     }
 
@@ -1281,33 +1335,26 @@ public class SettingsSearchCoordinator
      * Called when a preference is chosen from search results. Open the associated fragment or
      * activity, and if possible, scrolls to the chosen item and highlights it.
      *
-     * @param preferenceFragment Settings fragment to show.
-     * @param key The key of the chosen preference in the fragment.
-     * @param extras The additional args required to launch the pref.
-     * @param highlight Whether or not to scroll and highlight the item.
-     * @param highlightKey The key to highlight if it is different from {@code key}.
-     * @param subViewPos Position of the view to highlight among the child views.
+     * @param preferenceFragment Package name of the Fragment containing the chosen setting.
+     * @param highlight Whether or not to highlight the item.
+     * @param entry Entry data from the index.
      */
     private void onResultSelected(
-            @Nullable String preferenceFragment,
-            String key,
-            Bundle extras,
-            boolean highlight,
-            @Nullable String highlightKey,
-            int subViewPos) {
+            @Nullable String preferenceFragment, boolean highlight, SettingsIndexData.Entry entry) {
         if (mResultUpdated) {
             RecordUserAction.record("Android.Settings.Search.ResultClicked");
             mResultUpdated = false;
             mSearchCompleted = true;
         }
+        mRecentSearches.add(entry);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
         if (preferenceFragment == null) {
             if (MainSettings.openSearchResult(
                     mActivity,
                     mProfile,
-                    key,
-                    extras,
+                    entry.key,
+                    entry.extras,
                     mModalDialogManagerSupplier.asNonNull().get())) {
                 enterResultState();
             }
@@ -1318,7 +1365,7 @@ public class SettingsSearchCoordinator
             Class fragment = Class.forName(preferenceFragment);
             Constructor constructor = fragment.getConstructor();
             var f = (Fragment) constructor.newInstance();
-            f.setArguments(extras);
+            f.setArguments(entry.extras);
             FragmentManager fragmentManager = getSettingsFragmentManager();
             fragmentManager
                     .beginTransaction()
@@ -1337,7 +1384,10 @@ public class SettingsSearchCoordinator
                                 mHandler.post(
                                         () ->
                                                 scrollAndHighlightItem(
-                                                        pf, key, highlightKey, subViewPos));
+                                                        pf,
+                                                        entry.key,
+                                                        entry.highlightKey,
+                                                        entry.subViewPos));
                                 fm.unregisterFragmentLifecycleCallbacks(this);
                             }
                         },
@@ -1560,5 +1610,8 @@ public class SettingsSearchCoordinator
         }
         mHandler.removeCallbacksAndMessages(null);
         mContainmentController = null;
+
+        // TODO(crdebug.com/444475553): Persist the recent searches to the disk.
+        mRecentSearches.clear();
     }
 }
