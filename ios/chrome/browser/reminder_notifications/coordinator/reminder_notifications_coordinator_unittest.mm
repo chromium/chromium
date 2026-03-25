@@ -10,8 +10,6 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -32,12 +30,9 @@ class ReminderNotificationsCoordinatorTest : public PlatformTest {
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
 
-    // Set up mock command handler
-    mock_reminder_notifications_handler_ =
-        OCMStrictProtocolMock(@protocol(ReminderNotificationsCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_reminder_notifications_handler_
-                     forProtocol:@protocol(ReminderNotificationsCommands)];
+    // Set up mock delegate.
+    mock_delegate_ = OCMStrictProtocolMock(
+        @protocol(ReminderNotificationsCoordinatorDelegate));
   }
 
   void TearDown() override {
@@ -49,6 +44,7 @@ class ReminderNotificationsCoordinatorTest : public PlatformTest {
     coordinator_ = [[ReminderNotificationsCoordinator alloc]
         initWithBaseViewController:view_controller_
                            browser:browser_.get()];
+    coordinator_.delegate = mock_delegate_;
     return coordinator_;
   }
 
@@ -69,7 +65,7 @@ class ReminderNotificationsCoordinatorTest : public PlatformTest {
   ReminderNotificationsCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
-  id mock_reminder_notifications_handler_;
+  id mock_delegate_;
 };
 
 #pragma mark - Tests
@@ -101,7 +97,7 @@ TEST_F(ReminderNotificationsCoordinatorTest,
   EXPECT_EQ(2u, sheet_controller.detents.count);
 }
 
-// Tests that tapping the primary action dismisses the UI and sends the command.
+// Tests that tapping the primary action notifies the delegate.
 TEST_F(ReminderNotificationsCoordinatorTest,
        DismissesUIAndNotifiesOnPrimaryAction) {
   CreateCoordinator();
@@ -111,40 +107,42 @@ TEST_F(ReminderNotificationsCoordinatorTest,
 
   [coordinator_ start];
 
-  OCMExpect([mock_reminder_notifications_handler_ dismissSetTabReminderUI]);
+  OCMExpect([mock_delegate_
+      reminderNotificationsCoordinatorWantsToBeDismissed:coordinator_]);
 
   [(id<ConfirmationAlertActionHandler>)
           coordinator_ confirmationAlertPrimaryAction];
 
-  EXPECT_OCMOCK_VERIFY(mock_reminder_notifications_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
-// Tests that tapping the secondary action dismisses the UI and sends the
-// command.
+// Tests that tapping the secondary action notifies the delegate.
 TEST_F(ReminderNotificationsCoordinatorTest,
        DismissesUIAndNotifiesOnSecondaryAction) {
   CreateCoordinator();
   [coordinator_ start];
 
-  OCMExpect([mock_reminder_notifications_handler_ dismissSetTabReminderUI]);
+  OCMExpect([mock_delegate_
+      reminderNotificationsCoordinatorWantsToBeDismissed:coordinator_]);
 
   [(id<ConfirmationAlertActionHandler>)
           coordinator_ confirmationAlertSecondaryAction];
 
-  EXPECT_OCMOCK_VERIFY(mock_reminder_notifications_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
-// Tests that dismissing via the presentation controller sends the command.
+// Tests that dismissing via the presentation controller notifies the delegate.
 TEST_F(ReminderNotificationsCoordinatorTest,
        NotifiesWhenDismissedViaPresentationController) {
   CreateCoordinator();
   [coordinator_ start];
 
-  OCMExpect([mock_reminder_notifications_handler_ dismissSetTabReminderUI]);
+  OCMExpect([mock_delegate_
+      reminderNotificationsCoordinatorWantsToBeDismissed:coordinator_]);
 
   [(id<UIAdaptivePresentationControllerDelegate>)coordinator_
       presentationControllerDidDismiss:view_controller_.presentedViewController
                                            .presentationController];
 
-  EXPECT_OCMOCK_VERIFY(mock_reminder_notifications_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }

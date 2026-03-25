@@ -22,9 +22,6 @@ enum class SetTabReminderEntryPoint {
 // Shows the Set Tab Reminder UI.
 - (void)showSetTabReminderUI:(SetTabReminderEntryPoint)entryPoint;
 
-// Dismisses the Set Tab Reminder UI.
-- (void)dismissSetTabReminderUI;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_REMINDER_NOTIFICATIONS_COMMANDS_H_

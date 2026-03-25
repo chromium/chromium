@@ -80,6 +80,7 @@ enum class PresentedState {
 @interface BookmarksCoordinator () <BookmarksEditorCoordinatorDelegate,
                                     BookmarksFolderChooserCoordinatorDelegate,
                                     BookmarksHomeViewControllerDelegate,
+                                    ReminderNotificationsCoordinatorDelegate,
                                     UIAdaptivePresentationControllerDelegate,
                                     UINavigationControllerDelegate>
 
@@ -166,10 +167,6 @@ enum class PresentedState {
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
-  // TODO(crbug.com/431224365): Create ReminderNotificationsCoordinatorDelegate
-  // for more complete coordinator lifecycle management.
-  [_reminderNotificationsCoordinator stop];
-  _reminderNotificationsCoordinator = nil;
   switch (self.currentPresentedState) {
     case PresentedState::BOOKMARK_BROWSER:
       [self bookmarkBrowserDismissed];
@@ -537,11 +534,22 @@ enum class PresentedState {
   CHECK(node && node->is_url());
   CHECK(self.bookmarkNavigationController);
 
+  CHECK(!_reminderNotificationsCoordinator);
   _reminderNotificationsCoordinator = [[ReminderNotificationsCoordinator alloc]
       initWithBaseViewController:self.bookmarkNavigationController
                          browser:self.browser];
-
+  _reminderNotificationsCoordinator.delegate = self;
   [_reminderNotificationsCoordinator start];
+}
+
+#pragma mark - ReminderNotificationsCoordinatorDelegate
+
+- (void)reminderNotificationsCoordinatorWantsToBeDismissed:
+    (ReminderNotificationsCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _reminderNotificationsCoordinator);
+  [_reminderNotificationsCoordinator stop];
+  _reminderNotificationsCoordinator.delegate = nil;
+  _reminderNotificationsCoordinator = nil;
 }
 
 #pragma mark - BookmarksCommands

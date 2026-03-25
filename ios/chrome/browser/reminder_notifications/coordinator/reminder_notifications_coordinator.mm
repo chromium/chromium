@@ -17,8 +17,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -117,12 +115,9 @@
 
 #pragma mark - Private methods
 
-// Triggers dismissal of the reminder notifications UI by sending a command
-// through the dispatcher. This ensures proper cleanup of the UI state.
+// Notifies the delegate that the coordinator should be stopped.
 - (void)dismissScreen {
-  id<ReminderNotificationsCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ReminderNotificationsCommands);
-  [handler dismissSetTabReminderUI];
+  [self.delegate reminderNotificationsCoordinatorWantsToBeDismissed:self];
 }
 
 // Returns the active web state. May return `nullptr`.

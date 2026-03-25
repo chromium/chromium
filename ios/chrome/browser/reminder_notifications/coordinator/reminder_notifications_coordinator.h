@@ -7,9 +7,23 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class ReminderNotificationsCoordinator;
+
+// Delegate for ReminderNotificationsCoordinator.
+@protocol ReminderNotificationsCoordinatorDelegate <NSObject>
+
+// Called when the coordinator wants to be dismissed.
+- (void)reminderNotificationsCoordinatorWantsToBeDismissed:
+    (ReminderNotificationsCoordinator*)coordinator;
+
+@end
+
 // A coordinator to present the "Set a reminder" screen for the user's current
 // tab.
 @interface ReminderNotificationsCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<ReminderNotificationsCoordinatorDelegate>
+    delegate;
 
 @end
 
