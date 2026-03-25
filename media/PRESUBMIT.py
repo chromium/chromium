@@ -227,14 +227,20 @@ def _CheckNoLoggingOverrideInHeaders(input_api, output_api):
     return []
 
 
-def _CheckForNoV4L2AggregateInitialization(input_api, output_api):
+def _CheckV4L2StructureInitialization(input_api, output_api):
     """Check that struct v4l2_* are not initialized as aggregates with a
-  braced-init-list"""
+    braced-init-list, except for empty initialization.
+
+    Prior to C++17 it was undefined behavior to aggregate initialize a struct with
+    a union. CWG 1622 and 2272. As long as the struct is initialized with = {};
+    this is now defined.
+    """
 
     problems = []
 
+    # Matches struct v4l2_foo bar = { ... }; but allows = {};
     v4l2_aggregate_initializer_re = re.compile(
-        r'(^|\W)struct.+v4l2_.+=.+{+}+;')
+        r'(^|\W)struct.+v4l2_.+=[^{]*{\s*[^}\s].*};')
 
     for f in input_api.AffectedSourceFiles(_FilterFile):
         for line_number, line in f.ChangedContents():
@@ -244,11 +250,12 @@ def _CheckForNoV4L2AggregateInitialization(input_api, output_api):
     if problems:
         return [
             output_api.PresubmitPromptWarning(
-                'Avoid initializing V4L2 structures with braced-init-lists, i.e. as '
-                'aggregates. V4L2 structs often contain unions of various sized members: '
-                'when a union is initialized by aggregate initialization, only the first '
-                'non-static member is initialized, leaving other members unitialized if '
-                'they are larger. Use memset instead.', problems)
+                'Avoid initializing V4L2 structures with non-empty braced-init-lists, '
+                'i.e. as aggregates. V4L2 structs often contain unions of various '
+                'sized members: when a union is initialized by aggregate '
+                'initialization, only the first non-static member is initialized, '
+                'leaving other members uninitialized if they are larger. '
+                'Use = {} instead.', problems)
         ]
     return []
 
@@ -299,8 +306,7 @@ def _CheckChange(input_api, output_api):
     results.extend(_CheckForHistogramOffByOne(input_api, output_api))
     results.extend(_CheckForUseOfLazyInstance(input_api, output_api))
     results.extend(_CheckNoLoggingOverrideInHeaders(input_api, output_api))
-    results.extend(
-        _CheckForNoV4L2AggregateInitialization(input_api, output_api))
+    results.extend(_CheckV4L2StructureInitialization(input_api, output_api))
     results.extend(_CheckChangeInBundle(input_api, output_api))
     results.extend(_CheckIfGenerateGnTestsFail(input_api, output_api))
     return results
