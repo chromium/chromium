@@ -202,7 +202,7 @@ chromium_luci.configure_builders(
             default = os.LINUX_JAMMY,
             overrides = json.decode(io.read_file("//lib/linux-default.json")),
         ),
-        os.MAC_DEFAULT: os.MAC_15,
+        os.MAC_DEFAULT: "Mac-15|Mac-26",
         os.MAC_BETA: "Mac-15|Mac-26",
         os.WINDOWS_DEFAULT: os.WINDOWS_10,
     },
