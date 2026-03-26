@@ -209,6 +209,10 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
   [self resetAnimated:YES];
 }
 
+- (void)resetLoadingStates {
+  [self.formSuggestionView setActivityIndicatorEnabled:NO];
+}
+
 #pragma mark - FormInputAccessoryConsumer
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
@@ -360,6 +364,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 
 // Resets this view to its original state. Can be animated.
 - (void)resetAnimated:(BOOL)animated {
+  [self resetLoadingStates];
   self.formInputAccessoryView.hidden = NO;
 
   [self.formSuggestionView resetContentInsetAndDelegateAnimated:animated];
@@ -645,11 +650,20 @@ UIImage* GetManualFillSymbol() {
   }
 }
 
+- (BOOL)isSuggestionAutofillAsync:(FormSuggestion*)formSuggestion {
+  return [self.formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+             isSuggestionAutofillAsync:formSuggestion];
+}
+
 #pragma mark - FormSuggestionViewDelegate
 
 - (void)formSuggestionView:(FormSuggestionView*)formSuggestionView
        didAcceptSuggestion:(FormSuggestion*)suggestion
                    atIndex:(NSInteger)index {
+  if ([self isSuggestionAutofillAsync:suggestion]) {
+    [formSuggestionView setActivityIndicatorEnabled:YES];
+  }
   [self.formSuggestionClient didSelectSuggestion:suggestion atIndex:index];
 }
 

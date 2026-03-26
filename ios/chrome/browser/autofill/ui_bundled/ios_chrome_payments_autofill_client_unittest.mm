@@ -108,6 +108,9 @@
 - (void)dismissEditAddressBottomSheet {
 }
 
+- (void)resetAutofillSuggestionsLoadingStates {
+}
+
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext {
   _errorContext = std::move(errorContext);

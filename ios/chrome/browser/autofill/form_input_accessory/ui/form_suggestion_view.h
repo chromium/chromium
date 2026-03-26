@@ -52,6 +52,9 @@
 // hearing for the pull gesture to reset and unlock the trailing view.
 - (void)resetContentInsetAndDelegateAnimated:(BOOL)animated;
 
+// Starts or stops the activity indicator and enables/disables user interaction.
+- (void)setActivityIndicatorEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_INPUT_ACCESSORY_UI_FORM_SUGGESTION_VIEW_H_

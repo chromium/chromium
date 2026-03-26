@@ -88,6 +88,9 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
 // after the form suggestion view.
 @property(nonatomic, weak) UIView* accessoryTrailingView;
 
+// The activity indicator shown when the view is loading.
+@property(nonatomic, weak) UIActivityIndicatorView* activityIndicatorView;
+
 @end
 
 @implementation FormSuggestionView {
@@ -159,6 +162,18 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
                    }];
 }
 
+- (void)setActivityIndicatorEnabled:(BOOL)enabled {
+  if (enabled) {
+    [self.activityIndicatorView startAnimating];
+    self.userInteractionEnabled = NO;
+    self.stackView.alpha = 0.5;
+  } else {
+    [self.activityIndicatorView stopAnimating];
+    self.userInteractionEnabled = YES;
+    self.stackView.alpha = 1.0;
+  }
+}
+
 #pragma mark - UIView
 
 - (void)willMoveToSuperview:(UIView*)newSuperview {
@@ -220,6 +235,21 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   [self createAndInsertArrangedSubviews];
 
   self.accessibilityIdentifier = kFormSuggestionsViewAccessibilityIdentifier;
+
+  UIActivityIndicatorView* activityIndicatorView =
+      [[UIActivityIndicatorView alloc]
+          initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  activityIndicatorView.hidesWhenStopped = YES;
+  [self addSubview:activityIndicatorView];
+  self.activityIndicatorView = activityIndicatorView;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [activityIndicatorView.centerXAnchor
+        constraintEqualToAnchor:self.frameLayoutGuide.centerXAnchor],
+    [activityIndicatorView.centerYAnchor
+        constraintEqualToAnchor:self.frameLayoutGuide.centerYAnchor],
+  ]];
 }
 
 // Creates a tiny vertical separator.

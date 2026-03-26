@@ -14,7 +14,6 @@
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -25,10 +24,10 @@
 #import "components/plus_addresses/core/common/features.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
-#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -98,42 +97,6 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
   });
 }
 
-// Returns an entity base on the guid.
-base::optional_ref<const autofill::EntityInstance> GetAutofillAiEntity(
-    const autofill::Suggestion::Payload& payload,
-    web::WebState* web_state) {
-  if (!web_state) {
-    return std::nullopt;
-  }
-
-  if (!std::holds_alternative<autofill::Suggestion::AutofillAiPayload>(
-          payload)) {
-    return std::nullopt;
-  }
-
-  const std::string guid =
-      std::get<autofill::Suggestion::AutofillAiPayload>(payload).guid.value();
-
-  if (guid.empty()) {
-    return std::nullopt;
-  }
-
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
-  if (!profile) {
-    return std::nullopt;
-  }
-
-  autofill::EntityDataManager* edm =
-      IOSAutofillEntityDataManagerFactory::GetForProfile(profile);
-  if (!edm) {
-    return std::nullopt;
-  }
-
-  return edm->GetEntityInstance(autofill::EntityInstance::EntityId(
-      base::Uuid::ParseCaseInsensitive(guid)));
-}
-
 // Returns the default icon for the suggestion type.
 UIImage* DefaultIconForType(FormSuggestion* suggestion,
                             web::WebState* web_state) {
@@ -181,8 +144,14 @@ UIImage* DefaultIconForType(FormSuggestion* suggestion,
       }
     }
     case autofill::SuggestionType::kFillAutofillAi: {
+      if (!web_state) {
+        return nil;
+      }
+
       base::optional_ref<const autofill::EntityInstance> entity =
-          GetAutofillAiEntity(suggestion.payload, web_state);
+          autofill::GetEntityInstance(
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState()),
+              suggestion.payload);
       if (!entity.has_value()) {
         return nil;
       }

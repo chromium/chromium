@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class FormInputAccessoryViewController;
+@class FormSuggestion;
 
 namespace manual_fill {
 enum class ManualFillDataType;
@@ -31,6 +32,11 @@ enum class ManualFillDataType;
 // Resets the delegate.
 - (void)formInputAccessoryViewControllerReset:
     (FormInputAccessoryViewController*)formInputAccessoryViewController;
+
+// Returns whether filling the suggestion is an asynchronous process.
+- (BOOL)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+               isSuggestionAutofillAsync:(FormSuggestion*)formSuggestion;
 
 @end
 

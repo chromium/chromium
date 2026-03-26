@@ -40,6 +40,9 @@
 // Stops child coordinators presenting UI.
 - (void)clearPresentedState;
 
+// Resets the autofill suggestions loading states.
+- (void)resetLoadingStates;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_INPUT_ACCESSORY_COORDINATOR_FORM_INPUT_ACCESSORY_COORDINATOR_H_

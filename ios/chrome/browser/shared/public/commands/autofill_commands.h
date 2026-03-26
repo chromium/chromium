@@ -59,6 +59,9 @@ class WebState;
 // it's shown.
 - (void)dismissEditAddressBottomSheet;
 
+// Command to reset the autofill suggestions loading states.
+- (void)resetAutofillSuggestionsLoadingStates;
+
 // Commands to manage the Autofill error dialog.
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext;

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
 
 class ProfileIOS;
 
@@ -28,6 +29,11 @@ bool IsEnhancedAutofillEnabled(ProfileIOS* profile);
 
 // Enables or disables Enhanced Autofill.
 void SetEnhancedAutofillEnabled(ProfileIOS* profile, bool enabled);
+
+// Returns an entity base on the guid.
+base::optional_ref<const autofill::EntityInstance> GetEntityInstance(
+    ProfileIOS* profile,
+    const autofill::Suggestion::Payload& payload);
 
 }  // namespace autofill
 

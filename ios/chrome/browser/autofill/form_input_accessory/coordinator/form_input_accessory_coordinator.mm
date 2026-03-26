@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
@@ -281,6 +282,10 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [_formInputAccessoryMediator reloadFirstResponderInputViews];
 }
 
+- (void)resetLoadingStates {
+  [_formInputAccessoryViewController resetLoadingStates];
+}
+
 #pragma mark - Presenting Children
 
 - (void)clearPresentedState {
@@ -422,6 +427,32 @@ const base::Feature* FetchIPHFeatureFromEnum(
     (FormInputAccessoryViewController*)formInputAccessoryViewController {
   CHECK_EQ(_formInputAccessoryViewController, formInputAccessoryViewController);
   [self resetInputViews];
+}
+
+- (BOOL)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+               isSuggestionAutofillAsync:(FormSuggestion*)formSuggestion {
+  if (!self.profile) {
+    return NO;
+  }
+
+  if ([_formInputAccessoryMediator currentProviderMainFillingProduct] !=
+      autofill::FillingProduct::kAutofillAi) {
+    return NO;
+  }
+
+  base::optional_ref<const autofill::EntityInstance> entity =
+      autofill::GetEntityInstance(self.profile, formSuggestion.payload);
+  if (!entity.has_value()) {
+    return NO;
+  }
+
+  // Filling entities will unconditionally call
+  // ChromeAutofillClientIOS::HideAutofillSuggestions once the filling is
+  // completed. This process is synchronous for local entities, but asynchronous
+  // for wallet server private passes.
+  return autofill::IsMaskedStorageSupported(entity->type(),
+                                            entity->record_type());
 }
 
 #pragma mark - FallbackCoordinatorDelegate

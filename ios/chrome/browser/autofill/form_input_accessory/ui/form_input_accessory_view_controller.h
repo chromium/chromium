@@ -35,6 +35,9 @@ inline constexpr NSUInteger kKeyboardAccessorySuggestionsLimit = 30;
 // means no icon selected and the manual fallback view is unlocked.
 - (void)reset;
 
+// Resets the autofill suggestions loading states.
+- (void)resetLoadingStates;
+
 // Instances an object with the desired delegate.
 //
 // @param FormInputAccessoryViewControllerDelegate the delegate for the actions

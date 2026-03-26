@@ -6,6 +6,7 @@
 
 #import "base/strings/string_util.h"
 #import "components/account_settings/account_setting_service.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #import "components/variations/service/variations_service.h"
@@ -90,6 +91,35 @@ void SetEnhancedAutofillEnabled(ProfileIOS* profile, bool enabled) {
       GeoIpCountryCode(GetCountryCodeFromVariations()),
       enabled ? autofill::AutofillAiOptInStatus::kOptedIn
               : autofill::AutofillAiOptInStatus::kOptedOut);
+}
+
+base::optional_ref<const autofill::EntityInstance> GetEntityInstance(
+    ProfileIOS* profile,
+    const autofill::Suggestion::Payload& payload) {
+  if (!profile) {
+    return std::nullopt;
+  }
+
+  if (!std::holds_alternative<autofill::Suggestion::AutofillAiPayload>(
+          payload)) {
+    return std::nullopt;
+  }
+
+  const std::string guid =
+      std::get<autofill::Suggestion::AutofillAiPayload>(payload).guid.value();
+
+  if (guid.empty()) {
+    return std::nullopt;
+  }
+
+  autofill::EntityDataManager* edm =
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile);
+  if (!edm) {
+    return std::nullopt;
+  }
+
+  return edm->GetEntityInstance(autofill::EntityInstance::EntityId(
+      base::Uuid::ParseCaseInsensitive(guid)));
 }
 
 }  // namespace autofill

@@ -2310,6 +2310,10 @@ const char kChromeAppStoreUrl[] =
   self.editProfileBottomSheetHandler = nil;
 }
 
+- (void)resetAutofillSuggestionsLoadingStates {
+  [self.formInputAccessoryCoordinator resetLoadingStates];
+}
+
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext {
   if (self.autofillErrorDialogCoordinator) {
