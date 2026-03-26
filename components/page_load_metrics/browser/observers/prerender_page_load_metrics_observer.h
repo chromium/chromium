@@ -68,6 +68,7 @@ class PrerenderPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnSoftNavigation() override;
   void OnFirstInputInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(
@@ -117,6 +118,7 @@ class PrerenderPageLoadMetricsObserver
   // The suffix of a prerender embedder. This value is valid only when
   // PreloadingTriggerType is kEmbedder. Otherwise, it's an empty string.
   std::string embedder_histogram_suffix_;
+  int64_t soft_navigation_count_ = 0;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_PAGE_LOAD_METRICS_OBSERVER_H_

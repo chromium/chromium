@@ -224,6 +224,10 @@ void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       timing.paint_timing->first_contentful_paint.value());
 }
 
+void PrerenderPageLoadMetricsObserver::OnSoftNavigation() {
+  soft_navigation_count_++;
+}
+
 void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!WasActivatedInForegroundOptionalEventInForeground(
@@ -361,6 +365,11 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
       page_load_metrics::PrerenderingState::kActivated) {
     RecordLayoutShiftScoreMetrics(main_frame_timing);
     RecordNormalizedResponsivenessMetrics();
+
+    ukm::builders::PrerenderPageLoad builder(
+        GetDelegate().GetPageUkmSourceId());
+    builder.SetSoftNavigationCount(soft_navigation_count_);
+    builder.Record(ukm::UkmRecorder::Get());
   }
 }
 

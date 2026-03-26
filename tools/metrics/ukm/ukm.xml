@@ -20500,6 +20500,16 @@ be describing additional metrics about the same event.
       prerendering navigation fulfilled.
     </summary>
   </metric>
+  <metric name="SoftNavigationCount">
+    <summary>
+      Number of soft navigations detected by heuristics. See
+      https://bit.ly/soft-navigation
+
+      Soft navigations are JS-driven same-document navigations that are using
+      the history API or the new Navigation API, triggered by a user gesture and
+      meaningfully modify the DOM, replacing the previous content with new one.
+    </summary>
+  </metric>
   <metric name="Timing.ActivationToFirstContentfulPaint">
     <summary>
       The duration in milliseconds from time of activation navigation start to
