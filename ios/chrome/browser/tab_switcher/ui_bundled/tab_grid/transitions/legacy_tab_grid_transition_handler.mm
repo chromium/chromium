@@ -99,10 +99,8 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
       [selectedItem removeFromSuperview];
     }
     [self.animation removeFromSuperview];
-    if (position == UIViewAnimatingPositionEnd) {
-      [browserLayoutViewController.view removeFromSuperview];
-      [browserLayoutViewController removeFromParentViewController];
-    }
+    [browserLayoutViewController.view removeFromSuperview];
+    [browserLayoutViewController removeFromParentViewController];
     if (completion) {
       completion();
     }
