@@ -469,4 +469,226 @@ TEST_F(ReplaceSelectionCommandTest,
             doc.body()->GetInnerHTMLString());
 }
 
+TEST_F(ReplaceSelectionCommandTest,
+       NormalizeNbspSkippedForInsertReplacementText) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"Hello\u00A0World"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertReplacementText);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<div contenteditable>Hello\u00A0World|</div>",
+            GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspSkippedForInsertHTML) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  Element* span = GetDocument().CreateRawElement(html_names::kSpanTag);
+  span->setAttribute(html_names::kIdAttr, AtomicString("inserted"));
+  span->appendChild(Text::Create(GetDocument(), u"Hello\u00A0World"));
+  fragment.appendChild(span);
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kNone);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ(String(u"Hello\u00A0World"),
+            GetElementById("inserted")->textContent());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspInMiddleOfText) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"Hello\u00A0World"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<div contenteditable>Hello World|</div>",
+            GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspLeadingPreserved) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"\u00A0Hello"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<div contenteditable>\u00A0Hello|</div>",
+            GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspTrailingPreserved) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"Hello\u00A0"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<div contenteditable>Hello\u00A0|</div>",
+            GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest,
+       NormalizeNbspTrailingBoundaryInMergedTextNode) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>hello |world</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"hello\u00A0"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<div contenteditable>hello hello |world</div>",
+            GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspAtInsertedRangeBoundaries) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>foo|bar</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  Element* span = GetDocument().CreateRawElement(html_names::kSpanTag);
+  span->setAttribute(html_names::kClassAttr, AtomicString("inserted"));
+  span->appendChild(Text::Create(GetDocument(), u"\u00A0baz\u00A0"));
+  fragment.appendChild(span);
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ(
+      "<div contenteditable>foo<span class=\"inserted\"> baz |</span>"
+      "bar</div>",
+      GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspDoesNotTouchExistingText) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>A\u00A0B|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), "X"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<div contenteditable>A\u00A0BX|</div>",
+            GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspCrossNodeBoundaries) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"Some\u00A0"));
+  Element* span_a = GetDocument().CreateRawElement(html_names::kSpanTag);
+  span_a->setAttribute(html_names::kClassAttr, AtomicString("a"));
+  span_a->appendChild(Text::Create(GetDocument(), "cats"));
+  fragment.appendChild(span_a);
+  fragment.appendChild(Text::Create(GetDocument(), u"\u00A0and\u00A0"));
+  Element* span_b = GetDocument().CreateRawElement(html_names::kSpanTag);
+  span_b->setAttribute(html_names::kClassAttr, AtomicString("b"));
+  span_b->appendChild(Text::Create(GetDocument(), "dogs"));
+  fragment.appendChild(span_b);
+  fragment.appendChild(Text::Create(GetDocument(), u"\u00A0for\u00A0you"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ(
+      "<div contenteditable>Some <span class=\"a\">cats</span>"
+      " and <span class=\"b\">dogs</span> for you|</div>",
+      GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspInPlaintextOnly) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable=\"plaintext-only\">|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"Hello\u00A0World"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<div contenteditable=\"plaintext-only\">Hello World|</div>",
+            GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspInPlaintextOnlyFromHTML) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable=\"plaintext-only\">|</div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  Element* span = GetDocument().CreateRawElement(html_names::kSpanTag);
+  span->appendChild(Text::Create(GetDocument(), u"Hello\u00A0World"));
+  fragment.appendChild(span);
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<div contenteditable=\"plaintext-only\">Hello World|</div>",
+            GetSelectionTextFromBody());
+}
+
 }  // namespace blink

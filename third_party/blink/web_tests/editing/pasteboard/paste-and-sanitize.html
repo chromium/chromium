@@ -57,10 +57,10 @@ testPaste("<div><b><div><i>Hello</i></div></b></div>", "<i style=\"font-weight: 
 testPaste("<div><div style=\"text-align: center;\"><b>Hello</b></div></div>", "<b style=\"text-align: center;\">Hello</b>");
 testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>hello</i></b></span></i></b></div><div><b><i><span style=\"font-weight: normal\"><b><i>world</i></b></span></i></b></div>",
           "<div><b><i>hello</i></b></div><div><b><i>world</i></b></div>");
-testPaste("<div><b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i> hello2</i></b></span></i></b></div>", "<b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i>&nbsp;hello2</i></b></span></i></b>");
+testPaste("<div><b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i> hello2</i></b></span></i></b></div>", "<b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i> hello2</i></b></span></i></b>");
 testPaste("<i style=\"margin: 10px;\"><b><i style=\"margin: 10px;\">hello</i></b></i>",
           "<i style=\"margin: 10px;\"><b><i style=\"margin: 10px;\">hello</i></b></i>");
-testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>Hello <!-- comment -->world</i></b></span></i></b></div>", "<b><i>Hello&nbsp;world</i></b>");
+testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>Hello <!-- comment -->world</i></b></span></i></b></div>", "<b><i>Hello world</i></b>");
 testPaste("<div><b><i><span style=\"font-weight: normal\">plain text<b><i>bold italic text</i></b></span></i></b></div>", "<b><i><span style=\"font-weight: normal;\">plain text<b><i>bold italic text</i></b></span></i></b>");
 // Ordinary template gets removed:
 testPaste("<span>foo</span><template>Hello</template><span>bar</span>", "foobar");

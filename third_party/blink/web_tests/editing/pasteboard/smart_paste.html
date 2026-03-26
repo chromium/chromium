@@ -40,7 +40,7 @@ test(() => {
                 selection.modify('move', 'forward', 'character');
                 selection.document.execCommand('paste');
             },
-            '<div contenteditable>test\u{00A0}test|</div>',
+            '<div contenteditable>test test|</div>',
             `1 Smart paste at end of word ${withOrWithout} trailing whitespace`);
 
         assert_selection(
@@ -65,8 +65,8 @@ test(() => {
                 selection.document.execCommand('paste');
             },
             selectTrailingWhitespaceEnabled
-                ? '<div contenteditable>foo\u{00A0}foo\u{00A0}|\u{00A0}bar</div>'
-                : '<div contenteditable>foo\u{00A0}foo|\u{00A0}bar</div>',
+                ? '<div contenteditable>foo foo\u{00A0}|\u{00A0}bar</div>'
+                : '<div contenteditable>foo foo|\u{00A0}bar</div>',
             `3 Smart paste when pasting after a word and before a space and another word ${withOrWithout} trailing whitespace`);
 
         assert_selection(
@@ -93,7 +93,7 @@ test(() => {
                 selection.modify('move', 'forward', 'character');
                 selection.document.execCommand('paste');
             },
-            '<div contenteditable>a\u{00A0}abcd |bcd</div>',
+            '<div contenteditable>a abcd |bcd</div>',
             `5 Smart paste when pasting in the middle of a word ${withOrWithout} trailing whitespace`);
 
         assert_selection(
@@ -117,7 +117,7 @@ test(() => {
                 selection.modify('move', 'backward', 'character');
                 selection.document.execCommand('paste');
             },
-            '<div contenteditable>.\u{00A0}abcd|.</div>',
+            '<div contenteditable>. abcd|.</div>',
             `7 Smart paste when pasting between two periods ${withOrWithout} trailing whitespace`);
     });
 }, 'Smart Paste');

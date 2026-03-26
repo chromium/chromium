@@ -14,7 +14,7 @@ This test copies and pastes content inside a body with background and text-decor
 |   <li>
 |     "Copied content"
 |   <li>
-|     "hello, world "
+|     "hello, world "
 |     <a>
 |       href="http://www.webkit.org/"
 |       "WebKit"

@@ -138,6 +138,8 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
                              EditingState*,
                              PasswordEchoBehavior);
   void SetUpStyle(const VisibleSelection&);
+  bool ShouldNormalizeNbspInInsertedContent(EditingState*) const;
+  void NormalizeNbspInInsertedContent(EditingState*);
   void InsertParagraphSeparatorIfNeeds(const VisibleSelection&,
                                        const ReplacementFragment&,
                                        EditingState*);

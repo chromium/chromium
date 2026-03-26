@@ -33,7 +33,7 @@ Pasted:
 |     style="font-size: 1em; font-weight: bold;"
 |     title="font-size: 1em; font-weight: bold;"
 |     "world"
-|   " "
+|   " "
 |   <span>
 |     style="font-weight: bold; color: blue;"
 |     title="font-weight: bold; color: blue;"

@@ -49,7 +49,7 @@ function runTest() {
     eventSender.mouseUp();
 
     tester.step(function() {
-        assert_equals(sample.innerHTML, 'foo baz&nbsp;bar&nbsp;', 'innerHTML');
+        assert_equals(sample.innerHTML, 'foo baz bar&nbsp;', 'innerHTML');
         assert_false(selection.isCollapsed, 'isCollapsed');
         assert_equals(selection.anchorNode, sample.firstChild, 'anchorNode');
         assert_equals(selection.anchorOffset, 7, 'anchorOffset');

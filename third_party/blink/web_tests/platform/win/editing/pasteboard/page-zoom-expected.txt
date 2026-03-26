@@ -5,7 +5,7 @@ The pasted text should have a font size of 16px.
 
 
 Copy this x-small text.
-Paste Copy this x-small it here.
+Paste Copy this x-small it here.
 The pasted text should have a font size of x-small.
 
 

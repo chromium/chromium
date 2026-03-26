@@ -1854,6 +1854,13 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   // Remove the placeholder after the replacement is complete
   if (placeholder.IsNotNull()) {
     RemovePlaceholderAt(placeholder);
+    if (editing_state->IsAborted()) {
+      return;
+    }
+  }
+
+  if (ShouldNormalizeNbspInInsertedContent(editing_state)) {
+    NormalizeNbspInInsertedContent(editing_state);
   }
 }
 
@@ -2139,6 +2146,139 @@ void ReplaceSelectionCommand::MergeTextNodesAroundPosition(
   }
 }
 
+namespace {
+
+UChar PreviousCharacterForOffset(Text& text, unsigned offset) {
+  DCHECK_LE(offset, text.length());
+  if (offset) {
+    return text.data()[offset - 1];
+  }
+  return CharacterBefore(CreateVisiblePosition(Position(&text, 0)));
+}
+
+UChar NextCharacterForOffset(Text& text, unsigned offset) {
+  DCHECK_LE(offset, text.length());
+  if (offset < text.length()) {
+    return text.data()[offset];
+  }
+  return CharacterAfter(CreateVisiblePosition(Position(&text, text.length())));
+}
+
+}  // namespace
+
+bool ReplaceSelectionCommand::ShouldNormalizeNbspInInsertedContent(
+    EditingState* editing_state) const {
+  if (!RuntimeEnabledFeatures::NormalizeNbspForPasteAndDropEnabled()) {
+    return false;
+  }
+
+  if (editing_state->IsAborted()) {
+    return false;
+  }
+
+  if (input_type_ != InputEvent::InputType::kInsertFromPaste &&
+      input_type_ != InputEvent::InputType::kInsertFromDrop) {
+    return false;
+  }
+
+  Node* node = EndingSelection().Anchor().AnchorNode();
+  return node && IsEditable(*node);
+}
+
+// Converts U+00A0 (&nbsp;) to a regular space where it is surrounded by
+// non-whitespace on both sides.
+void ReplaceSelectionCommand::NormalizeNbspInInsertedContent(
+    EditingState* editing_state) {
+  if (start_of_inserted_range_.IsNull() || end_of_inserted_range_.IsNull()) {
+    return;
+  }
+
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  if (!start_of_inserted_range_.IsValidFor(GetDocument()) ||
+      !end_of_inserted_range_.IsValidFor(GetDocument())) {
+    return;
+  }
+
+  const EphemeralRange inserted_range = InsertedRange();
+  if (inserted_range.IsNull()) {
+    return;
+  }
+
+  const Position range_start = inserted_range.StartPosition();
+  const Position range_end = inserted_range.EndPosition();
+
+  HeapVector<Member<Text>> text_nodes;
+  for (Node& node : inserted_range.Nodes()) {
+    if (auto* text_node = DynamicTo<Text>(&node)) {
+      text_nodes.push_back(text_node);
+    }
+  }
+
+  HeapVector<Member<Text>> changed_text_nodes;
+  Vector<String> replacement_texts;
+  for (const auto& text_node_member : text_nodes) {
+    Text* text_node = text_node_member.Get();
+    const LayoutObject* layout_object = text_node->GetLayoutObject();
+    if (!layout_object) {
+      continue;
+    }
+    const ComputedStyle& style = layout_object->StyleRef();
+    if (style.ShouldPreserveWhiteSpaces() &&
+        style.UsedUserModify() != EUserModify::kReadWritePlaintextOnly) {
+      continue;
+    }
+
+    const String data = text_node->data();
+    if (data.find(uchar::kNoBreakSpace) == kNotFound) {
+      continue;
+    }
+
+    const unsigned start_offset =
+        range_start.AnchorNode() == text_node
+            ? range_start.ComputeOffsetInContainerNode()
+            : 0;
+    const unsigned end_offset = range_end.AnchorNode() == text_node
+                                    ? range_end.ComputeOffsetInContainerNode()
+                                    : text_node->length();
+    if (start_offset >= end_offset) {
+      continue;
+    }
+
+    bool changed = false;
+    StringBuilder builder;
+    builder.ReserveCapacity(data.length());
+    for (unsigned i = 0; i < data.length(); ++i) {
+      UChar c = data[i];
+      if (c == uchar::kNoBreakSpace && i >= start_offset && i < end_offset) {
+        const UChar prev_char = PreviousCharacterForOffset(*text_node, i);
+        const UChar next_char = NextCharacterForOffset(*text_node, i + 1);
+        if (prev_char && !IsWhitespace(prev_char) && next_char &&
+            !IsWhitespace(next_char)) {
+          builder.Append(' ');
+          changed = true;
+          continue;
+        }
+      }
+      builder.Append(c);
+    }
+
+    if (changed) {
+      changed_text_nodes.push_back(text_node);
+      replacement_texts.push_back(builder.ToString());
+    }
+  }
+
+  for (wtf_size_t i = 0; i < changed_text_nodes.size(); ++i) {
+    Text* text_node = changed_text_nodes[i].Get();
+    ReplaceTextInNode(text_node, 0, text_node->length(), replacement_texts[i],
+                      EditCommand::PasswordEchoBehavior::kDoNotEcho);
+    if (editing_state->IsAborted()) {
+      return;
+    }
+  }
+}
+
 InputEvent::InputType ReplaceSelectionCommand::GetInputType() const {
   // |ReplaceSelectionCommand| could be used with Paste, Drag&Drop,
   // InsertFragment and |TypingCommand|.
@@ -2282,6 +2422,13 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
 
   start_of_inserted_range_ = start;
   end_of_inserted_range_ = end;
+
+  if (ShouldNormalizeNbspInInsertedContent(editing_state)) {
+    NormalizeNbspInInsertedContent(editing_state);
+    if (editing_state->IsAborted()) {
+      return false;
+    }
+  }
 
   SetEndingSelection(SelectionForUndoStep::From(
       SelectionInDOMTree::Builder()

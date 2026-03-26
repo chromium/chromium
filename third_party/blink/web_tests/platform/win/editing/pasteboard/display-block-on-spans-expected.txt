@@ -29,7 +29,7 @@ after:
 | <span>
 |   style="display:block"
 |   <b>
-|     "This <#selection-caret>"
+|     "This <#selection-caret>"
 |   <b>
 |     "is another paragraph."
 | "

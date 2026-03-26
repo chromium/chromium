@@ -17,13 +17,13 @@ test(() => {
     assert_selection(
         '<div contenteditable>.^ foo|</div>',
         cutAndPaste,
-        '<div contenteditable>.\u{00A0}foo|</div>',
+        '<div contenteditable>. foo|</div>',
         'Paste with leading space.');
 
     assert_selection(
         '<div contenteditable>^foo |.</div>',
         cutAndPaste,
-        '<div contenteditable>foo\u{00A0}|.</div>',
+        '<div contenteditable>foo |.</div>',
         'Paste with trailing space.');
 
     assert_selection(

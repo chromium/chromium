@@ -38,8 +38,8 @@ test(() => {
         [
             '<div contenteditable>',
                 isWin
-                    ? 'world<span id="dragme">^\u{00A0}hello</span>\u{00A0}|'
-                    : 'world^\u{00A0}hello|',
+                    ? 'world<span id="dragme">^ hello</span>\u{00A0}|'
+                    : 'world^ hello|',
             '</div>',
         ].join(''),
         'drag-and-drop after double-click does a smart drag');

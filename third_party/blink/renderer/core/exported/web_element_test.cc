@@ -218,6 +218,7 @@ TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
   // Paste and replace selection.
   TestElement().PasteText("fancy text", /*replace_all=*/false);
+  // The &nbsp; is outside the inserted range and is preserved.
   EXPECT_EQ(element->GetInnerHTMLString(), "Some <b>fancy text</b>&nbsp;here.");
   // Paste and replace all.
   TestElement().PasteText("Hello", /*replace_all=*/true);
@@ -225,7 +226,7 @@ TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   // Paste into an unfocused element.
   element->nextElementSibling()->Focus();
   TestElement().PasteText("world", /*replace_all=*/false);
-  EXPECT_EQ(element->GetInnerHTMLString(), "Hello&nbsp;world");
+  EXPECT_EQ(element->GetInnerHTMLString(), "Hello world");
 }
 
 TEST_F(WebElementTest, PasteTextIntoTextArea) {
