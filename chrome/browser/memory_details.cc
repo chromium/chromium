@@ -42,7 +42,7 @@
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
@@ -58,14 +58,14 @@ using content::BrowserThread;
 using content::NavigationEntry;
 using content::RenderWidgetHost;
 using content::WebContents;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using extensions::Extension;
 #endif
 
 namespace {
 
 void UpdateProcessTypeAndTitles(
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     const extensions::ExtensionSet* extension_set,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     ProcessMemoryInformation& process,
@@ -90,7 +90,7 @@ void UpdateProcessTypeAndTitles(
     process.renderer_type = ProcessMemoryInformation::RENDERER_CHROME;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!is_webui && extension_set) {
     const Extension* extension = extension_set->GetByID(page_url.GetHost());
     if (extension) {
@@ -288,7 +288,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       render_process_host = widgets_by_pid[process.pid].front()->GetProcess();
     }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // Determine if this is an extension process.
     bool process_is_for_extensions = false;
     const extensions::ExtensionSet* extension_set = nullptr;
@@ -327,7 +327,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       render_process_host->ForEachRenderFrameHost(
           [&](content::RenderFrameHost* frame) {
             UpdateProcessTypeAndTitles(
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
                 process_is_for_extensions ? extension_set : nullptr,
 #endif
                 process, frame);
