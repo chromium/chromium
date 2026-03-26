@@ -12,9 +12,10 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span_writer.h"
 #include "base/hash/hash.h"
-#include "base/metrics/histogram_macros.h"
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "third_party/angle/src/common/angle_version_info.h"
+#include "base/check_op.h"
+#include "base/check.h"
 
 namespace gpu {
 namespace gles2 {

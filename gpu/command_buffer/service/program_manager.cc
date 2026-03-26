@@ -20,7 +20,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -35,6 +34,8 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
+#include "base/check_op.h"
+#include "base/check.h"
 
 namespace gpu {
 namespace gles2 {

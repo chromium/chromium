@@ -10,7 +10,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -24,6 +23,8 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/gurl.h"
+#include "base/check_op.h"
+#include "base/check.h"
 
 using base::AutoLock;
 
