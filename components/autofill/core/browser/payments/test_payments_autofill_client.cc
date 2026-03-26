@@ -58,9 +58,12 @@ TestPaymentsAutofillClient::TestPaymentsAutofillClient(AutofillClient* client)
       mock_save_and_fill_manager_(
           std::make_unique<NiceMock<MockSaveAndFillManager>>()),
       mock_merchant_promo_code_manager_(
-          &client_->GetPersonalDataManager().payments_data_manager()),
-      omnibox_autofill_delegate_(
-          std::make_unique<OmniboxAutofillDelegate>(client)) {}
+          &client_->GetPersonalDataManager().payments_data_manager()) {
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableOmniboxAutofill)) {
+    omnibox_autofill_delegate_ =
+        std::make_unique<OmniboxAutofillDelegate>(client);
+  }
+}
 
 TestPaymentsAutofillClient::~TestPaymentsAutofillClient() = default;
 

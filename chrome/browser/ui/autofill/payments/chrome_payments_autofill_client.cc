@@ -130,13 +130,11 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
     : content::WebContentsObserver(&client->GetWebContents()),
       client_(CHECK_DEREF(client)),
       save_and_fill_manager_(
-          std::make_unique<payments::SaveAndFillManagerImpl>(&client_.get()))
-#if !BUILDFLAG(IS_ANDROID)
-      ,
-      omnibox_autofill_delegate_(
-          std::make_unique<OmniboxAutofillDelegate>(&client_.get()))
-#endif  // !BUILDFLAG(IS_ANDROID)
-{
+          std::make_unique<payments::SaveAndFillManagerImpl>(&client_.get())) {
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableOmniboxAutofill)) {
+    omnibox_autofill_delegate_ =
+        std::make_unique<OmniboxAutofillDelegate>(&client_.get());
+  }
 }
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
