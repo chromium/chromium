@@ -20,7 +20,10 @@ enum class OneTimeTokenRetrievalError {
   kSmsOtpGmscoreVersionNotSupported = 6,
   // Error code for when AndroidSmsOtpBackend initialization fails
   kSmsOtpBackendInitializationFailed = 7,
-  kMaxValue = kSmsOtpBackendInitializationFailed,
+  kGmailOtpBackendAuthError = 8,
+  kGmailOtpBackendNetworkError = 9,
+  kGmailOtpBackendInvalidResponse = 10,
+  kMaxValue = kGmailOtpBackendInvalidResponse,
 };
 
 }  // namespace one_time_tokens

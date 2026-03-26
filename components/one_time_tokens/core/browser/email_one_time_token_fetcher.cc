@@ -1,0 +1,132 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
+
+#include "base/base64url.h"
+#include "components/one_time_tokens/core/browser/fetch_email_one_time_token_request.pb.h"
+#include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/one_time_tokens/core/browser/one_time_token_type.h"
+#include "net/base/url_util.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+
+namespace one_time_tokens {
+
+EmailOneTimeTokenFetcher::EmailOneTimeTokenFetcher(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::string encrypted_message_reference)
+    : url_loader_factory_(std::move(url_loader_factory)),
+      encrypted_message_reference_(std::move(encrypted_message_reference)) {}
+
+EmailOneTimeTokenFetcher::~EmailOneTimeTokenFetcher() = default;
+
+void EmailOneTimeTokenFetcher::Start(
+    EmailOneTimeTokenFetcher::ServerResponseCallback callback) {
+  callback_ = std::move(callback);
+  StartOneTimeTokenServiceCall();
+}
+
+void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall() {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  GURL url(
+      "https://onetimetoken.pa.googleapis.com/v1/onetimetokens:fetchEmail");
+
+  // TODO(crbug.com/486806779): figure out correct encoding.
+  std::string encoded_reference;
+  base::Base64UrlEncode(encrypted_message_reference_,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &encoded_reference);
+  resource_request->url = net::AppendQueryParameter(
+      url, "encryptedMessageReference", encoded_reference);
+  resource_request->method = "GET";
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  // TODO(crbug.com/486136247): Update the traffic annotation to include the
+  // enterprise policy.
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("fetch_email_one_time_token", R"(
+        semantics {
+          sender: "Gmail OTP filling in Autofill."
+          description:
+            "Sends a request to OneTimeTokenService to fetch an OTP that sits "
+            "in user's email. At this point the OTP is already parsed on the "
+            "backend and ready to be used."
+          trigger:
+            "A fillable OTP field is detected on a webpage and a notification "
+            "about OTP is received."
+          data:
+            "An opaque (encrypted) reference to the message which contains the "
+            "OTP. No user data is sent."
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2026-03-20"
+          internal {
+            contacts {
+              owners: "//components/one_time_tokens/OWNERS"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+         }
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "The feature can be controlled by a dedicated setting in Password "
+            "Manager. Navigate to chrome://password-manager/settings, and "
+            "toggle the 'Autofill Verification Codes from Gmail' setting."
+          policy_exception_justification:
+            "The feature is in progress."
+        })");
+
+  simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+
+  simple_url_loader_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(
+          &EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService,
+          weakptr_factory_.GetWeakPtr()),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService(
+    std::optional<std::string> response_body) {
+  if (!response_body.has_value()) {
+    // TODO(crbug.com/486141336): handle errors.
+    // HTTP error status is available in simple_url_loader.
+    // Additionally, we should parse the error response as
+    // FetchEmailOneTimeTokenErrorDetails and interpret it.
+    std::move(callback_).Run(base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError));
+    return;
+  }
+  base::expected<OneTimeToken, OneTimeTokenRetrievalError> result =
+      ExtractOneTimeTokenValueFromResponse(*response_body);
+  simple_url_loader_.reset();
+  std::move(callback_).Run(std::move(result));
+}
+
+base::expected<OneTimeToken, OneTimeTokenRetrievalError>
+EmailOneTimeTokenFetcher::ExtractOneTimeTokenValueFromResponse(
+    const std::string& response_body) {
+  ::google::internal::chrome::passwords::onetimetoken::v1::
+      FetchEmailOneTimeTokenResponse response;
+  if (!response.ParseFromString(response_body)) {
+    return base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+  }
+  if (!response.has_one_time_password()) {
+    return base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+  }
+  return base::ok(OneTimeToken(OneTimeTokenType::kGmail,
+                               response.one_time_password().one_time_password(),
+                               base::Time::Now()));
+}
+
+}  // namespace one_time_tokens
