@@ -16,9 +16,8 @@ ValidationStatus OriginAllowedToMakeWebAuthnRequests(
     return ValidationStatus::kOpaqueDomain;
   }
 
-  // The scheme is required to be HTTP(S).  Given the
-  // |network::IsUrlPotentiallyTrustworthy| check below, HTTP is effectively
-  // restricted to just "localhost".
+  // Given the |network::IsUrlPotentiallyTrustworthy| check below, http
+  // origins are effectively restricted to just `localhost`.
   if (caller_origin.scheme() != url::kHttpScheme &&
       caller_origin.scheme() != url::kHttpsScheme) {
     return ValidationStatus::kInvalidProtocol;
@@ -36,14 +35,22 @@ ValidationStatus OriginAllowedToMakeWebAuthnRequests(
 bool OriginIsAllowedToClaimRelyingPartyId(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
-  // `OriginAllowedToMakeWebAuthnRequests()` must have been called before.
-  DCHECK(OriginAllowedToMakeWebAuthnRequests(caller_origin) ==
-         ValidationStatus::kSuccess);
+  // Origins that cannot make WebAuthn requests should never be able to claim
+  // any RP ID. As an exception, Chrome Desktop allows WebAuthn requests from
+  // Chrome extensions, but this method deliberately only deals with the more
+  // narrow rules defined in the WebAuthn spec.
+  if (OriginAllowedToMakeWebAuthnRequests(caller_origin) !=
+      ValidationStatus::kSuccess) {
+    return false;
+  }
 
   if (claimed_relying_party_id.empty()) {
     return false;
   }
 
+  // The RP ID must be equal to, or a registrable suffix of, the caller origin's
+  // effective domain.
+  // https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#relying-party-identifier
   if (caller_origin.host() == claimed_relying_party_id) {
     return true;
   }

@@ -104,7 +104,7 @@ source_set("common_utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "webauthn_security_utils_unittest.cc" ]
   deps = [
     ":common_utils",
     "//testing/gtest",
