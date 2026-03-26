@@ -74,6 +74,7 @@ class WebUIToolbarWebView
   GetToolbarUIServiceDelegate() override;
   std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
   GetNavigationControlsStateFetcher() override;
+  CommandUpdater* GetCommandUpdater() override;
 
   // ToolbarUIService::ToolbarUIServiceDelegate:
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,

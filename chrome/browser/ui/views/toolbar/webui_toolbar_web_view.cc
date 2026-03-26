@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -337,6 +338,10 @@ WebUIToolbarWebView::GetNavigationControlsStateFetcher() {
                           base::Unretained(this)));
 }
 
+CommandUpdater* WebUIToolbarWebView::GetCommandUpdater() {
+  return browser_->GetFeatures().browser_command_controller();
+}
+
 toolbar_ui_api::mojom::NavigationControlsStatePtr
 WebUIToolbarWebView::GetNavigationControlsState() {
   return last_queued_state_.Clone();
@@ -357,6 +362,14 @@ void WebUIToolbarWebView::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  // Explicitly do another fetch to check if browser is in a shutdown state.
+  auto* bwi = webui::GetBrowserWindowInterface(web_view_->GetWebContents());
+  auto shutting_down = bwi == nullptr;
+  if (shutting_down) {
+    LOG(WARNING) << "browser is shutting down, aborting Init()";
     return;
   }
   auto* ui = GetWebUIToolbarUI();

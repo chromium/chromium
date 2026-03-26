@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -165,6 +167,12 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
     return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
         base::BindRepeating(
             [&] { return CreateValidNavigationControlsState(); }));
+  }
+  CommandUpdater* GetCommandUpdater() override {
+    return reinterpret_cast<CommandUpdater*>(
+        webui::GetBrowserWindowInterface(web_ui()->GetWebContents())
+            ->GetFeatures()
+            .browser_command_controller());
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }

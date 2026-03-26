@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -985,6 +986,28 @@ class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
+                       ShutdownBrowserBeforeInit) {
+  base::SimpleTestTickClock clock;
+  WebUIToolbarWebView* toolbar_view = GetWebUIToolbarWebView();
+  toolbar_view->SetTickClockForTesting(&clock);
+
+  auto* web_contents = GetWebContents(toolbar_view);
+  content::TestNavigationObserver observer(web_contents);
+  // Sets the browser window interface on the web content to simulate a
+  // browser shutdown.
+  webui::SetBrowserWindowInterface(web_contents, nullptr);
+
+  // Force a reload of the web content by killing it.
+  KillRendererUntilExceedingLimit(toolbar_view, web_contents);
+  clock.Advance(base::Seconds(1) + kRecoveryRetryInterval);
+
+  observer.WaitForNavigationFinished();
+  // Succeeded, but not really. Browser should be shutting down at this point
+  // so we just have to make sure it doesn't crash.
+  ASSERT_TRUE(observer.last_navigation_succeeded());
+}
 
 // Verify that the crash is recovered by reloading the page until it hits the
 // limit set in `WebUIReloadButtonMaxCrashRecoveryTimes`, after that it will

@@ -317,17 +317,6 @@ if (!is_android) {
       "pinned_toolbar_actions_container_browsertest.cc",
     ]
 
-    if (toolkit_views) {
-      sources += [
-        "toolbar_view_browsertest.cc",
-        "webui_toolbar_web_view_browsertest.cc",
-      ]
-    }
-
-    if (enable_webui_tab_strip) {
-      sources += [ "webui_tab_counter_button_browsertest.cc" ]
-    }
-
     deps = [
       ":test_support",
       ":toolbar",
@@ -351,6 +340,19 @@ if (!is_android) {
       "//ui/base",
       "//ui/views",
     ]
+
+    if (toolkit_views) {
+      sources += [
+        "toolbar_view_browsertest.cc",
+        "webui_toolbar_web_view_browsertest.cc",
+      ]
+
+      deps += [ "//chrome/browser/ui/webui:webui_util" ]
+    }
+
+    if (enable_webui_tab_strip) {
+      sources += [ "webui_tab_counter_button_browsertest.cc" ]
+    }
   }
 }
 

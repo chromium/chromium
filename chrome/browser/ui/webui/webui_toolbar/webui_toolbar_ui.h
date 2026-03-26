@@ -37,13 +37,18 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   // Provides dependencies to this controller during init.
   class DependencyProvider {
    public:
+    // Cannot be null.
     virtual browser_controls_api::BrowserControlsService::
         BrowserControlsServiceDelegate*
         GetBrowserControlsDelegate() = 0;
+    // Cannot be null.
     virtual toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate*
     GetToolbarUIServiceDelegate() = 0;
+    // Cannot be null.
     virtual std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
     GetNavigationControlsStateFetcher() = 0;
+    // Cannot be null.
+    virtual CommandUpdater* GetCommandUpdater() = 0;
   };
 
   explicit WebUIToolbarUI(content::WebUI* web_ui);
@@ -95,7 +100,6 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,
                            CreateToolbarUIService_NullCommandUpdater);
 
-  CommandUpdater* GetCommandUpdater() const;
   void InitBrowserControlsService(DependencyProvider& dependency_provider);
   void InitToolbarUIService(DependencyProvider& dependency_provider);
 
