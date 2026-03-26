@@ -228,12 +228,13 @@ void RecordChoiceScreenPositionsCountryMismatch(bool has_mismatch) {
 }
 
 void RecordChoiceScreenPositions(
-    const std::vector<SearchEngineType>& displayed_search_engines) {
+    const std::vector<SearchEngineType>& displayed_search_engines,
+    metrics::ProfileMetricsService& profile_metrics_service) {
   for (int i = 0; i < static_cast<int>(displayed_search_engines.size()); ++i) {
     // Using `UmaHistogramSparse()` instead of `UmaHistogramEnumeration()` as
     // it is more space efficient when logging just one value (in most cases)
     // for each index.
-    base::UmaHistogramSparse(
+    profile_metrics_service.UmaHistogramSparse(
         base::StringPrintf(
             kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, i),
         displayed_search_engines[i]);

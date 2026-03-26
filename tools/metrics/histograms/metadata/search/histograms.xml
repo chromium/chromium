@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ChoiceCompletedOnMonth.OnProfileLoad2"
+<histogram name="Search.ChoiceCompletedOnMonth.OnProfileLoad2{Profile}"
     enum="SearchEngineChoiceDate" expires_after="2026-09-06">
 <!-- When bumping expiry date, also update the enum (making the enumeration in
 sync with existing values). Escalate when data count exceeds 1000 entries:
@@ -366,7 +366,10 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     The value is serialized as a sparse histogram with integer values. Since
     each client can record the same value multiple times, it might be more
     interesting to look at unique clients.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
@@ -588,7 +591,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
-<histogram name="Search.ChoiceScreenShowedEngineAt.Index{Index}"
+<histogram name="Search.ChoiceScreenShowedEngineAt.Index{Index}{Profile}"
     enum="OmniboxSearchEngineType" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -606,6 +609,8 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     This metric is inteded to be consumed via raw histogram analysis instead of
     via the UMA dashboard. See
     http://go/chrome-choice-screen-positions-histogram-design for more info.
+
+    {Profile}
   </summary>
   <token key="Index">
     <variant name="0" summary="0"/>
@@ -617,6 +622,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     <variant name="6" summary="6"/>
     <variant name="7" summary="7"/>
   </token>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Search.ChoiceWipeReason" enum="SearchEngineChoiceWipeReason"

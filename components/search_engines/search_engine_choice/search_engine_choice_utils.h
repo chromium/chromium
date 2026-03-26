@@ -267,7 +267,8 @@ void RecordChoiceScreenSelectedIndex(int selected_engine_index);
 // Don't call this directly. Instead, go through
 // `SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState()`.
 void RecordChoiceScreenPositions(
-    const std::vector<SearchEngineType>& displayed_search_engines);
+    const std::vector<SearchEngineType>& displayed_search_engines,
+    metrics::ProfileMetricsService& profile_metrics_service);
 
 // Records whether `RecordChoiceScreenPositions()` had to be skipped due to
 // a mismatch between the Variations/UMA country and the profile/choice

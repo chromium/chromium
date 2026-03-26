@@ -489,18 +489,24 @@ class SearchEngineChoiceServiceDisplayStateRecordTest
 
     ASSERT_LE(expectations.impression_at_index.size(), kMaxRegionalListSize);
     for (size_t i = 0; i < kMaxRegionalListSize; ++i) {
+      std::string region_histogram_base_name = base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, i);
+
       if (i < expectations.impression_at_index.size()) {
+        CheckHistogramExpectation(histogram_tester, region_histogram_base_name,
+                                  expectations.impression_at_index[i],
+                                  location);
         CheckHistogramExpectation(
             histogram_tester,
-            base::StringPrintf(
-                kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, i),
+            base::StrCat({region_histogram_base_name, ".Profile1"}),
             expectations.impression_at_index[i], location);
       } else {
         // No expectation passed, let's assume it should not be recorded.
+        CheckHistogramExpectation(histogram_tester, region_histogram_base_name,
+                                  ExpectHistogramNever(), location);
         CheckHistogramExpectation(
             histogram_tester,
-            base::StringPrintf(
-                kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, i),
+            base::StrCat({region_histogram_base_name, ".Profile1"}),
             ExpectHistogramNever(), location);
       }
     }
@@ -935,6 +941,9 @@ TEST_F(SearchEngineChoiceServiceTest, IgnoresChoiceScreenCompletionDateRecord) {
   search_engine_choice_service();
   histogram_tester.ExpectTotalCount(
       kSearchEngineChoiceCompletedOnMonthHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kSearchEngineChoiceCompletedOnMonthHistogram, ".Profile1"}),
+      0);
 }
 
 // Tests if choice screen completion date is recorded.
@@ -956,6 +965,9 @@ TEST_F(SearchEngineChoiceServiceTest,
   search_engine_choice_service();
   histogram_tester.ExpectUniqueSample(
       kSearchEngineChoiceCompletedOnMonthHistogram, 202504, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kSearchEngineChoiceCompletedOnMonthHistogram, ".Profile1"}),
+      202504, 1);
 }
 
 // Tests if choice screen completion date is recorded.
@@ -976,6 +988,9 @@ TEST_F(SearchEngineChoiceServiceTest,
   search_engine_choice_service();
   histogram_tester.ExpectUniqueSample(
       kSearchEngineChoiceCompletedOnMonthHistogram, 100001, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kSearchEngineChoiceCompletedOnMonthHistogram, ".Profile1"}),
+      100001, 1);
 }
 
 // Tests if choice screen completion date is recorded.
@@ -996,6 +1011,9 @@ TEST_F(SearchEngineChoiceServiceTest,
   search_engine_choice_service();
   histogram_tester.ExpectUniqueSample(
       kSearchEngineChoiceCompletedOnMonthHistogram, 300001, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kSearchEngineChoiceCompletedOnMonthHistogram, ".Profile1"}),
+      300001, 1);
 }
 
 // Test that the user is not reprompted if the reprompt parameter is not a valid

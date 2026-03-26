@@ -58,4 +58,12 @@ void ProfileMetricsService::UmaHistogramCounts1000(std::string_view name,
   }
 }
 
+void ProfileMetricsService::UmaHistogramSparse(std::string_view name,
+                                               int sample) {
+  base::UmaHistogramSparse(name, sample);
+  if (!histogram_suffix_.empty()) {
+    base::UmaHistogramSparse(base::StrCat({name, histogram_suffix_}), sample);
+  }
+}
+
 }  // namespace metrics

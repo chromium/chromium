@@ -60,6 +60,8 @@ class ProfileMetricsService : public KeyedService {
 
   void UmaHistogramCounts1000(std::string_view name, int sample);
 
+  void UmaHistogramSparse(std::string_view name, int sample);
+
  private:
   const ProfileMetricsContext profile_metrics_context_;
 

@@ -212,7 +212,9 @@ bool ShouldRepromptFromFeatureParams(
 
 // Writes the histogram that tracks choice screen completion date in a specific
 // format: YYYYMM (of type int).
-void RecordChoiceScreenCompletionDate(PrefService& profile_prefs) {
+void RecordChoiceScreenCompletionDate(
+    PrefService& profile_prefs,
+    metrics::ProfileMetricsService& profile_metrics_service) {
   std::optional<base::Time> timestamp =
       GetChoiceScreenCompletionTimestamp(profile_prefs);
   if (!timestamp.has_value()) {
@@ -237,8 +239,8 @@ void RecordChoiceScreenCompletionDate(PrefService& profile_prefs) {
   }
 
   // Expected value space is 12 samples / year.
-  base::UmaHistogramSparse(kSearchEngineChoiceCompletedOnMonthHistogram,
-                           year * 100 + month);
+  profile_metrics_service.UmaHistogramSparse(
+      kSearchEngineChoiceCompletedOnMonthHistogram, year * 100 + month);
 }
 
 void RecordWipeOnMissingDse(bool will_wipe) {
@@ -436,7 +438,8 @@ bool MaybeRecordChoiceScreenDisplayStateInternal(
     regional_capabilities::RegionalCapabilitiesService&
         regional_capabilities_service,
     const ChoiceScreenDisplayState& display_state,
-    bool is_from_cached_state) {
+    bool is_from_cached_state,
+    metrics::ProfileMetricsService& profile_metrics_service) {
   if (display_state.selected_engine_index.has_value()) {
     if (!is_from_cached_state) {
       // Recorded at the choice moment as it's not part of the display state
@@ -452,7 +455,8 @@ bool MaybeRecordChoiceScreenDisplayStateInternal(
     return false;
   }
 
-  RecordChoiceScreenPositions(display_state.search_engines);
+  RecordChoiceScreenPositions(display_state.search_engines,
+                              profile_metrics_service);
   return true;
 }
 
@@ -471,7 +475,8 @@ enum class PendingDisplayStateStatus {
 PendingDisplayStateStatus ProcessPendingChoiceScreenDisplayStateInternal(
     regional_capabilities::RegionalCapabilitiesService&
         regional_capabilities_service,
-    PrefService& profile_prefs) {
+    PrefService& profile_prefs,
+    metrics::ProfileMetricsService& profile_metrics_service) {
   const base::DictValue& dict = profile_prefs.GetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
   std::optional<ChoiceScreenDisplayState> display_state =
@@ -492,7 +497,7 @@ PendingDisplayStateStatus ProcessPendingChoiceScreenDisplayStateInternal(
 
   return MaybeRecordChoiceScreenDisplayStateInternal(
              regional_capabilities_service, *display_state,
-             /* is_from_cached_state= */ true)
+             /* is_from_cached_state= */ true, profile_metrics_service)
              ? PendingDisplayStateStatus::kUploaded
              : PendingDisplayStateStatus::kStayPending;
 }
@@ -562,7 +567,7 @@ void SearchEngineChoiceService::Init() {
         base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
   }
 
-  RecordChoiceScreenCompletionDate(*profile_prefs_);
+  RecordChoiceScreenCompletionDate(*profile_prefs_, *profile_metrics_service_);
 }
 
 SearchEngineChoiceScreenConditions
@@ -890,8 +895,8 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
   }
 
   bool record_rejected = !MaybeRecordChoiceScreenDisplayStateInternal(
-      regional_capabilities_service_.get(), display_state,
-      /* is_from_cached_state= */ false);
+      *regional_capabilities_service_, display_state,
+      /* is_from_cached_state= */ false, *profile_metrics_service_);
   RecordChoiceScreenPositionsCountryMismatch(record_rejected);
   if (record_rejected) {
     // Recording was rejected, persist the data so we can attempt to send it
@@ -975,7 +980,8 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
   }
 
   auto status = ProcessPendingChoiceScreenDisplayStateInternal(
-      regional_capabilities_service_.get(), profile_prefs_.get());
+      *regional_capabilities_service_, *profile_prefs_,
+      *profile_metrics_service_);
   base::UmaHistogramEnumeration(
       "Search.ChoicePrefsCheck.PendingChoiceScreenDisplayStateStatus", status);
 
