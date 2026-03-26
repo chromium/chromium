@@ -142,7 +142,7 @@ class CC_EXPORT PictureLayerTilingSet {
   using CoverageIterator = TilingSetCoverageIterator<PictureLayerTiling>;
   CoverageIterator Cover(const gfx::Rect& coverage_rect,
                          float coverage_scale,
-                         float ideal_contents_scale);
+                         float ideal_contents_scale) const;
 
   void AsValueInto(base::trace_event::TracedValue* array) const;
   size_t GPUMemoryUsageInBytes() const;

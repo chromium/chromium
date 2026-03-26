@@ -103,10 +103,11 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion) override {}
+
   TilingSetCoverageIterator<FakeTiling> Cover(
       const gfx::Rect& coverage_rect,
       float coverage_scale,
-      float ideal_contents_scale) override {
+      float ideal_contents_scale) const override {
     tilings_[0]->SetTilingRect(gfx::Rect(bounds()));
     return TilingSetCoverageIterator<FakeTiling>(
         tilings_, coverage_rect, coverage_scale, ideal_contents_scale);

@@ -556,7 +556,7 @@ void PictureLayerTilingSet::GetAllPrioritizedTilesForTracing(
 PictureLayerTilingSet::CoverageIterator PictureLayerTilingSet::Cover(
     const gfx::Rect& coverage_rect,
     float coverage_scale,
-    float ideal_contents_scale) {
+    float ideal_contents_scale) const {
   return CoverageIterator(tilings_, coverage_rect, coverage_scale,
                           ideal_contents_scale);
 }

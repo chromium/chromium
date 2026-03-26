@@ -199,7 +199,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   virtual TilingSetCoverageIterator<Tiling> Cover(
       const gfx::Rect& coverage_rect,
       float coverage_scale,
-      float ideal_contents_scale) = 0;
+      float ideal_contents_scale) const = 0;
 
   virtual float GetIdealContentsScaleKey() const = 0;
 

@@ -217,8 +217,8 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
-  auto iter = TilingSetCoverageIterator<TileDisplayLayerTiling>(
-      tilings_, content_rect, max_contents_scale, GetIdealContentsScaleKey());
+  auto iter =
+      Cover(content_rect, max_contents_scale, GetIdealContentsScaleKey());
 
   // We cannot do anything if the mask resource was not provided.
   if (!iter || !*iter || !iter->resource()) {
@@ -291,7 +291,7 @@ void TileDisplayLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
 TilingSetCoverageIterator<TileDisplayLayerTiling> TileDisplayLayerImpl::Cover(
     const gfx::Rect& coverage_rect,
     float coverage_scale,
-    float ideal_contents_scale) {
+    float ideal_contents_scale) const {
   return TilingSetCoverageIterator<TileDisplayLayerTiling>(
       tilings_, coverage_rect, coverage_scale, ideal_contents_scale);
 }

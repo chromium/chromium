@@ -1000,8 +1000,8 @@ void PictureLayerImpl::GetContentsResourceId(
   const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
-  auto iter = tilings_->Cover(content_rect, max_contents_scale,
-                              GetIdealContentsScaleKey());
+  auto iter =
+      Cover(content_rect, max_contents_scale, GetIdealContentsScaleKey());
 
   // Mask resource not ready yet.
   if (!iter || !*iter) {
@@ -2175,7 +2175,7 @@ PictureLayerImpl::GetTilingResolutionForDebugBorders(
 TilingSetCoverageIterator<PictureLayerTiling> PictureLayerImpl::Cover(
     const gfx::Rect& coverage_rect,
     float coverage_scale,
-    float ideal_contents_scale) {
+    float ideal_contents_scale) const {
   return tilings_->Cover(coverage_rect, coverage_scale, ideal_contents_scale);
 }
 

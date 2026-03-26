@@ -415,7 +415,7 @@ class CC_EXPORT PictureLayerImpl
   TilingSetCoverageIterator<PictureLayerTiling> Cover(
       const gfx::Rect& coverage_rect,
       float coverage_scale,
-      float ideal_contents_scale) override;
+      float ideal_contents_scale) const override;
   void WillProcessReadyToDrawTile(
       const TilingSetCoverageIterator<PictureLayerTiling>& iter) override;
   bool ShouldUpdateApproximatedVisibleContentArea(

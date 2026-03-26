@@ -235,7 +235,7 @@ class CC_EXPORT TileDisplayLayerImpl
   TilingSetCoverageIterator<TileDisplayLayerTiling> Cover(
       const gfx::Rect& coverage_rect,
       float coverage_scale,
-      float ideal_contents_scale) override;
+      float ideal_contents_scale) const override;
   TilingResolution GetTilingResolutionForDebugBorders(
       const TileDisplayLayerTiling* tiling) const override;
   bool ComputeCheckerboardedNeedsRecord() override;
