@@ -2052,4 +2052,8 @@ bool ContentBrowserClient::OriginSupportsConcreteCrossOriginIsolation(
   return true;
 }
 
+bool ContentBrowserClient::IsAttributionInternalsWebUIEnabled() {
+  return true;
+}
+
 }  // namespace content

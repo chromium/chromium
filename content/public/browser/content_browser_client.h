@@ -3417,6 +3417,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // restrictions but does not give access to cross-origin isolated APIs.
   virtual bool OriginSupportsConcreteCrossOriginIsolation(
       const url::Origin& origin);
+
+  // Returns true if the Attribution Internals WebUI should be enabled.
+  virtual bool IsAttributionInternalsWebUIEnabled();
 };
 
 }  // namespace content

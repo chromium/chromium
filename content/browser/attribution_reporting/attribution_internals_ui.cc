@@ -8,11 +8,13 @@
 #include "content/browser/attribution_reporting/attribution_internals_handler_impl.h"
 #include "content/grit/attribution_internals_resources.h"
 #include "content/grit/attribution_internals_resources_map.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
@@ -58,6 +60,11 @@ void AttributionInternalsUI::Create(
     mojo::PendingReceiver<attribution_internals::mojom::Handler> handler) {
   ui_handler_ = std::make_unique<AttributionInternalsHandlerImpl>(
       web_ui(), std::move(observer), std::move(handler));
+}
+
+bool AttributionInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return GetContentClient()->browser()->IsAttributionInternalsWebUIEnabled();
 }
 
 }  // namespace content

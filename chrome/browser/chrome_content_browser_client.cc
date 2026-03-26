@@ -9167,3 +9167,8 @@ void ChromeContentBrowserClient::UpdateCorsExemptHeaderForPrefetch(
   }
 #endif
 }
+
+bool ChromeContentBrowserClient::IsAttributionInternalsWebUIEnabled() {
+  return !base::FeatureList::IsEnabled(
+      privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+}

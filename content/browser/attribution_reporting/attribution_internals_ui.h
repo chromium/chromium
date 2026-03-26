@@ -27,6 +27,7 @@ class AttributionInternalsUIConfig
   AttributionInternalsUIConfig()
       : DefaultWebUIConfig(kChromeUIScheme, kChromeUIAttributionInternalsHost) {
   }
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // WebUI which handles serving the chrome://attribution-internals page.

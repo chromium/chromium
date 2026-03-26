@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -43,6 +44,17 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
       prefs::kPrivacySandboxM1AdMeasurementEnabled));
 }
 
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
+                       AttributionInternalsWebUINull) {
+  GURL kUrl("chrome://attribution-internals");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
+  EXPECT_EQ(web_contents->GetWebUI(), nullptr);
+}
+
 class PrivacySandboxAdPrivacyDeprecationDisabledTest
     : public InProcessBrowserTest {
  public:
@@ -72,6 +84,17 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
       prefs::kPrivacySandboxM1FledgeEnabled));
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1AdMeasurementEnabled));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
+                       AttributionInternalsWebUINotNull) {
+  GURL kUrl("chrome://attribution-internals");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
+  EXPECT_NE(web_contents->GetWebUI(), nullptr);
 }
 
 }  // namespace privacy_sandbox

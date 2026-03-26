@@ -1223,6 +1223,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url,
       const std::string& embedder_histogram_suffix) override;
 
+  bool IsAttributionInternalsWebUIEnabled() override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
