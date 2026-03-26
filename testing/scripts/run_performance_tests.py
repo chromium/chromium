@@ -781,7 +781,7 @@ class CrossbenchTest(object):
     elif self._is_alum():
       self.is_android = True
       # TODO(crbug.com/435031130): Experimenting.
-      self._find_browser('android-trichrome-chrome-google-64-32-bundle')
+      self._find_browser('android-system-chrome')
     else:
       browser_arg = _get_browser_arg(options.passthrough_args)
       self.is_android = _is_android(browser_arg)
@@ -970,6 +970,8 @@ class CrossbenchTest(object):
     return default_args
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
+    if self._is_alum():
+      return ['vpython3', '-Xutf8'] + [ALUM_RUNNER]
     extra_browser_args = []
     if self.cb_options.extra_browser_args:
       extra_browser_args = ['--']
@@ -1020,10 +1022,14 @@ class CrossbenchTest(object):
                                                               env=env)
 
       if return_code == 0 or self.options.ignore_benchmark_exit_code:
-        crossbench_result_converter.convert(
-            pathlib.Path(output_paths.benchmark_path) / 'output',
-            pathlib.Path(output_paths.perf_results), display_name,
-            self.STORY_LABEL, self.options.results_label)
+        if self._is_alum():
+          # TODO(crbug.com/435031130): Convert results after experimenting.
+          pass
+        else:
+          crossbench_result_converter.convert(
+              pathlib.Path(output_paths.benchmark_path) / 'output',
+              pathlib.Path(output_paths.perf_results), display_name,
+              self.STORY_LABEL, self.options.results_label)
       if return_code and os.path.exists(output_paths.logs):
         # To avoid printing too large log file, we print the last 100 lines.
         bottom_of_log = deque(maxlen=100)
@@ -1059,7 +1065,7 @@ class CrossbenchTest(object):
       return 1
 
     if return_code and self.options.ignore_benchmark_exit_code:
-      print(f'crossbench returned exit code {return_code}'
+      print(f'Returned exit code {return_code}'
             ' which indicates there were test failures in the run.')
       return 0
     return return_code
@@ -1067,39 +1073,11 @@ class CrossbenchTest(object):
   def _is_alum(self):
     return self.cb_options.web_tests_cuj
 
-  # TODO(crbug.com/435031130): Experimenting.
-  def execute_alum(self, display_name='SP3.1'):
-    env = os.environ.copy()
-    env['CHROME_HEADLESS'] = '1'
-    env['PATH'] = f"{GSUTIL_DIR}:{env['PATH']}"
-    output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()
-    return_code = 1
-
-    command = ['vpython3', '-Xutf8'] + [ALUM_RUNNER]
-    try:
-      with open(output_paths.logs, 'w') as handle:
-        return_code = test_env.run_command_output_to_handle(command,
-                                                            handle,
-                                                            env=env)
-    except Exception:  # pylint: disable=broad-except
-      print('There was an infrastructure error encountered during the run. '
-            'Please check the logs above for details')
-      print(traceback.format_exc())
-      return 1
-
-    if return_code and self.options.ignore_benchmark_exit_code:
-      print(f'{ALUM_RUNNER} runner returned exit code {return_code}'
-            ' which indicates there were test failures in the run.')
-      return 0
-    return return_code
-
   def execute(self):
     if not self.options.benchmarks:
       raise Exception('Please use the --benchmarks to specify the benchmark.')
     if ',' in self.options.benchmarks:
       raise Exception('No support to run multiple benchmarks at this time.')
-    if self._is_alum():
-      return self.execute_alum()
     return self.execute_benchmark(
         self.options.benchmarks,
         (self.options.benchmark_display_name or self.options.benchmarks),
