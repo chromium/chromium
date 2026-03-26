@@ -71,7 +71,6 @@ chrome.test.runTests([
 
   // Display results in new window if said disposition is provided.
   async function QueryPopulatedDispositionNewWindow() {
-    const isAndroid = (await chrome.runtime.getPlatformInfo()).os == 'android';
     chrome.windows.getAll({}, (initialWindows) => {
       const initialWindowIds = initialWindows.map(window => window.id);
       Promise
@@ -81,17 +80,10 @@ chrome.test.runTests([
               chrome.search.query(
                   {text: SEARCH_WORDS, disposition: 'NEW_WINDOW'}, () => {
                     chrome.windows.getAll({}, (windows) => {
-                      // TODO(crbug.com/477944342): Desktop Android does not yet
-                      // support navigating to a new window with an existing web
-                      // contents.
-                      if (isAndroid) {
-                        assertEq(windows.length, initialWindowIds.length);
-                      } else {
-                        const window = windows.find(
+                      const window = windows.find(
                           window => !initialWindowIds.includes(window.id));
-                        assertEq(windows.length, initialWindowIds.length + 1);
-                        assertTrue(!!window);
-                      }
+                      assertEq(windows.length, initialWindowIds.length + 1);
+                      assertTrue(!!window);
                       resolve();
                     });
                   });
