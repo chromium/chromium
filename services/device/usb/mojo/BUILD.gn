@@ -17,6 +17,7 @@ source_set("mojo") {
   deps = [
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/device/public/cpp:device_features",
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom:usb",
     "//services/device/public/mojom:usb_test",
