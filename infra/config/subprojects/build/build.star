@@ -579,9 +579,6 @@ cq_build_perf_builder(
 )
 
 def developer_build_perf_builder(description_html, reclient_jobs = None, **kwargs):
-    # Use CQ siso.project and high siso_remote_jobs/cores to simulate CQ builds.
-    if not "siso_configs" in kwargs:
-        kwargs["siso_configs"] = ["remote-link"]
     props = {
         "$build/reclient": {
             "instance": siso.project.DEFAULT_UNTRUSTED,
