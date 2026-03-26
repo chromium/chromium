@@ -156,7 +156,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/423465927): Explore a better approach to make the
 // existing tests run with the prewarm feature enabled.
-@DisableFeatures({ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY, "Prewarm"})
+@DisableFeatures({
+    ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY,
+    "Prewarm",
+    ChromeFeatureList.DESKTOP_ANDROID_LINK_CAPTURING
+})
 public class UrlOverridingTest {
     @Rule
     public FreshCtaTransitTestRule mTabbedActivityTestRule =
