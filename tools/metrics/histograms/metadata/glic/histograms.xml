@@ -2287,7 +2287,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Session.ResponseCount" units="count"
+<histogram name="Glic.Session.ResponseCount{Profile}" units="count"
     expires_after="2026-07-26">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
@@ -2295,7 +2295,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of responses during the session. Recorded when the panel is
     closed.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Glic.Session.ResponseStart.BrowserActiveState"

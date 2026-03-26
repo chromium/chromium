@@ -22,12 +22,14 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -770,8 +772,11 @@ void GlicMetrics::OnGlicWindowClose(Browser* last_active_browser,
       "Glic.PercentOverlapWithBrowser.OnClose",
       GetPercentOverlapWithBrowser(last_active_browser, glic_bounds));
 #endif
-  base::UmaHistogramCounts1000("Glic.Session.ResponseCount",
-                               session_responses_);
+  metrics::ProfileMetricsService* profile_metrics_service =
+      ProfileMetricsServiceFactory::GetForProfile(profile_);
+  CHECK(profile_metrics_service);
+  profile_metrics_service->UmaHistogramCounts1000("Glic.Session.ResponseCount",
+                                                  session_responses_);
   if (session_start_time_.is_null()) {
     base::UmaHistogramEnumeration("Glic.Metrics.Error",
                                   Error::kWindowCloseWithoutWindowOpen);
