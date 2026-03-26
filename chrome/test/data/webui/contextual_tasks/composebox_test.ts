@@ -1131,7 +1131,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // After submission, verify the input is cleared by your component logic.
     await innerComposebox.updateComplete;
-    assertEquals('', innerComposebox.getInputText());
+    assertEquals('', innerComposebox.input);
   });
 
   test('OfflineStatusReconsideredOnReload', async () => {
@@ -1308,7 +1308,7 @@ suite('ContextualTasksComposeboxTest', () => {
     };
 
     contextualComposebox.isZeroState = true;
-    innerComposebox.getInputText = () => 'test';
+    innerComposebox.input = 'test';
     contextualComposebox.clearInputAndFocus(false);
     assertEquals(
         0, clearAutocompleteMatchesCallCount,
@@ -1337,7 +1337,7 @@ suite('ContextualTasksComposeboxTest', () => {
     };
 
     contextualComposebox.isZeroState = true;
-    innerComposebox.getInputText = () => '';
+    innerComposebox.input = '';
     innerComposebox.hasFiles = () => true;
     contextualComposebox.clearInputAndFocus(false);
     assertEquals(

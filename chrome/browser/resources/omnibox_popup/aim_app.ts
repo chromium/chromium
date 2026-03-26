@@ -166,7 +166,7 @@ export class OmniboxAimAppElement extends CrLitElement {
   }
 
   private async clearPopup_(): Promise<{input: string}> {
-    const input = this.$.composebox.getInputText();
+    const input = this.$.composebox.input;
     if (!this.preserveContextOnClose_) {
       this.$.composebox.clearAllInputs(
           /* querySubmitted= */ false,

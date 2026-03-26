@@ -1468,11 +1468,11 @@ suite('NewTabPageAppTest', () => {
             }));
             await microtasksFinished();
             const composebox = app.shadowRoot.querySelector('cr-composebox');
-            composebox!.setText('hello');
+            composebox!.input = 'hello';
             const composeboxScrim =
                 app.shadowRoot.querySelector<HTMLElement>('#scrim');
             assertTrue(!!composeboxScrim);
-            assertEquals(composebox!.getText(), 'hello');
+            assertEquals(composebox!.input, 'hello');
             composeboxScrim.click();
             await microtasksFinished();
 

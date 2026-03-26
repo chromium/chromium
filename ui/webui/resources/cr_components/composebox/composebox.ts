@@ -557,10 +557,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.getInputElement().inputElement.focus();
   }
 
-  getText() {
-    return this.input;
-  }
-
   queryAutocomplete(clearMatches: boolean) {
     this.queryAutocomplete_(clearMatches);
   }
@@ -585,10 +581,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.animationState = GlowAnimationState.EXPANDING;
       });
     }
-  }
-
-  setText(text: string) {
-    this.input = text;
   }
 
   resetModes() {
@@ -1922,10 +1914,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.input = '';
     this.lastQueriedInput_ = '';
     this.$.matches.unselect();
-  }
-
-  getInputText(): string {
-    return this.input;
   }
 
   getNumOfFilesForTesting(): number {

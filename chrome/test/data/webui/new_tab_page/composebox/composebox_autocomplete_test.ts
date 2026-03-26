@@ -986,7 +986,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
     await microtasksFinished();
 
     // Check that input and lastQueriedInput are set.
-    assertEquals(testProxy.element.getText(), 'hello world');
+    assertEquals(testProxy.element.input, 'hello world');
     assertEquals((testProxy.element as any).lastQueriedInput_, 'hello world');
     // Autocomplete should be queried again.
     assertEquals(

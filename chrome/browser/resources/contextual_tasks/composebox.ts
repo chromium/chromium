@@ -395,7 +395,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   clearInputAndFocus(querySubmitted: boolean = false): void {
-    const hadContent = this.$.composebox.getInputText().trim().length > 0 ||
+    const hadContent = this.$.composebox.input.trim().length > 0 ||
         this.$.composebox.hasFiles();
 
     // Clear text from composebox and focus.

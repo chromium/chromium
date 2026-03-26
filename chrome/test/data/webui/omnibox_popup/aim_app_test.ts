@@ -67,12 +67,12 @@ suite('AimAppTest', function() {
       attachments: [],
       toolMode: 0,
     });
-    assertTrue(!!app.$.composebox.getInputText());
+    assertTrue(!!app.$.composebox.input);
 
     // Close without preserving context (default is false).
     testProxy.page.clearPopup();
     await microtasksFinished();
-    assertTrue(!app.$.composebox.getInputText());
+    assertTrue(!app.$.composebox.input);
   });
 
   test('PreservesInputOnCloseWhenRequested', async function() {
@@ -85,13 +85,13 @@ suite('AimAppTest', function() {
       attachments: [],
       toolMode: 0,
     });
-    assertTrue(!!app.$.composebox.getInputText());
+    assertTrue(!!app.$.composebox.input);
 
     // Close with preserving context.
     testProxy.page.setPreserveContextOnClose(true);
     testProxy.page.clearPopup();
     await microtasksFinished();
-    assertTrue(!!app.$.composebox.getInputText());
+    assertTrue(!!app.$.composebox.input);
   });
 
   test('ResetsPreserveContextOnShow', async function() {
@@ -121,7 +121,7 @@ suite('AimAppTest', function() {
     // Close again, should clear input because it was reset to false.
     testProxy.page.clearPopup();
     await microtasksFinished();
-    assertTrue(!app.$.composebox.getInputText());
+    assertTrue(!app.$.composebox.input);
 
     // There's no search context being added when setting the input, therefore,
     // no context added histogram should get recorded.

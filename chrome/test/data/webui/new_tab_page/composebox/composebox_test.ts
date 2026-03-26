@@ -103,7 +103,7 @@ suite('NewTabPageComposeboxTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals('hello world', composebox.getText());
+    assertEquals('hello world', composebox.input);
     const activeTool =
         await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
     assertEquals(ToolMode.kDeepSearch, activeTool);
