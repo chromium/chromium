@@ -382,7 +382,8 @@ public class DownloadUtils {
                     .startActivity(
                             new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        } else if (source == DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE
+        } else if (!PdfUtils.isInlinePdfV2Enabled()
+                && source == DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE
                 && MimeTypeUtils.PDF_MIME_TYPE.equals(offlineItem.mimeType)
                 && PdfUtils.shouldOpenPdfInline(OtrProfileId.isOffTheRecord(otrProfileId))) {
             if (!openFileWithExternalApps(
