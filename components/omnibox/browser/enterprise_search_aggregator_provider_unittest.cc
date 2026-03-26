@@ -537,6 +537,35 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
 const std::string kNonDictJsonResponse =
     base::StringPrintf(R"(["test","result1","result2"])");
 
+const std::string kInvalidJsonResponse = R"invalid({
+    "contentSuggestions": [
+      {
+        "suggestion": "Invalid Suggestion",
+        "document": {
+          "derivedStructData": {
+            "title": "Invalid Suggestion"
+          }
+        },
+        "destinationUri": "javascript:alert(1)",
+        "score": 0.8
+      }
+    ],
+    "peopleSuggestions": [
+      {
+        "suggestion": "invalid@example.com",
+        "document": {
+          "derivedStructData": {
+            "name": {
+              "displayName": "Invalid Person"
+            }
+          }
+        },
+        "destinationUri": "javascript:alert(2)",
+        "score": 0.8
+      }
+    ]
+  })invalid";
+
 // Helper methods to dynamically generate valid responses.
 std::string CreateQueryResult(const std::string& query,
                               const float score = 0.0) {
@@ -1981,6 +2010,15 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   EXPECT_EQ(matches[2].contents, u"PNG Image");
   EXPECT_EQ(matches[2].description, u"Same thing we do every night, Pinky");
   EXPECT_EQ(matches[2].destination_url, GURL("https://url3/"));
+}
+
+TEST_F(EnterpriseSearchAggregatorProviderTest, DiscardsInvalidJavascriptUrl) {
+  provider_->adjusted_input_ = CreateInput(u"john d", true);
+  StartAndComplete3Requests(200, kInvalidJsonResponse);
+
+  ACMatches matches = provider_->matches_;
+  // After fix, it should have 0 matches because javascript: URLs are discarded.
+  EXPECT_EQ(matches.size(), 0u);
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderSingleRequestTest,

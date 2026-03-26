@@ -1041,6 +1041,10 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
       ptr_to_string(result.FindString("destinationUri"));
   if (suggestion_type == SuggestionType::CONTENT ||
       suggestion_type == SuggestionType::PEOPLE) {
+    GURL gurl(destination_uri);
+    if (!gurl.is_valid() || !gurl.SchemeIsHTTPOrHTTPS()) {
+      return "";
+    }
     return destination_uri;
   }
 
