@@ -22,10 +22,15 @@ namespace passage_embeddings {
 class ChromePassageEmbeddingsServiceController
     : public PassageEmbeddingsServiceController {
  public:
-  // Returns the PassageEmbeddingsServiceController.
   static ChromePassageEmbeddingsServiceController* Get();
 
  private:
+  enum ServiceState {
+    kIdle,
+    kLaunching,
+    kReady,
+  };
+
   friend base::NoDestructor<ChromePassageEmbeddingsServiceController>;
 
   ChromePassageEmbeddingsServiceController();
@@ -39,14 +44,13 @@ class ChromePassageEmbeddingsServiceController
   // launched and connected.
   void InitializeCpuLogger();
 
-  // Called after service is launched.
   void OnServiceLaunched(const base::Process& process);
 
-  // When the embeddings service is running, the logger will periodically sample
-  // and log the CPU time used by the service process.
+  ServiceState service_state_ = kIdle;
+
+  // Periodically samples and logs the CPU time used by the service process.
   CpuHistogramLogger cpu_logger_;
 
-  // Used to generate weak pointers to self.
   base::WeakPtrFactory<ChromePassageEmbeddingsServiceController>
       weak_ptr_factory_{this};
 };

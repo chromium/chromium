@@ -34,10 +34,12 @@ ChromePassageEmbeddingsServiceController::
     ~ChromePassageEmbeddingsServiceController() = default;
 
 void ChromePassageEmbeddingsServiceController::MaybeLaunchService() {
-  // No-op if already launched.
-  if (service_remote_) {
+  // No-op if already launched or launching.
+  if (service_state_ != kIdle) {
     return;
   }
+
+  service_state_ = kLaunching;
 
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
   // Unretained is safe because `this` owns `service_remote_`, which
@@ -64,6 +66,8 @@ void ChromePassageEmbeddingsServiceController::ResetServiceRemote() {
   ResetEmbedderRemote();
   service_remote_.reset();
   cpu_logger_.StopLoggingAfterNextUpdate();
+  service_state_ = kIdle;
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ChromePassageEmbeddingsServiceController::OnServiceLaunched(
@@ -81,6 +85,10 @@ void ChromePassageEmbeddingsServiceController::OnServiceLaunched(
 }
 
 void ChromePassageEmbeddingsServiceController::InitializeCpuLogger() {
+  if (service_state_ != kLaunching) {
+    return;
+  }
+
   content::BrowserChildProcessHostIterator iter(content::PROCESS_TYPE_UTILITY);
   while (!iter.Done()) {
     const content::ChildProcessData& data = iter.GetData();
@@ -90,6 +98,7 @@ void ChromePassageEmbeddingsServiceController::InitializeCpuLogger() {
           base::BindRepeating(
               &PassageEmbeddingsServiceController::EmbedderRunning,
               base::Unretained(this)));
+      service_state_ = kReady;
       return;
     }
     ++iter;
