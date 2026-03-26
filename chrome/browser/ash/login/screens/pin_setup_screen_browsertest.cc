@@ -100,6 +100,7 @@ const char kStrongPin[] = "978213587623";
 const char kExpectedHighComplexityError[] =
     "Must be at least 8 digits and can't contain repeating or ordered "
     "sequences";
+const char kExpectedLegacyWeakPinWarning[] = "PIN may be easy to guess";
 
 PinSetupScreen* GetScreen() {
   return WizardController::default_controller()->GetScreen<PinSetupScreen>();
@@ -820,8 +821,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
   // Do NOT set the complexity policy, leaving it as kUnset.
   WaitForScreenShown();
 
-  // Enter a weak PIN. The default minimum length for the legacy QuickUnlock PIN
-  // check is 6 digits.
+  // Enter a weak PIN.
   EnterPin(kWeakPin);
 
   // In the legacy flow, a weak PIN generates a WARNING but still allows the
@@ -860,6 +860,25 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest, WeakPinShowsErrorMessage) {
 
   // Verify the hard error state and message.
   ExpectProblemMessage(/*is_error=*/true, kExpectedHighComplexityError);
+}
+
+// Tests that a weak PIN explicitly displays the correct warning message on
+// the UI when the complexity policy is unset (legacy flow).
+IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
+                       LegacyFlowWeakPinShowsWarningMessage) {
+  ShowPinSetupScreen();
+  // Do NOT set the complexity policy, leaving it as kUnset.
+  WaitForScreenShown();
+
+  // Enter a weak PIN.
+  EnterPin(kWeakPin);
+
+  // In the legacy flow, a weak PIN generates a WARNING but still allows the
+  // user to submit. The 'Next' button should be enabled.
+  WaitUntilNextButtonEnabled(true);
+
+  // Verify the warning state (not an error) and the legacy message.
+  ExpectProblemMessage(/*is_error=*/false, kExpectedLegacyWeakPinWarning);
 }
 
 // Tests that a strong PIN passes the complexity policy and allows
