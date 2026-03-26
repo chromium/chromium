@@ -29,6 +29,7 @@ android_library("test_java") {
     "//third_party/google-truth:google_truth_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
 }
