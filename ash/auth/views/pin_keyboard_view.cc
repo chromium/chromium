@@ -67,9 +67,11 @@ views::Button* PinKeyboardView::TestApi::backspace_button() {
 }
 
 views::Button* PinKeyboardView::TestApi::digit_button(int digit) {
-  CHECK(view_->digit_buttons_.contains(digit));
-  CHECK(view_->digit_buttons_[digit]);
-  return view_->digit_buttons_[digit];
+  auto it = view_->digit_buttons_.find(digit);
+  CHECK(it != view_->digit_buttons_.end());
+  views::Button* button = it->second;
+  CHECK(button);
+  return button;
 }
 
 bool PinKeyboardView::TestApi::GetEnabled() {
