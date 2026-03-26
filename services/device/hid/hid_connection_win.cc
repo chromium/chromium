@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/win/object_watcher.h"
@@ -50,6 +51,9 @@ HidConnectionWin::HidDeviceEntry::HidDeviceEntry(
 HidConnectionWin::HidDeviceEntry::~HidDeviceEntry() = default;
 
 class PendingHidTransfer : public base::win::ObjectWatcher::Delegate {
+  // TODO(https://crbug.com/495999127): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   typedef base::OnceCallback<void(PendingHidTransfer*, bool)> Callback;
 
