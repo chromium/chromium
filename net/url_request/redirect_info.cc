@@ -8,7 +8,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/url_request/url_request_job.h"

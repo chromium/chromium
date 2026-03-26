@@ -11,7 +11,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"

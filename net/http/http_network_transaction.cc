@@ -19,7 +19,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -91,6 +90,7 @@
 #include "url/url_canon.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
+#include "base/no_destructor.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_service.h"

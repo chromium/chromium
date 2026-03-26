@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/host_port_pair.h"

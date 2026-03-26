@@ -5,6 +5,7 @@
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <functional>
 #include <limits>
@@ -18,12 +19,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "crypto/hash.h"
 #include "net/base/hash_value.h"

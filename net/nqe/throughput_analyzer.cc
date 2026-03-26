@@ -8,10 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_activity_monitor.h"
 #include "net/base/url_util.h"

@@ -18,7 +18,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -37,6 +36,9 @@
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID)
+#include <array>
+
+#include "base/time/time.h"
 #include "net/android/network_library.h"
 #endif
 

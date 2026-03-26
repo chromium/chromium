@@ -28,7 +28,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"

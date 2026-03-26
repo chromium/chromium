@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/spdy/spdy_log_util.h"
 

@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
