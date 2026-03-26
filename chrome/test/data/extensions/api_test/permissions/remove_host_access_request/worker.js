@@ -60,15 +60,6 @@ chrome.test.runTests([
   // Tests that an error is returned when the request cannot be removed since
   // the request doesn't exist.
   async function nonExistentRequest() {
-    // TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
-    // is available.
-    const isAndroid = await new Promise((resolve) => {
-      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
-    });
-    if (isAndroid) {
-      chrome.test.succeed();
-      return;
-    }
     const tab = await navigateTo('example.com');
     const request = {tabId: tab.id};
     await chrome.test.assertPromiseRejects(
@@ -82,15 +73,6 @@ chrome.test.runTests([
   // Tests that an error is returned when the request to remove has an invalid
   // pattern.
   async function invalidPattern() {
-    // TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
-    // is available.
-    const isAndroid = await new Promise((resolve) => {
-      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
-    });
-    if (isAndroid) {
-      chrome.test.succeed();
-      return;
-    }
     const tab = await navigateTo('requested.com');
 
     const request = {tabId: tab.id, pattern: 'invalid pattern'};

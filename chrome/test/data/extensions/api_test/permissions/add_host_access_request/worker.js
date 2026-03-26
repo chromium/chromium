@@ -60,15 +60,6 @@ chrome.test.runTests([
   // Tests that an error is returned when the extension adds a request for a
   // tabId that it can already access its current web contents.
   async function accessAlreadyGrantedForTabId() {
-    // TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
-    // is available.
-    const isAndroid = await new Promise((resolve) => {
-      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
-    });
-    if (isAndroid) {
-      chrome.test.succeed();
-      return;
-    }
     const tab = await navigateTo('requested.com');
 
     const request = {tabId: tab.id};
