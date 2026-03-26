@@ -26,7 +26,14 @@ namespace {
 // Returns an empty entity instance for the given type.
 autofill::EntityInstance GetEmptyEntityInstanceForType(
     autofill::EntityType type) {
-  return autofill::EntityInstanceBuilder(type).AddPrimaryAttribute().Build();
+  autofill::EntityInstanceBuilder builder(type);
+
+  // Iterate through all attributes for this specific type.
+  for (autofill::AttributeType attr_type : type.attributes()) {
+    builder.AddAttribute(autofill::AttributeInstance(attr_type));
+  }
+
+  return builder.Build();
 }
 
 // Returns the entity instance if `entity_id` is given.
