@@ -449,12 +449,6 @@ android_library("cronet_impl_common_java") {
     _generated_impl_version_java,
   ]
 
-  # Note: This target should not depend on //base:base_java as base
-  # is only bundled within the native_impl jar. Which means that
-  # if this target depends on base then we'll have to export the
-  # native_impl jar to all users of the fallback impl too.
-  assert_no_deps = [ "//base:base_java" ]
-
   # Adding deps here won't include those deps in the cronet_impl_common_java.jar.
   # Please add to cronet_impl_common_java_deps_to_package instead.
   deps = [
@@ -572,7 +566,18 @@ cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
   ":cronet_android_os_system_properties_java",
   "//base/version_info/android:version_constants_java",
-  "//base:base_java",
+  "//base:tasks_java",
+  "//base:command_line_java",
+  "//base:log_java",
+  "//base:resetters_java",
+  "//base:time_utils_java",
+  "//base:metrics_java",
+  "//base:activity_state_java",
+  "//base:callback_java",
+  "//base:jni_utils_java",
+  "//base:bundle_utils_java",
+  "//base:wrapped_class_loader_java",
+  "//base:build_info_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",
   "//url:url_java",
@@ -609,6 +614,7 @@ android_library("cronet_impl_native_java") {
     ":flags_java_proto",
     ":httpengine_native_provider_java",
     "//base:log_java",
+    "//base:metrics_ScopedSysTraceEvent_java",
     "//build/android:build_java",
     "//components/cronet:request_context_config_java_proto",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
