@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/merchant_trust_chip_button_controller.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
@@ -106,7 +107,8 @@ class LocationBarView
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
       public device::GeolocationSystemPermissionManager::PermissionObserver,
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-      public PageActionIconView::Delegate {
+      public PageActionIconView::Delegate,
+      public OmniboxPopupPresenterDelegate {
   METADATA_HEADER(LocationBarView, views::View)
 
  public:
@@ -137,6 +139,7 @@ class LocationBarView
 
   // Returns the location bar border radius in DIPs.
   int GetBorderRadius() const;
+  static int ComputeBorderRadius(gfx::Size size);
 
   // Initializes the LocationBarView.
   void Init();
@@ -145,12 +148,13 @@ class LocationBarView
 
   // Returns a background that paints an (optionally stroked) rounded rect with
   // the given color.
-  std::unique_ptr<views::Background> CreateRoundRectBackground(
+  static std::unique_ptr<views::Background> CreateRoundRectBackground(
       SkColor background_color,
       SkColor stroke_color,
+      gfx::Size size,
       SkBlendMode blend_mode = SkBlendMode::kSrcOver,
       bool antialias = true,
-      bool should_border_scale = false) const;
+      bool should_border_scale = false);
 
   // Returns the delegate.
   Delegate* delegate() const { return delegate_; }
@@ -264,6 +268,11 @@ class LocationBarView
   void OnPermissionManagerShuttingDown() override;
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
+  // OmniboxPopupPresenterDelegate:
+  views::Widget* GetLocationBarWidget() override;
+  OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override;
+  OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
+
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
 
   // Returns the height available for user-entered text in the location bar.
@@ -309,14 +318,6 @@ class LocationBarView
 
   OmniboxPopupView* GetOmniboxPopupViewForTesting() {
     return omnibox_popup_view_.get();
-  }
-
-  OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const {
-    return omnibox_popup_file_selector_.get();
-  }
-
-  OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const {
-    return omnibox_popup_aim_presenter_.get();
   }
 
  private:

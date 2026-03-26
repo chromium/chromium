@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "extensions/browser/view_type_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -19,7 +20,6 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_observer.h"
 
-class LocationBarView;
 class OmniboxContextMenu;
 class OmniboxController;
 class OmniboxPopupPresenterBase;
@@ -36,14 +36,14 @@ class MenuModel;
 
 // The content WebView for the popup of a WebUI Omnibox.
 class OmniboxPopupWebUIBaseContent : public views::WebView,
-                                     public views::ViewObserver,
+                                     public LocationBar::Observer,
                                      public WebUIContentsWrapper::Host {
   METADATA_HEADER(OmniboxPopupWebUIBaseContent, views::WebView)
 
  public:
   OmniboxPopupWebUIBaseContent() = delete;
   OmniboxPopupWebUIBaseContent(OmniboxPopupPresenterBase* presenter,
-                               LocationBarView* location_bar_view,
+                               LocationBar* location_bar,
                                OmniboxController* controller,
                                bool top_rounded_corners);
   OmniboxPopupWebUIBaseContent(const OmniboxPopupWebUIBaseContent&) = delete;
@@ -58,8 +58,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // views::View:
   void AddedToWidget() override;
 
-  // views::ViewObserver:
-  void OnViewBoundsChanged(views::View* observed_view) override;
+  // LocationBar::Observer:
+  void OnLocationBarBoundsChanged() override;
 
   // WebUIContentsWrapper::Host:
   void CloseUI() override;
@@ -98,7 +98,7 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   OmniboxController* controller() { return controller_.get(); }
 
-  LocationBarView* location_bar_view() { return location_bar_view_.get(); }
+  LocationBar* location_bar() { return location_bar_.get(); }
 
   bool top_rounded_corners() const { return top_rounded_corners_; }
 
@@ -112,7 +112,7 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   void LoadContent();
 
   raw_ptr<OmniboxPopupPresenterBase> popup_presenter_ = nullptr;
-  raw_ptr<LocationBarView> location_bar_view_ = nullptr;
+  raw_ptr<LocationBar> location_bar_ = nullptr;
   // The controller for the Omnibox.
   raw_ptr<OmniboxController> controller_ = nullptr;
 

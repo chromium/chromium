@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -18,8 +19,9 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
-class LocationBarView;
+class LocationBar;
 class OmniboxPopupWebUIBaseContent;
+class OmniboxPopupPresenterDelegate;
 class RoundedOmniboxResultsFrame;
 
 namespace omnibox {
@@ -35,7 +37,10 @@ extern const void* kOmniboxWebUIPopupWidgetId;
 class OmniboxPopupPresenterBase {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRoundedResultsFrame);
-  explicit OmniboxPopupPresenterBase(LocationBarView* location_bar_view);
+  // Arguments must outlast this.
+  explicit OmniboxPopupPresenterBase(
+      LocationBar* location_bar,
+      OmniboxPopupPresenterDelegate& presenter_delegate);
   OmniboxPopupPresenterBase(const OmniboxPopupPresenterBase&) = delete;
   OmniboxPopupPresenterBase& operator=(const OmniboxPopupPresenterBase&) =
       delete;
@@ -58,6 +63,10 @@ class OmniboxPopupPresenterBase {
 
   virtual std::string_view GetPopupMetricPrefix() const = 0;
 
+  OmniboxPopupPresenterDelegate& delegate() const {
+    return *presenter_delegate_;
+  }
+
  protected:
   // The container for the WebUI WebView.
   views::View* GetUIContainer() const;
@@ -77,9 +86,7 @@ class OmniboxPopupPresenterBase {
   // Returns whether the WebUI content view receive focus.
   virtual bool ShouldReceiveFocus() const;
 
-  LocationBarView* location_bar_view() const {
-    return location_bar_view_.get();
-  }
+  LocationBar* location_bar() const { return location_bar_.get(); }
 
   views::Widget* GetWidget() const { return widget_.get(); }
 
@@ -102,8 +109,10 @@ class OmniboxPopupPresenterBase {
   // created
   RoundedOmniboxResultsFrame* GetResultsFrame() const;
 
-  // The location bar view that owns `this`.
-  const raw_ptr<LocationBarView> location_bar_view_;
+  // The location bar that owns `this`.
+  const raw_ptr<LocationBar> location_bar_;
+
+  const raw_ref<OmniboxPopupPresenterDelegate> presenter_delegate_;
 
   // The container for both the WebUI suggestions list and other WebUI
   // containers

@@ -13,7 +13,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-class LocationBarView;
+class LocationBar;
 
 // A class that wraps a Widget's content view to provide a custom results frame.
 class RoundedOmniboxResultsFrame : public views::View {
@@ -21,7 +21,7 @@ class RoundedOmniboxResultsFrame : public views::View {
 
  public:
   RoundedOmniboxResultsFrame(views::View* contents,
-                             LocationBarView* location_bar,
+                             LocationBar* location_bar,
                              bool forward_mouse_events);
   RoundedOmniboxResultsFrame(const RoundedOmniboxResultsFrame&) = delete;
   RoundedOmniboxResultsFrame& operator=(const RoundedOmniboxResultsFrame&) =

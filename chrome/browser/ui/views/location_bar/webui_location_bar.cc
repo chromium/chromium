@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
@@ -46,6 +47,10 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
           /*location_bar=*/this, browser_, browser_->profile()));
   omnibox_view_ =
       std::make_unique<WebUIReadOnlyOmnibox>(omnibox_controller_.get(), *this);
+
+  omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
+      /*omnibox_view=*/omnibox_view_.get(), omnibox_controller_.get(),
+      /*location_bar=*/this, /*presenter_delegate=*/*this);
 
   // Unretained is safe because `this` owns `moved_subscription_`.
   moved_subscription_ =
@@ -227,6 +232,22 @@ content::WebContents* WebUILocationBar::GetContentSettingWebContents() {
 
 ContentSettingBubbleModelDelegate*
 WebUILocationBar::GetContentSettingBubbleModelDelegate() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+views::Widget* WebUILocationBar::GetLocationBarWidget() {
+  return toolbar_view_->GetWidget();
+}
+
+OmniboxPopupFileSelector* WebUILocationBar::GetOmniboxPopupFileSelector()
+    const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+OmniboxPopupAimPresenter* WebUILocationBar::GetOmniboxPopupAimPresenter()
+    const {
   NOTIMPLEMENTED();
   return nullptr;
 }

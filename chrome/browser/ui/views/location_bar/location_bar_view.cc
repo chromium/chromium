@@ -385,7 +385,7 @@ void LocationBarView::Init() {
        base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup))) {
     omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
         /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
-        /*location_bar_view=*/this);
+        /*location_bar=*/this, /*presenter_delegate=*/*this);
   } else {
     omnibox_popup_view_ = std::make_unique<OmniboxPopupViewViews>(
         /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
@@ -614,17 +614,24 @@ bool LocationBarView::IsInitialized() const {
 }
 
 int LocationBarView::GetBorderRadius() const {
-  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMaximum, size());
+  return ComputeBorderRadius(size());
 }
 
+// static
+int LocationBarView::ComputeBorderRadius(gfx::Size size) {
+  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, size);
+}
+
+// static
 std::unique_ptr<views::Background> LocationBarView::CreateRoundRectBackground(
     SkColor background_color,
     SkColor stroke_color,
+    gfx::Size size,
     SkBlendMode blend_mode,
     bool antialias,
-    bool should_border_scale) const {
-  const int radius = GetBorderRadius();
+    bool should_border_scale) {
+  const int radius = ComputeBorderRadius(size);
   auto painter =
       stroke_color == SK_ColorTRANSPARENT
           ? views::Painter::CreateSolidRoundRectPainter(
@@ -1331,6 +1338,18 @@ void LocationBarView::OnPermissionManagerShuttingDown() {
 }
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
+views::Widget* LocationBarView::GetLocationBarWidget() {
+  return GetWidget();
+}
+
+OmniboxPopupFileSelector* LocationBarView::GetOmniboxPopupFileSelector() const {
+  return omnibox_popup_file_selector_.get();
+}
+
+OmniboxPopupAimPresenter* LocationBarView::GetOmniboxPopupAimPresenter() const {
+  return omnibox_popup_aim_presenter_.get();
+}
+
 WebContents* LocationBarView::GetWebContentsForPageActionIconView() {
   return GetWebContents();
 }
@@ -1579,7 +1598,8 @@ void LocationBarView::RefreshBackground() {
     SetBackground(views::CreateSolidBackground(background_color_));
   } else {
     SetBackground(CreateRoundRectBackground(
-        background_color_, border_color, /*blend_mode=*/SkBlendMode::kSrcOver,
+        background_color_, border_color, size(),
+        /*blend_mode=*/SkBlendMode::kSrcOver,
         /*antialias=*/true, /*should_border_scale=*/true));
   }
 

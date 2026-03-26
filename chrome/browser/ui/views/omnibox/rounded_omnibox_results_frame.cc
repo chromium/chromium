@@ -70,9 +70,8 @@ views::Widget* GetImmersiveFullscreenWidgetForEvent(
     // widget to handle text selection.
     gfx::Point event_location = this_event->location();
     views::View::ConvertPointToScreen(this_view, &event_location);
-    views::View::ConvertPointFromScreen(browser_view->GetLocationBarView(),
-                                        &event_location);
-    if (browser_view->GetLocationBarView()->HitTestPoint(event_location)) {
+    gfx::Rect bounds = browser_view->GetLocationBar()->BoundsInScreen();
+    if (bounds.Contains(event_location)) {
       return browser_view->overlay_widget();
     }
   }
@@ -161,7 +160,7 @@ class TopBackgroundView : public views::View {
   METADATA_HEADER(TopBackgroundView, views::View)
 
  public:
-  explicit TopBackgroundView(const LocationBarView* location_bar)
+  explicit TopBackgroundView(const LocationBar* location_bar)
       : location_bar_(location_bar) {}
 
   void OnThemeChanged() override {
@@ -173,8 +172,9 @@ class TopBackgroundView : public views::View {
     // underlying antialiased location bar/toolbar edge.  The round rect here is
     // not antialiased, since the goal is to completely cover the underlying
     // pixels, and AA would let those on the edge partly bleed through.
-    SetBackground(location_bar_->CreateRoundRectBackground(
-        SK_ColorTRANSPARENT, background_color, SkBlendMode::kSrc, false));
+    SetBackground(LocationBarView::CreateRoundRectBackground(
+        SK_ColorTRANSPARENT, background_color, location_bar_->Bounds().size(),
+        SkBlendMode::kSrc, false));
   }
 
 #if !defined(USE_AURA)
@@ -218,7 +218,7 @@ class TopBackgroundView : public views::View {
 #endif  // !USE_AURA
 
  private:
-  raw_ptr<const LocationBarView> location_bar_;
+  raw_ptr<const LocationBar> location_bar_;
 };
 
 BEGIN_METADATA(TopBackgroundView)
@@ -233,7 +233,7 @@ DEFINE_VIEW_BUILDER(/* no export */, TopBackgroundView)
 
 RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
     views::View* contents,
-    LocationBarView* location_bar,
+    LocationBar* location_bar,
     bool forward_mouse_events)
     : contents_(contents), forward_mouse_events_(forward_mouse_events) {
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(

@@ -11,14 +11,15 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 
-class LocationBarView;
+class LocationBar;
 class OmniboxController;
 
 // Implements subclass of OmniboxPopupPresenterBase to present a single WebUI
 // into the Omnibox popup.
 class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
  public:
-  OmniboxPopupPresenter(LocationBarView* location_bar_view,
+  OmniboxPopupPresenter(LocationBar* location_bar,
+                        OmniboxPopupPresenterDelegate& presenter_delegate,
                         OmniboxController* controller);
   OmniboxPopupPresenter(const OmniboxPopupPresenter&) = delete;
   OmniboxPopupPresenter& operator=(const OmniboxPopupPresenter&) = delete;

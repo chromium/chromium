@@ -45,15 +45,17 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
-OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
-                                             OmniboxController* controller,
-                                             LocationBarView* location_bar_view)
+OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(
+    OmniboxView* omnibox_view,
+    OmniboxController* controller,
+    LocationBar* location_bar,
+    OmniboxPopupPresenterDelegate& presenter_delegate)
     : OmniboxPopupView(controller),
       construction_time_(base::TimeTicks::Now()),
       omnibox_view_(omnibox_view),
-      location_bar_view_(location_bar_view) {
-  presenter_ =
-      std::make_unique<OmniboxPopupPresenter>(location_bar_view, controller);
+      location_bar_(location_bar) {
+  presenter_ = std::make_unique<OmniboxPopupPresenter>(
+      location_bar, presenter_delegate, controller);
   controller->edit_model()->set_popup_view(this);
   edit_model_observation_.Observe(controller->edit_model());
 }

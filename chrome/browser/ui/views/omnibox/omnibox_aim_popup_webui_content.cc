@@ -62,10 +62,10 @@ void OmniboxAimPopupWebUIContent::OnClearCallback(const std::string& input) {
 
 void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(
     const std::string& input) {
-  location_bar_view()->GetOmniboxView()->RevertAll();
+  location_bar()->GetOmniboxView()->RevertAll();
   if (!input.empty()) {
-    location_bar_view()->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(input),
-                                                       /*update_popup=*/false);
+    location_bar()->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(input),
+                                                  /*update_popup=*/false);
   }
 }
 
@@ -82,8 +82,8 @@ void OmniboxAimPopupWebUIContent::UpdateLocationBarFocusForScreenReader() {
             ->GetAccessibilityMode()
             .has_mode(ui::AXMode::kScreenReader);
     if (is_screen_reader_enabled) {
-      location_bar_view()->FocusLocation(/*is_user_initiated=*/true,
-                                         /*clear_focus_if_failed=*/false);
+      location_bar()->FocusLocation(/*is_user_initiated=*/true,
+                                    /*clear_focus_if_failed=*/false);
     }
   }
 }
@@ -124,7 +124,7 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
   }
   if (!controller()->edit_model()->CurrentTextIsURL()) {
     context->text =
-        base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
+        base::UTF16ToUTF8(location_bar()->GetOmniboxView()->GetText());
   }
   handler->OnPopupShown(std::move(context));
 }

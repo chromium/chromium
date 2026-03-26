@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
@@ -61,7 +62,8 @@ bool OmniboxPopupUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return omnibox::IsAimPopupFeatureEnabled() ||
          base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
-         base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup);
+         base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) ||
+         features::IsWebUILocationBarEnabled();
 }
 
 bool OmniboxPopupUIConfig::ShouldCrashOnJavascriptErrorInDevelopmentBuild()

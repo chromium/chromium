@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
@@ -33,8 +34,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxPopupPresenterBase,
                                       kRoundedResultsFrame);
 
 OmniboxPopupPresenterBase::OmniboxPopupPresenterBase(
-    LocationBarView* location_bar_view)
-    : location_bar_view_(location_bar_view) {
+    LocationBar* location_bar,
+    OmniboxPopupPresenterDelegate& presenter_delegate)
+    : location_bar_(location_bar), presenter_delegate_(presenter_delegate) {
   owned_omnibox_popup_webui_container_ =
       views::Builder<views::View>().SetUseDefaultFillLayout(true).Build();
 }
@@ -105,7 +107,7 @@ void OmniboxPopupPresenterBase::SynchronizePopupBounds() {
   if (widget_) {
     // The width is known, and is the basis for consistent web content rendering
     // so width is specified exactly; then only height adjusts dynamically.
-    gfx::Rect widget_bounds = location_bar_view_->GetBoundsInScreen();
+    gfx::Rect widget_bounds = location_bar_->BoundsInScreen();
     widget_bounds.Inset(
         -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
     if (ShouldShowLocationBarCutout()) {
@@ -142,10 +144,9 @@ void OmniboxPopupPresenterBase::EnsureWidgetCreated() {
   if (widget_) {
     return;
   }
-  widget_ =
-      std::make_unique<ThemeCopyingWidget>(location_bar_view_->GetWidget());
+  views::Widget* parent_widget = presenter_delegate_->GetLocationBarWidget();
+  widget_ = std::make_unique<ThemeCopyingWidget>(parent_widget);
 
-  const views::Widget* parent_widget = location_bar_view_->GetWidget();
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       ShouldReceiveFocus() ? views::Widget::InitParams::TYPE_WINDOW_FRAMELESS
@@ -169,7 +170,7 @@ void OmniboxPopupPresenterBase::EnsureWidgetCreated() {
       views::kWidgetIdentifierKey,
       const_cast<void*>(omnibox::kOmniboxWebUIPopupWidgetId));
   auto rounded_frame = std::make_unique<RoundedOmniboxResultsFrame>(
-      owned_omnibox_popup_webui_container_.release(), location_bar_view_,
+      owned_omnibox_popup_webui_container_.release(), location_bar_,
       /*forward_mouse_events=*/ShouldShowLocationBarCutout());
   rounded_frame->SetProperty(views::kElementIdentifierKey,
                              kRoundedResultsFrame);

@@ -21,17 +21,19 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
-class LocationBarView;
+class LocationBar;
 class OmniboxController;
-class OmniboxViewViews;
+class OmniboxView;
 class OmniboxPopupPresenter;
+class OmniboxPopupPresenterDelegate;
 
 class OmniboxPopupViewWebUI : public OmniboxPopupView,
                               OmniboxEditModel::Observer {
  public:
-  OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
+  OmniboxPopupViewWebUI(OmniboxView* omnibox_view,
                         OmniboxController* controller,
-                        LocationBarView* location_bar_view);
+                        LocationBar* location_bar,
+                        OmniboxPopupPresenterDelegate& presenter_delegate);
   OmniboxPopupViewWebUI(const OmniboxPopupViewWebUI&) = delete;
   OmniboxPopupViewWebUI& operator=(const OmniboxPopupViewWebUI&) = delete;
   ~OmniboxPopupViewWebUI() override;
@@ -65,11 +67,11 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   // Time when this instance was constructed, or null after use for histogram.
   base::TimeTicks construction_time_;
 
-  // The edit view owned by `location_bar_view_`. May be nullptr in tests.
-  raw_ptr<OmniboxViewViews> omnibox_view_;
+  // The edit view owned by `location_bar_`. May be nullptr in tests.
+  raw_ptr<OmniboxView> omnibox_view_;
 
-  // The location bar view that owns `this`. May be nullptr in tests.
-  raw_ptr<LocationBarView> location_bar_view_;
+  // The location bar that owns `this`. May be nullptr in tests.
+  raw_ptr<LocationBar> location_bar_;
 
   // The presenter that manages its own widget and WebUI presentation.
   std::unique_ptr<OmniboxPopupPresenter> presenter_;

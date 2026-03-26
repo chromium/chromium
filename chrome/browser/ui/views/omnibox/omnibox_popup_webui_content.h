@@ -19,7 +19,7 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
-class LocationBarView;
+class LocationBar;
 class OmniboxPopupPresenterBase;
 class OmniboxPopupHandler;
 
@@ -30,7 +30,7 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
  public:
   OmniboxPopupWebUIContent() = delete;
   OmniboxPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
-                           LocationBarView* location_bar_view,
+                           LocationBar* location_bar,
                            OmniboxController* controller,
                            bool include_location_bar_cutout,
                            bool wants_focus);

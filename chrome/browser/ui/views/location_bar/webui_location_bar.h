@@ -10,12 +10,14 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/interaction/element_tracker.h"
 
 class Browser;
 class OmniboxController;
+class OmniboxPopupView;
 class PermissionDashboardController;
 class PermissionDashboardView;
 class Profile;
@@ -24,7 +26,8 @@ class WebUIToolbarWebView;
 // A LocationBar implementation using WebUI.
 class WebUILocationBar : public LocationBar,
                          public ContentSettingImageViewDelegate,
-                         public WebUIReadOnlyOmnibox::UpdatePropagator {
+                         public WebUIReadOnlyOmnibox::UpdatePropagator,
+                         public OmniboxPopupPresenterDelegate {
  public:
   WebUILocationBar(Browser* browser, LocationBarView::Delegate* delegate);
   ~WebUILocationBar() override;
@@ -77,6 +80,11 @@ class WebUILocationBar : public LocationBar,
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
+  // OmniboxPopupPresenterDelegate:
+  views::Widget* GetLocationBarWidget() override;
+  OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override;
+  OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
+
  private:
   void OnMoved(ui::TrackedElement* element);
 
@@ -92,6 +100,7 @@ class WebUILocationBar : public LocationBar,
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
+  std::unique_ptr<OmniboxPopupView> omnibox_popup_view_;
   bool is_initialized_ = false;
   base::WeakPtrFactory<WebUILocationBar> weak_ptr_factory_{this};
 };

@@ -37,13 +37,13 @@
 
 OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
     OmniboxPopupPresenterBase* presenter,
-    LocationBarView* location_bar_view,
+    LocationBar* location_bar,
     OmniboxController* controller,
     bool include_location_bar_cutout,
     bool wants_focus)
     : OmniboxPopupWebUIBaseContent(
           presenter,
-          location_bar_view,
+          location_bar,
           controller,
           /*top_rounded_corners=*/!include_location_bar_cutout),
       wants_focus_(wants_focus) {
