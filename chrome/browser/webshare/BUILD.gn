@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/safe_browsing/buildflags.gni")
 
 if (is_chromeos || is_mac) {
   static_library("storage") {
@@ -24,6 +25,104 @@ if (is_chromeos || is_mac) {
       "//base",
       "//third_party/blink/public/common",
     ]
+  }
+}
+
+if (is_win || is_chromeos || is_mac) {
+  source_set("webshare") {
+    public = [ "share_service_impl.h" ]
+
+    public_deps = [
+      "//base",
+      "//components/safe_browsing:buildflags",
+      "//content/public/browser",
+    ]
+
+    if (safe_browsing_mode != 0) {
+      public += [ "safe_browsing_request.h" ]
+    }
+
+    if (is_chromeos) {
+      public += [ "chromeos/sharesheet_client.h" ]
+      public_deps += [
+        "//chrome/browser/sharesheet",
+        "//chromeos/components/sharesheet:constants",
+        "//url",
+      ]
+    }
+
+    if (is_win) {
+      public += [
+        "win/share_operation.h",
+        "win/show_share_ui_for_window_operation.h",
+      ]
+    }
+
+    if (is_mac) {
+      public += [ "mac/sharing_service_operation.h" ]
+    }
+  }
+
+  source_set("impl") {
+    sources = [ "share_service_impl.cc" ]
+
+    public_deps = [ ":webshare" ]
+
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser:browser_public_dependencies",
+      "//mojo/public/cpp/bindings",
+    ]
+
+    if (safe_browsing_mode != 0) {
+      sources += [ "safe_browsing_request.cc" ]
+      deps += [
+        "//chrome/browser/safe_browsing",
+        "//components/safe_browsing/content/common:file_type_policies",
+        "//components/safe_browsing/core/browser/db",
+        "//components/safe_browsing/core/browser/db:database_manager",
+        "//components/safe_browsing/core/common",
+      ]
+    }
+
+    if (is_chromeos) {
+      sources += [ "chromeos/sharesheet_client.cc" ]
+      deps += [
+        ":storage",
+        "//chrome/browser/apps/app_service",
+        "//chrome/browser/ash/file_manager",
+        "//chrome/browser/profiles",
+        "//chrome/browser/sharesheet",
+        "//components/prefs",
+        "//components/services/app_service",
+        "//components/visibility_timer",
+        "//net",
+      ]
+    }
+
+    if (is_win) {
+      sources += [
+        "win/share_operation.cc",
+        "win/show_share_ui_for_window_operation.cc",
+      ]
+      deps += [
+        "//chrome/browser/profiles",
+        "//net",
+        "//storage/browser",
+        "//ui/display",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [ "mac/sharing_service_operation.mm" ]
+      deps += [
+        ":storage",
+        "//chrome/browser/profiles",
+        "//components/visibility_timer",
+        "//net",
+        "//storage/browser",
+      ]
+    }
   }
 }
 
@@ -50,6 +149,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_win || is_chromeos || is_mac) {
+    deps += [ "//chrome/browser/webshare" ]
+  }
 
   if (is_chromeos) {
     deps += [

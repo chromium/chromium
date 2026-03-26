@@ -995,7 +995,10 @@ static_library("test_support") {
       "base/process_lineage_win.cc",
       "base/process_lineage_win.h",
     ]
-    deps += [ "//chrome/chrome_elf:constants" ]
+    deps += [
+      "//chrome/browser/webshare",
+      "//chrome/chrome_elf:constants",
+    ]
     public_deps += [
       "//chrome/chrome_elf:crash",
       "//chrome/install_static/test:test_support",
@@ -4465,6 +4468,7 @@ if (!is_android) {
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/renderer_host:history_swiper",
         "//chrome/browser/shortcuts",
+        "//chrome/browser/webshare",
         "//components/enterprise/platform_auth:enterprise_platform_auth",
         "//components/onc",
         "//components/remote_cocoa/app_shim",
@@ -4590,6 +4594,7 @@ if (!is_android) {
 
     if (is_win || is_chromeos || is_mac) {
       sources += [ "../browser/webshare/share_service_browsertest.cc" ]
+      deps += [ "//chrome/browser/webshare" ]
 
       if (is_chromeos) {
         deps += [ "//chrome/browser/sharesheet" ]
@@ -5789,6 +5794,7 @@ if (!is_android) {
         "//chrome/browser/ui/webui/signin/ash:browser_tests",
         "//chrome/browser/ui/window_sizer:browser_tests",
         "//chrome/browser/web_applications/app_service",
+        "//chrome/browser/webshare",
         "//chrome/services/file_util/public/cpp:browser_tests",
         "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
         "//chromeos:test_support",
@@ -7766,6 +7772,7 @@ test("unit_tests") {
       "//chrome/browser/os_crypt",
       "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/shortcuts",
+      "//chrome/browser/webshare",
       "//chrome/browser/win:isolated_browser_support",
       "//chrome/browser/win:registry_watcher",
       "//chrome/browser/win/conflicts:unit_tests",

@@ -4884,8 +4884,6 @@ static_library("browser") {
       "supervised_user/chromeos/supervised_user_web_content_handler_impl.h",
       "ui/ash/shelf/chrome_shelf_metrics_provider.cc",
       "ui/ash/shelf/chrome_shelf_metrics_provider.h",
-      "webshare/chromeos/sharesheet_client.cc",
-      "webshare/chromeos/sharesheet_client.h",
     ]
 
     deps += [
@@ -5340,7 +5338,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/vm",
       "//chrome/browser/ui/webui/nearby_share",
       "//chrome/browser/ui/webui/signin/ash",
-      "//chrome/browser/webshare:storage",
       "//chrome/common/chromeos/extensions",
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/proto",
@@ -6063,10 +6060,6 @@ static_library("browser") {
       "profiles/profile_shortcut_manager_win.cc",
       "profiles/profile_shortcut_manager_win.h",
       "shell_integration_win.cc",
-      "webshare/win/share_operation.cc",
-      "webshare/win/share_operation.h",
-      "webshare/win/show_share_ui_for_window_operation.cc",
-      "webshare/win/show_share_ui_for_window_operation.h",
       "win/app_icon.cc",
       "win/app_icon.h",
       "win/automation_controller.cc",
@@ -6295,8 +6288,6 @@ static_library("browser") {
       "process_singleton_mac.mm",
       "shell_integration_mac.mm",
       "webauthn/chrome_authenticator_request_delegate_mac.mm",
-      "webshare/mac/sharing_service_operation.h",
-      "webshare/mac/sharing_service_operation.mm",
     ]
     deps += [
       "//chrome/app_shim",
@@ -6306,7 +6297,6 @@ static_library("browser") {
       "//chrome/browser/renderer_host:delegate_impl",
       "//chrome/browser/renderer_host:history_swiper",
       "//chrome/browser/web_applications/os_integration/mac:web_app_shortcut_copier_lib",
-      "//chrome/browser/webshare:storage",
       "//chrome/services/mac_notifications",
       "//chrome/services/mac_notifications/public/cpp",
       "//chrome/services/mac_notifications/public/mojom",
@@ -6791,17 +6781,15 @@ static_library("browser") {
   }
 
   if (is_win || is_chromeos || is_mac) {
-    if (safe_browsing_mode != 0) {
-      sources += [
-        "webshare/safe_browsing_request.cc",
-        "webshare/safe_browsing_request.h",
-      ]
-    }
-
-    sources += [
-      "webshare/share_service_impl.cc",
-      "webshare/share_service_impl.h",
+    deps += [
+      "//chrome/browser/webshare",
+      "//chrome/browser/webshare:impl",
     ]
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when
+    # chrome/browser/bad_message.h and chrome/browser/browser_process.h
+    # are fully componentized.
+    allow_circular_includes_from += [ "//chrome/browser/webshare:impl" ]
   }
 
   if (is_win || is_mac || is_linux) {
