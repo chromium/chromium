@@ -18,10 +18,6 @@
 
 namespace feed {
 
-const char kFeedHeaderRemovalTreatmentParam[] = "treatment";
-const char kFeedHeaderRemovalTreatmentValue1[] = "label";
-const char kFeedHeaderRemovalTreatmentValue2[] = "none";
-
 // InterestFeedV2 takes precedence over InterestFeedContentSuggestions.
 // InterestFeedV2 is cached in ChromeCachedFlags. If the default value here is
 // changed, please update the cached one's default value in CachedFeatureFlags.
@@ -72,8 +68,6 @@ BASE_FEATURE(kFeedRecyclerBinderUnmountOnDetach,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedStreaming, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFeedHeaderRemoval, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedAudioOverviews, base::FEATURE_DISABLED_BY_DEFAULT);
 

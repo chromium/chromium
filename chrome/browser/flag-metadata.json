@@ -4624,11 +4624,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "feed-header-removal",
-    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
-    "expiry_milestone": 142
-  },
-  {
     "name": "feed-loading-placeholder",
     "owners": [ "//chrome/android/feed/OWNERS", "dewittj@chromium.org" ],
     "expiry_milestone": 140

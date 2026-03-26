@@ -5622,10 +5622,6 @@ inline constexpr char kFeedFollowUiUpdateName[] =
 inline constexpr char kFeedFollowUiUpdateDescription[] =
     "Enables showing the updated UI for the following feed.";
 
-inline constexpr char kFeedHeaderRemovalName[] = "Removing feed header";
-inline constexpr char kFeedHeaderRemovalDescription[] =
-    "Stops showing the feed header.";
-
 inline constexpr char kFeedLoadingPlaceholderName[] =
     "Feed loading placeholder";
 inline constexpr char kFeedLoadingPlaceholderDescription[] =

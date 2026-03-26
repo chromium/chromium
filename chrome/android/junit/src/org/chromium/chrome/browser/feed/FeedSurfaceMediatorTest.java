@@ -69,11 +69,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({
-    ChromeFeatureList.WEB_FEED_SORT,
-    ChromeFeatureList.FEED_HEADER_REMOVAL,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-})
+@EnableFeatures({ChromeFeatureList.WEB_FEED_SORT, SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

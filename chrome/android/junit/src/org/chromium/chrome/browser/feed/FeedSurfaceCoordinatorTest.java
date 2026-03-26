@@ -120,7 +120,7 @@ import java.util.function.Supplier;
     ChromeFeatureList.WEB_FEED_ONBOARDING,
     ChromeFeatureList.FEED_CONTAINMENT
 })
-@EnableFeatures({SigninFeatures.ENABLE_SEAMLESS_SIGNIN, ChromeFeatureList.FEED_HEADER_REMOVAL})
+@EnableFeatures({SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;

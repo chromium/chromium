@@ -774,17 +774,6 @@ const FeatureEntry::FeatureVariation kOmahaMinSdkVersionAndroidVariations[] = {
      kOmahaMinSdkVersionAndroidMinSdk1000, nullptr},
 };
 
-const FeatureEntry::FeatureParam kFeedHeaderRemovalParam1[] = {
-    {feed::kFeedHeaderRemovalTreatmentParam,
-     feed::kFeedHeaderRemovalTreatmentValue1}};
-const FeatureEntry::FeatureParam kFeedHeaderRemovalParam2[] = {
-    {feed::kFeedHeaderRemovalTreatmentParam,
-     feed::kFeedHeaderRemovalTreatmentValue2}};
-const FeatureEntry::FeatureVariation kFeedHeaderRemovalVariations[] = {
-    {"1", kFeedHeaderRemovalParam1, nullptr},
-    {"2", kFeedHeaderRemovalParam2, nullptr},
-};
-
 const FeatureEntry::Choice kSafetyHubUnifiedPasswordsModuleChoices[] = {
     {"Default", "", ""},
     {"Enabled", switches::kEnableFeatures,
@@ -6038,11 +6027,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"refresh-feed-on-start", flag_descriptions::kRefreshFeedOnRestartName,
      flag_descriptions::kRefreshFeedOnRestartDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kRefreshFeedOnRestart)},
-    {"feed-header-removal", flag_descriptions::kFeedHeaderRemovalName,
-     flag_descriptions::kFeedHeaderRemovalDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kFeedHeaderRemoval,
-                                    kFeedHeaderRemovalVariations,
-                                    "FeedHeaderRemoval")},
     {"feed-audio-overviews", flag_descriptions::kFeedAudioOverviewsName,
      flag_descriptions::kFeedAudioOverviewsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedAudioOverviews)},
