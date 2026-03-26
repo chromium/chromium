@@ -332,7 +332,7 @@ class ReloadButtonMetricsTest : public ChromeViewsTestBase,
     viz::FrameTimingDetails frame_timing_details;
     frame_timing_details.presentation_feedback.timestamp =
         presentation_timestamp;
-    reload_button()->OnNextPresentation(reload_button()->visible_mode(),
+    reload_button()->OnNextPresentation(reload_button()->GetVisibleMode(),
                                         reload_button()->GetState(),
                                         frame_timing_details);
   }

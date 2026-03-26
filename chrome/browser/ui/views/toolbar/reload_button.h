@@ -45,7 +45,10 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   ReloadButton& operator=(const ReloadButton&) = delete;
   ~ReloadButton() override;
 
-  Mode visible_mode() const { return visible_mode_; }
+  Mode GetVisibleMode() const { return visible_mode_; }
+
+  [[nodiscard]] base::CallbackListSubscription AddVisibleModeChangedCallback(
+      views::PropertyChangedCallback callback);
 
   void SetVectorIconsForMode(Mode mode,
                              const gfx::VectorIcon& icon,

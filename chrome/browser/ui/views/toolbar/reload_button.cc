@@ -34,6 +34,7 @@
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/metrics.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -228,6 +229,9 @@ std::unique_ptr<ui::SimpleMenuModel> ReloadButton::CreateMenuModel() {
 }
 
 void ReloadButton::SetVisibleMode(Mode mode) {
+  if (visible_mode_ == mode) {
+    return;
+  }
   metrics_recorder_->OnChangeVisibleMode(ToRecorderButtonMode(visible_mode_),
                                          ToRecorderButtonMode(mode),
                                          base::TimeTicks::Now());
@@ -242,6 +246,12 @@ void ReloadButton::SetVisibleMode(Mode mode) {
   }
 
   UpdateCachedTooltipText();
+  OnPropertyChanged(&visible_mode_, views::PropertyEffects::kNone);
+}
+
+base::CallbackListSubscription ReloadButton::AddVisibleModeChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&visible_mode_, std::move(callback));
 }
 
 void ReloadButton::ButtonPressed(const ui::Event& event) {
@@ -340,5 +350,10 @@ void ReloadButton::OnNextPresentation(
       frame_timing_details.presentation_feedback.timestamp);
 }
 
+DEFINE_ENUM_CONVERTERS(ReloadButton::Mode,
+                       {ReloadButton::Mode::kReload, u"kReload"},
+                       {ReloadButton::Mode::kStop, u"kStop"})
+
 BEGIN_METADATA(ReloadButton)
+ADD_READONLY_PROPERTY_METADATA(ReloadButton::Mode, VisibleMode)
 END_METADATA
