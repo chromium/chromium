@@ -928,6 +928,42 @@ android_java_prebuilt("package_httpengine_native_provider_java") {
   deps = [ ":repackage_httpengine_native_provider" ]
 }
 
+# This target is not intended to be a functional APK. Instead, it is used to
+# ensure that the jars we are shipping to downstream users can successfully go
+# through R8/D8 on their own, that our ProGuard configs are valid, and that the
+# resulting APK is free of unresolved references or duplicate classes (i.e. same
+# class being shipped in multiple jars).
+template("cronet_package_apk") {
+  android_apk(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+
+    android_manifest = "//build/android/AndroidManifest.xml"
+
+    # ProGuard is what checks for undefined references, so we need to enable it
+    # for the checking to actually happen. Also, this nicely doubles as a basic
+    # check for our ProGuard configs.
+    proguard_enabled = true
+
+    # Disable the trace_references check, which is an additional Chromium safety
+    # check that ensures the resulting DEX does not contain unresolved references.
+    # The reason why we disable this check is because it does not consider
+    # -dontwarn rules from ProGuard configs, and will therefore fail. Note that
+    # even with this check disabled, R8 itself will still check for unresolved
+    # references.
+    enable_proguard_checks = false
+
+    if (use_jacoco_coverage) {
+      # Normally this would be done for us, see:
+      #   https://source.chromium.org/chromium/chromium/src/+/main:build/config/android/internal_rules.gni;l=3592-3601;drc=a250d23f8414193856f12bfe4a334329e0c26368
+      # However this only kicks in if sources are provided. We don't provide any
+      # in this target, and nothing we depend on bundles this dep (it was stripped
+      # from Cronet classes during repackaging), so we have to re-add this dep
+      # manually.
+      deps += [ "//third_party/jacoco:jacocoagent_java" ]
+    }
+  }
+}
+
 # Dependencies of cronet_package_without_native_apk that are not bundled within
 # the final Cronet jars that we are shipping to downstream users; instead, we
 # expect users to pull these themselves.
@@ -951,12 +987,7 @@ cronet_package_without_nativejava_external_deps = [
   "//third_party/androidx:androidx_annotation_annotation_java",
 ]
 
-# This target is not intended to be a functional APK. Instead, it is used to
-# ensure that the jars we are shipping to downstream users can successfully go
-# through R8/D8 on their own, that our ProGuard configs are valid, and that the
-# resulting APK is free of unresolved references or duplicate classes (i.e. same
-# class being shipped in multiple jars).
-android_apk("cronet_package_without_nativejava_apk") {
+cronet_package_apk("cronet_package_without_nativejava_apk") {
   apk_name = "CronetPackageWithoutNativejava"
   android_manifest = "//build/android/AndroidManifest.xml"
   deps = [
@@ -965,29 +996,6 @@ android_apk("cronet_package_without_nativejava_apk") {
            ":package_impl_common_java",
            ":package_shared_java",
          ] + cronet_package_without_nativejava_external_deps
-
-  if (use_jacoco_coverage) {
-    # Normally this would be done for us, see:
-    #   https://source.chromium.org/chromium/chromium/src/+/main:build/config/android/internal_rules.gni;l=3592-3601;drc=a250d23f8414193856f12bfe4a334329e0c26368
-    # However this only kicks in if sources are provided. We don't provide any
-    # in this target, and nothing we depend on bundles this dep (it was stripped
-    # from Cronet classes during repackaging), so we have to re-add this dep
-    # manually.
-    deps += [ "//third_party/jacoco:jacocoagent_java" ]
-  }
-
-  # ProGuard is what checks for undefined references, so we need to enable it
-  # for the checking to actually happen. Also, this nicely doubles as a basic
-  # check for our ProGuard configs.
-  proguard_enabled = true
-
-  # Disable the trace_references check, which is an additional Chromium safety
-  # check that ensures the resulting DEX does not contain unresolved references.
-  # The reason why we disable this check is because it does not consider
-  # -dontwarn rules from ProGuard configs, and will therefore fail. Note that
-  # even with this check disabled, R8 itself will still check for unresolved
-  # references.
-  enable_proguard_checks = false
   proguard_configs = [
     "cronet_shared_proguard.cfg",
     "cronet_impl_common_proguard.cfg",
@@ -1014,14 +1022,8 @@ cronet_package_with_nativejava_external_deps =
     cronet_package_without_nativejava_external_deps +
     [ "//third_party/android_deps:com_google_code_findbugs_jsr305_java" ]
 
-# This target is not intended to be a functional APK. Instead, it is used to
-# ensure that the jars we are shipping to downstream users can successfully go
-# through R8/D8 on their own, that our ProGuard configs are valid, and that the
-# resulting APK is free of unresolved references or duplicate classes (i.e. same
-# class being shipped in multiple jars).
-android_apk("cronet_package_with_nativejava_apk") {
+cronet_package_apk("cronet_package_with_nativejava_apk") {
   apk_name = "CronetPackageWithNativejava"
-  android_manifest = "//build/android/AndroidManifest.xml"
   deps = [
            ":package_api_java",
            ":package_httpengine_native_provider_java",
@@ -1029,29 +1031,6 @@ android_apk("cronet_package_with_nativejava_apk") {
            ":package_impl_native_java",
            ":package_shared_java",
          ] + cronet_package_with_nativejava_external_deps
-
-  if (use_jacoco_coverage) {
-    # Normally this would be done for us, see:
-    #   https://source.chromium.org/chromium/chromium/src/+/main:build/config/android/internal_rules.gni;l=3592-3601;drc=a250d23f8414193856f12bfe4a334329e0c26368
-    # However this only kicks in if sources are provided. We don't provide any
-    # in this target, and nothing we depend on bundles this dep (it was stripped
-    # from Cronet classes during repackaging), so we have to re-add this dep
-    # manually.
-    deps += [ "//third_party/jacoco:jacocoagent_java" ]
-  }
-
-  # ProGuard is what checks for undefined references, so we need to enable it
-  # for the checking to actually happen. Also, this nicely doubles as a basic
-  # check for our ProGuard configs.
-  proguard_enabled = true
-
-  # Disable the trace_references check, which is an additional Chromium safety
-  # check that ensures the resulting DEX does not contain unresolved references.
-  # The reason why we disable this check is because it does not consider
-  # -dontwarn rules from ProGuard configs, and will therefore fail. Note that
-  # even with this check disabled, R8 itself will still check for unresolved
-  # references.
-  enable_proguard_checks = false
   proguard_configs = [
     "cronet_shared_proguard.cfg",
     "cronet_impl_common_proguard.cfg",
