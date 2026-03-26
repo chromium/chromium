@@ -162,6 +162,37 @@ TEST_F(EnumSetTest, FromRange) {
             RestrictedRangeSet::FromRange(TestEnum::kTest2, TestEnum::kTest5));
 }
 
+TEST_F(EnumSetTest, FromRangeLarge) {
+  enum class TestEnumLarge {
+    kTestMin = 0,
+    kTest63 = 63,
+    kTest64 = 64,
+    kTestMax = 127,
+  };
+  using TestEnumLargeSet =
+      EnumSet<TestEnumLarge, TestEnumLarge::kTestMin, TestEnumLarge::kTestMax>;
+
+  // This should work because both are < 64.
+  EXPECT_EQ(TestEnumLargeSet({TestEnumLarge::kTest63}),
+            TestEnumLargeSet::FromRange(TestEnumLarge::kTest63,
+                                        TestEnumLarge::kTest63));
+
+  // These used to crash, but should now work.
+  EXPECT_EQ(TestEnumLargeSet({TestEnumLarge::kTest64}),
+            TestEnumLargeSet::FromRange(TestEnumLarge::kTest64,
+                                        TestEnumLarge::kTest64));
+  EXPECT_EQ(TestEnumLargeSet({TestEnumLarge::kTest63, TestEnumLarge::kTest64}),
+            TestEnumLargeSet::FromRange(TestEnumLarge::kTest63,
+                                        TestEnumLarge::kTest64));
+
+  // Test constexpr support for large ranges.
+  static_assert(
+      TestEnumLargeSet::FromRange(TestEnumLarge::kTest63,
+                                  TestEnumLarge::kTest64)
+          .Has(TestEnumLarge::kTest64),
+      "Expected FromRange() to be integral constant expression even for > 64");
+}
+
 TEST_F(EnumSetTest, Put) {
   TestEnumSet enums = {TestEnum::kTest4};
   enums.Put(TestEnum::kTest3);

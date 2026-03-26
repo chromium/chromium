@@ -210,10 +210,16 @@ class EnumSet {
 
   // Returns an EnumSet with all the values from start to end, inclusive.
   static constexpr EnumSet FromRange(E start, E end) {
-    CHECK_LE(start, end);
-    return EnumSet(EnumBitSet(
-        ((single_val_bitstring(end)) - (single_val_bitstring(start))) |
-        (single_val_bitstring(end))));
+    if constexpr (kValueCount <= 64) {
+      CHECK_LE(start, end);
+      return EnumSet(EnumBitSet(
+          ((single_val_bitstring(end)) - (single_val_bitstring(start))) |
+          (single_val_bitstring(end))));
+    } else {
+      EnumSet enum_set;
+      enum_set.PutRange(start, end);
+      return enum_set;
+    }
   }
 
   // Copy constructor and assignment welcome.
@@ -273,7 +279,7 @@ class EnumSet {
   void PutAll(EnumSet other) { enums_ |= other.enums_; }
 
   // Adds all values in the given range to our set, inclusive.
-  void PutRange(E start, E end) {
+  constexpr void PutRange(E start, E end) {
     CHECK_LE(start, end);
     size_t endIndexInclusive = ToIndex(end);
     for (size_t current = ToIndex(start); current <= endIndexInclusive;
