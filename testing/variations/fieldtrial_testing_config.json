@@ -10348,21 +10348,6 @@
             ]
         }
     ],
-    "ForceMigrateSyncingUserToSignedInAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ForceMigrateSyncingUserToSignedIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "FreezeSharedWorker": [
         {
             "platforms": [

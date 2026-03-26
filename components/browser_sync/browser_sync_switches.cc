@@ -26,7 +26,7 @@ BASE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceMigrateSyncingUserToSignedIn,
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
