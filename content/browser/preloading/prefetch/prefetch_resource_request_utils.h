@@ -12,6 +12,8 @@
 
 namespace content {
 
+struct PrefetchUpdateHeadersParams;
+
 // Avoid using `inline constexpr` here in order to place the definition to
 // `.cc` file to get `tools/traffic_annotation/scripts/auditor/auditor.py` to
 // work (See crbug.com/484967082 for more details).
@@ -26,6 +28,13 @@ extern const net::NetworkTrafficAnnotationTag
 // [2] Chromium's default headers
 // [3] WebContents overrides
 // [4] DevTools overrides
+
+// Returns a `PrefetchUpdateHeadersParams` that contains the headers to be added
+// to the initial prefetch `ResourceRequest`.
+PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
+    const GURL& request_url,
+    const PrefetchRequest& prefetch_request,
+    bool is_first_party_context_for_variations_header);
 
 // Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
 // Note that `request_url` and `prefetch_request.url` / `resource_request`

@@ -10,10 +10,12 @@
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -335,6 +337,90 @@ void MaybeApplyOverrideForDevtoolsUserAgentHeader(
     devtools_instrumentation::ApplyEmulationOverrides(
         RenderFrameDevToolsAgentHost::GetFor(referring_ftn), &request_headers);
   }
+}
+
+PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
+    const GURL& request_url,
+    const PrefetchRequest& prefetch_request,
+    bool is_first_party_context_for_variations_header) {
+  PrefetchUpdateHeadersParams params;
+
+  // ------------------------------------------------------------------------
+  // [1] Additional headers:
+  AddAdditionalHeaders(params.modified_headers, prefetch_request);
+
+  // ------------------------------------------------------------------------
+  // [2] `Accept`, `Upgrade-Insecure-Requests` and `Purpose`:
+  CHECK(prefetch_request.browser_context());
+  params.modified_headers.SetHeader(
+      net::HttpRequestHeaders::kAccept,
+      FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
+                             prefetch_request.browser_context()));
+
+  params.modified_headers.SetHeader("Upgrade-Insecure-Requests", "1");
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kRemovePurposeHeaderForPrefetch)) {
+    params.modified_headers.SetHeader(blink::kPurposeHeaderName,
+                                      blink::kSecPurposePrefetchHeaderValue);
+  }
+
+  // ------------------------------------------------------------------------
+  // [2] `Sec-Purpose`:
+  AddSecPurposeHeader(params.modified_headers, request_url, prefetch_request);
+
+  // ------------------------------------------------------------------------
+  // [2] `Sec-Speculation-Tags`:
+  AddSpeculationTagsHeader(params.modified_headers, request_url,
+                           prefetch_request);
+
+  // ------------------------------------------------------------------------
+  // [2] `X-Client-Data`:
+  if (prefetch_request.should_append_variations_header()) {
+    AddVariationsHeaderForPrefetch(
+        params.modified_cors_exempt_headers, request_url, prefetch_request,
+        is_first_party_context_for_variations_header);
+  }
+
+  // ------------------------------------------------------------------------
+  // [2] Embedder headers:
+  {
+    std::vector<std::string> removed_headers;
+    net::HttpRequestHeaders modified_headers;
+    net::HttpRequestHeaders modified_cors_exempt_headers;
+    GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
+        request_url, removed_headers, modified_headers,
+        modified_cors_exempt_headers);
+    params.modified_headers.MergeFrom(modified_headers);
+    params.modified_cors_exempt_headers.MergeFrom(modified_cors_exempt_headers);
+  }
+
+  // TODO(crbug.com/444065296): The following headers are an initial guess.
+  // Validate them against the actual navigation's header.
+
+  // ------------------------------------------------------------------------
+  // [3] `User-Agent` override:
+  MaybeApplyOverrideForWebContentsUserAgentHeader(
+      params.modified_headers, request_url, prefetch_request);
+
+  // ------------------------------------------------------------------------
+  // [2] Client Hints:
+  // [4] DevTools overrides (Client Hints):
+  // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
+  // override of non-UA Client Hints.
+  AddClientHintsHeaders(params.modified_headers,
+                        url::Origin::Create(request_url), prefetch_request);
+
+  // ------------------------------------------------------------------------
+  // [4] DevTools overrides (`User-Agent`, `Accept-Language`, non-UA Client
+  // Hints): The DevTools override is executed AFTER the WebContents override
+  // above because the DevTools override has higher priority than the
+  // WebContents override. See also the comment in
+  // `PrefetchContainer::MakeResourceRequest()` for the overriding order.
+  MaybeApplyOverrideForDevtoolsUserAgentHeader(params.modified_headers,
+                                               prefetch_request);
+
+  return params;
 }
 
 mojo::PendingRemote<network::mojom::DevToolsObserver>

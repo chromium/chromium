@@ -43,7 +43,6 @@
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
@@ -1549,89 +1548,12 @@ void PrefetchContainer::MakeInitialResourceRequest() {
     resource_request->load_flags |= net::LOAD_DISABLE_CACHE;
   }
 
-  // ------------------------------------------------------------------------
-  // Request headers. Headers should be applied in the following order, and the
-  // latter (if any) should override the former.
-  // [1] `request().additional_headers()`
-  // [2] Chromium's default headers
-  // [3] WebContents overrides
-  //     (`MaybeApplyOverrideForWebContentsUserAgentHeader()`)
-  // [4] DevTools overrides
-  //     (implemented in `MaybeApplyOverrideForDevtoolsUserAgentHeader()`)
-
-  // ------------------------------------------------------------------------
-  // [1] Additional headers:
-  AddAdditionalHeaders(resource_request->headers, request());
-
-  // ------------------------------------------------------------------------
-  // [2] `Accept`, `Upgrade-Insecure-Requests` and `Purpose`:
-  CHECK(request().browser_context());
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAccept,
-      FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
-                             request().browser_context()));
-
-  resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
-
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kRemovePurposeHeaderForPrefetch)) {
-    resource_request->headers.SetHeader(blink::kPurposeHeaderName,
-                                        blink::kSecPurposePrefetchHeaderValue);
-  }
-
-  // ------------------------------------------------------------------------
-  // [2] `Sec-Purpose`:
-  AddSecPurposeHeader(resource_request->headers, url, request());
-
-  // ------------------------------------------------------------------------
-  // [2] `Sec-Speculation-Tags`:
-  AddSpeculationTagsHeader(resource_request->headers, url, request());
-
-  // ------------------------------------------------------------------------
-  // [2] `X-Client-Data`:
-  if (request().should_append_variations_header()) {
-    AddVariationsHeaderForPrefetch(resource_request->cors_exempt_headers, url,
-                                   request(),
-                                   IsFirstPartyContext(*resource_request));
-  }
-
-  // ------------------------------------------------------------------------
-  // [2] Embedder headers:
-  {
-    std::vector<std::string> removed_headers;
-    net::HttpRequestHeaders modified_headers;
-    net::HttpRequestHeaders modified_cors_exempt_headers;
-    GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
-        resource_request->url, removed_headers, modified_headers,
-        modified_cors_exempt_headers);
-    resource_request->headers.MergeFrom(modified_headers);
-    resource_request->cors_exempt_headers.MergeFrom(
-        modified_cors_exempt_headers);
-  }
-
-  // TODO(crbug.com/444065296): The following headers are an initial guess.
-  // Validate them against the actual navigation's header.
-
-  // ------------------------------------------------------------------------
-  // [3] `User-Agent` override:
-  MaybeApplyOverrideForWebContentsUserAgentHeader(resource_request->headers,
-                                                  url, request());
-
-  // ------------------------------------------------------------------------
-  // [2] Client Hints:
-  // [4] DevTools overrides (Client Hints):
-  // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
-  // override of non-UA Client Hints.
-  AddClientHintsHeaders(resource_request->headers, origin, request());
-
-  // ------------------------------------------------------------------------
-  // [4] DevTools overrides (`User-Agent`, `Accept-Language`, non-UA Client
-  // Hints): The DevTools override is executed AFTER the WebContents override
-  // above because the DevTools override has higher priority than the
-  // WebContents override. See also the comment in
-  // `PrefetchContainer::MakeResourceRequest()` for the overriding order.
-  MaybeApplyOverrideForDevtoolsUserAgentHeader(resource_request->headers,
-                                               request());
+  PrefetchUpdateHeadersParams params = PrepareInitialHeadersForPrefetch(
+      url, request(), IsFirstPartyContext(*resource_request));
+  CHECK(params.removed_headers.empty());
+  resource_request->headers.MergeFrom(params.modified_headers);
+  resource_request->cors_exempt_headers.MergeFrom(
+      params.modified_cors_exempt_headers);
 
   // ------------------------------------------------------------------------
   // There are sometimes other headers that are set during navigation.  These
