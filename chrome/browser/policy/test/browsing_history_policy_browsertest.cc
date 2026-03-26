@@ -2,25 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/gtest_util.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif
 
 namespace policy {
 
@@ -57,53 +69,83 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SavingBrowserHistoryDisabled) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, DeletingBrowsingHistoryDisabled) {
-  // Verifies that deleting the browsing history can be disabled.
+class DeletingBrowsingHistoryPolicyTest : public PolicyTest {
+ public:
+  void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
 
+  history::QueryResults GetHistory() {
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            chrome_test_utils::GetProfile(this),
+            ServiceAccessType::EXPLICIT_ACCESS);
+    history::QueryResults history_query_results;
+    base::RunLoop run_loop;
+    base::CancelableTaskTracker tracker;
+    history_service->QueryHistory(
+        std::u16string(), history::QueryOptions(),
+        base::BindLambdaForTesting([&](history::QueryResults results) {
+          history_query_results = std::move(results);
+          run_loop.Quit();
+        }),
+        &tracker);
+    run_loop.Run();
+    return history_query_results;
+  }
+
+  void ClearHistory(uint64_t remove_mask) {
+    content::BrowsingDataRemover* remover =
+        chrome_test_utils::GetProfile(this)->GetBrowsingDataRemover();
+    content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+    remover->RemoveAndReply(
+        /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max(),
+        remove_mask, content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+        &completion_observer);
+    completion_observer.BlockUntilCompletion();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DeletingBrowsingHistoryPolicyTest,
+                       DeletingBrowsingHistoryDisabled) {
   PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+  const GURL test_url = embedded_test_server()->GetURL("/empty.html");
 
-  EXPECT_FALSE(prefs->IsManagedPreference(prefs::kAllowDeletingBrowserHistory));
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory));
+  // 1. Add a history entry.
+  ASSERT_TRUE(NavigateToUrl(test_url, this));
+  history::QueryResults history = GetHistory();
+  ASSERT_EQ(1u, history.size());
+  EXPECT_EQ(test_url, history[0].url());
 
-  EXPECT_TRUE(prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory));
-  EXPECT_TRUE(prefs->GetBoolean(browsing_data::prefs::kDeleteDownloadHistory));
-  EXPECT_TRUE(
-      prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistoryBasic));
-
+  // 2. Set policy to false to PREVENT history deletion.
   PolicyMap policies;
-  policies.Set(key::kAllowDeletingBrowserHistory, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
-               nullptr);
+  SetPolicy(&policies, key::kAllowDeletingBrowserHistory, base::Value(false));
   UpdateProviderPolicy(policies);
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kAllowDeletingBrowserHistory));
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory));
-
-  EXPECT_TRUE(prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory));
-  EXPECT_TRUE(prefs->GetBoolean(browsing_data::prefs::kDeleteDownloadHistory));
-  EXPECT_TRUE(
-      prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistoryBasic));
-
-  policies.Set(key::kAllowDeletingBrowserHistory, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-               nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kAllowDeletingBrowserHistory));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory));
 
-  EXPECT_FALSE(prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory));
-  EXPECT_FALSE(prefs->GetBoolean(browsing_data::prefs::kDeleteDownloadHistory));
-  EXPECT_FALSE(
-      prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistoryBasic));
+  // 3. Attempt to clear history using DATA_TYPE_NO_CHECKS to bypass the
+  // DCHECK.
+  ClearHistory(chrome_browsing_data_remover::DATA_TYPE_HISTORY |
+               content::BrowsingDataRemover::DATA_TYPE_NO_CHECKS);
 
-  policies.Clear();
+  // 4. Verify history was NOT cleared (because may_delete_history is false).
+  history = GetHistory();
+  ASSERT_EQ(1u, history.size());
+  EXPECT_EQ(test_url, history[0].url());
+
+  // 5. Set policy to true to ALLOW history deletion.
+  policies.Clear();  // Clear previous policy
+  SetPolicy(&policies, key::kAllowDeletingBrowserHistory, base::Value(true));
   UpdateProviderPolicy(policies);
-  EXPECT_FALSE(prefs->IsManagedPreference(prefs::kAllowDeletingBrowserHistory));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory));
 
-  EXPECT_TRUE(prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory));
-  EXPECT_TRUE(prefs->GetBoolean(browsing_data::prefs::kDeleteDownloadHistory));
-  EXPECT_TRUE(
-      prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistoryBasic));
+  // 6. Clear history (this time it should work).
+  ClearHistory(chrome_browsing_data_remover::DATA_TYPE_HISTORY);
+
+  // 7. Verify history WAS cleared.
+  history = GetHistory();
+  EXPECT_EQ(0u, history.size());
 }
 
 }  // namespace policy

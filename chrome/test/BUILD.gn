@@ -1426,6 +1426,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/autocomplete",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/browsing_data:constants",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/gcm",
     "//chrome/browser/history",
