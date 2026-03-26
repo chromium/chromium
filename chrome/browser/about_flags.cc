@@ -3971,8 +3971,8 @@ const FeatureEntry::FeatureParam kGlicSelectionPromptUseWidgetFalse[] = {
     {"use_widget", "false"}};
 
 const FeatureEntry::FeatureVariation kGlicSelectionPromptVariations[] = {
-    {"with Widget", kGlicSelectionPromptUseWidgetTrue, nullptr},
-    {"with Nudge", kGlicSelectionPromptUseWidgetFalse, nullptr}};
+    {"with InlineCue", kGlicSelectionPromptUseWidgetTrue, nullptr},
+    {"with TopCue", kGlicSelectionPromptUseWidgetFalse, nullptr}};
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};
