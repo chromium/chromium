@@ -98,10 +98,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Composebox) {
   RunTest("new_tab_page/composebox/composebox_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxInput) {
-  RunTest("new_tab_page/composebox/composebox_input_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteDropdown) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
           "runMochaSuite('NewTabPageComposeboxAutocompleteDropdownTest')");

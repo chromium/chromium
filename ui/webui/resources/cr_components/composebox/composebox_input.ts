@@ -80,7 +80,12 @@ export class ComposeboxInputElement extends I18nMixinLit
       if (this.smartComposeInlineHint) {
         this.adjustInputForSmartCompose();
       } else {
-        this.$.input.style.height = 'unset';
+        this.$.input.style.height = '';
+        this.$.input.style.minHeight = '';
+        const smartCompose = this.shadowRoot.getElementById('smartCompose');
+        if (smartCompose) {
+          smartCompose.style.minHeight = '';
+        }
       }
     }
   }
@@ -92,15 +97,9 @@ export class ComposeboxInputElement extends I18nMixinLit
     }
 
     const ghostHeight = smartCompose.scrollHeight;
-    const maxHeight = 190;
-    this.$.input.style.height = `${Math.min(ghostHeight, maxHeight)}px`;
     if (ghostHeight > 48) {
       this.$.input.style.minHeight = `68px`;
       smartCompose.style.minHeight = `68px`;
-    }
-
-    if (ghostHeight > maxHeight) {
-      smartCompose.scrollTop = this.$.input.scrollTop;
     }
   }
 
@@ -144,14 +143,6 @@ export class ComposeboxInputElement extends I18nMixinLit
       this.updateCaret_();
     }
     this.dispatchEvent(new CustomEvent('input-input', {detail: e}));
-  }
-
-  protected onInputScroll_(e: Event) {
-    const smartCompose = this.shadowRoot.getElementById('smartCompose');
-    if (smartCompose) {
-      smartCompose.scrollTop = this.$.input.scrollTop;
-    }
-    this.dispatchEvent(new CustomEvent('input-scroll', {detail: e}));
   }
 
   protected onInputFocusin_(e: FocusEvent) {

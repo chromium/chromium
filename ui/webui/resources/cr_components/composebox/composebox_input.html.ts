@@ -28,7 +28,6 @@ export function getHtml(this: ComposeboxInputElement) {
             @click="${this.onInputClick_}"
             @keyup="${this.onInputKeyup_}"
             @input="${this.onInputInput_}"
-            @scroll="${this.onInputScroll_}"
             @focusin="${this.onInputFocusin_}"
             @focus="${this.onInputFocus_}"
             @blur="${this.onInputBlur_}"></textarea>
