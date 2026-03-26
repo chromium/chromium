@@ -268,11 +268,13 @@ public class MultiWindowUtils implements ActivityStateListener {
                 && activity instanceof ChromeTabbedActivity) {
             @SupportedProfileType
             int supportedProfileType = ((ChromeTabbedActivity) activity).getSupportedProfileType();
-            int instanceCount =
-                    supportedProfileType == SupportedProfileType.OFF_THE_RECORD
-                            ? getIncognitoInstanceCount(/* activeOnly= */ true)
-                            : getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
-            return instanceCount > 1;
+            @PersistedInstanceType
+            int instanceType =
+                    PersistedInstanceType.ACTIVE
+                            | (supportedProfileType == SupportedProfileType.OFF_THE_RECORD
+                                    ? PersistedInstanceType.OFF_THE_RECORD
+                                    : PersistedInstanceType.REGULAR);
+            return MultiWindowUtils.getInstanceCount(instanceType) > 1;
         }
 
         return getOpenInOtherWindowActivity(activity) != null;
@@ -295,13 +297,12 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (isMultiInstanceApi31Enabled()) {
             @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-                if (tabModelSelector.isIncognitoBrandedModelSelected()) {
-                    return getIncognitoInstanceCount(/* activeOnly= */ true) > 1;
-                } else {
-                    instanceType |= PersistedInstanceType.REGULAR;
-                }
+                instanceType |=
+                        (tabModelSelector.isIncognitoBrandedModelSelected()
+                                ? PersistedInstanceType.OFF_THE_RECORD
+                                : PersistedInstanceType.REGULAR);
             }
-            return getInstanceCountWithFallback(instanceType) > 1;
+            return getInstanceCount(instanceType) > 1;
         } else {
             return isOpenInOtherWindowSupported(activity);
         }
@@ -316,7 +317,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     /* package */ static boolean canCreateNewWindow() {
         if (!isMultiInstanceApi31Enabled()) return false;
-        return getInstanceCountWithFallback(PersistedInstanceType.ACTIVE) < getMaxInstances();
+        return getInstanceCount(PersistedInstanceType.ACTIVE) < getMaxInstances();
     }
 
     /**
@@ -522,7 +523,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      *     considered restorable if it has tabs or is associated with a live task. An instance
      *     marked for deletion is restorable, but not usable unless restored.
      */
-    public static int getInstanceCountWithFallback(@PersistedInstanceType int type) {
+    public static int getInstanceCount(@PersistedInstanceType int type) {
         if (sInstanceCountForTesting != null) {
             return sInstanceCountForTesting;
         }
@@ -540,47 +541,10 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * Returns the number of restorable incognito instances.
-     *
-     * <p>This is a temporary method created to allow incognito window (IW) features to count
-     * incognito instances without being blocked by the {@code RobustWindowManagement} flag check in
-     * {@link #getInstanceCountWithFallback()}. This method should be removed after the Robust
-     * Window Management feature is fully launched, and callers should be migrated to a generic
-     * instance counting method.
-     *
-     * @param activeOnly If true, only counts active incognito instances. Otherwise, counts all
-     *     incognito instances (both active and inactive).
-     * @return The number of restorable incognito instances matching the criteria.
-     */
-    // TODO (crbug.com/461553972): Remove this method after Robust Window Management is launched.
-    public static int getIncognitoInstanceCount(boolean activeOnly) {
-        if (sIncognitoInstanceCountForTesting != null) {
-            return sIncognitoInstanceCountForTesting;
-        }
-
-        if (!isMultiInstanceApi31Enabled()) return 0;
-
-        int instanceType = PersistedInstanceType.OFF_THE_RECORD;
-        if (activeOnly) {
-            instanceType |= PersistedInstanceType.ACTIVE;
-        }
-        Set<Integer> ids = getPersistedInstanceIds(instanceType);
-        Context context = ContextUtils.getApplicationContext();
-        Set<Integer> appTaskIds = getAllAppTaskIds(context);
-        int count = 0;
-        for (Integer id : ids) {
-            if (isRestorableInstance(appTaskIds, id)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
      * @return Whether the app menu 'Manage windows' should be shown.
      */
     public static boolean shouldShowManageWindowsMenu() {
-        return getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
+        return getInstanceCount(PersistedInstanceType.ANY) > 1;
     }
 
     static boolean isRestorableInstance(Set<Integer> appTaskIds, int index) {
@@ -1221,7 +1185,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     public static int getInstanceIdForLinkIntent(Activity activity) {
         // INVALID_WINDOW_ID indicates that a new instance will be used to launch the link intent.
-        int instanceCount = getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
+        int instanceCount = getInstanceCount(PersistedInstanceType.ACTIVE);
         if (instanceCount < getMaxInstances()) return INVALID_WINDOW_ID;
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
         assert windowId != INVALID_WINDOW_ID
@@ -1257,14 +1221,15 @@ public class MultiWindowUtils implements ActivityStateListener {
         // Emit histograms for total instance count.
         RecordHistogram.recordExactLinearHistogram(
                 HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW,
-                getInstanceCountWithFallback(PersistedInstanceType.ANY),
+                getInstanceCount(PersistedInstanceType.ANY),
                 TabWindowManager.MAX_SELECTORS_1000 + 1);
 
         // Emit histograms for running Incognito activity count.
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             RecordHistogram.recordExactLinearHistogram(
                     HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_INCOGNITO,
-                    getIncognitoInstanceCount(/* activeOnly= */ true),
+                    getInstanceCount(
+                            PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD),
                     TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
 
@@ -1272,7 +1237,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             RecordHistogram.recordExactLinearHistogram(
                     HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW_INCOGNITO,
-                    getIncognitoInstanceCount(/* activeOnly= */ false),
+                    getInstanceCount(PersistedInstanceType.OFF_THE_RECORD),
                     TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
     }

@@ -206,7 +206,7 @@ public class LauncherShortcutTest {
         Assert.assertEquals(
                 "Number of Chrome instances should be correct.",
                 2,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
 
         // Verify NTP was created in the new activity.
         CriteriaHelper.pollUiThread(() -> newWindowActivity.getActivityTab() != null);

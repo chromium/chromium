@@ -64,6 +64,6 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
 
     @Override
     boolean isInMultiWindowMode() {
-        return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
+        return MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY) > 1;
     }
 }

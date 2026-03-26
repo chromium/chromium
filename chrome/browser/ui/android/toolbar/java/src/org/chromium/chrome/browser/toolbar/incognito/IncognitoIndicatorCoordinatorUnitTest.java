@@ -103,7 +103,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                         mThemeColorProvider,
                         mIncognitoStateProvider,
                         () ->
-                                MultiWindowUtils.getInstanceCountWithFallback(
+                                MultiWindowUtils.getInstanceCount(
                                         MultiInstanceManager.PersistedInstanceType.OFF_THE_RECORD),
                         /* visible= */ false);
         assertNull(

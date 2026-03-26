@@ -263,8 +263,7 @@ public abstract class TabDragHandlerBase
         boolean allowDragToCreateInstance =
                 shouldAllowTabDragToCreateInstance()
                         && (TabUiFeatureUtilities.doesOemSupportDragToCreateInstance()
-                                || MultiWindowUtils.getInstanceCountWithFallback(
-                                                PersistedInstanceType.ACTIVE)
+                                || MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)
                                         < MultiWindowUtils.getMaxInstances());
 
         return new ChromeTabDropDataAndroid.Builder()
@@ -280,8 +279,7 @@ public abstract class TabDragHandlerBase
         boolean allowDragToCreateInstance =
                 shouldAllowMultiTabDragToCreateInstance()
                         && (TabUiFeatureUtilities.doesOemSupportDragToCreateInstance()
-                                || MultiWindowUtils.getInstanceCountWithFallback(
-                                                PersistedInstanceType.ACTIVE)
+                                || MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)
                                         < MultiWindowUtils.getMaxInstances());
 
         ChromeMultiTabDropDataAndroid.Builder builder = new ChromeMultiTabDropDataAndroid.Builder();
@@ -306,8 +304,7 @@ public abstract class TabDragHandlerBase
                         isGroupShared);
         boolean allowDragToCreateInstance =
                 shouldAllowGroupDragToCreateInstance(tabGroupId)
-                        && (MultiWindowUtils.getInstanceCountWithFallback(
-                                        PersistedInstanceType.ACTIVE)
+                        && (MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)
                                 < MultiWindowUtils.getMaxInstances());
 
         ChromeTabGroupDropDataAndroid.Builder builder = new ChromeTabGroupDropDataAndroid.Builder();
@@ -381,7 +378,7 @@ public abstract class TabDragHandlerBase
                     isMultiTabDrop);
             DragDropMetricUtils.recordDragDropClosedWindow(
                     didCloseWindow, isTabGroupDrop, isMultiTabDrop);
-        } else if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
+        } else if (MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)
                 >= MultiWindowUtils.getMaxInstances()) {
             mMultiInstanceManager.showInstanceCreationLimitMessage();
             ChromeDragDropUtils.recordTabOrGroupDragToCreateInstanceFailureCount();

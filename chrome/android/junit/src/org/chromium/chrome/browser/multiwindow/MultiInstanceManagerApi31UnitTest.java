@@ -2164,7 +2164,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager)
                 .showTargetSelectorDialog(
                         any(),
-                        eq(PersistedInstanceType.ANY),
+                        eq(PersistedInstanceType.ACTIVE),
                         eq(R.string.menu_move_tab_to_other_window));
     }
 
@@ -2173,7 +2173,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testMoveTabsToOtherWindow_incognitoTabs_dialogShown() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        MultiWindowUtils.setInstanceCountForTesting(1);
+        MultiWindowUtils.setInstanceCountForTesting(2);
         MultiWindowUtils.setIncognitoInstanceCountForTesting(2);
         List<Tab> tabs = List.of(mTab1);
         when(mTab1.isIncognitoBranded()).thenReturn(true);
@@ -2266,7 +2266,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager)
                 .showTargetSelectorDialog(
                         any(),
-                        eq(PersistedInstanceType.ANY),
+                        eq(PersistedInstanceType.ACTIVE),
                         eq(R.string.menu_move_group_to_other_window));
     }
 
@@ -2275,7 +2275,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testMoveTabGroupToOtherWindow_incognitoTabs_dialogShown() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        MultiWindowUtils.setInstanceCountForTesting(1);
+        MultiWindowUtils.setInstanceCountForTesting(2);
         MultiWindowUtils.setIncognitoInstanceCountForTesting(2);
 
         mMultiInstanceManager.moveTabGroupToOtherWindow(

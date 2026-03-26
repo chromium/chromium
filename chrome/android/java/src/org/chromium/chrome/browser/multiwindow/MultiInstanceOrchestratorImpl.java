@@ -172,7 +172,7 @@ import java.util.Set;
         }
 
         // Check the number of instances that the url can be launched in.
-        int instanceCount = MultiWindowUtils.getInstanceCountWithFallback(instanceType);
+        int instanceCount = MultiWindowUtils.getInstanceCount(instanceType);
         if (instanceCount <= 1 || preferNew) {
             if (preferNew && !MultiWindowUtils.canCreateNewWindow()) {
                 if (multiInstanceManager != null) {

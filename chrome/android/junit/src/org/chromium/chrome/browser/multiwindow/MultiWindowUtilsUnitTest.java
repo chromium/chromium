@@ -622,7 +622,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testGetInstanceCountWithFallback() {
+    public void testGetInstanceCount() {
         MultiWindowTestUtils.enableMultiInstance();
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
@@ -648,23 +648,23 @@ public class MultiWindowUtilsUnitTest {
                 new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
 
         assertEquals(
-                "getInstanceCountWithFallback should only count active instances.",
+                "getInstanceCount should only count active instances.",
                 2,
-                MultiWindowUtils.getInstanceCountWithFallback(
+                MultiWindowUtils.getInstanceCount(
                         MultiInstanceManagerApi31.PersistedInstanceType.ACTIVE));
 
         assertEquals(
-                "getInstanceCountWithFallback should count all instances.",
+                "getInstanceCount should count all instances.",
                 3,
-                MultiWindowUtils.getInstanceCountWithFallback(
+                MultiWindowUtils.getInstanceCount(
                         MultiInstanceManagerApi31.PersistedInstanceType.ANY));
 
         // Mark the inactive instance for deletion.
         ChromeMultiInstancePersistentStore.writeMarkedForDeletion(INSTANCE_ID_2, true);
         assertEquals(
-                "getInstanceCountWithFallback should exclude instances marked for deletion.",
+                "getInstanceCount should exclude instances marked for deletion.",
                 2,
-                MultiWindowUtils.getInstanceCountWithFallback(
+                MultiWindowUtils.getInstanceCount(
                         MultiInstanceManagerApi31.PersistedInstanceType.ANY));
     }
 
@@ -690,8 +690,7 @@ public class MultiWindowUtilsUnitTest {
         MultiWindowUtils.setMaxInstancesForTesting(maxInstances - 1);
 
         // Verify instance count.
-        assertEquals(
-                3, MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+        assertEquals(3, MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
     }
 
     @Test

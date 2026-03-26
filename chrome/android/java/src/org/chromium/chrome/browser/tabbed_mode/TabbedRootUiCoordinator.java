@@ -1198,8 +1198,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             TabGroupSyncServiceFactory.getForProfile(originalProfile),
                             UserPrefs.get(originalProfile),
                             () -> {
-                                return MultiWindowUtils.getInstanceCountWithFallback(
-                                                        PersistedInstanceType.ANY)
+                                return MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY)
                                                 <= 1
                                         || ApplicationStatus.getLastTrackedFocusedActivity()
                                                 == mActivity;
@@ -1775,7 +1774,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     dataSharingNotificationManager,
                                     mDataSharingTabManager,
                                     () -> {
-                                        return MultiWindowUtils.getInstanceCountWithFallback(
+                                        return MultiWindowUtils.getInstanceCount(
                                                                 PersistedInstanceType.ANY)
                                                         <= 1
                                                 || ApplicationStatus.getLastTrackedFocusedActivity()

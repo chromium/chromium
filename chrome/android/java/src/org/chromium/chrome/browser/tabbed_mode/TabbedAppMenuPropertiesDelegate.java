@@ -1437,7 +1437,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         if (isMultiInstanceEnabled()) {
             // Hide the menu if we already have the maximum number of windows.
-            if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
+            if (MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)
                     >= MultiWindowUtils.getMaxInstances()) return false;
 
             // On phones, show the menu only when in split-screen, with a single instance

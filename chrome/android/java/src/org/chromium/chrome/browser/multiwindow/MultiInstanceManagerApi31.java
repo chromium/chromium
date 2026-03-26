@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -234,21 +233,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         if (tabs.isEmpty()) return;
         // Check the number of instances that the tab/s is able to move into.
-        int instanceCount =
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
-        @PersistedInstanceType int instanceType = PersistedInstanceType.ANY;
+        @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            // If one tab is incognito then all other tabs are incognito.
-            if (tabs.get(0).isIncognitoBranded()) {
-                instanceCount = MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true);
-                instanceType = PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD;
-            } else {
-                instanceCount =
-                        MultiWindowUtils.getInstanceCountWithFallback(
-                                PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
-                instanceType = PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR;
-            }
+            instanceType |=
+                    (tabs.get(0).isIncognitoBranded()
+                            ? PersistedInstanceType.OFF_THE_RECORD
+                            : PersistedInstanceType.REGULAR);
         }
+        int instanceCount = MultiWindowUtils.getInstanceCount(instanceType);
 
         if (instanceCount <= 1) {
             mMultiInstanceOrchestrator.moveTabsToNewWindow(
@@ -830,7 +822,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             RecordHistogram.recordExactLinearHistogram(
                     "Android.MultiInstance.NumActivities.Incognito",
-                    MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true),
+                    MultiWindowUtils.getInstanceCount(
+                            PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD),
                     TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
     }
@@ -841,13 +834,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
         RecordHistogram.recordExactLinearHistogram(
                 "Android.MultiInstance.NumInstances",
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY),
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY),
                 TabWindowManager.MAX_SELECTORS_1000 + 1);
 
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             RecordHistogram.recordExactLinearHistogram(
                     "Android.MultiInstance.NumInstances.Incognito",
-                    MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ false),
+                    MultiWindowUtils.getInstanceCount(PersistedInstanceType.OFF_THE_RECORD),
                     TabWindowManager.MAX_SELECTORS_1000 + 1);
         }
     }
@@ -1181,15 +1174,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             incognitoMaxCount = 0;
         }
         int instanceCount =
-                MultiWindowUtils.getInstanceCountWithFallback(
-                        MultiInstanceManager.PersistedInstanceType.ANY);
+                MultiWindowUtils.getInstanceCount(MultiInstanceManager.PersistedInstanceType.ANY);
         int incognitoInstanceCount =
-                MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ false);
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.OFF_THE_RECORD);
         if (instanceCount > maxCount) {
             ChromeMultiInstancePersistentStore.writeDailyMaxInstanceCount(instanceCount);
         }
         int activeInstanceCount =
-                MultiWindowUtils.getInstanceCountWithFallback(
+                MultiWindowUtils.getInstanceCount(
                         MultiInstanceManager.PersistedInstanceType.ACTIVE);
         if (activeInstanceCount > maxActiveCount) {
             ChromeMultiInstancePersistentStore.writeDailyMaxActiveInstanceCount(
@@ -1255,20 +1247,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public void moveTabGroupToOtherWindow(
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         // Check the number of instances that the tab group is able to move into.
-        int instanceCount =
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
-        @PersistedInstanceType int instanceType = PersistedInstanceType.ANY;
+        @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            if (tabGroupMetadata.isIncognito) {
-                instanceCount = MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true);
-                instanceType = PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD;
-            } else {
-                instanceCount =
-                        MultiWindowUtils.getInstanceCountWithFallback(
-                                PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
-                instanceType = PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR;
-            }
+            instanceType |=
+                    (tabGroupMetadata.isIncognito
+                            ? PersistedInstanceType.OFF_THE_RECORD
+                            : PersistedInstanceType.REGULAR);
         }
+        int instanceCount = MultiWindowUtils.getInstanceCount(instanceType);
 
         if (instanceCount <= 1) {
             moveTabGroupToNewWindow(tabGroupMetadata, source);

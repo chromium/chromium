@@ -667,8 +667,7 @@ public class RecentlyClosedEntriesManager {
     }
 
     private static boolean canRestoreWindow() {
-        int instanceCount =
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
+        int instanceCount = MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE);
         int instanceLimit = MultiWindowUtils.getMaxInstances();
         return instanceCount < instanceLimit;
     }

@@ -103,6 +103,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManager;
@@ -2012,7 +2013,10 @@ public class ToolbarManager
                         mHomeButtonCoordinator,
                         topControlsStacker,
                         mBrowserControlsSizer,
-                        () -> MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true),
+                        () ->
+                                MultiWindowUtils.getInstanceCount(
+                                        PersistedInstanceType.ACTIVE
+                                                | PersistedInstanceType.OFF_THE_RECORD),
                         profileSupplier,
                         SigninAndHistorySyncActivityLauncherImpl.get(),
                         mWindowAndroid,

@@ -116,7 +116,7 @@ public class DragAndDropLauncherActivityTest {
         Assert.assertEquals(
                 "Number of Chrome instances should be correct.",
                 2,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -180,7 +180,7 @@ public class DragAndDropLauncherActivityTest {
         Assert.assertEquals(
                 "Number of Chrome instances should be correct.",
                 2,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
 
         // Verify that the link is opened in the activity tab of the last accessed Chrome instance.
         CriteriaHelper.pollUiThread(
@@ -212,7 +212,7 @@ public class DragAndDropLauncherActivityTest {
         Assert.assertEquals(
                 "Number of instances should be correct.",
                 1,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
         // Verify metric is not recorded.
         histogramExpectation.assertExpected();
     }
@@ -250,7 +250,7 @@ public class DragAndDropLauncherActivityTest {
         Assert.assertEquals(
                 "Number of Chrome instances should be correct.",
                 2,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -316,7 +316,7 @@ public class DragAndDropLauncherActivityTest {
         Assert.assertEquals(
                 "Number of Chrome instances should be correct.",
                 2,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -388,7 +388,7 @@ public class DragAndDropLauncherActivityTest {
         Assert.assertEquals(
                 "Number of Chrome instances should be correct.",
                 2,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
 
         CriteriaHelper.pollUiThread(
                 () -> {

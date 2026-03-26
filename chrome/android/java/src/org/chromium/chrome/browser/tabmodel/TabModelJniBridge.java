@@ -407,7 +407,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         LoadUrlParams loadParams = new LoadUrlParams(url);
         @TabLaunchType int launchType = TabLaunchType.FROM_CHROME_UI;
         if (!newWindow
-                || MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
+                || MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)
                         >= MultiWindowUtils.getMaxInstances()) {
             return assumeNonNull(
                     getTabCreator(/* isIncognito= */ false)

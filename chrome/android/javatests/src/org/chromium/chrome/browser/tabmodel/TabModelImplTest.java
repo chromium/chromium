@@ -1646,9 +1646,7 @@ public class TabModelImplTest {
                 });
         if (expectReparent) {
             CriteriaHelper.pollUiThread(
-                    () ->
-                            MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY)
-                                    == 2,
+                    () -> MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY) == 2,
                     "Expected new window to be created");
         } else {
             assertEquals(

@@ -534,10 +534,7 @@ public class ChromeTabCreatorTest {
 
         if (expectReparent) {
             CriteriaHelper.pollUiThread(
-                    () ->
-                            MultiWindowUtils.getInstanceCountWithFallback(
-                                            PersistedInstanceType.ANY)
-                                    == 2,
+                    () -> MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY) == 2,
                     "Expected a new window to be created");
         } else {
             assertEquals(

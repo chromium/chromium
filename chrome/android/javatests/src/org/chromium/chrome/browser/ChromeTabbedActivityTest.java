@@ -305,8 +305,7 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testExplicitViewIntent_OpensInExistingLiveActivity() {
-        int initialWindowCount =
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY);
+        int initialWindowCount = MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -324,7 +323,7 @@ public class ChromeTabbedActivityTest {
         Assert.assertEquals(
                 "No new window should be opened.",
                 initialWindowCount,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
         // A new tab should be opened in the existing ChromeTabbedActivity.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -717,8 +716,7 @@ public class ChromeTabbedActivityTest {
                         .expectAnyRecord("Android.Reparent.TabGroup.Duration")
                         .build();
         long startTime = SystemClock.elapsedRealtime();
-        int initialWindowCount =
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY);
+        int initialWindowCount = MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
         intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
@@ -738,7 +736,7 @@ public class ChromeTabbedActivityTest {
         Assert.assertEquals(
                 "No new window should be opened.",
                 initialWindowCount,
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
+                MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY));
 
         // An individual tab and 3 grouped tabs should be opened in the existing
         // ChromeTabbedActivity.

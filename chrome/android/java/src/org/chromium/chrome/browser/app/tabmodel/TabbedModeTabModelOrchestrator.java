@@ -214,7 +214,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             // For multi-instance on Android S, this is a restart after the upgrade or fresh
             // installation. Allow merging tabs from CTA/CTA2 used by the previous version
             // if present.
-            return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) == 0;
+            return MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY) == 0;
         }
 
         // Merge tabs if this TabModelSelector is for a ChromeTabbedActivity created in
