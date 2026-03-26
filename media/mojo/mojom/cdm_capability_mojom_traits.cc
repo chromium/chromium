@@ -7,6 +7,8 @@
 #include <set>
 #include <utility>
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 namespace {
@@ -114,60 +116,45 @@ media::mojom::CdmCapabilityQueryStatus EnumTraits<
 }
 
 // static
-bool EnumTraits<media::mojom::CdmCapabilityQueryStatus,
-                media::CdmCapabilityQueryStatus>::
-    FromMojom(media::mojom::CdmCapabilityQueryStatus input,
-              media::CdmCapabilityQueryStatus* output) {
+media::CdmCapabilityQueryStatus
+EnumTraits<media::mojom::CdmCapabilityQueryStatus,
+           media::CdmCapabilityQueryStatus>::
+    FromMojom(media::mojom::CdmCapabilityQueryStatus input) {
   switch (input) {
     case media::mojom::CdmCapabilityQueryStatus::kSuccess:
-      *output = media::CdmCapabilityQueryStatus::kSuccess;
-      return true;
+      return media::CdmCapabilityQueryStatus::kSuccess;
     case media::mojom::CdmCapabilityQueryStatus::kUnknown:
-      *output = media::CdmCapabilityQueryStatus::kUnknown;
-      return true;
+      return media::CdmCapabilityQueryStatus::kUnknown;
     case media::mojom::CdmCapabilityQueryStatus::
         kHardwareSecureCodecNotSupported:
-      *output =
-          media::CdmCapabilityQueryStatus::kHardwareSecureCodecNotSupported;
-      return true;
+      return media::CdmCapabilityQueryStatus::kHardwareSecureCodecNotSupported;
     case media::mojom::CdmCapabilityQueryStatus::kNoSupportedVideoCodec:
-      *output = media::CdmCapabilityQueryStatus::kNoSupportedVideoCodec;
-      return true;
+      return media::CdmCapabilityQueryStatus::kNoSupportedVideoCodec;
     case media::mojom::CdmCapabilityQueryStatus::kNoSupportedEncryptionScheme:
-      *output = media::CdmCapabilityQueryStatus::kNoSupportedEncryptionScheme;
-      return true;
+      return media::CdmCapabilityQueryStatus::kNoSupportedEncryptionScheme;
     case media::mojom::CdmCapabilityQueryStatus::kUnsupportedKeySystem:
-      *output = media::CdmCapabilityQueryStatus::kUnsupportedKeySystem;
-      return true;
+      return media::CdmCapabilityQueryStatus::kUnsupportedKeySystem;
     case media::mojom::CdmCapabilityQueryStatus::
         kMediaFoundationCdmNotSupported:
-      *output =
-          media::CdmCapabilityQueryStatus::kMediaFoundationCdmNotSupported;
-      return true;
+      return media::CdmCapabilityQueryStatus::kMediaFoundationCdmNotSupported;
     case media::mojom::CdmCapabilityQueryStatus::kDisconnectionError:
-      *output = media::CdmCapabilityQueryStatus::kDisconnectionError;
-      return true;
+      return media::CdmCapabilityQueryStatus::kDisconnectionError;
     case media::mojom::CdmCapabilityQueryStatus::
         kMediaFoundationGetCdmFactoryFailed:
-      *output =
-          media::CdmCapabilityQueryStatus::kMediaFoundationGetCdmFactoryFailed;
-      return true;
+      return media::CdmCapabilityQueryStatus::
+          kMediaFoundationGetCdmFactoryFailed;
     case media::mojom::CdmCapabilityQueryStatus::
         kCreateDummyMediaFoundationCdmFailed:
-      *output =
-          media::CdmCapabilityQueryStatus::kCreateDummyMediaFoundationCdmFailed;
-      return true;
+      return media::CdmCapabilityQueryStatus::
+          kCreateDummyMediaFoundationCdmFailed;
     case media::mojom::CdmCapabilityQueryStatus::kUnexpectedEmptyCapability:
-      *output = media::CdmCapabilityQueryStatus::kUnexpectedEmptyCapability;
-      return true;
+      return media::CdmCapabilityQueryStatus::kUnexpectedEmptyCapability;
     case media::mojom::CdmCapabilityQueryStatus::kNoMediaDrmSupport:
-      *output = media::CdmCapabilityQueryStatus::kNoMediaDrmSupport;
-      return true;
+      return media::CdmCapabilityQueryStatus::kNoMediaDrmSupport;
     case media::mojom::CdmCapabilityQueryStatus::
         kMediaFoundationGetExtendedDRMTypeSupportFailed:
-      *output = media::CdmCapabilityQueryStatus::
+      return media::CdmCapabilityQueryStatus::
           kMediaFoundationGetExtendedDRMTypeSupportFailed;
-      return true;
   }
 
   NOTREACHED();

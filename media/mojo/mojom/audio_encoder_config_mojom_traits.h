@@ -18,8 +18,8 @@ struct EnumTraits<media::mojom::AacOutputFormat,
   static media::mojom::AacOutputFormat ToMojom(
       media::AudioEncoder::AacOutputFormat input);
 
-  static bool FromMojom(media::mojom::AacOutputFormat,
-                        media::AudioEncoder::AacOutputFormat* output);
+  static media::AudioEncoder::AacOutputFormat FromMojom(
+      media::mojom::AacOutputFormat);
 };
 
 template <>

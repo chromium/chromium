@@ -4,6 +4,8 @@
 
 #include "media/mojo/mojom/picture_in_picture_events_info_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -25,26 +27,21 @@ EnumTraits<media::mojom::AutoPipReason,
 }
 
 // static
-bool EnumTraits<media::mojom::AutoPipReason,
-                media::PictureInPictureEventsInfo::AutoPipReason>::
-    FromMojom(media::mojom::AutoPipReason input,
-              media::PictureInPictureEventsInfo::AutoPipReason* output) {
+media::PictureInPictureEventsInfo::AutoPipReason
+EnumTraits<media::mojom::AutoPipReason,
+           media::PictureInPictureEventsInfo::AutoPipReason>::
+    FromMojom(media::mojom::AutoPipReason input) {
   switch (input) {
     case media::mojom::AutoPipReason::kUnknown:
-      *output = ::media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
-      return true;
+      return ::media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
     case media::mojom::AutoPipReason::kVideoConferencing:
-      *output = ::media::PictureInPictureEventsInfo::AutoPipReason::
+      return ::media::PictureInPictureEventsInfo::AutoPipReason::
           kVideoConferencing;
-      return true;
     case media::mojom::AutoPipReason::kMediaPlayback:
-      *output =
-          ::media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
-      return true;
+      return ::media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
     case media::mojom::AutoPipReason::kBrowserInitiated:
-      *output =
-          ::media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated;
-      return true;
+      return ::media::PictureInPictureEventsInfo::AutoPipReason::
+          kBrowserInitiated;
   }
   NOTREACHED();
 }

@@ -17,9 +17,8 @@ struct EnumTraits<media::mojom::AutoPipReason,
   static media::mojom::AutoPipReason ToMojom(
       media::PictureInPictureEventsInfo::AutoPipReason input);
 
-  static bool FromMojom(
-      media::mojom::AutoPipReason,
-      media::PictureInPictureEventsInfo::AutoPipReason* output);
+  static media::PictureInPictureEventsInfo::AutoPipReason FromMojom(
+      media::mojom::AutoPipReason);
 };
 
 template <>

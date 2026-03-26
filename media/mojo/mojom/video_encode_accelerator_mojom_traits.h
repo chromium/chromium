@@ -23,9 +23,8 @@ struct EnumTraits<media::mojom::VideoEncodeAcceleratorSupportedRateControlMode,
   static media::mojom::VideoEncodeAcceleratorSupportedRateControlMode ToMojom(
       media::VideoEncodeAccelerator::SupportedRateControlMode mode);
 
-  static bool FromMojom(
-      media::mojom::VideoEncodeAcceleratorSupportedRateControlMode input,
-      media::VideoEncodeAccelerator::SupportedRateControlMode* out);
+  static media::VideoEncodeAccelerator::SupportedRateControlMode FromMojom(
+      media::mojom::VideoEncodeAcceleratorSupportedRateControlMode input);
 };
 
 template <>
@@ -371,9 +370,8 @@ struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_StorageType,
   static media::mojom::VideoEncodeAcceleratorConfig_StorageType ToMojom(
       media::VideoEncodeAccelerator::Config::StorageType input);
 
-  static bool FromMojom(
-      media::mojom::VideoEncodeAcceleratorConfig_StorageType,
-      media::VideoEncodeAccelerator::Config::StorageType* output);
+  static media::VideoEncodeAccelerator::Config::StorageType FromMojom(
+      media::mojom::VideoEncodeAcceleratorConfig_StorageType);
 };
 
 template <>
@@ -382,9 +380,8 @@ struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
   static media::mojom::VideoEncodeAcceleratorConfig_EncoderType ToMojom(
       media::VideoEncodeAccelerator::Config::EncoderType input);
 
-  static bool FromMojom(
-      media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
-      media::VideoEncodeAccelerator::Config::EncoderType* output);
+  static media::VideoEncodeAccelerator::Config::EncoderType FromMojom(
+      media::mojom::VideoEncodeAcceleratorConfig_EncoderType);
 };
 
 template <>
@@ -393,9 +390,8 @@ struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_ContentType,
   static media::mojom::VideoEncodeAcceleratorConfig_ContentType ToMojom(
       media::VideoEncodeAccelerator::Config::ContentType input);
 
-  static bool FromMojom(
-      media::mojom::VideoEncodeAcceleratorConfig_ContentType,
-      media::VideoEncodeAccelerator::Config::ContentType* output);
+  static media::VideoEncodeAccelerator::Config::ContentType FromMojom(
+      media::mojom::VideoEncodeAcceleratorConfig_ContentType);
 };
 
 template <>

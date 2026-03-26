@@ -73,8 +73,8 @@ struct EnumTraits<media::mojom::CdmCapabilityQueryStatus,
 
   // Returning false results in deserialization failure and causes the
   // message pipe receiving it to be disconnected.
-  static bool FromMojom(media::mojom::CdmCapabilityQueryStatus input,
-                        media::CdmCapabilityQueryStatus* output);
+  static media::CdmCapabilityQueryStatus FromMojom(
+      media::mojom::CdmCapabilityQueryStatus input);
 };
 
 }  // namespace mojo

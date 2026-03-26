@@ -25,15 +25,13 @@ struct EnumTraits<media::mojom::CdmContextEvent, ::media::CdmContext::Event> {
     NOTREACHED();
   }
 
-  static bool FromMojom(media::mojom::CdmContextEvent input,
-                        ::media::CdmContext::Event* output) {
+  static ::media::CdmContext::Event FromMojom(
+      media::mojom::CdmContextEvent input) {
     switch (input) {
       case media::mojom::CdmContextEvent::kHasAdditionalUsableKey:
-        *output = ::media::CdmContext::Event::kHasAdditionalUsableKey;
-        return true;
+        return ::media::CdmContext::Event::kHasAdditionalUsableKey;
       case media::mojom::CdmContextEvent::kHardwareContextReset:
-        *output = ::media::CdmContext::Event::kHardwareContextReset;
-        return true;
+        return ::media::CdmContext::Event::kHardwareContextReset;
     }
     NOTREACHED();
   }
@@ -56,18 +54,15 @@ struct EnumTraits<media::mojom::DecryptStatus, ::media::Decryptor::Status> {
     NOTREACHED();
   }
 
-  static bool FromMojom(media::mojom::DecryptStatus input,
-                        ::media::Decryptor::Status* output) {
+  static ::media::Decryptor::Status FromMojom(
+      media::mojom::DecryptStatus input) {
     switch (input) {
       case media::mojom::DecryptStatus::kSuccess:
-        *output = ::media::Decryptor::Status::kSuccess;
-        return true;
+        return ::media::Decryptor::Status::kSuccess;
       case media::mojom::DecryptStatus::kNoKey:
-        *output = ::media::Decryptor::Status::kNoKey;
-        return true;
+        return ::media::Decryptor::Status::kNoKey;
       case media::mojom::DecryptStatus::kFailure:
-        *output = ::media::Decryptor::Status::kError;
-        return true;
+        return ::media::Decryptor::Status::kError;
     }
     NOTREACHED();
   }

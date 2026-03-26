@@ -23,8 +23,8 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   static media::mojom::ResolutionChangePolicy ToMojom(
       media::ResolutionChangePolicy policy);
 
-  static bool FromMojom(media::mojom::ResolutionChangePolicy input,
-                        media::ResolutionChangePolicy* out);
+  static media::ResolutionChangePolicy FromMojom(
+      media::mojom::ResolutionChangePolicy input);
 };
 
 template <>
@@ -33,8 +33,8 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   static media::mojom::PowerLineFrequency ToMojom(
       media::PowerLineFrequency frequency);
 
-  static bool FromMojom(media::mojom::PowerLineFrequency input,
-                        media::PowerLineFrequency* out);
+  static media::PowerLineFrequency FromMojom(
+      media::mojom::PowerLineFrequency input);
 };
 
 template <>
@@ -42,8 +42,8 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     EnumTraits<media::mojom::VideoCapturePixelFormat, media::VideoPixelFormat> {
   static media::mojom::VideoCapturePixelFormat ToMojom(
       media::VideoPixelFormat input);
-  static bool FromMojom(media::mojom::VideoCapturePixelFormat input,
-                        media::VideoPixelFormat* output);
+  static media::VideoPixelFormat FromMojom(
+      media::mojom::VideoCapturePixelFormat input);
 };
 
 template <>
@@ -53,8 +53,8 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   static media::mojom::VideoCaptureBufferType ToMojom(
       media::VideoCaptureBufferType buffer_type);
 
-  static bool FromMojom(media::mojom::VideoCaptureBufferType input,
-                        media::VideoCaptureBufferType* out);
+  static media::VideoCaptureBufferType FromMojom(
+      media::mojom::VideoCaptureBufferType input);
 };
 
 template <>
@@ -63,8 +63,8 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   static media::mojom::VideoCaptureError ToMojom(
       media::VideoCaptureError buffer_type);
 
-  static bool FromMojom(media::mojom::VideoCaptureError input,
-                        media::VideoCaptureError* out);
+  static media::VideoCaptureError FromMojom(
+      media::mojom::VideoCaptureError input);
 };
 
 template <>
@@ -74,24 +74,22 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   static media::mojom::VideoCaptureFrameDropReason ToMojom(
       media::VideoCaptureFrameDropReason buffer_type);
 
-  static bool FromMojom(media::mojom::VideoCaptureFrameDropReason input,
-                        media::VideoCaptureFrameDropReason* out);
+  static media::VideoCaptureFrameDropReason FromMojom(
+      media::mojom::VideoCaptureFrameDropReason input);
 };
 
 template <>
 struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     EnumTraits<media::mojom::VideoFacingMode, media::VideoFacingMode> {
   static media::mojom::VideoFacingMode ToMojom(media::VideoFacingMode input);
-  static bool FromMojom(media::mojom::VideoFacingMode input,
-                        media::VideoFacingMode* output);
+  static media::VideoFacingMode FromMojom(media::mojom::VideoFacingMode input);
 };
 
 template <>
 struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi> {
   static media::mojom::VideoCaptureApi ToMojom(media::VideoCaptureApi input);
-  static bool FromMojom(media::mojom::VideoCaptureApi input,
-                        media::VideoCaptureApi* output);
+  static media::VideoCaptureApi FromMojom(media::mojom::VideoCaptureApi input);
 };
 
 template <>
@@ -99,8 +97,8 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     EnumTraits<media::mojom::CameraAvailability, media::CameraAvailability> {
   static media::mojom::CameraAvailability ToMojom(
       media::CameraAvailability input);
-  static bool FromMojom(media::mojom::CameraAvailability input,
-                        media::CameraAvailability* output);
+  static media::CameraAvailability FromMojom(
+      media::mojom::CameraAvailability input);
 };
 
 template <>
@@ -109,8 +107,8 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
                media::VideoCaptureTransportType> {
   static media::mojom::VideoCaptureTransportType ToMojom(
       media::VideoCaptureTransportType input);
-  static bool FromMojom(media::mojom::VideoCaptureTransportType input,
-                        media::VideoCaptureTransportType* output);
+  static media::VideoCaptureTransportType FromMojom(
+      media::mojom::VideoCaptureTransportType input);
 };
 
 template <>

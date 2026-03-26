@@ -44,8 +44,7 @@ template <>
 struct EnumTraits<media::mojom::EffectState, intermediate::EffectState> {
   static media::mojom::EffectState ToMojom(intermediate::EffectState input);
 
-  static bool FromMojom(media::mojom::EffectState input,
-                        intermediate::EffectState* output);
+  static intermediate::EffectState FromMojom(media::mojom::EffectState input);
 };
 
 template <>

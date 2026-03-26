@@ -16,8 +16,8 @@ struct EnumTraits<media::mojom::CdmKeyStatus,
   static media::mojom::CdmKeyStatus ToMojom(
       media::CdmKeyInformation::KeyStatus key_status);
 
-  static bool FromMojom(media::mojom::CdmKeyStatus input,
-                        media::CdmKeyInformation::KeyStatus* out);
+  static media::CdmKeyInformation::KeyStatus FromMojom(
+      media::mojom::CdmKeyStatus input);
 };
 
 template <>
