@@ -215,7 +215,7 @@ void TileDisplayLayerImpl::GetContentsResourceId(
     return;
   }
 
-  const float max_contents_scale = tilings_.front()->contents_scale_key();
+  const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
   auto iter = TilingSetCoverageIterator<TileDisplayLayerTiling>(

@@ -993,11 +993,11 @@ void PictureLayerImpl::GetContentsResourceId(
     return;
   }
 
-  float dest_scale = MaximumTilingContentsScale();
+  const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
   gfx::Rect content_rect =
-      gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), dest_scale);
-  auto iter =
-      tilings_->Cover(content_rect, dest_scale, GetIdealContentsScaleKey());
+      gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
+  auto iter = tilings_->Cover(content_rect, max_contents_scale,
+                              GetIdealContentsScaleKey());
 
   // Mask resource not ready yet.
   if (!iter || !*iter) {
