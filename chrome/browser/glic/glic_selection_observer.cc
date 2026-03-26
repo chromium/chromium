@@ -43,6 +43,10 @@ constexpr base::TimeDelta kSelectionProcessingDelay = base::Milliseconds(300);
 // Selections longer than this are ignored.
 constexpr size_t kMaxSelectionLength = 1000;
 
+// The minimum length of the selection text sent as a suggested prompt.
+// Selections shorter than this are ignored.
+constexpr size_t kMinSelectionLength = 3;
+
 // The MIME type for selected text.
 constexpr char kSelectionMimeType[] = "application/x-glic-selection";
 constexpr char kPromptMimeType[] = "application/x-glic-prompt";
@@ -186,9 +190,8 @@ void GlicSelectionObserver::OnTextSelectionChanged(
 
   bounds_retry_count_ = 0;
 
-  if (selected_text.empty()) {
-    pending_selection_text_ = std::u16string();
-  } else if (selected_text.length() > kMaxSelectionLength) {
+  if (selected_text.length() < kMinSelectionLength ||
+      selected_text.length() > kMaxSelectionLength) {
     pending_selection_text_ = std::u16string();
   } else {
     pending_selection_text_ = std::u16string(selected_text);

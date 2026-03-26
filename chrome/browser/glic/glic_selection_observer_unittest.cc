@@ -147,6 +147,21 @@ TEST_F(GlicSelectionObserverTest, TooLongSelectionIgnored) {
   EXPECT_EQ(u"", *observer->last_processed_text());
 }
 
+TEST_F(GlicSelectionObserverTest, TooShortSelectionIgnored) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  // kMinSelectionLength is 3.
+  std::u16string short_text(2, 'a');
+  observer->OnTextSelectionChanged(nullptr, short_text);
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  // Should be treated as clearing (empty text).
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(u"", *observer->last_processed_text());
+}
+
 TEST_F(GlicSelectionObserverTest, DebounceRestarted) {
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
