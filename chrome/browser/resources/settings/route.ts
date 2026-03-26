@@ -32,21 +32,17 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   r.COOKIES = r.PRIVACY.createChild('/cookies');
 
-  if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
+  if (loadTimeData.getBoolean('isAdPrivacyAvailable')) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
-    r.PRIVACY_SANDBOX_TOPICS =
-        r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
-    r.PRIVACY_SANDBOX_MANAGE_TOPICS =
-        r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
-    r.PRIVACY_SANDBOX_FLEDGE =
-        r.PRIVACY_SANDBOX.createChild('/adPrivacy/sites');
-    r.PRIVACY_SANDBOX_AD_MEASUREMENT =
-        r.PRIVACY_SANDBOX.createChild('/adPrivacy/measurement');
-  } else if (loadTimeData.getBoolean(
-                 'isPrivacySandboxRestrictedNoticeEnabled')) {
-    r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
-    // When the view is restricted, but the notice is configured to show, allow
-    // measurement settings only.
+    if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
+      r.PRIVACY_SANDBOX_TOPICS =
+          r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
+      r.PRIVACY_SANDBOX_MANAGE_TOPICS =
+          r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
+      r.PRIVACY_SANDBOX_FLEDGE =
+          r.PRIVACY_SANDBOX.createChild('/adPrivacy/sites');
+    }
+    // Ad Measurement is available whenever Ad Privacy is available.
     r.PRIVACY_SANDBOX_AD_MEASUREMENT =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/measurement');
   }

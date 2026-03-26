@@ -33,10 +33,7 @@
         on-click="onCookiesClick_"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <template is="dom-if" if=
-        "[[shouldShowAdPrivacy_(
-            isPrivacySandboxRestricted_,
-            isPrivacySandboxRestrictedNoticeEnabled_)]]">
+    <template is="dom-if" if="[[isAdPrivacyAvailable_]]">
       <cr-link-row id="privacySandboxLinkRow"
           start-icon="privacy20:ads-click"
           class="hr"

@@ -512,6 +512,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       privacy_sandbox_service->IsPrivacySandboxRestricted();
   bool is_restricted_notice_enabled =
       privacy_sandbox_service->IsRestrictedNoticeEnabled();
+  bool is_ad_privacy_ux_deprecation_enabled = base::FeatureList::IsEnabled(
+      privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+  bool is_ad_privacy_available = true;
+  if (is_ad_privacy_ux_deprecation_enabled) {
+    is_ad_privacy_available = false;
+  } else if (is_privacy_sandbox_restricted) {
+    is_ad_privacy_available = is_restricted_notice_enabled;
+  }
+
   html_source->AddBoolean("isPrivacySandboxRestricted",
                           is_privacy_sandbox_restricted);
   html_source->AddBoolean("isPrivacySandboxRestrictedNoticeEnabled",
@@ -519,10 +528,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "isRelatedWebsiteSetsUiEnabled",
       base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsUi));
-  html_source->AddBoolean(
-      "isPrivacySandboxAdPrivacyUxDeprecationEnabled",
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation));
+  html_source->AddBoolean("isPrivacySandboxAdPrivacyUxDeprecationEnabled",
+                          is_ad_privacy_ux_deprecation_enabled);
+  html_source->AddBoolean("isAdPrivacyAvailable", is_ad_privacy_available);
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());

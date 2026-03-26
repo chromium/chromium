@@ -29,6 +29,7 @@ suite('PrivacyPage', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
+      isAdPrivacyAvailable: false,
       isPrivacySandboxRestricted: true,
     });
     resetRouterForTesting();
@@ -119,6 +120,7 @@ suite(`PrivacySandbox`, function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
+      isAdPrivacyAvailable: true,
       isPrivacySandboxRestricted: false,
     });
     resetRouterForTesting();
@@ -274,6 +276,7 @@ suite(`PrivacySandbox4EnabledButRestricted`, function() {
     // startup, such that routes are created (or not). They are included here to
     // make clear the intent of the test.
     loadTimeData.overrideValues({
+      isAdPrivacyAvailable: false,
       isPrivacySandboxRestricted: true,
       isPrivacySandboxRestrictedNoticeEnabled: false,
     });
@@ -318,6 +321,7 @@ suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
     // startup, such that routes are created (or not). They are included here to
     // make clear the intent of the test.
     loadTimeData.overrideValues({
+      isAdPrivacyAvailable: true,
       isPrivacySandboxRestricted: true,
       isPrivacySandboxRestrictedNoticeEnabled: true,
     });
@@ -369,6 +373,47 @@ suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
     assertEquals(
         loadTimeData.getString('adPrivacyRestrictedLinkRowSubLabel'),
         privacySandboxLinkRow.subLabel);
+  });
+});
+
+suite('PrivacySandboxAdPrivacyUxDeprecationEnabled', function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isAdPrivacyAvailable: false,
+    });
+    resetRouterForTesting();
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('noPrivacySandboxRowShown', function() {
+    assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
+  });
+
+  test('noRouteForAdPrivacyPaths', function() {
+    const adPrivacyPaths = [
+      routes.PRIVACY_SANDBOX,
+      routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
+      routes.PRIVACY_SANDBOX_TOPICS,
+      routes.PRIVACY_SANDBOX_MANAGE_TOPICS,
+      routes.PRIVACY_SANDBOX_FLEDGE,
+    ];
+    for (const path of adPrivacyPaths) {
+      assertThrows(() => Router.getInstance().navigateTo(path));
+    }
   });
 });
 

@@ -76,6 +76,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
+      isAdPrivacyAvailable_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isAdPrivacyAvailable'),
+      },
+
       // The label of the confirmation toast that is displayed after deletion
       // from 'Delete Browsing data' is completed.
       dbdDeletionConfirmationToastLabel_: {
@@ -94,6 +99,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private showPrivacyGuideDialog_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
+  declare private isAdPrivacyAvailable_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;
   declare private shouldShowDbdDeletionConfirmationToast_: boolean;
 
@@ -209,11 +215,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       default:
         assertNotReached();
     }
-  }
-
-  private shouldShowAdPrivacy_(): boolean {
-    return !this.isPrivacySandboxRestricted_ ||
-        this.isPrivacySandboxRestrictedNoticeEnabled_;
   }
 
   private onBrowsingDataDeleted_(

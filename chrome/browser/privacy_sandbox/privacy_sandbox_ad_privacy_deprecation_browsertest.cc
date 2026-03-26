@@ -13,6 +13,17 @@
 #include "content/public/test/browser_test.h"
 
 namespace privacy_sandbox {
+namespace {
+
+constexpr const char* kAdPrivacyUrls[] = {
+    "chrome://settings/adPrivacy",
+    "chrome://settings/adPrivacy/interests",
+    "chrome://settings/adPrivacy/interests/manage",
+    "chrome://settings/adPrivacy/sites",
+    "chrome://settings/adPrivacy/measurement",
+};
+
+}  // namespace
 
 class PrivacySandboxAdPrivacyDeprecationTest : public InProcessBrowserTest {
  public:
@@ -55,6 +66,17 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
   EXPECT_EQ(web_contents->GetWebUI(), nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
+                       SettingsRoutesRedirect) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL base_settings_url("chrome://settings/");
+  for (const char* url_string : kAdPrivacyUrls) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url_string)));
+    EXPECT_EQ(web_contents->GetLastCommittedURL(), base_settings_url);
+  }
+}
+
 class PrivacySandboxAdPrivacyDeprecationDisabledTest
     : public InProcessBrowserTest {
  public:
@@ -95,6 +117,17 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
   ASSERT_TRUE(web_contents);
   EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
   EXPECT_NE(web_contents->GetWebUI(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
+                       SettingsRoutesDoNotRedirect) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  for (const char* url_string : kAdPrivacyUrls) {
+    GURL url(url_string);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    EXPECT_EQ(web_contents->GetLastCommittedURL(), url);
+  }
 }
 
 }  // namespace privacy_sandbox

@@ -69,6 +69,11 @@ auto ElementIsVisibleStateChange(ui::CustomElementEventType event,
 class PrivacySandboxSettingsTopicsInteractiveTest
     : public InteractiveBrowserTest {
  public:
+  PrivacySandboxSettingsTopicsInteractiveTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+  }
+
   void SetUpOnMainThread() override {
     browser()->profile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxM1TopicsEnabled, true);

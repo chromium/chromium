@@ -46,6 +46,7 @@ suite('PrivacyPageIndex', function() {
           enableWebAppInstallation: false,
           enableWebBluetoothNewPermissionsBackend: false,
           isGuest: false,
+          isAdPrivacyAvailable: true,
           isPrivacySandboxRestricted: false,
           isPrivacySandboxRestrictedNoticeEnabled: false,
         },

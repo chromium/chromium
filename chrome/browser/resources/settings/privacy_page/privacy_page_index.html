@@ -68,7 +68,7 @@
     </template>
   </template>
 
-  <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]" restamp>
+  <template is="dom-if" if="[[isPrivacySandboxTopicsAndFledgeAvailable_]]" restamp>
     <template is="dom-if" if="[[renderView_(
         routes_.PRIVACY_SANDBOX_FLEDGE, currentRoute, inSearchMode)]]"
         update-when-false>
