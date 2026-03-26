@@ -150,7 +150,9 @@
   equal to 25% of image's width. It pushes away the image 1px for every 2px of
   smaller screen size. Part "max(0px, calc(...))" prevents the image from being
   driven away to the left from the right edge */
-  transform: translate(max(0px, calc(25% - (50vw - var(--content-width) / 2) / 2)), -50%);
+  transform: translate(
+    max(0px, calc(25% - (50vw - var(--content-width) / 2) / 2)),
+    -50%);
   z-index: -1;
 }
 
@@ -160,7 +162,30 @@
   left: 75%;
   position: fixed;
   /* Same as above, but start point is 10% as we have more space vertically */
-  transform: translate(-50%, max(0px, calc(10% - (50vh - (var(--child-max-height) / 2 + var(--header-height))) / 2)));
+  transform: translate(
+    -50%,
+    max(0px, calc(10% - (50vh - (var(--child-max-height) / 2 + var(--header-height))) / 2)));
   width: 17%;
   z-index: -1;
+}
+
+/* For RTL languages, flip the direction */
+:host-context([dir='rtl']) #background-right {
+  left: 0;
+  right: auto;
+  transform: scaleX(-1) translate(
+    max(0px, calc(25% - (50vw - var(--content-width) / 2) / 2)),
+    -50%);
+}
+
+:host-context([dir='rtl']) #background-bottom {
+  left: auto;
+  right: 75%;
+  transform: scaleX(-1) translate(
+    -50%,
+    max(0px, calc(10% - (50vh - (var(--child-max-height) / 2 + var(--header-height))) / 2)));
+}
+
+:host-context([dir='rtl']) #illustration {
+  object-position: left center;
 }
