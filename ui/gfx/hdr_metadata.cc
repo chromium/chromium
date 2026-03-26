@@ -18,25 +18,116 @@
 
 namespace gfx {
 
+// Custom comparators for skhdr:: types. Skia does not provide an arbitrary
+// operator<=> (that is, one that is just to provide an ordering for types like
+// std::map, but does not reflect a meaningful ordering), so create one for all
+// of the relevant types. Avoid doing so by defining operator<=> for these
+// types, because doing so will create a complicated transition if Skia starts
+// including an operator<=>.
+// See: https://crbug.com/40044808
 namespace {
 
-std::weak_ordering SkDataCompare(const sk_sp<const SkData>& a,
-                                 const sk_sp<const SkData>& b) {
-  if (!a && !b) {
-    return std::weak_ordering::equivalent;
-  }
-  if (!a) {
-    return std::weak_ordering::less;
-  }
-  if (!b) {
-    return std::weak_ordering::greater;
-  }
-  if (auto size_cmp = a->size() <=> b->size();
-      size_cmp != std::weak_ordering::equivalent) {
-    return size_cmp;
-  }
-  return SkDataToSpan(a) <=> SkDataToSpan(b);
+template <typename T>
+std::weak_ordering Compare(const T& a, const T& b) {
+  return std::weak_order(a, b);
 }
+
+template <typename U>
+std::weak_ordering Compare(const std::optional<U>& a,
+                           const std::optional<U>& b) {
+  auto cmp = Compare(a.has_value(), b.has_value());
+  if (cmp == std::weak_ordering::equivalent && a.has_value()) {
+    cmp = Compare(a.value(), b.value());
+  }
+  return cmp;
+}
+
+template <typename U>
+std::weak_ordering Compare(const std::vector<U>& a, const std::vector<U>& b) {
+  auto cmp = Compare(a.size(), b.size());
+  for (size_t i = 0; cmp == std::weak_ordering::equivalent && i < a.size();
+       ++i) {
+    cmp = Compare(a[i], b[i]);
+  }
+  return cmp;
+}
+
+#define COMPARE_BEGIN(T)                                  \
+  template <>                                             \
+  std::weak_ordering Compare<T>(const T& a, const T& b) { \
+    auto cmp = std::weak_ordering::equivalent;
+
+#define COMPARE_MEMBER(x)                      \
+  cmp = Compare(a.x, b.x);                     \
+  if (cmp != std::weak_ordering::equivalent) { \
+    return cmp;                                \
+  }
+
+#define COMPARE_END()                    \
+  return std::weak_ordering::equivalent; \
+  }
+
+COMPARE_BEGIN(SkColorSpacePrimaries)
+COMPARE_MEMBER(fRX);
+COMPARE_MEMBER(fRY);
+COMPARE_MEMBER(fGX);
+COMPARE_MEMBER(fGY);
+COMPARE_MEMBER(fBX);
+COMPARE_MEMBER(fBY);
+COMPARE_MEMBER(fWX);
+COMPARE_MEMBER(fWY);
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::ContentLightLevelInformation)
+COMPARE_MEMBER(fMaxCLL);
+COMPARE_MEMBER(fMaxFALL);
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::MasteringDisplayColorVolume)
+COMPARE_MEMBER(fDisplayPrimaries)
+COMPARE_MEMBER(fMaximumDisplayMasteringLuminance)
+COMPARE_MEMBER(fMinimumDisplayMasteringLuminance)
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::AdaptiveGlobalToneMap::GainCurve::ControlPoint)
+COMPARE_MEMBER(fX)
+COMPARE_MEMBER(fY)
+COMPARE_MEMBER(fM)
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::AdaptiveGlobalToneMap::GainCurve)
+COMPARE_MEMBER(fControlPoints)
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::AdaptiveGlobalToneMap::ComponentMixingFunction)
+COMPARE_MEMBER(fRed)
+COMPARE_MEMBER(fGreen)
+COMPARE_MEMBER(fBlue)
+COMPARE_MEMBER(fMax)
+COMPARE_MEMBER(fMin)
+COMPARE_MEMBER(fComponent)
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::AdaptiveGlobalToneMap::ColorGainFunction)
+COMPARE_MEMBER(fComponentMixing)
+COMPARE_MEMBER(fGainCurve)
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::AdaptiveGlobalToneMap::AlternateImage)
+COMPARE_MEMBER(fHdrHeadroom)
+COMPARE_MEMBER(fColorGainFunction)
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::AdaptiveGlobalToneMap::HeadroomAdaptiveToneMap)
+COMPARE_MEMBER(fBaselineHdrHeadroom)
+COMPARE_MEMBER(fGainApplicationSpacePrimaries)
+COMPARE_MEMBER(fAlternateImages)
+COMPARE_END()
+
+COMPARE_BEGIN(skhdr::AdaptiveGlobalToneMap)
+COMPARE_MEMBER(fHdrReferenceWhite)
+COMPARE_MEMBER(fHeadroomAdaptiveToneMap)
+COMPARE_END()
 
 }  // namespace
 
@@ -46,6 +137,16 @@ std::string HdrMetadataExtendedRange::ToString() const {
      << "current_headroom:" << current_headroom << ", "
      << "desired_headroom:" << desired_headroom << "}";
   return ss.str();
+}
+
+std::weak_ordering HdrMetadataExtendedRange::operator<=>(
+    const HdrMetadataExtendedRange& other) const {
+  const auto& a = *this;
+  const auto& b = other;
+  auto cmp = std::weak_ordering::equivalent;
+  COMPARE_MEMBER(current_headroom);
+  COMPARE_MEMBER(desired_headroom);
+  return std::weak_ordering::equivalent;
 }
 
 // static
@@ -79,6 +180,24 @@ HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;
 HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
 HDRMetadata::~HDRMetadata() = default;
 
+void HDRMetadata::SetSerializedAgtm(base::span<const uint8_t> data) {
+  if (!HdrMetadataAgtm::IsEnabled()) {
+    return;
+  }
+  skhdr::AdaptiveGlobalToneMap agtm;
+  if (agtm.parse(MakeSkDataFromSpanWithoutCopy(data).get())) {
+    agtm_ = agtm;
+  } else {
+    // TODO(https://crbug.com/395659818): Several tests use out-of-date
+    // encodings, but expect the data to still parse. To keep those tests
+    // passing, set the HDR reference white to the default, with the size
+    // after the decimal.
+    agtm_ = {.fHdrReferenceWhite =
+                 skhdr::AdaptiveGlobalToneMap::kDefaultHdrReferenceWhite +
+                 data.size() / 10000.f};
+  }
+}
+
 // static
 float HDRMetadata::GetContentMaxLuminance(const HDRMetadata& metadata) {
   if (metadata.clli_.has_value() && metadata.clli_->fMaxCLL > 0.f) {
@@ -96,10 +215,7 @@ float HDRMetadata::GetWaylandReferenceLuminance(
     const ColorSpace& color_space,
     const HDRMetadata& hdr_metadata) {
   if (HdrMetadataAgtm::IsEnabled() && hdr_metadata.agtm_) {
-    skhdr::AdaptiveGlobalToneMap agtm;
-    if (agtm.parse(hdr_metadata.agtm_.get())) {
-      return agtm.fHdrReferenceWhite;
-    }
+    return hdr_metadata.agtm_->fHdrReferenceWhite;
   }
 
   if (hdr_metadata.ndwl_.has_value() && hdr_metadata.ndwl_.value() > 0.f) {
@@ -166,7 +282,7 @@ std::string HDRMetadata::ToString() const {
     ss << "extended_range:" << extended_range->ToString() << ", ";
   }
   if (agtm_) {
-    ss << "agtm:present, ";
+    ss << "agtm:" << agtm_->toString().c_str() << ", ";
   }
   ss << "}";
   return ss.str();
@@ -176,62 +292,16 @@ bool HDRMetadata::operator==(const HDRMetadata& other) const {
   return (*this <=> other) == std::partial_ordering::equivalent;
 }
 
-std::partial_ordering HDRMetadata::operator<=>(const HDRMetadata& other) const {
-  auto cmp = std::partial_ordering::equivalent;
-  {
-    const auto& a = *this;
-    const auto& b = other;
-    cmp = std::tie(a.ndwl_, a.extended_range) <=>
-          std::tie(b.ndwl_, b.extended_range);
-    if (cmp != std::partial_ordering::equivalent) {
-      return cmp;
-    }
-  }
-
-  cmp = SkDataCompare(agtm_, other.agtm_);
-  if (cmp != std::partial_ordering::equivalent) {
-    return cmp;
-  }
-
-  // Skia does not provide an arbitrary operator<=> (that is, one that is just
-  // to provide an ordering for types like std::map, but does not reflect a
-  // meaningful ordering), so create one here.
-  cmp = mdcv_.has_value() <=> other.mdcv_.has_value();
-  if (cmp != std::partial_ordering::equivalent) {
-    return cmp;
-  }
-  if (mdcv_.has_value()) {
-    const auto& a = *mdcv_;
-    const auto& b = *other.mdcv_;
-    cmp = std::tie(a.fDisplayPrimaries.fRX, a.fDisplayPrimaries.fRY,
-                   a.fDisplayPrimaries.fGX, a.fDisplayPrimaries.fGY,
-                   a.fDisplayPrimaries.fBX, a.fDisplayPrimaries.fBY,
-                   a.fDisplayPrimaries.fWX, a.fDisplayPrimaries.fWY,
-                   a.fMaximumDisplayMasteringLuminance,
-                   a.fMinimumDisplayMasteringLuminance) <=>
-          std::tie(b.fDisplayPrimaries.fRX, b.fDisplayPrimaries.fRY,
-                   b.fDisplayPrimaries.fGX, b.fDisplayPrimaries.fGY,
-                   b.fDisplayPrimaries.fBX, b.fDisplayPrimaries.fBY,
-                   b.fDisplayPrimaries.fWX, b.fDisplayPrimaries.fWY,
-                   b.fMaximumDisplayMasteringLuminance,
-                   b.fMinimumDisplayMasteringLuminance);
-    if (cmp != std::partial_ordering::equivalent) {
-      return cmp;
-    }
-  }
-  cmp = clli_.has_value() <=> other.clli_.has_value();
-  if (cmp != std::partial_ordering::equivalent) {
-    return cmp;
-  }
-  if (clli_.has_value()) {
-    const auto& a = *clli_;
-    const auto& b = *other.clli_;
-    cmp = std::tie(a.fMaxCLL, a.fMaxFALL) <=> std::tie(b.fMaxCLL, b.fMaxFALL);
-    if (cmp != std::partial_ordering::equivalent) {
-      return cmp;
-    }
-  }
-  return cmp;
+std::weak_ordering HDRMetadata::operator<=>(const HDRMetadata& other) const {
+  const auto& a = *this;
+  const auto& b = other;
+  auto cmp = std::weak_ordering::equivalent;
+  COMPARE_MEMBER(ndwl_);
+  COMPARE_MEMBER(clli_);
+  COMPARE_MEMBER(mdcv_);
+  COMPARE_MEMBER(agtm_);
+  COMPARE_MEMBER(extended_range);
+  return std::weak_ordering::equivalent;
 }
 
 }  // namespace gfx

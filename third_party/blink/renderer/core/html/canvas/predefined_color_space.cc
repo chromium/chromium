@@ -131,8 +131,7 @@ void ParseCanvasHighDynamicRangeOptions(
   if (gfx::HdrMetadataAgtm::IsEnabled()) {
     if (options->hasAgtm()) {
       auto span = options->agtm().RawByteSpan();
-      auto data = SkData::MakeWithCopy(span.data(), span.size());
-      hdr_metadata.setSerializedAgtm(std::move(data));
+      hdr_metadata.SetSerializedAgtm(span);
     }
   }
 }

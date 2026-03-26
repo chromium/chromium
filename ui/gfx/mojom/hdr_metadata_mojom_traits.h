@@ -28,33 +28,36 @@ struct StructTraits<gfx::mojom::HdrMetadataExtendedRangeDataView,
 
 template <>
 struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
-  static std::optional<skhdr::ContentLightLevelInformation> clli(
-      const gfx::HDRMetadata& input) {
-    if (input.HasCLLI()) {
-      return input.GetCLLI();
-    }
-    return std::nullopt;
+  static mojo::OptionalAsPointer<const skhdr::ContentLightLevelInformation>
+  clli(const gfx::HDRMetadata& input) {
+    return mojo::OptionalAsPointer(input.HasCLLI() ? &input.GetCLLI()
+                                                   : nullptr);
   }
-  static std::optional<skhdr::MasteringDisplayColorVolume> mdcv(
+
+  static mojo::OptionalAsPointer<const skhdr::MasteringDisplayColorVolume> mdcv(
       const gfx::HDRMetadata& input) {
-    if (input.HasMDCV()) {
-      return input.GetMDCV();
-    }
-    return std::nullopt;
+    return mojo::OptionalAsPointer(input.HasMDCV() ? &input.GetMDCV()
+                                                   : nullptr);
   }
+
   static std::optional<float> ndwl(const gfx::HDRMetadata& input) {
     if (input.HasNDWL()) {
       return input.GetNDWL();
     }
     return std::nullopt;
   }
+
+  static mojo::OptionalAsPointer<const skhdr::AdaptiveGlobalToneMap> agtm(
+      const gfx::HDRMetadata& input) {
+    return mojo::OptionalAsPointer(input.HasAgtm() ? &input.GetAgtm()
+                                                   : nullptr);
+  }
+
   static const std::optional<gfx::HdrMetadataExtendedRange>& extended_range(
       const gfx::HDRMetadata& input) {
     return input.extended_range;
   }
 
-  static std::optional<skhdr::AdaptiveGlobalToneMap> agtm(
-      const gfx::HDRMetadata& input);
 
   static bool Read(gfx::mojom::HDRMetadataDataView data,
                    gfx::HDRMetadata* output);

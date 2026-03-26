@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
@@ -25,6 +26,7 @@
 #include "media/filters/in_memory_url_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "ui/gfx/switches.h"
 
 using ::testing::_;
 
@@ -268,6 +270,7 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_12bitMono) {
 }
 
 TEST_F(Dav1dVideoDecoderTest, DecodeFrame_AgtmMetadata) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kHdrAgtm);
   Initialize();
 
   // Simulate decoding a single frame.
@@ -276,8 +279,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_AgtmMetadata) {
   ASSERT_EQ(1U, output_frames_.size());
 
   const auto& frame = output_frames_.front();
-  ASSERT_TRUE(frame->hdr_metadata().getSerializedAgtm());
-  EXPECT_EQ(frame->hdr_metadata().getSerializedAgtm()->size(), 101u);
+  ASSERT_TRUE(frame->hdr_metadata().HasAgtm());
+  EXPECT_EQ(frame->hdr_metadata().GetAgtm().fHdrReferenceWhite, 203.0101f);
 }
 
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify

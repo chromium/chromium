@@ -100,7 +100,7 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
 };
 
-sk_sp<SkData> GetTestAgtm() {
+skhdr::AdaptiveGlobalToneMap GetTestAgtm() {
   skhdr::AdaptiveGlobalToneMap::HeadroomAdaptiveToneMap hatm;
   hatm.fBaselineHdrHeadroom = 0.1f,
   hatm.fGainApplicationSpacePrimaries = SkNamedPrimaries::kRec2020;
@@ -132,9 +132,7 @@ sk_sp<SkData> GetTestAgtm() {
       .fHdrReferenceWhite = 100.0f,
       .fHeadroomAdaptiveToneMap = {hatm},
   };
-  auto result = agtm.serialize();
-  EXPECT_TRUE(result);
-  return result;
+  return agtm;
 }
 
 }  // namespace
@@ -451,7 +449,7 @@ TEST_F(StructTraitsTest, HDRMetadata) {
   EXPECT_EQ(input, output);
 
   // Include agtm.
-  input.setSerializedAgtm(GetTestAgtm());
+  input.SetAgtm(GetTestAgtm());
   EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);

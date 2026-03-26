@@ -17,20 +17,6 @@ bool StructTraits<gfx::mojom::HdrMetadataExtendedRangeDataView,
   return true;
 }
 
-std::optional<skhdr::AdaptiveGlobalToneMap>
-StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::agtm(
-    const gfx::HDRMetadata& input) {
-  const auto* serialized_agtm = input.getSerializedAgtm();
-  if (!serialized_agtm) {
-    return std::nullopt;
-  }
-  skhdr::AdaptiveGlobalToneMap agtm;
-  if (!agtm.parse(serialized_agtm)) {
-    return std::nullopt;
-  }
-  return agtm;
-}
-
 bool StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::Read(
     gfx::mojom::HDRMetadataDataView data,
     gfx::HDRMetadata* output) {
@@ -61,9 +47,7 @@ bool StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::Read(
     return false;
   }
   if (agtm) {
-    output->setSerializedAgtm(agtm->serialize());
-  } else {
-    output->setSerializedAgtm(nullptr);
+    output->SetAgtm(*agtm);
   }
   return true;
 }

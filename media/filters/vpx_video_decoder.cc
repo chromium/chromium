@@ -337,15 +337,8 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   if (buffer->side_data() &&
       buffer->side_data()->itu_t35_data.size() >= kItut35HeaderSize) {
     auto side_data = buffer->side_data()->itu_t35_data.as_span();
-    static constexpr uint8_t kItut35CountryCodeExtensionMarker = 0xFF;
-    if (side_data.data()[0] == kItut35CountryCodeExtensionMarker) {
-      side_data = side_data.subspan(1u);
-    }
-    auto [country_code, payload] = side_data.split_at<1u>();
-    if (auto agtm = GetSerializedAgtmItutT35(country_code.data()[0], payload)) {
-      gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
-      hdr_metadata.setSerializedAgtm(agtm);
-      config_.set_hdr_metadata(hdr_metadata);
+    if (auto agtm = GetAgtmFromT35(side_data)) {
+      config_.writable_hdr_metadata().SetSerializedAgtm(*agtm);
     }
   }
 

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/private/SkHdrMetadata.h"
 #include "ui/gfx/color_space_export.h"
@@ -42,10 +43,9 @@ struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
 
   std::string ToString() const;
 
+  std::weak_ordering operator<=>(const HdrMetadataExtendedRange&) const;
   friend bool operator==(const HdrMetadataExtendedRange&,
                          const HdrMetadataExtendedRange&) = default;
-  friend auto operator<=>(const HdrMetadataExtendedRange&,
-                          const HdrMetadataExtendedRange&) = default;
 };
 
 // Return whether or not use of AGTM metadata is enabled by default or not.
@@ -64,6 +64,18 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   HDRMetadata(const HDRMetadata& rhs);
   HDRMetadata& operator=(const HDRMetadata& rhs);
   ~HDRMetadata();
+
+  // Adaptive global tone mapping (AGTM) metadata.
+  void SetAgtm(const skhdr::AdaptiveGlobalToneMap& agtm) { agtm_ = agtm; }
+  bool HasAgtm() const { return agtm_.has_value(); }
+  const skhdr::AdaptiveGlobalToneMap& GetAgtm() const {
+    CHECK(agtm_.has_value());
+    return agtm_.value();
+  }
+
+  // Parse `data` to AGTM metadata. If parsing succeeds, then set the AGTM
+  // metadata to the parsed value. Otherwise leave it unchanged.
+  void SetSerializedAgtm(base::span<const uint8_t> data);
 
   // Mastering display color volume (MDCV) metadata.
   void SetMDCV(const skhdr::MasteringDisplayColorVolume& smpte) {
@@ -98,7 +110,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // Return true if this structure holds no metadata.
   bool IsEmpty() const {
     return !mdcv_.has_value() && !clli_.has_value() && !ndwl_.has_value() &&
-           !extended_range.has_value() && !agtm_;
+           !extended_range.has_value() && !agtm_.has_value();
   }
 
   bool IsValid() const {
@@ -131,19 +143,15 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   std::string ToString() const;
 
-  // TODO(https://crbug.com/395659818): Change these to use setters like the
-  // other metadata types.
-  void setSerializedAgtm(sk_sp<const SkData> agtm) { agtm_ = std::move(agtm); }
-  const SkData* getSerializedAgtm() const { return agtm_.get(); }
-
+  // A default weak ordering for use with maps, sets, and caches.
   bool operator==(const HDRMetadata&) const;
-  std::partial_ordering operator<=>(const HDRMetadata&) const;
+  std::weak_ordering operator<=>(const HDRMetadata&) const;
 
  private:
   std::optional<skhdr::MasteringDisplayColorVolume> mdcv_;
   std::optional<skhdr::ContentLightLevelInformation> clli_;
+  std::optional<skhdr::AdaptiveGlobalToneMap> agtm_;
   std::optional<float> ndwl_;
-  sk_sp<const SkData> agtm_;
 };
 
 // HDR metadata types as described in

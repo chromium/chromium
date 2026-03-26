@@ -60,8 +60,9 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   // Parse AGTM only if the feature is enabled.
   skhdr::AdaptiveGlobalToneMap agtm;
   bool agtm_valid = false;
-  if (gfx::HdrMetadataAgtm::IsEnabled()) {
-    agtm_valid = agtm.parse(metadata.getSerializedAgtm());
+  if (gfx::HdrMetadataAgtm::IsEnabled() && metadata.HasAgtm()) {
+    agtm_valid = true;
+    agtm = metadata.GetAgtm();
   }
 
   // Use NDWL to specify HDR reference white only if AGTM was not present.

@@ -951,10 +951,6 @@ ffmpeg -i av1-I-frame-320x240-agtm -c:v copy av1-I-frame-320x240-agtm.ivf
 #### vp9-agtm.webm
 VP9 video with a single frame that contains agtm metadata.
 
-#### vp9-agtm-country-code-extension.webm
-Same as vp9-agtm.webm but the ITU_T35 message contains a country code extension
-byte.
-
 ### HLS
 
 #### bear-1280x720-hls-clear-mpl.m3u8

@@ -2611,8 +2611,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     if (src_color_space.IsToneMappedByDefault()) {
       return true;
     }
-    if (gfx::HdrMetadataAgtm::IsEnabled() &&
-        src_hdr_metadata.getSerializedAgtm()) {
+    if (gfx::HdrMetadataAgtm::IsEnabled() && src_hdr_metadata.HasAgtm()) {
       return true;
     }
     return false;

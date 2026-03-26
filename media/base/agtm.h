@@ -13,9 +13,21 @@
 
 namespace media {
 
-// Returns AGTM metadata if the ITU-T T.35 message contains some.
-MEDIA_EXPORT sk_sp<const SkData> GetSerializedAgtmItutT35(
+// Returns true if `t35_prefix` matches the AGTM ITU-T T.35 codes exactly (with
+// `t35_prefix` having no extra bytes).
+MEDIA_EXPORT bool MatchesAgtmT35(base::span<const uint8_t> t35_prefix);
+
+// If `t35_country_code` and `t35_payload_without_country_code` match the AGTM
+// ITU-T T.35 codes, then return the sub-span of
+// `t35_payload_without_country_code` for the AGTM metadata.
+MEDIA_EXPORT std::optional<base::span<const uint8_t>>
+GetAgtmFromT35WithCountryCode(
     uint8_t t35_country_code,
+    base::span<const uint8_t> t35_payload_without_country_code);
+
+// If `t35_payload` begins with the AGTM ITU-T T.35 codes, then return the
+// sub-span of `t35_payload` for the AGTM metadata.
+MEDIA_EXPORT std::optional<base::span<const uint8_t>> GetAgtmFromT35(
     base::span<const uint8_t> t35_payload);
 
 }  // namespace media
