@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -72,10 +73,18 @@ void DidFindServiceWorkerRegistration(
   ServiceWorkerVersion* version = service_worker_registration->active_version();
   DCHECK(version);
 
-  version->RunAfterStartWorker(
-      event_type,
-      base::BindOnce(std::move(callback), base::WrapRefCounted(version),
-                     std::move(service_worker_context)));
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerSoftUpdateOnFunctionalEvent)) {
+    version->RunAfterStartWorkerForFunctionalEvent(
+        event_type,
+        base::BindOnce(std::move(callback), base::WrapRefCounted(version),
+                       std::move(service_worker_context)));
+  } else {
+    version->RunAfterStartWorker(
+        event_type,
+        base::BindOnce(std::move(callback), base::WrapRefCounted(version),
+                       std::move(service_worker_context)));
+  }
 }
 
 // Finds the |service_worker_registration|.
@@ -164,13 +173,26 @@ void PushMessagingRouter::DeliverMessageToWorker(
     return;
   }
 
-  int request_id = service_worker->StartRequestWithCustomTimeout(
-      ServiceWorkerMetrics::EventType::PUSH,
-      base::BindOnce(&PushMessagingRouter::DeliverMessageEnd, service_worker,
-                     service_worker_context, message_id,
-                     std::move(deliver_message_callback)),
-      base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
-      ServiceWorkerVersion::KILL_ON_TIMEOUT);
+  int request_id;
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerSoftUpdateOnFunctionalEvent)) {
+    request_id =
+        service_worker->StartRequestForFunctionalEventWithCustomTimeout(
+            ServiceWorkerMetrics::EventType::PUSH,
+            base::BindOnce(&PushMessagingRouter::DeliverMessageEnd,
+                           service_worker, service_worker_context, message_id,
+                           std::move(deliver_message_callback)),
+            base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
+            ServiceWorkerVersion::KILL_ON_TIMEOUT);
+  } else {
+    request_id = service_worker->StartRequestWithCustomTimeout(
+        ServiceWorkerMetrics::EventType::PUSH,
+        base::BindOnce(&PushMessagingRouter::DeliverMessageEnd,
+                       service_worker, service_worker_context, message_id,
+                       std::move(deliver_message_callback)),
+        base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
+        ServiceWorkerVersion::KILL_ON_TIMEOUT);
+  }
 
   if (record_network_requests) {
     service_worker->endpoint()->DispatchPushEventRecordingNetworkRequests(
@@ -307,12 +329,27 @@ void PushMessagingRouter::FireSubscriptionChangeEventToWorker(
     return;
   }
 
-  int request_id = service_worker->StartRequestWithCustomTimeout(
-      ServiceWorkerMetrics::EventType::PUSH_SUBSCRIPTION_CHANGE,
-      base::BindOnce(&PushMessagingRouter::FireSubscriptionChangeEventEnd,
-                     service_worker, std::move(subscription_change_callback)),
-      base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
-      ServiceWorkerVersion::KILL_ON_TIMEOUT);
+  int request_id;
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerSoftUpdateOnFunctionalEvent)) {
+    request_id =
+        service_worker->StartRequestForFunctionalEventWithCustomTimeout(
+            ServiceWorkerMetrics::EventType::PUSH_SUBSCRIPTION_CHANGE,
+            base::BindOnce(
+                &PushMessagingRouter::FireSubscriptionChangeEventEnd,
+                service_worker,
+                std::move(subscription_change_callback)),
+            base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
+            ServiceWorkerVersion::KILL_ON_TIMEOUT);
+  } else {
+    request_id = service_worker->StartRequestWithCustomTimeout(
+        ServiceWorkerMetrics::EventType::PUSH_SUBSCRIPTION_CHANGE,
+        base::BindOnce(
+            &PushMessagingRouter::FireSubscriptionChangeEventEnd,
+            service_worker, std::move(subscription_change_callback)),
+        base::Seconds(blink::mojom::kPushEventTimeoutSeconds),
+        ServiceWorkerVersion::KILL_ON_TIMEOUT);
+  }
 
   service_worker->endpoint()->DispatchPushSubscriptionChangeEvent(
       std::move(old_subscription), std::move(new_subscription),

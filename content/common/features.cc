@@ -697,6 +697,12 @@ BASE_FEATURE(kServiceWorkerClientUrlIsCreationUrl,
 BASE_FEATURE(kServiceWorkerWindowClientInitiator,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// (crbug.com/486495094): When enabled, triggers a soft update check after
+// functional events complete (spec step 8) and on worker start failure
+// (spec step 5), per the "Fire Functional Event" spec algorithm.
+BASE_FEATURE(kServiceWorkerSoftUpdateOnFunctionalEvent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,

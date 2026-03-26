@@ -50,6 +50,7 @@
 #include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/page_navigator.h"
@@ -828,6 +829,12 @@ bool ServiceWorkerVersion::FinishRequestWithFetchCount(int request_id,
       request->event_type, tick_clock_->NowTicks() - request->start_time_ticks,
       was_handled, fetch_count);
 
+  // "Fire Functional Event" spec algorithm step 8: trigger a soft update
+  // check after a functional event completes.
+  if (request->soft_update_on_completion && IsRegistrationStale()) {
+    ScheduleUpdate();
+  }
+
   // ServiceWorkerVersion::Request
   TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(request),
                   "Handled", was_handled);
@@ -841,6 +848,59 @@ bool ServiceWorkerVersion::FinishRequestWithFetchCount(int request_id,
     OnNoWorkInBrowser();
   }
   return true;
+}
+
+bool ServiceWorkerVersion::IsRegistrationStale() {
+  if (!context_) {
+    return false;
+  }
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      context_->GetLiveRegistration(registration_id_);
+  if (!registration || registration->installing_version()) {
+    return false;
+  }
+  return clock_->Now() - registration->last_update_check() >
+         ServiceWorkerConsts::kServiceWorkerScriptMaxCacheAge;
+}
+
+void ServiceWorkerVersion::RunAfterStartWorkerForFunctionalEvent(
+    ServiceWorkerMetrics::EventType purpose,
+    StatusCallback callback) {
+  RunAfterStartWorker(
+      purpose,
+      base::BindOnce(&ServiceWorkerVersion::DidStartWorkerForFunctionalEvent,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ServiceWorkerVersion::DidStartWorkerForFunctionalEvent(
+    StatusCallback callback,
+    blink::ServiceWorkerStatusCode status) {
+  if (status != blink::ServiceWorkerStatusCode::kOk) {
+    if (IsRegistrationStale()) {
+      ScheduleUpdate();
+    }
+  }
+  std::move(callback).Run(status);
+}
+
+int ServiceWorkerVersion::StartRequestForFunctionalEvent(
+    ServiceWorkerMetrics::EventType event_type,
+    StatusCallback error_callback) {
+  return StartRequestForFunctionalEventWithCustomTimeout(
+      event_type, std::move(error_callback), kRequestTimeout, KILL_ON_TIMEOUT);
+}
+
+int ServiceWorkerVersion::StartRequestForFunctionalEventWithCustomTimeout(
+    ServiceWorkerMetrics::EventType event_type,
+    StatusCallback error_callback,
+    const base::TimeDelta& timeout,
+    TimeoutBehavior timeout_behavior) {
+  int request_id = StartRequestWithCustomTimeout(
+      event_type, std::move(error_callback), timeout, timeout_behavior);
+  InflightRequest* request = inflight_requests_.Lookup(request_id);
+  DCHECK(request);
+  request->soft_update_on_completion = true;
+  return request_id;
 }
 
 ServiceWorkerExternalRequestResult ServiceWorkerVersion::FinishExternalRequest(
