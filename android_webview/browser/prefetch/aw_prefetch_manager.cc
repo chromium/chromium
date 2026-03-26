@@ -130,7 +130,7 @@ void AwPrefetchManager::SetOrClearExternalPrefetchExperiment(
   AwMetricsServiceAccessor::RegisterExternalExperiment(experiment_ids);
 }
 
-int AwPrefetchManager::StartPrefetchRequest(
+AwPrefetchKey AwPrefetchManager::StartPrefetchRequest(
     JNIEnv* env,
     const std::string& url,
     const base::android::JavaRef<jobject>& prefetch_params,
@@ -246,7 +246,8 @@ bool AwPrefetchManager::IsPrefetchDuplicate(
   return content::IsPrefetchDuplicate(candidates, url, expected_no_vary_search);
 }
 
-void AwPrefetchManager::CancelPrefetch(JNIEnv* env, int32_t prefetch_key) {
+void AwPrefetchManager::CancelPrefetch(JNIEnv* env,
+                                       AwPrefetchKey prefetch_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT0("android_webview", "AwPrefetchManager::CancelPrefetch");
   if (prefetch_key == NO_PREFETCH_KEY) {
@@ -262,12 +263,12 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env, int32_t prefetch_key) {
 
 bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(  // IN-TEST
     JNIEnv* env,
-    int32_t prefetch_key) const {
+    AwPrefetchKey prefetch_key) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return all_prefetches_map_.find(prefetch_key) != all_prefetches_map_.end();
 }
 
-static int32_t JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
+static AwPrefetchKey JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
   return NO_PREFETCH_KEY;
 }
 

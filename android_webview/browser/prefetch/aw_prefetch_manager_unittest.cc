@@ -53,7 +53,7 @@ TEST_F(AwPrefetchManagerTest, UpdateCacheConfig) {
             60 * 10);
   EXPECT_EQ(prefetch_manager.GetMaxPrefetchesForTesting(
                 base::android::AttachCurrentThread()),
-            5);
+            5u);
 }
 
 TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {
