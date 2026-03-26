@@ -620,7 +620,6 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
 
  private:
   CoreAccountId account_id_;
-  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 };
 
 // Checks that signout opens a new logout tab.
@@ -1104,9 +1103,7 @@ class ProfileMenuClickTest : public SyncTest,
     SetTargetBrowser(browser());
   }
 
-  Profile* GetProfile() {
-    return profile_ ? profile_.get() : browser()->profile();
-  }
+  Profile* GetProfile() { return browser()->profile(); }
 
   virtual ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex(
       size_t index) = 0;
@@ -1184,7 +1181,6 @@ class ProfileMenuClickTest : public SyncTest,
   base::CallbackListSubscription test_signin_client_subscription_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<SyncServiceImplHarness> sync_harness_;
-  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 };
 
 #define PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(                    \
