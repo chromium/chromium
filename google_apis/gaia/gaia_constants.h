@@ -173,6 +173,9 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPrivateAiAuthScope[];
 
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kWalletPassesOAuth2Scope[];
 
+// OAuth2 scope for One Time Token Service.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kOneTimeTokenOAuth2Scope[];
+
 // Constants for the Chrome Refresh Token Binding.
 inline constexpr std::string_view kTokenBindingAssertionSentinel =
     "DBSC_CHALLENGE_IF_REQUIRED";

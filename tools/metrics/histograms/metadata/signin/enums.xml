@@ -755,6 +755,7 @@ chromium-metrics-reviews@google.com.
   <int value="91" label="Accessibility Annotator"/>
   <int value="92" label="Actor Login Permission Service"/>
   <int value="93" label="Gapis Service"/>
+  <int value="94" label="One Time Token Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

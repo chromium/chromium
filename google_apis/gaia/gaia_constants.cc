@@ -303,6 +303,10 @@ const char kPrivateAiAuthScope[] = "https://www.googleapis.com/auth/paic";
 const char kWalletPassesOAuth2Scope[] =
     "https://www.googleapis.com/auth/wallet_1p_passes";
 
+// OAuth2 scope for One Time Token Service.
+const char kOneTimeTokenOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chrome.passwords.onetimetoken";
+
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
 // the ClientOAuth endpoint protocol.  The comment above each constant explains

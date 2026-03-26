@@ -126,7 +126,7 @@ constexpr char kAccessibilityAnnotatorName[] = "accessibility_annotator";
 constexpr char kActorLoginPermissionServiceName[] =
     "actor_login_permission_service";
 constexpr char kGapisServiceName[] = "gapis_service";
-
+constexpr char kOneTimeTokenServiceName[] = "one_time_token_service";
 }  // namespace
 
 namespace signin {
@@ -577,6 +577,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kGapisServiceName,
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kOneTimeTokenService:
+      return OAuthConsumer(
+          /*name=*/kOneTimeTokenServiceName,
+          /*scopes=*/{GaiaConstants::kOneTimeTokenOAuth2Scope});
   }
 }
 
