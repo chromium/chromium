@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedVault.RecoveryFactorRegistered{LocalRecoveryFactorType}{SecurityDomainId}"
-    enum="Boolean" expires_after="2026-05-03">
+    enum="Boolean" expires_after="2027-05-03">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
