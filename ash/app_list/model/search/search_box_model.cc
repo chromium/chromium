@@ -10,7 +10,6 @@
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "base/check_is_test.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"

@@ -26,7 +26,6 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_shortcut_image.h"

@@ -22,7 +22,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"

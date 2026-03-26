@@ -13,7 +13,6 @@
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/display/manager/display_manager.h"

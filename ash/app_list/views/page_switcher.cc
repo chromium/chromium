@@ -15,7 +15,6 @@
 #include "ash/style/icon_button.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/metrics/histogram_macros.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"

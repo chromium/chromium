@@ -9,7 +9,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/palette/palette_tool.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 
 namespace ash {
 

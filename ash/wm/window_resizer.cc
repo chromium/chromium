@@ -10,7 +10,6 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
