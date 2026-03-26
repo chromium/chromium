@@ -817,9 +817,13 @@ void HWNDMessageHandler::Restore() {
 
 void HWNDMessageHandler::Activate() {
   if (IsMinimized()) {
-    base::AutoReset<bool> restoring_activate(&notify_restore_on_activate_,
-                                             true);
+    notify_restore_on_activate_ = true;
+    auto ref = msg_handler_weak_factory_.GetWeakPtr();
     ::ShowWindow(hwnd(), SW_RESTORE);
+    if (!ref) {
+      return;
+    }
+    notify_restore_on_activate_ = false;
   }
 
   ::SetWindowPos(hwnd(), HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
@@ -1525,7 +1529,11 @@ void HWNDMessageHandler::PostProcessActivateMessage(
     last_size_param_ = SIZE_RESTORED;
   }
   if (delegate_->CanActivate()) {
+    auto ref = msg_handler_weak_factory_.GetWeakPtr();
     delegate_->HandleActivationChanged(active);
+    if (!ref) {
+      return;
+    }
   }
 
   if (!::IsWindow(window_gaining_or_losing_activation)) {
