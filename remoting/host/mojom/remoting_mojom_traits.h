@@ -126,18 +126,15 @@ struct EnumTraits<remoting::mojom::DesktopCaptureResult,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::DesktopCaptureResult input,
-                        ::webrtc::DesktopCapturer::Result* out) {
+  static ::webrtc::DesktopCapturer::Result FromMojom(
+      remoting::mojom::DesktopCaptureResult input) {
     switch (input) {
       case remoting::mojom::DesktopCaptureResult::kSuccess:
-        *out = ::webrtc::DesktopCapturer::Result::SUCCESS;
-        return true;
+        return ::webrtc::DesktopCapturer::Result::SUCCESS;
       case remoting::mojom::DesktopCaptureResult::kErrorTemporary:
-        *out = ::webrtc::DesktopCapturer::Result::ERROR_TEMPORARY;
-        return true;
+        return ::webrtc::DesktopCapturer::Result::ERROR_TEMPORARY;
       case remoting::mojom::DesktopCaptureResult::kErrorPermanent:
-        *out = ::webrtc::DesktopCapturer::Result::ERROR_PERMANENT;
-        return true;
+        return ::webrtc::DesktopCapturer::Result::ERROR_PERMANENT;
     }
 
     NOTREACHED();
@@ -247,27 +244,21 @@ struct EnumTraits<remoting::mojom::MouseButton,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::MouseButton input,
-                        ::remoting::protocol::MouseEvent::MouseButton* out) {
+  static ::remoting::protocol::MouseEvent::MouseButton FromMojom(
+      remoting::mojom::MouseButton input) {
     switch (input) {
       case remoting::mojom::MouseButton::kUndefined:
-        *out = ::remoting::protocol::MouseEvent::BUTTON_UNDEFINED;
-        return true;
+        return ::remoting::protocol::MouseEvent::BUTTON_UNDEFINED;
       case remoting::mojom::MouseButton::kLeft:
-        *out = ::remoting::protocol::MouseEvent::BUTTON_LEFT;
-        return true;
+        return ::remoting::protocol::MouseEvent::BUTTON_LEFT;
       case remoting::mojom::MouseButton::kMiddle:
-        *out = ::remoting::protocol::MouseEvent::BUTTON_MIDDLE;
-        return true;
+        return ::remoting::protocol::MouseEvent::BUTTON_MIDDLE;
       case remoting::mojom::MouseButton::kRight:
-        *out = ::remoting::protocol::MouseEvent::BUTTON_RIGHT;
-        return true;
+        return ::remoting::protocol::MouseEvent::BUTTON_RIGHT;
       case remoting::mojom::MouseButton::kBack:
-        *out = ::remoting::protocol::MouseEvent::BUTTON_BACK;
-        return true;
+        return ::remoting::protocol::MouseEvent::BUTTON_BACK;
       case remoting::mojom::MouseButton::kForward:
-        *out = ::remoting::protocol::MouseEvent::BUTTON_FORWARD;
-        return true;
+        return ::remoting::protocol::MouseEvent::BUTTON_FORWARD;
     }
 
     NOTREACHED();
@@ -289,15 +280,13 @@ struct EnumTraits<remoting::mojom::AudioPacket_BytesPerSample,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::AudioPacket_BytesPerSample input,
-                        ::remoting::AudioPacket::BytesPerSample* out) {
+  static ::remoting::AudioPacket::BytesPerSample FromMojom(
+      remoting::mojom::AudioPacket_BytesPerSample input) {
     switch (input) {
       case remoting::mojom::AudioPacket_BytesPerSample::kInvalid:
-        *out = ::remoting::AudioPacket::BYTES_PER_SAMPLE_INVALID;
-        return true;
+        return ::remoting::AudioPacket::BYTES_PER_SAMPLE_INVALID;
       case remoting::mojom::AudioPacket_BytesPerSample::kBytesPerSample_2:
-        *out = ::remoting::AudioPacket::BYTES_PER_SAMPLE_2;
-        return true;
+        return ::remoting::AudioPacket::BYTES_PER_SAMPLE_2;
     }
 
     NOTREACHED();
@@ -333,36 +322,27 @@ struct EnumTraits<remoting::mojom::AudioPacket_Channels,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::AudioPacket_Channels input,
-                        ::remoting::AudioPacket::Channels* out) {
+  static ::remoting::AudioPacket::Channels FromMojom(
+      remoting::mojom::AudioPacket_Channels input) {
     switch (input) {
       case remoting::mojom::AudioPacket_Channels::kInvalid:
-        *out = ::remoting::AudioPacket::CHANNELS_INVALID;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_INVALID;
       case remoting::mojom::AudioPacket_Channels::kMono:
-        *out = ::remoting::AudioPacket::CHANNELS_MONO;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_MONO;
       case remoting::mojom::AudioPacket_Channels::kStereo:
-        *out = ::remoting::AudioPacket::CHANNELS_STEREO;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_STEREO;
       case remoting::mojom::AudioPacket_Channels::kSurround:
-        *out = ::remoting::AudioPacket::CHANNELS_SURROUND;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_SURROUND;
       case remoting::mojom::AudioPacket_Channels::kChannel_4_0:
-        *out = ::remoting::AudioPacket::CHANNELS_4_0;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_4_0;
       case remoting::mojom::AudioPacket_Channels::kChannel_4_1:
-        *out = ::remoting::AudioPacket::CHANNELS_4_1;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_4_1;
       case remoting::mojom::AudioPacket_Channels::kChannel_5_1:
-        *out = ::remoting::AudioPacket::CHANNELS_5_1;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_5_1;
       case remoting::mojom::AudioPacket_Channels::kChannel_6_1:
-        *out = ::remoting::AudioPacket::CHANNELS_6_1;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_6_1;
       case remoting::mojom::AudioPacket_Channels::kChannel_7_1:
-        *out = ::remoting::AudioPacket::CHANNELS_7_1;
-        return true;
+        return ::remoting::AudioPacket::CHANNELS_7_1;
     }
 
     NOTREACHED();
@@ -386,18 +366,15 @@ struct EnumTraits<remoting::mojom::AudioPacket_Encoding,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::AudioPacket_Encoding input,
-                        ::remoting::AudioPacket::Encoding* out) {
+  static ::remoting::AudioPacket::Encoding FromMojom(
+      remoting::mojom::AudioPacket_Encoding input) {
     switch (input) {
       case remoting::mojom::AudioPacket_Encoding::kInvalid:
-        *out = ::remoting::AudioPacket::ENCODING_INVALID;
-        return true;
+        return ::remoting::AudioPacket::ENCODING_INVALID;
       case remoting::mojom::AudioPacket_Encoding::kRaw:
-        *out = ::remoting::AudioPacket::ENCODING_RAW;
-        return true;
+        return ::remoting::AudioPacket::ENCODING_RAW;
       case remoting::mojom::AudioPacket_Encoding::kOpus:
-        *out = ::remoting::AudioPacket::ENCODING_OPUS;
-        return true;
+        return ::remoting::AudioPacket::ENCODING_OPUS;
     }
 
     NOTREACHED();
@@ -421,18 +398,15 @@ struct EnumTraits<remoting::mojom::AudioPacket_SamplingRate,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::AudioPacket_SamplingRate input,
-                        ::remoting::AudioPacket::SamplingRate* out) {
+  static ::remoting::AudioPacket::SamplingRate FromMojom(
+      remoting::mojom::AudioPacket_SamplingRate input) {
     switch (input) {
       case remoting::mojom::AudioPacket_SamplingRate::kInvalid:
-        *out = ::remoting::AudioPacket::SAMPLING_RATE_INVALID;
-        return true;
+        return ::remoting::AudioPacket::SAMPLING_RATE_INVALID;
       case remoting::mojom::AudioPacket_SamplingRate::kRate_44100:
-        *out = ::remoting::AudioPacket::SAMPLING_RATE_44100;
-        return true;
+        return ::remoting::AudioPacket::SAMPLING_RATE_44100;
       case remoting::mojom::AudioPacket_SamplingRate::kRate_48000:
-        *out = ::remoting::AudioPacket::SAMPLING_RATE_48000;
-        return true;
+        return ::remoting::AudioPacket::SAMPLING_RATE_48000;
     }
 
     NOTREACHED();
@@ -596,33 +570,25 @@ struct EnumTraits<remoting::mojom::FileTransferError_Type,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::FileTransferError_Type input,
-                        ::remoting::protocol::FileTransfer_Error_Type* out) {
+  static ::remoting::protocol::FileTransfer_Error_Type FromMojom(
+      remoting::mojom::FileTransferError_Type input) {
     switch (input) {
       case remoting::mojom::FileTransferError_Type::kUnknown:
-        *out = ::remoting::protocol::FileTransfer_Error::UNSPECIFIED;
-        return true;
+        return ::remoting::protocol::FileTransfer_Error::UNSPECIFIED;
       case remoting::mojom::FileTransferError_Type::kCanceled:
-        *out = ::remoting::protocol::FileTransfer_Error::CANCELED;
-        return true;
+        return ::remoting::protocol::FileTransfer_Error::CANCELED;
       case remoting::mojom::FileTransferError_Type::kUnexpectedError:
-        *out = ::remoting::protocol::FileTransfer_Error::UNEXPECTED_ERROR;
-        return true;
+        return ::remoting::protocol::FileTransfer_Error::UNEXPECTED_ERROR;
       case remoting::mojom::FileTransferError_Type::kProtocolError:
-        *out = ::remoting::protocol::FileTransfer_Error::PROTOCOL_ERROR;
-        return true;
+        return ::remoting::protocol::FileTransfer_Error::PROTOCOL_ERROR;
       case remoting::mojom::FileTransferError_Type::kPermissionDenied:
-        *out = ::remoting::protocol::FileTransfer_Error::PERMISSION_DENIED;
-        return true;
+        return ::remoting::protocol::FileTransfer_Error::PERMISSION_DENIED;
       case remoting::mojom::FileTransferError_Type::kOutOfDiskSpace:
-        *out = ::remoting::protocol::FileTransfer_Error::OUT_OF_DISK_SPACE;
-        return true;
+        return ::remoting::protocol::FileTransfer_Error::OUT_OF_DISK_SPACE;
       case remoting::mojom::FileTransferError_Type::kIoError:
-        *out = ::remoting::protocol::FileTransfer_Error::IO_ERROR;
-        return true;
+        return ::remoting::protocol::FileTransfer_Error::IO_ERROR;
       case remoting::mojom::FileTransferError_Type::kNotLoggedIn:
-        *out = ::remoting::protocol::FileTransfer_Error::NOT_LOGGED_IN;
-        return true;
+        return ::remoting::protocol::FileTransfer_Error::NOT_LOGGED_IN;
     }
 
     NOTREACHED();
@@ -867,202 +833,138 @@ struct EnumTraits<remoting::mojom::LayoutKeyFunction,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::LayoutKeyFunction input,
-                        ::remoting::protocol::LayoutKeyFunction* out) {
+  static ::remoting::protocol::LayoutKeyFunction FromMojom(
+      remoting::mojom::LayoutKeyFunction input) {
     switch (input) {
       case remoting::mojom::LayoutKeyFunction::kUnknown:
-        *out = ::remoting::protocol::LayoutKeyFunction::UNKNOWN;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::UNKNOWN;
       case remoting::mojom::LayoutKeyFunction::kControl:
-        *out = ::remoting::protocol::LayoutKeyFunction::CONTROL;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::CONTROL;
       case remoting::mojom::LayoutKeyFunction::kAlt:
-        *out = ::remoting::protocol::LayoutKeyFunction::ALT;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::ALT;
       case remoting::mojom::LayoutKeyFunction::kShift:
-        *out = ::remoting::protocol::LayoutKeyFunction::SHIFT;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::SHIFT;
       case remoting::mojom::LayoutKeyFunction::kMeta:
-        *out = ::remoting::protocol::LayoutKeyFunction::META;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::META;
       case remoting::mojom::LayoutKeyFunction::kAltGr:
-        *out = ::remoting::protocol::LayoutKeyFunction::ALT_GR;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::ALT_GR;
       case remoting::mojom::LayoutKeyFunction::kMod5:
-        *out = ::remoting::protocol::LayoutKeyFunction::MOD5;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::MOD5;
       case remoting::mojom::LayoutKeyFunction::kCompose:
-        *out = ::remoting::protocol::LayoutKeyFunction::COMPOSE;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::COMPOSE;
       case remoting::mojom::LayoutKeyFunction::kOption:
-        *out = ::remoting::protocol::LayoutKeyFunction::OPTION;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::OPTION;
       case remoting::mojom::LayoutKeyFunction::kCommand:
-        *out = ::remoting::protocol::LayoutKeyFunction::COMMAND;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::COMMAND;
       case remoting::mojom::LayoutKeyFunction::kSearch:
-        *out = ::remoting::protocol::LayoutKeyFunction::SEARCH;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::SEARCH;
       case remoting::mojom::LayoutKeyFunction::kNumLock:
-        *out = ::remoting::protocol::LayoutKeyFunction::NUM_LOCK;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::NUM_LOCK;
       case remoting::mojom::LayoutKeyFunction::kCapsLock:
-        *out = ::remoting::protocol::LayoutKeyFunction::CAPS_LOCK;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::CAPS_LOCK;
       case remoting::mojom::LayoutKeyFunction::kScrollLock:
-        *out = ::remoting::protocol::LayoutKeyFunction::SCROLL_LOCK;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::SCROLL_LOCK;
       case remoting::mojom::LayoutKeyFunction::kBackspace:
-        *out = ::remoting::protocol::LayoutKeyFunction::BACKSPACE;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::BACKSPACE;
       case remoting::mojom::LayoutKeyFunction::kEnter:
-        *out = ::remoting::protocol::LayoutKeyFunction::ENTER;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::ENTER;
       case remoting::mojom::LayoutKeyFunction::kTab:
-        *out = ::remoting::protocol::LayoutKeyFunction::TAB;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::TAB;
       case remoting::mojom::LayoutKeyFunction::kInsert:
-        *out = ::remoting::protocol::LayoutKeyFunction::INSERT;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::INSERT;
       case remoting::mojom::LayoutKeyFunction::kDelete:
-        *out = ::remoting::protocol::LayoutKeyFunction::DELETE_;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::DELETE_;
       case remoting::mojom::LayoutKeyFunction::kHome:
-        *out = ::remoting::protocol::LayoutKeyFunction::HOME;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::HOME;
       case remoting::mojom::LayoutKeyFunction::kEnd:
-        *out = ::remoting::protocol::LayoutKeyFunction::END;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::END;
       case remoting::mojom::LayoutKeyFunction::kPageUp:
-        *out = ::remoting::protocol::LayoutKeyFunction::PAGE_UP;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::PAGE_UP;
       case remoting::mojom::LayoutKeyFunction::kPageDown:
-        *out = ::remoting::protocol::LayoutKeyFunction::PAGE_DOWN;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::PAGE_DOWN;
       case remoting::mojom::LayoutKeyFunction::kClear:
-        *out = ::remoting::protocol::LayoutKeyFunction::CLEAR;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::CLEAR;
       case remoting::mojom::LayoutKeyFunction::kArrowUp:
-        *out = ::remoting::protocol::LayoutKeyFunction::ARROW_UP;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::ARROW_UP;
       case remoting::mojom::LayoutKeyFunction::kArrowDown:
-        *out = ::remoting::protocol::LayoutKeyFunction::ARROW_DOWN;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::ARROW_DOWN;
       case remoting::mojom::LayoutKeyFunction::kArrowLeft:
-        *out = ::remoting::protocol::LayoutKeyFunction::ARROW_LEFT;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::ARROW_LEFT;
       case remoting::mojom::LayoutKeyFunction::kArrowRight:
-        *out = ::remoting::protocol::LayoutKeyFunction::ARROW_RIGHT;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::ARROW_RIGHT;
       case remoting::mojom::LayoutKeyFunction::kF1:
-        *out = ::remoting::protocol::LayoutKeyFunction::F1;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F1;
       case remoting::mojom::LayoutKeyFunction::kF2:
-        *out = ::remoting::protocol::LayoutKeyFunction::F2;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F2;
       case remoting::mojom::LayoutKeyFunction::kF3:
-        *out = ::remoting::protocol::LayoutKeyFunction::F3;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F3;
       case remoting::mojom::LayoutKeyFunction::kF4:
-        *out = ::remoting::protocol::LayoutKeyFunction::F4;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F4;
       case remoting::mojom::LayoutKeyFunction::kF5:
-        *out = ::remoting::protocol::LayoutKeyFunction::F5;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F5;
       case remoting::mojom::LayoutKeyFunction::kF6:
-        *out = ::remoting::protocol::LayoutKeyFunction::F6;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F6;
       case remoting::mojom::LayoutKeyFunction::kF7:
-        *out = ::remoting::protocol::LayoutKeyFunction::F7;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F7;
       case remoting::mojom::LayoutKeyFunction::kF8:
-        *out = ::remoting::protocol::LayoutKeyFunction::F8;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F8;
       case remoting::mojom::LayoutKeyFunction::kF9:
-        *out = ::remoting::protocol::LayoutKeyFunction::F9;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F9;
       case remoting::mojom::LayoutKeyFunction::kF10:
-        *out = ::remoting::protocol::LayoutKeyFunction::F10;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F10;
       case remoting::mojom::LayoutKeyFunction::kF11:
-        *out = ::remoting::protocol::LayoutKeyFunction::F11;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F11;
       case remoting::mojom::LayoutKeyFunction::kF12:
-        *out = ::remoting::protocol::LayoutKeyFunction::F12;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F12;
       case remoting::mojom::LayoutKeyFunction::kF13:
-        *out = ::remoting::protocol::LayoutKeyFunction::F13;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F13;
       case remoting::mojom::LayoutKeyFunction::kF14:
-        *out = ::remoting::protocol::LayoutKeyFunction::F14;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F14;
       case remoting::mojom::LayoutKeyFunction::kF15:
-        *out = ::remoting::protocol::LayoutKeyFunction::F15;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F15;
       case remoting::mojom::LayoutKeyFunction::kF16:
-        *out = ::remoting::protocol::LayoutKeyFunction::F16;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F16;
       case remoting::mojom::LayoutKeyFunction::kF17:
-        *out = ::remoting::protocol::LayoutKeyFunction::F17;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F17;
       case remoting::mojom::LayoutKeyFunction::kF18:
-        *out = ::remoting::protocol::LayoutKeyFunction::F18;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F18;
       case remoting::mojom::LayoutKeyFunction::kF19:
-        *out = ::remoting::protocol::LayoutKeyFunction::F19;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F19;
       case remoting::mojom::LayoutKeyFunction::kF20:
-        *out = ::remoting::protocol::LayoutKeyFunction::F20;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F20;
       case remoting::mojom::LayoutKeyFunction::kF21:
-        *out = ::remoting::protocol::LayoutKeyFunction::F21;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F21;
       case remoting::mojom::LayoutKeyFunction::kF22:
-        *out = ::remoting::protocol::LayoutKeyFunction::F22;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F22;
       case remoting::mojom::LayoutKeyFunction::kF23:
-        *out = ::remoting::protocol::LayoutKeyFunction::F23;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F23;
       case remoting::mojom::LayoutKeyFunction::kF24:
-        *out = ::remoting::protocol::LayoutKeyFunction::F24;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::F24;
       case remoting::mojom::LayoutKeyFunction::kEscape:
-        *out = ::remoting::protocol::LayoutKeyFunction::ESCAPE;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::ESCAPE;
       case remoting::mojom::LayoutKeyFunction::kContextMenu:
-        *out = ::remoting::protocol::LayoutKeyFunction::CONTEXT_MENU;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::CONTEXT_MENU;
       case remoting::mojom::LayoutKeyFunction::kPause:
-        *out = ::remoting::protocol::LayoutKeyFunction::PAUSE;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::PAUSE;
       case remoting::mojom::LayoutKeyFunction::kPrintScreen:
-        *out = ::remoting::protocol::LayoutKeyFunction::PRINT_SCREEN;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::PRINT_SCREEN;
       case remoting::mojom::LayoutKeyFunction::kHankakuZenkakuKanji:
-        *out = ::remoting::protocol::LayoutKeyFunction::HANKAKU_ZENKAKU_KANJI;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::HANKAKU_ZENKAKU_KANJI;
       case remoting::mojom::LayoutKeyFunction::kHenkan:
-        *out = ::remoting::protocol::LayoutKeyFunction::HENKAN;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::HENKAN;
       case remoting::mojom::LayoutKeyFunction::kMuhenkan:
-        *out = ::remoting::protocol::LayoutKeyFunction::MUHENKAN;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::MUHENKAN;
       case remoting::mojom::LayoutKeyFunction::kKatakanaHiriganaRomaji:
-        *out =
-            ::remoting::protocol::LayoutKeyFunction::KATAKANA_HIRAGANA_ROMAJI;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::
+            KATAKANA_HIRAGANA_ROMAJI;
       case remoting::mojom::LayoutKeyFunction::kKana:
-        *out = ::remoting::protocol::LayoutKeyFunction::KANA;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::KANA;
       case remoting::mojom::LayoutKeyFunction::kEisu:
-        *out = ::remoting::protocol::LayoutKeyFunction::EISU;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::EISU;
       case remoting::mojom::LayoutKeyFunction::kHanYeong:
-        *out = ::remoting::protocol::LayoutKeyFunction::HAN_YEONG;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::HAN_YEONG;
       case remoting::mojom::LayoutKeyFunction::kHanja:
-        *out = ::remoting::protocol::LayoutKeyFunction::HANJA;
-        return true;
+        return ::remoting::protocol::LayoutKeyFunction::HANJA;
     }
 
     NOTREACHED();
@@ -1283,24 +1185,19 @@ struct EnumTraits<remoting::mojom::TouchEventType,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::TouchEventType input,
-                        ::remoting::protocol::TouchEvent::TouchEventType* out) {
+  static ::remoting::protocol::TouchEvent::TouchEventType FromMojom(
+      remoting::mojom::TouchEventType input) {
     switch (input) {
       case remoting::mojom::TouchEventType::kUndefined:
-        *out = ::remoting::protocol::TouchEvent::TOUCH_POINT_UNDEFINED;
-        return true;
+        return ::remoting::protocol::TouchEvent::TOUCH_POINT_UNDEFINED;
       case remoting::mojom::TouchEventType::kStart:
-        *out = ::remoting::protocol::TouchEvent::TOUCH_POINT_START;
-        return true;
+        return ::remoting::protocol::TouchEvent::TOUCH_POINT_START;
       case remoting::mojom::TouchEventType::kMove:
-        *out = ::remoting::protocol::TouchEvent::TOUCH_POINT_MOVE;
-        return true;
+        return ::remoting::protocol::TouchEvent::TOUCH_POINT_MOVE;
       case remoting::mojom::TouchEventType::kEnd:
-        *out = ::remoting::protocol::TouchEvent::TOUCH_POINT_END;
-        return true;
+        return ::remoting::protocol::TouchEvent::TOUCH_POINT_END;
       case remoting::mojom::TouchEventType::kCancel:
-        *out = ::remoting::protocol::TouchEvent::TOUCH_POINT_CANCEL;
-        return true;
+        return ::remoting::protocol::TouchEvent::TOUCH_POINT_CANCEL;
     }
 
     NOTREACHED();
@@ -1343,22 +1240,19 @@ struct EnumTraits<remoting::mojom::TransportRouteType,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::TransportRouteType input,
-                        ::remoting::protocol::TransportRoute::RouteType* out) {
+  static ::remoting::protocol::TransportRoute::RouteType FromMojom(
+      remoting::mojom::TransportRouteType input) {
     switch (input) {
       case remoting::mojom::TransportRouteType::kUndefined:
         // kUndefined does not map to a value in TransportRoute::RouteType so
         // it should be treated the same as any other unknown value.
         break;
       case remoting::mojom::TransportRouteType::kDirect:
-        *out = ::remoting::protocol::TransportRoute::RouteType::DIRECT;
-        return true;
+        return ::remoting::protocol::TransportRoute::RouteType::DIRECT;
       case remoting::mojom::TransportRouteType::kStun:
-        *out = ::remoting::protocol::TransportRoute::RouteType::STUN;
-        return true;
+        return ::remoting::protocol::TransportRoute::RouteType::STUN;
       case remoting::mojom::TransportRouteType::kRelay:
-        *out = ::remoting::protocol::TransportRoute::RouteType::RELAY;
-        return true;
+        return ::remoting::protocol::TransportRoute::RouteType::RELAY;
     }
 
     NOTREACHED();
@@ -1461,100 +1355,70 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::ProtocolErrorCode input,
-                        ::remoting::protocol::ErrorCode* out) {
+  static ::remoting::protocol::ErrorCode FromMojom(
+      remoting::mojom::ProtocolErrorCode input) {
     switch (input) {
       case remoting::mojom::ProtocolErrorCode::kOk:
-        *out = ::remoting::protocol::ErrorCode::OK;
-        return true;
+        return ::remoting::protocol::ErrorCode::OK;
       case remoting::mojom::ProtocolErrorCode::kPeerIsOffline:
-        *out = ::remoting::protocol::ErrorCode::PEER_IS_OFFLINE;
-        return true;
+        return ::remoting::protocol::ErrorCode::PEER_IS_OFFLINE;
       case remoting::mojom::ProtocolErrorCode::kSessionRejected:
-        *out = ::remoting::protocol::ErrorCode::SESSION_REJECTED;
-        return true;
+        return ::remoting::protocol::ErrorCode::SESSION_REJECTED;
       case remoting::mojom::ProtocolErrorCode::kIncompatibleProtocol:
-        *out = ::remoting::protocol::ErrorCode::INCOMPATIBLE_PROTOCOL;
-        return true;
+        return ::remoting::protocol::ErrorCode::INCOMPATIBLE_PROTOCOL;
       case remoting::mojom::ProtocolErrorCode::kAuthenticationFailed:
-        *out = ::remoting::protocol::ErrorCode::AUTHENTICATION_FAILED;
-        return true;
+        return ::remoting::protocol::ErrorCode::AUTHENTICATION_FAILED;
       case remoting::mojom::ProtocolErrorCode::kInvalidAccount:
-        *out = ::remoting::protocol::ErrorCode::INVALID_ACCOUNT;
-        return true;
+        return ::remoting::protocol::ErrorCode::INVALID_ACCOUNT;
       case remoting::mojom::ProtocolErrorCode::kChannelConnectionError:
-        *out = ::remoting::protocol::ErrorCode::CHANNEL_CONNECTION_ERROR;
-        return true;
+        return ::remoting::protocol::ErrorCode::CHANNEL_CONNECTION_ERROR;
       case remoting::mojom::ProtocolErrorCode::kSignalingError:
-        *out = ::remoting::protocol::ErrorCode::SIGNALING_ERROR;
-        return true;
+        return ::remoting::protocol::ErrorCode::SIGNALING_ERROR;
       case remoting::mojom::ProtocolErrorCode::kSignalingTimeout:
-        *out = ::remoting::protocol::ErrorCode::SIGNALING_TIMEOUT;
-        return true;
+        return ::remoting::protocol::ErrorCode::SIGNALING_TIMEOUT;
       case remoting::mojom::ProtocolErrorCode::kHostOverload:
-        *out = ::remoting::protocol::ErrorCode::HOST_OVERLOAD;
-        return true;
+        return ::remoting::protocol::ErrorCode::HOST_OVERLOAD;
       case remoting::mojom::ProtocolErrorCode::kMaxSessionLength:
-        *out = ::remoting::protocol::ErrorCode::MAX_SESSION_LENGTH;
-        return true;
+        return ::remoting::protocol::ErrorCode::MAX_SESSION_LENGTH;
       case remoting::mojom::ProtocolErrorCode::kHostConfigurationError:
-        *out = ::remoting::protocol::ErrorCode::HOST_CONFIGURATION_ERROR;
-        return true;
+        return ::remoting::protocol::ErrorCode::HOST_CONFIGURATION_ERROR;
       case remoting::mojom::ProtocolErrorCode::kUnknownError:
-        *out = ::remoting::protocol::ErrorCode::UNKNOWN_ERROR;
-        return true;
+        return ::remoting::protocol::ErrorCode::UNKNOWN_ERROR;
       case remoting::mojom::ProtocolErrorCode::kElevationError:
-        *out = ::remoting::protocol::ErrorCode::ELEVATION_ERROR;
-        return true;
+        return ::remoting::protocol::ErrorCode::ELEVATION_ERROR;
       case remoting::mojom::ProtocolErrorCode::kHostCertificateError:
-        *out = ::remoting::protocol::ErrorCode::HOST_CERTIFICATE_ERROR;
-        return true;
+        return ::remoting::protocol::ErrorCode::HOST_CERTIFICATE_ERROR;
       case remoting::mojom::ProtocolErrorCode::kHostRegistrationError:
-        *out = ::remoting::protocol::ErrorCode::HOST_REGISTRATION_ERROR;
-        return true;
+        return ::remoting::protocol::ErrorCode::HOST_REGISTRATION_ERROR;
       case remoting::mojom::ProtocolErrorCode::kExistingAdminSession:
-        *out = ::remoting::protocol::ErrorCode::EXISTING_ADMIN_SESSION;
-        return true;
+        return ::remoting::protocol::ErrorCode::EXISTING_ADMIN_SESSION;
       case remoting::mojom::ProtocolErrorCode::kAuthzPolicyCheckFailed:
-        *out = ::remoting::protocol::ErrorCode::AUTHZ_POLICY_CHECK_FAILED;
-        return true;
+        return ::remoting::protocol::ErrorCode::AUTHZ_POLICY_CHECK_FAILED;
       case remoting::mojom::ProtocolErrorCode::kDisallowedByPolicy:
-        *out = ::remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY;
-        return true;
+        return ::remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY;
       case remoting::mojom::ProtocolErrorCode::kLocationAuthzPolicyCheckFailed:
-        *out =
-            ::remoting::protocol::ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED;
-        return true;
+        return ::remoting::protocol::ErrorCode::
+            LOCATION_AUTHZ_POLICY_CHECK_FAILED;
       case remoting::mojom::ProtocolErrorCode::kUnauthorizedAccount:
-        *out = ::remoting::protocol::ErrorCode::UNAUTHORIZED_ACCOUNT;
-        return true;
+        return ::remoting::protocol::ErrorCode::UNAUTHORIZED_ACCOUNT;
       case remoting::mojom::ProtocolErrorCode::kReauthzPolicyCheckFailed:
-        *out = ::remoting::protocol::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED;
-        return true;
+        return ::remoting::protocol::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED;
       case remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod:
-        *out = ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD;
-        return true;
+        return ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD;
       case remoting::mojom::ProtocolErrorCode::kLoginScreenNotSupported:
-        *out = ::remoting::protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED;
-        return true;
+        return ::remoting::protocol::ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED;
       case remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged:
-        *out = ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED;
-        return true;
+        return ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED;
       case remoting::mojom::ProtocolErrorCode::kUnexpectedAuthenticatorError:
-        *out = ::remoting::protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR;
-        return true;
+        return ::remoting::protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR;
       case remoting::mojom::ProtocolErrorCode::kInvalidState:
-        *out = ::remoting::protocol::ErrorCode::INVALID_STATE;
-        return true;
+        return ::remoting::protocol::ErrorCode::INVALID_STATE;
       case remoting::mojom::ProtocolErrorCode::kInvalidArgument:
-        *out = ::remoting::protocol::ErrorCode::INVALID_ARGUMENT;
-        return true;
+        return ::remoting::protocol::ErrorCode::INVALID_ARGUMENT;
       case remoting::mojom::ProtocolErrorCode::kNetworkFailure:
-        *out = ::remoting::protocol::ErrorCode::NETWORK_FAILURE;
-        return true;
+        return ::remoting::protocol::ErrorCode::NETWORK_FAILURE;
       case remoting::mojom::ProtocolErrorCode::kOperationTimeout:
-        *out = ::remoting::protocol::ErrorCode::OPERATION_TIMEOUT;
-        return true;
+        return ::remoting::protocol::ErrorCode::OPERATION_TIMEOUT;
     }
 
     NOTREACHED();
@@ -1578,18 +1442,15 @@ struct EnumTraits<remoting::mojom::VideoLayout_PixelType,
     NOTREACHED();
   }
 
-  static bool FromMojom(remoting::mojom::VideoLayout_PixelType input,
-                        ::remoting::protocol::VideoLayout::PixelType* out) {
+  static ::remoting::protocol::VideoLayout::PixelType FromMojom(
+      remoting::mojom::VideoLayout_PixelType input) {
     switch (input) {
       case remoting::mojom::VideoLayout_PixelType::kUnspecifiedPixelType:
-        *out = ::remoting::protocol::VideoLayout::UNSPECIFIED_PIXEL_TYPE;
-        return true;
+        return ::remoting::protocol::VideoLayout::UNSPECIFIED_PIXEL_TYPE;
       case remoting::mojom::VideoLayout_PixelType::kPhysical:
-        *out = ::remoting::protocol::VideoLayout::PHYSICAL;
-        return true;
+        return ::remoting::protocol::VideoLayout::PHYSICAL;
       case remoting::mojom::VideoLayout_PixelType::kLogical:
-        *out = ::remoting::protocol::VideoLayout::LOGICAL;
-        return true;
+        return ::remoting::protocol::VideoLayout::LOGICAL;
     }
 
     NOTREACHED();
