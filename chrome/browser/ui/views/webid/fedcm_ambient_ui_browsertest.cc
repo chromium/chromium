@@ -249,8 +249,10 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !observer.GetCurrentPageActionState().anchored_message_showing;
   }));
+
+  // We show a "Signing in ..." message after the user selects the account.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !observer.GetCurrentPageActionState().chip_showing; }));
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
@@ -293,13 +295,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
   view()->OnPageActionClicked();
   ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
 
-  // When the anchored message is used, both the chip and the anchored message
-  // should be hidden.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !observer.GetCurrentPageActionState().chip_showing; }));
+  // When the anchored message is clicked on, it gets hidden.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !observer.GetCurrentPageActionState().anchored_message_showing;
   }));
+
+  // And we show a "Signing in ..." message after the user selects the account.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiAccountFallback) {

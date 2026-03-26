@@ -131,7 +131,12 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
     // After clicking on the chip or the anchored message, we hide both of them
     // to collapse the page action back into an icon and sign the user in.
     controller->HideAnchoredMessage(kActionFederation);
-    controller->HideSuggestionChip(kActionFederation);
+    controller->OverrideText(
+        kActionFederation,
+        l10n_util::GetStringUTF16(IDS_FEDERATION_SIGNING_IN_TITLE));
+    controller->ShowSuggestionChip(kActionFederation);
+    controller->Show(kActionFederation);
+
     state_ = State::VERIFYING;
     NotifyDelegateOfAccountSelection(*accounts_[0], *idp_list_[0]);
   } else {

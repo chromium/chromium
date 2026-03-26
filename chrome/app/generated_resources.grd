@@ -18902,6 +18902,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_FEDERATION_SIGN_IN_TITLE" desc="Title of the UI shown in the omnibox to remind users that they can sign in with an identity provider.">
       Sign in with <ph name="IDP_NAME">$1<ex>google.com</ex></ph>
     </message>
+    <message name="IDS_FEDERATION_SIGNING_IN_TITLE" desc="Title of the UI shown in the omnibox while they are signing-in to the website with an identity provider.">
+      Signing in ...
+    </message>
     <message name="IDS_FEDERATION_SIGN_UP_TITLE" desc="Title of the UI shown in the omnibox to remind users that they can sign up with an identity provider.">
       Sign up with <ph name="IDP_NAME">$1<ex>google.com</ex></ph>
     </message>
