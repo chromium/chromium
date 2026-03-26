@@ -329,6 +329,12 @@ BASE_FEATURE(kSkiaGraphite,
 // compatible backing to serve clients requested usage is not already present.
 BASE_FEATURE(kUseDynamicBackingAllocations, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, this feature allows ClientSharedImage to store and use a
+// scoped_refptr to SharedImageInterface, instead of the raw_ptr as used in
+// SharedImageInterfaceHolder.
+BASE_FEATURE(kUseStrongRefToSharedImageInterface,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable atlasing of small paths on Skia Graphite. Only meaningful if
 // SkiaGraphite is also enabled.
 BASE_FEATURE(kSkiaGraphiteSmallPathAtlas, base::FEATURE_DISABLED_BY_DEFAULT);

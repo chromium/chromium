@@ -28,6 +28,7 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/dawn/include/dawn/wire/client/webgpu_cpp.h"
 #include "ui/gfx/buffer_types.h"
@@ -54,12 +55,6 @@
 namespace gpu {
 
 namespace {
-
-// When enabled, this feature allows ClientSharedImage to store and use a
-// scoped_refptr to SharedImageInterface, instead of the raw_ptr as used in
-// SharedImageInterfaceHolder.
-BASE_FEATURE(kUseStrongRefToSharedImageInterface,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
@@ -340,7 +335,8 @@ ClientSharedImage::ClientSharedImage(
       debug_label_(info.debug_label),
       creation_sync_token_(sync_token),
       sii_holder_(std::move(sii_holder)),
-      sii_(base::FeatureList::IsEnabled(kUseStrongRefToSharedImageInterface)
+      sii_(base::FeatureList::IsEnabled(
+               features::kUseStrongRefToSharedImageInterface)
                ? sii_holder_->Get()
                : nullptr) {
   CHECK(!mailbox.IsZero());
@@ -376,7 +372,8 @@ ClientSharedImage::ClientSharedImage(
       debug_label_(info.debug_label),
       creation_sync_token_(sync_token),
       sii_holder_(std::move(sii_holder)),
-      sii_(base::FeatureList::IsEnabled(kUseStrongRefToSharedImageInterface)
+      sii_(base::FeatureList::IsEnabled(
+               features::kUseStrongRefToSharedImageInterface)
                ? sii_holder_->Get()
                : nullptr),
       texture_target_(texture_target) {
@@ -397,7 +394,8 @@ ClientSharedImage::ClientSharedImage(
       creation_sync_token_(exported_si.creation_sync_token_),
       buffer_usage_(exported_si.buffer_usage_),
       sii_holder_(std::move(sii_holder)),
-      sii_(base::FeatureList::IsEnabled(kUseStrongRefToSharedImageInterface)
+      sii_(base::FeatureList::IsEnabled(
+               features::kUseStrongRefToSharedImageInterface)
                ? sii_holder_->Get()
                : nullptr),
       texture_target_(exported_si.texture_target_),
@@ -453,7 +451,8 @@ ClientSharedImage::ClientSharedImage(
                                          std::move(shared_memory_pool))),
       buffer_usage_(handle_info.buffer_usage),
       sii_holder_(std::move(sii_holder)),
-      sii_(base::FeatureList::IsEnabled(kUseStrongRefToSharedImageInterface)
+      sii_(base::FeatureList::IsEnabled(
+               features::kUseStrongRefToSharedImageInterface)
                ? sii_holder_->Get()
                : nullptr) {
   CHECK(!mailbox.IsZero());
@@ -630,7 +629,8 @@ void ClientSharedImage::OnMemoryDump(
 
 scoped_refptr<SharedImageInterface>
 ClientSharedImage::GetSharedImageInterface() {
-  if (base::FeatureList::IsEnabled(kUseStrongRefToSharedImageInterface)) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseStrongRefToSharedImageInterface)) {
     return sii_;
   } else {
     return sii_holder_->Get();
