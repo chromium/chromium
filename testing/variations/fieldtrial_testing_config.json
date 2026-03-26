@@ -17984,6 +17984,26 @@
             ]
         }
     ],
+    "PrepopulatedEnginesMigration": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260320",
+                    "enable_features": [
+                        "PrepopulatedEnginesMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2EarlyDocumentLifecycleUpdateV2": [
         {
             "platforms": [
