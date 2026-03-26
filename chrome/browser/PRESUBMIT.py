@@ -351,6 +351,28 @@ def _CheckForUnwantedFlagDescriptionContent(input_api, output_api):
 
     return result
 
+def _CheckForOrphanedFlagMetadata(input_api, output_api):
+    flag_tools_dir = input_api.os_path.join(input_api.change.RepositoryRoot(),
+                                            'tools', 'flags')
+    cmd = [input_api.python3_executable,
+           input_api.os_path.join(flag_tools_dir, 'lint_flags.py')]
+    try:
+      # Run from `//tools/flags/` to give access to the `flags_utils` module.
+      input_api.subprocess.check_call(cmd,
+                                      cwd=flag_tools_dir,
+                                      stdout=input_api.subprocess.PIPE)
+      return []
+    except input_api.subprocess.CalledProcessError as error:
+      result = input_api.json.loads(error.stdout)
+      # Output a hard error to block new orphans from landing.
+      return [
+        output_api.PresubmitError(
+            message=(
+                '`//chrome/browser/flag-metadata.json` appears to contain '
+                'entries not used in `about_flags.cc` or `about_flags.mm`.'),
+            items=result['unused_flags'])
+      ]
+
 def _CheckNewDirectoryHasBuildGn(input_api, output_api):
     """Checks that any new direct subdirectory under chrome/browser or
     chrome/browser/ui has a BUILD.gn.
@@ -431,6 +453,7 @@ def _CommonChecks(input_api, output_api):
     if _FlagFilesHaveChanged(input_api):
         results.extend(
             _CheckForUnwantedFlagDescriptionContent(input_api, output_api))
+        results.extend(_CheckForOrphanedFlagMetadata(input_api, output_api))
     return results
 
 

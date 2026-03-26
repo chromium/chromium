@@ -262,16 +262,6 @@
     "expiry_milestone": 149
   },
   {
-    "name": "android-composeplate",
-    "owners": [ "hanxi@chromium.org", "pnoland@chromium.org", "clank-start@google.com"],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "android-composeplate-lff",
-    "owners": [ "hanxi@chromium.org", "clank-start@google.com", "chrome-mobile-search@google.com"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "android-context-menu-duplicate-tabs",
     "owners": [
       "hitarthkothari@google.com",
@@ -3623,11 +3613,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-magic-stack-android",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-managed-configuration-web-api",
     "owners": [ "apotapchuk@chromium.org" ],
     "expiry_milestone": 92
@@ -3819,11 +3804,6 @@
       "cros-ui-foundations@google.com"
     ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "enable-preferences-account-storage",
-    "owners": [ "ankushkush@google.com", "treib@chromium.org" ],
-    "expiry_milestone": 137
   },
   {
     "name": "enable-printing-margins-and-scale",
@@ -5273,14 +5253,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "glic-side-panel",
-    "owners": [
-      "perrier@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "glic-tab-restoration",
     "owners": [
       "bryantchandler@chromium.org",
@@ -5688,11 +5660,6 @@
     "name": "ios-default-browser-promo-propensity-model",
     "owners": [ "thegreenfrog@google.com", "bling-mony-pod@google.com" ],
     "expiry_milestone": 152
-  },
-  {
-    "name": "ios-docking-promo",
-    "owners": ["gujen@google.com", "bling-mony-pod@google.com"],
-    "expiry_milestone": 150
   },
   {
     "name": "ios-docking-promo-v2",
@@ -8815,11 +8782,6 @@
   {
     "name": "tab-closure-method-refactor",
     "owners": [ "madhavpruthi@google.org", "ckitagawa@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "tab-grid-drag-and-drop",
-    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 150
   },
   {

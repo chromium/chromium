@@ -15,8 +15,8 @@ sys.path.append(PYJSON5_PATH)
 import json5
 
 
-def load_metadata():
-  flags_path = os.path.join(ROOT_PATH, 'chrome', 'browser',
+def load_metadata(root_path: os.PathLike[str] = ROOT_PATH):
+  flags_path = os.path.join(root_path, 'chrome', 'browser',
                             'flag-metadata.json')
   return json5.load(open(flags_path))
 

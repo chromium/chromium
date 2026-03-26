@@ -2063,7 +2063,6 @@ inline constexpr char kEnableSiteSearchAllowUserOverridePolicyDescription[] =
     "Enable the field that allows organizations to set a Site Search engine "
     "that can be overridden by the user.";
 
-inline constexpr char kEnableLensStandaloneFlagId[] = "enable-lens-standalone";
 inline constexpr char kEnableLensStandaloneName[] =
     "Enable Lens features in Chrome.";
 inline constexpr char kEnableLensStandaloneDescription[] =
