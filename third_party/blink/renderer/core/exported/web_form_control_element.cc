@@ -327,7 +327,7 @@ int32_t WebFormControlElement::GetAxId() const {
   return ConstUnwrap<HTMLFormControlElement>()->GetAxId();
 }
 
-std::optional<std::vector<WebFormControlElement::TextInfo>>
+std::optional<WebFormControlElement::TextInfo>
 WebFormControlElement::GetTextInfo() const {
   auto* textarea = ::blink::DynamicTo<HTMLTextAreaElement>(*private_);
   if (!textarea) {

@@ -43,7 +43,10 @@
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -53,9 +56,26 @@ class HTMLFormControlElement;
 // node.
 class BLINK_EXPORT WebFormControlElement : public WebElement {
  public:
-  struct TextInfo {
+  struct GlyphInfo {
+    uint16_t glyph;
+    gfx::Vector2dF offset;
+    float total_advance;
+  };
+
+  struct TypefaceRunInfo {
     sk_sp<SkTypeface> typeface;
-    std::vector<uint16_t> glyphs;
+    std::vector<GlyphInfo> glyphs;
+    bool is_horizontal;
+  };
+
+  struct TextRunInfo {
+    std::vector<TypefaceRunInfo> typeface_runs;
+    gfx::RectF location;
+  };
+
+  struct TextInfo {
+    std::vector<TextRunInfo> text_runs;
+    float effective_zoom;
   };
 
   explicit WebFormControlElement(
@@ -180,7 +200,7 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // If this element is a <textarea>, then returns a list with information (such
   // as typeface and glyphs) for the text inside. Otherwise returns
   // std::nullopt.
-  std::optional<std::vector<TextInfo>> GetTextInfo() const;
+  std::optional<TextInfo> GetTextInfo() const;
 
 #if INSIDE_BLINK
   WebFormControlElement(HTMLFormControlElement*);

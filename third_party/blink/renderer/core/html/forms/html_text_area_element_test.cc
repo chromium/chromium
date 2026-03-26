@@ -4,14 +4,163 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 
+#include <ostream>
+#include <vector>
+
+#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/skia/include/core/SkFontTypes.h"
+
+using testing::Each;
+using testing::ElementsAre;
+using testing::Field;
+using testing::Matcher;
+using testing::NotNull;
+using testing::SizeIs;
 
 namespace blink {
+
+void PrintTo(const WebFormControlElement::GlyphInfo& info, std::ostream* os) {
+  *os << "{glyph: " << info.glyph << ", offset: " << info.offset.ToString()
+      << ", tot_adv: " << info.total_advance << "}";
+}
+
+void PrintTo(const WebFormControlElement::TypefaceRunInfo& info,
+             std::ostream* os) {
+  *os << "\n{glyphs: [\n";
+  SkString name;
+  info.typeface->getFamilyName(&name);
+  for (size_t i = 0; i < info.glyphs.size(); ++i) {
+    *os << "  " << testing::PrintToString(info.glyphs[i]);
+    if (i + 1 < info.glyphs.size()) {
+      *os << ",\n";
+    }
+  }
+  *os << "],\n"
+      << "  typeface: " << name.c_str()
+      << ",\n  is_horizontal: " << base::ToString(info.is_horizontal) << "\n}";
+}
+
+void PrintTo(const WebFormControlElement::TextRunInfo& info, std::ostream* os) {
+  *os << "<location: " << info.location.ToString() << "\n";
+  for (size_t i = 0; i < info.typeface_runs.size(); ++i) {
+    *os << "TypefaceRunInfo #" << i << ":"
+        << testing::PrintToString(info.typeface_runs[i]);
+    if (i + 1 < info.typeface_runs.size()) {
+      *os << "\n";
+    }
+  }
+  *os << ">";
+}
+
+namespace {
+
+class TextRunIsMatcher {
+ public:
+  using is_gtest_matcher = void;
+
+  TextRunIsMatcher(std::vector<std::string> strs, gfx::RectF location)
+      : strs_(strs), location_(location) {}
+
+  bool MatchAndExplain(const WebFormControlElement::TextRunInfo& arg,
+                       std::ostream* os) const {
+    if (arg.location != location_) {
+      if (os) {
+        *os << "expected location " << location_.ToString() << " but got "
+            << arg.location.ToString();
+      }
+      return false;
+    }
+
+    if (arg.typeface_runs.size() != strs_.size()) {
+      if (os) {
+        *os << "expected " << strs_.size() << " typeface_runs but got "
+            << arg.typeface_runs.size();
+      }
+      return false;
+    }
+
+    size_t typeface_runs_index = 0;
+    for (const std::string& expected_str : strs_) {
+      const WebFormControlElement::TypefaceRunInfo& run =
+          arg.typeface_runs[typeface_runs_index++];
+
+      if (!run.typeface) {
+        if (os) {
+          *os << "expected a non-null typeface for run #"
+              << typeface_runs_index;
+        }
+        return false;
+      }
+
+      std::vector<SkGlyphID> expected_glyphs(expected_str.size());
+      size_t glyph_count = run.typeface->textToGlyphs(
+          expected_str.data(), expected_str.size(), SkTextEncoding::kUTF8,
+          SkSpan<SkGlyphID>(expected_glyphs));
+      expected_glyphs.resize(glyph_count);
+
+      if (run.glyphs.size() != expected_glyphs.size()) {
+        if (os) {
+          *os << "expected " << expected_glyphs.size() << " glyphs but got "
+              << run.glyphs.size();
+        }
+        return false;
+      }
+
+      for (size_t i = 0; i < expected_glyphs.size(); ++i) {
+        if (run.glyphs[i].glyph != expected_glyphs[i]) {
+          if (os) {
+            *os << "glyph at index " << i << " expected " << expected_glyphs[i]
+                << " but got " << run.glyphs[i].glyph;
+          }
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  void DescribeTo(std::ostream* os) const {
+    *os << "matches TextRunInfo ";
+    DescribeDataTo(os);
+  }
+
+  void DescribeNegationTo(std::ostream* os) const {
+    *os << "does not match TextRunInfo ";
+    DescribeDataTo(os);
+  }
+
+ private:
+  void DescribeDataTo(std::ostream* os) const {
+    *os << "at " << location_.ToString() << " with typeface_runs matching {";
+    for (size_t i = 0; i < strs_.size(); ++i) {
+      *os << "\"" << strs_[i] << "\"";
+      if (i + 1 < strs_.size()) {
+        *os << ", ";
+      }
+    }
+    *os << "}";
+  }
+
+  std::vector<std::string> strs_;
+  gfx::RectF location_;
+};
+
+testing::Matcher<const WebFormControlElement::TextRunInfo&> TextRunIs(
+    std::vector<std::string> strs,
+    gfx::RectF location) {
+  return TextRunIsMatcher(strs, location);
+}
+
+}  // namespace
 
 class HTMLTextAreaElementTest : public RenderingTest {
  public:
@@ -214,35 +363,162 @@ TEST_F(HTMLTextAreaElementTest, RemoveLastLineWithInsertText) {
   EXPECT_EQ(inner_editor->StitchedSize().height, LayoutUnit(20 * 2));
 }
 
-TEST_F(HTMLTextAreaElementTest, GetTextInfo) {
+TEST_F(HTMLTextAreaElementTest, GetTextInfoFonts) {
   LoadAhem();
   LoadNoto();
 
   SetBodyContent(
-      "<textarea id=test style='font-family: Ahem, NotoArabic'>"
+      "<textarea id=test style='font-family: Ahem, NotoArabic; width:500px'>"
       "XX\n"
       "pp ع\n"
       "</textarea>");
   HTMLTextAreaElement& textarea = TestElement();
 
-  std::vector<WebFormControlElement::TextInfo> text_info =
-      textarea.GetTextInfo();
-  ASSERT_EQ(2u, text_info.size());
-  EXPECT_TRUE(text_info[0].typeface);
-  EXPECT_TRUE(text_info[1].typeface);
-  EXPECT_NE(text_info[0].typeface, text_info[1].typeface);
-  ASSERT_EQ(5u, text_info[0].glyphs.size());
-  const int16_t first_glyph = text_info[0].glyphs[0];
-  EXPECT_EQ(first_glyph, text_info[0].glyphs[1]);
-  EXPECT_NE(first_glyph, text_info[0].glyphs[2]);
-  ASSERT_EQ(1u, text_info[1].glyphs.size());
+  {
+    WebFormControlElement::TextInfo text_info = textarea.GetTextInfo();
+    ASSERT_EQ(3u, text_info.text_runs.size());
+    ASSERT_EQ(1u, text_info.text_runs[0].typeface_runs.size());
+    ASSERT_EQ(1u, text_info.text_runs[1].typeface_runs.size());
+    ASSERT_EQ(1u, text_info.text_runs[2].typeface_runs.size());
+    WebFormControlElement::TypefaceRunInfo& run1 =
+        text_info.text_runs[0].typeface_runs[0];
+    WebFormControlElement::TypefaceRunInfo& run2 =
+        text_info.text_runs[1].typeface_runs[0];
+    WebFormControlElement::TypefaceRunInfo& run3 =
+        text_info.text_runs[2].typeface_runs[0];
+
+    ASSERT_TRUE(run1.typeface);
+    ASSERT_TRUE(run2.typeface);
+    ASSERT_TRUE(run3.typeface);
+    EXPECT_EQ(run1.typeface, run2.typeface);
+    EXPECT_NE(run1.typeface, run3.typeface);
+    ASSERT_EQ(2u, run1.glyphs.size());
+    ASSERT_EQ(3u, run2.glyphs.size());
+    ASSERT_EQ(1u, run3.glyphs.size());
+    const int16_t first_glyph = run1.glyphs[0].glyph;
+    EXPECT_EQ(first_glyph, run1.glyphs[1].glyph);
+    EXPECT_NE(first_glyph, run2.glyphs[0].glyph);
+    EXPECT_NE(first_glyph, run3.glyphs[0].glyph);
+  }
+
+  {
+    textarea.SetValue(u"Hello, العالم!");
+    RunDocumentLifecycle();
+
+    WebFormControlElement::TextInfo text_info = textarea.GetTextInfo();
+    ASSERT_EQ(3u, text_info.text_runs.size());
+    ASSERT_THAT(text_info.text_runs,
+                Each(Field(&WebFormControlElement::TextRunInfo::typeface_runs,
+                           SizeIs(1))));
+    ASSERT_THAT(
+        text_info.text_runs,
+        Each(Field(
+            &WebFormControlElement::TextRunInfo::typeface_runs,
+            ElementsAre(Field(&WebFormControlElement::TypefaceRunInfo::typeface,
+                              NotNull())))));
+    EXPECT_EQ(text_info.text_runs[0].typeface_runs[0].typeface,
+              text_info.text_runs[2].typeface_runs[0].typeface);
+    EXPECT_NE(text_info.text_runs[0].typeface_runs[0].typeface,
+              text_info.text_runs[1].typeface_runs[0].typeface);
+    EXPECT_EQ(text_info.text_runs[0].location.y(),
+              text_info.text_runs[1].location.y());
+    EXPECT_EQ(text_info.text_runs[1].location.y(),
+              text_info.text_runs[2].location.y());
+  }
 }
 
 TEST_F(HTMLTextAreaElementTest, GetTextInfoEmpty) {
   SetBodyContent("<textarea id=test></textarea>");
   HTMLTextAreaElement& textarea = TestElement();
 
-  EXPECT_TRUE(textarea.GetTextInfo().empty());
+  EXPECT_TRUE(textarea.GetTextInfo().text_runs.empty());
+}
+
+TEST_F(HTMLTextAreaElementTest, GetTextInfoSoftWrap) {
+  LoadAhem();
+
+  // The textarea can contain four letters in each of lines.
+  SetBodyContent(R"HTML(
+    <textarea id=test
+              style="font:10px Ahem; width:40px; height:200px;"></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+  RunDocumentLifecycle();
+  EXPECT_TRUE(textarea.GetTextInfo().text_runs.empty());
+
+  textarea.SetValue("12\n\n345678");
+  RunDocumentLifecycle();
+  EXPECT_THAT(textarea.GetTextInfo().text_runs,
+              ElementsAre(TextRunIs({"12"}, gfx::RectF(0, 0, 20, 10)),
+                          TextRunIs({"3456"}, gfx::RectF(0, 20, 40, 10)),
+                          TextRunIs({"78"}, gfx::RectF(0, 30, 20, 10))));
+
+  textarea.SetValue("1234567890\n");
+  RunDocumentLifecycle();
+  EXPECT_THAT(textarea.GetTextInfo().text_runs,
+              ElementsAre(TextRunIs({"1234"}, gfx::RectF(0, 0, 40, 10)),
+                          TextRunIs({"5678"}, gfx::RectF(0, 10, 40, 10)),
+                          TextRunIs({"90"}, gfx::RectF(0, 20, 20, 10))));
+
+  Document& doc = GetDocument();
+  auto* inner_editor = textarea.InnerEditorElement();
+  inner_editor->setTextContent("");
+  // We set the value same as the previous one, but the value consists of four
+  // Text nodes.
+  inner_editor->appendChild(Text::Create(doc, "12"));
+  inner_editor->appendChild(Text::Create(doc, "34"));
+  inner_editor->appendChild(Text::Create(doc, "5678"));
+  inner_editor->appendChild(Text::Create(doc, "90"));
+  inner_editor->appendChild(doc.CreateRawElement(html_names::kBrTag));
+  RunDocumentLifecycle();
+  EXPECT_THAT(textarea.GetTextInfo().text_runs,
+              ElementsAre(TextRunIs({"12"}, gfx::RectF(0, 0, 20, 10)),
+                          TextRunIs({"34"}, gfx::RectF(20, 0, 20, 10)),
+                          TextRunIs({"5678"}, gfx::RectF(0, 10, 40, 10)),
+                          TextRunIs({"90"}, gfx::RectF(0, 20, 20, 10))));
+}
+
+TEST_F(HTMLTextAreaElementTest, GetTextInfoLayoutAlign) {
+  LoadAhem();
+
+  // The textarea can contain four letters in each of lines.
+  SetBodyContent(R"HTML(
+    <textarea id=test
+              style="font:10px Ahem; width:40px; height:200px; text-align:right;"></textarea> )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+  RunDocumentLifecycle();
+  EXPECT_TRUE(textarea.GetTextInfo().text_runs.empty());
+
+  textarea.SetValue("12\n\n345678");
+  RunDocumentLifecycle();
+  EXPECT_THAT(textarea.GetTextInfo().text_runs,
+              ElementsAre(TextRunIs({"12"}, gfx::RectF(20, 0, 20, 10)),
+                          TextRunIs({"3456"}, gfx::RectF(0, 20, 40, 10)),
+                          TextRunIs({"78"}, gfx::RectF(20, 30, 20, 10))));
+
+  textarea.SetValue("1234567890\n");
+  RunDocumentLifecycle();
+  EXPECT_THAT(textarea.GetTextInfo().text_runs,
+              ElementsAre(TextRunIs({"1234"}, gfx::RectF(0, 0, 40, 10)),
+                          TextRunIs({"5678"}, gfx::RectF(0, 10, 40, 10)),
+                          TextRunIs({"90"}, gfx::RectF(20, 20, 20, 10))));
+
+  Document& doc = GetDocument();
+  auto* inner_editor = textarea.InnerEditorElement();
+  inner_editor->setTextContent("");
+  // We set the value same as the previous one, but the value consists of four
+  // Text nodes.
+  inner_editor->appendChild(Text::Create(doc, "12"));
+  inner_editor->appendChild(Text::Create(doc, "34"));
+  inner_editor->appendChild(Text::Create(doc, "5678"));
+  inner_editor->appendChild(Text::Create(doc, "90"));
+  inner_editor->appendChild(doc.CreateRawElement(html_names::kBrTag));
+  RunDocumentLifecycle();
+  EXPECT_THAT(textarea.GetTextInfo().text_runs,
+              ElementsAre(TextRunIs({"12"}, gfx::RectF(0, 0, 20, 10)),
+                          TextRunIs({"34"}, gfx::RectF(20, 0, 20, 10)),
+                          TextRunIs({"5678"}, gfx::RectF(0, 10, 40, 10)),
+                          TextRunIs({"90"}, gfx::RectF(20, 20, 20, 10))));
 }
 
 TEST_F(HTMLTextAreaElementTest, HeuristicCustomPasswordDetectionCSS) {

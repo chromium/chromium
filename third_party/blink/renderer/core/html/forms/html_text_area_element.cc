@@ -108,14 +108,18 @@ void GetTextInfoForGlyphCallback(void* context,
                                  CanvasRotationInVertical canvas_rotation,
                                  const SimpleFontData* font_data) {
   auto& results =
-      *static_cast<std::vector<WebFormControlElement::TextInfo>*>(context);
+      *static_cast<std::vector<WebFormControlElement::TypefaceRunInfo>*>(
+          context);
 
   sk_sp<SkTypeface> typeface = font_data->PlatformData().TypefaceSp();
   if (results.empty() || results.back().typeface != typeface) {
-    results.emplace_back(std::move(typeface), std::vector<Glyph>());
+    results.emplace_back(std::move(typeface),
+                         std::vector<WebFormControlElement::GlyphInfo>{},
+                         is_horizontal);
   }
 
-  results.back().glyphs.push_back(glyph);
+  CHECK_EQ(results.back().is_horizontal, is_horizontal);
+  results.back().glyphs.emplace_back(glyph, glyph_offset, total_advance);
 }
 
 }  // namespace
@@ -872,43 +876,49 @@ void HTMLTextAreaElement::SetFocused(bool is_focused,
   TextControlElement::SetFocused(is_focused, focus_type);
 }
 
-std::vector<WebFormControlElement::TextInfo> HTMLTextAreaElement::GetTextInfo()
-    const {
-  const auto* inner_element = InnerEditorElement();
+WebFormControlElement::TextInfo HTMLTextAreaElement::GetTextInfo() const {
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
+  const TextControlInnerEditorElement* inner_element = InnerEditorElement();
   if (!inner_element) {
     return {};
   }
-
   const auto* inner_layout =
       To<LayoutBlockFlow>(inner_element->GetLayoutObject());
-  if (!inner_element) {
+  if (!inner_layout) {
     return {};
   }
 
-  std::vector<WebFormControlElement::TextInfo> results;
-  for (const LayoutObject* child = inner_layout->FirstChild(); child;
+  WebFormControlElement::TextInfo results;
+  results.effective_zoom = inner_layout->StyleRef().EffectiveZoom();
+  for (LayoutObject* child = inner_layout->FirstChild(); child;
        child = child->NextSibling()) {
     const auto* paragraph_block = DynamicTo<LayoutBlockFlow>(child);
     if (!paragraph_block) {
       continue;
     }
-
-    for (InlineCursor paragraph_cursor(*paragraph_block); paragraph_cursor;
-         paragraph_cursor.MoveToNext()) {
-      const FragmentItem* fragment = paragraph_cursor.CurrentItem();
-      if (!fragment || !fragment->IsText()) {
+    const PhysicalOffset paragraph_offset = paragraph_block->PhysicalLocation();
+    for (InlineCursor cursor(*paragraph_block); cursor; cursor.MoveToNext()) {
+      const FragmentItem* text_item = cursor.CurrentItem();
+      if (!text_item || !text_item->IsText()) {
         continue;
       }
-
-      const ShapeResultView* shape = fragment->TextShapeResult();
+      const ShapeResultView* shape = text_item->TextShapeResult();
       if (!shape) {
-        continue;
+        continue;  // Skip \n characters
       }
-
-      shape->ForEachGlyph(/*initial_advance=*/0.0f, GetTextInfoForGlyphCallback,
-                          &results);
+      // Split `text_item` into multiple TypefaceRunInfo objects if it has
+      // more than one font.
+      std::vector<WebFormControlElement::TypefaceRunInfo> typeface_runs;
+      shape->ForEachGlyph(
+          /*initial_advance*/ 0.0f, GetTextInfoForGlyphCallback,
+          &typeface_runs);
+      results.text_runs.emplace_back(
+          std::move(typeface_runs),
+          gfx::RectF(text_item->RectInContainerFragment() + paragraph_offset));
     }
   }
+
   return results;
 }
 
