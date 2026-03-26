@@ -182,17 +182,60 @@ VideoImageReaderImageBacking::~VideoImageReaderImageBacking() {
   }
 }
 
+class VideoImageReaderImageBacking::GLVideoImageRepresentationShared
+    : public RefCountedLockHelperDrDc {
+ public:
+  GLVideoImageRepresentationShared(VideoImageReaderImageBacking* backing,
+                                   scoped_refptr<RefCountedLock> drdc_lock)
+      : RefCountedLockHelperDrDc(std::move(drdc_lock)), backing_(backing) {}
+
+  ~GLVideoImageRepresentationShared() {
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+    scoped_hardware_buffer_ = nullptr;
+  }
+
+  bool BeginAccess(GLenum mode, GLuint service_id) {
+    // This representation should only be called for read.
+    DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+
+    {
+      base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+      scoped_hardware_buffer_ =
+          backing_->stream_texture_sii_->GetAHardwareBuffer();
+    }
+    if (!scoped_hardware_buffer_) {
+      LOG(ERROR) << "Failed to get the hardware buffer.";
+      return false;
+    }
+    CreateAndBindEglImageFromAHB(scoped_hardware_buffer_->buffer(), service_id);
+    return true;
+  }
+
+  void EndAccess() {
+    DCHECK(scoped_hardware_buffer_);
+
+    base::ScopedFD sync_fd = gl::CreateEglFenceAndExportFd();
+    scoped_hardware_buffer_->SetReadFence(std::move(sync_fd));
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+    scoped_hardware_buffer_ = nullptr;
+  }
+
+ private:
+  raw_ptr<VideoImageReaderImageBacking> backing_;
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+      scoped_hardware_buffer_;
+};
+
 // Representation of VideoImageReaderImageBacking as a GL Texture.
 class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
-    : public GLTextureImageRepresentation,
-      public RefCountedLockHelperDrDc {
+    : public GLTextureImageRepresentation {
  public:
   GLTextureVideoImageRepresentation(SharedImageManager* manager,
                                     VideoImageReaderImageBacking* backing,
                                     MemoryTypeTracker* tracker,
                                     scoped_refptr<RefCountedLock> drdc_lock)
       : GLTextureImageRepresentation(manager, backing, tracker),
-        RefCountedLockHelperDrDc(std::move(drdc_lock)) {
+        shared_(backing, std::move(drdc_lock)) {
     texture_ = gpu::gles2::CreateGLES2TextureWithLightRef(
         CreateTextureWithLinearFilter(), GL_TEXTURE_EXTERNAL_OES);
     gfx::Rect cleared_rect;
@@ -218,43 +261,19 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
   }
 
   bool BeginAccess(GLenum mode) override {
-    // This representation should only be called for read.
-    DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-
-    auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());
-    {
-      base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-      scoped_hardware_buffer_ =
-          video_backing->stream_texture_sii_->GetAHardwareBuffer();
-    }
-    if (!scoped_hardware_buffer_) {
-      LOG(ERROR) << "Failed to get the hardware buffer.";
-      return false;
-    }
-    CreateAndBindEglImageFromAHB(scoped_hardware_buffer_->buffer(),
-                                 texture_->service_id());
-    return true;
+    return shared_.BeginAccess(mode, texture_->service_id());
   }
 
-  void EndAccess() override {
-    DCHECK(scoped_hardware_buffer_);
-
-    base::ScopedFD sync_fd = gl::CreateEglFenceAndExportFd();
-    scoped_hardware_buffer_->SetReadFence(std::move(sync_fd));
-    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-    scoped_hardware_buffer_ = nullptr;
-  }
+  void EndAccess() override { shared_.EndAccess(); }
 
  private:
   raw_ptr<gles2::Texture> texture_ = nullptr;
-  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-      scoped_hardware_buffer_;
+  GLVideoImageRepresentationShared shared_;
 };
 
 // Representation of VideoImageReaderImageBacking as a GL Texture.
 class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
-    : public GLTexturePassthroughImageRepresentation,
-      public RefCountedLockHelperDrDc {
+    : public GLTexturePassthroughImageRepresentation {
  public:
   GLTexturePassthroughVideoImageRepresentation(
       SharedImageManager* manager,
@@ -262,10 +281,10 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
       MemoryTypeTracker* tracker,
       scoped_refptr<RefCountedLock> drdc_lock)
       : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
-        RefCountedLockHelperDrDc(std::move(drdc_lock)),
         passthrough_texture_(base::MakeRefCounted<gles2::TexturePassthrough>(
             CreateTextureWithLinearFilter(),
-            GL_TEXTURE_EXTERNAL_OES)) {
+            GL_TEXTURE_EXTERNAL_OES)),
+        shared_(backing, std::move(drdc_lock)) {
     // TODO(crbug.com/40166788): Remove this CHECK.
     CHECK(passthrough_texture_);
   }
@@ -289,38 +308,14 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
   }
 
   bool BeginAccess(GLenum mode) override {
-    // This representation should only be called for read.
-    DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-
-    auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());
-
-    {
-      base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-      scoped_hardware_buffer_ =
-          video_backing->stream_texture_sii_->GetAHardwareBuffer();
-    }
-    if (!scoped_hardware_buffer_) {
-      LOG(ERROR) << "Failed to get the hardware buffer.";
-      return false;
-    }
-    CreateAndBindEglImageFromAHB(scoped_hardware_buffer_->buffer(),
-                                 passthrough_texture_->service_id());
-    return true;
+    return shared_.BeginAccess(mode, passthrough_texture_->service_id());
   }
 
-  void EndAccess() override {
-    DCHECK(scoped_hardware_buffer_);
-
-    base::ScopedFD sync_fd = gl::CreateEglFenceAndExportFd();
-    scoped_hardware_buffer_->SetReadFence(std::move(sync_fd));
-    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-    scoped_hardware_buffer_ = nullptr;
-  }
+  void EndAccess() override { shared_.EndAccess(); }
 
  private:
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
-  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-      scoped_hardware_buffer_;
+  GLVideoImageRepresentationShared shared_;
 };
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -633,19 +628,26 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
       scoped_hardware_buffer_;
 };
 
+template <typename T>
+std::unique_ptr<T> VideoImageReaderImageBacking::ProduceGLTextureInternal(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  // For (old) overlays, we don't have a texture owner, but overlay promotion
+  // might not happen for some reasons. In that case, it will try to draw
+  // which should result in no image.
+  if (!stream_texture_sii_->HasTextureOwner()) {
+    return nullptr;
+  }
+
+  return std::make_unique<T>(manager, this, tracker, GetDrDcLock());
+}
+
 std::unique_ptr<GLTextureImageRepresentation>
 VideoImageReaderImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                                MemoryTypeTracker* tracker) {
   base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-
-  // For (old) overlays, we don't have a texture owner, but overlay promotion
-  // might not happen for some reasons. In that case, it will try to draw
-  // which should result in no image.
-  if (!stream_texture_sii_->HasTextureOwner())
-    return nullptr;
-
-  return std::make_unique<GLTextureVideoImageRepresentation>(
-      manager, this, tracker, GetDrDcLock());
+  return ProduceGLTextureInternal<GLTextureVideoImageRepresentation>(manager,
+                                                                     tracker);
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
@@ -653,15 +655,8 @@ VideoImageReaderImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-
-  // For (old) overlays, we don't have a texture owner, but overlay promotion
-  // might not happen for some reasons. In that case, it will try to draw
-  // which should result in no image.
-  if (!stream_texture_sii_->HasTextureOwner())
-    return nullptr;
-
-  return std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
-      manager, this, tracker, GetDrDcLock());
+  return ProduceGLTextureInternal<GLTexturePassthroughVideoImageRepresentation>(
+      manager, tracker);
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -670,14 +665,14 @@ VideoImageReaderImageBacking::ProduceSkiaGanesh(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-
   DCHECK(context_state);
 
   // For (old) overlays, we don't have a texture owner, but overlay promotion
   // might not happen for some reasons. In that case, it will try to draw
   // which should result in no image.
-  if (!stream_texture_sii_->HasTextureOwner())
+  if (!stream_texture_sii_->HasTextureOwner()) {
     return nullptr;
+  }
 
   if (context_state->GrContextIsVulkan()) {
     return std::make_unique<SkiaVkVideoImageRepresentation>(
@@ -693,11 +688,12 @@ VideoImageReaderImageBacking::ProduceSkiaGanesh(
   std::unique_ptr<gpu::GLTextureImageRepresentationBase> gl_representation;
   if (passthrough) {
     gl_representation =
-        std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
-            manager, this, tracker, GetDrDcLock());
+        ProduceGLTextureInternal<GLTexturePassthroughVideoImageRepresentation>(
+            manager, tracker);
   } else {
-    gl_representation = std::make_unique<GLTextureVideoImageRepresentation>(
-        manager, this, tracker, GetDrDcLock());
+    gl_representation =
+        ProduceGLTextureInternal<GLTextureVideoImageRepresentation>(manager,
+                                                                    tracker);
   }
   return SkiaGLImageRepresentation::Create(std::move(gl_representation),
                                            std::move(context_state), manager,
