@@ -60,6 +60,17 @@ void AddVariationsHeaderForPrefetch(
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations);
 
+void MaybeApplyOverrideForWebContentsUserAgentHeader(
+    net::HttpRequestHeaders& request_headers,
+    const GURL& request_url,
+    const PrefetchRequest& prefetch_request);
+void AddClientHintsHeaders(net::HttpRequestHeaders& request_headers,
+                           const url::Origin& origin,
+                           const PrefetchRequest& prefetch_request);
+void MaybeApplyOverrideForDevtoolsUserAgentHeader(
+    net::HttpRequestHeaders& request_headers,
+    const PrefetchRequest& prefetch_request);
+
 mojo::PendingRemote<network::mojom::DevToolsObserver>
 MaybeMakeSelfOwnedNetworkServiceDevToolsObserverForPrefetch(
     const PrefetchRequest& prefetch_request);

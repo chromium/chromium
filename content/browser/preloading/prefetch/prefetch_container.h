@@ -42,10 +42,6 @@ class NetworkContext;
 }  // namespace mojom
 }  // namespace network
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace content {
 
 class AssertPrefetchContainerObserver;
@@ -683,22 +679,6 @@ class CONTENT_EXPORT PrefetchContainer
     base::AutoReset<bool> auto_reset(&during_observer_notification_, true);
     observers_.Notify(method, *this, args...);
   }
-
-  // Returns if WebContents-level UA overrides should be applied for a prefetch
-  // request for `request_url`. Note that not only the User-Agent header but
-  // also Client-Hints headers are affected by the UA overrides.
-  // The returned value is for an initial guess and shouldn't be used without a
-  // plan for the header validation (crbug.com/444065296).
-  bool ShouldApplyUserAgentOverride(const GURL& request_url) const;
-  // Adds the User-Agent header by UA override from WebContents if applicable.
-  void MaybeApplyOverrideForWebContentsUserAgentHeader(
-      network::ResourceRequest& resource_request);
-  // Adds the User-Agent header by UA override by Devtools if applicable.
-  void MaybeApplyOverrideForDevtoolsUserAgentHeader(
-      net::HttpRequestHeaders* request_headers) const;
-  // Adds client hints headers to a request bound for |origin|.
-  void AddClientHintsHeaders(const url::Origin& origin,
-                             net::HttpRequestHeaders* request_headers) const;
 
   // Returns the `PrefetchSingleRedirectHop` to be prefetched next.
   // This is the last element in `redirect_chain_`, because, during prefetching

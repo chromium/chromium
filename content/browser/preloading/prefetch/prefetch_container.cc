@@ -13,9 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/preloading/prefetch/assert_prefetch_container_observer.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
@@ -44,13 +42,12 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/browser/client_hints.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
@@ -62,7 +59,6 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
@@ -839,8 +835,8 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
     for (const auto& [_, header] : client_hints) {
       updates_for_resource_request.removed_headers.push_back(header);
     }
-    AddClientHintsHeaders(url::Origin::Create(url),
-                          &updates_for_resource_request.modified_headers);
+    AddClientHintsHeaders(updates_for_resource_request.modified_headers,
+                          url::Origin::Create(url), request());
 
     if (base::FeatureList::IsEnabled(
             features::kPrefetchFixHeaderUpdatesOnRedirect)) {
@@ -850,8 +846,8 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
       for (const auto& [_, header] : client_hints) {
         updates_for_follow_redirect.removed_headers.push_back(header);
       }
-      AddClientHintsHeaders(url::Origin::Create(url),
-                            &updates_for_follow_redirect.modified_headers);
+      AddClientHintsHeaders(updates_for_follow_redirect.modified_headers,
+                            url::Origin::Create(url), request());
     }
   }
 
@@ -861,12 +857,12 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
   // override of non-UA Client Hints.
   {
     MaybeApplyOverrideForDevtoolsUserAgentHeader(
-        &updates_for_resource_request.modified_headers);
+        updates_for_resource_request.modified_headers, request());
 
     if (base::FeatureList::IsEnabled(
             features::kPrefetchFixHeaderUpdatesOnRedirect)) {
       MaybeApplyOverrideForDevtoolsUserAgentHeader(
-          &updates_for_follow_redirect.modified_headers);
+          updates_for_follow_redirect.modified_headers, request());
     }
   }
 
@@ -1618,14 +1614,15 @@ void PrefetchContainer::MakeInitialResourceRequest() {
 
   // ------------------------------------------------------------------------
   // [3] `User-Agent` override:
-  MaybeApplyOverrideForWebContentsUserAgentHeader(*resource_request);
+  MaybeApplyOverrideForWebContentsUserAgentHeader(resource_request->headers,
+                                                  url, request());
 
   // ------------------------------------------------------------------------
   // [2] Client Hints:
   // [4] DevTools overrides (Client Hints):
   // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
   // override of non-UA Client Hints.
-  AddClientHintsHeaders(origin, &resource_request->headers);
+  AddClientHintsHeaders(resource_request->headers, origin, request());
 
   // ------------------------------------------------------------------------
   // [4] DevTools overrides (`User-Agent`, `Accept-Language`, non-UA Client
@@ -1633,7 +1630,8 @@ void PrefetchContainer::MakeInitialResourceRequest() {
   // above because the DevTools override has higher priority than the
   // WebContents override. See also the comment in
   // `PrefetchContainer::MakeResourceRequest()` for the overriding order.
-  MaybeApplyOverrideForDevtoolsUserAgentHeader(&resource_request->headers);
+  MaybeApplyOverrideForDevtoolsUserAgentHeader(resource_request->headers,
+                                               request());
 
   // ------------------------------------------------------------------------
   // There are sometimes other headers that are set during navigation.  These
@@ -1685,170 +1683,6 @@ bool PrefetchContainer::IsPrefetchStale() const {
   PrefetchServableState servable_state =
       GetMatchResolverAction().ToServableState();
   return servable_state == PrefetchServableState::kNotServable;
-}
-
-bool PrefetchContainer::ShouldApplyUserAgentOverride(
-    const GURL& request_url) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kPreloadingRespectUserAgentOverride)) {
-    return false;
-  }
-
-  WebContents* referring_web_contents =
-      request().referring_web_contents().get();
-  if (!referring_web_contents) {
-    return false;
-  }
-  // The empty `ua_string_override` means no registered UA overrides.
-  if (const blink::UserAgentOverride& ua_override =
-          referring_web_contents->GetUserAgentOverride();
-      ua_override.ua_string_override.empty()) {
-    return false;
-  }
-  raw_ptr<WebContentsDelegate> delegate = referring_web_contents->GetDelegate();
-  NavigationController::UserAgentOverrideOption option =
-      delegate ? delegate->ShouldOverrideUserAgentForPreloading(request_url)
-               : NavigationController::UA_OVERRIDE_INHERIT;
-  // Use the primary main frame of initiator's WebContents to guess if we should
-  // apply UA overrides in this prefetch request. Note that this decision is
-  // independent with that of policy checking on ClientHints headers. This is an
-  // estimation, i.e., can lead to wrong choices in some cases (e.g., where the
-  // prefetched result is used in prerender for another WebContents).
-  // TODO(crbug.com/444065296): Update this comment after the header comparison
-  // between prefetch and prerender is implemented.
-  auto* render_frame_host = referring_web_contents->GetPrimaryMainFrame();
-  CHECK(render_frame_host);
-  auto& nav_controller = static_cast<NavigationControllerImpl&>(
-      render_frame_host->GetController());
-  return nav_controller.ShouldOverrideUserAgentInNextNavigation(option);
-}
-
-void PrefetchContainer::MaybeApplyOverrideForWebContentsUserAgentHeader(
-    network::ResourceRequest& resource_request) {
-  if (!ShouldApplyUserAgentOverride(resource_request.url)) {
-    return;
-  }
-  WebContents* referring_web_contents =
-      request_->referring_web_contents().get();
-  if (!referring_web_contents) {
-    return;
-  }
-  // TODO(crbug.com/444065296): This is an initial guess, because e.g.
-  // `referring_web_contents` might be different from the navigation target's
-  // WebContents. Validate this against the actual navigation's header.
-  const blink::UserAgentOverride& ua_override =
-      referring_web_contents->GetUserAgentOverride();
-  CHECK(!ua_override.ua_string_override.empty());
-  resource_request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                     ua_override.ua_string_override);
-}
-
-void PrefetchContainer::MaybeApplyOverrideForDevtoolsUserAgentHeader(
-    net::HttpRequestHeaders* request_headers) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kPrefetchDevtoolsUserAgentOverride) ||
-      !request_headers || !request().referring_web_contents()) {
-    return;
-  }
-
-  auto* referring_ftn = FrameTreeNode::From(
-      RenderFrameHostImpl::FromID(request()
-                                      .referring_web_contents()
-                                      ->GetPrimaryMainFrame()
-                                      ->GetGlobalId()));
-  // This is an initial guess (crbug.com/444065296), e.g. ideally, the
-  // DevTools UA overrides of the navigation target FrameTreeNode should be
-  // used, but this is not available at the time of prefetch, so we use the
-  // prefetch initiator's FrameTreeNode instead as an initial guess.
-  // TODO(crbug.com/444065296): Validate the header against the actual
-  // navigation's request header.
-  //
-  // For now, we only apply a part of
-  // `devtools_instrumentation::ApplyNetworkRequestOverrides()` which is
-  // applied to navigational request in
-  // `NavigationRequest::OnStartChecksComplete()`.
-  if (referring_ftn && RenderFrameDevToolsAgentHost::GetFor(referring_ftn)) {
-    // Add/override `User-Agent` headers for DevTools emulation mode  by
-    // `referring_ftn`'s devtools emulation mode.
-    // TODO(crbug.com/422193319): This part only addresses devtools emulation
-    // mode UA override. There are other types of UA overrides, which are at
-    // WebContents level.
-    devtools_instrumentation::ApplyEmulationOverrides(
-        RenderFrameDevToolsAgentHost::GetFor(referring_ftn), request_headers);
-  }
-}
-
-void PrefetchContainer::AddClientHintsHeaders(
-    const url::Origin& origin,
-    net::HttpRequestHeaders* request_headers) const {
-  if (!base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
-    return;
-  }
-  if (!request().browser_context()) {
-    return;
-  }
-  ClientHintsControllerDelegate* client_hints_delegate =
-      request().browser_context()->GetClientHintsControllerDelegate();
-  if (!client_hints_delegate) {
-    return;
-  }
-
-  auto* referring_ftn = base::FeatureList::IsEnabled(
-                            features::kPrefetchDevtoolsUserAgentOverride) &&
-                                request().referring_web_contents()
-                            ? FrameTreeNode::From(RenderFrameHostImpl::FromID(
-                                  request()
-                                      .referring_web_contents()
-                                      ->GetPrimaryMainFrame()
-                                      ->GetGlobalId()))
-                            : nullptr;
-
-  // TODO(crbug.com/41497015): Consider supporting UA override mode here.
-  const bool is_ua_override_on = false;
-  net::HttpRequestHeaders client_hints_headers;
-  if (request().is_javascript_enabled()) {
-    // Add Client Hints headers
-    //
-    // Historically, `AddClientHintsHeadersToPrefetchNavigation` added
-    // Client Hints headers iff `request().is_javascript_enabled()`, so the `if`
-    // block here is to persist the behavior.
-    // TODO(crbug.com/394716357): Revisit if we really want to allow prefetch
-    // for non-Javascript enabled profile/origins.
-    //
-    // The request headers added by `referring_ftn` is the initial guess for the
-    // request headers that will be used in the navigations served by this
-    // prefetch, and can be different from the navigation target's
-    // `FrameTreeNode` (crbug.com/444065296).
-    // TODO(crbug.com/444065296): Validate the Client Hint headers added here
-    // using `referring_ftn` against the navigation request's headers.
-    AddClientHintsHeadersToPrefetchNavigation(
-        origin, &client_hints_headers, request().browser_context(),
-        client_hints_delegate, is_ua_override_on, referring_ftn);
-  }
-
-  // Merge in the client hints which are suitable to include given this is a
-  // prefetch, and potentially a cross-site only. (This logic might need to be
-  // revisited if we ever supported prefetching in another site's partition,
-  // such as in a subframe.)
-  const bool is_cross_site = request().IsCrossSiteRequest(origin);
-  const auto cross_site_behavior =
-      features::kPrefetchClientHintsCrossSiteBehavior.Get();
-  if (!is_cross_site ||
-      cross_site_behavior ==
-          features::PrefetchClientHintsCrossSiteBehavior::kAll) {
-    request_headers->MergeFrom(client_hints_headers);
-  } else if (cross_site_behavior ==
-             features::PrefetchClientHintsCrossSiteBehavior::kLowEntropy) {
-    for (const auto& [ch, header] : network::GetClientHintToNameMap()) {
-      if (blink::IsClientHintSentByDefault(ch)) {
-        std::optional<std::string> header_value =
-            client_hints_headers.GetHeader(header);
-        if (header_value) {
-          request_headers->SetHeader(header, std::move(header_value).value());
-        }
-      }
-    }
-  }
 }
 
 std::ostream& operator<<(std::ostream& ostream,
