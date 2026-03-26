@@ -38,7 +38,6 @@
 #include "base/memory/shared_memory_security_policy.h"
 #include "base/message_loop/io_watcher.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
