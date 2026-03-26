@@ -27,6 +27,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.ExtensionControlHandler;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
@@ -59,6 +60,7 @@ public class ExtensionSearchEngineMediatorUnitTest {
     @Mock private TemplateUrl mTemplateUrl;
     @Mock private ModelList mModelList;
     @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    @Mock private ExtensionControlHandler mMockExtensionControlHandler;
 
     private Context mContext;
     private ExtensionSearchEngineMediator mMediator;
@@ -68,6 +70,7 @@ public class ExtensionSearchEngineMediatorUnitTest {
         mContext = RuntimeEnvironment.application;
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
+        ExtensionControlHandler.setFactoryForTesting(() -> mMockExtensionControlHandler);
 
         when(mTemplateUrlService.getTemplateUrlsByCategory(TemplateUrlCategory.EXTENSION))
                 .thenReturn(Arrays.asList(mTemplateUrl));
@@ -156,8 +159,16 @@ public class ExtensionSearchEngineMediatorUnitTest {
     }
 
     @Test
+    public void testOnMenuItemClicked_Disable() {
+        when(mTemplateUrl.getProvidingExtensionId()).thenReturn("extension_id");
+        mMediator.onMenuItemClicked(R.string.site_search_extensions_menu_disable, mTemplateUrl);
+        verify(mMockExtensionControlHandler).disableExtension("extension_id");
+    }
+
+    @Test
     public void testDestroy() {
         mMediator.destroy();
         verify(mTemplateUrlService).removeObserver(mMediator);
+        verify(mMockExtensionControlHandler).destroy();
     }
 }

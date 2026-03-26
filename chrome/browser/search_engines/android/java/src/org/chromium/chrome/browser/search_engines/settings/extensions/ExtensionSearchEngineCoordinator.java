@@ -6,50 +6,20 @@ package org.chromium.chrome.browser.search_engines.settings.extensions;
 
 import android.content.Context;
 
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
-import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
-import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+/** Interface for the extension search engine coordinator. */
 @NullMarked
-public class ExtensionSearchEngineCoordinator {
-    private final ModelList mModelList;
-    private final SimpleRecyclerViewAdapter mAdapter;
-    private final ExtensionSearchEngineMediator mMediator;
-    private final PropertyModel mPropertyModel;
-    private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-
-    public ExtensionSearchEngineCoordinator(
+public interface ExtensionSearchEngineCoordinator extends Destroyable {
+    @Initializer
+    void initialize(
             Context context,
             Profile profile,
             SearchEngineListPreference pref,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
-        mModelList = new ModelList();
-        mAdapter = new ExtensionSearchEngineAdapter(context, mModelList);
-        mMediator =
-                new ExtensionSearchEngineMediator(
-                        context, mModelList, profile, settingsCustomTabLauncher);
-
-        mPropertyModel =
-                new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
-                        .with(SiteSearchProperties.ADAPTER, mAdapter)
-                        .build();
-
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mPropertyModel, pref, SiteSearchViewBinder::bindPreference);
-    }
-
-    public void destroy() {
-        mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
-        mPropertyModelChangeProcessor.destroy();
-        mAdapter.destroy();
-        mMediator.destroy();
-    }
+            SettingsCustomTabLauncher settingsCustomTabLauncher);
 }

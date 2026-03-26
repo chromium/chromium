@@ -8226,8 +8226,12 @@ test("unit_tests") {
       sources += [
         "../browser/android/extensions/extensions_url_override_state_tracker_unittest.cc",
         "../browser/extensions/system_display/display_info_provider_android_unittest.cc",
+        "../browser/search_engines/extension_control_handler_android_unittest.cc",
       ]
-      deps += [ "//chrome/browser/android/extensions:android" ]
+      deps += [
+        "//chrome/browser/android/extensions:android",
+        "//chrome/browser/search_engines",
+      ]
     }
 
     if (is_desktop_android) {

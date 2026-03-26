@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.ExtensionControlHandler;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.settings.common.BaseSiteSearchMediator;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -29,6 +30,7 @@ import java.util.List;
 public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
     private static final String EXTENSION_MANAGE_URL_PREFIX = "chrome://extensions/?id=";
     private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    private final ExtensionControlHandler mExtensionControlHandler;
 
     public ExtensionSearchEngineMediator(
             Context context,
@@ -37,6 +39,7 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         super(context, modelList, profile);
         mSettingsCustomTabLauncher = settingsCustomTabLauncher;
+        mExtensionControlHandler = ExtensionControlHandler.createForProfile(profile);
 
         initializeTemplateUrlService();
     }
@@ -78,9 +81,20 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
 
     @VisibleForTesting
     void onMenuItemClicked(int textId, TemplateUrl url) {
+        String extensionId = url.getProvidingExtensionId();
+        if (extensionId == null) return;
+
         if (R.string.site_search_extensions_menu_manage == textId) {
             mSettingsCustomTabLauncher.openUrlInCct(
-                    mContext, EXTENSION_MANAGE_URL_PREFIX + url.getProvidingExtensionId());
+                    mContext, EXTENSION_MANAGE_URL_PREFIX + extensionId);
+        } else if (R.string.site_search_extensions_menu_disable == textId) {
+            mExtensionControlHandler.disableExtension(extensionId);
         }
+    }
+
+    @Override
+    public void destroy() {
+        mExtensionControlHandler.destroy();
+        super.destroy();
     }
 }

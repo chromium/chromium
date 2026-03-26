@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
@@ -41,9 +42,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogProperties.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogSaveAction.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogViewBinder.java",
-    "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineCoordinator.java",
-    "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineMediator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutMediator.java",
@@ -54,6 +53,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:service_loader_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
@@ -64,6 +64,7 @@ android_library("java") {
     "//chrome/browser/regional_capabilities/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
+    "//chrome/browser/ui/android/extensions:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",
@@ -95,10 +96,21 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.search_engines"
+  if (enable_extensions_core) {
+    sources += [
+      "java/src/org/chromium/chrome/browser/search_engines/ExtensionControlHandler.java",
+      "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineAdapter.java",
+      "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineCoordinatorImpl.java",
+      "java/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineMediator.java",
+    ]
+  }
 }
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java" ]
+  if (enable_extensions_core) {
+    sources += [ "java/src/org/chromium/chrome/browser/search_engines/ExtensionControlHandler.java" ]
+  }
 }
 
 android_resources("java_resources") {
@@ -153,7 +165,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogDraftUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogViewBinderUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutMediatorUnitTest.java",
   ]
   deps = [
@@ -165,11 +176,13 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base:base_shared_preferences_java",
     "//base:holder_java",
+    "//base:service_loader_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/extensions:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/theme/android:java_resources",
@@ -195,6 +208,9 @@ robolectric_library("junit") {
     "//ui/android:ui_java_test_support",
     "//url:url_java",
   ]
+  if (enable_extensions_core) {
+    sources += [ "junit/src/org/chromium/chrome/browser/search_engines/settings/extensions/ExtensionSearchEngineMediatorUnitTest.java" ]
+  }
 }
 
 android_library("unit_device_javatests") {

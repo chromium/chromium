@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.search_engines.settings;
 import android.content.Context;
 import android.os.Bundle;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.search_engines.settings.custom_site_search.Cu
 import org.chromium.chrome.browser.search_engines.settings.extensions.ExtensionSearchEngineCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.inactive_shortcut.InactiveShortcutCoordinator;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -86,11 +88,16 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
                         context, profile, inactiveShortcutPref, modalDialogManager);
 
         // Extensions
-        SettingsUtils.addPreferencesFromResource(this, R.xml.extensions_preferences);
-        SearchEngineListPreference extensionsPref = findPreference(EXTENSIONS_PREF_KEY);
-        mExtensionSearchEngineCoordinator =
-                new ExtensionSearchEngineCoordinator(
+        if (ExtensionUi.isEnabled(profile)) {
+            mExtensionSearchEngineCoordinator =
+                    ServiceLoaderUtil.maybeCreate(ExtensionSearchEngineCoordinator.class);
+            if (mExtensionSearchEngineCoordinator != null) {
+                SettingsUtils.addPreferencesFromResource(this, R.xml.extensions_preferences);
+                SearchEngineListPreference extensionsPref = findPreference(EXTENSIONS_PREF_KEY);
+                mExtensionSearchEngineCoordinator.initialize(
                         context, profile, extensionsPref, getCustomTabLauncher());
+            }
+        }
     }
 
     @Override
