@@ -18,4 +18,5 @@ include_rules = [
   "+third_party/blink/public/platform", # Test web sandbox support.
   "+ui/base/ui_base_features.h",  # UI features.
   "+ui/accessibility",  # Tagged PDF exporting.
+  "+ui/gfx",
 ]

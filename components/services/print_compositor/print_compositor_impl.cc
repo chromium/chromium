@@ -30,6 +30,7 @@
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "content/public/child/font_integration_init.h"
@@ -91,7 +92,7 @@ void DrawEnterpriseWatermark(
     return;
   }
   auto skpicture_span = mapping.GetMemoryAsSpan<uint8_t>();
-  SkMemoryStream stream(skpicture_span.data(), skpicture_span.size());
+  SkMemoryStream stream(gfx::MakeSkDataFromSpanWithoutCopy(skpicture_span));
   sk_sp<SkPicture> picture = SkPicture::MakeFromStream(&stream);
 
   enterprise_watermark::DrawWatermark(canvas, picture.get(),
@@ -408,7 +409,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
       GetPictureDeserializationContext(subframe_content_map);
 
   // Read in content and convert it into pdf.
-  SkMemoryStream stream(serialized_content.data(), serialized_content.size());
+  SkMemoryStream stream(gfx::MakeSkDataFromSpanWithoutCopy(serialized_content));
   int page_count = SkMultiPictureDocument::ReadPageCount(&stream);
   if (!page_count) {
     LOG(ERROR) << "CompositePages: No page is read.";
@@ -474,8 +475,8 @@ void PrintCompositorImpl::CompositeSubframe(FrameInfo* frame_info) {
       GetPictureDeserializationContext(frame_info->subframe_content_map);
 
   // Composite the entire frame.
-  SkMemoryStream stream(frame_info->serialized_content.data(),
-                        frame_info->serialized_content.size());
+  SkMemoryStream stream(
+      gfx::MakeSkDataFromSpanWithoutCopy(frame_info->serialized_content));
   SkDeserialProcs procs = DeserializationProcs(
       &subframes, &frame_info->typefaces, &frame_info->images);
   frame_info->content = SkPicture::MakeFromStream(&stream, &procs);
