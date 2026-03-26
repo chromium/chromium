@@ -13,7 +13,7 @@
 
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

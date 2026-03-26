@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"

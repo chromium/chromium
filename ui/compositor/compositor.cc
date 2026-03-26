@@ -17,7 +17,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"
@@ -73,6 +72,7 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #endif
 

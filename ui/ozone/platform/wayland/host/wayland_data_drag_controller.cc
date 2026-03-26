@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -50,6 +49,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/time/time.h"
 #include "ui/base/clipboard/clipboard_util_linux.h"
 #endif
 

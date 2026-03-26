@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"

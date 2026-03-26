@@ -9,7 +9,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"

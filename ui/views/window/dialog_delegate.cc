@@ -10,7 +10,6 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"

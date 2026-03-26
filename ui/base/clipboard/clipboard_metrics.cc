@@ -5,9 +5,9 @@
 #include "ui/base/clipboard/clipboard_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/time/time.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

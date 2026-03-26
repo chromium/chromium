@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "base/threading/hang_watcher.h"

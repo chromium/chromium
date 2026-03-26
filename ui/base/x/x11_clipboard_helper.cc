@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"

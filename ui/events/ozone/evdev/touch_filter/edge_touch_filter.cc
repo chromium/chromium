@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ui/events/ozone/evdev/touch_filter/edge_touch_filter.h"
 
 #include <stddef.h>
 
 #include <cmath>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace ui {

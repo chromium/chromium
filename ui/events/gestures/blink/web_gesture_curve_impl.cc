@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/gestures/fixed_velocity_curve.h"
