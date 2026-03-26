@@ -54,13 +54,10 @@ BASE_FEATURE(kExtensionsCollapseMainMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInfobarRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
-             "OfferPinToTaskbarWhenSettingDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOfferPinToTaskbarInFirstRunExperience,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOfferPinToTaskbarInSettings, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Shows an infobar at startup offering to pin Chrome to the taskbar (on
