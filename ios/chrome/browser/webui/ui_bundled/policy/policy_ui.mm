@@ -215,6 +215,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
   static constexpr webui::LocalizedString kPolicyLogsStrings[] = {
       {"browserName", IDS_IOS_PRODUCT_NAME},
       {"exportLogsJSON", IDS_EXPORT_POLICY_LOGS_JSON},
+      {"filterLogs", IDS_POLICY_LOGS_FILTER_PLACEHOLDER},
       {"logsTitle", IDS_POLICY_LOGS_TITLE},
       {"os", IDS_VERSION_UI_OS},
       {"refreshLogs", IDS_REFRESH_POLICY_LOGS},

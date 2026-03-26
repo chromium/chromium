@@ -886,6 +886,9 @@ Additional details:
   <message name="IDS_POLICY_LOGS_TITLE" desc="Title for the page.">
     Policy Logs
   </message>
+  <message name="IDS_POLICY_LOGS_FILTER_PLACEHOLDER" desc="Placeholder for the input field that lets the user filter policy logs by substring.">
+    Filter logs
+  </message>
   <message name="IDS_VERSION_INFO" desc="Label for the section showing the version Information.">
     Version Information
   </message>

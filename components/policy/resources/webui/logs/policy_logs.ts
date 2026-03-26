@@ -18,6 +18,8 @@ import type {Log, VersionInfo} from './types.js';
 let logs: Log[];
 let versionInfo: VersionInfo;
 
+const severities = ['error', 'warning', 'info', 'verbose'];
+
 // Dumps file with JSON contents to filename.
 function dumpFileWithJsonContents() {
   const dumpObject = {versionInfo, logs};
@@ -42,7 +44,30 @@ function displayList() {
   } else {
     logMessageContainer.innerHTML = '';
   }
-  logs.forEach(log => {
+
+  // Only show log lines that match all the words (AND filtering). Accept
+  // matches in `message`, `fileAndLine`, and `severity`.
+  const filterInput = getRequiredElement<HTMLInputElement>('filter');
+  const filterWords =
+      filterInput.value.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+
+  const severityCheckboxes: {[key: string]: boolean} =
+      Object.fromEntries(severities.map(
+          s =>
+              [s.toUpperCase(),
+               getRequiredElement<HTMLInputElement>(`${s}-checkbox`).checked,
+  ]));
+
+  const filteredLogs = logs.filter(log => {
+    const matchesFilter = filterWords.every(
+        word => log.message.toLowerCase().includes(word) ||
+            log.fileAndLine.toLowerCase().includes(word) ||
+            log.logSeverity.toLowerCase().includes(word));
+    const matchesSeverity = severityCheckboxes[log.logSeverity] ?? true;
+    return matchesFilter && matchesSeverity;
+  });
+
+  for (const log of filteredLogs) {
     const logMessage = document.createElement('div');
     logMessage.setAttribute('role', 'row');
     logMessage.className = 'log-line';
@@ -93,7 +118,7 @@ function displayList() {
     logMessage.appendChild(messageDiv);
 
     logMessageContainer.appendChild(logMessage);
-  });
+  }
 }
 
 function displayVersionInfo() {
@@ -128,6 +153,14 @@ function initialize() {
       .addEventListener('click', dumpFileWithJsonContents);
   getRequiredElement('logs-refresh')
       .addEventListener('click', fetchLogsAndDisplay);
+
+  const filterInput = getRequiredElement<HTMLInputElement>('filter');
+  filterInput.addEventListener('input', displayList);
+
+  for (const severity of severities) {
+    getRequiredElement(`${severity}-checkbox`)
+        .addEventListener('change', displayList);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

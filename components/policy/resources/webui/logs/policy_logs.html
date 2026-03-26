@@ -27,6 +27,30 @@
       gap: 8px;
     }
 
+    .filter-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 16px;
+      margin-bottom: 8px;
+    }
+
+    #severity-filters {
+      display: flex;
+      gap: 8px;
+    }
+
+    #severity-filters label {
+      align-items: center;
+      display: flex;
+      font-size: 0.9em;
+    }
+
+    #filter {
+      padding: 0 8px;
+      width: 50ch;
+    }
+
     button {
       align-items: center;
       border-radius: 4px;
@@ -177,6 +201,16 @@
     </table>
 
     <h2>Logs</h2>
+
+    <div class="filter-row">
+      <input type="search" id="filter" placeholder="$i18n{filterLogs}" aria-label="$i18n{filterLogs}">
+      <div id="severity-filters">
+        <label><input type="checkbox" id="error-checkbox" checked>ERROR</label>
+        <label><input type="checkbox" id="warning-checkbox" checked>WARNING</label>
+        <label><input type="checkbox" id="info-checkbox" checked>INFO</label>
+        <label><input type="checkbox" id="verbose-checkbox" checked>VERBOSE</label>
+      </div>
+    </div>
 
     <div id="logs-container" role="grid" aria-label="Logs List"></div>
 
