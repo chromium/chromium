@@ -261,9 +261,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   EXPECT_EQ(num_channels - 1,
             MessageService::Get(profile())->GetChannelCountForTest());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests chrome.tabs.sendMessage from SW extension to content script.
-// TODO(crbug.com/371432155): Support chrome.tabs on desktop Android.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, WorkerToTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
@@ -275,7 +275,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, WorkerToTab) {
 // callback doesn't crash.
 //
 // Regression test for https://crbug.com/1218569.
-// TODO(crbug.com/371432155): Support chrome.tabs on desktop Android.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        TabsSendMessageWithoutCallback) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -283,7 +282,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
       "service_worker/messaging/tabs_send_message_without_callback"))
       << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests port creation (chrome.runtime.connect) from content script to an
 // extension SW and disconnecting the port.
