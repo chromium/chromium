@@ -8,7 +8,7 @@
 
 #include <algorithm>
 #include <array>
-#include <climits>
+#include <bit>
 #include <optional>
 #include <string_view>
 
@@ -499,17 +499,13 @@ bool ParseURLHostnameToAddress(std::string_view hostname,
 size_t CommonPrefixLength(const IPAddress& a1, const IPAddress& a2) {
   DCHECK_EQ(a1.size(), a2.size());
   for (size_t i = 0; i < a1.size(); ++i) {
-    unsigned diff = a1.bytes()[i] ^ a2.bytes()[i];
-    if (!diff)
+    uint8_t diff = a1.bytes()[i] ^ a2.bytes()[i];
+    if (diff == 0) {
       continue;
-    for (unsigned j = 0; j < CHAR_BIT; ++j) {
-      if (diff & (1 << (CHAR_BIT - 1)))
-        return i * CHAR_BIT + j;
-      diff <<= 1;
     }
-    NOTREACHED();
+    return i * 8 + static_cast<size_t>(std::countl_zero(diff));
   }
-  return a1.size() * CHAR_BIT;
+  return a1.size() * 8;
 }
 
 size_t MaskPrefixLength(const IPAddress& mask) {

@@ -1021,6 +1021,24 @@ TEST(IPAddressTest, VerifyIPAddressCreatedAtCompileTime) {
   EXPECT_TRUE(VerifyIPBytes(ipv6_address, ipv6_bytes));
 }
 
+TEST(IPAddressTest, CommonPrefixLength) {
+  IPAddress ipv4_1(192, 168, 0, 1);
+  EXPECT_EQ(32u, CommonPrefixLength(ipv4_1, ipv4_1));
+
+  IPAddress ipv4_2(192, 168, 0, 2);
+  // First 3 bytes (192.168.0) match. Of the last byte, first 6 bits match.
+  EXPECT_EQ(30u, CommonPrefixLength(ipv4_1, ipv4_2));
+
+  IPAddress ipv6_1;
+  ASSERT_TRUE(ipv6_1.AssignFromIPLiteral("2001:db8::1"));
+  EXPECT_EQ(128u, CommonPrefixLength(ipv6_1, ipv6_1));
+
+  IPAddress ipv6_2;
+  ASSERT_TRUE(ipv6_2.AssignFromIPLiteral("2001:db8::2"));
+  // First 15 bytes match, followed by 6 bits matching of the last byte.
+  EXPECT_EQ(126u, CommonPrefixLength(ipv6_1, ipv6_2));
+}
+
 }  // anonymous namespace
 
 }  // namespace net
