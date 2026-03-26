@@ -190,6 +190,7 @@ export class SelectionOverlayElementElement extends
         break;
       case GestureState.STARTING:
         if (this.draggingRespondent === DragFeature.NONE) {
+          this.baseHandler.activeRegionId = '';
           this.selectionElements.regionSelectionLayer.handleGestureEnd(
               this.currentGesture);
         }
