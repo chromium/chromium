@@ -12,6 +12,10 @@ namespace blink {
 
 class PaintLayerScrollableArea;
 
+// text-overflow:ellipsis is only rendered if the scroll offset in the inline
+// direction is 0. The scroll offset is snapshot at "run snapshot post-layout
+// state steps" time to make sure we read the offsets from a clean tree and not
+// during layout.
 class TextOverflowPostLayoutSnapshot final
     : public GarbageCollected<TextOverflowPostLayoutSnapshot>,
       public PostLayoutSnapshotClient {
@@ -21,13 +25,15 @@ class TextOverflowPostLayoutSnapshot final
   bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
-  bool IsScrolled() const;
+  bool IsScrolled() const { return is_scrolled_; }
 
   void Trace(Visitor* visitor) const override;
 
  private:
+  bool ComputeIsScrolled() const;
+
   Member<PaintLayerScrollableArea> scroller_;
-  bool was_scrolled_ = false;
+  bool is_scrolled_ = false;
 };
 
 }  // namespace blink

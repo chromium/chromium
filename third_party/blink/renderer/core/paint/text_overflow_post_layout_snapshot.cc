@@ -22,9 +22,9 @@ TextOverflowPostLayoutSnapshot::TextOverflowPostLayoutSnapshot(
 
 bool TextOverflowPostLayoutSnapshot::UpdateSnapshot() {
   if (LayoutBox* box = scroller_->GetLayoutBox()) {
-    const bool is_scrolled = IsScrolled();
-    if (was_scrolled_ != is_scrolled) {
-      was_scrolled_ = is_scrolled;
+    const bool is_scrolled = ComputeIsScrolled();
+    if (is_scrolled_ != is_scrolled) {
+      is_scrolled_ = is_scrolled;
       box->SetNeedsLayout(layout_invalidation_reason::kUnknown);
       return true;
     }
@@ -32,7 +32,7 @@ bool TextOverflowPostLayoutSnapshot::UpdateSnapshot() {
   return false;
 }
 
-bool TextOverflowPostLayoutSnapshot::IsScrolled() const {
+bool TextOverflowPostLayoutSnapshot::ComputeIsScrolled() const {
   if (const LayoutBox* box = scroller_->GetLayoutBox()) {
     ScrollOffset offset = scroller_->GetScrollOffset();
     return box->IsHorizontalWritingMode() ? offset.x() : offset.y();
