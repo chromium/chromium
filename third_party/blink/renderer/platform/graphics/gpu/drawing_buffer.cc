@@ -1997,13 +1997,13 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 
   // First see if creating a SharedImage that can be used as an overlay is
   // feasible.
-#if BUILDFLAG(IS_WIN)
-  if (SharedGpuContext::IsGpuCompositingEnabled() && can_use_low_latency_) {
-    usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-  }
-#else
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
+#if BUILDFLAG(IS_WIN)
+    if (can_use_low_latency_) {
+      usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+    }
+#else
     bool use_as_overlay = false;
 
     // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
@@ -2051,8 +2051,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         }
       }
     }
-  }
 #endif
+  }
 
   // Set the correct SkAlphaType on the new shared image if not using as an
   // overlay (note that in the case of creating a SharedImage that can be
