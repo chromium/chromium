@@ -47,6 +47,7 @@
   height: var(--handle-size);
   position: absolute;
   transform: translate(-50%, -50%);
+  user-select: none;
   width: var(--handle-size);
 }
 
@@ -102,6 +103,7 @@
   padding: var(--border-padding);
   border: var(--border-width) solid var(--primary-color);
   cursor: move;
+  user-select: none;
 }
 
 textarea {
