@@ -15,7 +15,7 @@ namespace optimization_guide {
 
 model_execution::prefs::GenAILocalFoundationalModelEnterprisePolicySettings
 GetGenAILocalFoundationalModelEnterprisePolicySettings(
-    PrefService* local_state) {
+    const PrefService* local_state) {
   return static_cast<model_execution::prefs::
                          GenAILocalFoundationalModelEnterprisePolicySettings>(
       local_state->GetInteger(

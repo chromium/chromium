@@ -38,6 +38,8 @@ class Manifest final {
   using UseCaseName = std::string;
 
   enum class ParseError {
+    kFileNotFound,
+    kProtoParseError,
     kDuplicateIdentifier,
     kMissingIdentifier,
     kConflictingComponent,
@@ -47,12 +49,22 @@ class Manifest final {
       proto::Manifest manifest,
       DeviceCategory device_category);
 
+  static void Load(
+      const base::FilePath& path,
+      DeviceCategory device_category,
+      base::OnceCallback<void(base::expected<Manifest, ParseError>)> callback);
+
+  // Default constructed manifest supports no assets or recipes.
+  Manifest();
   ~Manifest();
 
   Manifest(const Manifest&);
   Manifest& operator=(const Manifest&);
   Manifest(Manifest&&);
   Manifest& operator=(Manifest&&);
+
+  // Returns true if the manifest defines any assets.
+  bool HasAssets() const;
 
   // Returns the identifiers of the Assets required for a single use case.
   // Returns nullopt if the use case is not defined in the manifest.

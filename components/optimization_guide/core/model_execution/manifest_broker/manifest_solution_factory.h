@@ -35,7 +35,6 @@ class ManifestSolutionFactory {
   };
   struct AssetInfo {
     base::FilePath path;
-    base::Version version;
   };
   using AssetState = base::expected<AssetInfo, AssetUnavailableReason>;
 
@@ -104,6 +103,8 @@ class ManifestSolutionFactory {
 
   // Flush all use cases and emit new solutions for any that are now available.
   void UpdateSolutions();
+
+  const Manifest& manifest() const { return manifest_; }
 
  private:
   class Solution;

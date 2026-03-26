@@ -20,7 +20,7 @@ namespace optimization_guide {
 // `local_state`.
 model_execution::prefs::GenAILocalFoundationalModelEnterprisePolicySettings
 GetGenAILocalFoundationalModelEnterprisePolicySettings(
-    PrefService* local_state);
+    const PrefService* local_state);
 
 // Returns the model execution config read from the `config_path`.
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>

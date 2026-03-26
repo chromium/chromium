@@ -1,0 +1,211 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
+
+#include <cstddef>
+#include <memory>
+
+#include "base/barrier_closure.h"
+#include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
+#include "base/trace_event/trace_event.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+
+namespace optimization_guide {
+
+namespace {
+
+void LogEligibilityReason(mojom::OnDeviceFeature feature,
+                          OnDeviceModelEligibilityReason reason) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
+           GetVariantName(feature)}),
+      reason);
+}
+
+}  // namespace
+
+ManifestBrokerState::ManifestBrokerState(
+    PrefService& local_state,
+    on_device_model::ServiceClient::LaunchFn launch_fn,
+    ManifestMonitor::Delegate& monitor_delegate)
+    : local_state_(local_state),
+      service_client_(std::move(launch_fn)),
+      usage_tracker_(&local_state),
+      model_broker_impl_(
+          usage_tracker_,
+          base::BindRepeating(&ManifestBrokerState::EnsureInitialization,
+                              base::Unretained(this)),
+          base::DoNothing()),
+      performance_classifier_(&local_state, service_client_.GetSafeRef()),
+      manifest_monitor_(
+          local_state,
+          performance_classifier_,
+          monitor_delegate,
+          base::BindRepeating(&ManifestBrokerState::OnManifestUpdated,
+                              base::Unretained(this))) {}
+
+ManifestBrokerState::~ManifestBrokerState() = default;
+
+void ManifestBrokerState::BindModelBroker(
+    mojo::PendingReceiver<mojom::ModelBroker> receiver) {
+  if (!features::IsOnDeviceExecutionEnabled()) {
+    return;
+  }
+  model_broker_impl_.BindBroker(std::move(receiver));
+}
+
+std::unique_ptr<OnDeviceSession> ManifestBrokerState::StartSession(
+    mojom::OnDeviceFeature feature,
+    const SessionConfigParams& config_params,
+    base::WeakPtr<OptimizationGuideLogger> logger) {
+  if (!features::IsOnDeviceExecutionEnabled()) {
+    return nullptr;
+  }
+  TRACE_EVENT("optimization_guide", "ManifestBrokerState::StartSession",
+              "feature", base::ToString(feature));
+  OnDeviceModelEligibilityReason reason = GetOnDeviceModelEligibility(feature);
+  LogEligibilityReason(feature, reason);
+  usage_tracker_.OnDeviceEligibleFeatureUsed(feature);
+
+  // Return if we cannot do anything more for right now.
+  if (reason != OnDeviceModelEligibilityReason::kSuccess) {
+    VLOG(1) << "Failed to create Session:" << reason;
+    return nullptr;
+  }
+  // Client should be non-null because GetOnDeviceModelEligibility above
+  // succeeded.
+  return model_broker_impl_.GetSolutionProvider(feature)
+      .local_subscriber()
+      .client()
+      ->CreateSession(config_params, logger);
+}
+
+void ManifestBrokerState::AddOnDeviceModelAvailabilityChangeObserver(
+    mojom::OnDeviceFeature feature,
+    OnDeviceModelAvailabilityObserver* observer) {
+  if (!features::IsOnDeviceExecutionEnabled()) {
+    return;
+  }
+  model_broker_impl_.GetSolutionProvider(feature).AddObserver(observer);
+}
+
+void ManifestBrokerState::RemoveOnDeviceModelAvailabilityChangeObserver(
+    mojom::OnDeviceFeature feature,
+    OnDeviceModelAvailabilityObserver* observer) {
+  if (!features::IsOnDeviceExecutionEnabled()) {
+    return;
+  }
+  model_broker_impl_.GetSolutionProvider(feature).RemoveObserver(observer);
+}
+
+OnDeviceModelEligibilityReason ManifestBrokerState::GetOnDeviceModelEligibility(
+    mojom::OnDeviceFeature feature) {
+  if (!features::IsOnDeviceExecutionEnabled()) {
+    return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+  }
+  TRACE_EVENT("optimization_guide",
+              "ManifestBrokerState::GetOnDeviceModelEligibility", "feature",
+              base::ToString(feature));
+  if (factory_) {
+    factory_->UpdateSolutions();
+  }
+
+  return model_broker_impl_.GetSolutionProvider(feature).solution().error_or(
+      OnDeviceModelEligibilityReason::kSuccess);
+}
+
+void ManifestBrokerState::GetOnDeviceModelEligibilityAsync(
+    mojom::OnDeviceFeature feature,
+    const on_device_model::Capabilities& capabilities,
+    base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback) {
+  if (!features::IsOnDeviceExecutionEnabled()) {
+    std::move(callback).Run(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
+    return;
+  }
+  EnsureInitialization(
+      base::BindOnce(&ManifestBrokerState::FinishGetOnDeviceModelEligibility,
+                     weak_ptr_factory_.GetWeakPtr(), feature, capabilities,
+                     std::move(callback)));
+}
+
+void ManifestBrokerState::EnsureInitialization(
+    ModelBrokerImpl::InitCallback callback) {
+  // Hurry the performance classifier.
+  performance_classifier_.EnsurePerformanceClassAvailable(base::DoNothing());
+  if (manifest_monitor_.manifest().has_value()) {
+    // Initialization is already complete.
+    std::move(callback).Run(GetPossibleOnDeviceCapabilities());
+    return;
+  }
+  init_callbacks_.push_back(std::move(callback));
+}
+
+void ManifestBrokerState::OnManifestUpdated() {
+  TRACE_EVENT("optimization_guide", "ManifestBrokerState::OnManifestUpdated");
+  CHECK(manifest_monitor_.manifest().has_value());
+
+  // Init will complete the first time we finish loading all available assets
+  // for a manifest.
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      2, base::BindOnce(&ManifestBrokerState::OnInitComplete,
+                        weak_ptr_factory_.GetWeakPtr()));
+  factory_ = std::make_unique<ManifestSolutionFactory>(
+      *manifest_monitor_.manifest(), model_broker_impl_, service_client_);
+  factory_->UpdateAssetState(
+      kManifestAssetName,
+      ManifestSolutionFactory::AssetInfo{
+          .path = manifest_monitor_.manifest_dir().value()},
+      barrier_closure);
+  // TODO(b/489511247): Wire the factory into an asset manager.
+  // asset_manager_ = std::make_unique<ManifestAssetManager>(
+  //     &*local_state_, usage_tracker_, std::move(init_tasks_->delegate_),
+  //     factory_->manifest());
+  // asset_manager_->SetFactory(std::move(factory), barrier_closure);
+  barrier_closure.Run();  // For asset manager init.
+}
+
+void ManifestBrokerState::OnInitComplete() {
+  TRACE_EVENT("optimization_guide", "ManifestBrokerState::OnInitComplete");
+  auto callbacks_to_run = std::move(init_callbacks_);
+  init_callbacks_.clear();
+  for (auto& callback : callbacks_to_run) {
+    std::move(callback).Run(GetPossibleOnDeviceCapabilities());
+  }
+}
+
+on_device_model::Capabilities
+ManifestBrokerState::GetPossibleOnDeviceCapabilities() const {
+  CHECK(manifest_monitor_.manifest().has_value());
+  if (!performance_classifier_.IsPerformanceClassAvailable()) {
+    // This should only happen if a policy is disabling on-device models.
+    return {};
+  }
+  return performance_classifier_.GetPossibleOnDeviceCapabilities();
+}
+
+void ManifestBrokerState::FinishGetOnDeviceModelEligibility(
+    mojom::OnDeviceFeature feature,
+    const on_device_model::Capabilities& capabilities,
+    base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
+        callback,
+    const on_device_model::Capabilities& possible_capabilities) {
+  // If this device will never support the requested capabilities, return not
+  // available.
+  if (!possible_capabilities.HasAll(capabilities)) {
+    std::move(callback).Run(optimization_guide::OnDeviceModelEligibilityReason::
+                                kModelAdaptationNotAvailable);
+    return;
+  }
+  std::move(callback).Run(GetOnDeviceModelEligibility(feature));
+}
+
+}  // namespace optimization_guide

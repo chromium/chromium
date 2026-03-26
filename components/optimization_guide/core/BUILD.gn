@@ -382,6 +382,10 @@ if (build_with_model_execution) {
       "model_execution/manifest_broker/manifest.h",
       "model_execution/manifest_broker/manifest_asset_manager.cc",
       "model_execution/manifest_broker/manifest_asset_manager.h",
+      "model_execution/manifest_broker/manifest_broker_state.cc",
+      "model_execution/manifest_broker/manifest_broker_state.h",
+      "model_execution/manifest_broker/manifest_monitor.cc",
+      "model_execution/manifest_broker/manifest_monitor.h",
       "model_execution/manifest_broker/manifest_solution_factory.cc",
       "model_execution/manifest_broker/manifest_solution_factory.h",
     ]

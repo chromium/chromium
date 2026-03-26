@@ -6,12 +6,35 @@
 
 #include <optional>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
+#include "components/optimization_guide/proto/manifest.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace optimization_guide {
 
 namespace {
+
+base::expected<Manifest, Manifest::ParseError> ReadManifestFile(
+    const base::FilePath& path,
+    DeviceCategory device_category) {
+  TRACE_EVENT("optimization_guide", "ReadManifestFile");
+  // Unpack and verify model config file.
+  std::string binary_manifest_pb;
+  if (!base::ReadFileToString(path, &binary_manifest_pb)) {
+    return base::unexpected(Manifest::ParseError::kFileNotFound);
+  }
+
+  proto::Manifest manifest;
+  if (!manifest.ParseFromString(binary_manifest_pb)) {
+    return base::unexpected(Manifest::ParseError::kProtoParseError);
+  }
+  return Manifest::Create(std::move(manifest), device_category);
+}
 
 proto::DeviceCategoryConfig SelectDeviceCategoryConfig(
     const proto::Manifest& manifest,
@@ -258,6 +281,17 @@ base::expected<Manifest, Manifest::ParseError> Manifest::Create(
                   std::move(assets));
 }
 
+void Manifest::Load(
+    const base::FilePath& path,
+    DeviceCategory device_category,
+    base::OnceCallback<void(base::expected<Manifest, ParseError>)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&ReadManifestFile, path, device_category),
+      std::move(callback));
+}
+
+Manifest::Manifest() = default;
 Manifest::Manifest(proto::DeviceCategoryConfig device_category_config,
                    proto::Recipes recipes,
                    proto::Assets assets)
@@ -271,6 +305,10 @@ Manifest::Manifest(const Manifest&) = default;
 Manifest& Manifest::operator=(const Manifest&) = default;
 Manifest::Manifest(Manifest&&) = default;
 Manifest& Manifest::operator=(Manifest&&) = default;
+
+bool Manifest::HasAssets() const {
+  return !assets_.on_demand_components().empty();
+}
 
 std::optional<absl::flat_hash_set<Manifest::AssetId>>
 Manifest::GetRequiredAssets(const UseCaseName& use_case) const {
