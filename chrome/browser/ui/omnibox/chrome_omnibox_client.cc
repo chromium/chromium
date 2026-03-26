@@ -137,6 +137,8 @@
 
 namespace {
 
+using ExtensionControlledDialogResult =
+    ChromeOmniboxClient::ExtensionControlledDialogResult;
 using predictors::AutocompleteActionPredictor;
 
 LensSearchController* GetLensSearchController(
@@ -144,6 +146,21 @@ LensSearchController* GetLensSearchController(
   return web_contents ? LensSearchController::FromTabWebContents(web_contents)
                       : nullptr;
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+ExtensionControlledDialogResult SettingDialogResultToExtensionDialogResult(
+    SettingsOverriddenDialogController::DialogResult result) {
+  using DialogResult = SettingsOverriddenDialogController::DialogResult;
+  switch (result) {
+    case DialogResult::kKeepNewSettings:
+      return ExtensionControlledDialogResult::kAccept;
+    case DialogResult::kChangeSettingsBack:
+      return ExtensionControlledDialogResult::kReject;
+    default:
+      return ExtensionControlledDialogResult::kCancel;
+  }
+}
+#endif
 
 }  // namespace
 
@@ -232,7 +249,7 @@ SessionID ChromeOmniboxClient::GetSessionID() const {
 bool ChromeOmniboxClient::
     ShowConfirmationDialogIfDefaultSearchExtensionControlled(
         const GURL& url,
-        base::OnceCallback<void(bool)> callback) {
+        base::OnceCallback<void(ExtensionControlledDialogResult)> callback) {
 #if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kSearchEngineExplicitChoiceDialog));
@@ -257,11 +274,11 @@ bool ChromeOmniboxClient::
   controller->ShowConfirmationDialog(
       *web_contents,
       base::BindOnce(
-          [](base::OnceCallback<void(bool)> client_callback,
+          [](base::OnceCallback<void(ExtensionControlledDialogResult)>
+                 client_callback,
              SettingsOverriddenDialogController::DialogResult result) {
             std::move(client_callback)
-                .Run(result == SettingsOverriddenDialogController::
-                                   DialogResult::kKeepNewSettings);
+                .Run(SettingDialogResultToExtensionDialogResult(result));
           },
           std::move(callback)));
 

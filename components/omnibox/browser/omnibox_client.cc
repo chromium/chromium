@@ -49,7 +49,7 @@ bookmarks::BookmarkModel* OmniboxClient::GetBookmarkModel() {
 
 bool OmniboxClient::ShowConfirmationDialogIfDefaultSearchExtensionControlled(
     const GURL& url,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(ExtensionControlledDialogResult)> callback) {
   return false;
 }
 

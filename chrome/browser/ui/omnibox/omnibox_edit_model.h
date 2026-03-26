@@ -654,7 +654,7 @@ class OmniboxEditModel {
       const GURL& alternate_nav_url,
       const std::u16string& pasted_text,
       base::TimeTicks match_selection_timestamp,
-      bool proceed);
+      OmniboxClient::ExtensionControlledDialogResult proceed);
 
   // Updates the feedback type on the match at the given index and schedules a
   // repaint to update the suggestion view. On negative feedback, also shows the

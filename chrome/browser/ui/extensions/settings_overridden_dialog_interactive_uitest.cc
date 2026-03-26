@@ -437,20 +437,22 @@ class SettingsOverriddenExplicitChoiceDialogEscapableInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(
     SettingsOverriddenExplicitChoiceDialogEscapableInteractiveUiTest,
     MAYBE_EscapeClosesDialog) {
+  const GURL kInitialUrl("https://www.google.com/");
+
   // This test verifies that pressing Escape closes the dialog when the
   // "escapable" feature parameter is set.
-  RunTestSequence(
-      InstrumentTab(kWebContentsId),
-      SetNewSearchProvider(DefaultSearch::kUseDefault),
-      LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-      WaitForDialogToShow(),
-      SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_ESCAPE),
-      // Verify dialog is dismissed.
-      WaitForHide(kSettingsOverriddenDialogId),
-      // Verify navigation proceeds to the extension's search URL since the
-      // dialog was dismissed without saving changes (default behavior is to
-      // keep new settings).
-      WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, kInitialUrl),
+                  SetNewSearchProvider(DefaultSearch::kUseDefault),
+                  LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+                  WaitForDialogToShow(),
+                  SendKeyPress(kSettingsOverriddenDialogId, ui::VKEY_ESCAPE),
+                  // Verify dialog is dismissed.
+                  WaitForHide(kSettingsOverriddenDialogId),
+                  // Verify that no navigation happens.
+                  CheckActiveUrl(kInitialUrl)
+
+  );
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,

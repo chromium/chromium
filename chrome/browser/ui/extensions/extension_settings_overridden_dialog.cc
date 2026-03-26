@@ -200,7 +200,9 @@ ExtensionSettingsOverriddenDialog::GetShowParams() {
 void ExtensionSettingsOverriddenDialog::OnDialogShown() {
   DCHECK(ShouldShow());
 
-  MarkShownFor(*profile_, params_.controlling_extension_id);
+  if (!params_.unlimited_shows) {
+    MarkShownFor(*profile_, params_.controlling_extension_id);
+  }
 }
 
 void ExtensionSettingsOverriddenDialog::HandleDialogResult(
@@ -209,7 +211,8 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
   DCHECK(!HasAcknowledgedExtension(
       *profile_, params_.controlling_extension_id,
       params_.extension_acknowledged_preference_name));
-  DCHECK(HasShownFor(*profile_, params_.controlling_extension_id));
+  DCHECK(params_.unlimited_shows ||
+         HasShownFor(*profile_, params_.controlling_extension_id));
 
   // It's possible the extension was removed or disabled while the dialog was
   // being displayed. If this is the case, bail early.

@@ -60,6 +60,10 @@ class ExtensionSettingsOverriddenDialog
 
     // The text and similar content required for the dialog.
     ShowParams content;
+
+    // If set, the dialog will be shown repeatedly, until a choice is made.
+    // Otherwise, it will be shown only once per user session.
+    bool unlimited_shows = false;
   };
 
   ExtensionSettingsOverriddenDialog(Params params, Profile& profile);

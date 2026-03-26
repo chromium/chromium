@@ -53,6 +53,19 @@ class OmniboxPopupCloser;
 // objects under the hood).
 class OmniboxClient {
  public:
+  // The result of an extension-controlled search confirmation dialog.
+  enum class ExtensionControlledDialogResult {
+    // Accept the new extension's search provider.
+    kAccept,
+
+    // Reject the new extension's search provider, and disable the extension,
+    // and search with the previous provider.
+    kReject,
+
+    // Don't search at all.
+    kCancel,
+  };
+
   OmniboxClient() = default;
   virtual ~OmniboxClient() = default;
 
@@ -95,7 +108,7 @@ class OmniboxClient {
   // |callback| is run when the dialog is closed.
   virtual bool ShowConfirmationDialogIfDefaultSearchExtensionControlled(
       const GURL& url,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(ExtensionControlledDialogResult)> callback);
 
   // Called when the user changes the selected |index| in the result list via
   // mouse down or arrow key down. |match| is the suggestion corresponding to

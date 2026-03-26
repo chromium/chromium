@@ -2556,20 +2556,24 @@ void OmniboxEditModel::OnDefaultSearchExtensionDialogDone(
     const GURL& alternate_nav_url,
     const std::u16string& pasted_text,
     base::TimeTicks match_selection_timestamp,
-    bool proceed) {
+    OmniboxClient::ExtensionControlledDialogResult proceed) {
   // Reaching here mean that the default search engine was initially overridden
   // by an extension and that user either accepted or rejected the change.
   //
-  // When `proceed` is true, it means that the user accepted the change the
+  // When `proceed` is kAccept, it means that the user accepted the change the
   // search will continue as normal.
   //
-  // When `proceed` is false, it means that the user rejected the change.
+  // When `proceed` is kReject, it means that the user rejected the change.
   // Therefore, It is necessary to re-classify the input text using the current
   // (restored) settings and build the new navigation url.
-  if (proceed) {
+  //
+  // When `proceed` is kCancel, the dialog was closed without making a choice,
+  // and we don't do a search.
+  if (proceed == OmniboxClient::ExtensionControlledDialogResult::kAccept) {
     OpenMatch(selection, match, disposition, alternate_nav_url, pasted_text,
               match_selection_timestamp);
-  } else {
+  } else if (proceed ==
+             OmniboxClient::ExtensionControlledDialogResult::kReject) {
     std::u16string input_text =
         pasted_text.empty()
             ? (user_input_in_progress_ ? user_text_ : url_for_editing_)
@@ -2587,6 +2591,8 @@ void OmniboxEditModel::OnDefaultSearchExtensionDialogDone(
     // The omnibox is focused during the string classification, so we need to
     // focus the web contents after the string classification.
     controller_->client()->FocusWebContents();
+  } else {
+    CHECK_EQ(proceed, OmniboxClient::ExtensionControlledDialogResult::kCancel);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

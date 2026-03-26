@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -50,7 +51,8 @@ class ChromeOmniboxClient final : public OmniboxClient {
   SessionID GetSessionID() const override;
   bool ShowConfirmationDialogIfDefaultSearchExtensionControlled(
       const GURL& url,
-      base::OnceCallback<void(bool)> callback) override;
+      base::OnceCallback<void(ExtensionControlledDialogResult)> callback)
+      override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;

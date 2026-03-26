@@ -556,6 +556,10 @@ void GetSearchOverriddenParamsThenRun(
     auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
         extension->id(), preference_name, histogram_name,
         std::move(show_params));
+    // The explicit choice dialog needs to be shown until a choice is made,
+    // so suppress the mechanism that limits the number of times the dialog is
+    // shown.
+    params->unlimited_shows = true;
 
     std::vector<IconFetchParams> icon_lookups;
 
