@@ -347,14 +347,16 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
         View actorContainer = fastFindViewById(R.id.actor_ui_container);
 
         if (actorContainer == null && inflateIfMissing) {
-            LayoutInflater.from(getContext()).inflate(R.layout.actor_gts_tab_indicator, this, true);
+            ViewGroup contentView = (ViewGroup) fastFindViewById(R.id.content_view);
+            if (contentView == null) return null;
+
+            LayoutInflater.from(getContext())
+                    .inflate(R.layout.actor_gts_tab_indicator, contentView, true);
 
             actorContainer = fastFindViewById(R.id.actor_ui_container);
 
-            assumeNonNull(actorContainer)
-                    .setLayoutParams(
-                            new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-            bringChildToFront(actorContainer);
+            assumeNonNull(actorContainer);
+            contentView.bringChildToFront(actorContainer);
         }
         return actorContainer;
     }
