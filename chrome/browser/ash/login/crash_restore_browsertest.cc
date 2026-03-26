@@ -217,7 +217,10 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest, RestoreSessionForThreeUsers) {
+// Disabled due to bot failures.
+// TODO(crbug.com/496355983): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest,
+                       DISABLED_RestoreSessionForThreeUsers) {
   {
     UserSessionRestoreObserver restore_observer;
     restore_observer.Wait();
