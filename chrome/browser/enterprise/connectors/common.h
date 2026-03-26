@@ -74,17 +74,6 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-// Returns true if `result` as returned by BinaryUploadService is considered a
-// fail-closed result, regardless of attempting a cloud-based or a local-based
-// content analysis.
-bool ResultIsFailClosed(ScanRequestUploadResult result);
-
-// Determines if a request result should be used to allow a data use or to
-// block it.
-bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
-                              ScanRequestUploadResult upload_result);
-
-
 // Returns the appropriate BinaryUploadService for the given `profile` and
 // `settings`. This can be a cloud or local service.
 BinaryUploadService* GetBinaryUploadServiceForConnector(
@@ -107,13 +96,6 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               content::WebContents* web_contents,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure);
-
-// Calculates the result for the request handler based on the upload result and
-// the analysis response.
-RequestHandlerResult CalculateRequestHandlerResult(
-    const AnalysisSettings& settings,
-    ScanRequestUploadResult upload_result,
-    const ContentAnalysisResponse& response);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Constants used to build the report of a data masking event.

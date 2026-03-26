@@ -59,18 +59,6 @@ using MatchedDetector = ::chrome::cros::reporting::proto::MatchedDetector;
 // URL chain limit for nested iFrames.
 constexpr int kMaxFrameUrls = 10;
 
-bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
-  switch (action) {
-    case TriggeredRule::ACTION_UNSPECIFIED:
-    case TriggeredRule::REPORT_ONLY:
-      return true;
-    case TriggeredRule::WARN:
-    case TriggeredRule::BLOCK:
-    case TriggeredRule::FORCE_SAVE_TO_CLOUD:
-      return false;
-  }
-}
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 std::string EventResultToString(
     extensions::api::enterprise_reporting_private::EventResult event_result) {
@@ -203,64 +191,6 @@ policy::BrowserPolicyConnector* GetBrowserPolicyConnector() {
                            : nullptr;
 }
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-RequestHandlerResult CalculateRequestHandlerResult(
-    const AnalysisSettings& settings,
-    ScanRequestUploadResult upload_result,
-    const ContentAnalysisResponse& response) {
-  std::string tag;
-  auto action = GetHighestPrecedenceAction(response, &tag);
-
-  bool file_complies = ResultShouldAllowDataUse(settings, upload_result) &&
-                       ContentAnalysisActionAllowsDataUse(action);
-
-  RequestHandlerResult result;
-  result.complies = file_complies;
-  result.request_token = response.request_token();
-  result.tag = tag;
-
-  if (file_complies) {
-    result.final_result = FinalContentAnalysisResult::SUCCESS;
-    return result;
-  }
-
-  // If file is non-compliant, map it to the specific case.
-  //
-  // We should check if the action is `WARN` or `BLOCK` before `FILE_TOO_LARGE`
-  // or `FILE_ENCRYPTED`, because the server could issue a `WARN` or `BLOCK`
-  // verdict based on the metadata of large or encrypted files.
-  if (ResultIsFailClosed(upload_result)) {
-    DVLOG(1) << __func__ << ": result mapped to fail-closed.";
-    result.final_result = FinalContentAnalysisResult::FAIL_CLOSED;
-  } else if (action == TriggeredRule::WARN) {
-    result.final_result = FinalContentAnalysisResult::WARNING;
-  } else if (action == TriggeredRule::BLOCK) {
-    result.final_result = FinalContentAnalysisResult::FAILURE;
-  } else if (upload_result == ScanRequestUploadResult::kFileTooLarge) {
-    result.final_result = FinalContentAnalysisResult::LARGE_FILES;
-  } else if (upload_result == ScanRequestUploadResult::kFileEncrypted) {
-    result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
-  } else {
-    result.final_result = FinalContentAnalysisResult::FAILURE;
-  }
-
-  for (const auto& response_result : response.results()) {
-    if (!response_result.has_status() ||
-        response_result.status() != ContentAnalysisResponse::Result::SUCCESS) {
-      continue;
-    }
-    for (const auto& rule : response_result.triggered_rules()) {
-      // Ensures that lower precedence actions custom messages are skipped. The
-      // message shown is arbitrary for rules with the same precedence.
-      if (rule.action() == action && rule.has_custom_rule_message()) {
-        result.custom_rule_message = rule.custom_rule_message();
-      }
-    }
-  }
-  return result;
-}
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-
 const char SavePackageScanningData::kKey[] =
     "enterprise_connectors.save_package_scanning_key";
 SavePackageScanningData::SavePackageScanningData(
@@ -346,51 +276,6 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-bool ResultIsFailClosed(ScanRequestUploadResult result) {
-  return result == ScanRequestUploadResult::kUploadFailure ||
-         result == ScanRequestUploadResult::kTimeout ||
-         result == ScanRequestUploadResult::kFailedToGetToken ||
-         result == ScanRequestUploadResult::kTooManyRequests ||
-         result == ScanRequestUploadResult::kUnknown ||
-         result == ScanRequestUploadResult::kIncompleteResponse;
-}
-
-bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
-                              ScanRequestUploadResult upload_result) {
-  bool default_action_allow_data_use =
-      settings.default_action == DefaultAction::kAllow;
-
-  // Keep this implemented as a switch instead of a simpler if statement so that
-  // new values added to ScanRequestUploadResult cause a compiler error.
-  switch (upload_result) {
-    case ScanRequestUploadResult::kSuccess:
-    // UNAUTHORIZED allows data usage since it's a result only obtained if the
-    // browser is not authorized to perform deep scanning. It does not make
-    // sense to block data in this situation since no actual scanning of the
-    // data was performed, so it's allowed.
-    case ScanRequestUploadResult::kUnauthorized:
-      return true;
-
-    case ScanRequestUploadResult::kUploadFailure:
-    case ScanRequestUploadResult::kTimeout:
-    case ScanRequestUploadResult::kFailedToGetToken:
-    case ScanRequestUploadResult::kTooManyRequests:
-    case ScanRequestUploadResult::kUnknown:
-    case ScanRequestUploadResult::kIncompleteResponse:
-      DVLOG(1) << __func__
-               << ": handled by fail-closed settings, "
-                  "default_action_allow_data_use="
-               << default_action_allow_data_use;
-      return default_action_allow_data_use;
-
-    case ScanRequestUploadResult::kFileTooLarge:
-      return !settings.block_large_files;
-
-    case ScanRequestUploadResult::kFileEncrypted:
-      return !settings.block_password_protected_files;
-  }
-}
 
 BinaryUploadService* GetBinaryUploadServiceForConnector(
     Profile* profile,

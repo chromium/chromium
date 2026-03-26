@@ -66,6 +66,23 @@ EventResult CalculateEventResult(const AnalysisSettings& settings,
                                  bool allowed_by_scan_result,
                                  bool should_warn);
 
+// Returns true if `result` as returned by BinaryUploadService is considered a
+// fail-closed result, regardless of attempting a cloud-based or a local-based
+// content analysis.
+bool ResultIsFailClosed(ScanRequestUploadResult result);
+
+// Determines if a request result should be used to allow a data use or to
+// block it.
+bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
+                              ScanRequestUploadResult upload_result);
+
+// Calculates the result for the request handler based on the upload result and
+// the analysis response.
+RequestHandlerResult CalculateRequestHandlerResult(
+    const AnalysisSettings& settings,
+    ScanRequestUploadResult upload_result,
+    const ContentAnalysisResponse& response);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_
