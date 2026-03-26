@@ -18,6 +18,7 @@
 
 namespace web_app {
 namespace {
+using testing::ElementsAre;
 
 using testing::IsEmpty;
 using testing::NotNull;
@@ -206,6 +207,36 @@ TEST_F(IwaPermissionsPolicyCacheTest,
 
   EXPECT_FALSE(cache()->ParseManifestAndSetPolicy(kOrigin, kManifest));
   EXPECT_THAT(cache()->GetPolicy(kOrigin), testing::IsNull());
+}
+
+TEST_F(IwaPermissionsPolicyCacheTest,
+       ParseManifestAndSetPolicy_UnknownFeature) {
+  const IwaOrigin kOrigin =
+      IwaOrigin::Create(
+          GURL("isolated-app://"
+               "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"))
+          .value();
+  const std::string kManifest = R"({
+    "permissions_policy": {
+      "unknown-feature": ["self"]
+    }
+  })";
+
+  EXPECT_TRUE(cache()->ParseManifestAndSetPolicy(kOrigin, kManifest));
+
+  const auto* policy = cache()->GetPolicy(kOrigin);
+  ASSERT_THAT(policy, NotNull());
+  EXPECT_THAT(*policy,
+              ElementsAre(IsolatedAppPermissionPolicyEntryIs(
+                  "unknown-feature", std::vector<std::string>({"'self'"}))));
+
+  auto warnings = cache()->GetWarningMessages(kOrigin);
+  ASSERT_EQ(warnings.size(), 1u);
+  EXPECT_EQ(warnings[0].source, blink::mojom::ConsoleMessageSource::kOther);
+  EXPECT_EQ(
+      warnings[0].message,
+      u"The 'permissions_policy' field in the manifest includes an unknown "
+      u"feature: 'unknown-feature'.");
 }
 
 }  // namespace web_app

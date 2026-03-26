@@ -56,12 +56,17 @@ class IwaPermissionsPolicyCache : public KeyedService,
     std::vector<std::string> allowed_origins;
   };
 
+  struct ManifestWarning {
+    blink::mojom::ConsoleMessageSource source;
+    std::string message;
+  };
+
   struct Policy {
     explicit Policy(
         const std::vector<Entry>& unfiltered = {},
         const std::vector<Entry>& filtered = {},
         std::optional<IwaVersion> app_version_for_filtering = std::nullopt,
-        std::vector<std::string> deprecation_warnings = {});
+        std::vector<ManifestWarning> manifest_warnings = {});
     Policy(const Policy&);
     Policy(Policy&&);
     Policy& operator=(const Policy&);
@@ -70,7 +75,7 @@ class IwaPermissionsPolicyCache : public KeyedService,
     std::vector<Entry> unfiltered;
     std::vector<Entry> filtered;
     std::optional<IwaVersion> app_version_for_filtering;
-    std::vector<std::string> deprecation_warnings;
+    std::vector<ManifestWarning> manifest_warnings;
   };
 
   explicit IwaPermissionsPolicyCache(WebAppProvider& provider);
@@ -102,13 +107,13 @@ class IwaPermissionsPolicyCache : public KeyedService,
   std::vector<content::ConsoleMessage> GetViolationWarningMessages(
       const IwaOrigin& iwa_origin) const;
 
-  std::vector<content::ConsoleMessage> GetDeprecationWarningMessages(
+  std::vector<content::ConsoleMessage> GetManifestWarningMessages(
       const IwaOrigin& iwa_origin) const;
 
   // Stores the policy for the given IWA origin and runs pending callbacks.
   void SetPolicy(const IwaOrigin& iwa_origin,
                  CacheEntry policy,
-                 std::vector<std::string> deprecation_warnings);
+                 std::vector<ManifestWarning> manifest_warnings);
 
   // Parses the manifest and stores the policy for the given IWA origin.
   // Returns true if the manifest was parsed successfully (even if the policy
@@ -161,6 +166,8 @@ class IwaPermissionsPolicyCache : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(
       IwaPermissionsPolicyCacheTest,
       ParseManifestAndSetPolicy_InvalidPolicyFormat_ItemNotString);
+  FRIEND_TEST_ALL_PREFIXES(IwaPermissionsPolicyCacheTest,
+                           ParseManifestAndSetPolicy_UnknownFeature);
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppThrottleTest,
                            WebAppProviderInitialized);
 

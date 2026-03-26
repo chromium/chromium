@@ -58,11 +58,11 @@ IwaPermissionsPolicyCache::Policy::Policy(
     const std::vector<Entry>& unfiltered,
     const std::vector<Entry>& filtered,
     std::optional<IwaVersion> app_version_for_filtering,
-    std::vector<std::string> deprecation_warnings)
+    std::vector<ManifestWarning> manifest_warnings)
     : unfiltered(unfiltered),
       filtered(filtered),
       app_version_for_filtering(std::move(app_version_for_filtering)),
-      deprecation_warnings(std::move(deprecation_warnings)) {}
+      manifest_warnings(std::move(manifest_warnings)) {}
 IwaPermissionsPolicyCache::Policy::Policy(const Policy&) = default;
 IwaPermissionsPolicyCache::Policy::Policy(Policy&&) = default;
 IwaPermissionsPolicyCache::Policy& IwaPermissionsPolicyCache::Policy::operator=(
@@ -127,24 +127,27 @@ std::optional<std::vector<std::string>> GetAllowedOrigins(
 }
 
 void AddDirectSocketsPrivatePermissionPolicyWarningMessage(
-    std::vector<std::string>& deprecation_warnings,
+    std::vector<IwaPermissionsPolicyCache::ManifestWarning>& manifest_warnings,
     network::mojom::PermissionsPolicyFeature feature) {
   std::string feature_name = GetPermissionsPolicyFeatureName(feature);
 
-  deprecation_warnings.emplace_back(base::StrCat(
-      {"The 'permissions_policy' field in the manifest includes "
-       "'direct-sockets-private' but is missing the required '",
-       feature_name, "' policy. While Chrome is automatically including '",
-       feature_name,
-       "' to maintain backward compatibility, this behavior is deprecated and "
-       "will be removed in Chrome 151. Please update your manifest to include "
-       "'",
-       feature_name, "' explicitly."}));
+  manifest_warnings.emplace_back(
+      blink::mojom::ConsoleMessageSource::kDeprecation,
+      base::StrCat({"The 'permissions_policy' field in the manifest includes "
+                    "'direct-sockets-private' but is missing the required '",
+                    feature_name,
+                    "' policy. While Chrome is automatically including '",
+                    feature_name,
+                    "' to maintain backward compatibility, this behavior is "
+                    "deprecated and will be removed in Chrome 151. Please "
+                    "update your manifest to include '",
+                    feature_name, "' explicitly."}));
 }
 
 std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
     const std::string& manifest_content,
-    std::vector<std::string>& deprecation_warnings) {
+    std::vector<IwaPermissionsPolicyCache::ManifestWarning>&
+        manifest_warnings) {
   // Yes, this parses untrusted data in the browser process. But it's Rust JSON
   // parser so it's alright.
   std::optional<base::Value> json_value =
@@ -168,8 +171,19 @@ std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
   const base::DictValue& permissions_policy_dict =
       permissions_policy_value->GetDict();
 
+  const auto& name_to_feature_map =
+      blink::GetPermissionsPolicyNameToFeatureMap();
+
   std::vector<IwaPermissionsPolicyCache::Entry> permissions_policy;
   for (const auto [key, val] : permissions_policy_dict) {
+    if (!name_to_feature_map.contains(key)) {
+      manifest_warnings.push_back(
+          {blink::mojom::ConsoleMessageSource::kOther,
+           base::StrCat({"The 'permissions_policy' field in the manifest "
+                         "includes an unknown feature: '",
+                         key, "'."})});
+    }
+
     if (!val.is_list()) {
       return std::nullopt;
     }
@@ -223,7 +237,7 @@ std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
               network::mojom::PermissionsPolicyFeature::kLocalNetwork)),
           *direct_sockets_private_origins);
       AddDirectSocketsPrivatePermissionPolicyWarningMessage(
-          deprecation_warnings,
+          manifest_warnings,
           network::mojom::PermissionsPolicyFeature::kLocalNetwork);
     }
     if (!GetAllowedOrigins(
@@ -234,7 +248,7 @@ std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
               network::mojom::PermissionsPolicyFeature::kLoopbackNetwork)),
           *direct_sockets_private_origins);
       AddDirectSocketsPrivatePermissionPolicyWarningMessage(
-          deprecation_warnings,
+          manifest_warnings,
           network::mojom::PermissionsPolicyFeature::kLoopbackNetwork);
     }
   }
@@ -385,21 +399,21 @@ IwaPermissionsPolicyCache::GetViolationWarningMessages(
 }
 
 std::vector<content::ConsoleMessage>
-IwaPermissionsPolicyCache::GetDeprecationWarningMessages(
+IwaPermissionsPolicyCache::GetManifestWarningMessages(
     const IwaOrigin& iwa_origin) const {
   const Policy* policy = base::FindOrNull(cache_, iwa_origin);
-  if (!policy || policy->deprecation_warnings.empty()) {
+  if (!policy || policy->manifest_warnings.empty()) {
     return {};
   }
 
   const GURL& url = iwa_origin.origin().GetURL();
   std::vector<content::ConsoleMessage> messages;
-  messages.reserve(policy->deprecation_warnings.size());
+  messages.reserve(policy->manifest_warnings.size());
 
-  for (const std::string& warning : policy->deprecation_warnings) {
-    messages.emplace_back(blink::mojom::ConsoleMessageSource::kDeprecation,
+  for (const auto& warning : policy->manifest_warnings) {
+    messages.emplace_back(warning.source,
                           blink::mojom::ConsoleMessageLevel::kWarning,
-                          base::UTF8ToUTF16(warning),
+                          base::UTF8ToUTF16(warning.message),
                           /*line_number=*/0, url);
   }
 
@@ -410,7 +424,7 @@ std::vector<content::ConsoleMessage>
 IwaPermissionsPolicyCache::GetWarningMessages(
     const IwaOrigin& iwa_origin) const {
   std::vector<content::ConsoleMessage> messages =
-      GetDeprecationWarningMessages(iwa_origin);
+      GetManifestWarningMessages(iwa_origin);
   std::vector<content::ConsoleMessage> violation_messages =
       GetViolationWarningMessages(iwa_origin);
 
@@ -505,24 +519,25 @@ void IwaPermissionsPolicyCache::OnManifestLoaded(
 void IwaPermissionsPolicyCache::SetPolicy(
     const IwaOrigin& iwa_origin,
     CacheEntry unfiltered_policy,
-    std::vector<std::string> deprecation_warnings) {
+    std::vector<ManifestWarning> manifest_warnings) {
+  CacheEntry filtered_policy = unfiltered_policy;
   UpdateFilteredPolicy(
-      iwa_origin, cache_[iwa_origin] =
-                      Policy{/*unfiltered=*/unfiltered_policy,
-                             /*filtered=*/std::move(unfiltered_policy),
-                             std::nullopt, std::move(deprecation_warnings)});
+      iwa_origin,
+      cache_[iwa_origin] = Policy{/*unfiltered=*/std::move(unfiltered_policy),
+                                  /*filtered=*/std::move(filtered_policy),
+                                  std::nullopt, std::move(manifest_warnings)});
 }
 
 bool IwaPermissionsPolicyCache::ParseManifestAndSetPolicy(
     const IwaOrigin& iwa_origin,
     const std::string& manifest_content) {
-  std::vector<std::string> deprecation_warnings;
+  std::vector<ManifestWarning> manifest_warnings;
   std::optional<CacheEntry> policy =
-      ParseManifest(manifest_content, deprecation_warnings);
+      ParseManifest(manifest_content, manifest_warnings);
   if (!policy) {
     return false;
   }
-  SetPolicy(iwa_origin, std::move(*policy), std::move(deprecation_warnings));
+  SetPolicy(iwa_origin, std::move(*policy), std::move(manifest_warnings));
   return true;
 }
 
