@@ -27,6 +27,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/accessibility_annotator/accessibility_query_service_factory.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
@@ -181,8 +183,6 @@
 #include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
 #else  // !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
@@ -1056,23 +1056,14 @@ void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
 
 bool ChromeAutofillClient::IsTabInActorMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
   if (base::FeatureList::IsEnabled(features::debug::kAutofillForceActorMode)) {
     return true;
   }
   return active_actor_task_.has_value();
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ActorKeyMetricsRecorder* ChromeAutofillClient::GetActorKeyMetricsRecorder() {
-#if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
   return actor_key_metrics_recorder_.get();
-#endif
 }
 
 bool ChromeAutofillClient::IsAutofillEnabled() const {
@@ -1257,8 +1248,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   save_update_address_profile_flow_manager_ =
       std::make_unique<SaveUpdateAddressProfileFlowManager>(
           this, GetAutofillMessageController());
-#else
-  // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
+#endif
+
   if (actor::ActorKeyedService* actor_service =
           base::FeatureList::IsEnabled(features::kAutofillActorMode)
               ? actor::ActorKeyedService::Get(GetProfile())
@@ -1274,7 +1265,6 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
 
   form_predictions_tracker_ = std::make_unique<FormPredictionsTracker>(this);
   actor_key_metrics_recorder_ = std::make_unique<ActorKeyMetricsRecorder>(this);
-#endif
 }
 
 Profile* ChromeAutofillClient::GetProfile() const {
@@ -1363,11 +1353,7 @@ OtpPhishGuardDelegate* ChromeAutofillClient::GetOtpPhishGuardDelegate() {
 }
 
 FormPredictionsTracker* ChromeAutofillClient::GetFormPredictionsTracker() {
-#if !BUILDFLAG(IS_ANDROID)
   return form_predictions_tracker_.get();
-#else
-  return nullptr;
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 one_time_tokens::OneTimeTokenService*
@@ -1504,7 +1490,6 @@ ToastController* ChromeAutofillClient::GetToastController() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
   const actor::TaskId task_id = task.id();
   const actor::ActorTask::State state = task.GetState();
@@ -1533,6 +1518,5 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
   // `actor::ActorTask::State::kCreated` state should enable the actor mode.
   active_actor_task_ = task_id;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

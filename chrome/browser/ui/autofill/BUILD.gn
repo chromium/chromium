@@ -69,6 +69,7 @@ source_set("autofill") {
     "//base",
     "//base:i18n",
     "//chrome/browser:global_features",
+    "//chrome/browser/actor",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
@@ -136,7 +137,6 @@ source_set("autofill") {
       "update_address_bubble_controller.h",
     ]
     public_deps += [
-      "//chrome/browser/actor",
       "//components/autofill/core/browser",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:password_form",
@@ -267,7 +267,6 @@ source_set("impl") {
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
       "//chrome/browser/apps/platform_apps",
-      "//chrome/browser/autofill/actor",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/feedback",
       "//chrome/browser/profiles:profile_util",

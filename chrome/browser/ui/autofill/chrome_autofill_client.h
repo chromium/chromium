@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
@@ -29,6 +30,7 @@
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/form_predictions_tracker.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
@@ -43,10 +45,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
-#else                                         // BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/actor_task.h"  // nogncheck
+#else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
-#include "components/autofill/core/browser/form_predictions_tracker.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class ToastController;
@@ -314,13 +314,10 @@ class ChromeAutofillClient : public ContentAutofillClient {
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Called when an actor task is created or an existing one changes state. It
   // may be called for actors unrelated to the current tab. If an update is
   // related to the current tab.
-  // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
   void OnActorTaskStateChange(actor::ActorTask& task);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   const raw_ptr<LogRouter> log_router_ =
       AutofillLogRouterFactory::GetForBrowserContext(
@@ -371,7 +368,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
   std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Removes the subscription when the `ChromeAutofillClient` is destroyed.
   base::CallbackListSubscription actor_task_state_changed_subscription_;
 
@@ -382,9 +378,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   std::optional<actor::TaskId> active_actor_task_;
 
   std::unique_ptr<FormPredictionsTracker> form_predictions_tracker_;
-
   std::unique_ptr<ActorKeyMetricsRecorder> actor_key_metrics_recorder_;
-#endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);
 
