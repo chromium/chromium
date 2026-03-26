@@ -419,8 +419,11 @@ bool PrerendererImpl::MaybePrerender(
                              SpeculationRulesTags(candidate->tags)),
       Referrer{*candidate->referrer}, no_vary_search_hint, &rfhi,
       web_contents->GetWeakPtr(),
-      candidate->form_submission ? ui::PAGE_TRANSITION_FORM_SUBMIT
-                                 : ui::PAGE_TRANSITION_LINK,
+      candidate->form_submission &&
+              candidate->target_browsing_context_name_hint !=
+                  blink::mojom::SpeculationTargetHint::kBlank
+          ? ui::PAGE_TRANSITION_FORM_SUBMIT
+          : ui::PAGE_TRANSITION_LINK,
       should_warm_up_compositor,
       /*should_prepare_paint_tree=*/false, candidate->action,
       /*url_match_predicate=*/{},

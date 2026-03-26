@@ -867,8 +867,20 @@ void PrerenderTestHelper::NavigatePrimaryPage(const GURL& url,
 }
 
 void PrerenderTestHelper::OpenNewWindowWithoutOpener(WebContents& web_contents,
-                                                     const GURL& url) {
-  std::string script = R"(window.open($1, "_blank", "noopener");)";
+                                                     const GURL& url,
+                                                     bool is_form_submission) {
+  std::string script;
+  if (is_form_submission) {
+    script = R"(const form = document.createElement('form');
+                form.action = $1;
+                form.method = 'GET';
+                form.target = '_blank';
+                form.setAttribute('rel', 'noopener');
+                document.body.appendChild(form);
+                form.submit();)";
+  } else {
+    script = R"(window.open($1, "_blank", "noopener");)";
+  }
   EXPECT_TRUE(ExecJs(&web_contents, JsReplace(script, url.spec())));
 }
 

@@ -17530,6 +17530,7 @@ class PrerenderFormSubmissionOriginTrialBrowserTest
   // not.
   void RunFormSubmissionHintTest(bool first_attempt_form_field,
                                  std::optional<bool> second_attempt_form_field,
+                                 std::string target_hint,
                                  bool navigate_as_form_submission,
                                  bool should_activate) {
     // The URL that was used to register the Origin Trial token.
@@ -17571,12 +17572,12 @@ class PrerenderFormSubmissionOriginTrialBrowserTest
 
     // Start prerendering `prerender_url` with `form_submission` =
     // `first_attempt_form_field`.
-    prerender_helper()->AddPrerender(prerender_url, /*eagerness=*/std::nullopt,
-                                     /*no_vary_search_hint=*/std::nullopt,
-                                     /*target_hint=*/std::string(),
-                                     /*ruleset_tag=*/std::nullopt,
-                                     /*world_id=*/ISOLATED_WORLD_ID_GLOBAL,
-                                     first_attempt_form_field);
+    PrerenderHostId host_id = prerender_helper()->AddPrerender(
+        prerender_url, /*eagerness=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
+        /*target_hint=*/target_hint,
+        /*ruleset_tag=*/std::nullopt,
+        /*world_id=*/ISOLATED_WORLD_ID_GLOBAL, first_attempt_form_field);
 
     if (second_attempt_form_field.has_value()) {
       // Start prerendering `prerender_url` with `form_submission` =
@@ -17584,31 +17585,40 @@ class PrerenderFormSubmissionOriginTrialBrowserTest
       prerender_helper()->AddPrerender(prerender_url,
                                        /*eagerness=*/std::nullopt,
                                        /*no_vary_search_hint=*/std::nullopt,
-                                       /*target_hint=*/std::string(),
+                                       /*target_hint=*/target_hint,
                                        /*ruleset_tag=*/std::nullopt,
                                        /*world_id=*/ISOLATED_WORLD_ID_GLOBAL,
                                        second_attempt_form_field.value());
     }
 
-    // Start to navigate to prerender_url.
-    test::PrerenderTestHelper::NavigatePrimaryPage(
-        *web_contents_impl(), prerender_url,
-        navigate_as_form_submission ? ui::PAGE_TRANSITION_FORM_SUBMIT
-                                    : ui::PAGE_TRANSITION_LINK);
-    if (should_activate) {
-      // Ensure the state has been propagated to renderer processes.
-      ASSERT_EQ(false, EvalJs(web_contents(), "document.prerendering"));
+    auto* prerender_web_contents =
+        test::PrerenderTestHelper::GetPrerenderWebContents(host_id);
+    EXPECT_TRUE(prerender_web_contents);
+    test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                   host_id);
 
-      // The prerender host should be consumed.
-      EXPECT_FALSE(HasHostForUrl(prerender_url));
-      ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
-      ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerender_url);
+    if (target_hint == "_blank") {
+      TestNavigationObserver observer(prerender_web_contents);
+      EXPECT_NE(prerender_web_contents, web_contents_impl());
+      test::PrerenderTestHelper::OpenNewWindowWithoutOpener(
+          *web_contents_impl(), prerender_url, navigate_as_form_submission);
+      observer.WaitForNavigationFinished();
+      EXPECT_EQ(observer.last_navigation_url(), prerender_url);
+    } else {
+      test::PrerenderTestHelper::NavigatePrimaryPage(
+          *web_contents_impl(), prerender_url,
+          navigate_as_form_submission ? ui::PAGE_TRANSITION_FORM_SUBMIT
+                                      : ui::PAGE_TRANSITION_LINK);
+    }
+
+    if (should_activate) {
+      EXPECT_TRUE(prerender_observer.was_activated());
     } else {
       // The prerender host should be destroyed for parameter mismatch.
       EXPECT_FALSE(HasHostForUrl(prerender_url));
       ExpectFinalStatusForSpeculationRule(
           PrerenderFinalStatus::kActivationNavigationParameterMismatch);
-      ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerender_url);
+      ASSERT_EQ(prerender_web_contents->GetLastCommittedURL(), prerender_url);
     }
 
     // If a second prerender attempt is tried, it is expected to be treated as
@@ -17686,6 +17696,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
                        FormSubmissionHint_ActivationSuccessful) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
                             /*second_attempt_form_field=*/std::nullopt,
+                            /*target_hint=*/std::string(),
                             /*navigate_as_form_submission=*/true,
                             /*should_activate=*/true);
 }
@@ -17695,6 +17706,7 @@ IN_PROC_BROWSER_TEST_F(
     FormSubmissionHint_FirstWin_TrueThenFalse_ActivationSuccesful) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
                             /*second_attempt_form_field=*/false,
+                            /*target_hint=*/std::string(),
                             /*navigate_as_form_submission=*/true,
                             /*should_activate=*/true);
 }
@@ -17704,6 +17716,7 @@ IN_PROC_BROWSER_TEST_F(
     FormSubmissionHint_FirstWin_FalseThenTrue_ActivationSuccesful) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/false,
                             /*second_attempt_form_field=*/true,
+                            /*target_hint=*/std::string(),
                             /*navigate_as_form_submission=*/false,
                             /*should_activate=*/true);
 }
@@ -17715,6 +17728,7 @@ IN_PROC_BROWSER_TEST_F(
     FormSubmissionHint_FirstWin_TrueThenFalse_FailWithMismatch) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
                             /*second_attempt_form_field=*/false,
+                            /*target_hint=*/std::string(),
                             /*navigate_as_form_submission=*/false,
                             /*should_activate=*/false);
 }
@@ -17726,7 +17740,26 @@ IN_PROC_BROWSER_TEST_F(
     FormSubmissionHint_FirstWin_FalseThenTrue_FailWithMismatch) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/false,
                             /*second_attempt_form_field=*/true,
+                            /*target_hint=*/std::string(),
                             /*navigate_as_form_submission=*/true,
+                            /*should_activate=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
+                       FormSubmissionHintBlankTargetHint_ActivationSuccessful) {
+  RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
+                            /*second_attempt_form_field=*/std::nullopt,
+                            /*target_hint=*/"_blank",
+                            /*navigate_as_form_submission=*/true,
+                            /*should_activate=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
+                       FormSubmissionHintBlankTargetHint_FailWithMismatch) {
+  RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
+                            /*second_attempt_form_field=*/std::nullopt,
+                            /*target_hint=*/"_blank",
+                            /*navigate_as_form_submission=*/false,
                             /*should_activate=*/false);
 }
 

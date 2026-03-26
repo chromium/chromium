@@ -278,7 +278,8 @@ class PrerenderTestHelper {
   // This is intended for activating a prerendered page initiated for a new
   // window.
   static void OpenNewWindowWithoutOpener(WebContents& web_contents,
-                                         const GURL& url);
+                                         const GURL& url,
+                                         bool is_form_submission = false);
 
   // Confirms that, internally, appropriate subframes report that they are
   // prerendering (and that each frame tree type is kPrerender).

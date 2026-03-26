@@ -1320,12 +1320,17 @@ PrerenderHostRegistry::TakePreCreatedWebContentsForNewTabIfExists(
   // Don't serve a prerendered page if the window needs the opener or is created
   // for non-regular navigations.
   if (!create_new_window_params.opener_suppressed ||
-      create_new_window_params.is_form_submission ||
       create_new_window_params.pip_options) {
     return nullptr;
   }
 
   for (auto& iter : prerender_new_tab_handle_by_id_) {
+    // Skip those PrerenderHosts that are not for form submission if the window
+    // is created by form submission.
+    if (create_new_window_params.is_form_submission &&
+        !iter.second->form_submission()) {
+      continue;
+    }
     std::unique_ptr<WebContentsImpl> web_contents =
         iter.second->TakeWebContentsIfAvailable(create_new_window_params,
                                                 web_contents_create_params);
