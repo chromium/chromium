@@ -255,6 +255,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // file status is updated from backend. Ghost files will be
   // shown as image chip with spinner in file carousel.
   accessor shouldShowGhostFiles: boolean = false;
+  accessor submitButtonIconType: SubmitButtonIconType =
+      SubmitButtonIconType.UPWARD;
   protected isRtl_: boolean = document.documentElement.dir === 'rtl';
 
   protected composeboxNoFlickerSuggestionsFix_: boolean =
@@ -294,19 +296,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.valueExists('queryZpsOnLoad') :
       true;
   private browserProxy: ComposeboxProxyImpl = ComposeboxProxyImpl.getInstance();
-  accessor submitButtonIconType: SubmitButtonIconType =
-      SubmitButtonIconType.UPWARD;
-
-  get submitButtonIconClass_(): string {
-    switch (this.submitButtonIconType) {
-      case SubmitButtonIconType.FORWARD:
-        return 'icon-arrow-forward';
-      case SubmitButtonIconType.UPWARD:
-        return 'icon-arrow-upward';
-      default:
-        assertNotReachedCase(this.submitButtonIconType);
-    }
-  }
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -357,6 +346,17 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   protected get shouldShowSubmitButton_(): boolean {
     return this.searchboxNextEnabled && this.submitEnabled;
+  }
+
+  protected submitButtonIconClass_(): string {
+    switch (this.submitButtonIconType) {
+      case SubmitButtonIconType.FORWARD:
+        return 'icon-arrow-forward';
+      case SubmitButtonIconType.UPWARD:
+        return 'icon-arrow-upward';
+      default:
+        assertNotReachedCase(this.submitButtonIconType);
+    }
   }
 
   constructor() {
