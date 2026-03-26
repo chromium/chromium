@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/web_state.h"
 
 @interface AssistantAIMCoordinator () <AssistantAIMViewControllerDelegate,
@@ -40,6 +41,7 @@
 
 
 - (void)start {
+  CHECK(IsAimCobrowseEnabled());
   if (self.browser->GetProfile()->IsOffTheRecord()) {
     return;
   }
