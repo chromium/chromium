@@ -6,9 +6,9 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #import=//resources/cr_elements/cr_page_host_style_lit.css.js
- * #import=./certificate_manager_style_lit.css.js
+ * #import=./certificate_manager_style.css.js
  * #scheme=relative
- * #include=cr-shared-style-lit cr-page-host-style-lit certificate-manager-style-lit
+ * #include=cr-shared-style-lit cr-page-host-style-lit certificate-manager-style
  * #css_wrapper_metadata_end */
 
 #importOsCerts {

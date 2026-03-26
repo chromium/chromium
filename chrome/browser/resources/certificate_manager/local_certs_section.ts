@@ -14,7 +14,9 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
+// <if expr="not is_chromeos">
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
+// </if>
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';

@@ -53,7 +53,7 @@ build_webui("build") {
     "certificate_entry.css",
     "certificate_list.css",
     "certificate_manager.css",
-    "certificate_manager_style_lit.css",
+    "certificate_manager_style.css",
     "certificate_subpage.css",
     "local_certs_section.css",
   ]
@@ -63,7 +63,7 @@ build_webui("build") {
       "certificate_provisioning_details_dialog.css",
       "certificate_provisioning_entry.css",
       "certificate_provisioning_list.css",
-      "certificate_shared_lit.css",
+      "certificate_shared.css",
     ]
     ts_files += [
       "certificate_manager_types.ts",
@@ -84,7 +84,6 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

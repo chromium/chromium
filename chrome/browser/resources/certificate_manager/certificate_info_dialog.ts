@@ -38,8 +38,8 @@ export class CertificateInfoDialogElement extends CrLitElement {
     };
   }
 
-  accessor dialogTitle: string;
-  accessor dialogMessage: string;
+  accessor dialogTitle: string = '';
+  accessor dialogMessage: string = '';
 
   protected onOkClick_() {
     this.$.dialog.close();

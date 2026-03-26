@@ -6,8 +6,8 @@
  * #type=style-lit
  * #scheme=relative
  * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #import=./certificate_shared_lit.css.js
- * #include=certificate-shared-lit
+ * #import=./certificate_shared.css.js
+ * #include=certificate-shared
  * #css_wrapper_metadata_end */
 
 .cert-box {

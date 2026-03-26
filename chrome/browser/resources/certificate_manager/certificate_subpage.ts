@@ -33,7 +33,7 @@ export interface CertificateSubpageElement {
   };
 }
 
-export class SubpageCertificateList {
+export interface SubpageCertificateList {
   headerText: string;
   certSource: CertificateSource;
   certMetadataEditable?: boolean;

@@ -9,9 +9,9 @@
  * #import=//resources/cr_elements/cr_nav_menu_item_style_lit.css.js
  * #import=//resources/cr_elements/cr_scrollable_lit.css.js
  * #import=//resources/cr_elements/cr_page_host_style_lit.css.js
- * #import=./certificate_manager_style_lit.css.js
+ * #import=./certificate_manager_style.css.js
  * #scheme=relative
- * #include=cr-page-host-style-lit cr-shared-style-lit cr-nav-menu-item-style-lit cr-scrollable-lit certificate-manager-style-lit
+ * #include=cr-page-host-style-lit cr-shared-style-lit cr-nav-menu-item-style-lit cr-scrollable-lit certificate-manager-style
  * #css_wrapper_metadata_end */
 
 :host {

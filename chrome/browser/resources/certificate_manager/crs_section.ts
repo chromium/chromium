@@ -15,7 +15,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CertificateListElement} from './certificate_list.js';
-import {getCss as getCertificateManagerStyleCss} from './certificate_manager_style_lit.css.js';
+import {getCss as getCertificateManagerStyleCss} from './certificate_manager_style.css.js';
 import {getHtml} from './crs_section.html.js';
 
 export interface CrsSectionElement {

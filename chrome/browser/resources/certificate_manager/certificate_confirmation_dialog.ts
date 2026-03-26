@@ -41,8 +41,8 @@ export class CertificateConfirmationDialogElement extends CrLitElement {
     };
   }
 
-  accessor dialogTitle: string;
-  accessor dialogMessage: string;
+  accessor dialogTitle: string = '';
+  accessor dialogMessage: string = '';
 
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
