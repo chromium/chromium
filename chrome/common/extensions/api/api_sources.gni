@@ -106,7 +106,7 @@ if (enable_extensions) {
     schema_sources_ += [
       "accessibility_private.json",
       "accessibility_service_private.webidl",
-      "certificate_provider.idl",
+      "certificate_provider.webidl",
       "certificate_provider_internal.idl",
       "document_scan.idl",
       "echo_private.json",

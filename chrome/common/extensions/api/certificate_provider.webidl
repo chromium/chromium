@@ -1,0 +1,334 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Types of supported cryptographic signature algorithms.
+enum Algorithm {
+  // Specifies the RSASSA PKCS#1 v1.5 signature algorithm with the MD5-SHA-1
+  // hashing. The extension must not prepend a DigestInfo prefix but only
+  // add PKCS#1 padding. This algorithm is deprecated and will never be
+  // requested  by Chrome as of version 109.
+  "RSASSA_PKCS1_v1_5_MD5_SHA1",
+  // Specifies the RSASSA PKCS#1 v1.5 signature algorithm
+  // with the SHA-1 hash function.
+  "RSASSA_PKCS1_v1_5_SHA1",
+  // Specifies the RSASSA PKCS#1 v1.5 signature algorithm
+  // with the SHA-256 hashing function.
+  "RSASSA_PKCS1_v1_5_SHA256",
+  // Specifies the RSASSA PKCS#1 v1.5 signature algorithm
+  // with the SHA-384 hashing function.
+  "RSASSA_PKCS1_v1_5_SHA384",
+  // Specifies the RSASSA PKCS#1 v1.5 signature algorithm
+  // with the SHA-512 hashing function.
+  "RSASSA_PKCS1_v1_5_SHA512",
+  // Specifies the RSASSA PSS signature algorithm with the SHA-256 hashing
+  // function, MGF1 mask generation function and the salt of the same size as
+  // the hash.
+  "RSASSA_PSS_SHA256",
+  // Specifies the RSASSA PSS signature algorithm with the SHA-384 hashing
+  // function, MGF1 mask generation function and the salt of the same size as
+  // the hash.
+  "RSASSA_PSS_SHA384",
+  // Specifies the RSASSA PSS signature algorithm with the SHA-512 hashing
+  // function, MGF1 mask generation function and the salt of the same size as
+  // the hash.
+  "RSASSA_PSS_SHA512"
+};
+
+// Types of errors that the extension can report.
+enum Error {
+  // General error that cannot be represented by other more specific
+  // error codes.
+  "GENERAL_ERROR"
+};
+
+// Information about a client certificate.
+dictionary ClientCertificateInfo {
+  // The array must contain the DER encoding of the X.509 client certificate
+  // as its first element.
+  // <p>This must include exactly one certificate.</p>
+  required sequence<ArrayBuffer> certificateChain;
+  // All algorithms supported for this certificate. The extension will only be
+  // asked for signatures using one of these algorithms.
+  required sequence<Algorithm> supportedAlgorithms;
+};
+
+dictionary SetCertificatesDetails {
+  // When called in response to $(ref:onCertificatesUpdateRequested), should
+  // contain the received <code>certificatesRequestId</code> value. Otherwise,
+  // should be unset.
+  long certificatesRequestId;
+  // Error that occurred while extracting the certificates, if any. This error
+  // will be surfaced to the user when appropriate.
+  Error error;
+  // List of currently available client certificates.
+  required sequence<ClientCertificateInfo> clientCertificates;
+};
+
+dictionary CertificatesUpdateRequest {
+  // Request identifier to be passed to $(ref:setCertificates).
+  required long certificatesRequestId;
+};
+
+dictionary SignatureRequest {
+  // Request identifier to be passed to $(ref:reportSignature).
+  required long signRequestId;
+  // Data to be signed. Note that the data is not hashed.
+  required ArrayBuffer input;
+  // Signature algorithm to be used.
+  required Algorithm algorithm;
+  // The DER encoding of a X.509 certificate. The extension must sign
+  // <code>input</code> using the associated private key.
+  required ArrayBuffer certificate;
+};
+
+dictionary ReportSignatureDetails {
+  // Request identifier that was received via the $(ref:onSignatureRequested)
+  // event.
+  required long signRequestId;
+  // Error that occurred while generating the signature, if any.
+  Error error;
+  // The signature, if successfully generated.
+  ArrayBuffer signature;
+};
+
+// Deprecated. Replaced by $(ref:Algorithm).
+enum Hash {
+  // Specifies the MD5 and SHA1 hashing algorithms.
+  "MD5_SHA1",
+  // Specifies the SHA1 hashing algorithm.
+  "SHA1",
+  // Specifies the SHA256 hashing algorithm.
+  "SHA256",
+  // Specifies the SHA384 hashing algorithm.
+  "SHA384",
+  // Specifies the SHA512 hashing algorithm.
+  "SHA512"
+};
+
+// The type of code being requested by the extension with requestPin function.
+enum PinRequestType {
+  // Specifies the requested code is a PIN.
+  "PIN",
+  // Specifies the requested code is a PUK.
+  "PUK"
+};
+
+// The types of errors that can be presented to the user through the
+// requestPin function.
+enum PinRequestErrorType {
+  // Specifies the PIN is invalid.
+  "INVALID_PIN",
+  // Specifies the PUK is invalid.
+  "INVALID_PUK",
+  // Specifies the maximum attempt number has been exceeded.
+  "MAX_ATTEMPTS_EXCEEDED",
+  // Specifies that the error cannot be represented by the above types.
+  "UNKNOWN_ERROR"
+};
+
+// Deprecated. Replaced by $(ref:ClientCertificateInfo).
+dictionary CertificateInfo {
+  // Must be the DER encoding of a X.509 certificate. Currently, only
+  // certificates of RSA keys are supported.
+  required ArrayBuffer certificate;
+
+  // Must be set to all hashes supported for this certificate. This extension
+  // will only be asked for signatures of digests calculated with one of these
+  // hash algorithms. This should be in order of decreasing hash preference.
+  required sequence<Hash> supportedHashes;
+};
+
+// Deprecated. Replaced by $(ref:SignatureRequest).
+dictionary SignRequest {
+  // The unique ID to be used by the extension should it need to call a method
+  // that requires it, e.g. requestPin.
+  required long signRequestId;
+
+  // The digest that must be signed.
+  required ArrayBuffer digest;
+
+  // Refers to the hash algorithm that was used to create <code>digest</code>.
+  required Hash hash;
+
+  // The DER encoding of a X.509 certificate. The extension must sign
+  // <code>digest</code> using the associated private key.
+  required ArrayBuffer certificate;
+};
+
+dictionary RequestPinDetails {
+  // The ID given by Chrome in SignRequest.
+  required long signRequestId;
+
+  // The type of code requested. Default is PIN.
+  PinRequestType requestType;
+
+  // The error template displayed to the user. This should be set if the
+  // previous request failed, to notify the user of the failure reason.
+  PinRequestErrorType errorType;
+
+  // The number of attempts left. This is provided so that any UI can present
+  // this information to the user. Chrome is not expected to enforce this,
+  // instead stopPinRequest should be called by the extension with
+  // errorType = MAX_ATTEMPTS_EXCEEDED when the number of pin requests is
+  // exceeded.
+  long attemptsLeft;
+};
+
+dictionary StopPinRequestDetails {
+  // The ID given by Chrome in SignRequest.
+  required long signRequestId;
+
+  // The error template. If present it is displayed to user. Intended to
+  // contain the reason for stopping the flow if it was caused by an error,
+  // e.g. MAX_ATTEMPTS_EXCEEDED.
+  PinRequestErrorType errorType;
+};
+
+dictionary PinResponseDetails {
+  // The code provided by the user. Empty if user closed the dialog or some
+  // other error occurred.
+  DOMString userInput;
+};
+
+// The callback provided by the extension that Chrome uses to report back
+// rejected certificates. See <code>CertificatesCallback</code>.
+callback ResultCallback =
+    undefined (sequence<ArrayBuffer> rejectedCertificates);
+
+// Call this exactly once with the list of certificates that this extension is
+// providing. The list must only contain certificates for which the extension
+// can sign data using the associated private key. If the list contains
+// invalid certificates, these will be ignored. All valid certificates are
+// still registered for the extension. Chrome will call back with the list of
+// rejected certificates, which might be empty.
+callback CertificatesCallback =
+    undefined (sequence<CertificateInfo> certificates, ResultCallback callback);
+
+// If no error occurred, this function must be called with the signature of
+// the digest using the private key of the requested certificate.
+// For an RSA key, the signature must be a PKCS#1 signature. The extension
+// is responsible for prepending the DigestInfo prefix and adding PKCS#1
+// padding. If an error occurred, this callback should be called without
+// signature.
+callback SignCallback = undefined (optional ArrayBuffer signature);
+
+// Listener callback for the onCertificatesUpdateRequested event.
+callback OnCertificatesUpdateRequestedListener =
+    undefined (CertificatesUpdateRequest request);
+
+interface OnCertificatesUpdateRequestedEvent : ExtensionEvent {
+  static undefined addListener(OnCertificatesUpdateRequestedListener listener);
+  static undefined removeListener(
+      OnCertificatesUpdateRequestedListener listener);
+  static boolean hasListener(OnCertificatesUpdateRequestedListener listener);
+};
+
+// Listener callback for the onSignatureRequested event.
+callback OnSignatureRequestedListener = undefined (SignatureRequest request);
+
+interface OnSignatureRequestedEvent : ExtensionEvent {
+  static undefined addListener(OnSignatureRequestedListener listener);
+  static undefined removeListener(OnSignatureRequestedListener listener);
+  static boolean hasListener(OnSignatureRequestedListener listener);
+};
+
+// Listener callback for the onCertificatesRequested event.
+callback OnCertificatesRequestedListener =
+    undefined (CertificatesCallback reportCallback);
+
+interface OnCertificatesRequestedEvent : ExtensionEvent {
+  static undefined addListener(OnCertificatesRequestedListener listener);
+  static undefined removeListener(OnCertificatesRequestedListener listener);
+  static boolean hasListener(OnCertificatesRequestedListener listener);
+};
+
+// Listener callback for the onSignDigestRequested event.
+// |request|: Contains the details about the sign request.
+callback OnSignDigestRequestedListener =
+    undefined (SignRequest request, SignCallback reportCallback);
+
+interface OnSignDigestRequestedEvent : ExtensionEvent {
+  static undefined addListener(OnSignDigestRequestedListener listener);
+  static undefined removeListener(OnSignDigestRequestedListener listener);
+  static boolean hasListener(OnSignDigestRequestedListener listener);
+};
+
+// Use this API to expose certificates to the platform which can use these
+// certificates for TLS authentications.
+interface CertificateProvider {
+  // Requests the PIN from the user. Only one ongoing request at a time is
+  // allowed. The requests issued while another flow is ongoing are rejected.
+  // It's the extension's responsibility to try again later if another flow is
+  // in progress.
+  // |details|: Contains the details about the requested dialog.
+  // |Returns|: Returns a Promise which resolves when the PIN is provided by
+  // the user. Rejects with an error if the dialog request finishes
+  // unsuccessfully (e.g. the dialog was canceled by the user or was not
+  // allowed to be shown).
+  // |PromiseValue|: details
+  [requiredCallback] static Promise<PinResponseDetails?> requestPin(
+      RequestPinDetails details);
+
+  // Stops the pin request started by the $(ref:requestPin) function.
+  // |details|: Contains the details about the reason for stopping the
+  // request flow.
+  // |Returns|: Returns a Promise which resolves when the request to close
+  //   the PIN dialog is complete.
+  [requiredCallback] static Promise<undefined> stopPinRequest(
+      StopPinRequestDetails details);
+
+  // Sets a list of certificates to use in the browser.
+  // <p>The extension should call this function after initialization and on
+  // every change in the set of currently available certificates. The
+  // extension should also call this function in response to
+  // $(ref:onCertificatesUpdateRequested) every time this event is
+  // received.</p>
+  // |details|: The certificates to set. Invalid certificates will be ignored.
+  // |Returns|: Returns a Promise which resolves upon completion.
+  static Promise<undefined> setCertificates(
+      SetCertificatesDetails details);
+
+  // Should be called as a response to $(ref:onSignatureRequested).
+  // <p>The extension must eventually call this function for every
+  // $(ref:onSignatureRequested) event; the API implementation will stop
+  // waiting for this call after some time and respond with a timeout
+  // error when this function is called.</p>
+  static Promise<undefined> reportSignature(
+      ReportSignatureDetails details);
+
+  // This event fires if the certificates set via $(ref:setCertificates)
+  // are insufficient or the browser requests updated information. The
+  // extension must call $(ref:setCertificates) with the updated list of
+  // certificates and the received <code>certificatesRequestId</code>.
+  static attribute OnCertificatesUpdateRequestedEvent
+      onCertificatesUpdateRequested;
+
+  // This event fires every time the browser needs to sign a message using a
+  // certificate provided by this extension via $(ref:setCertificates).
+  // <p>The extension must sign the input data from <code>request</code> using
+  // the appropriate algorithm and private key and return it by calling
+  // $(ref:reportSignature) with the received <code>signRequestId</code>.</p>
+  static attribute OnSignatureRequestedEvent onSignatureRequested;
+
+  // <p>This event fires every time the browser requests the current list of
+  // certificates provided by this extension. The extension must call
+  // <code>reportCallback</code> exactly once with the current list of
+  // certificates.</p>
+  [deprecated="Use $(ref:onCertificatesUpdateRequested) instead."]
+  static attribute OnCertificatesRequestedEvent onCertificatesRequested;
+
+  // This event fires every time the browser needs to sign a message using
+  // a certificate provided by this extension in reply to an
+  // $(ref:onCertificatesRequested) event.
+  // The extension must sign the data in <code>request</code> using the
+  // appropriate algorithm and private key and return it by calling
+  // <code>reportCallback</code>. <code>reportCallback</code> must be called
+  // exactly once.
+  [deprecated="Use $(ref:onSignatureRequested) instead."]
+  static attribute OnSignDigestRequestedEvent onSignDigestRequested;
+};
+
+partial interface Browser {
+  static attribute CertificateProvider certificateProvider;
+};
