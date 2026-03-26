@@ -9,10 +9,13 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
 #include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/common/chrome_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -101,6 +104,46 @@ TEST_F(GlicPanelHotkeyDelegateTest,
   EXPECT_FALSE(
       delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kFocusToggle));
   EXPECT_EQ(0, user_action_tester_.GetActionCount("Glic.FocusHotKey"));
+}
+
+TEST_F(GlicPanelHotkeyDelegateTest, AcceleratorPressedZoomIn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicClientZoomControl);
+
+  EXPECT_CALL(*mock_panel_, Zoom(mojom::ZoomAction::kZoomIn)).Times(1);
+  EXPECT_TRUE(
+      delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kZoomIn));
+}
+
+TEST_F(GlicPanelHotkeyDelegateTest, AcceleratorPressedZoomOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicClientZoomControl);
+
+  EXPECT_CALL(*mock_panel_, Zoom(mojom::ZoomAction::kZoomOut)).Times(1);
+  EXPECT_TRUE(
+      delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kZoomOut));
+}
+
+TEST_F(GlicPanelHotkeyDelegateTest, AcceleratorPressedZoomReset) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicClientZoomControl);
+
+  EXPECT_CALL(*mock_panel_, Zoom(mojom::ZoomAction::kReset)).Times(1);
+  EXPECT_TRUE(
+      delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kZoomReset));
+}
+
+TEST_F(GlicPanelHotkeyDelegateTest, ZoomDisabledByFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicClientZoomControl);
+
+  EXPECT_CALL(*mock_panel_, Zoom(testing::_)).Times(0);
+  EXPECT_FALSE(
+      delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kZoomIn));
+  EXPECT_FALSE(
+      delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kZoomOut));
+  EXPECT_FALSE(
+      delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kZoomReset));
 }
 
 #if BUILDFLAG(IS_WIN)
