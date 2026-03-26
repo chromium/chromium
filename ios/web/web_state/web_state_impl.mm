@@ -660,6 +660,20 @@ void WebStateImpl::Stop() {
   RealizedState()->Stop();
 }
 
+std::optional<std::string> WebStateImpl::GetUserAgentOverride() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pimpl_) [[likely]] {
+    return pimpl_->GetUserAgentOverride();
+  }
+  return std::nullopt;
+}
+
+void WebStateImpl::SetUserAgentOverride(
+    std::optional<std::string> ua_override) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RealizedState()->SetUserAgentOverride(std::move(ua_override));
+}
+
 const NavigationManager* WebStateImpl::GetNavigationManager() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {

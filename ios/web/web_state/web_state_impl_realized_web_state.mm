@@ -46,6 +46,7 @@
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 #import "ios/web/webui/web_ui_ios_impl.h"
+#import "net/http/http_util.h"
 #import "url/gurl.h"
 #import "url/url_constants.h"
 
@@ -695,6 +696,19 @@ void WebStateImpl::RealizedWebState::OpenURL(
 
 void WebStateImpl::RealizedWebState::Stop() {
   [web_controller_ stopLoading];
+}
+
+std::optional<std::string>
+WebStateImpl::RealizedWebState::GetUserAgentOverride() const {
+  return user_agent_override_;
+}
+
+void WebStateImpl::RealizedWebState::SetUserAgentOverride(
+    std::optional<std::string> ua_override) {
+  if (ua_override && !net::HttpUtil::IsValidHeaderValue(*ua_override)) {
+    return;
+  }
+  user_agent_override_ = std::move(ua_override);
 }
 
 void WebStateImpl::RealizedWebState::LoadData(NSData* data,

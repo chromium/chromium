@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/contextual_tasks/public/features.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -37,6 +39,9 @@ const CGFloat kSheetDetentAnimationDuration = 0.3;
   self = [super init];
   if (self) {
     _webState = std::move(webState);
+    _webState->SetUserAgentOverride(
+        web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE) + " " +
+        contextual_tasks::GetContextualTasksUserAgentSuffix());
     _context = context;
     _containerHandler = containerHandler;
   }

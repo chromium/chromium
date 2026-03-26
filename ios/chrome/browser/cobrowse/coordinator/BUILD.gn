@@ -10,6 +10,7 @@ source_set("coordinator") {
     "assistant_aim_mediator.mm",
   ]
   deps = [
+    "//components/contextual_tasks/public:feature_list",
     "//ios/chrome/browser/assistant/coordinator:commands",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/cobrowse/model",

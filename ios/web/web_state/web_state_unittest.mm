@@ -310,6 +310,41 @@ TEST_F(WebStateTest, SetHasOpener) {
   EXPECT_TRUE(web_state()->HasOpener());
 }
 
+// Tests that setting and getting user agent override works.
+TEST_F(WebStateTest, UserAgentOverride) {
+  EXPECT_FALSE(web_state()->GetUserAgentOverride().has_value());
+  std::string ua_override = "Fake UA String";
+  web_state()->SetUserAgentOverride(ua_override);
+  EXPECT_EQ(ua_override, web_state()->GetUserAgentOverride().value());
+
+  web_state()->SetUserAgentOverride(std::nullopt);
+  EXPECT_FALSE(web_state()->GetUserAgentOverride().has_value());
+
+  // An explicit empty string is treated as an empty override.
+  web_state()->SetUserAgentOverride("");
+  EXPECT_TRUE(web_state()->GetUserAgentOverride().has_value());
+  EXPECT_EQ("", web_state()->GetUserAgentOverride().value());
+}
+
+// Tests that setting an invalid user agent override is ignored.
+TEST_F(WebStateTest, UserAgentOverrideValidation) {
+  EXPECT_FALSE(web_state()->GetUserAgentOverride().has_value());
+
+  // String with a newline is an invalid header value.
+  std::string invalid_ua = "Fake\nUA";
+  web_state()->SetUserAgentOverride(invalid_ua);
+  EXPECT_FALSE(web_state()->GetUserAgentOverride().has_value());
+
+  // Normal string should still work.
+  std::string valid_ua = "Fake UA";
+  web_state()->SetUserAgentOverride(valid_ua);
+  EXPECT_EQ(valid_ua, web_state()->GetUserAgentOverride().value());
+
+  // Clearing still works.
+  web_state()->SetUserAgentOverride(std::nullopt);
+  EXPECT_FALSE(web_state()->GetUserAgentOverride().has_value());
+}
+
 // Verifies that large session can be restored with max session size limit
 // equals to `wk_navigation_util::kMaxSessionSize`.
 // TODO(crbug.com/433740395): Re-enable tests

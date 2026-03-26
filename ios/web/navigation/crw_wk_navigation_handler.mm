@@ -4,6 +4,8 @@
 
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ns_error_util.h"
@@ -271,8 +273,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       }
     }
 
-    NSString* userAgentString = base::SysUTF8ToNSString(
-        web::GetWebClient()->GetUserAgent(userAgentType));
+    std::optional<std::string> userAgentOverride =
+        self.webStateImpl->GetUserAgentOverride();
+    NSString* userAgentString =
+        base::SysUTF8ToNSString(userAgentOverride.value_or(
+            web::GetWebClient()->GetUserAgent(userAgentType)));
     if (![webView.customUserAgent isEqualToString:userAgentString]) {
       webView.customUserAgent = userAgentString;
     }

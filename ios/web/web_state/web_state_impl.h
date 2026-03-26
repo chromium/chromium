@@ -316,6 +316,8 @@ class WebStateImpl final : public WebState {
                             NSData* response_data,
                             NSString* mime_type) final;
   void Stop() final;
+  std::optional<std::string> GetUserAgentOverride() const final;
+  void SetUserAgentOverride(std::optional<std::string> ua_override) final;
   const NavigationManager* GetNavigationManager() const final;
   NavigationManager* GetNavigationManager() final;
   WebFramesManager* GetPageWorldWebFramesManager() final;

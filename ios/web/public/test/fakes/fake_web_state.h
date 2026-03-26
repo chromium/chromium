@@ -90,6 +90,8 @@ class FakeWebState : public WebState {
   const GURL& GetLastCommittedURL() const override;
   std::optional<GURL> GetLastCommittedURLIfTrusted() const override;
   CRWWebViewProxyType GetWebViewProxy() const override;
+  std::optional<std::string> GetUserAgentOverride() const override;
+  void SetUserAgentOverride(std::optional<std::string> ua_override) override;
 
   void AddObserver(WebStateObserver* observer) override;
 
@@ -217,6 +219,7 @@ class FakeWebState : public WebState {
   id<CRWFindInteraction> find_interaction_ API_AVAILABLE(ios(16));
   id<CRWWebViewDownload> web_view_download_;
   id<CRWWebViewDownloadDelegate> download_delegate_;
+  std::optional<std::string> user_agent_override_;
 
   // A list of observers notified when page state changes. Weak references.
   WebStateObserverList observers_;

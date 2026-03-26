@@ -343,6 +343,17 @@ class WebState : public base::SupportsUserData {
   // Stops any pending navigation.
   virtual void Stop() = 0;
 
+  // Returns the user agent override, or std::nullopt if none is set.
+  // If set, this value takes precedence over the UserAgentType returned by
+  // the NavigationManager.
+  virtual std::optional<std::string> GetUserAgentOverride() const = 0;
+  // Sets the user agent override. If `ua_override` is `std::nullopt` or empty,
+  // the default user agent (as determined by UserAgentType) is used.
+  // `ua_override` must be a valid HTTP header value (e.g. it cannot contain
+  // control characters like newlines). If it is not valid, the call is ignored
+  // and the previous value is maintained.
+  virtual void SetUserAgentOverride(std::optional<std::string> ua_override) = 0;
+
   // Gets the NavigationManager associated with this WebState. Will return null
   // iff the WebState is unrealized. It doesn't force the realization.
   virtual const NavigationManager* GetNavigationManager() const = 0;

@@ -96,6 +96,8 @@ class ContentWebState : public WebState,
                             NSString* mime_type) override
       API_AVAILABLE(ios(15.0));
   void Stop() override;
+  std::optional<std::string> GetUserAgentOverride() const override;
+  void SetUserAgentOverride(std::optional<std::string> ua_override) override;
   const NavigationManager* GetNavigationManager() const override;
   NavigationManager* GetNavigationManager() override;
   WebFramesManager* GetPageWorldWebFramesManager() override;
