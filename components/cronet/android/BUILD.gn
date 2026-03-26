@@ -266,7 +266,7 @@ sizes_test("cronet_sizes") {
   ]
 }
 
-cronet_shared_java_deps_to_package = [
+cronet_shared_api_dependencies_java_deps_to_package = [
   ":cronet_stats_log_java",
   "//base:metrics_ScopedSysTraceEvent_java",
   "//base:log_java",
@@ -283,7 +283,11 @@ cronet_shared_java_deps_to_package = [
 # Google Play Services), making it impossible for references to these classes to
 # cross the boundary. These classes should be shipped in `cronet_api_java`
 # instead.
-android_library("cronet_shared_java") {
+#
+# Use this target for classes that cronet_api_java depends on. This target
+# cannot be used for classes that depend on cronet_api_java as that would create
+# a circular dependency; add those to cronet_shared_java instead.
+android_library("cronet_shared_api_dependencies_java") {
   srcjar_deps = [ ":url_request_close_source_java" ]
   sources = [
     "java/src/org/chromium/net/httpflags/BaseFeature.java",
@@ -303,12 +307,38 @@ android_library("cronet_shared_java") {
   ]
 
   # Adding deps here won't include those deps in the cronet_shared_java.jar.
-  # Please add to cronet_shared_java_deps_to_package instead.
+  # Please add to cronet_shared_api_dependencies_java_deps_to_package instead.
   deps = [
            "//base:log_java",
            "//third_party/android_deps:protobuf_lite_runtime_java",
            "//third_party/androidx:androidx_annotation_annotation_java",
-         ] + cronet_shared_java_deps_to_package
+         ] + cronet_shared_api_dependencies_java_deps_to_package
+}
+
+cronet_shared_java_deps_to_package = [
+  ":cronet_shared_api_dependencies_java",
+
+  # CronetHttpURLConnection is needed by the impl (to implement
+  # CronetEngine#openConnection), but can also be used directly as a Cronet
+  # public API, hence we ship it as part of the shared jar.
+  #
+  # Note this cannot be shipped in cronet_api_java for historical reasons: there
+  # are apps already deployed in the wild that do not include these classes, and
+  # instead rely on Play Services Cronet having its own copy. If we move these
+  # classes to cronet_api_java, they will end up being removed from Play
+  # Services Cronet, breaking any apps that did not upgrade to the latest Cronet
+  # API version.
+  ":cronet_urlconnection_impl_java",
+]
+
+# Same as cronet_shared_api_dependencies_java, but with access to
+# cronet_api_java. In return, cronet_api_java cannot depend on this target.
+# Only add to this target classes that depend on cronet_api_java, but must ship
+# via cronet_shared_java.jar.
+java_group("cronet_shared_java") {
+  # Adding deps here won't include those deps in the cronet_shared_java.jar.
+  # Please add to cronet_shared_java_deps_to_package instead.
+  deps = cronet_shared_java_deps_to_package
 
   proguard_configs =
       [ "//components/cronet/android/cronet_shared_proguard.cfg" ]
@@ -356,7 +386,7 @@ android_library("cronet_api_java") {
 
   deps = [
     ":api_version",
-    ":cronet_shared_java",
+    ":cronet_shared_api_dependencies_java",
     "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -551,7 +581,6 @@ cronet_impl_native_java_srcjar_deps = [
 ]
 
 cronet_impl_native_java_deps_to_package = [
-  ":cronet_urlconnection_impl_java",
   ":cronet_android_os_system_properties_java",
   "//base/version_info/android:version_constants_java",
   "//base:tasks_java",
@@ -1112,7 +1141,12 @@ template("jar_src") {
 
 jar_src("jar_cronet_shared_source") {
   src_search_dirs = [ "java/src" ]
-  source_deps = [ ":cronet_shared_java" ]
+  source_deps = [
+    # Not including cronet_shared_java because java_group targets are not
+    # supported here.
+    ":cronet_shared_api_dependencies_java",
+    ":cronet_urlconnection_impl_java",
+  ]
   jar_path = "$_package_dir/cronet_shared-src.jar"
 }
 
@@ -1198,7 +1232,9 @@ template("repackage_jars") {
 
 repackage_jars("repackage_shared") {
   output = "$_package_dir/cronet_shared_java.jar"
-  deps = cronet_shared_java_deps_to_package + [
+  deps = cronet_shared_api_dependencies_java_deps_to_package +
+         cronet_shared_java_deps_to_package +
+         [
            # Compilation targets are fed a placeholder BuildConfig. We still
            # have to ship the final non-placeholder BuildConfig; this is what
            # we do here. We do it here because we only want to include
@@ -1636,7 +1672,6 @@ android_library("cronet_javatests") {
     ":cronet_all_java",
     ":cronet_api_helpers_java",
     ":cronet_stats_log_java",
-    ":cronet_urlconnection_impl_java",
     "//components/cronet:request_context_config_java_proto",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
