@@ -20,8 +20,8 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
@@ -789,10 +789,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         GetUserDataFactory()
             .CreateInstance<contextual_tasks::EntryPointEligibilityManager>(
                 *browser_, browser_);
-    contextual_tasks_panel_controller_ =
+    contextual_tasks_side_panel_coordinator_ =
         GetUserDataFactory()
             .CreateInstance<
-                contextual_tasks::ContextualTasksPanelControllerImpl>(
+                contextual_tasks::ContextualTasksSidePanelCoordinator>(
                 *browser_, browser_,
                 contextual_tasks_active_task_context_provider_.get(),
                 contextual_tasks_entry_point_eligibility_manager_.get());
@@ -810,7 +810,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
             .CreateInstance<ContextualTasksCloseButtonController>(
                 *browser_, browser_,
                 contextual_tasks_entry_point_eligibility_manager_.get(),
-                contextual_tasks_panel_controller_.get());
+                contextual_tasks_side_panel_coordinator_.get());
   }
 
   side_panel_coordinator_->Init(browser_view->browser());
@@ -973,7 +973,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   actor_task_list_bubble_controller_.reset();
 
   contextual_tasks_close_button_controller_.reset();
-  contextual_tasks_panel_controller_.reset();
+  contextual_tasks_side_panel_coordinator_.reset();
   contextual_tasks_entry_point_eligibility_manager_.reset();
 
 #if !BUILDFLAG(IS_CHROMEOS)

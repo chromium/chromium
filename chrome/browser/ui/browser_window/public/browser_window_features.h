@@ -159,7 +159,7 @@ class ContextualCueingController;
 
 namespace contextual_tasks {
 class ActiveTaskContextProvider;
-class ContextualTasksPanelController;
+class ContextualTasksSidePanelCoordinator;
 class EntryPointEligibilityManager;
 }  // namespace contextual_tasks
 
@@ -668,8 +668,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<contextual_tasks::ActiveTaskContextProvider>
       contextual_tasks_active_task_context_provider_;
 
-  std::unique_ptr<contextual_tasks::ContextualTasksPanelController>
-      contextual_tasks_panel_controller_;
+  std::unique_ptr<contextual_tasks::ContextualTasksSidePanelCoordinator>
+      contextual_tasks_side_panel_coordinator_;
 
   std::unique_ptr<tab_groups::MostRecentSharedTabUpdateStore>
       most_recent_shared_tab_update_store_;

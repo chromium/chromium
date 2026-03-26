@@ -7,8 +7,8 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -49,7 +49,7 @@ ContextualTasksBridge::ContextualTasksBridge(
           *browser_window, browser_window,
           ContextualTasksServiceFactory::GetForProfile(profile));
   controller_ =
-      GetUserDataFactory().CreateInstance<ContextualTasksPanelControllerImpl>(
+      GetUserDataFactory().CreateInstance<ContextualTasksSidePanelCoordinator>(
           *browser_window, browser_window, active_task_context_provider_.get(),
           entry_point_eligibility_manager_.get());
 }

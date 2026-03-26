@@ -1,9 +1,9 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
+#define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
 
 #include <map>
 
@@ -44,7 +44,7 @@ class ContextualTasksUiService;
 class ActiveTaskContextProvider;
 class EntryPointEligibilityManager;
 
-class ContextualTasksPanelControllerImpl
+class ContextualTasksSidePanelCoordinator
     : public ContextualTasksPanelController,
       public ContextualTasksPanelHost::Observer,
       public TabListInterfaceObserver,
@@ -68,25 +68,25 @@ class ContextualTasksPanelControllerImpl
     base::TimeTicks last_active_time_ticks;
   };
 
-  DECLARE_USER_DATA(ContextualTasksPanelControllerImpl);
+  DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
-  explicit ContextualTasksPanelControllerImpl(
+  explicit ContextualTasksSidePanelCoordinator(
       BrowserWindowInterface* browser_window,
       ActiveTaskContextProvider* active_task_context_provider,
       EntryPointEligibilityManager* eligibility_manager);
 
   // For testing only.
-  ContextualTasksPanelControllerImpl(
+  ContextualTasksSidePanelCoordinator(
       BrowserWindowInterface* browser_window,
       std::unique_ptr<ContextualTasksPanelHost> contextual_tasks_panel_host,
       ActiveTaskContextProvider* active_task_context_provider,
       EntryPointEligibilityManager* eligibility_manager);
 
-  ContextualTasksPanelControllerImpl(
-      const ContextualTasksPanelControllerImpl&) = delete;
-  ContextualTasksPanelControllerImpl& operator=(
-      const ContextualTasksPanelControllerImpl&) = delete;
-  ~ContextualTasksPanelControllerImpl() override;
+  ContextualTasksSidePanelCoordinator(
+      const ContextualTasksSidePanelCoordinator&) = delete;
+  ContextualTasksSidePanelCoordinator& operator=(
+      const ContextualTasksSidePanelCoordinator&) = delete;
+  ~ContextualTasksSidePanelCoordinator() override;
 
   // ContextualTasksPanelController:
   void AddObserver(ContextualTasksPanelController::Observer* observer) override;
@@ -142,12 +142,12 @@ class ContextualTasksPanelControllerImpl
                     TabRemovedReason removed_reason) override;
 
   // Get the WebContentsCacheItem for web_contents, return nullptr if not found.
-  ContextualTasksPanelControllerImpl::WebContentsCacheItem*
+  ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
   GetWebContentsCacheItemForWebContents(content::WebContents* web_contents);
 
  private:
-  friend class ContextualTasksPanelControllerImplInteractiveUiTest;
-  friend class ContextualTasksPanelControllerImplTest;
+  friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
+  friend class ContextualTasksSidePanelCoordinatorTest;
 
   void SetPanelSuppressedForTesting(bool suppressed) {
     contextual_tasks_panel_host_->SetPanelSuppressedForTesting(suppressed);
@@ -247,17 +247,17 @@ class ContextualTasksPanelControllerImpl
 
   base::CallbackListSubscription eligibility_change_subscription_;
 
-  ui::ScopedUnownedUserData<ContextualTasksPanelControllerImpl>
+  ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>
       scoped_unowned_user_data_;
 
   bool in_cobrowsing_session_ = false;
 
   base::ObserverList<ContextualTasksPanelController::Observer> observers_;
 
-  base::WeakPtrFactory<ContextualTasksPanelControllerImpl> weak_ptr_factory_{
+  base::WeakPtrFactory<ContextualTasksSidePanelCoordinator> weak_ptr_factory_{
       this};
 };
 
 }  // namespace contextual_tasks
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
