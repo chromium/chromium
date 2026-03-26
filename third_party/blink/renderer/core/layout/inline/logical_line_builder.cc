@@ -158,6 +158,17 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
           LayoutObjectForLineClampEllipsis(node_, *line_items,
                                            line_info->Start());
 
+      // If the ellipsis completely displaced the line, in quirks mode the line
+      // didn't have strict line height, so our metrics are now empty. They
+      // shouldn't be, so we make it behave as if it had zero line height.
+      // TODO(abotella): It's not clear whether it should work like this, or if
+      // the ellipsis should trigger strict line height.
+      if (!box->HasMetrics()) {
+        DCHECK(quirks_mode_);
+        DCHECK(line_box->IsEmpty());
+        box->metrics = FontHeight();
+      }
+
       line_box->AddChild(corresponding_layout_object,
                          StyleVariant::kStandardEllipsis, shape_result_view,
                          ellipsis_data->text,
