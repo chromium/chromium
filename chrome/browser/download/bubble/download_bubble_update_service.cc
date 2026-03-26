@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -31,10 +32,12 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -43,8 +46,13 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/browser/download_manager.h"
 #include "extensions/browser/extension_util.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
+
+const char kDownloadCUJEventEmittedKey[] = "DownloadCUJEventEmitted";
+class CUJEventEmittedData : public base::SupportsUserData::Data {};
 
 using ::offline_items_collection::ContentId;
 using ::offline_items_collection::OfflineContentProvider;
@@ -866,13 +874,30 @@ void DownloadBubbleUpdateService::OnDownloadUpdated(
   cache.OnDownloadItemUpdated(item);
 
   auto* web_app_data = DownloadItemWebAppData::Get(item);
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [&](BrowserWindowInterface* browser) {
         auto* bubble_controller = GetBubbleController(browser);
         if (bubble_controller &&
             BrowserMatchesWebAppData(browser, web_app_data)) {
           bubble_controller->OnDownloadItemUpdated(item);
         }
+
+        if (item->GetState() == download::DownloadItem::COMPLETE) {
+          // A download completion event can be completed multiple times. To
+          // prevent notification spam, only send a single event for this
+          // `item`.
+          if (!item->GetUserData(&kDownloadCUJEventEmittedKey)) {
+            BrowserView* browser_view =
+                BrowserView::GetBrowserViewForBrowser(browser);
+            if (browser_view) {
+              item->SetUserData(&kDownloadCUJEventEmittedKey,
+                                std::make_unique<CUJEventEmittedData>());
+              views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+                  kDownloadEndedCustomEventId, browser_view);
+            }
+          }
+        }
+
         return true;
       });
 }

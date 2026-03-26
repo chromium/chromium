@@ -6,10 +6,45 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "ui/base/interaction/interaction_sequence.h"
+
 namespace metrics {
 
 CriticalUserJourneyRegistry::CriticalUserJourneyRegistry() = default;
 CriticalUserJourneyRegistry::~CriticalUserJourneyRegistry() = default;
+
+void CriticalUserJourneyRegistry::AddJourneys() {
+  AddJourney(
+      CriticalUserJourney::Builder("ViewDownloadedFileJourney")
+          .AddCustomEventStep(kDownloadEndedCustomEventId,
+                              /*metric_id=*/1)
+          .AddAnyOf({Branch(kToolbarDownloadBubbleElementId,
+                            ui::InteractionSequence::StepType::kShown,
+                            /*metric_id=*/2),
+                     Branch(kToolbarDownloadButtonElementId,
+                            ui::InteractionSequence::StepType::kActivated,
+                            /*metric_id=*/3)})
+          .AddStep(kDownloadBubbleOpenButtonId,
+                   ui::InteractionSequence::StepType::kActivated,
+                   /*metric_id=*/4)
+          .Build());
+
+  AddJourney(
+      CriticalUserJourney::Builder("ViewDownloadedFileFromAppMenuJourney")
+          .AddCustomEventStep(kDownloadEndedCustomEventId,
+                              /*metric_id=*/1)
+          .AddStep(kToolbarAppMenuButtonElementId,
+                   ui::InteractionSequence::StepType::kActivated,
+                   /*metric_id=*/2)
+          .AddStep(AppMenuModel::kDownloadsMenuItem,
+                   ui::InteractionSequence::StepType::kActivated,
+                   /*metric_id=*/3)
+          .AddCustomEventStep(kDownloadedFileOpenedCustomEventId,
+                              /*metric_id=*/4)
+          .Build());
+}
 
 void CriticalUserJourneyRegistry::AddJourney(
     std::unique_ptr<CriticalUserJourney> journey) {

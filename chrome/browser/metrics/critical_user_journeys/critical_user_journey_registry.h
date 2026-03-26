@@ -28,6 +28,9 @@ class CriticalUserJourneyRegistry {
   // Adds a journey to the registry.
   void AddJourney(std::unique_ptr<CriticalUserJourney> journey);
 
+  // Populates the registry with all defined journeys.
+  void AddJourneys();
+
   // Returns all registered journeys.
   const std::vector<std::unique_ptr<CriticalUserJourney>>& journeys() const {
     return journeys_;

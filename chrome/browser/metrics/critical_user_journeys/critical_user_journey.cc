@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "ui/base/interaction/interaction_sequence.h"
+
 namespace metrics {
 
 Branch::Branch(ui::ElementIdentifier id,
@@ -28,9 +31,24 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddStep(
     ui::ElementIdentifier id,
     ui::InteractionSequence::StepType type,
     int metric_id) {
+  // TODO(dljames): Consolidate AddStep and AddCustomEventStep into a single
+  // function with a variant for the ElementIdentifier.
+  CHECK_NE(type, ui::InteractionSequence::StepType::kCustomEvent)
+      << "To add custom events use AddCustomEventStep instead of AddStep.";
   auto step = std::make_unique<CriticalUserJourneyStep>();
   step->id = id;
   step->type = type;
+  step->metric_id = metric_id;
+  steps_.push_back(std::move(step));
+  return *this;
+}
+
+CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddCustomEventStep(
+    ui::CustomElementEventType event_type,
+    int metric_id) {
+  auto step = std::make_unique<CriticalUserJourneyStep>();
+  step->custom_event_type = event_type;
+  step->type = ui::InteractionSequence::StepType::kCustomEvent;
   step->metric_id = metric_id;
   steps_.push_back(std::move(step));
   return *this;

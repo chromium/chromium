@@ -49,7 +49,7 @@ void CriticalUserJourneyService::Initialize() {
 
 void CriticalUserJourneyService::RegisterJourneys(
     CriticalUserJourneyRegistry* registry) {
-  // TODO(crbug.com/488075669): Populate registry with journeys.
+  registry->AddJourneys();
 }
 
 void CriticalUserJourneyService::RegisterJourneyTrigger(

@@ -4,25 +4,44 @@
 
 #include <memory>
 
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_service.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_service_factory.h"
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/download_test_observer.h"
+#include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/download/download_display.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace metrics {
 
@@ -122,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
 
   const std::string step_reached = base::StrCat(
       {GetMetricJourneyPrefix(kAppMenuJourneyName), ".StepReached"});
-  const std::string completed =
-      base::StrCat({GetMetricJourneyPrefix(kAppMenuJourneyName), ".Completed"});
+  const std::string result =
+      base::StrCat({GetMetricJourneyPrefix(kAppMenuJourneyName), ".Result"});
 
   RunTestSequence(
       // Step 1: Click App Menu.
@@ -133,12 +152,16 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
       PressButton(kNewTabButtonElementId));
 
   // Verification: The journey should complete asynchronously.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return histograms.GetBucketCount(completed, true) > 0; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) >
+           0;
+  }));
 
   histograms.ExpectBucketCount(step_reached, 1, 1);
   histograms.ExpectBucketCount(step_reached, 2, 1);
-  histograms.ExpectUniqueSample(completed, true, 1);
+  histograms.ExpectUniqueSample(
+      result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
@@ -147,8 +170,8 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
 
   const std::string step_reached = base::StrCat(
       {GetMetricJourneyPrefix(kBranchingJourneyName), ".StepReached"});
-  const std::string completed = base::StrCat(
-      {GetMetricJourneyPrefix(kBranchingJourneyName), ".Completed"});
+  const std::string result =
+      base::StrCat({GetMetricJourneyPrefix(kBranchingJourneyName), ".Result"});
 
   RunTestSequence(
       // Step 1: Click App Menu (triggers start).
@@ -158,12 +181,16 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
       PressButton(kNewTabButtonElementId));
 
   // Verification
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return histograms.GetBucketCount(completed, true) > 0; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) >
+           0;
+  }));
 
   histograms.ExpectBucketCount(step_reached, 1, 1);
   histograms.ExpectBucketCount(step_reached, 2, 1);
-  histograms.ExpectUniqueSample(completed, true, 1);
+  histograms.ExpectUniqueSample(
+      result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
@@ -172,8 +199,8 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
 
   const std::string step_reached = base::StrCat(
       {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".StepReached"});
-  const std::string completed = base::StrCat(
-      {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".Completed"});
+  const std::string result =
+      base::StrCat({GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".Result"});
 
   RunTestSequence(
       // Step 1: Click New Tab Button (triggers start).
@@ -182,12 +209,16 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
       // Step 2: Click the App Menu Button.
       PressButton(kToolbarAppMenuButtonElementId));
 
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return histograms.GetBucketCount(completed, true) > 0; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) >
+           0;
+  }));
 
   histograms.ExpectBucketCount(step_reached, 1, 1);
   histograms.ExpectBucketCount(step_reached, 3, 1);
-  histograms.ExpectUniqueSample(completed, true, 1);
+  histograms.ExpectUniqueSample(
+      result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
@@ -196,8 +227,8 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
 
   const std::string step_reached = base::StrCat(
       {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".StepReached"});
-  const std::string completed = base::StrCat(
-      {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".Completed"});
+  const std::string result =
+      base::StrCat({GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".Result"});
 
   RunTestSequence(
       // Step 1: Click the Avatar Button (triggers start).
@@ -206,12 +237,169 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
       // Step 2: Click the App Menu Button.
       PressButton(kToolbarAppMenuButtonElementId));
 
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return histograms.GetBucketCount(completed, true) > 0; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) >
+           0;
+  }));
 
   histograms.ExpectBucketCount(step_reached, 2, 1);
   histograms.ExpectBucketCount(step_reached, 3, 1);
-  histograms.ExpectUniqueSample(completed, true, 1);
+  histograms.ExpectUniqueSample(
+      result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
 }
+
+class RealCriticalUserJourneyServiceInteractiveTest
+    : public InteractiveBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+ public:
+  RealCriticalUserJourneyServiceInteractiveTest() {
+    feature_list_.InitAndEnableFeature(metrics::kCriticalUserJourneyService);
+  }
+  ~RealCriticalUserJourneyServiceInteractiveTest() override = default;
+
+  void SetUp() override { InteractiveBrowserTest::SetUp(); }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                 false);
+    embedded_test_server()->ServeFilesFromDirectory(
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+  // The Download Bubble UI is not used on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // A helper function to trigger a real download and wait for it to complete.
+  auto DownloadTestFile() {
+    return Steps(Do([this]() {
+      GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
+      content::DownloadManager* manager =
+          browser()->profile()->GetDownloadManager();
+      std::unique_ptr<content::DownloadTestObserver> observer(
+          new content::DownloadTestObserverTerminal(
+              manager, 1,
+              content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+      ui_test_utils::NavigateToURLWithDisposition(
+          browser(), url, WindowOpenDisposition::CURRENT_TAB,
+          ui_test_utils::BROWSER_TEST_NO_WAIT);
+      observer->WaitForFinished();
+    }));
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+};
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
+                       DownloadJourneyCompletion) {
+  base::HistogramTester histograms;
+
+  const std::string step_reached = base::StrCat(
+      {GetMetricJourneyPrefix("ViewDownloadedFileJourney"), ".StepReached"});
+  const std::string result = base::StrCat(
+      {GetMetricJourneyPrefix("ViewDownloadedFileJourney"), ".Result"});
+
+  RunTestSequence(
+      // Trigger a real download and wait for it to complete.
+      DownloadTestFile(),
+
+      // The download is now complete. Forcibly open the download bubble to
+      // satisfy Step 2 of the journey (the bubble must be shown).
+      Do([this]() {
+        if (auto* display =
+                browser()->GetFeatures().download_toolbar_ui_controller()) {
+          display->ShowDetails();
+        }
+      }),
+
+      // The Download Bubble UI is drawn in a separate widget and thus has a
+      // different ElementContext. Use InAnyContext to find the row.
+      InAnyContext(Steps(WaitForShow(kDownloadBubbleRowElementId),
+                         PressButton(kDownloadBubbleOpenButtonId))),
+
+      // Hide the bubble before teardown to allow the test to cleanup properly.
+      Do([this]() {
+        if (auto* display =
+                browser()->GetFeatures().download_toolbar_ui_controller()) {
+          display->HideDetails();
+        }
+      }));
+
+  // Verification
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) >
+           0;
+  }));
+
+  histograms.ExpectBucketCount(step_reached, 1, 1);  // Download Ended
+  histograms.ExpectBucketCount(step_reached, 2, 1);  // Bubble Shown
+  histograms.ExpectBucketCount(step_reached, 4, 1);  // Activated
+  histograms.ExpectUniqueSample(
+      result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
+                       ViewDownloadedFileFromAppMenuCompletion) {
+  base::HistogramTester histograms;
+
+  const std::string step_reached = base::StrCat(
+      {GetMetricJourneyPrefix("ViewDownloadedFileFromAppMenuJourney"),
+       ".StepReached"});
+  const std::string result = base::StrCat(
+      {GetMetricJourneyPrefix("ViewDownloadedFileFromAppMenuJourney"),
+       ".Result"});
+
+  RunTestSequence(
+      // Step 1: Trigger a real download and wait for it to complete.
+      DownloadTestFile(),
+
+      // Step 2: Open App Menu
+      PressButton(kToolbarAppMenuButtonElementId),
+
+      // Step 3: Click Downloads Menu Item
+      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+
+      // Step 4: Trigger the custom event for opening the downloaded file.
+      Do([this]() {
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        auto* element =
+            ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                kToolbarAppMenuButtonElementId,
+                browser_view->GetElementContext());
+        if (element) {
+          ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+              element, kDownloadedFileOpenedCustomEventId);
+        }
+      }),
+      // Ensure the menu closes before tearing down the test fixture. This is an
+      // asynchronous process on MacOS.
+      WaitForHide(AppMenuModel::kDownloadsMenuItem));
+
+  // Verification
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) >
+           0;
+  }));
+
+  histograms.ExpectBucketCount(step_reached, 1, 1);  // Download Ended
+  histograms.ExpectBucketCount(step_reached, 2, 1);  // App Menu Clicked
+  histograms.ExpectBucketCount(step_reached, 3,
+                               1);  // Downloads Menu Item Clicked
+  histograms.ExpectBucketCount(step_reached, 4, 1);  // Downloaded File Opened
+  histograms.ExpectUniqueSample(
+      result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace metrics

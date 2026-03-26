@@ -15,11 +15,6 @@
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_step.h"
 #include "ui/base/interaction/element_tracker.h"
 
-namespace {
-// Defines the maximum number of steps in a journey.
-constexpr int MAX_JOURNEY_STEPS = 20;
-}  // namespace
-
 namespace metrics {
 
 CriticalUserJourneySession::CriticalUserJourneySession(
@@ -68,13 +63,20 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
     }
 
     if (step->branches.empty()) {
-      builder.AddStep(ui::InteractionSequence::StepBuilder()
-                          .SetElement(step->id)
-                          .SetType(step->type)
-                          .SetDescription(base::NumberToString(step->metric_id))
-                          .SetStartCallback(base::BindOnce(
-                              &CriticalUserJourneySession::OnStepStarted,
-                              weak_factory_.GetWeakPtr(), step->metric_id)));
+      auto step_builder = ui::InteractionSequence::StepBuilder();
+      if (step->type == ui::InteractionSequence::StepType::kCustomEvent) {
+        step_builder.SetType(step->type, step->custom_event_type);
+      } else {
+        step_builder.SetType(step->type);
+        step_builder.SetElement(step->id);
+      }
+      step_builder.SetContext(step->context)
+          .SetDescription(base::NumberToString(step->metric_id))
+          .SetStartCallback(
+              base::BindOnce(&CriticalUserJourneySession::OnStepStarted,
+                             weak_factory_.GetWeakPtr(), step->metric_id));
+
+      builder.AddStep(std::move(step_builder));
     } else {
       ui::InteractionSequence::StepBuilder step_builder =
           std::move(ui::InteractionSequence::StepBuilder().SetSubsequenceMode(
@@ -100,9 +102,9 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
 
 void CriticalUserJourneySession::OnStepStarted(int metric_id) {
   last_reached_metric_id_ = metric_id;
-  base::UmaHistogramExactLinear(
+  base::UmaHistogramSparse(
       base::StrCat({"CriticalUserJourney.", journey_->name(), ".StepReached"}),
-      metric_id, MAX_JOURNEY_STEPS + 1);
+      metric_id);
 }
 
 void CriticalUserJourneySession::OnAborted(
@@ -112,19 +114,25 @@ void CriticalUserJourneySession::OnAborted(
     CHECK_NE(aborted_metric_id, -1);
     base::StringToInt(data.step_description, &aborted_metric_id);
   }
-  base::UmaHistogramExactLinear(
-      base::StrCat(
-          {"CriticalUserJourney.", journey_->name(), ".AbortedAtStep"}),
-      aborted_metric_id, MAX_JOURNEY_STEPS);
+
+  base::UmaHistogramSparse(
+      base::StrCat({"CriticalUserJourney.", journey_->name(), ".StepAborted"}),
+      aborted_metric_id);
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"CriticalUserJourney.", journey_->name(), ".Result"}),
+      JourneyResult::kAborted);
+
   if (on_done_callback_) {
     std::move(on_done_callback_).Run();
   }
 }
 
 void CriticalUserJourneySession::OnCompleted() {
-  base::UmaHistogramBoolean(
-      base::StrCat({"CriticalUserJourney.", journey_->name(), ".Completed"}),
-      true);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"CriticalUserJourney.", journey_->name(), ".Result"}),
+      JourneyResult::kCompleted);
+
   if (journey_->completion_callback()) {
     journey_->completion_callback().Run();
   }

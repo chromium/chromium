@@ -43,6 +43,8 @@ class CriticalUserJourney {
     Builder& AddStep(ui::ElementIdentifier id,
                      ui::InteractionSequence::StepType type,
                      int metric_id);
+    Builder& AddCustomEventStep(ui::CustomElementEventType event_type,
+                                int metric_id);
     Builder& AddAnyOf(const std::vector<Branch>& branches);
     Builder& AddCustomCompletionCallback(base::RepeatingClosure callback);
 

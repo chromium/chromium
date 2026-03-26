@@ -24,6 +24,7 @@
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -382,6 +383,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
           base::BindRepeating(&DownloadBubbleRowView::OnMainButtonPressed,
                               base::Unretained(this)),
           this));
+  transparent_button_->SetProperty(views::kElementIdentifierKey,
+                                   kDownloadBubbleOpenButtonId);
   transparent_button_->set_context_menu_controller(this);
   transparent_button_->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
   transparent_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
@@ -493,6 +496,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // Expect to start not visible, will be updated later.
   progress_bar_->SetVisible(false);
 
+  SetProperty(views::kElementIdentifierKey, kDownloadBubbleRowElementId);
   SetNotifyEnterExitOnChild(true);
 
   // Set up initial state.
@@ -789,6 +793,12 @@ void DownloadBubbleRowView::AddMainPageButton(
   button->SetVisible(false);
   button->SetStyle(ui::ButtonStyle::kText);
 
+  if (command == DownloadCommands::OPEN_WHEN_COMPLETE ||
+      command == DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN) {
+    button->SetProperty(views::kElementIdentifierKey,
+                        kDownloadBubbleOpenButtonId);
+  }
+
   main_page_buttons_[command] = button;
 }
 
@@ -806,6 +816,13 @@ void DownloadBubbleRowView::AddQuickAction(DownloadCommands::Command command) {
   views::InkDrop::Get(quick_action)
       ->SetBaseColor(views::TypographyProvider::Get().GetColorId(
           views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
+
+  if (command == DownloadCommands::OPEN_WHEN_COMPLETE ||
+      command == DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN) {
+    quick_action->SetProperty(views::kElementIdentifierKey,
+                              kDownloadBubbleOpenButtonId);
+  }
+
   quick_actions_[command] = quick_action;
 }
 

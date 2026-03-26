@@ -22,42 +22,46 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="CriticalUserJourney.{JourneyName}.AbortedAtStep"
-    units="Step ID" expires_after="2027-01-01">
+<variants name="CriticalUserJourneyStepAction">
+  <variant name="StepAborted" summary="aborted"/>
+  <variant name="StepReached" summary="reached"/>
+</variants>
+
+<histogram
+    name="CriticalUserJourney.ViewDownloadedFileFromAppMenuJourney.{StepAction}"
+    enum="ViewDownloadedFileFromAppMenuJourneySteps" expires_after="2027-01-01">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
-    Recorded when the Critical User Journey {JourneyName} is aborted. The value
-    logged is the ID of the step that was aborted.
+    Recorded when a step is {StepAction} in the
+    ViewDownloadedFileFromAppMenuJourney.
   </summary>
-  <token key="JourneyName">
-    <variant name="TestJourney" summary="Test Journey"/>
-  </token>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
 </histogram>
 
-<histogram name="CriticalUserJourney.{JourneyName}.Completed"
-    enum="BooleanCompleted" expires_after="2027-01-01">
+<histogram name="CriticalUserJourney.ViewDownloadedFileJourney.{StepAction}"
+    enum="ViewDownloadedFileJourneySteps" expires_after="2027-01-01">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
-    Recorded when the Critical User Journey {JourneyName} is successfully
-    completed. Always logs true.
+    Recorded when a step is {StepAction} in the ViewDownloadedFileJourney.
   </summary>
-  <token key="JourneyName">
-    <variant name="TestJourney" summary="Test Journey"/>
-  </token>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
 </histogram>
 
-<histogram name="CriticalUserJourney.{JourneyName}.StepReached" units="Step ID"
-    expires_after="2027-01-01">
+<histogram name="CriticalUserJourney.{JourneyName}.Result"
+    enum="CriticalUserJourneyResult" expires_after="2027-01-01">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
-    Recorded each time a step in the Critical User Journey {JourneyName} is
-    reached. The value logged is the ID of the reached step.
+    Records the final outcome (Completed or Aborted) of the {JourneyName}
+    critical user journey.
   </summary>
   <token key="JourneyName">
-    <variant name="TestJourney" summary="Test Journey"/>
+    <variant name="ViewDownloadedFileFromAppMenuJourney"/>
+    <variant name="ViewDownloadedFileJourney"/>
+<!-- Add new journeys here! -->
+
   </token>
 </histogram>
 

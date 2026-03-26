@@ -10,6 +10,33 @@ This file defines enums used in Critical User Journey histograms.
 
 <histogram-configuration>
 
-<enums/>
+<enums>
+
+<!-- LINT.IfChange(CriticalUserJourneyResult) -->
+
+<enum name="CriticalUserJourneyResult">
+  <int value="0" label="Completed"/>
+  <int value="1" label="Aborted"/>
+</enum>
+
+<!-- LINT.ThenChange(chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h:JourneyResult) -->
+
+<!-- Define the steps for your journeys below! -->
+
+<enum name="ViewDownloadedFileFromAppMenuJourneySteps">
+  <int value="1" label="Finish download"/>
+  <int value="2" label="App menu button clicked"/>
+  <int value="3" label="Downloads menu item clicked"/>
+  <int value="4" label="Downloaded file clicked"/>
+</enum>
+
+<enum name="ViewDownloadedFileJourneySteps">
+  <int value="1" label="Finish download"/>
+  <int value="2" label="Download bubble appears"/>
+  <int value="3" label="User clicked download bubble"/>
+  <int value="4" label="Click downloaded file"/>
+</enum>
+
+</enums>
 
 </histogram-configuration>

@@ -26,6 +26,16 @@ class CriticalUserJourney;
 // Uses ui::InteractionSequence to track progress through steps.
 class CriticalUserJourneySession {
  public:
+  // LINT.IfChange(JourneyResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class JourneyResult {
+    kCompleted = 0,
+    kAborted = 1,
+    kMaxValue = kAborted,
+  };
+  // LINT.ThenChange(tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:CriticalUserJourneyResult)
+
   explicit CriticalUserJourneySession(const CriticalUserJourney* journey);
   ~CriticalUserJourneySession();
 
