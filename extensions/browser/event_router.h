@@ -364,6 +364,7 @@ class EventRouter : public KeyedService,
   friend class SystemInfoAPITest;
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest,
                            AddLazyListenerForUnloadedExtension);
+  FRIEND_TEST_ALL_PREFIXES(EventRouterTest, RemovesOrphanedWebRequestEvents);
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, MultipleEventRouterObserver);
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, DispatchPendingEvent_NullContext);
   FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatch);
@@ -439,6 +440,12 @@ class EventRouter : public KeyedService,
   void SetRegisteredEvents(const ExtensionId& extension_id,
                            const std::set<std::string>& events,
                            RegisteredEventType type);
+
+  // TODO(crbug.com/474558883): Remove this after webRequest listener
+  // persistence is stable for a few milestones.
+  void RemoveOrphanedWebRequestEvents(const ExtensionId& extension_id,
+                                      std::set<std::string>& events,
+                                      RegisteredEventType type);
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,

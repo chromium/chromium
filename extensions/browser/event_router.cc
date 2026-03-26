@@ -16,6 +16,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -43,6 +44,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature.h"
@@ -1410,6 +1412,34 @@ void EventRouter::AddFilterToEvent(const std::string& event_name,
   filter_list->Append(filter.Clone());
 }
 
+// TODO(crbug.com/474558883): Remove this after webRequest listener persistence
+// is stable for a few milestones.
+void EventRouter::RemoveOrphanedWebRequestEvents(
+    const ExtensionId& extension_id,
+    std::set<std::string>& events,
+    RegisteredEventType type) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::
+              kWebRequestPersistFilteredEventsViaEventRouter)) {
+    return;
+  }
+
+  // Before the webRequest persisted listeners feature was enabled, webRequest
+  // events from service workers were stored as unfiltered listeners. Now that
+  // they are stored as filtered listeners, we need to clean up the old,
+  // orphaned unfiltered listener entries from preferences to prevent duplicate
+  // listener entries.
+  size_t removed_count = std::erase_if(events, [](const std::string& event) {
+    return (event.starts_with("webRequest.") ||
+            event.starts_with("webViewInternal.")) &&
+           event.contains("/");
+  });
+
+  if (removed_count > 0) {
+    SetRegisteredEvents(extension_id, events, type);
+  }
+}
+
 void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,
                                     const Extension* extension) {
   // TODO(richardzh): revisit here once we create separate lazy listeners for
@@ -1419,12 +1449,16 @@ void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,
   // Add all registered lazy listeners to our cache.
   std::set<std::string> registered_events =
       GetRegisteredEvents(extension->id(), RegisteredEventType::kLazy);
+  RemoveOrphanedWebRequestEvents(extension->id(), registered_events,
+                                 RegisteredEventType::kLazy);
   listeners_.LoadUnfilteredLazyListeners(browser_context, extension->id(),
                                          /*is_for_service_worker=*/false,
                                          registered_events);
 
   std::set<std::string> registered_worker_events =
       GetRegisteredEvents(extension->id(), RegisteredEventType::kServiceWorker);
+  RemoveOrphanedWebRequestEvents(extension->id(), registered_worker_events,
+                                 RegisteredEventType::kServiceWorker);
   listeners_.LoadUnfilteredLazyListeners(browser_context, extension->id(),
                                          /*is_for_service_worker=*/true,
                                          registered_worker_events);
