@@ -481,6 +481,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.isPrivacyNoticeVisible = false;
     this.suppressGhostLoader = false;
     this.isSearchboxFocused = true;
+    this.triggerSearchboxSuggestions();
     this.$.translateButtonContainer.classList.remove('searchbox-unfocused');
 
     this.focusShimmerOnSearchbox();
@@ -755,9 +756,13 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       return;
     }
 
+    if (!this.isSearchboxFocused) {
+      return;
+    }
+
     // If the backend handshake has completed, then it is safe to issue the
     // autocomplete query immediately.
-    if (this.isBackendHandshakeComplete && this.$.searchbox.dropdownIsVisible) {
+    if (this.isBackendHandshakeComplete) {
       this.$.searchbox.queryInputAutocomplete();
       return;
     }
@@ -772,9 +777,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private focusSearchbox() {
-  this.shadowRoot!.querySelector<SearchboxElement>('cr-searchbox')
-      ?.focusInput();
-    this.triggerSearchboxSuggestions();
+    const searchbox =
+        this.shadowRoot!.querySelector<SearchboxElement>('cr-searchbox');
+    if (searchbox) {
+      searchbox.focusInput();
+    }
   }
 
   private computeShouldFadeOutButtons(): boolean {

@@ -204,4 +204,46 @@ suite('Searchbox', () => {
     // Searchbox focus should be lost
     assertFalse(lensOverlayElement.isSearchboxFocused);
   });
+
+  test('SearchboxDropdownDoesNotShowWhenNotFocused', async () => {
+    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+
+    let queryAutocompleteCalled = false;
+    lensOverlayElement.$.searchbox.queryInputAutocomplete = () => {
+      queryAutocompleteCalled = true;
+    };
+
+    // Ensure the searchbox is not focused.
+    lensOverlayElement.setSearchboxFocusForTesting(false);
+
+    // Simulate the backend handshake completing.
+    testBrowserProxy.page.notifyHandshakeComplete();
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Dropdown should not show (queryInputAutocomplete should not be called).
+    assertFalse(queryAutocompleteCalled);
+  });
+
+  test('SearchboxDropdownShowsWhenFocused', async () => {
+    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+
+    let queryAutocompleteCalled = false;
+    lensOverlayElement.$.searchbox.queryInputAutocomplete = () => {
+      queryAutocompleteCalled = true;
+    };
+
+    // Simulate the searchbox being focused.
+    lensOverlayElement.$.searchbox.dispatchEvent(new CustomEvent('focusin', {
+      bubbles: true,
+      composed: true,
+    }));
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Simulate the backend handshake completing.
+    testBrowserProxy.page.notifyHandshakeComplete();
+    await waitAfterNextRender(lensOverlayElement);
+
+    // Dropdown should show (queryInputAutocomplete should be called).
+    assertTrue(queryAutocompleteCalled);
+  });
 });
