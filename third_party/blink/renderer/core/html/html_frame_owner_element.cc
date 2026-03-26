@@ -918,6 +918,17 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
   return content_frame_->IsAdFrame();
 }
 
+std::optional<AdProvenance> HTMLFrameOwnerElement::GetAdProvenance() const {
+  // Only query the monitor if the element is known to be ad-related.
+  // TODO(yaoxia): Clean this up once `AdProvenance` is accurate for OOPIF cases
+  // and is consolidated with `FrameAdEvidence`.
+  if (!IsAdRelated() || !display_ad_element_monitor_) {
+    return std::nullopt;
+  }
+
+  return display_ad_element_monitor_->GetAdProvenance();
+}
+
 bool HTMLFrameOwnerElement::ShouldHighlightAd() const {
   return display_ad_element_monitor_ &&
          display_ad_element_monitor_->ShouldHighlight();

@@ -161,6 +161,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   // Element overrides:
   bool IsAdRelated() const override;
+  std::optional<AdProvenance> GetAdProvenance() const override;
   bool ShouldHighlightAd() const override;
 
   // If the iframe is lazy-loaded, initiate its load, and return true if such
