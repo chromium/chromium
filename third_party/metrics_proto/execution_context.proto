@@ -116,6 +116,10 @@ enum Thread {
   // Network thread. Exists only on Android.
   NETWORK_THREAD = 30;
 
+  // Display Compositor GPU thread (in GPU process). Spawned at
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/viz/service/display_embedder/compositor_gpu_thread.cc;drc=ebd2ca36e2f541884ef6cf7f8de036ee65abc559;l=61.
+  DISPLAY_COMPOSITOR_GPU_THREAD = 31;
+
   // A Chrome thread not identified by any other enum. Defined for the benefit
   // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
   // enum instead.

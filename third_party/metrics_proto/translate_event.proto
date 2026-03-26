@@ -77,7 +77,7 @@ message TranslateEventProto {
   RankerResponse ranker_response = 9 [default = NOT_QUERIED];
 
   // The action performed by the user in the translate UI.
-  // Next tag: 28
+  // Next tag: 29
   enum EventType {
     option features.enum_type = CLOSED;
 
@@ -181,6 +181,10 @@ message TranslateEventProto {
     // Failed to initialize the translate script, this can happen for iOS due
     // to CSPs.
     INITIALIZATION_ERROR = 27;
+
+    // The translation was triggered by the translate-target-language command
+    // line switch.
+    AUTO_TRANSLATION_BY_COMMANDLINE = 28;
   }
 
   // Event received from translate UI.

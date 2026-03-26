@@ -2,8 +2,8 @@ Name: Variations Protos
 Short Name: client_variations_proto
 URL: This is the canonical public repository
 Update Mechanism: Manual
-Version: 868825129
-Date: 2026-02-11
+Version: 889840333
+Date: 2026-03-26
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes
@@ -22,4 +22,4 @@ blaze run //analysis/uma/proto_export:proto_export -- \
 
 
 Local Modifications:
-* Enable cpp_features in variations_seed.proto.
+Unchanged from the output of the export script.
