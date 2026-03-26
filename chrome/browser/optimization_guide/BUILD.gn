@@ -162,6 +162,7 @@ if (!is_android) {
       "model_execution/model_execution_live_test.cc",
       "model_execution/model_execution_validation_browsertest.cc",
       "optimization_guide_keyed_service_browsertest.cc",
+      "optimization_guide_tab_url_provider_browsertest.cc",
     ]
 
     if (build_with_tflite_lib) {
@@ -210,12 +211,7 @@ source_set("unit_tests") {
     "//components/variations:test_support",
   ]
   if (!is_android) {
-    sources += [
-      "private_ai_model_execution_fetcher_unittest.cc",
-
-      # Android uses a different way of showing browser windows.
-      "optimization_guide_tab_url_provider_unittest.cc",
-    ]
+    sources += [ "private_ai_model_execution_fetcher_unittest.cc" ]
     deps += [
       "//components/private_ai",
       "//components/private_ai:proto",
