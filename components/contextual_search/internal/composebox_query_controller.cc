@@ -901,6 +901,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
       contextual_input_data->viewport_screenshot.has_value();
 
   bool has_viewport_screenshot = has_viewport_bitmap || has_viewport_bytes;
+  bool has_context_input = contextual_input_data->context_input.has_value() &&
+                           !contextual_input_data->context_input->empty();
 
   // Determine the update mode based on file type and viewport.
   lens::RequestIdUpdateMode base_update_mode =
@@ -908,8 +910,16 @@ void ComposeboxQueryController::StartFileUploadFlow(
   if (current_file_info.mime_type == lens::MimeType::kImage) {
     base_update_mode = lens::RequestIdUpdateMode::kFullImageRequest;
   } else if (has_viewport_screenshot) {
-    base_update_mode =
-        lens::RequestIdUpdateMode::kPageContentWithViewportRequest;
+    // The input data may contain just a viewport without the actual
+    // context input data, in the case that the QueryContextualizer determines
+    // that the context is a reupload with an updated viewport but unchanged
+    // page / pdf contents.
+    if (has_context_input) {
+      base_update_mode =
+          lens::RequestIdUpdateMode::kPageContentWithViewportRequest;
+    } else {
+      base_update_mode = lens::RequestIdUpdateMode::kFullImageRequest;
+    }
   }
 
   // For the multi-context input flow, whether or not to use the _AND_IMAGE
@@ -975,10 +985,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
           lens::RequestIdUpdateMode::kMultiContextUploadRequest,
           current_file_info.mime_type_string.value());
     } else {
+      lens::LensOverlayRequestId::MediaType media_type =
+          has_context_input
+              ? lens::MimeTypeToMediaType(current_file_info.mime_type,
+                                          use_has_viewport_media_type)
+              : lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE;
       current_file_info.request_id = *request_id_generator_.GetNextRequestId(
-          lens::RequestIdUpdateMode::kMultiContextUploadRequest,
-          lens::MimeTypeToMediaType(current_file_info.mime_type,
-                                    use_has_viewport_media_type));
+          lens::RequestIdUpdateMode::kMultiContextUploadRequest, media_type);
     }
   }
 
@@ -1689,16 +1702,27 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
     case lens::MimeType::kPdf:
       [[fallthrough]];
     case lens::MimeType::kAnnotatedPageContent:
-      CHECK(contextual_input_data->context_input.has_value());
-      if (contextual_input_data->context_input->size() == 0) {
-        UpdateContextUploadStatus(
-            file_info->file_token,
-            contextual_search::ContextUploadStatus::kValidationFailed,
-            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
-        return;
-      }
       [[fallthrough]];
     case lens::MimeType::kUnknown:
+      if (!contextual_input_data->context_input.has_value() ||
+          contextual_input_data->context_input->empty()) {
+        if (enable_viewport_images_ &&
+            (contextual_input_data->viewport_screenshot_bytes.has_value() ||
+             contextual_input_data->viewport_screenshot.has_value())) {
+          // This is a reupload with an updated viewport but unchanged page /
+          // pdf contents. Other than the viewport upload set up earlier
+          // in this function, no other uploads are needed.
+          break;
+        }
+        if (file_info->mime_type != lens::MimeType::kUnknown) {
+          UpdateContextUploadStatus(
+              file_info->file_token,
+              contextual_search::ContextUploadStatus::kValidationFailed,
+              contextual_search::ContextUploadErrorType::
+                  kBrowserProcessingError);
+          return;
+        }
+      }
       // Call CreateContentextualDataUploadPayload off the main thread to avoid
       // blocking the main thread on compression.
       create_request_task_runner_->PostTaskAndReplyWithResult(

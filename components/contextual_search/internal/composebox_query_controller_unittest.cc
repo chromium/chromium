@@ -5716,4 +5716,84 @@ TEST_F(ComposeboxQueryControllerTest, UploadRawFileRequestSuccess) {
   EXPECT_EQ(request_id->mime_type(), "application/pdf");
 }
 
+#if !BUILDFLAG(IS_IOS)
+TEST_F(ComposeboxQueryControllerTest, StartContextUploadFlow_ViewportOnly) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false);
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow with ONLY viewport screenshot.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  // Empty context_input
+  input_data->context_input = std::vector<lens::ContextualInput>();
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+  input_data->viewport_screenshot = bitmap;
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  // Assert: Validate file upload request and status changes.
+  // Since there is no context input, only the viewport image should be
+  // uploaded.
+  WaitForFileUpload(file_token, lens::MimeType::kAnnotatedPageContent);
+
+  // Check that the vsrid matches that for an image upload (image_sequence_id
+  // incremented, long_context_id not incremented).
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                ->sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                ->image_sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                ->long_context_id(),
+            0);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .request_context()
+                .request_id()
+                .long_context_id(),
+            0);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 }  // namespace contextual_search

@@ -140,9 +140,14 @@ class QueryContextualizer {
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
-  bool IsContextUnchangedFromPreviousUpload(
+  // Checks if the context has changed since the previous upload. If only the
+  // viewport has changed, it modifies `page_content_data` to strip out the
+  // unchanged page contents so that only the new viewport is uploaded.
+  // Returns true if the context is completely unchanged (no upload needed),
+  // and false if there are changes (upload needed).
+  bool CheckIfContextChangedAndPrepareUploadData(
       std::optional<int64_t> context_id,
-      const lens::ContextualInputData& page_content_data,
+      lens::ContextualInputData& page_content_data,
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
