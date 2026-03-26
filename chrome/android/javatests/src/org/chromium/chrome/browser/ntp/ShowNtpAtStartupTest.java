@@ -250,7 +250,7 @@ public class ShowNtpAtStartupTest {
                 ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getTabAt(0));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ntp.showMagicStack(newTrackingTab);
+                    ntp.showHomeSurfaceUiOnNtp(newTrackingTab);
                 });
         CriteriaHelper.pollUiThread(() -> ntp.isMagicStackVisibleForTesting());
 

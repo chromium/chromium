@@ -23,6 +23,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -40,18 +45,33 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoUtils;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoCoordinator;
@@ -62,6 +82,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -81,13 +102,19 @@ import java.util.function.Supplier;
  * There are no separate phone and tablet UIs; this layout adapts based on the available space.
  */
 @NullMarked
-public class NewTabPageCoordinator {
+public class NewTabPageCoordinator implements ModuleDelegateHost {
     private static final String TAG = "NewTabPageLayout";
 
     private final NewTabPageManager mManager;
     private final Activity mActivity;
     private final NewTabPageLayout mNewTabPageLayout;
     private final NewTabPageLayout.Delegate mLayoutDelegate;
+    private final Tab mTab;
+    private final TabModelSelector mTabModelSelector;
+    private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
+    private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
+    private final SettableNullableObservableSupplier<Tab> mMostRecentTabSupplier =
+            ObservableSuppliers.createNullable();
     private LogoCoordinator mLogoCoordinator;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private @Nullable MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
@@ -105,6 +132,11 @@ public class NewTabPageCoordinator {
     private CallbackController mCallbackController = new CallbackController();
     private SearchEngineUtils.@Nullable SearchEngineIconObserver mSearchEngineIconObserver;
     private SearchEngineUtils.@Nullable SearchBoxHintTextObserver mSearchBoxHintTextObserver;
+
+    private @Nullable HomeModulesCoordinator mHomeModulesCoordinator;
+    private @Nullable ViewGroup mHomeModulesContainer;
+    private SetupListManager.@Nullable Observer mSetupListObserver;
+    private @Nullable Point mContextMenuStartPosition;
 
     /**
      * Whether the tiles shown in the layout have finished loading. With {@link #mHasShownView},
@@ -131,6 +163,7 @@ public class NewTabPageCoordinator {
     private boolean mTileCountChanged;
 
     private boolean mSnapshotTileGridChanged;
+    private boolean mSnapshotSingleTabCardChanged;
     private int mSearchBoxTwoSideMargin;
 
     /**
@@ -176,12 +209,25 @@ public class NewTabPageCoordinator {
      *     the page.
      * @param activity The activity that currently owns the new tab page
      * @param newTabPageLayout The new tab page layout.
+     * @param tabModelSelector {@link TabModelSelector} object.
+     * @param moduleRegistrySupplier Supplier for the {@link ModuleRegistry}.
+     * @param homeSurfaceTracker Used to decide whether we are the home surface.
      */
     public NewTabPageCoordinator(
-            NewTabPageManager manager, Activity activity, NewTabPageLayout newTabPageLayout) {
+            NewTabPageManager manager,
+            Activity activity,
+            NewTabPageLayout newTabPageLayout,
+            Tab tab,
+            TabModelSelector tabModelSelector,
+            OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
+            @Nullable HomeSurfaceTracker homeSurfaceTracker) {
         mManager = manager;
         mActivity = activity;
         mNewTabPageLayout = newTabPageLayout;
+        mTab = tab;
+        mTabModelSelector = tabModelSelector;
+        mModuleRegistrySupplier = moduleRegistrySupplier;
+        mHomeSurfaceTracker = homeSurfaceTracker;
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
@@ -263,6 +309,9 @@ public class NewTabPageCoordinator {
         mSearchEngineUtils = SearchEngineUtils.getForProfile(mProfile);
         mComposeplateUrlSupplier = composeplateUrlSupplier;
 
+        mContextMenuStartPosition =
+                ReturnToChromeUtil.calculateContextMenuStartPosition(mActivity.getResources());
+
         if (mIsTablet) {
             mDisplayStyleObserver = this::onDisplayStyleChanged;
             mUiConfig.addObserver(mDisplayStyleObserver);
@@ -298,6 +347,8 @@ public class NewTabPageCoordinator {
         if (assumeNonNull(mIsComposeplateEnabled)) {
             initializeComposeplate();
         }
+
+        initializeHomeModules();
 
         // This should be called after both mSearchBoxCoordinator and mComposeplateCoordinator are
         // initialized.
@@ -967,7 +1018,7 @@ public class NewTabPageCoordinator {
      * @see InvalidationAwareThumbnailProvider#shouldCaptureThumbnail()
      */
     public boolean shouldCaptureThumbnail() {
-        return mSnapshotTileGridChanged;
+        return mSnapshotTileGridChanged || mSnapshotSingleTabCardChanged;
     }
 
     /**
@@ -978,6 +1029,7 @@ public class NewTabPageCoordinator {
     public void onPreCaptureThumbnail() {
         if (mLogoCoordinator != null) mLogoCoordinator.endFadeAnimation();
         mSnapshotTileGridChanged = false;
+        mSnapshotSingleTabCardChanged = false;
     }
 
     private boolean shouldShowLogo() {
@@ -986,6 +1038,186 @@ public class NewTabPageCoordinator {
 
     private boolean hasLoadCompleted() {
         return mHasShownView && mTilesLoaded;
+    }
+
+    /** Initialize the magic stack on NTP. */
+    @VisibleForTesting
+    void initializeHomeModules() {
+        boolean isTrackingTabReady =
+                mHomeSurfaceTracker != null && mHomeSurfaceTracker.isHomeSurfaceTab(mTab);
+        // The magic stack is shown on every NTP. There are three cases:
+        // 1) on any normal NewTabPage. Initialize the magic stack here.
+        // 2) The home surface NewTabPage which is created via back operations. Initialize the
+        // magic stack here, and re-show the single Tab card with the previously tracked Tab.
+        // 3) The home surface NewTabPage which is created at startup. The magic stack will be
+        // initialized later since its tracking Tab hasn't been available yet.
+        // The launch type of a home surface NTP is TabLaunchType.FROM_STARTUP.
+        if (isTrackingTabReady) {
+            assumeNonNull(mHomeSurfaceTracker);
+            // Case 2) on home surface NTP via back operations.
+            showHomeSurfaceUiOnNtp(mHomeSurfaceTracker.getLastActiveTabToTrack());
+        } else if (mTab.getLaunchType() != TabLaunchType.FROM_STARTUP) {
+            // Case 1) on normal NTP.
+            showHomeSurfaceUiOnNtp(null);
+        }
+
+        if (isTrackingTabReady) {
+            ReturnToChromeUtil.recordHomeSurfaceShown();
+        }
+    }
+
+    /**
+     * Called to update the home modules.
+     *
+     * @param isLoaded Whether the host surface has been loaded.
+     */
+    void maybeUpdateHomeModules(boolean isLoaded) {
+        if (isLoaded && mHomeModulesCoordinator != null) {
+            mHomeModulesCoordinator.updateModules();
+        }
+    }
+
+    /**
+     * Shows the magic stack with the last active Tab if exists on the home surface NTP.
+     *
+     * @param mostRecentTab The last shown Tab if exists. It is non null for NTP home surface only.
+     */
+    public void showHomeSurfaceUiOnNtp(@Nullable Tab mostRecentTab) {
+        if (mModuleRegistrySupplier.get() == null) {
+            return;
+        }
+
+        if (mostRecentTab != null && !UrlUtilities.isNtpUrl(mostRecentTab.getUrl())) {
+            mMostRecentTabSupplier.set(mostRecentTab);
+        }
+
+        Profile profile = mProfile;
+        if (profile != null) {
+            SetupListManager.getInstance().maybePrimeCompletionStatus(profile.getOriginalProfile());
+        }
+
+        if (mHomeModulesCoordinator == null) {
+            initializeHomeModulesImpl();
+        }
+        mHomeModulesCoordinator.show(this::onHomeModulesShown);
+    }
+
+    /**
+     * Initializes the magic stack to show home modules on the current new tab page which is used as
+     * the home surface.
+     */
+    @EnsuresNonNull({"mHomeModulesContainer", "mHomeModulesCoordinator"})
+    private void initializeHomeModulesImpl() {
+        mHomeModulesContainer =
+                (ViewGroup)
+                        ((ViewStub)
+                                        mNewTabPageLayout.findViewById(
+                                                R.id.home_modules_recycler_view_stub))
+                                .inflate();
+        MonotonicObservableSupplier<Profile> profileSupplier =
+                ObservableSuppliers.createMonotonic(mProfile);
+        mHomeModulesCoordinator =
+                new HomeModulesCoordinator(
+                        mActivity,
+                        this,
+                        mNewTabPageLayout,
+                        HomeModulesConfigManager.getInstance(),
+                        profileSupplier,
+                        assumeNonNull(mModuleRegistrySupplier.get()));
+
+        if (SetupListManager.getInstance().isSetupListActive()) {
+            mSetupListObserver =
+                    () -> {
+                        if (mHomeModulesCoordinator != null) {
+                            mHomeModulesCoordinator.refreshModules();
+                        }
+                    };
+            SetupListManager.getInstance().addObserver(mSetupListObserver);
+        }
+    }
+
+    @VisibleForTesting
+    void onHomeModulesShown(boolean isVisible) {
+        assumeNonNull(mHomeModulesContainer);
+        mHomeModulesContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private void onTabClicked(int tabId) {
+        TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER);
+
+        mTabModelSelector
+                .getModel(false)
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
+        if (mHomeSurfaceTracker != null) {
+            // Updates the mHomeSurfaceTracker since the Tab of the NTP is closed.
+            mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);
+        }
+    }
+
+    // ModuleDelegateHost implementation
+
+    @Override
+    public @Nullable Point getContextMenuStartPoint() {
+        return mContextMenuStartPosition;
+    }
+
+    @Override
+    public @Nullable UiConfig getUiConfig() {
+        return mIsTablet ? mUiConfig : null;
+    }
+
+    @Override
+    public void onUrlClicked(GURL gurl) {
+        mTab.loadUrl(new LoadUrlParams(gurl));
+    }
+
+    @Override
+    public void onTabSelected(int tabId) {
+        onTabClicked(tabId);
+    }
+
+    @Override
+    public void onCaptureThumbnailStatusChanged() {
+        mSnapshotSingleTabCardChanged = true;
+    }
+
+    @Override
+    public void customizeSettings() {
+        NtpCustomizationCoordinatorFactory.getInstance()
+                .create(
+                        mActivity,
+                        mBottomSheetController,
+                        mTab::getProfile,
+                        NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS,
+                        mWindowAndroid,
+                        mModuleRegistrySupplier.get())
+                .showBottomSheet();
+    }
+
+    @Override
+    public int getStartMargin() {
+        boolean isInNarrowWindowOnTablet =
+                mIsTablet && NtpCustomizationUtils.isInNarrowWindowOnTablet(mIsTablet, mUiConfig);
+        int marginResourceId =
+                isInNarrowWindowOnTablet
+                        ? R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet
+                        : R.dimen.mvt_container_lateral_margin;
+        return mActivity.getResources().getDimensionPixelSize(marginResourceId);
+    }
+
+    @Override
+    public @Nullable Tab getTrackingTab() {
+        return mMostRecentTabSupplier.get();
+    }
+
+    @Override
+    public boolean isHomeSurface() {
+        // Can only show a local tab to resume if we we have a tracked tab. The presence of the
+        // local tab to resume module is effectively what being a home surface is.
+        return mMostRecentTabSupplier.get() != null;
     }
 
     @SuppressWarnings("NullAway")
@@ -1039,6 +1271,16 @@ public class NewTabPageCoordinator {
             mSigninPromoCoordinator = null;
         }
 
+        if (mHomeModulesCoordinator != null) {
+            mHomeModulesCoordinator.destroy();
+            mHomeModulesCoordinator = null;
+        }
+
+        if (mSetupListObserver != null) {
+            SetupListManager.getInstance().removeObserver(mSetupListObserver);
+            mSetupListObserver = null;
+        }
+
         mSearchBoxScrollListener = null;
         mComposeplateUrlSupplier = null;
     }
@@ -1061,6 +1303,16 @@ public class NewTabPageCoordinator {
 
     LogoCoordinator getLogoCoordinatorForTesting() {
         return mLogoCoordinator;
+    }
+
+    public boolean isMagicStackVisibleForTesting() {
+        if (mHomeModulesContainer == null) return false;
+
+        return mHomeModulesContainer.getVisibility() == View.VISIBLE;
+    }
+
+    public boolean getSnapshotSingleTabCardChangedForTesting() {
+        return mSnapshotSingleTabCardChanged;
     }
 
     private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
@@ -1176,5 +1428,9 @@ public class NewTabPageCoordinator {
 
     NewTabPageLayout getNewTabPageLayout() {
         return mNewTabPageLayout;
+    }
+
+    public @Nullable HomeModulesCoordinator getHomeModulesCoordinatorForTesting() {
+        return mHomeModulesCoordinator;
     }
 }

@@ -368,7 +368,7 @@ public final class ReturnToChromeUtil {
         // This cast is now guaranteed to succeed to a non-null value.
         NewTabPage newTabPage = (NewTabPage) nativePage;
         homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(ntpTab, lastActiveTab);
-        newTabPage.showMagicStack(lastActiveTab);
+        newTabPage.showHomeSurfaceUiOnNtp(lastActiveTab);
     }
 
     // TODO(crbug.com/40270227): Removes this histogram once we understand the root cause of
