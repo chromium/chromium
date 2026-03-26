@@ -3672,6 +3672,143 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
       aim_url, kAimMultiContextQueryParameter, &amc_value));
   EXPECT_EQ(amc_value, "1");
 }
+
+TEST_F(ComposeboxQueryControllerTest,
+       SingleContextImageUploadQueryHasVsridAndQueryParam) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the image file upload flow.
+  // Simulating user uploading an image via context menu.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  StartImageFileUploadFlow(file_token, image_bytes, image_options);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  // Act: Create the destination URL for the query.
+  // The destination URL can only be created after the cluster info is received.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  // Assert: vsrid parameter is present and contains "MEDIA_TYPE_DEFAULT_IMAGE".
+  std::string vsrid_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                         &vsrid_value));
+  EXPECT_FALSE(vsrid_value.empty());
+  EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE,
+            DecodeRequestIdFromVsrid(vsrid_value).media_type());
+
+  // Assert: q parameter contains the query text.
+  std::string query_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, "q", &query_value));
+  EXPECT_EQ(query_value, "hello");
+
+  // Assert: cinpts parameter is not present.
+  // Single context only uses vsrid.
+  std::string cinpts_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      aim_url, kContextualInputsParameterKey, &cinpts_value));
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       MultiContextPdfAndImageUploadQueryHasCinptsAndQueryParam) {
+  CreateController(
+    /*send_lns_surface=*/false,
+    /*suppress_lns_surface_param_if_no_image=*/true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the first file upload flow - PDF.
+  // Simulating user uploading a pdf via context menu.
+  const base::UnguessableToken pdf_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(pdf_token, /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(pdf_token, lens::MimeType::kPdf);
+
+  // Act: Start the second file upload flow - Image.
+  // Simulating user uploading an image via context menu.
+  const base::UnguessableToken image_token = base::UnguessableToken::Create();
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  StartImageFileUploadFlow(image_token, image_bytes, image_options);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(image_token, lens::MimeType::kImage);
+
+  // Act: Create the destination URL for the query.
+  // Simulating user entering query text and submitting with both files
+  // attached.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(pdf_token);
+  search_url_request_info->file_tokens.push_back(image_token);
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  // Assert: vsrid parameter is not present.
+  // Multi context uses cinpts instead of vsrid.
+  std::string vsrid_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                          &vsrid_value));
+
+  // Assert: cinpts parameter is present with both file request IDs.
+  lens::LensOverlayContextualInputs contextual_inputs =
+    GetContextualInputsFromUrl(aim_url.spec());
+  EXPECT_EQ(contextual_inputs.inputs_size(), 2);
+
+  // The files may be in any order, so find which is PDF and which is image.
+  bool first_input_is_pdf =
+      contextual_inputs.inputs(0).request_id().media_type() ==
+      lens::LensOverlayRequestId::MEDIA_TYPE_PDF;
+  auto pdf_request_id =
+      contextual_inputs.inputs(first_input_is_pdf ? 0 : 1).request_id();
+  auto image_request_id =
+      contextual_inputs.inputs(first_input_is_pdf ? 1 : 0).request_id();
+
+  EXPECT_EQ(pdf_request_id.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+  EXPECT_EQ(image_request_id.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+
+  // Assert: q parameter contains the query text.
+  std::string query_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, "q", &query_value));
+  EXPECT_EQ(query_value, "hello");
+
+  // Assert: gession id is present.
+  std::string gsession_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
+                                         &gsession_id_value));
+  EXPECT_EQ(kTestSearchSessionId, gsession_id_value);
+}
 #endif  // !BUILDFLAG(IS_IOS)
 
 // TODO(crbug.com/457765080): De-flake and re-enable on iOS.
