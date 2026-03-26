@@ -879,6 +879,46 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    public void testDrag_disabledDuringTabletSearch() {
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+        when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
+                .thenReturn(Arrays.asList(mFolderId3));
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        DragStateDelegate dragStateDelegate = mMediator.getDragStateDelegate();
+        assertTrue(
+                "Drag should be enabled in folder mode on tablet.",
+                dragStateDelegate.getDragEnabled());
+
+        // Get the search text change callback from the search box row.
+        Callback<String> searchTextChangeCallback =
+                mModelList
+                        .get(0)
+                        .model
+                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+
+        // Start a search on the tablet (in-place filter, stays in FOLDER mode).
+        searchTextChangeCallback.onResult("3");
+        assertEquals(
+                "UI mode should remain FOLDER on tablet during search.",
+                BookmarkUiMode.FOLDER,
+                mMediator.getCurrentUiMode());
+        assertFalse(
+                "Drag should be disabled during tablet search to prevent reordering a filtered"
+                        + " list.",
+                dragStateDelegate.getDragEnabled());
+
+        // Clearing the search should re-enable drag.
+        searchTextChangeCallback.onResult("");
+        assertTrue(
+                "Drag should be re-enabled after clearing tablet search.",
+                dragStateDelegate.getDragEnabled());
+    }
+
+    @Test
     public void testSearch() {
         when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
                 .thenReturn(Collections.singletonList(mFolderId3));
