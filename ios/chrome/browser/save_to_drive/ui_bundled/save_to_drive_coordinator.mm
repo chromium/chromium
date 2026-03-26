@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
@@ -56,6 +56,7 @@
   AccountPickerCoordinator* _accountPickerCoordinator;
   FileDestinationPickerViewController* _destinationPicker;
   UIAlertController* _alertController;
+  SigninCoordinator* _signinCoordinator;
   BOOL _shouldShowSignIn;
 }
 
@@ -137,6 +138,8 @@
   _alertController = nil;
   [_accountPickerCoordinator stop];
   _accountPickerCoordinator = nil;
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
 }
 
 #pragma mark - AccountPickerCoordinatorDelegate
@@ -284,6 +287,10 @@
 #pragma mark - Private
 
 - (void)openSignIn {
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
+  [_signinCoordinator stop];
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninOnly
@@ -297,18 +304,19 @@
                [weakSelf doSigninCompletionWithResult:result identity:identity];
              }];
 
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(), SigninPresenter)
-      showSignin:command];
+  _signinCoordinator =
+      [SigninCoordinator signinCoordinatorWithCommand:command
+                                              browser:self.browser
+                                   baseViewController:self.baseViewController];
+  [_signinCoordinator start];
 }
 
 - (void)doSigninCompletionWithResult:(SigninCoordinatorResult)result
                             identity:(id<SystemIdentity>)identity {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
   if (result == SigninCoordinatorResultSuccess) {
     [_mediator saveWithSelectedIdentity:identity];
-  } else {
-    id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), SaveToDriveCommands);
-    [saveToDriveHandler hideSaveToDrive];
   }
 }
 

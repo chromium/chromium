@@ -21,7 +21,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_configuration",
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_consumer",
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_logger",
-    "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/drive/model:drive_file_uploader",
