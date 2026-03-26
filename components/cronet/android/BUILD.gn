@@ -2155,12 +2155,19 @@ action("api_static_checks") {
   script = "//components/cronet/tools/api_static_checks.py"
   outputs = [ "$target_gen_dir/$target_name.stamp" ]
   _api_jar = "$_package_dir/cronet_api.jar"
+  _shared_jar = "$_package_dir/cronet_shared_java.jar"
   _common_jar = "$_package_dir/cronet_impl_common_java.jar"
   _platform_jar = "$_package_dir/cronet_impl_platform_java.jar"
   _native_jar = "$_package_dir/cronet_impl_native_java.jar"
   args = [
     "--api_jar",
     rebase_path(_api_jar, root_build_dir),
+
+    # The shared jar is considered an impl jar for the purposes of this check,
+    # because it is shipped on the impl side (and also on the API side, but
+    # that's not relevant here)
+    "--impl_jar",
+    rebase_path(_shared_jar, root_build_dir),
     "--impl_jar",
     rebase_path(_common_jar, root_build_dir),
     "--impl_jar",
@@ -2175,9 +2182,11 @@ action("api_static_checks") {
     ":repackage_impl_common",
     ":repackage_native",
     ":repackage_platform",
+    ":repackage_shared",
   ]
   inputs = [
     _api_jar,
+    _shared_jar,
     _common_jar,
     _platform_jar,
     _native_jar,
