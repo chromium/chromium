@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -274,6 +275,38 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData_SplitPrepopulatedEntry) {
   EXPECT_EQ(url_to_update->short_name(), u"modified name");
   EXPECT_EQ(url_to_update->keyword(), u"newkeyword");
   EXPECT_NE(url_to_update->sync_guid, original_turl->sync_guid());
+}
+
+TEST(TemplateURLServiceUtilTest, MergeIntoEngineData_MigrationLogging) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kPrepopulatedEnginesMigration};
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<TemplateURLData> original_turl_data =
+      CreatePrepopulateTemplateURLData(1, "google");
+  std::unique_ptr<TemplateURLData> url_to_update =
+      CreatePrepopulateTemplateURLData(130, "google");
+  original_turl_data->migrate_to_id = 130;
+
+  std::unique_ptr<TemplateURL> original_turl =
+      std::make_unique<TemplateURL>(*original_turl_data);
+
+  // Test kMigratedNonDefault
+  MergeIntoEngineData(original_turl->data(), *url_to_update.get(),
+                      TemplateURLMergeOption::kSplitPrepopulatedEntry);
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.TemplateUrl.DBRefresh.MigrationAction",
+      1 /*kMigratedNonDefault*/, 1);
+
+  // Test kMigratedDefaultProvider
+  url_to_update = CreatePrepopulateTemplateURLData(130, "google");
+  MergeIntoEngineData(original_turl->data(), *url_to_update.get(),
+                      TemplateURLMergeOption::kSettingAsDefaultProvider);
+
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.TemplateUrl.DBRefresh.MigrationAction",
+      0 /*kMigratedDefaultProvider*/, 1);
 }
 
 class TemplateURLServiceUtilLoadTest : public testing::Test {

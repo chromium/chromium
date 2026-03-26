@@ -4331,6 +4331,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.TemplateUrl.DBRefresh.MigrationAction"
+    enum="PrepopulatedEngineMigrationAction" expires_after="2027-03-01">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Emitted when an engine is migrated to a new ID during the Keywords database
+    update pass. Records whether the migrated engine was the user's Default
+    Search Provider or another engine present in the keywords DB.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.TemplateUrl.DBRefresh.UnmatchedDefaultSearchCount"
     units="count" expires_after="2026-09-20">
   <owner>dgn@google.com</owner>

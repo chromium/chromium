@@ -19,6 +19,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
@@ -226,6 +227,19 @@ enum class EntryPreservationReason {
 void RecordEntryPreservationReason(EntryPreservationReason reason) {
   base::UmaHistogramEnumeration(
       "Omnibox.TemplateUrl.DBRefresh.EntryPreservationReason", reason);
+}
+
+// LINT.IfChange(PrepopulatedEngineMigrationAction)
+enum class PrepopulatedEngineMigrationAction {
+  kMigratedDefaultProvider = 0,
+  kMigratedNonDefault = 1,
+  kMaxValue = kMigratedNonDefault,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/omnibox/enums.xml:PrepopulatedEngineMigrationAction)
+
+void RecordMigrationAction(PrepopulatedEngineMigrationAction action) {
+  base::UmaHistogramEnumeration("Omnibox.TemplateUrl.DBRefresh.MigrationAction",
+                                action);
 }
 
 void RecordDefaultSearchMatchCount(int entries_matching_dsp_to_reconcile,
@@ -545,6 +559,11 @@ void MergeIntoEngineData(const TemplateURLData& original_turl,
   }
 
   if (is_id_migration) {
+    RecordMigrationAction(
+        merge_option == TemplateURLMergeOption::kSettingAsDefaultProvider
+            ? PrepopulatedEngineMigrationAction::kMigratedDefaultProvider
+            : PrepopulatedEngineMigrationAction::kMigratedNonDefault);
+
     // The data from `original_turl` has been merged into `data_to_update`, but
     // `data_to_update` has a different `prepopulate_id`. This could lead to
     // reconciliation issues on clients which don't have the latest data yet,
@@ -689,20 +708,49 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
   // Debugging https://crbug.com/492852740
   bool is_dsp_from_policy =
       default_search_provider && default_search_provider->enforced_by_policy();
+  bool is_dsp_from_extension =
+      default_search_provider &&
+      (default_search_provider->type() == TemplateURL::OMNIBOX_API_EXTENSION ||
+       default_search_provider->type() ==
+           TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
 
-  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_dsp",
-                        default_search_provider != nullptr);
   SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_dsp_match", dsp_match != nullptr);
-  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_existing_urls",
-                        !existing_urls.empty());
+
+  // Breakdown of the explanations for a DSP mismatch.
+  bool has_mismatch_explanation =
+      // There is no DSP.
+      !default_search_provider ||
+      // There is no set of existing turls to get a match from.
+      existing_urls.empty();
+
+  // - Confirmed and expected reasons
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_no_preloaded_dsp",
+                        default_search_provider == nullptr);
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_existing_urls_empty",
+                        existing_urls.empty());
+  // - Other hypotheses
+  //   Not confirmed because they should normally not be brought up through
+  //   pre-loading DSP, or their first appearance should come after the keywords
+  //   DB is loaded, and then they should have been added to it.
   SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_dsp_from_policy",
                         is_dsp_from_policy);
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_dsp_from_extension",
+                        is_dsp_from_extension);
+  SCOPED_CRASH_KEY_BOOL(
+      "KwdbRefresh", "is_from_reg_program",
+      default_search_provider &&
+          default_search_provider->CreatedByRegulatoryProgram());
 
-  // It would make no sense that none of the existing turls matches the DSP,
-  // except if there is no DSP or no existing turls.
-  CHECK(dsp_match || !default_search_provider || existing_urls.empty() ||
-            is_dsp_from_policy,
-        base::NotFatalUntil::M150);
+  if (!dsp_match && !has_mismatch_explanation) {
+    // This is not implemented with a `CHECK` for various reasons:
+    // - It's a pre-existing behaviour
+    // - Some of the ways to trigger it are explicitly not blocked upstream on
+    //   some platforms, during prefs loading.
+    // So we keep this as a `DumpWithoutCrashing` to avoid causing test
+    // failures, while still allowing to collect data, validating the logic in
+    // this function and following-up with some defensive checks.
+    base::debug::DumpWithoutCrashing();
+  }
 
   // We expect to only have one regulatory program engine at a time, see
   // `TemplateURLService::ResetPlayAPISearchEngine()`.

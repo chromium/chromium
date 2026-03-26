@@ -334,6 +334,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/browser/lens_suggest_inputs_utils.h:PaywallSignal) -->
 
+<!-- LINT.IfChange(PrepopulatedEngineMigrationAction) -->
+
+<enum name="PrepopulatedEngineMigrationAction">
+  <int value="0" label="Migrated Default Provider"/>
+  <int value="1" label="Migrated Non-Default Engine"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/search_engines/util.cc:PrepopulatedEngineMigrationAction) -->
+
 <!-- LINT.IfChange(ReconciliationType) -->
 
 <enum name="ReconciliationType">
