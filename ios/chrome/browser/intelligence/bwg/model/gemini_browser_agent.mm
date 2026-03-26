@@ -762,6 +762,7 @@ bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
     case gemini::FloatyUpdateSource::ContextMenu:
     case gemini::FloatyUpdateSource::WebContextMenu:
     case gemini::FloatyUpdateSource::IneligibleSite:
+    case gemini::FloatyUpdateSource::SearchRelatedPage:
     case gemini::FloatyUpdateSource::ForcedFromQueryResponse:
     case gemini::FloatyUpdateSource::TabGrid:
     case gemini::FloatyUpdateSource::Banner:

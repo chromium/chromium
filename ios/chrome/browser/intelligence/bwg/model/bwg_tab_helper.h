@@ -76,6 +76,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // Whether Gemini is available for the current web state.
   bool IsGeminiAvailableForWebState();
 
+  // Returns true if the URL is an Aim-related URL (e.g. Google search, home
+  // page, or zero state URL).
+  bool IsAimRelatedUrl(const GURL& url);
 
   // Gets the client and server IDs for the BWG session for the associated
   // WebState. server ID is optional because it may not be found or is expired.

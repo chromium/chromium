@@ -394,3 +394,20 @@ TEST_F(GeminiMetricsTest, RecordGeminiEntryPointAvailable) {
                                       gemini::EntryPoint::EditMenu, 1);
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kEntryPointAvailable));
 }
+
+TEST_F(GeminiMetricsTest, RecordGeminiPageAvailability) {
+  RecordGeminiPageAvailability(IOSGeminiPageAvailability::kAvailable);
+  histogram_tester_.ExpectUniqueSample(kGeminiPageAvailabilityHistogram,
+                                       IOSGeminiPageAvailability::kAvailable,
+                                       1);
+
+  RecordGeminiPageAvailability(IOSGeminiPageAvailability::kSearchResultPage);
+  histogram_tester_.ExpectBucketCount(
+      kGeminiPageAvailabilityHistogram,
+      IOSGeminiPageAvailability::kSearchResultPage, 1);
+
+  RecordGeminiPageAvailability(IOSGeminiPageAvailability::kUnavailable);
+  histogram_tester_.ExpectBucketCount(kGeminiPageAvailabilityHistogram,
+                                      IOSGeminiPageAvailability::kUnavailable,
+                                      1);
+}

@@ -93,6 +93,8 @@ const char kPromoActionHistogram[] = "IOS.Gemini.FRE.PromoAction";
 
 const char kConsentActionHistogram[] = "IOS.Gemini.FRE.ConsentAction";
 
+const char kGeminiPageAvailabilityHistogram[] = "IOS.Gemini.PageAvailability";
+
 const char kGeminiIneligibilityReasonHistogram[] =
     "IOS.Gemini.IneligibilityReason";
 
@@ -218,6 +220,10 @@ void RecordFREConsentAction(IOSGeminiFREAction action) {
       break;
   }
   base::UmaHistogramEnumeration(kConsentActionHistogram, action);
+}
+
+void RecordGeminiPageAvailability(IOSGeminiPageAvailability reason) {
+  base::UmaHistogramEnumeration(kGeminiPageAvailabilityHistogram, reason);
 }
 
 void RecordGeminiEligibility(bool eligible) {

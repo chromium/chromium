@@ -27,6 +27,7 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
@@ -331,14 +332,19 @@ bool BwgTabHelper::IsGeminiAvailableForWebState() {
 
   if (IsGeminiCopresenceEnabled() || IsGeminiFloatyAllPagesEnabled()) {
     const GURL& url = web_state_->GetVisibleURL();
-    if (!url.SchemeIsHTTPOrHTTPS() || google_util::IsGoogleSearchUrl(url) ||
-        google_util::IsGoogleHomePageUrl(url) || IsAimZeroStateURL(url)) {
+    if (!url.SchemeIsHTTPOrHTTPS() || IsAimRelatedUrl(url)) {
       return false;
     }
   }
 
   return CanExtractPageContextForWebState(web_state_) ||
          IsGeminiFloatyAllPagesEnabled();
+}
+
+bool BwgTabHelper::IsAimRelatedUrl(const GURL& url) {
+  return (google_util::IsGoogleSearchUrl(url) ||
+          google_util::IsGoogleHomePageUrl(url) || IsAimZeroStateURL(url)) &&
+         IsGeminiCopresenceSRPCheckEnabled();
 }
 
 #pragma mark - WebStateObserver
@@ -427,6 +433,16 @@ void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (IsGeminiCopresenceEnabled()) {
+    if (IsGeminiAvailableForWebState()) {
+      RecordGeminiPageAvailability(IOSGeminiPageAvailability::kAvailable);
+    } else {
+      if (google_util::IsGoogleSearchUrl(web_state->GetVisibleURL())) {
+        RecordGeminiPageAvailability(
+            IOSGeminiPageAvailability::kSearchResultPage);
+      } else {
+        RecordGeminiPageAvailability(IOSGeminiPageAvailability::kUnavailable);
+      }
+    }
     [bwg_commands_handler_
         updateFloatyVisibilityIfEligibleAnimated:NO
                                       fromSource:gemini::FloatyUpdateSource::

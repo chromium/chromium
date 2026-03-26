@@ -501,6 +501,16 @@ double GetGeminiCopresenceResponseReadyInterval() {
       kGeminiCopresenceResponseReadyIntervalDefault);
 }
 
+const char kGeminiCopresenceSRPCheck[] = "GeminiCopresenceSRPCheck";
+
+bool IsGeminiCopresenceSRPCheckEnabled() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiCopresence, kGeminiCopresenceSRPCheck, /*default_value=*/true);
+}
+
 BASE_FEATURE(kGeminiChatPersistence, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiChatPersistenceEnabled() {

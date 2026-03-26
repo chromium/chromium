@@ -1190,6 +1190,8 @@ const FeatureEntry::FeatureParam
         {kGeminiCopresenceWithFullscreenDisabler, "true"}};
 const FeatureEntry::FeatureParam kGeminiCopresenceTrackSourcesParam[] = {
     {kGeminiCopresenceTrackSources, "true"}};
+const FeatureEntry::FeatureParam kGeminiCopresenceIgnoreSRPCheckEnabled[] = {
+    {kGeminiCopresenceSRPCheck, "false"}};
 
 const FeatureEntry::FeatureVariation kGeminiCopresenceVariations[] = {
     {"Response Ready Interval", kGeminiCopresenceResponseReadyIntervalParam,
@@ -1197,6 +1199,7 @@ const FeatureEntry::FeatureVariation kGeminiCopresenceVariations[] = {
     {"With Fullscreen Disabler", kGeminiCopresenceWithFullscreenDisablerParam,
      nullptr},
     {"Track Sources", kGeminiCopresenceTrackSourcesParam, nullptr},
+    {"Ignore SRP Check", kGeminiCopresenceIgnoreSRPCheckEnabled, nullptr},
 };
 
 const char kFRESignInHeaderTextUpdateParamName[] =
