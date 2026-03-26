@@ -2565,10 +2565,6 @@ TEST_P(PageContextWrapperTest,
                RawHtml("<iframe srcdoc=\"" + srcdoc_content + "\"></iframe>"));
 
   std::string main_html = page_helper_->Build(page_structure);
-  // Start the server if not already running (required for GetURL).
-  if (!test_server_.Started()) {
-    ASSERT_TRUE(test_server_.Start());
-  }
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
 
@@ -4039,6 +4035,119 @@ TEST_P(PageContextWrapperTest,
   EXPECT_EQ(fc_changed_password.redaction_decision(),
             optimization_guide::proto::RedactionDecision::
                 REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+}
+
+// Tests that input fields using CSS text security (custom passwords) are
+// correctly identified and redacted.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_CustomPassword) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  // A simple page with a custom password field (using -webkit-text-security).
+
+  auto page_structure = HtmlPage(
+      "CustomPassword",
+      RawHtml("<html><body>"
+              "<form>"
+              "<input type='text' style='-webkit-text-security: disc;' "
+              "value='secret'>"
+              "</form>"
+              "</body></html>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& form_node = root_node.children_nodes(0);
+  ASSERT_EQ(form_node.children_nodes_size(), 1);
+  const auto& input_node = form_node.children_nodes(0);
+
+  EXPECT_TRUE(input_node.content_attributes().has_form_control_data());
+  const auto& form_control_data =
+      input_node.content_attributes().form_control_data();
+
+  // Should be identified as a password due to redaction decision
+  // REDACTED_HAS_BEEN_PASSWORD (2).
+  EXPECT_EQ(form_control_data.redaction_decision(),
+            static_cast<optimization_guide::proto::RedactionDecision>(2));
+
+  // The value should be empty because it was redacted.
+  EXPECT_FALSE(form_control_data.has_field_value());
+  EXPECT_EQ(form_control_data.field_value(), "");
+}
+
+// Tests that input fields using JS masking (e.g. appearing as a sequence of
+// dots) are correctly identified as potential passwords and redacted.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_JSCustomPassword) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  // A page with a JS-masked password field (e.g., "••••a").
+  auto page_structure =
+      HtmlPage("JSCustomPassword",
+               RawHtml("<html><body>"
+                       "<form>"
+                       "<input type='text' value='\u2022\u2022\u2022\u2022a' "
+                       "name='password_imitation'>"
+                       "</form>"
+                       "</body></html>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& form_node = root_node.children_nodes(0);
+  ASSERT_EQ(form_node.children_nodes_size(), 1);
+  const auto& input_node = form_node.children_nodes(0);
+
+  EXPECT_TRUE(input_node.content_attributes().has_form_control_data());
+  const auto& form_control_data =
+      input_node.content_attributes().form_control_data();
+
+  // Based on JS masking heuristic, this should be redacted.
+  EXPECT_EQ(form_control_data.redaction_decision(),
+            static_cast<optimization_guide::proto::RedactionDecision>(2));
+  EXPECT_EQ(form_control_data.field_value(), "");
 }
 
 // Tests that Canvas Metadata is extracted correctly.

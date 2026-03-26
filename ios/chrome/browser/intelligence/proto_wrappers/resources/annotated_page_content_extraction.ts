@@ -225,11 +225,6 @@ const BASIC_CONTENT_ATTRIBUTES: PageContentAttributes = {
 const STYLE_VALUE_OVERFLOW_AUTO = 'auto';
 const STYLE_VALUE_OVERFLOW_SCROLL = 'scroll';
 
-// Input redaction decision that will keep its value.
-const UNREDACTED_DECISIONS = [
-  PageContentRedactionDecision.NO_REDACTION_NECESSARY,
-  PageContentRedactionDecision.UNREDACTED_EMPTY_PASSWORD,
-];
 
 // Type alias for accessing webkit-specific fullscreen document properties that
 // are not part of the standard Document interface.
@@ -1382,6 +1377,162 @@ function getAriaLabel(element: HTMLElement): string | undefined {
 }
 
 /**
+ * Checks if a code point is a security mask character (e.g. bullet, asterisk).
+ *
+ * @param codePoint The Unicode code point to check.
+ * @return True if the code point is a security mask character.
+ */
+function isSecurityMaskCharacter(codePoint: number): boolean {
+  switch (codePoint) {
+    // Standard Asterisks & Stars.
+    case 0x002A:  // '*'
+    case 0x2731:  // Heavy Asterisk (✱)
+    case 0x2732:  // Open Centre Asterisk (✲)
+    case 0x2733:  // Eight Spoked Asterisk (✳)
+    case 0xFF0A:  // Fullwidth Asterisk (＊)
+
+    // Standard Bullets & Circles.
+    case 0x2022:  // Bullet (•)
+    case 0x25CF:  // Black Circle (●)
+    case 0x25CB:  // White Circle (○)
+    case 0x25EF:  // Large Circle (◯)
+    case 0x26AB:  // Medium Black Circle (⚫)
+    case 0x2B24:  // Black Large Circle (⬤)
+    case 0x25E6:  // White Bullet (◦)
+    case 0x25C9:  // Fisheye (◉)
+
+    // Dots & Mathematical Operators.
+    case 0x00B7:  // Middle Dot (·)
+    case 0x2219:  // Bullet Operator (∙)
+    case 0x22C5:  // Dot Operator (⋅)
+    case 0x2802:  // Braille Dot-2 (⠂)
+    case 0x2812:  // Braille Dots-2-5 (⠒)
+    case 0x2836:  // Braille Dots-2-3-5-6 (⠶)
+
+    // Squares, Blocks & Diamonds.
+    case 0x25A0:  // Black Square (■)
+    case 0x25A1:  // White Square (□)
+    case 0x25AA:  // Black Small Square (▪)
+    case 0x25AB:  // White Small Square (▫)
+    case 0x25AE:  // Black Vertical Rectangle (▮)
+    case 0x2588:  // Full Block (█)
+    case 0x2589:  // Left Seven Eighths Block (▉)
+    case 0x25C6:  // Black Diamond (◆)
+    case 0x25C7:  // White Diamond (◇)
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * Checks if a code point is a whitespace character (Space, Tab, LF, CR).
+ *
+ * @param codePoint The Unicode code point to check.
+ * @return True if the code point is a whitespace character.
+ */
+function isJSWhitespace(codePoint: number): boolean {
+  switch (codePoint) {
+    case 0x0020:  // Space
+    case 0x0009:  // Horizontal tab
+    case 0x000A:  // Line feed
+    case 0x000D:  // Carriage return
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
+ * Checks if the field's value looks like a custom password field masked by JS.
+ * This heuristic detects values that are mostly composed of mask characters,
+ * potentially with the last character visible (as is common on mobile).
+ *
+ * @param fieldValue The value to check.
+ * @return True if the value is likely a custom password.
+ */
+function isLikelyJSCustomPasswordField(fieldValue: string): boolean {
+  // Use a while loop to correctly iterate over Unicode code points without
+  // allocating a new array, handling surrogate pairs as single characters.
+  let i = 0;
+  let codePointCount = 0;
+  while (i < fieldValue.length) {
+    const codePoint = fieldValue.codePointAt(i)!;
+    codePointCount++;
+
+    if (isJSWhitespace(codePoint)) {
+      // Passwords generally do not contain whitespace (it doesn't mean they
+      // can't but this is a generalization to make a best guess on the
+      // purpose of the `fieldValue`).
+      return false;
+    }
+
+    const isMask = isSecurityMaskCharacter(codePoint);
+    const charLen = codePoint > 0xFFFF ? 2 : 1;
+    const isLast = (i + charLen >= fieldValue.length);
+
+    if (isMask) {
+      i += charLen;
+      continue;
+    }
+
+    // Visible characters are only allowed at the very end (to support the
+    // common mobile pattern where the last typed character is briefly visible).
+    if (!isLast) {
+      return false;
+    }
+
+    i += charLen;
+  }
+
+  // All characters look like password characters and we have at least 2.
+  return codePointCount >= 2;
+}
+
+/**
+ * Checks if the element is a custom password field (e.g. using CSS
+ * text-security or JS masking).
+ */
+function isCustomPassword(element: Element): boolean {
+  if (element.tagName === TAG_INPUT || element.tagName === TAG_TEXTAREA) {
+    const value = (element as HTMLInputElement | HTMLTextAreaElement).value;
+    if (value && isLikelyJSCustomPasswordField(value)) {
+      return true;
+    }
+  }
+
+  const windowObj = element.ownerDocument?.defaultView || window;
+  const style = windowObj.getComputedStyle(element);
+  const textSecurity = style.getPropertyValue('-webkit-text-security');
+  return !!textSecurity && textSecurity !== 'none';
+}
+
+
+
+/**
+ * Checks if the element is a password field (standard or custom).
+ *
+ * @param domNode The DOM element to process.
+ * @param tagName The tag name of the element.
+ * @return True if the element is a password field.
+ */
+function isPasswordField(domNode: HTMLElement, tagName: string): boolean {
+  if (tagName === TAG_INPUT &&
+      ((domNode as PasswordTrackedElement)[HAS_BEEN_PASSWORD_SYMBOL] ||
+       (domNode as HTMLInputElement).type === PASSWORD_TYPE)) {
+    // A plain password input.
+    return true;
+  }
+
+  if (tagName === TAG_INPUT || tagName === TAG_TEXTAREA) {
+    // Check for custom password fields (CSS or JS masked).
+    return isCustomPassword(domNode);
+  }
+  return false;
+}
+
+/**
  * Extracts form control specific content attributes from a given DOM element.
  * Handles inputs, textareas, selects, and buttons.
  *
@@ -1408,22 +1559,15 @@ function getFormControlData(
 
   const value = (domNode as HTMLInputElement).value;
   if (value !== undefined) {
-    // Don't include password values as they are sensitive (mirrors Blink's
-    // logic). The symbol should be enough but check the input type as a
-    // fallback.
-    if (tagName === TAG_INPUT &&
-        ((domNode as PasswordTrackedElement)[HAS_BEEN_PASSWORD_SYMBOL] ||
-         (domNode as HTMLInputElement).type === PASSWORD_TYPE)) {
-      formControlData.redactionDecision = value ?
+    let needRedaction = false;
+    if (isPasswordField(domNode, tagName)) {
+      needRedaction = !!value;
+      // Exclude password field value mirroring Blink's logic.
+      formControlData.redactionDecision = needRedaction ?
           PageContentRedactionDecision.REDACTED_HAS_BEEN_PASSWORD :
           PageContentRedactionDecision.UNREDACTED_EMPTY_PASSWORD;
     }
-
-    // TAG_TEXTAREA and TAG_SELECT do not support the 'type' attribute to
-    // designate a password field, so we consider their values safe to extract
-    // (unless they are custom passwords, which is handled separately).
-    if (tagName !== TAG_INPUT ||
-        UNREDACTED_DECISIONS.includes(formControlData.redactionDecision)) {
+    if (!needRedaction) {
       formControlData.fieldValue = value;
     }
   }
