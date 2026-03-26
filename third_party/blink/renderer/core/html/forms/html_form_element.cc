@@ -345,8 +345,7 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
     active_webmcp_tool_->CallDoneCallback(base::unexpected(ScriptToolError(
         ScriptToolErrorCode::kToolCancelled,
         "Tool execution cancelled, since tool definition was updated")));
-    model_context->unregisterTool(active_webmcp_tool_->ToolName(),
-                                  ASSERT_NO_EXCEPTION);
+    model_context->UnregisterTool(active_webmcp_tool_->ToolName());
     active_webmcp_tool_ = nullptr;
   }
 

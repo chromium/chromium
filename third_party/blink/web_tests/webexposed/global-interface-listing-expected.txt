@@ -6700,7 +6700,6 @@ interface ModelContext
     attribute @@toStringTag
     method constructor
     method registerTool
-    method unregisterTool
 interface Mojo
     static method bindInterface
     static method createDataPipe

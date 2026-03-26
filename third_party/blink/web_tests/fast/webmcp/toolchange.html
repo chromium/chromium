@@ -41,7 +41,7 @@ promise_test(async t => {
 
   // Test 1: Register a new tool
   let eventPromise = watcher.wait_for('toolchange');
-  navigator.modelContext.registerTool({
+  const greetTool = {
       execute: greet,
       name: "greet",
       description: "greet someone",
@@ -55,7 +55,9 @@ promise_test(async t => {
           },
           required: ["name"]
       },
-  });
+  };
+  const controller = new AbortController();
+  navigator.modelContext.registerTool(greetTool, { signal: controller.signal });
   await eventPromise;
 
   tools = navigator.modelContextTesting.listTools();
@@ -63,7 +65,7 @@ promise_test(async t => {
 
   // Test 2: Unregister a tool
   eventPromise = watcher.wait_for('toolchange');
-  navigator.modelContext.unregisterTool("greet");
+  controller.abort();
   await eventPromise;
 
   tools = navigator.modelContextTesting.listTools();

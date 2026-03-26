@@ -4,11 +4,14 @@
 
 // https://webmachinelearning.github.io/webmcp/#model-context-container
 
+dictionary ModelContextRegisterToolOptions {
+  AbortSignal signal;
+};
+
 [
     Exposed=Window,
     SecureContext,
     RuntimeEnabled=WebMCP
 ] interface ModelContext {
-  [CallWith=ScriptState, RaisesException, MeasureAs=ModelContextRegisterTool] undefined registerTool(ModelContextTool tool);
-  [RaisesException] undefined unregisterTool(DOMString name);
+  [CallWith=ScriptState, RaisesException, MeasureAs=ModelContextRegisterTool] undefined registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
 };

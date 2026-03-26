@@ -1,11 +1,13 @@
 'use strict';
 
 test(() => {
-  navigator.modelContext.registerTool({
+  const tool = {
     name: 'empty',
     description: 'echo empty',
     execute: () => {},
-  });
+  };
 
-  navigator.modelContext.unregisterTool('empty');
+  const controller = new AbortController();
+  navigator.modelContext.registerTool(tool, { signal: controller.signal });
+  controller.abort();
 }, 'register tool with only required params');

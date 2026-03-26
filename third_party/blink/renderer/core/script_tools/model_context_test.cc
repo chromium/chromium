@@ -1244,7 +1244,7 @@ TEST_F(ModelContextTest, ForEachScriptToolGC) {
   EXPECT_TRUE(found);
 
   // Now unregister it.
-  model_context->unregisterTool("test_tool", ASSERT_NO_EXCEPTION);
+  model_context->UnregisterTool("test_tool");
 
   // Trigger GC again. Now it should be reclaimed.
   ThreadState::Current()->CollectAllGarbageForTesting();

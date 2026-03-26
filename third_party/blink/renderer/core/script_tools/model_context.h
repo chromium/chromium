@@ -26,6 +26,7 @@ class AbortSignal;
 class Element;
 class SourceLocation;
 class ModelContextOptions;
+class ModelContextRegisterToolOptions;
 class ModelContextTool;
 
 class DeclarativeWebMCPTool : public GarbageCollectedMixin {
@@ -108,8 +109,9 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
 
   void registerTool(ScriptState* state,
                     ModelContextTool* tool,
+                    ModelContextRegisterToolOptions* options,
                     ExceptionState& exception_state);
-  void unregisterTool(const String& name, ExceptionState& exception_state);
+  void UnregisterTool(const String& name);
 
   std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
       const String& name) const;
@@ -145,6 +147,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
 
  private:
   class ToolFunctionFinishedCallback;
+  class ToolUnregisterAbortAlgorithm;
 
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                      const base::UnguessableToken& execution_id,

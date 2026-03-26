@@ -27,7 +27,7 @@ Adding {
                     [0] : {
                         columnNumber : 31
                         functionName :
-                        lineNumber : 9
+                        lineNumber : 15
                         scriptId : <string>
                         url :
                     }
@@ -59,7 +59,7 @@ Adding {
                     [0] : {
                         columnNumber : 35
                         functionName : window.registerNewTools
-                        lineNumber : 16
+                        lineNumber : 18
                         scriptId : <string>
                         url :
                     }
@@ -92,7 +92,7 @@ Removing {
                     [0] : {
                         columnNumber : 31
                         functionName :
-                        lineNumber : 9
+                        lineNumber : 15
                         scriptId : <string>
                         url :
                     }

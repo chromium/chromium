@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_script_tool_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_model_context_register_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_annotations.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -138,6 +140,25 @@ String ComputeScriptToolResult(const Document& document) {
 
 }  // namespace
 
+class ModelContext::ToolUnregisterAbortAlgorithm final
+    : public AbortSignal::Algorithm {
+ public:
+  ToolUnregisterAbortAlgorithm(ModelContext* model_context,
+                               const String& tool_name)
+      : model_context_(model_context), tool_name_(tool_name) {}
+
+  void Run() override { model_context_->UnregisterTool(tool_name_); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(model_context_);
+    AbortSignal::Algorithm::Trace(visitor);
+  }
+
+ private:
+  Member<ModelContext> model_context_;
+  String tool_name_;
+};
+
 class ModelContext::ToolFunctionFinishedCallback
     : public ThenCallable<IDLAny, ToolFunctionFinishedCallback> {
  public:
@@ -208,6 +229,7 @@ void ModelContext::ForEachScriptTool(
 
 void ModelContext::registerTool(ScriptState* script_state,
                                 ModelContextTool* tool,
+                                ModelContextRegisterToolOptions* options,
                                 ExceptionState& exception_state) {
   if (tool_map_.find(tool->name()) != tool_map_.end()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -237,6 +259,30 @@ void ModelContext::registerTool(ScriptState* script_state,
     }
   }
 
+  if (options && options->hasSignal()) {
+    AbortSignal* signal = options->signal();
+    if (signal->aborted()) {
+      ExecutionContext::From(script_state)
+          ->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Tool '" + tool->name() +
+                  "' was not registered because its AbortSignal was already "
+                  "aborted."));
+      return;
+    }
+
+    // We intentionally do not use `ScopedAbortState` or otherwise explicitly
+    // manage this algorithm handle. For imperative tools, the tool's
+    // registration lifecycle is exactly bound to the given abort signal. Since
+    // the signal automatically clears its internal algorithm list upon
+    // aborting, no explicit cleanup is required here. If there were a way to
+    // unregister an imperative tools otherwise, then during that process we
+    // would remove the unregistration algorithm from the given signal.
+    std::ignore = signal->AddAlgorithm(
+        MakeGarbageCollected<ToolUnregisterAbortAlgorithm>(this, tool->name()));
+  }
+
   auto script_tool = mojom::blink::ScriptTool::New();
   script_tool->name = tool->name();
   script_tool->description = tool->description();
@@ -259,12 +305,9 @@ void ModelContext::registerTool(ScriptState* script_state,
   OnToolChange();
 }
 
-void ModelContext::unregisterTool(const String& tool_name,
-                                  ExceptionState& exception_state) {
-  auto it = tool_map_.find(tool_name);
+void ModelContext::UnregisterTool(const String& name) {
+  auto it = tool_map_.find(name);
   if (it == tool_map_.end()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid tool name");
     return;
   }
 

@@ -17,11 +17,13 @@
           required: ["text"]
         };
         async function echo(obj) { return obj.text; }
-        navigator.modelContext.registerTool({
+        const initial_imperative_tool = {
           execute: echo,
           name: "initial_imperative_tool",
           description: "An imperative WebMCP tool",
-        });
+        };
+        window.initialController = new AbortController();
+        navigator.modelContext.registerTool(initial_imperative_tool, { signal: window.initialController.signal });
 
         window.registerNewTools = function() {
             navigator.modelContext.registerTool({
@@ -44,7 +46,7 @@
         };
 
         window.unregisterOneOfEach = function() {
-            navigator.modelContext.unregisterTool("initial_imperative_tool");
+            window.initialController.abort();
             const form = document.getElementById("initial_declarative");
             form.remove();
         };
