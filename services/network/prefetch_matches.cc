@@ -176,7 +176,6 @@ enum class FieldsForUma {
   kRequiredIpAddressSpace = 20,
   kCredentialsMode = 21,
   kRedirectMode = 22,
-  // DEPRECATED: kAllowUnsafeRedirectSchemes = 67,
   kFetchIntegrity = 23,
   kDestination = 24,
   kOriginalDestination = 25,
