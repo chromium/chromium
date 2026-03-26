@@ -509,11 +509,6 @@ bool ChromeAutocompleteProviderClient::IsAuthenticated() const {
                                   .empty();
 }
 
-bool ChromeAutocompleteProviderClient::IsSyncActive() const {
-  syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile_);
-  return sync && sync->IsSyncFeatureActive();
-}
-
 std::string ChromeAutocompleteProviderClient::ProfileUserName() const {
   return profile_->GetProfileUserName();
 }

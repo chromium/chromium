@@ -145,7 +145,8 @@ chromium-metrics-reviews@google.com.
       label="Not allowed because the Drive setting is disabled (obsolete)"/>
   <int value="5" label="Not allowed because the profile is off the record"/>
   <int value="6" label="Not allowed because the user is not logged in"/>
-  <int value="7" label="Not allowed because the user is not Syncing"/>
+  <int value="7"
+      label="(Obsolete) Not allowed because the user is not Syncing"/>
   <int value="8" label="Not allowed because the server requested backoff"/>
   <int value="9" label="Not allowed because Google is not the DSE"/>
   <int value="10" label="Not allowed because the input is a focus or is empty"/>

@@ -178,9 +178,6 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // This function returns true if the user is signed in.
   virtual bool IsAuthenticated() const = 0;
 
-  // Determines whether sync is enabled.
-  virtual bool IsSyncActive() const = 0;
-
   virtual std::string ProfileUserName() const;
 
   // Given some string |text| that the user wants to use for navigation,

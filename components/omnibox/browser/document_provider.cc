@@ -78,7 +78,7 @@ enum class DocumentProviderAllowedReason : int {
   kDriveSettingDisabledObsolete = 4,
   kOffTheRecord = 5,
   kNotLoggedIn = 6,
-  kNotSyncing = 7,
+  kNotSyncing_DEPRECATED = 7,
   kBackoff = 8,
   kDSENotGoogle = 9,
   kInputOnFocusOrEmpty = 10,
@@ -390,15 +390,6 @@ bool DocumentProvider::IsDocumentProviderAllowed(
     base::UmaHistogramEnumeration(
         "Omnibox.DocumentSuggest.ProviderAllowed",
         DocumentProviderAllowedReason::kNotEnterpriseEligible);
-    return false;
-  }
-
-  // Sync must be enabled and active.
-  if (!base::FeatureList::IsEnabled(
-          omnibox::kDocumentProviderNoSyncRequirement) &&
-      !client_->IsSyncActive()) {
-    base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
-                                  DocumentProviderAllowedReason::kNotSyncing);
     return false;
   }
 

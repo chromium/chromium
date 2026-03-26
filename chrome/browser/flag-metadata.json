@@ -6823,11 +6823,6 @@
     "expiry_milestone": 300
   },
   {
-    "name": "omnibox-drive-suggestions-no-sync-requirement",
-    "owners": [ "jdonnelly@chromium.org", "chrome-omnibox-team@google.com", "chrome-privacy-controls@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "omnibox-drs-prototype",
     "owners": ["stkhapugin@chromium.org", "christianxu@chromium.com"],
     "expiry_milestone": 145

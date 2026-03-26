@@ -278,11 +278,6 @@ bool AutocompleteProviderClientImpl::IsAuthenticated() const {
          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
-bool AutocompleteProviderClientImpl::IsSyncActive() const {
-  // Sync-the-feature is gone on iOS.
-  return false;
-}
-
 void AutocompleteProviderClientImpl::Classify(
     const std::u16string& text,
     bool prefer_keyword,

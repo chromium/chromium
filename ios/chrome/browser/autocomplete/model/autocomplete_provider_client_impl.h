@@ -94,7 +94,6 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   bool IsUrlDataCollectionActive() const override;
   bool IsPersonalizedUrlDataCollectionActive() const override;
   bool IsAuthenticated() const override;
-  bool IsSyncActive() const override;
   void Classify(
       const std::u16string& text,
       bool prefer_keyword,

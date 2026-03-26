@@ -139,13 +139,6 @@ BASE_FEATURE(kDocumentProviderEnterpriseEligibilityWhenUnknown,
              "OmniboxDocumentProviderEnterpriseEligibilityWhenUnknown",
              DISABLED);
 
-// If enabled, the requirement to be in an active Sync state is removed and
-// Drive suggestions are available to all clients who meet the other
-// requirements.
-BASE_FEATURE(kDocumentProviderNoSyncRequirement,
-             "OmniboxDocumentProviderNoSyncRequirement",
-             ENABLED);
-
 // If enabled, the omnibox popup is not presented until the mouse button is
 // released.
 BASE_FEATURE(kShowPopupOnMouseReleased,
