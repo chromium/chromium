@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
@@ -55,6 +56,8 @@ using ::testing::ValuesIn;
 class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
  public:
   QuietPromptInteractiveUITest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        tabs::kHorizontalTabStripComboButton);
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -161,6 +164,7 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
+  ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };

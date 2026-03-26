@@ -9,13 +9,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -66,7 +67,10 @@ constexpr char kDocumentWithTextField[] = "/form_interaction.html";
 
 class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
  public:
-  InteractiveBrowserTestUiTest() = default;
+  InteractiveBrowserTestUiTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        tabs::kHorizontalTabStripComboButton);
+  }
   ~InteractiveBrowserTestUiTest() override = default;
 
   void SetUp() override {
@@ -84,6 +88,9 @@ class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,

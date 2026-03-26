@@ -66,7 +66,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
                                         public TabGroupSyncService::Observer {
  public:
   TabGroupSyncDelegateBrowserTest() {
-    features_.InitWithFeatures({}, {});
+    features_.InitWithFeatures({}, {tab_groups::kProjectsPanel});
 
     dependency_manager_subscription_ =
         BrowserContextDependencyManager::GetInstance()

@@ -5,6 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,6 +51,8 @@ class WebContentsInteractionTestUtilInteractiveUiTest
     : public InProcessBrowserTest {
  public:
   WebContentsInteractionTestUtilInteractiveUiTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        tabs::kHorizontalTabStripComboButton);
     InteractionTestUtilBrowser::PopulateSimulators(test_util_);
     test_util_.AddSimulator(
         std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
@@ -72,6 +76,7 @@ class WebContentsInteractionTestUtilInteractiveUiTest
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   ui::test::InteractionTestUtil test_util_;
 };
 

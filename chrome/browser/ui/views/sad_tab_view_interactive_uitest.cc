@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
@@ -27,7 +28,10 @@
 
 class SadTabViewInteractiveUITest : public InProcessBrowserTest {
  public:
-  SadTabViewInteractiveUITest() = default;
+  SadTabViewInteractiveUITest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        tabs::kHorizontalTabStripComboButton);
+  }
 
   SadTabViewInteractiveUITest(const SadTabViewInteractiveUITest&) = delete;
   SadTabViewInteractiveUITest& operator=(const SadTabViewInteractiveUITest&) =
@@ -109,6 +113,8 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     sad_tab_controller->RecordFirstPaint();
     PressSpacebar();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_MAC)

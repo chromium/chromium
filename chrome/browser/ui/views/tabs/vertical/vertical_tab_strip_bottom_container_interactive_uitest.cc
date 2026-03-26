@@ -29,6 +29,10 @@ class VerticalTabStripBottomContainerInteractiveUiTest
  public:
   using VerticalTabsInteractiveTestMixin::VerticalTabsInteractiveTestMixin;
 
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {tab_groups::kProjectsPanel};
+  }
+
  private:
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(

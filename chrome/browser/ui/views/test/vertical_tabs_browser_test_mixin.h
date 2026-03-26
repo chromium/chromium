@@ -44,7 +44,7 @@ class VerticalTabsBrowserTestMixin : public T {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     T::SetUpCommandLine(command_line);
     scoped_feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
-                                                       {});
+                                                       GetDisabledFeatures());
   }
 
   void SetUpOnMainThread() override {
@@ -94,6 +94,10 @@ class VerticalTabsBrowserTestMixin : public T {
   virtual const std::vector<base::test::FeatureRefAndParams>
   GetEnabledFeatures() {
     return {{tabs::kVerticalTabs, {}}};
+  }
+
+  virtual const std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    return {};
   }
 
   RootTabCollectionNode* root_node() {

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_highlight_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -88,10 +89,16 @@ class MultiContentsViewUiTest
     : public SplitViewInteractiveTestMixin<
           TabStripInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
+  MultiContentsViewUiTest() = default;
+
   void SetUpOnMainThread() override {
     SplitViewInteractiveTestMixin::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {tabs::kHorizontalTabStripComboButton};
   }
 
  protected:
@@ -897,6 +904,9 @@ class MultiContentsViewOutlineHighlightUiTest : public MultiContentsViewUiTest {
     AddDescriptionPrefix(result, "CheckOutlineHighlightState()");
     return result;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewOutlineHighlightUiTest,

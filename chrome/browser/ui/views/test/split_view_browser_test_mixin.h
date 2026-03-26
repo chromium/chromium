@@ -41,7 +41,7 @@ class SplitViewBrowserTestMixin : public T {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     T::SetUpCommandLine(command_line);
     scoped_feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
-                                                       {});
+                                                       GetDisabledFeatures());
   }
 
   TabStripModel* tab_strip_model() { return T::browser()->tab_strip_model(); }
@@ -63,6 +63,10 @@ class SplitViewBrowserTestMixin : public T {
 
   virtual const std::vector<base::test::FeatureRefAndParams>
   GetEnabledFeatures() {
+    return {};
+  }
+
+  virtual const std::vector<base::test::FeatureRef> GetDisabledFeatures() {
     return {};
   }
 

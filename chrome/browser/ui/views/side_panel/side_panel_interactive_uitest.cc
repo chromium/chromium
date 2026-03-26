@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -267,8 +268,9 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
   PinnedSidePanelInteractiveTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHSidePanelGenericPinnableFeature})) {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kImmersiveReadAnything);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kImmersiveReadAnything,
+             tabs::kHorizontalTabStripComboButton});
   }
   ~PinnedSidePanelInteractiveTest() override = default;
 

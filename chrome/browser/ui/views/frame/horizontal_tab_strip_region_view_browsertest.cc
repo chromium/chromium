@@ -82,7 +82,10 @@ class HorizontalTabStripRegionViewTest : public InProcessBrowserTest {
  public:
   HorizontalTabStripRegionViewTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
-            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {tabs::kHorizontalTabStripComboButton});
+  }
   HorizontalTabStripRegionViewTest(const HorizontalTabStripRegionViewTest&) = delete;
   HorizontalTabStripRegionViewTest& operator=(const HorizontalTabStripRegionViewTest&) = delete;
   ~HorizontalTabStripRegionViewTest() override = default;
@@ -110,6 +113,8 @@ class HorizontalTabStripRegionViewTest : public InProcessBrowserTest {
   TabStrip* tab_strip() { return tab_strip_region_view()->tab_strip(); }
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
@@ -310,15 +315,16 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
 class HorizontalTabStripRegionViewWithTabstripTabSearchTest
     : public HorizontalTabStripRegionViewTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
+  HorizontalTabStripRegionViewWithTabstripTabSearchTest() {
+    scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeaturesAndParameters({}, {
                                                                features::kGlic
                                                            });
-    HorizontalTabStripRegionViewTest::SetUpCommandLine(command_line);
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HorizontalTabStripRegionViewTest::SetUpCommandLine(command_line);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewWithTabstripTabSearchTest,

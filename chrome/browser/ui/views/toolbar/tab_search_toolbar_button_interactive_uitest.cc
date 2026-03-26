@@ -133,7 +133,8 @@ class TabSearchToolbarButtonGlicDisabledTest
  public:
   TabSearchToolbarButtonGlicDisabledTest() {
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kGlic, tabs::kVerticalTabs});
+        {}, {features::kGlic, tabs::kVerticalTabs,
+             tabs::kHorizontalTabStripComboButton});
   }
   ~TabSearchToolbarButtonGlicDisabledTest() override = default;
 

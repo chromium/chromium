@@ -43,13 +43,14 @@ class SavedTabGroupBarBrowserTest : public InProcessBrowserTest,
  public:
   SavedTabGroupBarBrowserTest() {
     if (GetParam()) {
-      features_.InitWithFeatures(
-          {data_sharing::features::kDataSharingFeature},
-          {data_sharing::features::kDataSharingJoinOnly});
+      features_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                                 {data_sharing::features::kDataSharingJoinOnly,
+                                  tab_groups::kProjectsPanel});
     } else {
-      features_.InitWithFeatures(
-          {}, {data_sharing::features::kDataSharingFeature,
-               data_sharing::features::kDataSharingJoinOnly});
+      features_.InitWithFeatures({},
+                                 {data_sharing::features::kDataSharingFeature,
+                                  data_sharing::features::kDataSharingJoinOnly,
+                                  tab_groups::kProjectsPanel});
     }
   }
   void Wait() {

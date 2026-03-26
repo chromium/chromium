@@ -42,6 +42,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`
+  #include "chrome/browser/ui/tabs/features.h"
   #include "extensions/common/extension_l10n_util.h"
   #include "ui/accessibility/accessibility_features.h"
       `);
@@ -63,7 +64,12 @@ ChromeVoxE2ETest = class extends E2ETestBase {
   }
 
   get featureList() {
-    return {disabled: ['features::kAccessibilityManifestV3ChromeVox']};
+    return {
+      disabled: [
+        'features::kAccessibilityManifestV3ChromeVox',
+        'tabs::kHorizontalTabStripComboButton',
+      ],
+    };
   }
 
   /**

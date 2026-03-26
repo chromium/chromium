@@ -12014,6 +12014,25 @@
             ]
         }
     ],
+    "HorizontalTabStripComboButton": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HorizontalTabStripComboButton",
+                        "IPH_TabSearchComboButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpCacheInitializeDiskCacheBackendEarly": [
         {
             "platforms": [
@@ -18567,6 +18586,30 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ProgressiveAccessibilityPhase2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProjectsPanel": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "include_threads_in_projects_panel": "true"
+                    },
+                    "enable_features": [
+                        "IPH_ResumptionRail",
+                        "ProjectsPanel",
+                        "SyncAIThreads",
+                        "SyncGeminiThreads"
                     ]
                 }
             ]

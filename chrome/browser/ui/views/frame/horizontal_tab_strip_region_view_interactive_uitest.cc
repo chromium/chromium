@@ -73,7 +73,8 @@ class HorizontalTabStripRegionViewBrowserTest : public HorizontalTabStripRegionV
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{features::kGlicLocaleFiltering,
-                               features::kGlicCountryFiltering});
+                               features::kGlicCountryFiltering,
+                               tabs::kHorizontalTabStripComboButton});
   }
   HorizontalTabStripRegionViewBrowserTest(const HorizontalTabStripRegionViewBrowserTest&) = delete;
   HorizontalTabStripRegionViewBrowserTest& operator=(
@@ -315,5 +316,3 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_3));
   EXPECT_TRUE(tab_0->IsActive());
 }
-
-

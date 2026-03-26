@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -90,8 +91,9 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   enum class TargetViewToVerify { kLocationBar, kPageInfo };
 
   LHSIndicatorsInteractiveUITest() {
-    scoped_features_.InitAndEnableFeature(
-        content_settings::features::kLeftHandSideActivityIndicators);
+    scoped_features_.InitWithFeatures(
+        {content_settings::features::kLeftHandSideActivityIndicators},
+        {tabs::kHorizontalTabStripComboButton});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/common/pref_names.h"
@@ -24,7 +25,10 @@ namespace settings {
 
 class AppearanceHandlerTest : public InProcessBrowserTest {
  public:
-  AppearanceHandlerTest() = default;
+  AppearanceHandlerTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        tabs::kHorizontalTabStripComboButton);
+  }
   ~AppearanceHandlerTest() override = default;
   AppearanceHandlerTest(const AppearanceHandlerTest&) = delete;
   AppearanceHandlerTest& operator=(const AppearanceHandlerTest&) = delete;
@@ -35,6 +39,9 @@ class AppearanceHandlerTest : public InProcessBrowserTest {
     EXPECT_TRUE(content::WaitForLoadStop(
         browser()->tab_strip_model()->GetActiveWebContents()));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest,
