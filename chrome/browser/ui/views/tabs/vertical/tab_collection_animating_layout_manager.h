@@ -12,8 +12,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
 
@@ -21,8 +21,9 @@
 // to child view bounds. It wraps another LayoutManager (the
 // target_layout_manager) which calculates the desired final positions. When the
 // target layout changes, this manager animates the transition.
-class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
-                                            public gfx::AnimationDelegate {
+class TabCollectionAnimatingLayoutManager
+    : public views::LayoutManagerBase,
+      public views::AnimationDelegateViews {
  public:
   // Controls along which axis view bounds are animated during animate-in and
   // animate-out transitions.
@@ -80,7 +81,7 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
                                  int width) const override;
   void OnLayoutChanged() override;
 
-  // gfx::AnimationDelegate:
+  // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 

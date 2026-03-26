@@ -66,7 +66,8 @@ TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
     Delegate& delegate,
     AnimationAxis animation_axis,
     bool animate_host_size)
-    : target_layout_manager_(
+    : views::AnimationDelegateViews(target_layout_manager->host_view()),
+      target_layout_manager_(
           CHECK_DEREF(AddOwnedLayout(std::move(target_layout_manager)))),
       animation_(this),
       delegate_(delegate),
