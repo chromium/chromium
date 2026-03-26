@@ -27,11 +27,11 @@ import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 import type {LanguageMenuElement} from './language_menu.js';
 // clang-format off
 // <if expr="not is_chromeos">
-import {isGoogle} from './voice_language_conversions.js';
+import {hasGoogleIdentifier} from './voice_language_conversions.js';
 // </if>
 // clang-format on
 
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, NotificationType} from './voice_language_conversions.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, hasNaturalIdentifier, NotificationType} from './voice_language_conversions.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 import type {VoiceNotificationListener} from './voice_notification_manager.js';
 import {getCss} from './voice_selection_menu.css.js';
@@ -253,7 +253,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     let title = voice.name;
     // <if expr="not is_chromeos">
     // We only use the system label outside of ChromeOS.
-    if (!isGoogle(voice)) {
+    if (!hasGoogleIdentifier(voice)) {
       title = loadTimeData.getString('systemVoiceLabel');
     }
     // </if>
@@ -476,16 +476,18 @@ function voiceQualityRankComparator(
     voice1: VoiceDropdownItem,
     voice2: VoiceDropdownItem,
     ): number {
-  if (isNatural(voice1.voice) && isNatural(voice2.voice)) {
+  if (hasNaturalIdentifier(voice1.voice) &&
+      hasNaturalIdentifier(voice2.voice)) {
     return 0;
   }
 
-  if (!isNatural(voice1.voice) && !isNatural(voice2.voice)) {
+  if (!hasNaturalIdentifier(voice1.voice) &&
+      !hasNaturalIdentifier(voice2.voice)) {
     return 0;
   }
 
   // voice1 is a Natural voice and voice2 is not
-  if (isNatural(voice1.voice)) {
+  if (hasNaturalIdentifier(voice1.voice)) {
     return -1;
   }
 

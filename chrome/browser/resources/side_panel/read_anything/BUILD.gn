@@ -62,6 +62,7 @@ build_webui("build") {
     "read_aloud/speech_model.ts",
     "read_aloud/speech_presentation_rules.ts",
     "read_aloud/text_segmenter.ts",
+    "read_aloud/tts_voice_filtering.ts",
     "read_aloud/ts_model_impl.ts",
     "read_aloud/v8_model_impl.ts",
     "read_aloud/voice_language_controller.ts",

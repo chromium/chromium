@@ -11,7 +11,7 @@ import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.
 import type {Segment} from './read_aloud_types.js';
 import {getCurrentSpeechRate} from './speech_presentation_rules.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
-import {isEspeak} from './voice_language_conversions.js';
+import {hasEspeakIdentifier} from './voice_language_conversions.js';
 import {WordBoundaries} from './word_boundaries.js';
 
 // Manages state and drawing of visual highlights for read aloud.
@@ -125,7 +125,7 @@ export class ReadAloudHighlighter {
     }
 
     if (this.wordBoundaries_.notSupported() ||
-        isEspeak(this.voiceLanguageController_.getCurrentVoice())) {
+        hasEspeakIdentifier(this.voiceLanguageController_.getCurrentVoice())) {
       // Fall back where word highlighting is not possible. Since espeak
       // boundaries are different than Google TTS word boundaries, fall back
       // to sentence boundaries in that case too.

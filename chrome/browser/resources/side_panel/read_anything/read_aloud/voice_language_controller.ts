@@ -4,13 +4,14 @@
 
 // clang-format off
 // <if expr="is_chromeos">
-import {isGoogle} from './voice_language_conversions.js';
+import {hasGoogleIdentifier} from './voice_language_conversions.js';
 // </if>
 // clang-format on
 
 import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_conversions.js';
+import {getFilteredVoiceList} from './tts_voice_filtering.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, EXTENSION_RESPONSE_TIMEOUT_MS, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, hasNaturalIdentifier, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_conversions.js';
 import type {VoicePackStatus} from './voice_language_conversions.js';
 import {VoiceLanguageModel} from './voice_language_model.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
@@ -289,7 +290,7 @@ export class VoiceLanguageController {
     }
 
     const naturalVoicesForLang = this.getAvailableVoices().filter(
-        voice => isNatural(voice) &&
+        voice => hasNaturalIdentifier(voice) &&
             voice.lang.startsWith(this.getCurrentLanguage()));
     if (!naturalVoicesForLang.length || !naturalVoicesForLang[0]) {
       return;
@@ -382,7 +383,8 @@ export class VoiceLanguageController {
 
     let disableLang = false;
     // <if expr="is_chromeos">
-    disableLang = !availableVoicesForLang.some(voice => isGoogle(voice));
+    disableLang =
+        !availableVoicesForLang.some(voice => hasGoogleIdentifier(voice));
     // </if>
     // <if expr="not is_chromeos">
     disableLang = availableVoicesForLang.length === 0;
@@ -571,7 +573,7 @@ export class VoiceLanguageController {
           // voice as AVAILABLE or INSTALLED_AND_UNAVAILABLE
           const voicesForLanguageAreAvailable = this.getAvailableVoices().some(
               voice =>
-                  ((isNatural(voice) || !languageHasNaturalVoices) &&
+                  ((hasNaturalIdentifier(voice) || !languageHasNaturalVoices) &&
                    getVoicePackConvertedLangIfExists(voice.lang) === lang));
 
           // If natural voices are currently available for the language or the

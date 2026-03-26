@@ -50,10 +50,11 @@ export {PauseActionSource, SpeechEngineState, SpeechModel} from './read_aloud/sp
 export {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting, textEndsWithOpeningPunctuation} from './read_aloud/speech_presentation_rules.js';
 export {TextSegmenter} from './read_aloud/text_segmenter.js';
 export {TsReadModelImpl} from './read_aloud/ts_model_impl.js';
+export {getFilteredVoiceList} from './read_aloud/tts_voice_filtering.js';
 export {V8ModelImpl} from './read_aloud/v8_model_impl.js';
 export type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';
 export {VoiceLanguageController} from './read_aloud/voice_language_controller.js';
-export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getNotification, getVoicePackConvertedLangIfExists, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './read_aloud/voice_language_conversions.js';
+export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getNotification, getVoicePackConvertedLangIfExists, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './read_aloud/voice_language_conversions.js';
 export {VoiceLanguageModel} from './read_aloud/voice_language_model.js';
 export type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';
 export {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';

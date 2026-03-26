@@ -270,6 +270,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudModel) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, TtsVoiceFiltering) {
+  RunSidePanelTest("side_panel/read_anything/tts_voice_filtering_test.js",
+                   "mocha.run()");
+}
+
 class ImmersiveReadAnythingMochaTest : public ReadAnythingMochaBrowserTest {
  protected:
   ImmersiveReadAnythingMochaTest() {
