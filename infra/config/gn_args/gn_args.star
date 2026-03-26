@@ -1187,13 +1187,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "release_java",
-    args = {
-        "is_java_debug": False,
-    },
-)
-
-gn_args.config(
     name = "release_try_builder",
     configs = [
         "release_builder",

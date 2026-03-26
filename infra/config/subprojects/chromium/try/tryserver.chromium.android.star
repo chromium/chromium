@@ -584,7 +584,6 @@ try_.builder(
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
-            "release_java",
         ],
     ),
     contact_team_email = "cronet-team@google.com",

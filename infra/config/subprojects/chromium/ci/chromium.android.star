@@ -1262,7 +1262,6 @@ ci.builder(
             "cronet_android",
             "debug_static_builder",
             "remoteexec",
-            "release_java",
         ],
     ),
     targets = targets.bundle(
