@@ -343,16 +343,19 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             windowHeight = mWindowAndroid.getDisplay().getDisplayHeight();
         }
 
-        int paddingBottom = 0;
-        // Apply extra bottom padding if the keyboard isn't showing.
-        if (keyboardHeight <= 0) {
-            paddingBottom = mBottomWindowPaddingSupplier.get();
-            windowHeight += paddingBottom;
-        }
-
         int minSpaceAboveWindowBottom =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_min_space_above_window_bottom);
+
+        int paddingBottom = 0;
+        // Apply extra bottom padding if the keyboard isn't showing. Reduce the padding applied by
+        // the "min height above window bottom".
+        if (keyboardHeight <= 0) {
+            paddingBottom =
+                    Math.max(mBottomWindowPaddingSupplier.get() - minSpaceAboveWindowBottom, 0);
+            windowHeight += paddingBottom;
+        }
+
         int windowSpace =
                 Math.min(windowHeight - keyboardHeight, windowHeight - minSpaceAboveWindowBottom);
 
