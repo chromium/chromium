@@ -117,6 +117,9 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_X_GEO_PERMISSION_GRANULARITY,
                     FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sPlatformAgnosticXGeo =
+            newFlag(OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO, FeatureState.DISABLED);
+
     public static final CachedFlag sAsyncViewInflation =
             newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, FeatureState.ENABLED_IN_TEST);
 

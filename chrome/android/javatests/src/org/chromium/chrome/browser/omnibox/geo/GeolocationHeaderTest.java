@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -41,6 +42,7 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 
@@ -48,6 +50,7 @@ import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableFeatures({OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO})
 public class GeolocationHeaderTest {
     public @Rule AutoResetCtaTransitTestRule mAutoResetCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
@@ -248,6 +251,18 @@ public class GeolocationHeaderTest {
         setPermission(ContentSetting.ALLOW);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO})
+    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
+    public void testHeaderNotSentWhenPlatformAgnosticEnabled() {
+        setPermission(ContentSetting.ALLOW);
+        setMockLocationNow();
+
+        // X-Geo shouldn't be sent because the platform agnostic logic is enabled.
+        assertNullHeader(SEARCH_URL_1, false);
     }
 
     private void checkHeaderWithPermission(

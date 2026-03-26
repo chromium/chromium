@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.omnibox.geo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -54,6 +56,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Robolectric tests for {@link GeolocationHeader}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO})
 @Config(manifest = Config.NONE)
 @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
 public class GeolocationHeaderUnitTest {
@@ -318,6 +321,24 @@ public class GeolocationHeaderUnitTest {
                 mockLocation,
                 GeolocationHeader.getLastKnownLocation(/* hasFineSitePermission= */ false));
         assertEquals(0, mRefreshLastKnownLocationCount);
+    }
+
+    @Test
+    @EnableFeatures({OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO})
+    public void testGetGeoHeaderPlatformAgnosticXGeoEnabled() {
+        Location location = generateMockLocation("should_not_matter", LOCATION_TIME);
+        GeolocationTracker.setLocationForTesting(location, null);
+        GeolocationTracker.setLocationAgeForTesting(1 * 60 * 1000L);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertNull(header);
+    }
+
+    @Test
+    @EnableFeatures({OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO})
+    public void testPrimeLocationPlatformAgnosticXGeoEnabled() {
+        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
+        assertFalse(GeolocationHeader.isGeolocationPrimedForTesting());
     }
 
     private void setSiteGeolocationPermissions(

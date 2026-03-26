@@ -64,6 +64,7 @@ public class GeolocationHeader {
         HeaderState.NOT_HTTPS,
         HeaderState.LOCATION_PERMISSION_BLOCKED,
         HeaderState.HEADER_ENABLED_ONLY_COARSE,
+        HeaderState.HEADER_DISABLED,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface HeaderState {
@@ -73,6 +74,7 @@ public class GeolocationHeader {
         int NOT_HTTPS = 3;
         int LOCATION_PERMISSION_BLOCKED = 4;
         int HEADER_ENABLED_ONLY_COARSE = 5;
+        int HEADER_DISABLED = 6;
     }
 
     /** The maximum age in milliseconds of a location that we'll send in an X-Geo header. */
@@ -227,6 +229,10 @@ public class GeolocationHeader {
     private static @HeaderState int geoHeaderStateForUrl(
             Profile profile, @Nullable TemplateUrlService service, String url) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.geoHeaderStateForUrl")) {
+            if (OmniboxFeatures.sPlatformAgnosticXGeo.isEnabled()) {
+                return HeaderState.HEADER_DISABLED;
+            }
+
             // Only send X-Geo to search engines associated with the current profile.
             if (profile == null || service == null) return HeaderState.UNSUITABLE_URL;
 
@@ -376,6 +382,12 @@ public class GeolocationHeader {
         sHasCoarsePermissionForTesting = hasCoarse;
         sHasFinePermissionForTesting = hasFine;
         sUseFakePermissionForTesting = true;
+        sGeolocationPrimed = false;
+        ResettersForTesting.register(
+                () -> {
+                    sUseFakePermissionForTesting = false;
+                    sGeolocationPrimed = false;
+                });
     }
 
     static boolean isGeolocationPrimedForTesting() {

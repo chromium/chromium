@@ -168,6 +168,11 @@ BASE_DECLARE_FEATURE(kAndroidHubSearchTabGroups);
 BASE_DECLARE_FEATURE(kOmniboxImprovementForLFF);
 BASE_DECLARE_FEATURE(kResetSuggestionsScroll);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// If enabled, X-Geo headers are sent for all search navigations on all
+// platforms.
+BASE_DECLARE_FEATURE(kPlatformAgnosticXGeo);
+
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {
