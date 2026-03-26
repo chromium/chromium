@@ -970,25 +970,6 @@ static_library("test_support") {
 
   if (is_win) {
     sources += [
-      "../browser/webshare/win/fake_buffer.cc",
-      "../browser/webshare/win/fake_buffer.h",
-      "../browser/webshare/win/fake_data_transfer_manager.cc",
-      "../browser/webshare/win/fake_data_transfer_manager.h",
-      "../browser/webshare/win/fake_data_transfer_manager_interop.cc",
-      "../browser/webshare/win/fake_data_transfer_manager_interop.h",
-      "../browser/webshare/win/fake_data_writer_factory.cc",
-      "../browser/webshare/win/fake_data_writer_factory.h",
-      "../browser/webshare/win/fake_iasync_operation_with_progress.h",
-      "../browser/webshare/win/fake_random_access_stream.cc",
-      "../browser/webshare/win/fake_random_access_stream.h",
-      "../browser/webshare/win/fake_storage_file_statics.cc",
-      "../browser/webshare/win/fake_storage_file_statics.h",
-      "../browser/webshare/win/fake_uri_runtime_class_factory.cc",
-      "../browser/webshare/win/fake_uri_runtime_class_factory.h",
-      "../browser/webshare/win/scoped_fake_data_transfer_manager_interop.cc",
-      "../browser/webshare/win/scoped_fake_data_transfer_manager_interop.h",
-      "../browser/webshare/win/scoped_share_operation_fake_components.cc",
-      "../browser/webshare/win/scoped_share_operation_fake_components.h",
       "//chrome/app/chrome_crash_reporter_client_win.cc",
       "base/process_inspector_win.cc",
       "base/process_inspector_win.h",
@@ -996,7 +977,7 @@ static_library("test_support") {
       "base/process_lineage_win.h",
     ]
     deps += [
-      "//chrome/browser/webshare",
+      "//chrome/browser/webshare:test_support",
       "//chrome/chrome_elf:constants",
     ]
     public_deps += [
@@ -4448,7 +4429,6 @@ if (!is_android) {
         "../browser/ui/views/fullscreen_mac_browsertest.cc",
         "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
-        "../browser/webshare/mac/sharing_service_operation_browsertest.cc",
         "../common/mac/app_mode_chrome_locator_browsertest.mm",
         "../common/profiler/thread_profiler_browsertest.cc",
       ]
@@ -4468,7 +4448,7 @@ if (!is_android) {
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/renderer_host:history_swiper",
         "//chrome/browser/shortcuts",
-        "//chrome/browser/webshare",
+        "//chrome/browser/webshare:browser_tests",
         "//components/enterprise/platform_auth:enterprise_platform_auth",
         "//components/onc",
         "//components/remote_cocoa/app_shim",
@@ -4593,12 +4573,7 @@ if (!is_android) {
     }
 
     if (is_win || is_chromeos || is_mac) {
-      sources += [ "../browser/webshare/share_service_browsertest.cc" ]
-      deps += [ "//chrome/browser/webshare" ]
-
-      if (is_chromeos) {
-        deps += [ "//chrome/browser/sharesheet" ]
-      }
+      deps += [ "//chrome/browser/webshare:browser_tests" ]
     }
 
     if (enable_plugins) {
@@ -5465,7 +5440,6 @@ if (!is_android) {
         "../browser/ui/views/web_apps/protocol_handler_picker_interactve_uitest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
-        "../browser/webshare/chromeos/sharesheet_client_browsertest.cc",
         "//ash/webui/boca_ui/provider/tab_info_collector_browsertest.cc",
         "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
         "base/ash/web_ui_browser_test_browsertest.cc",
@@ -5794,7 +5768,6 @@ if (!is_android) {
         "//chrome/browser/ui/webui/signin/ash:browser_tests",
         "//chrome/browser/ui/window_sizer:browser_tests",
         "//chrome/browser/web_applications/app_service",
-        "//chrome/browser/webshare",
         "//chrome/services/file_util/public/cpp:browser_tests",
         "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
         "//chromeos:test_support",
@@ -7728,15 +7701,6 @@ test("unit_tests") {
       "../browser/ui/views/frame/windows_caption_button_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
       "../browser/ui/webui/version/version_handler_win_unittest.cc",
-      "../browser/webshare/win/fake_buffer_unittest.cc",
-      "../browser/webshare/win/fake_data_transfer_manager_interop_unittest.cc",
-      "../browser/webshare/win/fake_data_transfer_manager_unittest.cc",
-      "../browser/webshare/win/fake_data_writer_factory_unittest.cc",
-      "../browser/webshare/win/fake_random_access_stream_unittest.cc",
-      "../browser/webshare/win/fake_storage_file_statics_unittest.cc",
-      "../browser/webshare/win/fake_uri_runtime_class_factory_unittest.cc",
-      "../browser/webshare/win/share_operation_unittest.cc",
-      "../browser/webshare/win/show_share_ui_for_window_operation_unittest.cc",
       "../browser/win/chrome_elf_init_unittest.cc",
       "../browser/win/isolated_browser_support_unittest.cc",
       "../browser/win/jumplist_file_util_unittest.cc",
@@ -7772,7 +7736,6 @@ test("unit_tests") {
       "//chrome/browser/os_crypt",
       "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/shortcuts",
-      "//chrome/browser/webshare",
       "//chrome/browser/win:isolated_browser_support",
       "//chrome/browser/win:registry_watcher",
       "//chrome/browser/win/conflicts:unit_tests",
