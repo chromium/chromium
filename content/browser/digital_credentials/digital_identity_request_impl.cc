@@ -205,7 +205,7 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
         return {};
       }
       const base::ListValue* paths = claim_dict->FindList("path");
-      if (!paths) {
+      if (!paths || paths->empty()) {
         return {};
       }
       const std::string* claim_name = paths->back().GetIfString();

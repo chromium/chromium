@@ -757,6 +757,17 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_EmptyPathList) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+  base::Value* paths = FindValueWithKey(request, "path");
+  ASSERT_TRUE(IsNonEmptyList(paths));
+  paths->GetList().resize(0);
+
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
+            std::nullopt);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpUnsignedProtocolDCQL_ComputeInterstitialType_OnlyAgeOver) {
   EXPECT_EQ(ComputeInterstitialType(kOpenid4vpUnsignedProtocol,
                                     GenerateOnlyAgeOpenid4VpRequestWithDCQL()),
