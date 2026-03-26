@@ -29,7 +29,6 @@ async function removeThreadFrameToPreventRaceConditions() {
 
 suite('ContextualTasksAppTest', function() {
   let initialUrl: string;
-
   let metrics: MetricsTracker;
 
   suiteSetup(() => {
@@ -41,7 +40,10 @@ suite('ContextualTasksAppTest', function() {
     if (initialUrl) {
       window.history.replaceState({}, '', initialUrl);
     }
-    loadTimeData.overrideValues({enableBasicModeZOrder: true});
+    loadTimeData.overrideValues({
+      enableBasicModeZOrder: true,
+      enableComposeboxJumpFix: false,
+    });
     metrics = fakeMetricsPrivate();
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
     BrowserProxyImpl.setInstance(proxy);
