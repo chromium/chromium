@@ -77,8 +77,7 @@ public class AutofillDialogControllerTest {
                 new ConfirmationDialogParams(mActivity)
                         .withTitle(TEST_TITLE)
                         .withDescription(TEST_DESCRIPTION)
-                        .withPositiveButton(TEST_BUTTON_TEXT)
-                        .withNegativeButton(R.string.cancel);
+                        .withPositiveButton(TEST_BUTTON_TEXT);
         assertEquals(expectedParams, dialogParams);
     }
 

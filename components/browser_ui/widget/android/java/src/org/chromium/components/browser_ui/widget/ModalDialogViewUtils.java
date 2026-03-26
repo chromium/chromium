@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Set of shared helper functions for UI related to the {@link ModalDialogView}. */
 @NullMarked
@@ -23,11 +24,11 @@ public final class ModalDialogViewUtils {
      * @param context The current context.
      * @param positiveButton The positive button for the button bar. This may or may not be of type
      *     {@link SpinnerButtonWrapper}.
-     * @param negativeButton The negative button for the button bar. This may or may not be of type
-     *     {@link SpinnerButtonWrapper}.
+     * @param negativeButton An optional negative button for the button bar. This may or may not be
+     *     of type {@link SpinnerButtonWrapper}.
      */
     public static View createCustomButtonBarView(
-            Context context, View positiveButton, View negativeButton) {
+            Context context, View positiveButton, @Nullable View negativeButton) {
         Resources resources = context.getResources();
         int horizontalPadding =
                 resources.getDimensionPixelSize(
@@ -42,7 +43,9 @@ public final class ModalDialogViewUtils {
         buttonRowLayout.setPadding(
                 horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
         buttonRowLayout.addView(positiveButton);
-        buttonRowLayout.addView(negativeButton);
+        if (negativeButton != null) {
+            buttonRowLayout.addView(negativeButton);
+        }
         return buttonRowLayout;
     }
 }

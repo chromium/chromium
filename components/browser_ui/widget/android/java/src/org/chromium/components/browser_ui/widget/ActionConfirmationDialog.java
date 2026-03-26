@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -461,8 +462,13 @@ public class ActionConfirmationDialog {
                 createSpinnerButton(
                         context, modelSupplier, /* isPositiveButton= */ true, positiveText);
         SpinnerButtonWrapper negativeButtonSpinner =
-                createSpinnerButton(
-                        context, modelSupplier, /* isPositiveButton= */ false, negativeText);
+                TextUtils.isEmpty(negativeText)
+                        ? null
+                        : createSpinnerButton(
+                                context,
+                                modelSupplier,
+                                /* isPositiveButton= */ false,
+                                negativeText);
         return ModalDialogViewUtils.createCustomButtonBarView(
                 context, positiveButtonSpinner, negativeButtonSpinner);
     }

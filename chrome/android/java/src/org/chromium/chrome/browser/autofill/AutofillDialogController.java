@@ -77,13 +77,11 @@ public class AutofillDialogController {
             @JniType("std::u16string") String title,
             @JniType("std::u16string") String description,
             @JniType("std::u16string") String buttonText) {
-        // TODO: crbug.com/476753598 - Remove "cancel" button.
         mDialog.show(
                 new ConfirmationDialogParams(mContext)
                         .withTitle(title)
                         .withDescription(description)
-                        .withPositiveButton(buttonText)
-                        .withNegativeButton(R.string.cancel),
+                        .withPositiveButton(buttonText),
                 this::handleDialogAction);
     }
 

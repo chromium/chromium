@@ -177,6 +177,33 @@ public class ActionConfirmationDialogUnitTest {
     }
 
     @Test
+    public void testPositiveDismiss_NoNegative() {
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
+        dialog.show(
+                new ConfirmationDialogParams(mContext)
+                        .withTitle(R.string.title)
+                        .withDescription(R.string.learn_more)
+                        .withPositiveButton(R.string.confirm)
+                        .withSupportStopShowing(true),
+                mConfirmationDialogHandler);
+
+        verify(mModalDialogManager)
+                .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
+        PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
+
+        Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(propertyModel, ButtonType.POSITIVE);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.POSITIVE),
+                        /* stopShowing= */ eq(false));
+        verify(mModalDialogManager)
+                .dismissDialog(propertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+    }
+
+    @Test
     public void testNegativeDismiss() {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
