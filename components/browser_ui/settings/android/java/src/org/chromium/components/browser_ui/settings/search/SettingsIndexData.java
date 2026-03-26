@@ -12,7 +12,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -23,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +39,7 @@ import java.util.regex.Pattern;
 /** Data from Preferences used for settings search. This is a collection of data to be indexed. */
 @NullMarked
 public class SettingsIndexData {
+    private static final String TAG = "SettingsIndexData";
 
     /* Scores given to the entries having matches with a query */
     public static final int EXACT_TITLE_MATCH = 10;
@@ -195,6 +201,108 @@ public class SettingsIndexData {
             isSearchable = in.readByte() != 0;
             mTitleNormalized = in.readString();
             mSummaryNormalized = in.readString();
+        }
+
+        /**
+         * Returns the entry in JSON object format. This is primarily used to store the entry to
+         * disk.
+         */
+        public @Nullable JSONObject toJsonObject() {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id", id);
+                jsonObject.put("key", key);
+                jsonObject.put("title", title);
+                jsonObject.put("summary", summary);
+                jsonObject.put("fragment", fragment);
+                jsonObject.put("highlightKey", highlightKey);
+                jsonObject.put("subViewPos", subViewPos);
+                jsonObject.put("extras", extrasToString(extras));
+                jsonObject.put("parentFragment", parentFragment);
+                return jsonObject;
+            } catch (JSONException e) {
+                Log.e(TAG, "Error converting Entry to JSON object.");
+            }
+            return null;
+        }
+
+        /** Build {@link Entry} from a given JSON object. */
+        public static @Nullable Entry fromJson(JSONObject obj) {
+            try {
+                String id = obj.getString("id");
+                String key = obj.getString("key");
+                String title = obj.optString("title", null);
+                String summary = obj.optString("summary", null);
+                String fragment = obj.optString("fragment", null);
+                String highlightKey = obj.optString("highlightKey", null);
+                int subViewPos = obj.optInt("subViewPos", -1);
+                Bundle extras = stringToExtras(obj.optString("extras", ""));
+                String parentFragment = obj.optString("parentFragment", null);
+                var builder =
+                        new SettingsIndexData.Entry.Builder(id, key, title, parentFragment)
+                                .setSummary(summary)
+                                .setFragment(fragment);
+                if (subViewPos >= 0) builder.setSubViewPos(subViewPos);
+                if (highlightKey != null) builder.setHighlightKey(highlightKey);
+                if (extras != null) builder.setArguments(extras);
+                return builder.build();
+            } catch (JSONException e) {
+                Log.e(TAG, "Error building Entry from JSON object.");
+            }
+            return null;
+        }
+
+        private static @Nullable String extrasToString(@Nullable Bundle extras) {
+            if (extras == null) return null;
+            JSONObject json = new JSONObject();
+
+            for (String key : extras.keySet()) {
+                try {
+                    json.put(key, extras.get(key));
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error converting extras to JSON.");
+                }
+            }
+            return json.toString();
+        }
+
+        private static @Nullable Bundle stringToExtras(String jsonString)
+                throws IllegalArgumentException {
+            JSONObject json;
+            try {
+                json = new JSONObject(jsonString);
+            } catch (JSONException e) {
+                Log.e(TAG, "Error restoring Bundle from JSON string.");
+                return null;
+            }
+            Iterator<String> keys = json.keys();
+            Bundle bundle = new Bundle();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                try {
+                    Object value = json.get(key);
+                    if (value instanceof Integer) {
+                        bundle.putInt(key, (Integer) value);
+                    } else if (value instanceof Long) {
+                        bundle.putLong(key, (Long) value);
+                    } else if (value instanceof Double) {
+                        bundle.putDouble(key, (Double) value);
+                    } else if (value instanceof Boolean) {
+                        bundle.putBoolean(key, (Boolean) value);
+                    } else if (value instanceof String) {
+                        bundle.putString(key, (String) value);
+                    } else {
+                        // Complex types are not expected in the Bundle object used for extras.
+                        // Report the exception if it actually occurs.
+                        throw new IllegalArgumentException(
+                                "Unsupported complex type in extras: " + key);
+                    }
+                } catch (JSONException e) {
+                    // Skip restoring the element that causes an exception.
+                    Log.e(TAG, "Error restoring Bundle from JSON string.");
+                }
+            }
+            return bundle;
         }
 
         @Override

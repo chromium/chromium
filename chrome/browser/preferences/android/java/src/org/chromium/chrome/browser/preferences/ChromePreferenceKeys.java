@@ -898,6 +898,9 @@ public final class ChromePreferenceKeys {
     public static final String SETTINGS_WEBSITE_FAILED_BUILD_VERSION =
             "ManagedSpace.FailedBuildVersion";
 
+    public static final String SETTINGS_RECENT_SEARCH_ENTRIES =
+            "Chrome.Settings.RecentSearchEntries";
+
     public static final String SHARING_LAST_SHARED_COMPONENT_NAME =
             "Chrome.Sharing.LastSharedComponentName";
 
@@ -1274,6 +1277,7 @@ public final class ChromePreferenceKeys {
                 SEGMENTATION_FEED_ACTIVE_USER,
                 SERIAL_NOTIFICATION_IDS,
                 SETUP_LIST_COMPLETED_KEY_PREFIX.pattern(),
+                SETTINGS_RECENT_SEARCH_ENTRIES,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
