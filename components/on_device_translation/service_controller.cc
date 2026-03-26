@@ -91,9 +91,23 @@ std::string SwitchLanguageCodeToIwIfHe(std::string_view language_code) {
   return base::StrCat({"iw-", split->second});
 }
 
+std::string SwitchLanguageCodeForChinese(std::string_view language_code) {
+  std::string lower_code = base::ToLowerASCII(language_code);
+  if (lower_code == "zh-cn" || lower_code == "zh-hans-cn" ||
+      lower_code == "cmn-hans-cn") {
+    return "zh";
+  }
+  if (lower_code == "zh-tw" || lower_code == "zh-hant-tw" ||
+      lower_code == "cmn-hant-tw") {
+    return "zh-Hant";
+  }
+  return std::string(language_code);
+}
+
 std::optional<std::string> GetBestFitLanguageCode(
     std::string_view language_code) {
   std::string best_fit = SwitchLanguageCodeToIwIfHe(language_code);
+  best_fit = SwitchLanguageCodeForChinese(best_fit);
   return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes,
                                        std::move(best_fit));
 }
