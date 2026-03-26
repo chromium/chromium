@@ -16,6 +16,13 @@ void CSPViolationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddStringOrNull("sample", sample());
   builder.AddString("disposition", disposition().AsStringView());
   builder.AddNumber("statusCode", statusCode());
+
+  if (urlHash() && !urlHash().empty()) {
+    builder.AddString("url-hash", urlHash());
+  }
+  if (evalHash() && !evalHash().empty()) {
+    builder.AddString("eval-hash", evalHash());
+  }
 }
 
 }  // namespace blink

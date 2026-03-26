@@ -30,7 +30,11 @@ class CORE_EXPORT CSPViolationReportBody : public LocationReportBody {
         original_policy_(violation_data.originalPolicy()),
         sample_(violation_data.sample()),
         disposition_(violation_data.disposition()),
-        status_code_(violation_data.statusCode()) {}
+        status_code_(violation_data.statusCode()),
+        url_hash_(violation_data.hasUrlHash() ? violation_data.urlHash()
+                                              : String()),
+        eval_hash_(violation_data.hasEvalHash() ? violation_data.evalHash()
+                                                : String()) {}
 
   ~CSPViolationReportBody() override = default;
 
@@ -44,6 +48,8 @@ class CORE_EXPORT CSPViolationReportBody : public LocationReportBody {
     return disposition_;
   }
   uint16_t statusCode() const { return status_code_; }
+  const String& urlHash() const { return url_hash_; }
+  const String& evalHash() const { return eval_hash_; }
 
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
@@ -56,6 +62,8 @@ class CORE_EXPORT CSPViolationReportBody : public LocationReportBody {
   const String sample_;
   const V8SecurityPolicyViolationEventDisposition disposition_;
   const uint16_t status_code_;
+  const String url_hash_;
+  const String eval_hash_;
 };
 
 }  // namespace blink

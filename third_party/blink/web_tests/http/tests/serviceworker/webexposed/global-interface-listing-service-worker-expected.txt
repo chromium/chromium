@@ -1858,6 +1858,7 @@ interface SecurityPolicyViolationEvent : Event
     getter sample
     getter sourceFile
     getter statusCode
+    getter urlHash
     getter violatedDirective
     method constructor
 interface ServiceWorker : EventTarget

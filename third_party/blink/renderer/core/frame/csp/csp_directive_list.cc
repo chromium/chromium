@@ -70,6 +70,10 @@ String GetEvalSha256String(const String& content) {
   return StrCat({"eval-", GetSha256String(content)});
 }
 
+String GetUrlSha256String(const String& url) {
+  return StrCat({"url-", GetSha256String(url)});
+}
+
 // https://w3c.github.io/webappsec-csp/#effective-directive-for-inline-check
 CSPDirectiveName EffectiveDirectiveForInlineCheck(
     ContentSecurityPolicy::InlineType inline_type) {
@@ -133,7 +137,9 @@ void ReportViolation(
         ContentSecurityPolicyViolationType::kURLViolation,
     const String& sample = String(),
     const String& sample_prefix = String(),
-    std::optional<base::UnguessableToken> issue_id = std::nullopt) {
+    std::optional<base::UnguessableToken> issue_id = std::nullopt,
+    std::optional<String> eval_hash = std::nullopt,
+    std::optional<String> url_hash = std::nullopt) {
   String message =
       StrCat({console_message,
               CSPDirectiveListIsReportOnly(csp)
@@ -151,7 +157,7 @@ void ReportViolation(
                           violation_type, nullptr,
                           nullptr,  // localFrame
                           nullptr,  // Element*
-                          sample, sample_prefix, issue_id);
+                          sample, sample_prefix, issue_id, eval_hash, url_hash);
 }
 
 void ReportViolationWithLocation(
@@ -662,12 +668,25 @@ void ReportViolationForCheckSource(
   String raw_directive =
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
 
+  std::optional<String> url_hash;
+  if (policy && policy->ScriptSrcExtendedHashesEnabled() &&
+      (effective_type == CSPDirectiveName::ScriptSrc ||
+       effective_type == CSPDirectiveName::ScriptSrcElem ||
+       effective_type == CSPDirectiveName::ScriptSrcAttr ||
+       effective_type == CSPDirectiveName::WorkerSrc)) {
+    String stripped_url = CSPStripURL(url_before_redirects).GetString();
+    if (!stripped_url.empty()) {
+      url_hash = GetUrlSha256String(stripped_url);
+    }
+  }
+
   ReportViolation(
       csp, policy, raw_directive, effective_type,
       StrCat({prefix, url.ElidedString(),
               "' violates the following Content Security Policy directive: \"",
               raw_directive, "\".", suffix}),
-      url_before_redirects);
+      url_before_redirects, ContentSecurityPolicyViolationType::kURLViolation,
+      String(), String(), std::nullopt, std::nullopt, url_hash);
 }
 
 CSPCheckResult CheckSource(

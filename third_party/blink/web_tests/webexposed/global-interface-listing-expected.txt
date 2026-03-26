@@ -576,12 +576,14 @@ interface CSPViolationReportBody : ReportBody
     getter disposition
     getter documentURL
     getter effectiveDirective
+    getter evalHash
     getter lineNumber
     getter originalPolicy
     getter referrer
     getter sample
     getter sourceFile
     getter statusCode
+    getter urlHash
     method constructor
     method toJSON
 interface CSSAnimation : Animation
@@ -9863,6 +9865,7 @@ interface SecurityPolicyViolationEvent : Event
     getter sample
     getter sourceFile
     getter statusCode
+    getter urlHash
     getter violatedDirective
     method constructor
 interface Selection

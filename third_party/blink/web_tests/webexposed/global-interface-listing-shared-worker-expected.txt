@@ -1774,6 +1774,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter sample
 [Worker]     getter sourceFile
 [Worker]     getter statusCode
+[Worker]     getter urlHash
 [Worker]     getter violatedDirective
 [Worker]     method constructor
 [Worker] interface ServiceWorkerRegistration : EventTarget

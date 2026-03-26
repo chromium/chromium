@@ -51,4 +51,7 @@ enum SecurityPolicyViolationEventDisposition {
     // Contains the hashes of scripts that were blocked from being run through
     // eval due to unsafe-eval not being set.
     [RuntimeEnabled=CSPHashesV1] readonly attribute DOMString evalHash;
+    // Contains the hash of the URL of the script that was blocked from being
+    // loaded.
+    [RuntimeEnabled=CSPHashesV1] readonly attribute DOMString urlHash;
 };

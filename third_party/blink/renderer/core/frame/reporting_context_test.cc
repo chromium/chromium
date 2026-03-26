@@ -96,7 +96,9 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
                                const String& disposition,
                                uint16_t status_code,
                                int32_t line_number,
-                               int32_t column_number) override {
+                               int32_t column_number,
+                               const String& url_hash,
+                               const String& eval_hash) override {
     if (reached_callback_)
       std::move(reached_callback_).Run();
   }

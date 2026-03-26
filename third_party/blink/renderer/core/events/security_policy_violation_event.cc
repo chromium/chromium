@@ -69,6 +69,9 @@ SecurityPolicyViolationEvent::SecurityPolicyViolationEvent(
   if (initializer->hasEvalHash()) {
     eval_hash_ = initializer->evalHash();
   }
+  if (initializer->hasUrlHash()) {
+    url_hash_ = initializer->urlHash();
+  }
 }
 
 V8SecurityPolicyViolationEventDisposition

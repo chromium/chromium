@@ -89,19 +89,22 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     QueueReport(url, "default", "deprecation", std::move(body));
   }
 
-  void QueueCspViolationReport(const GURL& url,
-                               const std::string& group,
-                               const std::string& document_url,
-                               const std::optional<std::string>& referrer,
-                               const std::optional<std::string>& blocked_url,
-                               const std::string& effective_directive,
-                               const std::string& original_policy,
-                               const std::optional<std::string>& source_file,
-                               const std::optional<std::string>& script_sample,
-                               const std::string& disposition,
-                               uint16_t status_code,
-                               int line_number,
-                               int column_number) override {
+  void QueueCspViolationReport(
+      const GURL& url,
+      const std::string& group,
+      const std::string& document_url,
+      const std::optional<std::string>& referrer,
+      const std::optional<std::string>& blocked_url,
+      const std::string& effective_directive,
+      const std::string& original_policy,
+      const std::optional<std::string>& source_file,
+      const std::optional<std::string>& script_sample,
+      const std::string& disposition,
+      uint16_t status_code,
+      int line_number,
+      int column_number,
+      const std::optional<std::string>& url_hash,
+      const std::optional<std::string>& eval_hash) override {
     base::DictValue body;
     body.Set("documentURL", document_url);
     if (referrer)
@@ -120,6 +123,12 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       body.Set("lineNumber", line_number);
     if (column_number)
       body.Set("columnNumber", column_number);
+    if (url_hash) {
+      body.Set("url-hash", *url_hash);
+    }
+    if (eval_hash) {
+      body.Set("eval-hash", *eval_hash);
+    }
     QueueReport(url, group, "csp-violation", std::move(body));
   }
 

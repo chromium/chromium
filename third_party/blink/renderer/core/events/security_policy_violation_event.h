@@ -69,6 +69,7 @@ class SecurityPolicyViolationEvent final : public Event {
   int columnNumber() const { return column_number_; }
   uint16_t statusCode() const { return status_code_; }
   const String& evalHash() const { return eval_hash_; }
+  const String& urlHash() const { return url_hash_; }
 
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kSecurityPolicyViolationEvent;
@@ -91,6 +92,7 @@ class SecurityPolicyViolationEvent final : public Event {
   int column_number_ = 0;
   uint16_t status_code_ = 0;
   String eval_hash_;
+  String url_hash_;
 };
 
 }  // namespace blink

@@ -18,5 +18,7 @@
   readonly attribute unsigned short statusCode;
   readonly attribute unsigned long? lineNumber;
   readonly attribute unsigned long? columnNumber;
+  [RuntimeEnabled=CSPHashesV1] readonly attribute DOMString? urlHash;
+  [RuntimeEnabled=CSPHashesV1] readonly attribute DOMString? evalHash;
   [CallWith=ScriptState] object toJSON(optional DOMString key);
 };

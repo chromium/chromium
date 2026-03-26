@@ -47,7 +47,9 @@ interface ReportingServiceProxy {
                           string disposition,
                           uint16 status_code,
                           int32 line_number,
-                          int32 column_number);
+                          int32 column_number,
+                          string? url_hash,
+                          string? eval_hash);
 
   // Attempts to queue an Integrity Violation report using the Reporting API.
   //

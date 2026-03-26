@@ -228,7 +228,8 @@ void ReportingContext::SendToReportingAPI(Report* report,
         body->effectiveDirective() ? body->effectiveDirective() : "",
         body->originalPolicy() ? body->originalPolicy() : "",
         body->sourceFile(), body->sample(), body->disposition().AsString(),
-        body->statusCode(), line_number, column_number);
+        body->statusCode(), line_number, column_number, body->urlHash(),
+        body->evalHash());
   } else if (type == ReportType::kDeprecation) {
     // Send the deprecation report.
     const DeprecationReportBody* body =
