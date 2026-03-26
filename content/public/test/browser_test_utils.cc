@@ -2229,7 +2229,8 @@ bool SetCookie(
       ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
   std::unique_ptr<net::CanonicalCookie> cc(
       net::CanonicalCookie::CreateForTesting(
-          url, value, base::Time::Now(), std::nullopt /* server_time */,
+          url, value, base::Time::Now(), net::CookieSourceType::kOther,
+          std::nullopt /* server_time */,
           cookie_partition_key.CopyAsOptional()));
   DCHECK(cc.get());
 

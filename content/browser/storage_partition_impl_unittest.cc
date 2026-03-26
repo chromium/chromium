@@ -175,8 +175,8 @@ class RemoveCookieTester {
     std::unique_ptr<net::CanonicalCookie> cc(
         net::CanonicalCookie::CreateForTesting(
             origin.GetURL(), cookie_str, base::Time::Now(),
-            /*server_time=*/std::nullopt, cookie_partition_key,
-            net::CookieSourceType::kOther, &status));
+            net::CookieSourceType::kOther,
+            /*server_time=*/std::nullopt, cookie_partition_key, &status));
     base::RunLoop loop;
     storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
         *cc, origin.GetURL(), net::CookieOptions::MakeAllInclusive(),

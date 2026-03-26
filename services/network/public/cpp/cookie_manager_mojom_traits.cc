@@ -25,8 +25,6 @@ network::mojom::CookieSourceType
 EnumTraits<network::mojom::CookieSourceType, net::CookieSourceType>::ToMojom(
     net::CookieSourceType input) {
   switch (input) {
-    case net::CookieSourceType::kUnknown:
-      return network::mojom::CookieSourceType::kUnknown;
     case net::CookieSourceType::kHTTP:
       return network::mojom::CookieSourceType::kHTTP;
     case net::CookieSourceType::kScript:
@@ -40,8 +38,6 @@ net::CookieSourceType
 EnumTraits<network::mojom::CookieSourceType, net::CookieSourceType>::FromMojom(
     network::mojom::CookieSourceType input) {
   switch (input) {
-    case network::mojom::CookieSourceType::kUnknown:
-      return net::CookieSourceType::kUnknown;
     case network::mojom::CookieSourceType::kHTTP:
       return net::CookieSourceType::kHTTP;
     case network::mojom::CookieSourceType::kScript:

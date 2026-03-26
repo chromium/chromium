@@ -22,6 +22,19 @@ void TriedToRestoreCookieMetric(bool success) {
   base::UmaHistogramBoolean("Cookie.AndroidOTRRestore", success);
 }
 
+// Map legacy kUnknown (0) and other invalid values to kOther for backward
+// compatibility during restores.
+net::CookieSourceType ComputeSourceType(int32_t source_type) {
+  net::CookieSourceType value = static_cast<net::CookieSourceType>(source_type);
+  switch (value) {
+    case net::CookieSourceType::kHTTP:
+    case net::CookieSourceType::kScript:
+    case net::CookieSourceType::kOther:
+      return value;
+  }
+  return net::CookieSourceType::kOther;
+}
+
 }  // namespace
 
 // Returns the cookie service at the client end of the mojo pipe.
@@ -74,7 +87,7 @@ void CookiesFetcherRestoreCookiesImpl(JNIEnv* env,
           static_cast<net::CookiePriority>(priority),
           serialized_cookie_partition_key.value(),
           static_cast<net::CookieSourceScheme>(source_scheme), source_port,
-          static_cast<net::CookieSourceType>(source_type),
+          ComputeSourceType(source_type),
           net::CanonicalCookieFromStorageCallSite::
               kAndroidCookiesFetcherRestoreUtil);
   // FromStorage() uses a less strict version of IsCanonical(), we need to check

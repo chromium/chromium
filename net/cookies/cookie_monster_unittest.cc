@@ -6706,9 +6706,9 @@ TEST_F(CookieMonsterTest, RejectCreatedSameSiteCookieOnSet) {
   CookieInclusionStatus status;
   // Cookie can be created successfully; SameSite is not checked on Creation.
   auto cookie = CanonicalCookie::CreateForTesting(
-      url, cookie_line, base::Time::Now(),
+      url, cookie_line, base::Time::Now(), CookieSourceType::kOther,
       /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
+      /*cookie_partition_key=*/std::nullopt, &status);
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
 
@@ -6730,8 +6730,9 @@ TEST_F(CookieMonsterTest, RejectCreatedSecureCookieOnSet) {
   // Cookie can be created successfully from an any url. Secure is not checked
   // on Create.
   auto cookie = CanonicalCookie::CreateForTesting(
-      http_url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
+      http_url, cookie_line, base::Time::Now(), CookieSourceType::kOther,
+      /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt, &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -6754,9 +6755,9 @@ TEST_F(CookieMonsterTest, RejectCreatedHttpOnlyCookieOnSet) {
   CookieInclusionStatus status;
   // Cookie can be created successfully; HttpOnly is not checked on Create.
   auto cookie = CanonicalCookie::CreateForTesting(
-      url, cookie_line, base::Time::Now(),
+      url, cookie_line, base::Time::Now(), CookieSourceType::kOther,
       /*server_time=*/std::nullopt,
-      /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
+      /*cookie_partition_key=*/std::nullopt, &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());

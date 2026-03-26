@@ -391,9 +391,9 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions_InvalidCookie) {
   // This cookie is HttpOnly and our CookieOptions will forbid setting that.
   net::CookieInclusionStatus status;
   auto cookie = net::CanonicalCookie::CreateForTesting(
-      url, "test_cookie=value; HttpOnly", base::Time::Now(), std::nullopt,
-      std::nullopt /* cookie_partition_key */, net::CookieSourceType::kHTTP,
-      &status);
+      url, "test_cookie=value; HttpOnly", /*creation_time=*/base::Time::Now(),
+      net::CookieSourceType::kHTTP, /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt, &status);
   ASSERT_TRUE(cookie);
   std::vector<net::CanonicalCookie> cookies_to_set;
   cookies_to_set.push_back(*cookie);

@@ -257,30 +257,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       CookieSourceScheme source_scheme = CookieSourceScheme::kUnset,
       int source_port = url::PORT_UNSPECIFIED);
 
-  // Deprecated: existing callers should be updated to use the overload that
-  // requires CookieSourceType.
-  static std::unique_ptr<CanonicalCookie> CreateUnsafeCookieForTesting(
-      const std::string& name,
-      const std::string& value,
-      const std::string& domain,
-      const std::string& path,
-      base::Time creation,
-      base::Time expiration,
-      base::Time last_access,
-      base::Time last_update,
-      bool secure,
-      bool httponly,
-      CookieSameSite same_site,
-      CookiePriority priority,
-      std::optional<CookiePartitionKey> partition_key = std::nullopt,
-      CookieSourceScheme source_scheme = CookieSourceScheme::kUnset,
-      int source_port = url::PORT_UNSPECIFIED) {
-    return CreateUnsafeCookieForTesting(
-        name, value, domain, path, creation, expiration, last_access,
-        last_update, secure, httponly, same_site, priority,
-        CookieSourceType::kOther, partition_key, source_scheme, source_port);
-  }
-
   // Like Create but with some more friendly defaults for use in tests.
   static std::unique_ptr<CanonicalCookie> CreateForTesting(
       const GURL& url,
@@ -290,35 +266,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       std::optional<base::Time> server_time = std::nullopt,
       std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
       CookieInclusionStatus* status = nullptr);
-
-  // Deprecated: existing callers should be updated to use the overload that
-  // requires CookieSourceType.
-  static std::unique_ptr<CanonicalCookie> CreateForTesting(
-      const GURL& url,
-      std::string_view cookie_line,
-      base::Time creation_time,
-      std::optional<base::Time> server_time = std::nullopt,
-      std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
-      CookieInclusionStatus* status = nullptr) {
-    return CreateForTesting(url, cookie_line, creation_time,
-                            CookieSourceType::kOther, server_time,
-                            cookie_partition_key, status);
-  }
-
-  // Deprecated: This overload is needed specifically for callers that were
-  // explicitly passing CookieSourceType *and* CookieInclusionStatus before the
-  // reorder.
-  static std::unique_ptr<CanonicalCookie> CreateForTesting(
-      const GURL& url,
-      std::string_view cookie_line,
-      base::Time creation_time,
-      std::optional<base::Time> server_time,
-      std::optional<CookiePartitionKey> cookie_partition_key,
-      CookieSourceType source_type,
-      CookieInclusionStatus* status = nullptr) {
-    return CreateForTesting(url, cookie_line, creation_time, source_type,
-                            server_time, cookie_partition_key, status);
-  }
 
   friend auto operator<=>(const CanonicalCookie& left,
                           const CanonicalCookie& right) {
@@ -530,7 +477,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   base::Time last_access_date_;
   base::Time last_update_date_;
   CookiePriority priority_{COOKIE_PRIORITY_MEDIUM};
-  CookieSourceType source_type_{CookieSourceType::kUnknown};
+  CookieSourceType source_type_{CookieSourceType::kOther};
 };
 
 // Used to pass excluded cookie information when it's possible that the

@@ -111,7 +111,7 @@ net::CookieSourceType CookieSourceTypeFromProtoEnum(
     const sync_pb::CookieSpecifics_CookieSourceType& proto_enum) {
   switch (proto_enum) {
     case sync_pb::CookieSpecifics_CookieSourceType_UNKNOWN:
-      return net::CookieSourceType::kUnknown;
+      return net::CookieSourceType::kOther;
     case sync_pb::CookieSpecifics_CookieSourceType_HTTP:
       return net::CookieSourceType::kHTTP;
     case sync_pb::CookieSpecifics_CookieSourceType_SCRIPT:
@@ -124,8 +124,6 @@ net::CookieSourceType CookieSourceTypeFromProtoEnum(
 sync_pb::CookieSpecifics_CookieSourceType ProtoEnumFromCookieSourceType(
     const net::CookieSourceType& source_type) {
   switch (source_type) {
-    case net::CookieSourceType::kUnknown:
-      return sync_pb::CookieSpecifics_CookieSourceType_UNKNOWN;
     case net::CookieSourceType::kHTTP:
       return sync_pb::CookieSpecifics_CookieSourceType_HTTP;
     case net::CookieSourceType::kScript:

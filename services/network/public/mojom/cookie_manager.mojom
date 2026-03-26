@@ -124,7 +124,6 @@ enum CookieSameSiteContextMetadataDowngradeType {
 };
 
 enum CookieSourceType {
-  kUnknown,
   kHTTP,
   kScript,
   kOther,
@@ -212,7 +211,7 @@ struct CanonicalCookie {
   // -1 because of url::PORT_UNSPECIFIED
   // url/third_party/mozilla/url_parse.h
   int32 source_port = -1;
-  CookieSourceType source_type = kUnknown;
+  CookieSourceType source_type = kOther;
 };
 
 struct ExclusionReasons {

@@ -214,9 +214,9 @@ TEST_F(BrowsingDataHelperTest, ABAEmbedCookies) {
   browsing_data_model->AddBrowsingData(
       *net::CanonicalCookie::CreateForTesting(
           GURL("https://example.com/"), "abc=123; SameSite=None; Secure",
-          base::Time::Now(),
+          base::Time::Now(), net::CookieSourceType::kOther,
           /*server_time=*/std::nullopt,
-          /*cookie_partition_key=*/std::nullopt, net::CookieSourceType::kOther),
+          /*cookie_partition_key=*/std::nullopt),
       BrowsingDataModel::StorageType::kCookie,
       /*storage_size=*/0,
       /*cookie_count=*/1,
