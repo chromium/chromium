@@ -152,6 +152,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                              AppendQuadsData* append_quads_data,
                              bool is_checkerboard) {}
 
+  virtual bool ValidateTilingSetForContentsResourceId() const { return true; }
+
  private:
   // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
   virtual void AppendQuadsForResourcelessSoftwareDraw(

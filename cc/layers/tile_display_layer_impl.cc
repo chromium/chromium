@@ -210,8 +210,7 @@ void TileDisplayLayerImpl::GetContentsResourceId(
     return;
   }
 
-  // Masks are only supported if they fit on exactly one tile.
-  if (tilings_.size() != 1u) {
+  if (!ValidateTilingSetForContentsResourceId()) {
     return;
   }
 
@@ -270,6 +269,11 @@ std::vector<float> TileDisplayLayerImpl::GetSafeToDeleteTilings() {
 float TileDisplayLayerImpl::GetIdealContentsScaleKey() const {
   const auto ideal_scale = GetIdealContentsScale();
   return std::max(ideal_scale.x(), ideal_scale.y());
+}
+
+bool TileDisplayLayerImpl::ValidateTilingSetForContentsResourceId() const {
+  // Masks are only supported if they fit on exactly one tile.
+  return tilings_.size() == 1u;
 }
 
 void TileDisplayLayerImpl::AppendQuadsForResourcelessSoftwareDraw(

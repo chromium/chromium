@@ -225,6 +225,7 @@ class CC_EXPORT TileDisplayLayerImpl
   // TileBasedLayerImpl:
   float GetMaximumContentsScaleForUseInAppendQuads() const override;
   float GetIdealContentsScaleKey() const override;
+  bool ValidateTilingSetForContentsResourceId() const override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,
       viz::CompositorRenderPass* render_pass,

@@ -993,6 +993,10 @@ void PictureLayerImpl::GetContentsResourceId(
     return;
   }
 
+  if (!ValidateTilingSetForContentsResourceId()) {
+    return;
+  }
+
   const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
