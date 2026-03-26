@@ -10,6 +10,8 @@ source_set("gradient") {
     "gradient_layer.mm",
     "gradient_view.h",
     "gradient_view.mm",
+    "multi_color_gradient_view.h",
+    "multi_color_gradient_view.mm",
   ]
   deps = [ "//base" ]
 }

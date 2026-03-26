@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_gradient_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_presentation_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
@@ -71,7 +72,6 @@ constexpr CGFloat kContainerMargin = 12;
 constexpr CGFloat kContainerMultiplier = 0.8;
 constexpr CGFloat kContainerCornerRadius = 24;
 constexpr CGFloat kContainerBackgroundAlpha = 0.8;
-constexpr CGFloat kContainerBackgroundAlphaWithGradient = 0.6;
 
 // Returns a button to be added to the top toolbar.
 UIButton* TopToolbarButton(NSString* symbol_name,
@@ -168,14 +168,15 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIView* _container;
   // The background of the container, for animations.
   UIView* _containerBackground;
+  // An ivar that stores the _containerBackground as TabGroupGradientView,
+  // should be removed once IsTabGroupColorOnSurfaceEnabled shipped.
+  TabGroupGradientView* _containerGradientBackground;
   // The gesture recognizer to swipe to dismiss the tab group view.
   UIPanGestureRecognizer* _swipeDownGestureRecognizer;
   // Face pile provider.
   id<FacePileProviding> _facePileProvider;
   // The color palette for the tab group view.
   TabGroupColorPalette* _tabGroupColorPalette;
-  // The gradient for the container background.
-  CAGradientLayer* _gradientBackground;
 }
 
 #pragma mark - Public
@@ -413,13 +414,6 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
   [self updateGridInsets];
-}
-
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  if (IsTabGroupColorOnSurfaceEnabled()) {
-    _gradientBackground.frame = _containerBackground.bounds;
-  }
 }
 
 #pragma mark - UINavigationBarDelegate
@@ -760,29 +754,25 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 }
 
 // Returns the background, with a gradient if TabGroupColorOnSurface is enabled.
+// TODO(crbug.com/481997646): Change return type once feature launched.
 - (UIView*)configuredBackground {
-  UIView* background = [[UIView alloc] init];
-  background.translatesAutoresizingMaskIntoConstraints = NO;
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    TabGroupGradientView* background = [[TabGroupGradientView alloc]
+        initWithColors:[TabGroupColorPalette
+                           gradientBackgroundColors:_tabGroupColorPalette
+                                                        .tabGroupColorID]];
+    background.translatesAutoresizingMaskIntoConstraints = NO;
+    _containerGradientBackground = background;
 
-  if (!IsTabGroupColorOnSurfaceEnabled()) {
-    background.backgroundColor =
-        [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
     return background;
   }
 
-  UIView* gradientBackgroundContainer = [[UIView alloc] init];
-  gradientBackgroundContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  _gradientBackground = [CAGradientLayer layer];
-  _gradientBackground.colors = _tabGroupColorPalette.backgroundGradientColors;
-  _gradientBackground.locations = @[ @0.0, @0.15, @1.0 ];
-  [gradientBackgroundContainer.layer addSublayer:_gradientBackground];
+  UIView* background = [[UIView alloc] init];
+  background.translatesAutoresizingMaskIntoConstraints = NO;
+  background.backgroundColor =
+      [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
 
-  background.backgroundColor = [UIColor.blackColor
-      colorWithAlphaComponent:kContainerBackgroundAlphaWithGradient];
-  [gradientBackgroundContainer addSubview:background];
-  AddSameConstraints(gradientBackgroundContainer, background);
-
-  return gradientBackgroundContainer;
+  return background;
 }
 
 // Displays the menu to rename and change the color of the currently displayed
@@ -1069,7 +1059,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   closeButtonConfig.background.backgroundColor = buttonColor;
   _closeButton.configuration = closeButtonConfig;
 
-  _gradientBackground.colors = _tabGroupColorPalette.backgroundGradientColors;
+  [_containerGradientBackground
+      updateColors:[TabGroupColorPalette
+                       gradientBackgroundColors:_tabGroupColorPalette
+                                                    .tabGroupColorID]];
 
   [_facePileView
       setShareButtonBackgroundColor:[_tabGroupColorPalette.commonColor
