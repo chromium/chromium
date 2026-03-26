@@ -113,6 +113,8 @@ BASE_EXPORT std::string GetJavaExceptionInfo(
 // This returns a string representation of the java stack trace.
 BASE_EXPORT std::string GetJavaStackTraceIfPresent();
 
+void HookJniFindClass(JNIEnv* env);
+
 using MethodID = jni_zero::MethodID;
 }  // namespace android
 }  // namespace base

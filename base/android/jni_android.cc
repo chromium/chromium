@@ -27,6 +27,11 @@ namespace base {
 namespace android {
 namespace {
 
+#if !BUILDFLAG(IS_ROBOLECTRIC)
+const JNINativeInterface* g_previous_functions = nullptr;
+JNINativeInterface g_hooked_functions;
+#endif
+
 // If disabled, we LOG(FATAL) immediately in native code when faced with an
 // uncaught Java exception (historical behavior). If enabled, we give the Java
 // uncaught exception handler a chance to handle the exception first, so that
@@ -71,6 +76,17 @@ void PrepareClassLoaders(JNIEnv* env) {
                          "(Ljava/lang/String;)Ljava/lang/Class;");
     CHECK(!ClearException(env));
   }
+}
+
+jclass FindClassHook(JNIEnv* env, const char* class_name) {
+  jclass clazz = GetClassFromSplit(env, class_name, "");
+  if (clazz) {
+    return clazz;
+  }
+  // ClassLoader.loadClass() throws ClassNotFoundException, but FindClass()
+  // throws only NoClassDefFoundError.
+  ClearException(env);
+  return g_previous_functions->FindClass(env, class_name);
 }
 #endif  // !BUILDFLAG(IS_ROBOLECTRIC)
 }  // namespace
@@ -263,6 +279,15 @@ std::string GetJavaStackTraceIfPresent() {
     return {};
   }
   return ret.substr(newline_idx + 1);
+}
+
+void HookJniFindClass(JNIEnv* env) {
+#if !BUILDFLAG(IS_ROBOLECTRIC)
+  g_previous_functions = env->functions;
+  g_hooked_functions = *g_previous_functions;
+  env->functions = &g_hooked_functions;
+  g_hooked_functions.FindClass = &FindClassHook;
+#endif
 }
 
 }  // namespace android

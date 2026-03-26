@@ -15,6 +15,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -873,6 +874,6 @@ public class LibraryLoader {
     interface Natives {
         // Performs auxiliary initialization useful right after the native library load. Returns
         // true on success and false on failure.
-        boolean libraryLoaded(@LibraryProcessType int processType);
+        boolean libraryLoaded(@LibraryProcessType @JniType("LibraryProcessType") int processType);
     }
 }
