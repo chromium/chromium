@@ -2629,12 +2629,8 @@ TEST_F(HostResolverManagerTest, StartIPv6ReachabilityCheck) {
   NetLogWithSource net_log =
       NetLogWithSource::Make(net::NetLog::Get(), NetLogSourceType::NONE);
   MockClientSocketFactory socket_factory;
-  SequencedSocketData sync_connect(MockConnect(SYNCHRONOUS, OK),
-                                   base::span<net::MockRead>(),
-                                   base::span<net::MockWrite>());
-  SequencedSocketData async_connect(MockConnect(ASYNC, OK),
-                                    base::span<net::MockRead>(),
-                                    base::span<net::MockWrite>());
+  SequencedSocketData sync_connect(MockConnect(SYNCHRONOUS, OK), {}, {});
+  SequencedSocketData async_connect(MockConnect(ASYNC, OK), {}, {});
   socket_factory.AddSocketDataProvider(&sync_connect);
   socket_factory.AddSocketDataProvider(&async_connect);
 
@@ -4611,9 +4607,9 @@ TEST_F(HostResolverManagerDnsTest, LocalhostLookup) {
 TEST_F(HostResolverManagerDnsTest, LocalhostLookupWithHosts) {
   DnsHosts hosts;
   hosts[DnsHostsKey("localhost", ADDRESS_FAMILY_IPV4)] =
-      IPAddress(base::span<const uint8_t>({192, 168, 1, 1}));
+      IPAddress(192, 168, 1, 1);
   hosts[DnsHostsKey("foo.localhost", ADDRESS_FAMILY_IPV4)] =
-      IPAddress(base::span<const uint8_t>({192, 168, 1, 2}));
+      IPAddress(192, 168, 1, 2);
 
   DnsConfig config = CreateValidDnsConfig();
   config.hosts = hosts;

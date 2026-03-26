@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <string_view>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -380,7 +381,7 @@ bool ImageDecoder::HasSufficientDataToSniffMimeType(const SharedBuffer& data) {
     static_assert(8 <= kLongestSignatureLength, "");
     bool ok = data.GetBytes(base::byte_span_from_ref(box));
     DCHECK(ok);
-    if (base::span(box.type) == base::span<const char>({'f', 't', 'y', 'p'})) {
+    if (std::string_view(box.type, 4) == "ftyp") {
       // Returns whether we have received the File Type Box in its entirety.
       return base::U32FromBigEndian(box.size) <= data.size();
     }
