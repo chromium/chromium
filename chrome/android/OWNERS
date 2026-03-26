@@ -40,3 +40,6 @@ per-file ...RecentlyClosedEntriesManager*=aishwaryarj@google.com
 per-file ...RecentlyClosedEntriesManager*=zheliooo@google.com
 per-file ...RecentlyClosedWindow*=aishwaryarj@google.com
 per-file ...RecentlyClosedWindow*=zheliooo@google.com
+
+# Exclusive Access:
+per-file ...ExclusiveAccess*=file://chrome/browser/ui/exclusive_access/OWNERS
