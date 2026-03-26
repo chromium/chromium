@@ -1325,7 +1325,8 @@ crbug.com/494341468 external/wpt/quirks/tables-inherit-color-from-body-quirk-005
 
 # ====== Style team owned tests to here ======
 
-# Tests only passing with SnapshotScrollTimelinesPostLayout enabled
+# Test expectations for SnapshotScrollTimelinesPostLayout runtime flag
+crbug.com/384523570 virtual/snapshot-scroll-timelines-post-layout/external/wpt/scroll-animations/css/view-timeline-paused-animations.html [ Failure Pass ]
 crbug.com/384523570 virtual/snapshot-scroll-timelines-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html [ Failure Pass ]
 crbug.com/384523570 virtual/snapshot-scroll-timelines-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-timeline-snapshotting.html [ Pass ]
 crbug.com/384523570 virtual/snapshot-scroll-timelines-post-layout/external/wpt/scroll-animations/scroll-timelines/updating-the-finished-state.html [ Pass Timeout ]
