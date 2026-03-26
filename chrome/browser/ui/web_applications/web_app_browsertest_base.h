@@ -46,6 +46,9 @@ using WebAppBrowserTestBaseParent = MixinBasedInProcessBrowserTest;
 #endif
 
 // Base class for tests of user interface support for web applications.
+// Have ability to perform dynamic test data loading using
+// RegisterPortReplacementHandler, and mock .well-known file fetch for
+// app migration using RegisterAssociatedOriginWellKnownHandler.
 class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
  public:
   WebAppBrowserTestBase();
@@ -97,6 +100,27 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
 
   OsIntegrationTestOverrideImpl& os_integration_override();
 
+  // Registers a request handler with the `https_server_` that intercepts
+  // requests for files ending with "manifest.replaceport.json". It dynamically
+  // replaces all occurrences of the string "$PORT" in the file's content
+  // with the actual port number the server is running on.
+  void RegisterPortReplacementHandler();
+
+  // Registers a request handler with the `https_server_` that intercepts
+  // requests for the `/.well-known/web-app-origin-association` endpoint.
+  // It responds to requests exactly matching the `source_host` domain
+  // and returns a valid Web App Origin Association JSON authorizing the
+  // `target_manifest_id_template` (with $PORT replaced by the active port)
+  // to migrate from the source app.
+  // Note: This can currently only be called once per host (or origin).
+  // TODO(crbug.com/494641551): Create a map of origin -> target manifests and
+  // have a single handler look at that map instead of registering multiple
+  // handlers.
+  void RegisterAssociatedOriginWellKnownHandler(
+      const std::string& source_host,
+      const std::string& target_manifest_id_template,
+      const std::string& allowed_scope = "/");
+
  protected:
   WebAppBrowserTestBase(
       const std::vector<base::test::FeatureRef>& enabled_features,
@@ -117,6 +141,10 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   void SetUp() override;
   void TearDown() override;
   void SetUpInProcessBrowserTestFixture() override;
+
+  std::unique_ptr<net::test_server::HttpResponse> HandlePortReplacement(
+      const net::test_server::HttpRequest& request);
+
   void TearDownInProcessBrowserTestFixture() override;
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;

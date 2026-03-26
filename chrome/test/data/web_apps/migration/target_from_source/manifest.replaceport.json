@@ -1,0 +1,24 @@
+{
+  "name": "Target App",
+  "id": "/web_apps/migration/target_from_source/manifest_id",
+  "start_url": "index.html",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "migrate_from": [{
+    "id": "https://www.example.com:$PORT/web_apps/migration/source_to_foo_example_com/manifest_id",
+    "behavior": "suggest"
+  },{
+    "id": "https://www.example.com:$PORT/web_apps/migration/source_to_www_example_com/manifest_id",
+    "behavior": "suggest"
+  },{
+    "id": "https://www.example.com:$PORT/web_apps/migration/source_to_www_example_org/manifest_id",
+    "behavior": "suggest"
+  }]
+
+}

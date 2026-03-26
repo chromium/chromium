@@ -7,7 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -44,6 +47,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
@@ -181,6 +188,97 @@ Browser* WebAppBrowserTestBase::OpenPopupAndWait(Browser* browser,
 OsIntegrationTestOverrideImpl&
 WebAppBrowserTestBase::os_integration_override() {
   return faked_os_integration_.test_override();
+}
+
+void WebAppBrowserTestBase::RegisterPortReplacementHandler() {
+  https_server()->RegisterRequestHandler(base::BindRepeating(
+      &WebAppBrowserTestBase::HandlePortReplacement, base::Unretained(this)));
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+WebAppBrowserTestBase::HandlePortReplacement(
+    const net::test_server::HttpRequest& request) {
+  if (!request.GetURL().path().contains("manifest.replaceport.json")) {
+    return nullptr;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> default_response =
+      net::test_server::HandleFileRequest(
+          net::test_server::EmbeddedTestServer::GetFullPathFromSourceDirectory(
+              GetChromeTestDataDir()),
+          request);
+
+  if (!default_response) {
+    return nullptr;
+  }
+
+  // TODO:Split out a version of HandleFileRequest that returns a
+  // BasicHttpResponse. Then we can avoid static_cast here.
+  auto& basic_response =
+      static_cast<net::test_server::BasicHttpResponse&>(*default_response);
+
+  std::string content(basic_response.content());
+  base::ReplaceSubstringsAfterOffset(&content, 0, "$PORT",
+                                     base::ToString(https_server()->port()));
+  basic_response.set_content(content);
+
+  return default_response;
+}
+
+void WebAppBrowserTestBase::RegisterAssociatedOriginWellKnownHandler(
+    const std::string& source_host,
+    const std::string& target_manifest_id_template,
+    const std::string& allowed_scope) {
+  https_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const std::string& expected_host,
+         const std::string& manifest_id_template,
+         const std::string& allowed_scope,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL().path() !=
+            "/.well-known/web-app-origin-association") {
+          return nullptr;
+        }
+
+        // Determine the actual host of the request. Since the embedded
+        // test server resolves to 127.0.0.1 locally, we must read the 'Host'
+        // header to check which domain the test is attempting to reach.
+        std::string actual_host(request.GetURL().host());
+        if (auto it = request.headers.find("Host");
+            it != request.headers.end()) {
+          actual_host = std::string(GURL("http://" + it->second).host());
+        }
+
+        if (expected_host != actual_host) {
+          return nullptr;
+        }
+
+        auto response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("application/json");
+
+        std::string manifest_id = manifest_id_template;
+        base::ReplaceSubstringsAfterOffset(
+            &manifest_id, 0, "$PORT",
+            base::ToString(request.GetURL().IntPort()));
+
+        // Construct the JSON. The parser requires the root keys to be
+        // valid manifest ID URLs, and 'allow_migration' must evaluate to
+        // true.
+        std::string json = base::ReplaceStringPlaceholders(
+            R"({
+              "$1": {
+                "scope": "$2",
+                "allow_migration": true
+              }
+            })",
+            {manifest_id, allowed_scope}, nullptr);
+        response->set_content(json);
+
+        return response;
+      },
+      source_host, target_manifest_id_template, allowed_scope));
 }
 
 content::WebContents* WebAppBrowserTestBase::OpenApplication(

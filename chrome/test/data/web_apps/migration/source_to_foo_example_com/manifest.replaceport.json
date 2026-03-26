@@ -1,0 +1,17 @@
+{
+  "name": "Source App (to foo.example.com)",
+  "id": "/web_apps/migration/source_to_foo_example_com/manifest_id",
+  "start_url": "index.html",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "migrate_to": {
+    "id": "https://foo.example.com:$PORT/web_apps/migration/target_from_source/manifest_id",
+    "install_url": "https://foo.example.com:$PORT/web_apps/migration/target_from_source/index.html"
+  }
+}
