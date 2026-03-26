@@ -39,7 +39,17 @@ case "$1" in
   "configure")
     echo "Adding user $CRD_NETWORK_USER to allow the Chrome Remote Desktop network "
     echo 'process to be run in a sandboxed environment.'
-    adduser --system "$CRD_NETWORK_USER"
+    # On Debian 11 or older, usernames with a leading underscore are not allowed
+    # unless --allow-bad-names or --force-badname is set. --allow-bad-names is
+    # only available in newer versions (>= 3.134) of adduser.
+    ADDUSER_OPTS="--system"
+    ADDUSER_VERSION=$(dpkg-query -W -f='${Version}' adduser)
+    if dpkg --compare-versions "$ADDUSER_VERSION" ge "3.134"; then
+      ADDUSER_OPTS="$ADDUSER_OPTS --allow-bad-names"
+    else
+      ADDUSER_OPTS="$ADDUSER_OPTS --force-badname"
+    fi
+    adduser $ADDUSER_OPTS "$CRD_NETWORK_USER"
 
     kill_processes
 
