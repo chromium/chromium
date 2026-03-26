@@ -21,6 +21,14 @@ RulesServiceBase::RulesServiceBase(PrefService* pref_service) {
 
 RulesServiceBase::~RulesServiceBase() = default;
 
+void RulesServiceBase::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void RulesServiceBase::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 Verdict RulesServiceBase::GetCopyRestrictedBySourceVerdict(
     const GURL& source) const {
   return GetVerdict(Rule::Restriction::kClipboard,
@@ -138,6 +146,10 @@ void RulesServiceBase::OnDataControlsRulesUpdate() {
     }
 
     rules_.push_back(std::move(*rule));
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnRulesUpdated();
   }
 }
 
