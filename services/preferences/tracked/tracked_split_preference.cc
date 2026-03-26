@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "services/preferences/public/cpp/tracked/pref_names.h"

@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "services/preferences/tracked/device_id.h"
