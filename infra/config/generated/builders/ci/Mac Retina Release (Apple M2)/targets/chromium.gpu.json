@@ -1,5 +1,4 @@
 {
-  "GPU Mac arm64 Builder": {},
   "Mac Retina Release (Apple M2)": {
     "gtest_tests": [
       {

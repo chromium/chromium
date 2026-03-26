@@ -27,7 +27,6 @@ ci/GPU FYI XR Win x64 Builder
 ci/GPU Linux Builder
 ci/GPU Mac Builder
 ci/GPU Mac Builder (dbg)
-ci/GPU Mac arm64 Builder
 ci/GPU Win x64 Builder
 ci/GPU Win x64 Builder (dbg)
 ci/Linux FYI Debug (NVIDIA)
