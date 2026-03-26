@@ -26,8 +26,11 @@ from components.cronet.tools.update_api import CLASS_RE  # pylint: disable=wrong
 
 METHOD_RE = re.compile(r".* ([^ ]*)\(.*\)( .+)?;")
 
-# Adding anything to this list is dangerous: do so only if you deeply understand Cronet's API/IMPL layering.
-ALLOWED_EXCEPTIONS = [
+# urlconnection exemptions. PLEASE READ THE WARNING IN
+# //components/cronet/android/java/src/org/chromium/net/urlconnection/README.md
+# BEFORE ADDING TO THIS LIST. urlconnection code MUST NOT assume it is running
+# against a recent version of the Cronet API.
+ALLOWED_URLCONNECTION_EXCEPTIONS = [
     'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect -> org/chromium/net/UrlRequest/cancel:()V',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getResponseMessage -> org/chromium/net/UrlResponseInfo/getHttpStatusText:()Ljava/lang/String;',
     'org.chromium.net.urlconnection.CronetHttpURLConnection/getResponseCode -> org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
@@ -55,6 +58,10 @@ ALLOWED_EXCEPTIONS = [
     'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/openConnection -> org/chromium/net/ExperimentalCronetEngine/openConnection:(Ljava/net/URL;Ljava/net/Proxy;)Ljava/net/URLConnection;',
     'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderImpl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
     'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderImpl/rewind -> org/chromium/net/UploadDataSink/onRewindSucceeded:()V',
+]
+
+# Adding anything to this list is dangerous: do so only if you deeply understand Cronet's API/IMPL layering.
+ALLOWED_EXCEPTIONS = ALLOWED_URLCONNECTION_EXCEPTIONS + [
     'org.chromium.net.impl.CronetEngineBase/newBidirectionalStreamBuilder -> org/chromium/net/ExperimentalCronetEngine/newBidirectionalStreamBuilder:(Ljava/lang/String;Lorg/chromium/net/BidirectionalStream$Callback;Ljava/util/concurrent/Executor;)Lorg/chromium/net/ExperimentalBidirectionalStream$Builder;',
     'org.chromium.net.impl.NetworkExceptionImpl/getMessage -> org/chromium/net/NetworkException/getMessage:()Ljava/lang/String;',
     'org.chromium.net.VersionSafeProxyOptions/org.chromium.net.VersionSafeProxyOptions -> org/chromium/net/ProxyOptions/getProxyList:()Ljava/util/List;',
