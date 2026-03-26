@@ -1379,6 +1379,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        UserInterventionFailsWhenFeatureDisabled) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUserInterventionForPasswordChange)) {
+    GTEST_SKIP() << "UserInterventionForPasswordChange is enabled.";
+  }
   SetPrivacyNoticeAcceptedPref();
   SetChangePasswordUrl("/password/update_form_empty_fields.html");
 
