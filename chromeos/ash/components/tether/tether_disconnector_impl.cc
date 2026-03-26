@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/tether/tether_disconnector_impl.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"

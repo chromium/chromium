@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/shill_property_util.h"

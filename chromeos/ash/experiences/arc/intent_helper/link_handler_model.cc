@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
