@@ -256,6 +256,17 @@ const CGFloat kIconPointSize = 16.0;
     return NO;
   }
 
+  // When the stable entrypoint is enabled, the page action menu badge is always
+  //  available. User state (signed-out, ineligible) is handled dynamically in
+  //  the menu.
+  if (IsPageActionMenuAuthFlowEnabled()) {
+    if (IsDirectBWGEntryPoint()) {
+      // Direct entry point retains existing Gemini-gated behavior.
+      return [self isGeminiEligibleForActiveWebState];
+    }
+    return YES;
+  }
+
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(webState->GetBrowserState());
   BwgService* geminiService = BwgServiceFactory::GetForProfile(profile);
@@ -272,6 +283,23 @@ const CGFloat kIconPointSize = 16.0;
   return geminiService->IsProfileEligibleForGemini();
 }
 
+/// Returns whether Gemini is eligible for the current active web state.
+- (BOOL)isGeminiEligibleForActiveWebState {
+  web::WebState* webState = [self activeWebState];
+  if (!webState) {
+    return NO;
+  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(webState->GetBrowserState());
+  BwgService* geminiService = BwgServiceFactory::GetForProfile(profile);
+  if (!geminiService) {
+    return NO;
+  }
+  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(webState);
+  return tabHelper && tabHelper->IsGeminiAvailableForWebState() &&
+         geminiService->IsProfileEligibleForGemini();
+}
+
 /// Updates the placeholder.
 - (void)updatePlaceholderType {
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2) &&
@@ -286,23 +314,24 @@ const CGFloat kIconPointSize = 16.0;
   }
 
   if ([self isAIHubAvailable]) {
-    // If this is the user's first time being eligible for the AI Hub, notify
-    // the FET.
-    web::WebState* webState = [self activeWebState];
-    if (!webState) {
-      return;
+    // Gemini-specific metrics should only fire when Gemini is actually
+    // eligible, not just when the PAM badge is visible.
+    if ([self isGeminiEligibleForActiveWebState]) {
+      web::WebState* webState = [self activeWebState];
+      if (webState) {
+        ProfileIOS* profile =
+            ProfileIOS::FromBrowserState(webState->GetBrowserState());
+        PrefService* prefs = profile->GetPrefs();
+        if (!prefs->GetBoolean(prefs::kAIHubEligibilityTriggered)) {
+          prefs->SetBoolean(prefs::kAIHubEligibilityTriggered, true);
+          feature_engagement::TrackerFactory::GetForProfile(profile)
+              ->NotifyEvent(feature_engagement::events::kIOSGeminiEligiblity);
+        }
+        // Record Gemini entry point impression when AI Hub is available and
+        // shown.
+        RecordGeminiEntryPointImpression(gemini::EntryPoint::AIHub);
+      }
     }
-    ProfileIOS* profile =
-        ProfileIOS::FromBrowserState(webState->GetBrowserState());
-    PrefService* prefs = profile->GetPrefs();
-    if (!prefs->GetBoolean(prefs::kAIHubEligibilityTriggered)) {
-      prefs->SetBoolean(prefs::kAIHubEligibilityTriggered, true);
-      feature_engagement::TrackerFactory::GetForProfile(profile)->NotifyEvent(
-          feature_engagement::events::kIOSGeminiEligiblity);
-    }
-
-    // Record Gemini entry point impression when AI Hub is available and shown.
-    RecordGeminiEntryPointImpression(gemini::EntryPoint::AIHub);
     [self.consumer
         setPlaceholderType:LocationBarPlaceholderType::kPageActionMenu];
     return;
