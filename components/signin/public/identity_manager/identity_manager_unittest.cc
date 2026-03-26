@@ -385,10 +385,12 @@ class IdentityManagerTest : public testing::Test {
             &signin_client_);
 
     auto account_fetcher_service = std::make_unique<AccountFetcherService>();
+    auto account_fetcher_factory = std::make_unique<FakeAccountFetcherFactory>(
+        *token_service.get(), signin_client_);
     account_fetcher_service->Initialize(
         &signin_client_, token_service.get(), account_tracker_service.get(),
         std::make_unique<image_fetcher::FakeImageDecoder>(),
-        std::make_unique<FakeAccountFetcherFactory>());
+        std::move(account_fetcher_factory));
 
     auto primary_account_manager = std::make_unique<PrimaryAccountManager>(
         &signin_client_, token_service.get(), account_tracker_service.get(),

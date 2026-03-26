@@ -6,12 +6,16 @@
 
 #import <memory>
 
+#import "base/check_deref.h"
 #import "base/no_destructor.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/internal/identity_manager/account_tracker_service.h"
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
 #import "components/signin/public/base/account_consistency_method.h"
 #import "components/signin/public/base/signin_client.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -65,15 +69,25 @@ WebViewIdentityManagerFactory::BuildServiceInstanceFor(
       WebViewSigninClientFactory::GetForBrowserState(browser_state);
 
   signin::IdentityManagerBuildParams params;
-  params.device_accounts_provider =
-      std::make_unique<WebViewDeviceAccountsProviderImpl>();
   params.image_decoder = image_fetcher::CreateIOSImageDecoder();
   params.local_state = ApplicationContext::GetInstance()->GetLocalState();
   params.pref_service = browser_state->GetPrefs();
   params.profile_path = base::FilePath();
   params.signin_client = client;
+
+  params.account_tracker_service = std::make_unique<AccountTrackerService>();
+  params.account_tracker_service->Initialize(params.pref_service,
+                                             params.profile_path);
+
+  auto delegate = std::make_unique<ProfileOAuth2TokenServiceIOSDelegate>(
+      client, std::make_unique<WebViewDeviceAccountsProviderImpl>(),
+      params.account_tracker_service.get());
+  params.token_service = std::make_unique<ProfileOAuth2TokenService>(
+      params.pref_service, std::move(delegate));
+
   params.account_fetcher_factory =
-      std::make_unique<ios_web_view::AccountFetcherFactoryIOSWebView>();
+      std::make_unique<ios_web_view::AccountFetcherFactoryIOSWebView>(
+          CHECK_DEREF(params.token_service), CHECK_DEREF(client));
   params.profile_metrics_service =
       WebViewProfileMetricsServiceFactory::GetForBrowserState(browser_state);
 

@@ -6,10 +6,27 @@
 
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_android.h"
+#include "components/signin/internal/identity_manager/account_info_fetcher_gaia.h"
+#include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
-AccountFetcherFactoryAndroid::AccountFetcherFactoryAndroid() = default;
+AccountFetcherFactoryAndroid::AccountFetcherFactoryAndroid(
+    ProfileOAuth2TokenService& token_service,
+    SigninClient& signin_client)
+    : token_service_(token_service), signin_client_(signin_client) {}
+
 AccountFetcherFactoryAndroid::~AccountFetcherFactoryAndroid() = default;
+
+std::unique_ptr<AccountInfoFetcher>
+AccountFetcherFactoryAndroid::CreateAccountInfoFetcher(
+    const CoreAccountId& account_id,
+    base::OnceCallback<void(std::optional<AccountInfo>)> callback) {
+  return std::make_unique<AccountInfoFetcherGaia>(
+      token_service_.get(), signin_client_->GetURLLoaderFactory(), account_id,
+      std::move(callback));
+}
 
 std::unique_ptr<AccountCapabilitiesFetcher>
 AccountFetcherFactoryAndroid::CreateAccountCapabilitiesFetcher(

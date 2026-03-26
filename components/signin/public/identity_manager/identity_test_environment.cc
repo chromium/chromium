@@ -329,10 +329,12 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
 #endif
 ) {
   auto account_fetcher_service = std::make_unique<AccountFetcherService>();
+  auto account_fetcher_factory = std::make_unique<FakeAccountFetcherFactory>(
+      *token_service, *signin_client);
   account_fetcher_service->Initialize(
       signin_client, token_service.get(), account_tracker_service.get(),
       std::make_unique<image_fetcher::FakeImageDecoder>(),
-      std::make_unique<FakeAccountFetcherFactory>());
+      std::move(account_fetcher_factory));
 
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
       std::make_unique<PrimaryAccountManager>(

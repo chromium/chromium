@@ -14,6 +14,7 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
+#include "components/signin/internal/identity_manager/account_info_fetcher.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -41,12 +42,19 @@ class MockAccountFetcherFactory : public AccountFetcherFactory {
   MockAccountFetcherFactory() = default;
   ~MockAccountFetcherFactory() override = default;
 
-  MOCK_METHOD3(
+  MOCK_METHOD(std::unique_ptr<AccountInfoFetcher>,
+              CreateAccountInfoFetcher,
+              (const CoreAccountId&,
+               base::OnceCallback<void(std::optional<AccountInfo>)>),
+              (override));
+
+  MOCK_METHOD(
+      std::unique_ptr<AccountCapabilitiesFetcher>,
       CreateAccountCapabilitiesFetcher,
-      std::unique_ptr<AccountCapabilitiesFetcher>(
-          const CoreAccountInfo& account_info,
-          AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-          AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback));
+      (const CoreAccountInfo& account_info,
+       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
+       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback),
+      (override));
 };
 
 class IdentityManagerBuilderTest : public testing::Test {

@@ -16,10 +16,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
-
-namespace network {
-class SharedURLLoaderFactory;
-}
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class ProfileOAuth2TokenService;
 
@@ -32,7 +29,7 @@ class AccountInfoFetcherGaia : public AccountInfoFetcher,
                                public gaia::GaiaOAuthClient::Delegate {
  public:
   AccountInfoFetcherGaia(
-      ProfileOAuth2TokenService* token_service,
+      ProfileOAuth2TokenService& token_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const CoreAccountId& account_id,
       base::OnceCallback<void(std::optional<AccountInfo>)> callback);
@@ -58,7 +55,7 @@ class AccountInfoFetcherGaia : public AccountInfoFetcher,
   // Start fetching the account information.
   void Start();
 
-  raw_ptr<ProfileOAuth2TokenService> token_service_;
+  raw_ref<ProfileOAuth2TokenService> token_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const CoreAccountId account_id_;
   base::OnceCallback<void(std::optional<AccountInfo>)> callback_;

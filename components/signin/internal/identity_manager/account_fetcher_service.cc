@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_fetcher_factory.h"
-#include "components/signin/internal/identity_manager/account_info_fetcher_gaia.h"
+#include "components/signin/internal/identity_manager/account_info_fetcher.h"
 #include "components/signin/internal/identity_manager/account_info_util.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -176,8 +176,8 @@ void AccountFetcherService::StartFetchingUserInfo(
     user_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
     user_info_requests_.emplace(
         account_id,
-        std::make_unique<AccountInfoFetcherGaia>(
-            token_service_, signin_client_->GetURLLoaderFactory(), account_id,
+        account_fetcher_factory_->CreateAccountInfoFetcher(
+            account_id,
             base::BindOnce(&AccountFetcherService::OnUserInfoFetchCompleted,
                            base::Unretained(this), account_id)));
   }

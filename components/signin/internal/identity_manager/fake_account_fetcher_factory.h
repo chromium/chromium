@@ -9,18 +9,22 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ref.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_fetcher_factory.h"
 
 class FakeAccountCapabilitiesFetcher;
 class AccountCapabilities;
+class ProfileOAuth2TokenService;
 struct CoreAccountId;
 struct CoreAccountInfo;
+class SigninClient;
 
 // Fake `AccountFetcherFactory` implementation for tests.
 class FakeAccountFetcherFactory : public AccountFetcherFactory {
  public:
-  FakeAccountFetcherFactory();
+  FakeAccountFetcherFactory(ProfileOAuth2TokenService& token_service,
+                            SigninClient& signin_client);
   ~FakeAccountFetcherFactory() override;
 
   FakeAccountFetcherFactory(const FakeAccountFetcherFactory&) = delete;
@@ -28,6 +32,9 @@ class FakeAccountFetcherFactory : public AccountFetcherFactory {
       delete;
 
   // AccountFetcherFactory:
+  std::unique_ptr<AccountInfoFetcher> CreateAccountInfoFetcher(
+      const CoreAccountId& account_id,
+      base::OnceCallback<void(std::optional<AccountInfo>)> callback) override;
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
@@ -43,6 +50,9 @@ class FakeAccountFetcherFactory : public AccountFetcherFactory {
 
  private:
   void OnFetcherDestroyed(const CoreAccountId& account_id);
+
+  const raw_ref<ProfileOAuth2TokenService> token_service_;
+  const raw_ref<SigninClient> signin_client_;
 
   std::map<CoreAccountId, FakeAccountCapabilitiesFetcher*> fetchers_;
 

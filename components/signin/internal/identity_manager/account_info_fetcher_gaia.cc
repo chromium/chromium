@@ -15,7 +15,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 AccountInfoFetcherGaia::AccountInfoFetcherGaia(
-    ProfileOAuth2TokenService* token_service,
+    ProfileOAuth2TokenService& token_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const CoreAccountId& account_id,
     base::OnceCallback<void(std::optional<AccountInfo>)> callback)

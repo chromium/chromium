@@ -78,10 +78,12 @@ class PrimaryAccountManagerTest : public testing::Test,
         &user_prefs_,
         std::make_unique<FakeProfileOAuth2TokenServiceDelegate>());
     account_fetcher_ = std::make_unique<AccountFetcherService>();
+    auto account_fetcher_factory = std::make_unique<FakeAccountFetcherFactory>(
+        *token_service_.get(), *signin_client());
     account_fetcher_->Initialize(
         &test_signin_client_, token_service_.get(), account_tracker_.get(),
         std::make_unique<image_fetcher::FakeImageDecoder>(),
-        std::make_unique<FakeAccountFetcherFactory>());
+        std::move(account_fetcher_factory));
   }
 
   ~PrimaryAccountManagerTest() override {

@@ -8,7 +8,9 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/types/to_address.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
+#include "components/signin/internal/identity_manager/account_info_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "google_apis/credentials_mode.h"
@@ -35,11 +37,20 @@ const GURL& GetAccountCapabilitiesUrl() {
 }  // namespace
 
 AccountFetcherFactoryGaia::AccountFetcherFactoryGaia(
-    ProfileOAuth2TokenService* token_service,
-    SigninClient* signin_client)
+    ProfileOAuth2TokenService& token_service,
+    SigninClient& signin_client)
     : token_service_(token_service), signin_client_(signin_client) {}
 
 AccountFetcherFactoryGaia::~AccountFetcherFactoryGaia() = default;
+
+std::unique_ptr<AccountInfoFetcher>
+AccountFetcherFactoryGaia::CreateAccountInfoFetcher(
+    const CoreAccountId& account_id,
+    base::OnceCallback<void(std::optional<AccountInfo>)> callback) {
+  return std::make_unique<AccountInfoFetcherGaia>(
+      *token_service_, signin_client_->GetURLLoaderFactory(), account_id,
+      std::move(callback));
+}
 
 std::unique_ptr<AccountCapabilitiesFetcher>
 AccountFetcherFactoryGaia::CreateAccountCapabilitiesFetcher(
@@ -47,8 +58,8 @@ AccountFetcherFactoryGaia::CreateAccountCapabilitiesFetcher(
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {
   return std::make_unique<AccountCapabilitiesFetcherGaia>(
-      token_service_, signin_client_->GetURLLoaderFactory(), account_info,
-      fetch_priority, std::move(on_complete_callback));
+      base::to_address(token_service_), signin_client_->GetURLLoaderFactory(),
+      account_info, fetch_priority, std::move(on_complete_callback));
 }
 
 void AccountFetcherFactoryGaia::PrepareForFetchingAccountCapabilities() {

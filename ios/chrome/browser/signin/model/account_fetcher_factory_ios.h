@@ -10,31 +10,39 @@
 #import "components/signin/public/identity_manager/account_info.h"
 
 class ChromeAccountManagerService;
+class ProfileOAuth2TokenService;
+class SigninClient;
 
 namespace ios {
 
-// iOS implementation of `AccountFetcherFactory`.
-// This factory creates the link between capabilities cached at the system
-// identity manager scope and those available in C++ account information.
+// iOS implementation of `AccountFetcherFactory`. Creates platform-specific
+// fetchers for account info and capabilities available in the system identity
+// manager.
 class AccountFetcherFactoryIOS : public AccountFetcherFactory {
  public:
-  using OnCompleteCallback = AccountCapabilitiesFetcher::OnCompleteCallback;
-
-  explicit AccountFetcherFactoryIOS(
-      ChromeAccountManagerService* account_management_service);
+  AccountFetcherFactoryIOS(
+      ChromeAccountManagerService* account_management_service,
+      ProfileOAuth2TokenService& token_service,
+      SigninClient& signin_client);
   ~AccountFetcherFactoryIOS() override;
 
   AccountFetcherFactoryIOS(const AccountFetcherFactoryIOS&) = delete;
   AccountFetcherFactoryIOS& operator=(const AccountFetcherFactoryIOS&) = delete;
 
   // AccountFetcherFactory:
+  std::unique_ptr<AccountInfoFetcher> CreateAccountInfoFetcher(
+      const CoreAccountId& account_id,
+      base::OnceCallback<void(std::optional<AccountInfo>)> callback) override;
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-      OnCompleteCallback on_complete_callback) override;
+      AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
+      override;
 
  private:
-  raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  const raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  const raw_ref<ProfileOAuth2TokenService> token_service_;
+  const raw_ref<SigninClient> signin_client_;
 };
 
 }  // namespace ios
