@@ -967,8 +967,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     new TabbedOpenInAppEntryPoint(
                             mActivityTabProvider.asObservable(),
                             assumeNonNull(mOmniboxChipManager),
-                            mActivity,
-                            mTabModelSelectorSupplier);
+                            mActivity);
         }
 
         if (ChromeFeatureList.sGlic.isEnabled()) {
