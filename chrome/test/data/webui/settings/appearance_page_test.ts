@@ -561,7 +561,7 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
 suite('TabStripComboButtonSettings', () => {
   setup(async () => {
     loadTimeData.overrideValues({
-      showTabStripComboButtonEnabled: true,
+      showTabSearchEnabled: true,
       showProjectsPanelEnabled: true,
     });
 
@@ -607,7 +607,7 @@ suite('TabStripComboButtonSettings', () => {
 
   test('Everything menu toggle updates correct pref', async function() {
     loadTimeData.overrideValues({
-      showTabStripComboButtonEnabled: true,
+      showTabSearchEnabled: true,
       showProjectsPanelEnabled: false,
       showEverythingMenuEnabled: true,
     });
@@ -631,7 +631,7 @@ suite('TabStripComboButtonSettings', () => {
 
   test('Toggles hidden when disabled', async function() {
     loadTimeData.overrideValues({
-      showTabStripComboButtonEnabled: false,
+      showTabSearchEnabled: false,
       showProjectsPanelEnabled: false,
       showEverythingMenuEnabled: false,
     });

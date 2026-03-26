@@ -586,7 +586,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("showVerticalTabsExpandOnHoverEnabled",
                           tabs::IsVerticalTabsExpandOnHoverFeatureEnabled());
   html_source->AddBoolean(
-      "showTabStripComboButtonEnabled",
+      "showTabSearchEnabled",
       tabs::IsVerticalTabsFeatureEnabled() ||
           base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton));
   html_source->AddBoolean("showProjectsPanelEnabled",

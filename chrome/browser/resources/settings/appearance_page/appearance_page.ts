@@ -242,10 +242,10 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showTabStripComboButtonEnabled_: {
+      showTabSearchEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('showTabStripComboButtonEnabled');
+          return loadTimeData.getBoolean('showTabSearchEnabled');
         },
       },
 
@@ -305,7 +305,7 @@ export class SettingsAppearancePageElement extends
 
   declare private showVerticalTabsEnabled_: boolean;
   declare private showVerticalTabsExpandOnHoverEnabled_: boolean;
-  declare private showTabStripComboButtonEnabled_: boolean;
+  declare private showTabSearchEnabled_: boolean;
   declare private showProjectsPanelEnabled_: boolean;
   declare private showEverythingMenuEnabled_: boolean;
   declare private showManagedThemeDialog_: boolean;
