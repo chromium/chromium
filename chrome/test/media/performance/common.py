@@ -149,7 +149,13 @@ def send_ssh_command(hostname, username, command, blocking=False):
         subprocess.CompletedProcess or subprocess.Popen: The process object.
     """
     key_path = os.path.expanduser('~/.ssh/id_ed25519')
-    ssh_command = ['ssh', '-i', key_path, f'{username}@{hostname}', command]
+    ssh_command = [
+        'ssh',
+        '-o', 'StrictHostKeyChecking=no',
+        '-i', key_path,
+        f'{username}@{hostname}',
+        command
+    ]
     logging.debug('Executing SSH command: %s', ' '.join(ssh_command))
 
     if blocking:
@@ -192,16 +198,17 @@ def get_remote_info(args):
     """Detects info (arch, OS version) of the remote machine."""
     info = {'arch': None, 'os_version': None}
     if args.sender_os == 'mac':
+        # Use absolute paths on Mac to avoid PATH issues in non-interactive SSH.
         arch_result = send_ssh_command(args.sender,
                                        args.username,
-                                       'uname -m',
+                                       '/usr/bin/uname -m',
                                        blocking=True)
         arch = arch_result.stdout.strip()
         info['arch'] = 'x64' if arch == 'x86_64' else arch
 
         version_result = send_ssh_command(args.sender,
                                           args.username,
-                                          'sw_vers -productVersion',
+                                          '/usr/bin/sw_vers -productVersion',
                                           blocking=True)
         info['os_version'] = version_result.stdout.strip()
 
