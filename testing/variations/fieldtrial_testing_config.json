@@ -22077,24 +22077,6 @@
             ]
         }
     ],
-    "TextInputClientNestedLoop": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithEventMask",
-                    "params": {
-                        "enable_event_mask": "true"
-                    },
-                    "enable_features": [
-                        "TextInputClientUseNestedLoop"
-                    ]
-                }
-            ]
-        }
-    ],
     "TextInputHostMojoCapabilityControlWorkaround": [
         {
             "platforms": [
