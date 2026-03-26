@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -90,6 +91,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
                                         public ui::InputMethodObserver,
                                         public ui::WindowEventTarget,
                                         public ui::AXFragmentRootDelegateWin {
+  // TODO(https://crbug.com/495981317): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // See WindowImpl for details on |debugging_id|.
   static std::unique_ptr<HWNDMessageHandler> Create(
