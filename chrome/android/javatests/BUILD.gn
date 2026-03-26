@@ -730,10 +730,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
     "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCustomTabsIntegrationTest.java",
   ]
 
-  deps = [
-    ":chrome_test_java_helper",
-    "//chrome/browser/android/customtabs/branding:branding_common_java",
-  ]
+  deps = [ ":chrome_test_java_helper" ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.device_dialog") {

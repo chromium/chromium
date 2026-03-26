@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingDecision.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingInfo.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationChecker.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationData.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/SharedPreferencesBrandingTimeStorage.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingDelegate.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayCoordinator.java",
@@ -28,7 +29,6 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/ui/android/omnibox:java",
-    "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/widget/android:java",
@@ -52,10 +52,7 @@ android_library("java") {
 
 # Low-level branding target that doesn't depend on chrome_java to avoid dependency cycles.
 android_library("branding_common_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationData.java",
-    "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationSigninDelegate.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationSigninDelegate.java" ]
   deps = [
     ":proto_java",
     "//base:base_java",
@@ -95,7 +92,6 @@ robolectric_library("junit") {
   ]
 
   deps = [
-    ":branding_common_java",
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -106,7 +102,6 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
-    "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/crash/android:java",
