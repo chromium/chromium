@@ -1,11 +1,10 @@
 {
   "name": "webNavigation",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests the webNavigation API events - fencedFrame.",
   "background": {
-    "scripts": ["test_fencedFrame.js"],
-    "persistent": true
+    "service_worker": "test_fencedFrame.js"
   },
   "permissions": ["webNavigation", "tabs"]
 }

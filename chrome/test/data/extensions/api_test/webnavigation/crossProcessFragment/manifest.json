@@ -1,10 +1,10 @@
 {
   "name": "webNavigation",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests the webNavigation API events - crossProcessFragment.",
   "background": {
-    "page": "test_crossProcessFragment.html"
+    "service_worker": "test_crossProcessFragment.html"
   },
   "permissions": ["webNavigation", "tabs"]
 }

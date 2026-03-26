@@ -1,11 +1,10 @@
 {
   "name": "webNavigation",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests the webNavigation API events - filtered.",
   "background": {
-    "scripts": ["test_filtered.js"],
-    "persistent": true
+    "service_worker": "test_filtered.js"
   },
   "permissions": ["webNavigation", "tabs"]
 }
