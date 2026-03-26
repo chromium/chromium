@@ -8,7 +8,6 @@
 
 #include "base/android/android_info.h"
 #include "base/lazy_instance.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/viz/common/features.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/gl_bindings.h"
