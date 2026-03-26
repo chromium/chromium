@@ -3482,40 +3482,6 @@ bool ChromeContentBrowserClient::AllowWorkerWebLocks(
                                                storage_key);
 }
 
-ChromeContentBrowserClient::AllowWebBluetoothResult
-ChromeContentBrowserClient::AllowWebBluetooth(
-    content::BrowserContext* browser_context,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  // TODO(crbug.com/40462828): Don't disable if
-  // base::CommandLine::ForCurrentProcess()->
-  // HasSwitch(switches::kEnableWebBluetooth) is true.
-  if (base::GetFieldTrialParamValue(
-          permissions::ContentSettingPermissionContextBase::
-              kPermissionsKillSwitchFieldStudy,
-          "Bluetooth") == permissions::ContentSettingPermissionContextBase::
-                              kPermissionsKillSwitchBlockedValue) {
-    // The kill switch is enabled for this permission. Block requests.
-    return AllowWebBluetoothResult::BLOCK_GLOBALLY_DISABLED;
-  }
-
-  const HostContentSettingsMap* const content_settings =
-      HostContentSettingsMapFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-
-  if (content_settings->GetContentSetting(
-          requesting_origin.GetURL(), embedding_origin.GetURL(),
-          ContentSettingsType::BLUETOOTH_GUARD) == CONTENT_SETTING_BLOCK) {
-    return AllowWebBluetoothResult::BLOCK_POLICY;
-  }
-  return AllowWebBluetoothResult::ALLOW;
-}
-
-std::string ChromeContentBrowserClient::GetWebBluetoothBlocklist() {
-  return base::GetFieldTrialParamValue("WebBluetoothBlocklist",
-                                       "blocklist_additions");
-}
-
 bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host,
@@ -7715,36 +7681,6 @@ int ChromeContentBrowserClient::NumVersionsInTopicsEpochs(
   CHECK(browsing_topics_service);
   return browsing_topics_service->NumVersionsInEpochs(
       main_frame->GetLastCommittedOrigin());
-}
-
-bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(
-    content::BrowserContext* browser_context,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  const HostContentSettingsMap* const content_settings =
-      HostContentSettingsMapFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-
-  if (content_settings->GetContentSetting(
-          requesting_origin.GetURL(), embedding_origin.GetURL(),
-          ContentSettingsType::BLUETOOTH_SCANNING) == CONTENT_SETTING_BLOCK) {
-    return true;
-  }
-
-  return false;
-}
-
-void ChromeContentBrowserClient::BlockBluetoothScanning(
-    content::BrowserContext* browser_context,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  HostContentSettingsMap* const content_settings =
-      HostContentSettingsMapFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-
-  content_settings->SetContentSettingDefaultScope(
-      requesting_origin.GetURL(), embedding_origin.GetURL(),
-      ContentSettingsType::BLUETOOTH_SCANNING, CONTENT_SETTING_BLOCK);
 }
 
 void ChromeContentBrowserClient::GetMediaDeviceIDSalt(

@@ -618,19 +618,6 @@ bool ContentBrowserClient::AllowWorkerWebLocks(
   return true;
 }
 
-ContentBrowserClient::AllowWebBluetoothResult
-ContentBrowserClient::AllowWebBluetooth(
-    content::BrowserContext* browser_context,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  DCHECK(browser_context);
-  return AllowWebBluetoothResult::ALLOW;
-}
-
-std::string ContentBrowserClient::GetWebBluetoothBlocklist() {
-  return std::string();
-}
-
 bool ContentBrowserClient::IsInterestGroupAPIAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host,
@@ -1547,18 +1534,6 @@ int ContentBrowserClient::NumVersionsInTopicsEpochs(
     content::RenderFrameHost* main_frame) const {
   return 0;
 }
-
-bool ContentBrowserClient::IsBluetoothScanningBlocked(
-    content::BrowserContext* browser_context,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  return false;
-}
-
-void ContentBrowserClient::BlockBluetoothScanning(
-    content::BrowserContext* browser_context,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {}
 
 void ContentBrowserClient::GetMediaDeviceIDSalt(
     content::RenderFrameHost* rfh,

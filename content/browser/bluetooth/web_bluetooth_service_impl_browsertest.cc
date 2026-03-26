@@ -146,6 +146,11 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     device_to_select_ = device_address;
   }
 
+  void block_globally_disabled() { block_globally_disabled_ = true; }
+  bool checked_allow_web_bluetooth() const {
+    return checked_allow_web_bluetooth_;
+  }
+
   // BluetoothDelegate:
   std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
       RenderFrameHost* frame,
@@ -225,6 +230,17 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     return {};
   }
 
+  AllowWebBluetoothResult AllowWebBluetooth(
+      content::BrowserContext* browser_context,
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin) override {
+    checked_allow_web_bluetooth_ = true;
+    if (block_globally_disabled_) {
+      return AllowWebBluetoothResult::kBlockGloballyDisabled;
+    }
+    return AllowWebBluetoothResult::kAllow;
+  }
+
   void AddFramePermissionObserver(FramePermissionObserver* observer) override {}
   void RemoveFramePermissionObserver(
       FramePermissionObserver* observer) override {}
@@ -255,6 +271,8 @@ class TestBluetoothDelegate : public BluetoothDelegate {
   raw_ptr<FakeBluetoothScanningPrompt, DanglingUntriaged> prompt_ = nullptr;
   base::OnceClosure quit_on_scanning_prompt_;
   bool showed_bluetooth_scanning_prompt_ = false;
+  bool checked_allow_web_bluetooth_ = false;
+  bool block_globally_disabled_ = false;
 };
 
 class TestContentBrowserClient : public ContentBrowserTestContentBrowserClient {
@@ -266,22 +284,9 @@ class TestContentBrowserClient : public ContentBrowserTestContentBrowserClient {
 
   TestBluetoothDelegate* bluetooth_delegate() { return &bluetooth_delegate_; }
 
-  AllowWebBluetoothResult AllowWebBluetooth(
-      content::BrowserContext* browser_context,
-      const url::Origin& requesting_origin,
-      const url::Origin& embedding_origin) override {
-    checked_allow_web_bluetooth_ = true;
-
-    if (block_globally_disabled_)
-      return AllowWebBluetoothResult::BLOCK_GLOBALLY_DISABLED;
-
-    return ContentBrowserClient::AllowWebBluetooth(
-        browser_context, requesting_origin, embedding_origin);
+  bool checked_allow_web_bluetooth() {
+    return bluetooth_delegate_.checked_allow_web_bluetooth();
   }
-
-  void block_globally_disabled() { block_globally_disabled_ = true; }
-
-  bool checked_allow_web_bluetooth() { return checked_allow_web_bluetooth_; }
 
  protected:
   // ChromeContentBrowserClient:
@@ -291,8 +296,6 @@ class TestContentBrowserClient : public ContentBrowserTestContentBrowserClient {
 
  private:
   TestBluetoothDelegate bluetooth_delegate_;
-  bool checked_allow_web_bluetooth_ = false;
-  bool block_globally_disabled_ = false;
 };
 
 }  // namespace
@@ -355,7 +358,9 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
     return browser_client_->checked_allow_web_bluetooth();
   }
 
-  void BlockGloballyDisabled() { browser_client_->block_globally_disabled(); }
+  void BlockGloballyDisabled() {
+    browser_client_->bluetooth_delegate()->block_globally_disabled();
+  }
 
   WebBluetoothServiceImpl* GetWebBluetoothServiceOverride(
       RenderFrameHost* render_frame_host) {

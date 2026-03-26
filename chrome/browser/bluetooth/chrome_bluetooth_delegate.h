@@ -17,6 +17,18 @@ class ChromeBluetoothDelegate : public permissions::BluetoothDelegateImpl {
  public:
   explicit ChromeBluetoothDelegate(std::unique_ptr<Client> client);
   bool MayUseBluetooth(content::RenderFrameHost* rfh) override;
+
+  AllowWebBluetoothResult AllowWebBluetooth(
+      content::BrowserContext* browser_context,
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin) override;
+  std::string GetWebBluetoothBlocklist() override;
+  bool IsBluetoothScanningBlocked(content::BrowserContext* browser_context,
+                                  const url::Origin& requesting_origin,
+                                  const url::Origin& embedding_origin) override;
+  void BlockBluetoothScanning(content::BrowserContext* browser_context,
+                              const url::Origin& requesting_origin,
+                              const url::Origin& embedding_origin) override;
 };
 
 #endif  // CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_H_

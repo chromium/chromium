@@ -12,11 +12,13 @@
 
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/bluetooth_delegate.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -77,6 +79,17 @@ class MockBluetoothDelegate : public BluetoothDelegate {
               (RenderFrameHost*));
   MOCK_METHOD(void, AddFramePermissionObserver, (FramePermissionObserver*));
   MOCK_METHOD(void, RemoveFramePermissionObserver, (FramePermissionObserver*));
+
+  MOCK_METHOD(AllowWebBluetoothResult,
+              AllowWebBluetooth,
+              (BrowserContext*, const url::Origin&, const url::Origin&));
+  MOCK_METHOD(std::string, GetWebBluetoothBlocklist, ());
+  MOCK_METHOD(bool,
+              IsBluetoothScanningBlocked,
+              (BrowserContext*, const url::Origin&, const url::Origin&));
+  MOCK_METHOD(void,
+              BlockBluetoothScanning,
+              (BrowserContext*, const url::Origin&, const url::Origin&));
 };
 
 }  // namespace content

@@ -380,11 +380,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const std::vector<content::GlobalRenderFrameHostId>& render_frames,
       const blink::StorageKey& storage_key) override;
-  AllowWebBluetoothResult AllowWebBluetooth(
-      content::BrowserContext* browser_context,
-      const url::Origin& requesting_origin,
-      const url::Origin& embedding_origin) override;
-  std::string GetWebBluetoothBlocklist() override;
   bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
                                  content::RenderFrameHost* render_frame_host,
                                  InterestGroupApiOperation operation,
@@ -918,14 +913,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   int NumVersionsInTopicsEpochs(
       content::RenderFrameHost* main_frame) const override;
-
-  bool IsBluetoothScanningBlocked(content::BrowserContext* browser_context,
-                                  const url::Origin& requesting_origin,
-                                  const url::Origin& embedding_origin) override;
-
-  void BlockBluetoothScanning(content::BrowserContext* browser_context,
-                              const url::Origin& requesting_origin,
-                              const url::Origin& embedding_origin) override;
 
   void GetMediaDeviceIDSalt(
       content::RenderFrameHost* rfh,

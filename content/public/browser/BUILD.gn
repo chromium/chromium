@@ -63,6 +63,7 @@ source_set("browser_sources") {
     "blob_handle.h",
     "bluetooth_chooser.cc",
     "bluetooth_chooser.h",
+    "bluetooth_delegate.cc",
     "bluetooth_delegate.h",
     "bluetooth_scanning_prompt.cc",
     "bluetooth_scanning_prompt.h",

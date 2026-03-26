@@ -1030,33 +1030,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const std::vector<GlobalRenderFrameHostId>& render_frames,
       const blink::StorageKey& storage_key);
 
-  // Allow the embedder to control whether we can use Web Bluetooth.
-  // TODO(crbug.com/40458188): Replace this with a use of the permission system.
-  enum class AllowWebBluetoothResult {
-    ALLOW,
-    BLOCK_POLICY,
-    BLOCK_GLOBALLY_DISABLED,
-  };
-  virtual AllowWebBluetoothResult AllowWebBluetooth(
-      content::BrowserContext* browser_context,
-      const url::Origin& requesting_origin,
-      const url::Origin& embedding_origin);
-
-  // Returns a blocklist of UUIDs that have restrictions when accessed
-  // via Web Bluetooth. Parsed by BluetoothBlocklist::Add().
-  //
-  // The blocklist string must be a comma-separated list of UUID:exclusion
-  // pairs. The pairs may be separated by whitespace. Pair components are
-  // colon-separated and must not have whitespace around the colon.
-  //
-  // UUIDs are a string that BluetoothUUID can parse (See BluetoothUUID
-  // constructor comment). Exclusion values are a single lower case character
-  // string "e", "r", or "w" for EXCLUDE, EXCLUDE_READS, or EXCLUDE_WRITES.
-  //
-  // Example:
-  // "1812:e, 00001800-0000-1000-8000-00805f9b34fb:w, ignored:1, alsoignored."
-  virtual std::string GetWebBluetoothBlocklist();
-
   using InterestGroupApiOperation = content::InterestGroupApiOperation;
 
   // Returns whether `api_origin` on `top_frame_origin` can perform `operation`
@@ -2736,17 +2709,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // return true for the same main frame context).
   virtual int NumVersionsInTopicsEpochs(
       content::RenderFrameHost* main_frame) const;
-
-  // Returns whether a site is blocked to use Bluetooth scanning API.
-  virtual bool IsBluetoothScanningBlocked(
-      content::BrowserContext* browser_context,
-      const url::Origin& requesting_origin,
-      const url::Origin& embedding_origin);
-
-  // Blocks a site to use Bluetooth scanning API.
-  virtual void BlockBluetoothScanning(content::BrowserContext* browser_context,
-                                      const url::Origin& requesting_origin,
-                                      const url::Origin& embedding_origin);
 
   // Returns via callback:
   //  1. A boolean indicating whether persistent device IDs are allowed.

@@ -469,16 +469,19 @@ WebBluetoothServiceImpl::GetBluetoothAllowed() {
   // TODO(crbug.com/41476036): Perform this check once there is a way to
   // check if a platform is capable of producing a chooser and return a
   // |blink::mojom::WebBluetoothResult::WEB_BLUETOOTH_NOT_SUPPORTED| error.
-  switch (GetContentClient()->browser()->AllowWebBluetooth(
-      web_contents()->GetBrowserContext(), requesting_origin,
-      embedding_origin)) {
-    case ContentBrowserClient::AllowWebBluetoothResult::BLOCK_POLICY:
+  auto allow_result =
+      delegate
+          ? delegate->AllowWebBluetooth(web_contents()->GetBrowserContext(),
+                                        requesting_origin, embedding_origin)
+          : BluetoothDelegate::AllowWebBluetoothResult::kBlockGloballyDisabled;
+  switch (allow_result) {
+    case BluetoothDelegate::AllowWebBluetoothResult::kBlockPolicy:
       return blink::mojom::WebBluetoothResult::
           CHOOSER_NOT_SHOWN_API_LOCALLY_DISABLED;
-    case ContentBrowserClient::AllowWebBluetoothResult::BLOCK_GLOBALLY_DISABLED:
+    case BluetoothDelegate::AllowWebBluetoothResult::kBlockGloballyDisabled:
       return blink::mojom::WebBluetoothResult::
           CHOOSER_NOT_SHOWN_API_GLOBALLY_DISABLED;
-    case ContentBrowserClient::AllowWebBluetoothResult::ALLOW:
+    case BluetoothDelegate::AllowWebBluetoothResult::kAllow:
       return blink::mojom::WebBluetoothResult::SUCCESS;
   }
 }
@@ -513,9 +516,12 @@ void WebBluetoothServiceImpl::OnBluetoothScanningPromptEvent(
     const url::Origin requesting_origin = origin();
     const url::Origin embedding_origin =
         render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
-    GetContentClient()->browser()->BlockBluetoothScanning(
-        web_contents()->GetBrowserContext(), requesting_origin,
-        embedding_origin);
+    BluetoothDelegate* delegate =
+        GetContentClient()->browser()->GetBluetoothDelegate();
+    if (delegate) {
+      delegate->BlockBluetoothScanning(web_contents()->GetBrowserContext(),
+                                       requesting_origin, embedding_origin);
+    }
   } else if (event == BluetoothScanningPrompt::Event::kCanceled) {
     result = blink::mojom::WebBluetoothResult::PROMPT_CANCELED;
   } else {
@@ -1448,8 +1454,11 @@ void WebBluetoothServiceImpl::RequestScanningStart(
   const url::Origin embedding_origin =
       render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
 
-  bool blocked = GetContentClient()->browser()->IsBluetoothScanningBlocked(
-      web_contents()->GetBrowserContext(), requesting_origin, embedding_origin);
+  BluetoothDelegate* delegate =
+      GetContentClient()->browser()->GetBluetoothDelegate();
+  bool blocked = !delegate || delegate->IsBluetoothScanningBlocked(
+                                  web_contents()->GetBrowserContext(),
+                                  requesting_origin, embedding_origin);
   if (blocked) {
     std::move(callback).Run(blink::mojom::WebBluetoothResult::SCANNING_BLOCKED);
     return;

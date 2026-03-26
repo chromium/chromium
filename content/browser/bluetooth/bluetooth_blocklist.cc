@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "content/browser/bluetooth/bluetooth_util.h"
+#include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
@@ -264,7 +265,11 @@ void BluetoothBlocklist::PopulateWithDefaultValues() {
 }
 
 void BluetoothBlocklist::PopulateWithServerProvidedValues() {
-  Add(GetContentClient()->browser()->GetWebBluetoothBlocklist());
+  BluetoothDelegate* delegate =
+      GetContentClient()->browser()->GetBluetoothDelegate();
+  if (delegate) {
+    Add(delegate->GetWebBluetoothBlocklist());
+  }
 }
 
 }  // namespace content
