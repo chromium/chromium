@@ -435,6 +435,12 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @UiThread
+    public int getAllowedPrerenderingCount() {
+        assert ThreadUtils.runningOnUiThread();
+        return AwBrowserContextJni.get().allowedPrerenderingCount(mNativeAwBrowserContext);
+    }
+
+    @UiThread
     public void warmUpSpareRenderer() {
         AwBrowserContextJni.get().warmUpSpareRenderer(mNativeAwBrowserContext);
     }
@@ -532,6 +538,8 @@ public class AwBrowserContext implements BrowserContextHandle {
         void setAllowedPrerenderingCount(
                 long nativeAwBrowserContext,
                 @JniType("std::optional<int>") @Nullable Integer maxPrerenders);
+
+        int allowedPrerenderingCount(long nativeAwBrowserContext);
 
         @JniType("std::vector<std::string>")
         List<String> setOriginMatchedHeader(

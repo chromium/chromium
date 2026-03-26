@@ -170,6 +170,14 @@ public class Profile {
     }
 
     /**
+     * @return Max Prerenders set for the {@link Profile}
+     */
+    @UiThread
+    public int getMaxPrerenders() {
+        return mBrowserContext.getAllowedPrerenderingCount();
+    }
+
+    /**
      * @param maxPrefetches The maximum number of prefetches. If null, restores the default.
      */
     @UiThread

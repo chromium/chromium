@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,26 @@ public class AwBrowserContextTest extends AwParameterizedTest {
 
     public AwBrowserContextTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSetAndGetMaxPrerenders() throws Throwable {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AwBrowserContext context = AwBrowserContext.getDefault();
+                    context.setMaxPrerenders(1);
+                    Assert.assertEquals(1, context.getAllowedPrerenderingCount());
+                    context.setMaxPrerenders(3);
+                    Assert.assertEquals(3, context.getAllowedPrerenderingCount());
+
+                    // This test checks that we can not set prerenders more than the absolute max
+                    // that we can set, currently set in
+                    // android_webview/browser/aw_browser_context.h#kMaxAllowedPrerenderingCount
+                    context.setMaxPrerenders(4);
+                    Assert.assertEquals(3, context.getAllowedPrerenderingCount());
+                });
     }
 
     @Test

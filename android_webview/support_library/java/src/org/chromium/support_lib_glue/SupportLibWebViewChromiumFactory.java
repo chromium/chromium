@@ -335,6 +335,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.SET_PREFETCH_TTL_SECONDS,
         ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_KEEP_FORWARD_ENTRIES,
         ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_KEEP_FORWARD_ENTRIES,
+        ApiCall.GET_MAX_PRERENDERS,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -531,8 +532,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_IGNORE_DUPLICATE_NAV_ENABLED = 185;
         int SET_IGNORE_DUPLICATE_NAV_THRESHOLD_MS = 186;
         int GET_IGNORE_DUPLICATE_NAV_THRESHOLD_MS = 187;
+        int GET_MAX_PRERENDERS = 188;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 188;
+        int COUNT = 189;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
