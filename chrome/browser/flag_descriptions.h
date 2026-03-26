@@ -4190,13 +4190,6 @@ inline constexpr char kOpenAllProfilesFromProfilePickerExperimentDescription[] =
     "As part of the Growth experiments, add a button to open all profiles from "
     "the profile picker.";
 
-inline constexpr char kBackdropFilterMirrorEdgeName[] =
-    "Backdrop Filter Mirror Edge";
-inline constexpr char kBackdropFilterMirrorEdgeDescription[] =
-    "When sampling being the backdrop edge for backdrop-filter, samples "
-    "beyond the edge are mirrored back into the backdrop rather than "
-    "duplicating the pixels at the edge.";
-
 inline constexpr char kSmoothScrollingName[] = "Smooth Scrolling";
 inline constexpr char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";

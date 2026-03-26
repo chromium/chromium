@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/solid_color_layer.h"
@@ -15,7 +14,6 @@
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/solid_color_content_layer_client.h"
-#include "components/viz/common/features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 
@@ -1274,7 +1272,6 @@ TEST_P(LayerTreeHostFiltersPixelTestGPU, FilterWithGiantCropRectNoClip) {
 class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
  protected:
   void RunPixelTestType(float device_scale_factor) {
-    feature_list_.InitAndEnableFeature(features::kBackdropFilterMirrorEdgeMode);
     scoped_refptr<Layer> root =
         CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
     scoped_refptr<SolidColorLayer> background =
@@ -1309,7 +1306,6 @@ class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
     LayerTreeHostFiltersPixelTest::SetupTree();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   float device_scale_factor_ = 1;
 };
 

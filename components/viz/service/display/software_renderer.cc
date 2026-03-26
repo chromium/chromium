@@ -17,7 +17,6 @@
 #include "cc/paint/image_provider.h"
 #include "cc/paint/render_surface_filters.h"
 #include "components/viz/common/display/renderer_settings.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -844,13 +843,9 @@ sk_sp<SkImage> SoftwareRenderer::ApplyBackdropFilterWithExactOutputSize(
   if (!available_backdrop.contains(filter->filterBounds(
           output_rect, local_matrix, SkImageFilter::kReverse_MapDirection,
           /*inputRect=*/nullptr))) {
-    const SkTileMode sk_tile_mode =
-        base::FeatureList::IsEnabled(features::kBackdropFilterMirrorEdgeMode)
-            ? SkTileMode::kMirror
-            : SkTileMode::kClamp;
     filter = SkImageFilters::Compose(
         /*outer=*/std::move(filter),
-        /*inner=*/SkImageFilters::Crop(available_backdrop, sk_tile_mode,
+        /*inner=*/SkImageFilters::Crop(available_backdrop, SkTileMode::kMirror,
                                        nullptr));
   }
 

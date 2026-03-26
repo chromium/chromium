@@ -4944,10 +4944,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillShowBubblesBasedOnPriorities)},
-    {"backdrop-filter-mirror-edge",
-     flag_descriptions::kBackdropFilterMirrorEdgeName,
-     flag_descriptions::kBackdropFilterMirrorEdgeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kBackdropFilterMirrorEdgeMode)},
     {"smooth-scrolling", flag_descriptions::kSmoothScrollingName,
      flag_descriptions::kSmoothScrollingDescription,
      // Mac has a separate implementation with its own setting to disable.
