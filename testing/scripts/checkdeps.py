@@ -10,12 +10,15 @@ import sys
 import common
 
 
-def main_run(args):
+def main_run(args, suppress_warnings=False):
   with common.temporary_file() as tempfile_path:
-    rc = common.run_command([
+    cmd = [
         os.path.join(common.SRC_DIR, 'buildtools', 'checkdeps', 'checkdeps.py'),
         '--json', tempfile_path
-    ])
+    ]
+    if suppress_warnings:
+      cmd.append('--suppress-syntax-warnings')
+    rc = common.run_command(cmd)
 
     with open(tempfile_path) as f:
       checkdeps_results = json.load(f)
@@ -36,8 +39,17 @@ def main_compile_targets(args):
 
 
 if __name__ == '__main__':
+  argv = sys.argv[1:]
+  should_suppress = False
+  if '--suppress-syntax-warnings' in argv:
+    should_suppress = True
+    argv.remove('--suppress-syntax-warnings')
+  elif '-s' in argv:
+    should_suppress = True
+    argv.remove('-s')
+
   funcs = {
-      'run': main_run,
+      'run': lambda args: main_run(args, should_suppress),
       'compile_targets': main_compile_targets,
   }
-  sys.exit(common.run_script(sys.argv[1:], funcs))
+  sys.exit(common.run_script(argv, funcs))

@@ -236,6 +236,10 @@ def main():
       action='store_true', dest='skip_tests', default=False,
       help='Skip checking test files (best effort).')
   option_parser.add_option(
+      '-s', '--suppress-syntax-warnings',
+      action='store_true', dest='suppress_syntax_warnings', default=False,
+      help='Suppress SyntaxWarning messages from Python')
+  option_parser.add_option(
       '-v', '--verbose',
       action='store_true', default=False,
       help='Print debug logging')
@@ -249,6 +253,10 @@ def main():
            'to the file perfoming the inclusion.')
 
   options, args = option_parser.parse_args()
+
+  if options.suppress_syntax_warnings:
+    import warnings
+    warnings.filterwarnings("ignore", category=SyntaxWarning)
 
   deps_checker = DepsChecker(options.base_directory,
                              extra_repos=options.extra_repos,

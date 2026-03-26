@@ -140,7 +140,8 @@ class CheckDepsTest(unittest.TestCase):
     temp_rules = self.deps_checker.results_formatter.GetResults()
     expected = ['  "!/does_not_exist.h",',
                 '  "!buildtools/checkdeps/testdata/disallowed/bad.h",',
-                '  "!buildtools/checkdeps/testdata/disallowed/teststuff/bad.h",',
+                '  "!buildtools/checkdeps/testdata/disallowed/'
+                'teststuff/bad.h",',
                 '  "!third_party/explicitly_disallowed/bad.h",',
                 '  "!third_party/no_rule/bad.h",']
     self.assertEqual(expected, temp_rules)
@@ -184,7 +185,8 @@ class CheckDepsTest(unittest.TestCase):
   def testCheckAddedIncludesTempAllowed(self):
     problems = self.deps_checker.CheckAddedCppIncludes(
       [['buildtools/checkdeps/testdata/allowed/test.cc',
-        ['#include "buildtools/checkdeps/testdata/disallowed/temporarily_allowed.h"']
+        ['#include "buildtools/checkdeps/testdata/disallowed/'
+         'temporarily_allowed.h"']
       ]])
     self.assertTrue(problems)
 
@@ -201,10 +203,12 @@ class CheckDepsTest(unittest.TestCase):
     # if the bug is in place.
     problems = self.deps_checker.CheckAddedCppIncludes(
       [['buildtools/checkdeps/testdata/allowed/test.cc',
-        ['#include "buildtools/checkdeps/testdata/disallowed/temporarily_allowed.h"']
+        ['#include "buildtools/checkdeps/testdata/disallowed/'
+         'temporarily_allowed.h"']
        ],
        ['buildtools/checkdeps/testdata/disallowed/foo_unittest.cc',
-        ['#include "buildtools/checkdeps/testdata/bongo/temp_allowed_for_tests.h"']
+        ['#include "buildtools/checkdeps/testdata/bongo/'
+         'temp_allowed_for_tests.h"']
        ]])
     # With the bug in place, there would be two problems reported, and
     # the second would be for foo_unittest.cc.
@@ -213,7 +217,8 @@ class CheckDepsTest(unittest.TestCase):
 
   def testTraversalIsOrdered(self):
     dirs_traversed = []
-    for rules, filenames in self.deps_checker.GetAllRulesAndFiles(dir_name='buildtools'):
+    for rules, filenames in self.deps_checker.GetAllRulesAndFiles(
+        dir_name='buildtools'):
       self.assertEqual(type(filenames), list)
       self.assertEqual(filenames, sorted(filenames))
       if filenames:
@@ -233,7 +238,8 @@ class CheckDepsTest(unittest.TestCase):
     problems = self.deps_checker.CheckAddedProtoImports(
       [['buildtools/checkdeps/testdata/test.proto',
         ['import "buildtools/checkdeps/testdata/allowed/good.proto"',
-         'import "buildtools/checkdeps/testdata/disallowed/sub_folder/good.proto"']
+         'import "buildtools/checkdeps/testdata/disallowed/'
+         'sub_folder/good.proto"']
       ]])
     self.assertFalse(problems)
 
@@ -262,16 +268,45 @@ class CheckDepsTest(unittest.TestCase):
     # The CppChecker disallows unknown files by default, so if we don't
     # resolve properly this will be forbidden.
     problems = self.deps_checker.CheckAddedCppIncludes(
-      [[os.path.join(self.deps_checker.base_directory, 'buildtools/checkdeps/testdata/allowed/test.cc'),
+      [[os.path.join(self.deps_checker.base_directory,
+                    'buildtools/checkdeps/testdata/allowed/test.cc'),
         ['#include "../../testdata/allowed/test.h"']]])
     self.assertFalse(problems)
 
     # The ProtoChecker allows unknown files by default, so if we don't
     # resolve properly this will be allowed.
     problems = self.deps_checker.CheckAddedProtoImports(
-      [[os.path.join(self.deps_checker.base_directory, 'buildtools/checkdeps/testdata/test.proto'),
+      [[os.path.join(self.deps_checker.base_directory,
+                    'buildtools/checkdeps/testdata/test.proto'),
         ['import "../testdata/disallowed/test.proto"']]])
     self.assertTrue(problems)
+
+  def testSuppressSyntaxWarnings(self):
+    import subprocess
+    import tempfile
+    import sys
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+      deps_path = os.path.join(temp_dir, 'DEPS')
+      with open(deps_path, 'w') as f:
+        f.write('include_rules = ["+foo\\."]\n')
+
+      script_path = os.path.join(
+          self.deps_checker.base_directory, 'buildtools', 'checkdeps',
+          'checkdeps.py')
+
+      # Run without flag
+      res_no_flag = subprocess.run(
+          [sys.executable, script_path, temp_dir],
+          capture_output=True, text=True)
+
+      # Run with flag
+      res_with_flag = subprocess.run(
+          [sys.executable, script_path, '--suppress-syntax-warnings', temp_dir],
+          capture_output=True, text=True)
+
+      # Verify that with the flag, there are no SyntaxWarnings.
+      self.assertNotIn('SyntaxWarning', res_with_flag.stderr)
 
 if __name__ == '__main__':
   unittest.main()
