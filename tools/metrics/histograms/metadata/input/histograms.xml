@@ -2217,7 +2217,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.CharacterIndex" units="ms"
+<histogram name="TextInputClient.CharacterIndex2" units="ms"
     expires_after="2026-08-16">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -2225,16 +2225,14 @@ chromium-metrics-reviews@google.com.
     Recorded per call from a browser process thread to query
     GetCharacterIndexAtPoint on a renderer process, with the duration of the
     query. The call is effectively synchronous, blocking all other tasks from
-    running on the browser thread for that duration.
+    running on the browser thread for that duration. The duration is tracked
+    with LiveTicks so doesn't include time when the system is suspended.
 
     Only recorded on macOS.
-
-    Warning: this histogram was missing its entry until 2024-01 and expired from
-    2024-08-18 to 2026-02-09; data may be missing.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.FirstRect" units="ms"
+<histogram name="TextInputClient.FirstRect2" units="ms"
     expires_after="2026-08-16">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -2242,12 +2240,10 @@ chromium-metrics-reviews@google.com.
     Recorded per call from a browser process thread to query
     GetFirstRectForRange on a renderer process, with the duration of the query.
     The call is effectively synchronous, blocking all other tasks from running
-    on the browser thread for that duration.
+    on the browser thread for that duration. The duration is tracked with
+    LiveTicks so doesn't include time when the system is suspended.
 
     Only recorded on macOS.
-
-    Warning: this histogram was missing its entry until 2024-01 and expired from
-    2025-02-23 to 2026-02-09; data may be missing.
   </summary>
 </histogram>
 
@@ -2294,20 +2290,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.LockWait" units="ms"
+<histogram name="TextInputClient.LockWait2" units="ms"
     expires_after="2026-08-16">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time took to acquire TextInputClient mutex lock on the browser process
     thread, recorded per attempt. The histogram is useful to understand how much
-    of the TextInputClient.FirstRect and TextInputClient.CharacterIndex latency
-    are due to acquring browser-side lock.
+    of the TextInputClient.FirstRect2 and TextInputClient.CharacterIndex2
+    latency are due to acquring browser-side lock. For parity with those
+    histograms, the duration is tracked with LiveTicks so doesn't include time
+    when the system is suspended.
 
     Only recorded on macOS.
-
-    Warning: this histogram was missing its entry until 2024-01 and expired from
-    2024-08-18 to 2026-02-09; data may be missing.
   </summary>
 </histogram>
 
