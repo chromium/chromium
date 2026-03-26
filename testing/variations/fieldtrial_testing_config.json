@@ -16277,25 +16277,6 @@
             ]
         }
     ],
-    "OrderScrollJankV4EventMetricsByArrivedInRendererCompositor": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OrderScrollJankV4EventMetricsByArrivedInRendererCompositor"
-                    ]
-                }
-            ]
-        }
-    ],
     "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [
