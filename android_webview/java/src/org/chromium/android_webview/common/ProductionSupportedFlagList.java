@@ -1367,7 +1367,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "WebViewSkipFaviconJavaCopyUntilNeeded",
                 "Skips copying the favicon to Java if not needed by onReceivedIcon"
-                        + "being overriden."),
+                        + " being overriden."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_PASS_NULL_FAVICON_TO_ON_PAGE_STARTED,
+                "Passes a null favicon to the onPageStarted method."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

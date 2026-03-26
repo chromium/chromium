@@ -79,6 +79,7 @@ BASE_DECLARE_FEATURE(kWebViewUseNonembeddedLowEntropySource);
 BASE_DECLARE_FEATURE(kWebViewFasterGetDefaultUserAgent);
 BASE_DECLARE_FEATURE(kWebViewSaveStateIncludeHeaders);
 BASE_DECLARE_FEATURE(kWebViewSkipFaviconJavaCopyUntilNeeded);
+BASE_DECLARE_FEATURE(kWebViewPassNullFaviconToOnPageStarted);
 }  // namespace android_webview::features
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_

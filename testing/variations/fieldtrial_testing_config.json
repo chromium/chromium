@@ -24843,6 +24843,21 @@
             ]
         }
     ],
+    "WebViewPassNullFaviconToOnPageStarted": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewPassNullFaviconToOnPageStarted"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewPersistentMetricsInNoBackupDir": [
         {
             "platforms": [
