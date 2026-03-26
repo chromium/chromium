@@ -13,6 +13,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  background-image: url('images/profile_picker_light_background.svg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: column;
@@ -22,6 +25,12 @@
   justify-content: center;
   min-height: 560px;
   min-width: 600px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    background-image: url('images/profile_picker_dark_background.svg');
+  }
 }
 
 .main-container {

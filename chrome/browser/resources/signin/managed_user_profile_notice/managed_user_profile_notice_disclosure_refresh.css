@@ -171,7 +171,7 @@ main {
   }
 
   .disclaimer {
-    background-color: var(--cr-fallback-color-surface);
+    background-color: var(--cr-fallback-color-surface2);
     border: none;
   }
 }
