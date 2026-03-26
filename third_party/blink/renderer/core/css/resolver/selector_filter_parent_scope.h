@@ -50,7 +50,6 @@ class CORE_EXPORT SelectorFilterParentScope {
   void PushAncestors(Element&);
   void PopAncestors(Element&);
 
-  bool pushed_ = false;
   SelectorFilter::Mark mark_;
   StyleResolver* resolver_ = nullptr;
 };
