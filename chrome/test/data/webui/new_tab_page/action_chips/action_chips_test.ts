@@ -756,4 +756,67 @@ suite('NewTabPageActionChipsTest', () => {
               window.getComputedStyle(chip).getPropertyValue('animation-name'));
         });
   });
+
+  suite('title', () => {
+    test('renders title when a11y_text is provided', async () => {
+      await initializeChips({
+        actionChips: [{
+          suggestTemplateInfo: {
+            typeIcon: IconType.kFavicon,
+            primaryText: {text: 'Example Tab', a11yText: 'A11y Title'},
+            secondaryText: {text: 'Subtitle', a11yText: 'A11y Subtitle'},
+            preselectedTool: ToolMode.kUnspecified,
+          },
+          suggestion: 'Suggestion',
+          tab: null,
+        }],
+      });
+      const chip =
+          chips.shadowRoot.querySelector<HTMLButtonElement>('.action-chip');
+      assertTrue(!!chip);
+      assertEquals('A11y Title A11y Subtitle', chip.getAttribute('title'));
+    });
+
+    test(
+        'renders title using visible text when a11y_text is missing',
+        async () => {
+          await initializeChips({
+            actionChips: [{
+              suggestTemplateInfo: {
+                typeIcon: IconType.kFavicon,
+                primaryText: {text: 'Example Tab', a11yText: null},
+                secondaryText: {text: 'Subtitle', a11yText: null},
+                preselectedTool: ToolMode.kUnspecified,
+              },
+              suggestion: 'Suggestion',
+              tab: null,
+            }],
+          });
+          const chip =
+              chips.shadowRoot.querySelector<HTMLButtonElement>('.action-chip');
+          assertTrue(!!chip);
+          assertEquals('Example Tab Subtitle', chip.getAttribute('title'));
+        });
+
+    test(
+        'falls back to visible text when one a11y_text is missing',
+        async () => {
+          await initializeChips({
+            actionChips: [{
+              suggestTemplateInfo: {
+                typeIcon: IconType.kFavicon,
+                primaryText: {text: 'Example Tab', a11yText: null},
+                secondaryText: {text: 'Subtitle', a11yText: 'A11y Subtitle'},
+                preselectedTool: ToolMode.kUnspecified,
+              },
+              suggestion: 'Suggestion',
+              tab: null,
+            }],
+          });
+          const chip =
+              chips.shadowRoot.querySelector<HTMLButtonElement>('.action-chip');
+          assertTrue(!!chip);
+          assertEquals('Example Tab A11y Subtitle', chip.getAttribute('title'));
+        });
+  });
 });
