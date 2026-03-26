@@ -20,10 +20,7 @@ source_set("send_tab_to_self") {
     "//content/public/browser",
   ]
 
-  if (!is_android) {
-    sources += [ "desktop_notification_handler.h" ]
-  } else {
-    sources += [ "../android/send_tab_to_self/android_notification_handler.h" ]
+  if (is_android) {
     public_deps += [ "//components/messages/android" ]
   }
 }
@@ -48,19 +45,13 @@ source_set("impl") {
     "//url",
   ]
 
-  if (!is_android) {
-    sources += [ "desktop_notification_handler.cc" ]
+  if (is_android) {
+    deps += [ "//chrome/browser/android/send_tab_to_self" ]
+  } else {
     deps += [
       "//chrome/browser/ui",
       "//chrome/browser/ui/send_tab_to_self",
     ]
-  } else {
-    sources += [
-      "../android/send_tab_to_self/android_notification_handler.cc",
-      "../android/send_tab_to_self/send_tab_to_self_android_bridge.cc",
-      "../android/send_tab_to_self/send_tab_to_self_metrics_recorder.cc",
-    ]
-    deps += [ "//chrome/android:chrome_jni_headers" ]
   }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
@@ -89,10 +80,7 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
-      "desktop_notification_handler_browsertest.cc",
-      "send_tab_to_self_scroll_observer_browsertest.cc",
-    ]
+    sources = [ "send_tab_to_self_scroll_observer_browsertest.cc" ]
     deps = [
       ":send_tab_to_self",
       "//base",
@@ -100,6 +88,10 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/send_tab_to_self",
+      "//chrome/browser/ui/views/send_tab_to_self",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/test:test_support_ui",
       "//components/send_tab_to_self",
       "//components/send_tab_to_self:test_support",

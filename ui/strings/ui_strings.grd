@@ -937,18 +937,13 @@ need to be translated for each locale.-->
       <message name="IDS_MESSAGE_NOTIFICATION_ACCESSIBLE_NAME" desc="The spoken feedback text when focusing a notification using ChromeVox.">
         Notification
       </message>
-      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_DEVICE_INFO" desc="The message text for the notification when the user receive a shared tab from another device. It shows the name of the device which shared the tab.">
-        Shared from <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph>
-      </message>
-      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_SUCCESS" desc="The title text for the comformation notification when the user successfully share a tab to other devices.">
-        Sending to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph>...
-      </message>
-      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE" desc="The title text for the comformation notification when the user failed to share a tab to other devices.">
+      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE" desc="The title text for the confirmation notification when the user failed to share a tab to other devices.">
         Failed to send
       </message>
-      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE" desc="The message text for the comformation notification when the user failed to share a tab to other devices.">
+      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE" desc="The message text for the confirmation notification when the user failed to share a tab to other devices.">
         Please try again
       </message>
+
       <if expr="is_chromeos">
         <message name="IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME" desc="The name of hats notifier that is a system component">
           Survey

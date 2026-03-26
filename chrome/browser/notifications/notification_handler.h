@@ -27,7 +27,7 @@ class NotificationHandler {
     WEB_PERSISTENT = 0,
     WEB_NON_PERSISTENT = 1,
     EXTENSION = 2,
-    SEND_TAB_TO_SELF = 3,
+    // SEND_TAB_TO_SELF = 3,  // Deprecated.
     TRANSIENT = 4,  // A generic type for any notification that does not outlive
                     // the browser instance and is controlled by a
                     // NotificationDelegate.

@@ -8,8 +8,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
@@ -42,10 +45,13 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace send_tab_to_self {
 
@@ -161,19 +167,8 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
             }
           },
           weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(
-          [](base::WeakPtr<SendTabToSelfBubbleController> controller,
-             const GURL& url) {
-            if (controller) {
-              // TODO(crbug.com/40811626): Is this legit? In STTSv2, there may
-              // not *be* a DesktopNotificationHandler for profile, and we're
-              // violating the lifetime rules of DesktopNotificationHandler here
-              // I think.
-              DesktopNotificationHandler(controller->GetProfile())
-                  .DisplayFailureMessage(url);
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&SendTabToSelfBubbleController::OnSendFailed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SendTabToSelfBubbleController::OnManageDevicesClicked(
@@ -204,6 +199,25 @@ void SendTabToSelfBubbleController::OnBackButtonPressed() {
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           &GetWebContents());
   controller->ShowBubble(share::ShareAttempt(&GetWebContents()));
+}
+
+void SendTabToSelfBubbleController::OnSendFailed(const GURL& url) {
+  // TODO(crbug.com/40811626): Decide how to handle failures in STTSv2. For now,
+  // keep the STTSv1-style notification.
+  message_center::Notification notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      "shared" + base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      l10n_util::GetStringUTF16(
+          IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE),
+      l10n_util::GetStringUTF16(
+          IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE),
+      ui::ImageModel(), base::UTF8ToUTF16(url.host()), url,
+      message_center::NotifierId(url), message_center::RichNotificationData(),
+      /*delegate=*/nullptr);
+
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->Display(NotificationHandler::Type::SHARING, notification,
+                /*metadata=*/nullptr);
 }
 
 bool SendTabToSelfBubbleController::InitialSendAnimationShown() {

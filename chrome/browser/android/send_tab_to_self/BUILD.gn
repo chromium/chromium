@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("send_tab_to_self") {
+  sources = [
+    "android_notification_handler.cc",
+    "android_notification_handler.h",
+    "send_tab_to_self_android_bridge.cc",
+    "send_tab_to_self_metrics_recorder.cc",
+  ]
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/android:resource_mapper",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/send_tab_to_self",
+    "//chrome/browser/sync",
+    "//components/messages/android",
+    "//components/send_tab_to_self",
+    "//components/shared_highlighting/core/common",
+    "//components/sync/protocol",
+    "//components/url_formatter",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}

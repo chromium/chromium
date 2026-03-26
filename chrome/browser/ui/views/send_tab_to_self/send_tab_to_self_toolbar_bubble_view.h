@@ -47,6 +47,8 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   void ReplaceEntry(const SendTabToSelfEntry& new_entry);
   void Hide();
 
+  void OpenInNewTab();
+
   std::string GetGuidForTesting() { return entry_.GetGUID(); }
 
  private:
@@ -60,7 +62,6 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
       SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest,
       ButtonNavigatesWithoutScrollPositionIfFeatureDisabled);
 
-  void OpenInNewTab();
   void Timeout();
 
   base::OnceCallback<base::WeakPtr<content::NavigationHandle>(NavigateParams*)>

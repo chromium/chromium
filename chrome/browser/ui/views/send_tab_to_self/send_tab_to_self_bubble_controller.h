@@ -112,6 +112,8 @@ class SendTabToSelfBubbleController
   Profile* GetProfile();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
 
+  void OnSendFailed(const GURL& url);
+
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
   // True if the back button is currently shown.

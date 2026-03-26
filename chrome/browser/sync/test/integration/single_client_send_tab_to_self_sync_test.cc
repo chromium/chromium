@@ -13,7 +13,9 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -23,9 +25,15 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/send_tab_to_self/features.h"
@@ -440,6 +448,26 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
+void SimulateOpeningReceivedTab(
+    Browser* browser,
+    const send_tab_to_self::SendTabToSelfEntry& entry) {
+  send_tab_to_self::SendTabToSelfToolbarBubbleController* controller =
+      browser->browser_window_features()
+          ->send_tab_to_self_toolbar_bubble_controller();
+
+  if (!controller->IsBubbleShowing()) {
+    PinnedToolbarActionsController* pinned_controller =
+        browser->browser_window_features()->pinned_toolbar_actions_controller();
+    pinned_controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf,
+                                                      true);
+    auto anchor = pinned_controller->GetBubbleAnchor(kActionSendTabToSelf);
+    controller->ShowBubble(entry, anchor);
+  }
+
+  ASSERT_TRUE(controller->IsBubbleShowing());
+  controller->bubble()->OpenInNewTab();
+}
+
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
                        ReceiveTextFragment) {
   const GURL kUrl =
@@ -482,14 +510,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
       entry->GetPageContext().scroll_position.text_fragment;
   EXPECT_EQ(kTextStart, received_fragment.text_start);
 
-  // Mimic the user opening the received tab via the DesktopNotificationHandler.
-  send_tab_to_self::DesktopNotificationHandler handler(GetProfile(0));
-
   content::WebContentsAddedObserver web_contents_added_observer;
 
-  handler.OnClick(GetProfile(0), kUrl, kGuid,
-                  /*action_index=*/std::nullopt,
-                  /*reply=*/std::nullopt, base::DoNothing());
+  SimulateOpeningReceivedTab(GetBrowser(0), *entry);
 
   // Wait until the entry is marked opened in the model.
   ASSERT_TRUE(

@@ -32,7 +32,6 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-#include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/sharing/sharing_notification_handler.h"
 #endif
 
@@ -78,14 +77,6 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
         std::make_unique<NonPersistentNotificationHandler>());
     AddNotificationHandler(NotificationHandler::Type::WEB_PERSISTENT,
                            std::make_unique<PersistentNotificationHandler>());
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-    AddNotificationHandler(
-        NotificationHandler::Type::SEND_TAB_TO_SELF,
-        std::make_unique<send_tab_to_self::DesktopNotificationHandler>(
-            profile_));
-#endif
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
      BUILDFLAG(IS_WIN)) &&                                                 \

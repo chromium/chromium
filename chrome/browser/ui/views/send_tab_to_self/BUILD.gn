@@ -69,6 +69,8 @@ source_set("impl") {
     "//ui/color",
     "//ui/events",
     "//ui/gfx",
+    "//ui/strings:ui_strings",
+    "//ui/strings:ui_strings_grit",
     "//ui/views",
   ]
 

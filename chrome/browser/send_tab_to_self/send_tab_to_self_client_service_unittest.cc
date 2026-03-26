@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/time/time.h"
-#include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"

@@ -8,11 +8,21 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -27,6 +37,25 @@
 namespace send_tab_to_self {
 
 namespace {
+
+void SimulateOpeningReceivedTab(Browser* browser,
+                                const SendTabToSelfEntry& entry) {
+  SendTabToSelfToolbarBubbleController* controller =
+      browser->browser_window_features()
+          ->send_tab_to_self_toolbar_bubble_controller();
+
+  if (!controller->IsBubbleShowing()) {
+    PinnedToolbarActionsController* pinned_controller =
+        browser->browser_window_features()->pinned_toolbar_actions_controller();
+    pinned_controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf,
+                                                      true);
+    auto anchor = pinned_controller->GetBubbleAnchor(kActionSendTabToSelf);
+    controller->ShowBubble(entry, anchor);
+  }
+
+  ASSERT_TRUE(controller->IsBubbleShowing());
+  controller->bubble()->OpenInNewTab();
+}
 
 class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
  public:
@@ -44,7 +73,7 @@ class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
                                      const std::string& device_id,
                                      const PageContext& context) override {
     // For testing purposes, we hardcode the guid as "guid" so we can reference
-    // it in the DesktopNotificationHandler::OnClick call.
+    // it in the Navigate call.
     auto entry = std::make_unique<SendTabToSelfEntry>(
         "guid", url, title, base::Time::Now(), device_id, "cache_guid",
         context);
@@ -123,15 +152,13 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
 
   model_fake_->AddEntry(test_url, "title", "device", page_context);
 
-  DesktopNotificationHandler handler(browser()->profile());
-  base::HistogramTester histogram_tester;
-
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
 
-  handler.OnClick(browser()->profile(), test_url, "guid",
-                  /*action_index=*/std::nullopt,
-                  /*reply=*/std::nullopt, base::DoNothing());
+  // Mimic the user opening the received tab.
+  const SendTabToSelfEntry* entry = model_fake_->GetEntryByGUID("guid");
+  base::HistogramTester histogram_tester;
+  SimulateOpeningReceivedTab(browser(), *entry);
 
   navigation_observer.Wait();
   content::WebContents* web_contents =
@@ -167,15 +194,13 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
 
   model_fake_->AddEntry(test_url, "title", "device", page_context);
 
-  DesktopNotificationHandler handler(browser()->profile());
-  base::HistogramTester histogram_tester;
-
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
 
-  handler.OnClick(browser()->profile(), test_url, "guid",
-                  /*action_index=*/std::nullopt,
-                  /*reply=*/std::nullopt, base::DoNothing());
+  // Mimic the user opening the received tab.
+  const SendTabToSelfEntry* entry = model_fake_->GetEntryByGUID("guid");
+  base::HistogramTester histogram_tester;
+  SimulateOpeningReceivedTab(browser(), *entry);
 
   navigation_observer.Wait();
   content::WebContents* web_contents =
