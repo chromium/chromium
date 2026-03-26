@@ -1901,7 +1901,7 @@ CanvasResourceProvider::UnacceleratedSnapshotForCanvas2D(
   if (!IsValid())
     return nullptr;
 
-  FlushCanvas();
+  FlushCanvas2D();
 
   cc::PaintImage paint_image;
 
