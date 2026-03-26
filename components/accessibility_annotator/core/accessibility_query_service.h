@@ -23,7 +23,7 @@ class MemoryDataProvider;
 class AccessibilityQueryService : public KeyedService {
  public:
   explicit AccessibilityQueryService(
-      std::unique_ptr<MemoryDataProvider> data_provider);
+      std::vector<std::unique_ptr<MemoryDataProvider>> data_providers);
   AccessibilityQueryService(const AccessibilityQueryService&) = delete;
   AccessibilityQueryService& operator=(const AccessibilityQueryService&) =
       delete;
@@ -38,7 +38,7 @@ class AccessibilityQueryService : public KeyedService {
       base::RepeatingCallback<void(MemorySearchResults)> update_callback);
 
  private:
-  std::unique_ptr<MemoryDataProvider> data_provider_;
+  std::vector<std::unique_ptr<MemoryDataProvider>> data_providers_;
   QueryClassifier classifier_;
 };
 

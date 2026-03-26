@@ -36,6 +36,7 @@ source_set("impl") {
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/core/annotation_reducer",
+    "//components/accessibility_annotator/core/data_models",
     "//components/accessibility_annotator/core/storage",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",

@@ -10,7 +10,7 @@ namespace autofill {
 
 MockAccessibilityQueryService::MockAccessibilityQueryService()
     : accessibility_annotator::AccessibilityQueryService(
-          /*data_provider=*/nullptr) {}
+          /*data_providers=*/{}) {}
 
 MockAccessibilityQueryService::~MockAccessibilityQueryService() = default;
 
