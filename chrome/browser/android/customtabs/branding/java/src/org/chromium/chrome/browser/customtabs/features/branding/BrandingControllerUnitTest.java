@@ -279,7 +279,7 @@ public class BrandingControllerUnitTest {
                             "appName",
                             context.getPackageName(),
                             R.string.twa_running_in_chrome_template,
-                            () -> mMismatchNotificationChecker,
+                            (appId) -> mMismatchNotificationChecker,
                             null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
@@ -296,7 +296,7 @@ public class BrandingControllerUnitTest {
                             /* appId= */ null,
                             context.getPackageName(),
                             R.string.auth_tab_secured_by_chrome_template,
-                            () -> null,
+                            (appId) -> null,
                             null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.

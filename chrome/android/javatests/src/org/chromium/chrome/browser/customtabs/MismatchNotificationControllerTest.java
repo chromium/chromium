@@ -35,10 +35,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotificationChecker;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
@@ -66,6 +70,7 @@ public class MismatchNotificationControllerTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private MismatchNotificationController mMismatchNotificationController;
+    private MismatchNotificationChecker mMismatchNotificationChecker;
 
     private int mCloseType;
 
@@ -78,12 +83,24 @@ public class MismatchNotificationControllerTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, TEST_URL));
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mMismatchNotificationController =
-                                MismatchNotificationController.get(
-                                        mActivityTestRule.getActivity().getWindowAndroid(),
-                                        ProfileManager.getLastUsedRegularProfile(),
-                                        TestAccounts.ACCOUNT1.getEmail()));
+                () -> {
+                    CustomTabActivity activity = mActivityTestRule.getActivity();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    mMismatchNotificationChecker =
+                            new MismatchNotificationChecker(
+                                    activity,
+                                    profile,
+                                    IdentityServicesProvider.get().getIdentityManager(profile),
+                                    SigninAndHistorySyncActivityLauncherImpl.get(),
+                                    (delegate, accountId, lastShownTime, mimData, onClose) ->
+                                            false);
+                    mMismatchNotificationController =
+                            MismatchNotificationController.get(
+                                    activity.getWindowAndroid(),
+                                    profile,
+                                    TestAccounts.ACCOUNT1.getEmail(),
+                                    mMismatchNotificationChecker);
+                });
     }
 
     @Test
