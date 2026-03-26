@@ -19,11 +19,6 @@ async function isAndroid() {
 chrome.test.runTests([
 
   async function attachToWebUI() {
-    // TODO(crbug.com/371432155): Support chrome.tabs on desktop Android.
-    if (await isAndroid()) {
-      chrome.test.succeed('skipped');
-      return;
-    }
     const {openTab} = await import('/_test_resources/test_util/tabs_util.js');
     const tab = await openTab('chrome://version');
     const debuggee = {tabId: tab.id};
