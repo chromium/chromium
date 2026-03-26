@@ -422,8 +422,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.RegularProfile.DefaultJavascriptOptimizationBlockedByOs"
-    enum="Boolean" expires_after="2026-04-01">
-  <owner>pkotwicz@google.com</owner>
+    enum="Boolean" expires_after="2026-10-01">
+  <owner>jacastro@chromium.org</owner>
   <owner>src/chrome/browser/site_protection/OWNERS</owner>
   <summary>
     Whether an operating system permission disables the javascript-optimizer.
@@ -435,8 +435,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.RegularProfile.DefaultJavaScriptOptimizationSetting"
-    enum="ContentSetting" expires_after="2026-04-20">
-  <owner>pkotwicz@chromium.org</owner>
+    enum="ContentSetting" expires_after="2026-10-01">
+  <owner>jacastro@chromium.org</owner>
   <owner>src/chrome/browser/site_protection/OWNERS</owner>
   <summary>
     The default JavaScript optimization setting at profile open. Records the
