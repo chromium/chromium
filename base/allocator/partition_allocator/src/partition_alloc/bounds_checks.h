@@ -14,6 +14,8 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 namespace partition_alloc {
 
@@ -44,11 +46,10 @@ PtrPosWithinAlloc IsPtrWithinSameAllocInBRPPool(uintptr_t orig_address,
                                                 uintptr_t test_address,
                                                 size_t type_size);
 
-// Pool-agnostic version of the above. Primarily used to support Checked
-// Span (https://crbug.com/484171909).
+// Prefer to use the templated version below this function.
 //
-// TODO(crbug.com/484171909): arguments are confusing for callers.
-// Expose a version that's easier to understand.
+// Pool-agnostic version of `IsPtrWithinSameAllocInBRPPool()`. Primarily
+// used to support Checked Span (https://crbug.com/484171909).
 //
 // Note:
 //
@@ -67,6 +68,21 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 bool IsExtentOutOfBounds(const void* ptr,
                          size_t extent_bytes,
                          size_t type_size);
+
+// Suitable for external callers. Has the same caveats as
+// `IsExtentOutOfBounds()` (but inverted).
+//
+// Given a `T* elems` and a max `index`, call
+// ```
+// CHECK(IsExtentInBounds(elems, index));
+// ```
+template <typename T>
+bool IsExtentInBounds(const T* ptr,
+                      internal::base::StrictNumeric<size_t> index) {
+  internal::base::CheckedNumeric<size_t> size_bytes = index;
+  size_bytes *= sizeof(T);
+  return !IsExtentOutOfBounds(ptr, size_bytes.ValueOrDie(), sizeof(T));
+}
 
 }  // namespace partition_alloc
 

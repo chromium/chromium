@@ -4658,6 +4658,7 @@ source_set("build_time") {
 if (enable_nocompile_tests) {
   nocompile_source_set("base_nocompile_tests") {
     sources = [
+      "allocator/partition_allocator/src/partition_alloc/bounds_checks_nocompile.nc",
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_nocompile.nc",
       "allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_nocompile.nc",
       "allocator/partition_allocator/src/partition_alloc/pointers/raw_ref_nocompile.nc",
