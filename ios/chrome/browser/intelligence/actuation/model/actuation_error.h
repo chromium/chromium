@@ -77,6 +77,13 @@ enum class ActuationErrorCode {
   // The tab to be navigated is not realized.
   // See docs/ios/unrealized_web_state.md.
   kNavigationTabNotRealized = 301,
+
+  // History Tool Errors (400-499).
+
+  // It is not possible to navigate back in the tab's history.
+  kHistoryBackNotPossible = 400,
+  // It is not possible to navigate forward in the tab's history.
+  kHistoryForwardNotPossible = 401,
 };
 
 // Represents an error that occurred during actuation.

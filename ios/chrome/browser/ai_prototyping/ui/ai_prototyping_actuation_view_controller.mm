@@ -13,6 +13,8 @@
 namespace {
 NSString* const kToolNavigate = @"Navigate";
 NSString* const kToolClick = @"Click";
+NSString* const kToolHistoryBack = @"History Back";
+NSString* const kToolHistoryForward = @"History Forward";
 }  // namespace
 
 @interface AIPrototypingActuationViewController () <UITextViewDelegate> {
@@ -251,6 +253,22 @@ NSString* const kToolClick = @"Click";
                   "    },\n"
                   "    \"click_type\": 1,\n"
                   "    \"click_count\": 1\n"
+                  "  }\n"
+                  "}")
+    },
+    kToolHistoryBack : @{
+      @"ui" : @[ _tabIdContainer, _jsonContainer ],
+      @"json" : @("{\n"
+                  "  \"back\": {\n"
+                  "    \"tab_id\": %d\n"
+                  "  }\n"
+                  "}")
+    },
+    kToolHistoryForward : @{
+      @"ui" : @[ _tabIdContainer, _jsonContainer ],
+      @"json" : @("{\n"
+                  "  \"forward\": {\n"
+                  "    \"tab_id\": %d\n"
                   "  }\n"
                   "}")
     }

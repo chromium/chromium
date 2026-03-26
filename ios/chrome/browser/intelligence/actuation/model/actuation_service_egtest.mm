@@ -318,4 +318,69 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
   [ChromeEarlGrey waitForWebStateFrameContainingText:"Clicked"];
 }
 
+// Tests that the history tool successfully navigates the user back when the tab
+// is on the foreground.
+- (void)testThatHistoryBackToolWorksOnForeground {
+  [ChromeEarlGrey loadURL:[self URLForHTML:"PageA"]];
+  [ChromeEarlGrey waitForWebStateContainingText:"PageA"];
+
+  [ChromeEarlGrey loadURL:[self URLForHTML:"PageB"]];
+  [ChromeEarlGrey waitForWebStateContainingText:"PageB"];
+
+  optimization_guide::proto::Action action;
+  action.mutable_back()->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+
+  [self executeAction:action];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"PageA"];
+}
+
+// Tests that the history tool successfully navigates the user back when the tab
+// is on the background.
+- (void)testThatHistoryBackToolWorksOnBackground {
+  [ChromeEarlGrey loadURL:[self URLForHTML:"PageA"]];
+  [ChromeEarlGrey waitForWebStateContainingText:"PageA"];
+
+  [ChromeEarlGrey loadURL:[self URLForHTML:"PageB"]];
+  [ChromeEarlGrey waitForWebStateContainingText:"PageB"];
+
+  // Put the current tab on background by opening a new tab.
+  NSString* backgroundTabID = [ChromeEarlGrey currentTabID];
+  [ChromeEarlGrey openNewTab];
+  NSString* foregroundTabID = [ChromeEarlGrey currentTabID];
+
+  optimization_guide::proto::Action action;
+  action.mutable_back()->set_tab_id(backgroundTabID.intValue);
+
+  [self executeAction:action];
+
+  // Verify that the browser did not change the active tab.
+  GREYAssertEqualObjects(
+      [ChromeEarlGrey currentTabID], foregroundTabID,
+      @"Navigating the background tab changed the active tab.");
+
+  // Switch back to the background tab to verify the navigation.
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey waitForWebStateContainingText:"PageA"];
+}
+
+// Tests that the history tool successfully navigates the user forward.
+- (void)testHistoryForwardTool {
+  [ChromeEarlGrey loadURL:[self URLForHTML:"PageA"]];
+  [ChromeEarlGrey waitForWebStateContainingText:"PageA"];
+
+  [ChromeEarlGrey loadURL:[self URLForHTML:"PageB"]];
+  [ChromeEarlGrey waitForWebStateContainingText:"PageB"];
+
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:"PageA"];
+
+  optimization_guide::proto::Action action;
+  action.mutable_forward()->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+
+  [self executeAction:action];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"PageB"];
+}
+
 @end

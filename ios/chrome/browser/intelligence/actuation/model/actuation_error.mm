@@ -63,6 +63,10 @@ std::string GetActuationErrorMessage(const ActuationError& error) {
       return "Navigation failed due to invalid destination URL.";
     case ActuationErrorCode::kNavigationTabNotRealized:
       return "Navigation failed because the target tab is not realized.";
+    case ActuationErrorCode::kHistoryBackNotPossible:
+      return "Cannot go back.";
+    case ActuationErrorCode::kHistoryForwardNotPossible:
+      return "Cannot go forward.";
   }
   NOTREACHED();
 }

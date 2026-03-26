@@ -12,10 +12,14 @@ namespace ai_prototyping {
 
 namespace {
 
+// Based on available Actions in
+// components/optimization_guide/proto/features/actions_data.proto.
 enum class ActionType {
   kUnknown,
   kNavigate,
   kClick,
+  kHistoryBack,
+  kHistoryForward,
 };
 
 // Based on the field names in
@@ -26,6 +30,12 @@ ActionType GetActionType(const std::string& key) {
   }
   if (key == "click") {
     return ActionType::kClick;
+  }
+  if (key == "back") {
+    return ActionType::kHistoryBack;
+  }
+  if (key == "forward") {
+    return ActionType::kHistoryForward;
   }
   return ActionType::kUnknown;
 }
@@ -42,6 +52,26 @@ bool MapNavigateAction(const base::DictValue& dict,
   return navigate->ByteSizeLong() > 0;
 }
 
+bool MapHistoryBackAction(const base::DictValue& dict,
+                          optimization_guide::proto::Action* action) {
+  auto* history_back = action->mutable_back();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    history_back->set_tab_id(*tab_id);
+  }
+  return history_back->ByteSizeLong() > 0;
+}
+
+bool MapHistoryForwardAction(const base::DictValue& dict,
+                             optimization_guide::proto::Action* action) {
+  auto* history_forward = action->mutable_forward();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    history_forward->set_tab_id(*tab_id);
+  }
+  return history_forward->ByteSizeLong() > 0;
+}
+
+// Helper method that retrieves the coordinates for point-based actions like
+// click.
 void MapCoordinate(const base::DictValue& dict,
                    optimization_guide::proto::Coordinate* coordinate) {
   if (std::optional<int> x = dict.FindInt("x")) {
@@ -52,6 +82,8 @@ void MapCoordinate(const base::DictValue& dict,
   }
 }
 
+// Helper method that retrieves the target element for point-based actions like
+// click.
 void MapActionTarget(const base::DictValue& dict,
                      optimization_guide::proto::ActionTarget* target) {
   if (const base::DictValue* coordinate = dict.FindDict("coordinate")) {
@@ -108,6 +140,10 @@ bool ParseActionFromDict(const base::DictValue& dict,
       return MapNavigateAction(value.GetDict(), action);
     case ActionType::kClick:
       return MapClickAction(value.GetDict(), action);
+    case ActionType::kHistoryBack:
+      return MapHistoryBackAction(value.GetDict(), action);
+    case ActionType::kHistoryForward:
+      return MapHistoryForwardAction(value.GetDict(), action);
     case ActionType::kUnknown:
       return false;
   }

@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/click_tool.h"
+#import "ios/chrome/browser/intelligence/actuation/model/tools/history_tool.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/navigate_tool.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -26,6 +27,10 @@ ActuationToolFactory::CreateTool(
       return NavigateTool::Create(action.navigate(), profile);
     case optimization_guide::proto::Action::kClick:
       return ClickTool::Create(action.click(), profile);
+    case optimization_guide::proto::Action::kBack:
+      return HistoryTool::Create(action.back(), profile);
+    case optimization_guide::proto::Action::kForward:
+      return HistoryTool::Create(action.forward(), profile);
     default:
       return base::unexpected(
           ActuationError{ActuationErrorCode::kUnsupportedAction});

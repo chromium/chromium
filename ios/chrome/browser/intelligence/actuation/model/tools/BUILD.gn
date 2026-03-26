@@ -58,6 +58,21 @@ source_set("navigate_tool") {
   ]
 }
 
+source_set("history_tool") {
+  sources = [
+    "history_tool.h",
+    "history_tool.mm",
+  ]
+
+  deps = [
+    ":actuation_interface",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actuation/model:actuation_error",
+    "//ios/web/public",
+  ]
+}
+
 compile_ts("actuation_utils_ts") {
   sources = [ "resources/actuation_utils.ts" ]
 }
@@ -134,6 +149,7 @@ source_set("unit_tests") {
     "click_tool_java_script_feature_unittest.mm",
     "click_tool_js_unittest.mm",
     "click_tool_unittest.mm",
+    "history_tool_unittest.mm",
     "navigate_tool_unittest.mm",
   ]
   deps = [
@@ -141,6 +157,7 @@ source_set("unit_tests") {
     ":actuation_target_ts",
     ":click_tool",
     ":click_tool_ts",
+    ":history_tool",
     ":java_script_features",
     ":navigate_tool",
     "//base/test:test_support",
