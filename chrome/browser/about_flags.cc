@@ -4518,11 +4518,6 @@ const FeatureEntry::FeatureVariation kProfilePickerTextVariations[] = {
     {"V5: Keep everything in Chrome", kProfilePickerTextVariation5, nullptr},
 };
 
-const FeatureEntry::FeatureParam kDisableU18FeedbackDesktopForced[] = {
-    {"state", "forced"}};
-const FeatureEntry::FeatureVariation kDisableU18FeedbackDesktopVariations[] = {
-    {"Forced", kDisableU18FeedbackDesktopForced, nullptr},
-};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -12343,9 +12338,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableU18FeedbackDesktopName,
      flag_descriptions::kDisableU18FeedbackDesktopDescription,
      kOsWin | kOsMac | kOsLinux,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kDisableU18FeedbackDesktop,
-                                    kDisableU18FeedbackDesktopVariations,
-                                    "DisableU18FeedbackDesktop")},
+     FEATURE_VALUE_TYPE(switches::kDisableU18FeedbackDesktop)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

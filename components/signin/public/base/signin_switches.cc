@@ -224,15 +224,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kDisableU18FeedbackDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<U18FeedbackDesktopState>::Option
-    kDisableU18FeedbackDesktopStates[] = {
-        {U18FeedbackDesktopState::kEnabled, "enabled"},
-        {U18FeedbackDesktopState::kForced, "forced"},
-};
-constexpr base::FeatureParam<U18FeedbackDesktopState>
-    kDisableU18FeedbackDesktopState{&kDisableU18FeedbackDesktop, "state",
-                                    U18FeedbackDesktopState::kEnabled,
-                                    &kDisableU18FeedbackDesktopStates};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
