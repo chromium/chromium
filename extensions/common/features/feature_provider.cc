@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/span_printf.h"
 #include "base/strings/string_split.h"

@@ -16,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"

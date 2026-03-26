@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/renderer/render_frame.h"

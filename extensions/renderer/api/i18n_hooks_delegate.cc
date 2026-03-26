@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"

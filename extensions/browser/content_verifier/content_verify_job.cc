@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"

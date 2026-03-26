@@ -4,7 +4,6 @@
 
 #include "extensions/browser/extension_action_icon_factory.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"

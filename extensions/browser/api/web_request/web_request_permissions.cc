@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/debug/crash_logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
