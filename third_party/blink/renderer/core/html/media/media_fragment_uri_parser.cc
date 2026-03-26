@@ -28,6 +28,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -38,6 +39,32 @@ namespace blink {
 namespace {
 
 constexpr std::string_view kNptIdentifier = "npt:";
+constexpr std::string_view kPixelIdentifier = "pixel:";
+constexpr std::string_view kPercentIdentifier = "percent:";
+
+// Consumes leading ASCII digits from `str`, converts them to an int via
+// base::StringToInt, and advances `str` past the digits.
+bool ParseNonNegativeInt(std::string_view& str, int& out) {
+  size_t i = 0;
+  while (i < str.size() && IsAsciiDigit(str[i])) {
+    ++i;
+  }
+  if (!base::StringToInt(str.substr(0, i), &out)) {
+    return false;
+  }
+  str.remove_prefix(i);
+  return true;
+}
+
+// Consumes a single comma from `str`. Returns false if `str` does not start
+// with ','.
+bool ParseComma(std::string_view& str) {
+  if (!str.starts_with(',')) {
+    return false;
+  }
+  str.remove_prefix(1);
+  return true;
+}
 
 }  // namespace
 
@@ -322,6 +349,88 @@ bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
   }
 
   return true;
+}
+
+SpatialClip MediaFragmentURIParser::SpatialFragment() {
+  if (!url_.IsValid()) {
+    return {};
+  }
+  if (!has_parsed_spatial_) {
+    ParseSpatialFragment();
+  }
+  return spatial_clip_;
+}
+
+void MediaFragmentURIParser::ParseSpatialFragment() {
+  has_parsed_spatial_ = true;
+  if (!has_parsed_fragments_) {
+    ParseFragments();
+  }
+
+  // When a fragment dimension occurs multiple times, only the last
+  // valid occurrence of that dimension is used. Iterate in reverse to find it.
+  for (const auto& fragment : base::Reversed(fragments_)) {
+    // https://www.w3.org/TR/media-frags/#naming-space
+    // Spatial clipping is denoted by the name xywh.
+    if (fragment.first != "xywh") {
+      continue;
+    }
+
+    SpatialClip clip = ParseXYWH(fragment.second);
+    if (clip.IsValid()) {
+      spatial_clip_ = clip;
+      break;
+    }
+  }
+}
+
+// TODO(dmangal): Consider separating the syntax parsing and semantic
+// validation, if the validation rules becomes complex.
+//
+// https://www.w3.org/TR/media-frags/#valid-uri-spatial
+SpatialClip MediaFragmentURIParser::ParseXYWH(std::string_view value) {
+  // https://www.w3.org/TR/media-frags/#naming-space
+  // Spatial clipping is denoted by the name xywh. The value is an optional
+  // unit prefix (pixel: or percent:) followed by four comma-separated
+  // non-negative integers: x, y, w, h. The default unit is pixel.
+  //
+  // xywhdef   = "xywh=" xywhunit ":" 1*DIGIT "," 1*DIGIT "," 1*DIGIT ","
+  //             1*DIGIT
+  // xywhunit  = %x70.69.78.65.6C        ; "pixel"
+  //           / %x70.65.72.63.65.6E.74   ; "percent"
+  SpatialClip::Unit unit = SpatialClip::Unit::kPixel;
+
+  if (value.starts_with(kPixelIdentifier)) {
+    unit = SpatialClip::Unit::kPixel;
+    value.remove_prefix(kPixelIdentifier.size());
+  } else if (value.starts_with(kPercentIdentifier)) {
+    unit = SpatialClip::Unit::kPercent;
+    value.remove_prefix(kPercentIdentifier.size());
+  }
+
+  // Parse four comma-separated non-negative integers: x,y,w,h.
+  // x and y must be >= 0, w and h must be > 0.
+  int x, y, w, h;
+  if (!ParseNonNegativeInt(value, x) || !ParseComma(value) ||
+      !ParseNonNegativeInt(value, y) || !ParseComma(value) ||
+      !ParseNonNegativeInt(value, w) || w == 0 || !ParseComma(value) ||
+      !ParseNonNegativeInt(value, h) || h == 0 || !value.empty()) {
+    return {};
+  }
+
+  DCHECK_GE(x, 0);
+  DCHECK_GE(y, 0);
+  DCHECK_GT(w, 0);
+  DCHECK_GT(h, 0);
+
+  // For percent coordinates, additionally x+w <= 100 and y+h <= 100.
+  if (unit == SpatialClip::Unit::kPercent &&
+      (x > 100 || w > 100 || y > 100 || h > 100 || x + w > 100 ||
+       y + h > 100)) {
+    return {};
+  }
+
+  return SpatialClip{gfx::Rect(x, y, w, h), unit};
 }
 
 }  // namespace blink

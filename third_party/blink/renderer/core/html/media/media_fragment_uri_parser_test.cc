@@ -11,6 +11,8 @@
 #include <string_view>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -220,7 +222,88 @@ TEST(MediaFragmentURIParserTest, InvalidUrlYieldsNaN) {
   EXPECT_TRUE(std::isnan(parser.StartTime()));
   EXPECT_TRUE(std::isnan(parser.EndTime()));
   EXPECT_TRUE(parser.DefaultTracks().empty());
+  EXPECT_FALSE(parser.SpatialFragment().IsValid());
 }
+
+struct SpatialFragmentTestCase {
+  std::string test_name;
+  const char* url_fragment;
+  SpatialClip expected_clip;
+};
+
+using SpatialFragmentTest = ::testing::TestWithParam<SpatialFragmentTestCase>;
+
+TEST_P(SpatialFragmentTest, ParsesSpatialFragment) {
+  const SpatialFragmentTestCase& test_case = GetParam();
+  MediaFragmentURIParser parser(KURL(
+      blink::StrCat({"http://example.com/img.svg", test_case.url_fragment})));
+  SpatialClip clip = parser.SpatialFragment();
+
+  EXPECT_EQ(clip, test_case.expected_clip);
+}
+
+const auto kValidSpatialFragmentCases = std::to_array<SpatialFragmentTestCase>({
+    {"PixelImplicit", "#xywh=0,900,20,100",
+     SpatialClip{gfx::Rect(0, 900, 20, 100), SpatialClip::Unit::kPixel}},
+    {"PixelExplicit", "#xywh=pixel:0,400,80,100",
+     SpatialClip{gfx::Rect(0, 400, 80, 100), SpatialClip::Unit::kPixel}},
+    {"Percent", "#xywh=percent:25,25,50,50",
+     SpatialClip{gfx::Rect(25, 25, 50, 50), SpatialClip::Unit::kPercent}},
+    {"PercentFullSize", "#xywh=percent:0,0,100,100",
+     SpatialClip{gfx::Rect(0, 0, 100, 100), SpatialClip::Unit::kPercent}},
+    {"LastOccurrenceWins", "#xywh=10,10,50,50&xywh=0,0,100,100",
+     SpatialClip{gfx::Rect(0, 0, 100, 100), SpatialClip::Unit::kPixel}},
+    {"WithTemporalFragment", "#xywh=0,0,100,100&t=5,10",
+     SpatialClip{gfx::Rect(0, 0, 100, 100), SpatialClip::Unit::kPixel}},
+    {"TemporalBeforeSpatial", "#t=5,10&xywh=0,0,100,100",
+     SpatialClip{gfx::Rect(0, 0, 100, 100), SpatialClip::Unit::kPixel}},
+    {"LeadingZeros", "#xywh=000,000,0100,0100",
+     SpatialClip{gfx::Rect(0, 0, 100, 100), SpatialClip::Unit::kPixel}},
+});
+
+INSTANTIATE_TEST_SUITE_P(
+    ValidSpatialFragments,
+    SpatialFragmentTest,
+    ::testing::ValuesIn(kValidSpatialFragmentCases),
+    [](const testing::TestParamInfo<SpatialFragmentTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+const auto kInvalidSpatialFragmentCases =
+    std::to_array<SpatialFragmentTestCase>({
+        {"PercentOverflow", "#xywh=percent:50,50,60,60", {}},
+        {"NoFragment", "", {}},
+        {"EmptyValue", "#xywh=", {}},
+        {"MissingW", "#xywh=0,0,100", {}},
+        {"ZeroW", "#xywh=0,0,0,100", {}},
+        {"ZeroH", "#xywh=0,0,100,0", {}},
+        {"NegativeX", "#xywh=-1,0,100,100", {}},
+        {"NegativeY", "#xywh=0,-1,100,100", {}},
+        {"NegativeW", "#xywh=0,0,-1,100", {}},
+        {"NegativeH", "#xywh=0,0,100,-1", {}},
+        {"TrailingText", "#xywh=0,0,100,100abc", {}},
+        {"NonNumericWidth", "#xywh=4,5,abc,8", {}},
+        {"UnknownUnitPrefix", "#xywh=foo:4,5,7,8", {}},
+        {"PercentSingleCoordOver100", "#xywh=percent:400,5,6,8", {}},
+        {"FractionalX", "#xywh=0.5,0,100,100", {}},
+        {"ExtraTrailingComma", "#xywh=0,0,100,100,", {}},
+        {"FiveValues", "#xywh=0,0,100,100,50", {}},
+        {"LeadingSpace", "#xywh= 0,0,100,100", {}},
+        {"CaseSensitiveUnit", "#xywh=Pixel:0,0,100,100", {}},
+        {"TwoValues", "#xywh=4,5", {}},
+        {"PercentOverflowLarge", "#xywh=percent:99,99,2,2", {}},
+        {"EmptyBetweenCommas", "#xywh=0,,100,100", {}},
+        {"IntOverflowX", "#xywh=2147483648,0,1,1", {}},
+        {"RectOverflowXPlusW", "#xywh=2147483647,0,1,1", {}},
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidSpatialFragments,
+    SpatialFragmentTest,
+    ::testing::ValuesIn(kInvalidSpatialFragmentCases),
+    [](const testing::TestParamInfo<SpatialFragmentTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 
