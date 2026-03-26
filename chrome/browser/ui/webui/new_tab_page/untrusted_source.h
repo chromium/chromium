@@ -71,12 +71,12 @@ class UntrustedSource : public content::URLDataSource,
 
   void ServeBackgroundImage(const GURL& url,
                             const GURL& url_2x,
-                            const std::string& size,
-                            const std::string& repeat_x,
-                            const std::string& repeat_y,
-                            const std::string& position_x,
-                            const std::string& position_y,
-                            const std::string& scrim_display,
+                            std::string_view size,
+                            std::string_view repeat_x,
+                            std::string_view repeat_y,
+                            std::string_view position_x,
+                            std::string_view position_y,
+                            std::string_view scrim_display,
                             content::URLDataSource::GotDataCallback callback);
   bool IsURLAllowed(const GURL& url);
   bool IsURLBlockedByPolicy(const GURL& url);

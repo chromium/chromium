@@ -231,16 +231,24 @@ void UntrustedSource::StartDataRequest(
     // Parse all query parameters to hash map and decode values.
     std::map<std::string, std::string> params = ExtractQueryParams(url.query());
 
+    auto lookup_or_default = [&params](const std::string& key,
+                                       absl::string_view default_value) {
+      if (auto it = params.find(key); it != params.end()) {
+        return std::string_view(it->second);
+      }
+      return default_value;
+    };
+
     // Extract desired values.
-    ServeBackgroundImage(
-        params.count("url") == 1 ? GURL(params["url"]) : GURL(),
-        params.count("url2x") == 1 ? GURL(params["url2x"]) : GURL(),
-        params.count("size") == 1 ? params["size"] : "cover",
-        params.count("repeatX") == 1 ? params["repeatX"] : "no-repeat",
-        params.count("repeatY") == 1 ? params["repeatY"] : "no-repeat",
-        params.count("positionX") == 1 ? params["positionX"] : "center",
-        params.count("positionY") == 1 ? params["positionY"] : "center", "none",
-        std::move(callback));
+    ServeBackgroundImage(GURL(lookup_or_default("url", "")),
+                         GURL(lookup_or_default("url2x", "")),
+                         lookup_or_default("size", "cover"),
+                         lookup_or_default("repeatX", "no-repeat"),
+                         lookup_or_default("repeatY", "no-repeat"),
+                         lookup_or_default("positionX", "center"),
+                         lookup_or_default("positionY", "center"),
+                         lookup_or_default("scrimDisplay", "none"),
+                         std::move(callback));
     return;
   }
   if (path == "background_image.js") {
@@ -345,12 +353,12 @@ void UntrustedSource::OnOneGoogleBarServiceShuttingDown() {
 void UntrustedSource::ServeBackgroundImage(
     const GURL& url,
     const GURL& url_2x,
-    const std::string& size,
-    const std::string& repeat_x,
-    const std::string& repeat_y,
-    const std::string& position_x,
-    const std::string& position_y,
-    const std::string& scrim_display,
+    std::string_view size,
+    std::string_view repeat_x,
+    std::string_view repeat_y,
+    std::string_view position_x,
+    std::string_view position_y,
+    std::string_view scrim_display,
     content::URLDataSource::GotDataCallback callback) {
   if (!IsURLAllowed(url)) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
