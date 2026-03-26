@@ -21,17 +21,17 @@ export function getHtml(this: SearchboxElement) {
   <cr-searchbox-input id="input"
       exportparts="searchbox-input"
       ?dropdown-is-visible="${this.dropdownIsVisible}"
-      input-aria-live="${this.inputAriaLive_}"
+      input-aria-live="${this.inputAriaLive}"
       ?multi-line-enabled="${this.multiLineEnabled}"
       placeholder-text="${this.computePlaceholderText_(this.placeholderText)}"
       searchbox-aria-description="${this.searchboxAriaDescription}"
       searchbox-icon="${this.searchboxIcon_}"
       .selectedMatch="${this.selectedMatch}"
-      ?input-has-matches="${this.inputHasMatches_()}"
+      ?input-has-matches="${this.hasMatches()}"
       @focusin="${this.onInputFocus_}"
       @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
-      @searchbox-input-text-updated="${this.onInputTextUpdated_}"
-      @searchbox-input-tab-or-mouse-clicked="${this.onInputFocusChanged}">
+      @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
+      @input-focus-changed="${this.onInputFocusChanged}">
     ${this.showThumbnail ? html`
       <div id="thumbnailContainer" slot="thumbnail">
         <cr-searchbox-thumbnail id="thumbnail"

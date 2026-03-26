@@ -168,19 +168,21 @@ suite('SearchboxInputTest', () => {
 
     let eventCount = 0;
     let eventValue = '';
-    input.addEventListener('searchbox-input-tab-or-mouse-clicked', (e: Event) => {
+    input.addEventListener('input-focus-changed', (e: Event) => {
       eventCount++;
       eventValue = (e as CustomEvent<{value: string}>).detail.value;
     });
 
     const mousedownEvent = new MouseEvent('mousedown', {button: 0});
     input.inputElement.dispatchEvent(mousedownEvent);
-    assertEquals(1, eventCount);
+    assertEquals(
+        1, eventCount, 'Expected one event to be fired after mousedown');
     assertEquals('hello', eventValue);
 
     const mousedownEventRightClick = new MouseEvent('mousedown', {button: 1});
     input.inputElement.dispatchEvent(mousedownEventRightClick);
-    assertEquals(1, eventCount);
+    assertEquals(
+        1, eventCount, 'Expected one event to be fired after right-click');
 
     const keyupEvent = new KeyboardEvent('keyup', {key: 'Tab'});
     input.inputElement.dispatchEvent(keyupEvent);

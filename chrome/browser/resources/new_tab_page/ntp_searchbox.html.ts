@@ -28,7 +28,7 @@ export function getHtml(this: NtpSearchboxElement) {
   <cr-searchbox-input id="input"
       exportparts="searchbox-input"
       ?dropdown-is-visible="${this.dropdownIsVisible}"
-      input-aria-live="${this.inputAriaLive_}"
+      input-aria-live="${this.inputAriaLive}"
       ?multi-line-enabled="${this.multiLineEnabled}"
       placeholder-text="${this.computePlaceholderText_(this.placeholderText)}"
       searchbox-aria-description="${this.searchboxAriaDescription}"
@@ -38,8 +38,8 @@ export function getHtml(this: NtpSearchboxElement) {
       ?allow-file-paste="${this.ntpRealboxNextEnabled}"
       @focusin="${this.onInputFocus_}"
       @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
-      @searchbox-input-text-updated="${this.onInputTextUpdated_}"
-      @searchbox-input-tab-or-mouse-clicked="${this.onInputFocusChanged}">
+      @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
+      @input-focus-changed="${this.onInputFocusChanged}">
     ${this.ntpRealboxNextEnabled ? html`
       <div class="contextualEntrypointContainer contextualEntrypointContainerCompact" slot="contextual-entrypoint">
         ${getContextualEntrypointHtml.bind(this as SearchboxElement)()}

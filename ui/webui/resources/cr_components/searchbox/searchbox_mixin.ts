@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {isMac} from '//resources/js/platform.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
-import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -27,6 +27,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           reflect: true,
         },
 
+        /** The value of the input element's 'aria-live' attribute. */
+        inputAriaLive: {
+          type: String,
+        },
+
         multiLineEnabled: {
           type: Boolean,
           reflect: true,
@@ -43,19 +48,41 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         selectedMatchIndex: {
           type: Number,
         },
+
+        /** The aria description to include on the input element. */
+        searchboxAriaDescription: {
+          type: String,
+        },
+
+        /** Searchbox default icon (i.e., Google G icon or the search loupe). */
+        searchboxIcon: {
+          type: String,
+        },
       };
     }
-
+    accessor searchboxAriaDescription: string = '';
     accessor dropdownIsVisible: boolean = false;
     accessor multiLineEnabled: boolean = false;
     accessor result: AutocompleteResult|null = null;
     accessor selectedMatch: AutocompleteMatch|null = null;
     accessor selectedMatchIndex: number = -1;
+    accessor inputAriaLive: string = '';
+    accessor searchboxIcon: string = '';
 
     initialInputScrollHeight: number = 0;
 
     private lastIgnoredEnterEvent_: KeyboardEvent|null = null;
     private lastQueriedInput_: string|null = null;
+
+    override willUpdate(changedProperties: PropertyValues<this>) {
+      super.willUpdate(changedProperties);
+
+      const changedPrivateProperties =
+          changedProperties as Map<PropertyKey, unknown>;
+      if (changedPrivateProperties.has('selectedMatch')) {
+        this.inputAriaLive = this.computeInputAriaLive_();
+      }
+    }
 
     getInputElement(): SearchboxInputElement {
       assertNotReached();
@@ -126,7 +153,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
 
       this.result = result;
-      const hasMatches = result.matches?.length > 0;
+      const hasMatches = this.hasMatches();
       const hasPrimaryMatches = result.matches?.some(match => {
         const sideType =
             result.suggestionGroupsMap[match.suggestionGroupId]?.sideType ||
@@ -197,7 +224,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.queryAutocomplete(e.detail.value);
     }
 
-    onInputTextUpdated(
+    onSearchboxInputTextUpdated(
         e: CustomEvent<{value: string, isComposing: boolean}>,
         forceAutocomplete: boolean = false) {
       const inputValue = e.detail.value;
@@ -264,6 +291,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
 
       await this.handleKeyNavigation(e);
+    }
+
+    hasMatches(): boolean {
+      return this.result !== null && !!this.result.matches &&
+          this.result.matches.length > 0;
     }
 
     async handleKeyNavigation(e: KeyboardEvent) {
@@ -394,6 +426,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         moveCursorToEnd: newInline.length === 0,
       });
     }
+
+    protected computeInputAriaLive_(): string {
+      return this.selectedMatch ? 'off' : 'polite';
+    }
   }
 
   return SearchboxMixin;
@@ -401,27 +437,29 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
 export interface SearchboxMixinInterface {
   dropdownIsVisible: boolean;
-  multiLineEnabled: boolean;
   initialInputScrollHeight: number;
+  inputAriaLive: string;
+  multiLineEnabled: boolean;
+  result: AutocompleteResult|null;
+  searchboxAriaDescription: string;
   selectedMatch: AutocompleteMatch|null;
   selectedMatchIndex: number;
-  result: AutocompleteResult|null;
-
-  getInputElement(): SearchboxInputElement;
-  getDropdownElement(): SearchboxDropdownElement;
-  getWrapperElement(): HTMLElement;
-  pageHandler(): PageHandlerInterface;
 
   clearAutocompleteMatches(): void;
+  getDropdownElement(): SearchboxDropdownElement;
+  getInputElement(): SearchboxInputElement;
+  getWrapperElement(): HTMLElement;
   handleKeyNavigation(e: KeyboardEvent): void;
-  navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent): void;
-  queryAutocomplete(input: string, preventInlineAutocomplete: boolean): void;
+  hasMatches(): boolean;
 
+  navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent): void;
   onAutocompleteResultChanged(result: AutocompleteResult|null): void;
   onInputFocusChanged(e: CustomEvent<{value: string}>): void;
-  onInputTextUpdated(
+  onSearchboxInputTextUpdated(
       e: CustomEvent<{value: string, isComposing: boolean}>,
       forceAutocomplete: boolean): void;
   onInputWrapperFocusout(e: FocusEvent): void;
   onInputWrapperKeydown(e: KeyboardEvent): void;
+  pageHandler(): PageHandlerInterface;
+  queryAutocomplete(input: string, preventInlineAutocomplete?: boolean): void;
 }
