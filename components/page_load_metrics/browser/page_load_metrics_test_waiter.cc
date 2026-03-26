@@ -167,6 +167,16 @@ void PageLoadMetricsTestWaiter::AddPageExpectation(TimingField field) {
   }
 }
 
+void PageLoadMetricsTestWaiter::AddPageBackForwardCacheRestoreExpectation(
+    size_t back_forward_timings_index,
+    TimingField field) {
+  CHECK(field == TimingField::kFirstPaintAfterBackForwardCacheRestore ||
+        field == TimingField::kFirstInputDelayAfterBackForwardCacheRestore ||
+        field ==
+            TimingField::kRequestAnimationFrameAfterBackForwardCacheRestore);
+  expected_.page_bfcache_restore_fields_[back_forward_timings_index].Set(field);
+}
+
 void PageLoadMetricsTestWaiter::AddFrameSizeExpectation(const gfx::Size& size) {
   expected_.frame_sizes_.insert(size);
 }
@@ -323,6 +333,24 @@ void PageLoadMetricsTestWaiter::OnTimingUpdated(
     observed_.subframe_fields_.Merge(matched_bits);
   else
     observed_.page_fields_.Merge(matched_bits);
+
+  if (!subframe_rfh && !timing.back_forward_cache_timings.empty()) {
+    for (size_t ii = 0; ii < timing.back_forward_cache_timings.size(); ++ii) {
+      const auto& t = timing.back_forward_cache_timings[ii];
+      auto& observed = observed_.page_bfcache_restore_fields_[ii];
+      if (!t->first_paint_after_back_forward_cache_restore.is_zero()) {
+        observed.Set(TimingField::kFirstPaintAfterBackForwardCacheRestore);
+      }
+      if (t->first_input_delay_after_back_forward_cache_restore.has_value()) {
+        observed.Set(TimingField::kFirstInputDelayAfterBackForwardCacheRestore);
+      }
+      if (!t->request_animation_frames_after_back_forward_cache_restore
+               .empty()) {
+        observed.Set(
+            TimingField::kRequestAnimationFrameAfterBackForwardCacheRestore);
+      }
+    }
+  }
 
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
@@ -729,6 +757,13 @@ bool PageLoadMetricsTestWaiter::
 }
 
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
+  for (const auto& entries : expected_.page_bfcache_restore_fields_) {
+    auto it = observed_.page_bfcache_restore_fields_.find(entries.first);
+    if (it == observed_.page_bfcache_restore_fields_.end() ||
+        !entries.second.AreAllSetIn(it->second)) {
+      return false;
+    }
+  }
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
          expected_.on_complete_ == observed_.on_complete_ &&

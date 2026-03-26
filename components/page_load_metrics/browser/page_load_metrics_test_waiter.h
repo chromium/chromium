@@ -66,6 +66,15 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // Add a subframe-level expectation.
   void AddSubFrameExpectation(TimingField field);
 
+  // Add a page-level expectation on the k-th back-forward cache restoration.
+  // Note:
+  // * |back_forward_timings_index| is 0-based.
+  // * Only k[x]AfterBackForwardCacheRestore are valid arguments for |field|,
+  //   with [x] one of {FirstPaint, FirstInput, RequestAnimationFrame}.
+  void AddPageBackForwardCacheRestoreExpectation(
+      size_t back_forward_timings_index,
+      TimingField field);
+
   // Add a frame size expectation. Expects that at least one frame receives a
   // size update of |size|.
   void AddFrameSizeExpectation(const gfx::Size& size);
@@ -345,6 +354,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
     TimingFieldBitSet page_fields_;
     TimingFieldBitSet subframe_fields_;
+    base::flat_map<size_t, TimingFieldBitSet> page_bfcache_restore_fields_;
     blink::UseCounterFeatureTracker feature_tracker_;
     int loading_behavior_flags_ = 0;
     bool subframe_navigation_ = false;
