@@ -79,7 +79,7 @@ if (enable_extensions) {
     "autofill_private.idl",
     "autotest_private.webidl",
     "bookmark_manager_private.json",
-    "braille_display_private.idl",
+    "braille_display_private.webidl",
     "command_line_private.json",
     "crash_report_private.idl",
     "enterprise_reporting_private.idl",

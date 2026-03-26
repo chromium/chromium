@@ -3,7 +3,7 @@
 # typescript definitions.
 accessibility_features.json
 accessibility_private.json
-braille_display_private.idl
+braille_display_private.webidl
 chromeos_info_private.json
 command_line_private.json
 crash_report_private.idl

@@ -6,10 +6,10 @@
  * Modified for MV2.
  *
  * @fileoverview Definitions for chrome.brailleDisplayPrivate API
- * Generated from: chrome/common/extensions/api/braille_display_private.idl
+ * Generated from: chrome/common/extensions/api/braille_display_private.webidl
  * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/braille_display_private.idl -g ts_definitions`
- * to regenerate.
+ * chrome/common/extensions/api/braille_display_private.webidl -g
+ * ts_definitions` to regenerate.
  */
 
 import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';

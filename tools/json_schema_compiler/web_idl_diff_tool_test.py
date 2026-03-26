@@ -61,6 +61,7 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('power.idl', 'power.webidl'),
         ('serial.idl', 'serial.webidl'),
         ('bluetooth_private.idl', 'bluetooth_private.webidl'),
+        ('braille_display_private.idl', 'braille_display_private.webidl'),
         ('content_scripts.idl', 'content_scripts.webidl'),
         ('declarative_net_request.idl', 'declarative_net_request.webidl'),
         ('printer_provider.idl', 'printer_provider.webidl'),

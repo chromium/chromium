@@ -64,7 +64,7 @@ Here are a few key api surfaces on which accessibility depends.
 
 #### Private apis (only available in component accessibility extensions)
 - [chrome.accessibilityPrivate](https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/extensions/api/accessibility_private.json)
-- [chrome.brailleDisplayPrivate](https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/extensions/api/braille_display_private.idl)
+- [chrome.brailleDisplayPrivate](https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/extensions/api/braille_display_private.webidl)
 - [chrome.speechRecognitionPrivate](https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/extensions/api/speech_recognition_private.idl)
 
 #### Libraries and system executables
