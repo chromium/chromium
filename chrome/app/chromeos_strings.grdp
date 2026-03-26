@@ -4498,18 +4498,6 @@
   </if>
 
   <!-- Mojo service names (displayed in task manager) -->
-  <message name="IDS_ASH_ASH_SERVICE_NAME" desc="Name of the internal software service that manages windows. Appears in the task manager.">
-    Window manager
-  </message>
-  <message name="IDS_ASH_SHORTCUT_VIEWER_APP_NAME" desc="Name of the app that shows the list of keyboard shortcuts. Appears in the task manager.">
-    Shortcut viewer
-  </message>
-  <message name="IDS_ASH_TAP_VISUALIZER_APP_NAME" desc="Name of the app that displays touch tap points on the screen. Appears in the task manager.">
-    Show taps
-  </message>
-  <message name="IDS_ASH_UI_SERVICE_NAME" desc="Name of the internal software service that manages the user interface (UI). Appears in the task manager.">
-    UI service
-  </message>
   <message name="IDS_UTILITY_PROCESS_PDF_SERVICE_NAME" desc="The name of the utility process used for PDF conversions.">
     PDF Service
   </message>
