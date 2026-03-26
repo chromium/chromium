@@ -67,7 +67,7 @@ template <size_t N>
 class TracingCategory {
  public:
   constexpr TracingCategory(const char (&str)[N]) {
-    std::copy_n(str, N, value);
+    base::span(value).copy_from(str);
   }
 
   char value[N];
