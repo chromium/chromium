@@ -233,6 +233,8 @@ chrome.test.callbackFail = function(expectedError, func) {};
 
 /**
  * @param {!Array<function(): void>} tests
+ * @return {Promise} A promise that resolves when all tests complete
+ *     successfully or rejects if any test failed.
  * @see https://developer.chrome.com/extensions/test#method-runTests
  */
 chrome.test.runTests = function(tests) {};

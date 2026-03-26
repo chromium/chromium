@@ -385,7 +385,12 @@
             "name": "tests",
             "items": {"type": "function"}
           }
-        ]
+        ],
+        "returns": {
+          "type": "object",
+          "isInstanceOf": "Promise",
+          "description": "A promise that resolves when all tests complete successfully or rejects if any test failed."
+        }
       },
       {
         "name": "getApiFeatures",

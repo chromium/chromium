@@ -20,42 +20,52 @@ var run = function() {
 
   chrome.test.getConfig(function(chromeConfig) {
     utils.setUp(chromeConfig, config);
-    embedder.loadGuest(function() {
-      chrome.test.runTests([
-        useragentTests.testUserAgentOverride
-      ]);
-    }, function(data) {
-      if (data[0] == 'got-user-agent') {
-        // data[1] is the guest's user agent.
-        if (step == 1) {
-          chrome.test.assertEq(USER_AGENT_OVERRIDE, data[1]);
-          chrome.test.assertEq(USER_AGENT_OVERRIDE,
-                               embedder.webview.getUserAgent());
-          embedder.webview.setUserAgentOverride('foobar');
-        } else if (step == 2) {
-          chrome.test.assertEq('foobar', data[1]);
-          chrome.test.assertTrue(embedder.webview.isUserAgentOverridden());
-          chrome.test.assertEq('foobar', embedder.webview.getUserAgent());
+    var testRunning = false;
+    embedder.loadGuest(
+        function() {
+          // The `<webview>` triggers a `loadstop` event and re-invokes this
+          // callback each time the User-Agent is overridden. We only start
+          // `runTests()` once and manually advance the test on subsequent
+          // reloads to avoid re-entrancy.
+          if (!testRunning) {
+            testRunning = true;
+            chrome.test.runTests([useragentTests.testUserAgentOverride]);
+          } else {
+            useragentTests.testUserAgentOverride();
+          }
+        },
+        function(data) {
+          if (data[0] == 'got-user-agent') {
+            // data[1] is the guest's user agent.
+            if (step == 1) {
+              chrome.test.assertEq(USER_AGENT_OVERRIDE, data[1]);
+              chrome.test.assertEq(
+                  USER_AGENT_OVERRIDE, embedder.webview.getUserAgent());
+              embedder.webview.setUserAgentOverride('foobar');
+            } else if (step == 2) {
+              chrome.test.assertEq('foobar', data[1]);
+              chrome.test.assertTrue(embedder.webview.isUserAgentOverridden());
+              chrome.test.assertEq('foobar', embedder.webview.getUserAgent());
 
-          // Now remove the UA override.
-          embedder.webview.setUserAgentOverride('');
-        } else if (step == 3) {
-          chrome.test.assertNe(data[1], 'foobar');
-          chrome.test.assertFalse(embedder.webview.isUserAgentOverridden());
-          chrome.test.succeed();
-        }
+              // Now remove the UA override.
+              embedder.webview.setUserAgentOverride('');
+            } else if (step == 3) {
+              chrome.test.assertNe(data[1], 'foobar');
+              chrome.test.assertFalse(embedder.webview.isUserAgentOverridden());
+              chrome.test.succeed();
+            }
 
-        step++;
-        return true;
-      }
-      return false;
-    },
-    undefined /* partition */,
-    function(webview) {
-      chrome.test.assertFalse(webview.isUserAgentOverridden());
-      // Called before setting .src attribute.
-      webview.setUserAgentOverride(USER_AGENT_OVERRIDE);
-    });
+            step++;
+            return true;
+          }
+          return false;
+        },
+        undefined /* partition */,
+        function(webview) {
+          chrome.test.assertFalse(webview.isUserAgentOverridden());
+          // Called before setting .src attribute.
+          webview.setUserAgentOverride(USER_AGENT_OVERRIDE);
+        });
   });
 };
 

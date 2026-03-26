@@ -53,17 +53,30 @@ chrome.tabs.create(() => {
 API, as described in the sections below.
 
 ### test.runTests()
+
+```js
+chrome.test.runTests(tests): Promise<void>
+```
+
 `chrome.test.runTests()` is used to run a sequence of individual, smaller JS
 tests, and then passes the result to the browser by **automatically** calling
 `chrome.test.notifyPass()` or `chrome.test.notifyFail()`.  `notifyPass()` will
 be called if and only if all individual tests pass; `notifyFail()` will be
-called if any test fails.  A test may fail if an assertion fails, if there is
-an unexpected runtime error, or if `chrome.test.fail()` is called explicitly.
+called if any test fails.  A test may fail if an assertion fails, if there is an
+unexpected runtime error, or if `chrome.test.fail()` is called explicitly.
+`runTests()` returns a Promise that resolves when all tests pass, or rejects if
+any test fails.
 
 `chrome.test.runTests()` takes an array of functions, and runs them serially.
 This means that these functions may be independent, or may implicitly rely on
 one another.  The output of running these individual tests is printed through
 `console.log()`s, which enables tracing how far a test suite progresses.
+
+**Important Note:** `chrome.test.runTests()` modifies global test suite state
+and cannot be run concurrently. Calling `runTests()` while another `runTests()`
+execution is actively running in the same script context will throw an error.
+You must either `await` the Promise of an existing `runTests()` call or place
+all tests into a single array.
 
 Each individual test function passed to `runTests()` will execute, and then
 wait for that specific function to pass or fail.  Passing is indicated by

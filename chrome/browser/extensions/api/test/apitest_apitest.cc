@@ -672,4 +672,46 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, ListenOnceWithPromise) {
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
+// Tests that sequential calls to runTests() properly reset internal states. To
+// verify this, we run a passing batch, a failing batch, and another passing
+// batch. If internal state (like `testsFailed`) was not reset, the final
+// passing batch would incorrectly fail.
+IN_PROC_BROWSER_TEST_F(TestAPITest, RunTestsSuccessiveAwaits) {
+  ResultCatcher result_catcher;
+  constexpr char kBackgroundJs[] =
+      R"(async function testEntryPoint() {
+           await chrome.test.runTests([
+             function test1() { chrome.test.succeed(); }
+           ]);
+
+           try {
+             await chrome.test.runTests([
+               function test2() { chrome.test.fail('intentional failure'); }
+             ]);
+           } catch (e) {
+             // Prevent the error thrown from `runTests()` `Promise` rejecting
+             // from stopping the JS thread.
+           }
+
+           await chrome.test.runTests([
+             function test3() {
+               chrome.test.succeed();
+             }
+           ]);
+         }
+         testEntryPoint();)";
+  ASSERT_TRUE(LoadExtensionWithScript(kBackgroundJs));
+
+  // Batch 1 passes.
+  EXPECT_TRUE(result_catcher.GetNextResult());
+
+  // Batch 2 fails.
+  EXPECT_FALSE(result_catcher.GetNextResult());
+  EXPECT_EQ("Failed 1 of 1 tests", result_catcher.message());
+
+  // Batch 3 passes. If internal state was not reset, batch 3 would incorrectly
+  // fail because `testsFailed` from batch 2 would still be 1.
+  EXPECT_TRUE(result_catcher.GetNextResult());
+}
+
 }  // namespace extensions
