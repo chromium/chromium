@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_button_controller.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
@@ -749,6 +750,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // Set the window for the animation controller. Add animation providers here
   // as well.
   browser_animation_controller_->set_browser_view(browser_view);
+  browser_animation_controller_->AddAnimationProvider(
+      std::make_unique<SidePanelAnimations>());
 
   // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to
   // Init.
