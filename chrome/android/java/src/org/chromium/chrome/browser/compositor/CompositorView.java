@@ -669,7 +669,12 @@ public class CompositorView extends FrameLayout
 
     void onPhysicalBackingSizeChanged(WebContents webContents, int width, int height) {
         CompositorViewJni.get()
-                .onPhysicalBackingSizeChanged(mNativeCompositorView, webContents, width, height);
+                .onPhysicalBackingSizeChanged(
+                        mNativeCompositorView,
+                        webContents,
+                        width,
+                        height,
+                        isFluidResizeEnabledAndLff());
     }
 
     void onControlsResizeViewChanged(WebContents webContents, boolean controlsResizeView) {
@@ -932,7 +937,11 @@ public class CompositorView extends FrameLayout
                 @Nullable InputTransferToken browserInputToken);
 
         void onPhysicalBackingSizeChanged(
-                long nativeCompositorView, WebContents webContents, int width, int height);
+                long nativeCompositorView,
+                WebContents webContents,
+                int width,
+                int height,
+                boolean isFluidResize);
 
         void onControlsResizeViewChanged(
                 long nativeCompositorView, WebContents webContents, boolean controlsResizeView);

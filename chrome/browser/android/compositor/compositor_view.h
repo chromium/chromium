@@ -69,7 +69,8 @@ class CompositorView : public content::CompositorClient,
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
       int32_t width,
-      int32_t height);
+      int32_t height,
+      bool is_fluid_resize);
   void OnControlsResizeViewChanged(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
