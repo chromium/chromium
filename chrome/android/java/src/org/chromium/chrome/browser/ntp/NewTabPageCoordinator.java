@@ -92,6 +92,8 @@ import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.url.GURL;
 
@@ -109,6 +111,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final Activity mActivity;
     private final NewTabPageLayout mNewTabPageLayout;
     private final NewTabPageLayout.Delegate mLayoutDelegate;
+    private final PropertyModel mModel;
     private final Tab mTab;
     private final TabModelSelector mTabModelSelector;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
@@ -237,6 +240,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         mEnableLogs = ChromeFeatureList.sNewTabPageCustomizationV2EnableLogs.getValue();
 
+        mModel = new PropertyModel(NewTabPageLayoutProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                mModel, mNewTabPageLayout, NewTabPageLayoutViewBinder::bind);
         mLayoutDelegate =
                 new NewTabPageLayout.Delegate() {
                     @Override
@@ -254,7 +260,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         NewTabPageCoordinator.this.updateActionButtonVisibility();
                     }
                 };
-        mNewTabPageLayout.setDelegate(mLayoutDelegate);
+        mModel.set(NewTabPageLayoutProperties.DELEGATE, mLayoutDelegate);
     }
 
     /**
@@ -540,7 +546,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private void initializeLayoutChangeListener() {
         TraceEvent.begin(TAG + ".initializeLayoutChangeListener()");
         mOnLayoutChangeListener = this::onLayoutChanged;
-        mNewTabPageLayout.addOnLayoutChangeListener(mOnLayoutChangeListener);
+        mModel.set(NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER, mOnLayoutChangeListener);
         TraceEvent.end(TAG + ".initializeLayoutChangeListener()");
     }
 
@@ -838,20 +844,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                                 - mSearchBoxBoundsVerticalInset);
 
         float translationY = mUrlFocusChangePercent * (basePosition - target);
-        setTranslationYOfFakeboxAndAbove(translationY);
-    }
-
-    /**
-     * Sets the translation_y of the fakebox and all views above it, but not the views below. Used
-     * when the url focus animation is combined with the omnibox suggestions list animation to
-     * reduce the number of visual elements in motion.
-     */
-    private void setTranslationYOfFakeboxAndAbove(float translationY) {
-        for (int i = 0; i < mNewTabPageLayout.getChildCount(); i++) {
-            View view = mNewTabPageLayout.getChildAt(i);
-            view.setTranslationY(translationY);
-            if (view.getId() == R.id.search_box) return;
-        }
+        mModel.set(NewTabPageLayoutProperties.TRANSITION_Y, translationY);
     }
 
     /**
@@ -1257,9 +1250,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mSearchEngineUtils = null;
         }
 
-        mNewTabPageLayout.removeOnLayoutChangeListener(mOnLayoutChangeListener);
+        mModel.set(NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER, null);
         mOnLayoutChangeListener = null;
-        mNewTabPageLayout.setDelegate(null);
+        mModel.set(NewTabPageLayoutProperties.DELEGATE, null);
 
         if (mComposeplateCoordinator != null) {
             mComposeplateCoordinator.destroy();
@@ -1364,11 +1357,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         // Top padding is applied to the NTP layout, ensuring all UI components remain in their
         // original positions after Status bar is hidden.
-        mNewTabPageLayout.setPaddingRelative(
-                mNewTabPageLayout.getPaddingStart(),
-                toolbarHeightNoShadow + mTopInset,
-                mNewTabPageLayout.getPaddingEnd(),
-                mNewTabPageLayout.getPaddingBottom());
+        mModel.set(NewTabPageLayoutProperties.TOP_INSET_PX, toolbarHeightNoShadow + mTopInset);
 
         if (mEnableLogs) {
             Log.i(TAG, "The top padding to add on the NTP is %d.", mTopInset);

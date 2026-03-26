@@ -104,4 +104,17 @@ public class NewTabPageLayout extends LinearLayout {
     void setDelegate(Delegate delegate) {
         mDelegate = delegate;
     }
+
+    /**
+     * Sets the translation_y of the fakebox and all views above it, but not the views below. Used
+     * when the url focus animation is combined with the omnibox suggestions list animation to
+     * reduce the number of visual elements in motion.
+     */
+    void setTranslationYOfFakeboxAndAbove(float translationY) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            view.setTranslationY(translationY);
+            if (view.getId() == R.id.search_box) return;
+        }
+    }
 }
