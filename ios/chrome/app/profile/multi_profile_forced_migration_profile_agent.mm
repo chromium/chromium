@@ -11,6 +11,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -78,9 +79,13 @@
 
 - (void)managedProfileCreationCoordinator:
             (ManagedProfileCreationCoordinator*)coordinator
-                                didAccept:(BOOL)accepted
-                     browsingDataSeparate:(BOOL)browsingDataSeparate {
+                                   result:(std::optional<
+                                              signin::ManagedAccountSigninMode>)
+                                              mode {
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
+  // The user was not allowed to cancel, only confirm they saw the information.
+  CHECK(mode);
+  CHECK_EQ(*mode, signin::ManagedAccountSigninMode::kInformOfForcedMigration);
   base::RecordAction(base::UserMetricsAction(
       "Signin_MultiProfileForcedMigration_DialogAcknowleged"));
   _managedConfirmationScreenCoordinator.delegate = nil;
@@ -123,18 +128,16 @@
 
   SystemIdentityManager* systemIdentityManager =
       GetApplicationContext()->GetSystemIdentityManager();
-  _managedConfirmationScreenCoordinator = [[ManagedProfileCreationCoordinator
-      alloc] initWithBaseViewController:presentingInterface.viewController
-                                   identity:systemIdentity
-                               hostedDomain:
-                                   systemIdentityManager
-                                       ->GetCachedHostedDomainForIdentity(
-                                           systemIdentity)
-                                    browser:browser
-                  skipBrowsingDataMigration:YES
-                 mergeBrowsingDataByDefault:NO
-      browsingDataMigrationDisabledByPolicy:NO
-                 multiProfileForceMigration:YES];
+  _managedConfirmationScreenCoordinator =
+      [[ManagedProfileCreationCoordinator alloc]
+          initWithBaseViewController:presentingInterface.viewController
+                            identity:systemIdentity
+                        hostedDomain:systemIdentityManager
+                                         ->GetCachedHostedDomainForIdentity(
+                                             systemIdentity)
+                             browser:browser
+                                mode:signin::ManagedAccountSigninMode::
+                                         kInformOfForcedMigration];
   _managedConfirmationScreenCoordinator.delegate = self;
 
   [_managedConfirmationScreenCoordinator start];

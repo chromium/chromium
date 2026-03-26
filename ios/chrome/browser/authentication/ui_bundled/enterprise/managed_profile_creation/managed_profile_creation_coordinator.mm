@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/browsing_data_migration_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_learn_more_coordinator.h"
@@ -31,10 +32,7 @@
 @implementation ManagedProfileCreationCoordinator {
   id<SystemIdentity> _identity;
   NSString* _hostedDomain;
-  BOOL _skipBrowsingDataMigration;
-  BOOL _mergeBrowsingDataByDefault;
-  BOOL _browsingDataMigrationDisabledByPolicy;
-  BOOL _multiProfileForceMigration;
+  signin::ManagedAccountSigninMode _mode;
   ManagedProfileCreationViewController* _viewController;
   // Used to display `_viewController` initially and
   // `_browsingDataMigrationViewController` if the user tries to modify how
@@ -49,11 +47,8 @@
                                   identity:(id<SystemIdentity>)identity
                               hostedDomain:(NSString*)hostedDomain
                                    browser:(Browser*)browser
-                 skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
-                mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
-     browsingDataMigrationDisabledByPolicy:
-         (BOOL)browsingDataMigrationDisabledByPolicy
-                multiProfileForceMigration:(BOOL)multiProfileForceMigration {
+                                      mode:(signin::ManagedAccountSigninMode)
+                                               mode {
   // TODO(crbug.com/381853288): Add a mediator to listen to the identity
   // changes.
   DCHECK(viewController);
@@ -64,20 +59,15 @@
              base::NotFatalUntil::M145);
     _identity = identity;
     _hostedDomain = hostedDomain;
-    _skipBrowsingDataMigration = skipBrowsingDataMigration;
-    _mergeBrowsingDataByDefault = mergeBrowsingDataByDefault;
-    _browsingDataMigrationDisabledByPolicy =
-        browsingDataMigrationDisabledByPolicy;
-    _multiProfileForceMigration = multiProfileForceMigration;
+    _mode = mode;
   }
   return self;
 }
 
 - (void)start {
   _viewController = [[ManagedProfileCreationViewController alloc]
-               initWithUserEmail:_identity.userEmail
-                    hostedDomain:_hostedDomain
-      multiProfileForceMigration:_multiProfileForceMigration];
+      initWithUserEmail:_identity.userEmail
+           hostedDomain:_hostedDomain];
   _viewController.delegate = self;
   _viewController.managedProfileCreationViewControllerPresentationDelegate =
       self;
@@ -90,15 +80,13 @@
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
   _mediator = [[ManagedProfileCreationMediator alloc]
-                    initWithIdentityManager:identityManager
-                      accountManagerService:accountManagerService
-                  skipBrowsingDataMigration:_skipBrowsingDataMigration
-                 mergeBrowsingDataByDefault:_mergeBrowsingDataByDefault
-      browsingDataMigrationDisabledByPolicy:
-          _browsingDataMigrationDisabledByPolicy
-                                     gaiaID:_identity.gaiaId];
+      initWithIdentityManager:identityManager
+        accountManagerService:accountManagerService
+                         mode:_mode
+                       gaiaID:_identity.gaiaId];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
+  _viewController.managedProfileCreationDataSource = _mediator;
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -123,18 +111,14 @@
 - (void)didTapPrimaryActionButton {
   // `dismissViewControllerAnimated` will release the mediator, so grab this
   // value first.
-  BOOL browsingDataSeparate = _mediator.browsingDataSeparate;
+  signin::ManagedAccountSigninMode mode = _mediator.mode;
   [self dismissViewControllerAnimated:YES];
-  [self.delegate managedProfileCreationCoordinator:self
-                                         didAccept:YES
-                              browsingDataSeparate:browsingDataSeparate];
+  [self.delegate managedProfileCreationCoordinator:self result:mode];
 }
 
 - (void)didTapSecondaryActionButton {
   [self dismissViewControllerAnimated:YES];
-  [self.delegate managedProfileCreationCoordinator:self
-                                         didAccept:NO
-                              browsingDataSeparate:NO];
+  [self.delegate managedProfileCreationCoordinator:self result:std::nullopt];
 }
 
 - (void)didTapURLInDisclaimer:(NSURL*)URL {
@@ -150,10 +134,26 @@
 
 - (void)showMergeBrowsingDataScreen {
   CHECK(!_browsingDataMigrationViewController);
+
+  BOOL browsingDataSeparate;
+  switch (_mediator.mode) {
+    case signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy:
+    case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
+    case signin::ManagedAccountSigninMode::kAutoMergeDuringFRE:
+    case signin::ManagedAccountSigninMode::kInformOfForcedMigration:
+      // The user should not have been presented with a choice option
+      NOTREACHED();
+    case signin::ManagedAccountSigninMode::kSeparateProfileData:
+      browsingDataSeparate = YES;
+      break;
+    case signin::ManagedAccountSigninMode::kMergeProfileData:
+      browsingDataSeparate = NO;
+      break;
+  }
   _browsingDataMigrationViewController =
       [[BrowsingDataMigrationViewController alloc]
              initWithUserEmail:_identity.userEmail
-          browsingDataSeparate:_mediator.browsingDataSeparate];
+          browsingDataSeparate:browsingDataSeparate];
   _browsingDataMigrationViewController.mutator = _mediator;
   [_navigationController pushViewController:_browsingDataMigrationViewController
                                    animated:YES];

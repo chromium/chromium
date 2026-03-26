@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -107,46 +108,6 @@ enum class IOSIdentityAvailableInProfile : int {
   kAvailableInProfileMapperAvailableInIdentityManager = 3,
   kMaxValue = kAvailableInProfileMapperAvailableInIdentityManager,
 };
-
-// Returns `true` if any of the following holds:
-// * we are at the FRE step,
-// * there is already a profile that has been fully initialized for gaia_id, or
-// * a policy forces the browsing data to stay separated.
-bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
-                                     const GaiaId& gaia_id,
-                                     PrefService* pref_service) {
-  bool always_separate_browsing_data_per_policy =
-      pref_service->GetInteger(
-          prefs::kProfileSeparationDataMigrationSettings) ==
-      policy::ALWAYS_SEPARATE;
-  return always_separate_browsing_data_per_policy ||
-         access_point == signin_metrics::AccessPoint::kStartPage ||
-         GetApplicationContext()
-             ->GetAccountProfileMapper()
-             ->IsProfileForGaiaIDFullyInitialized(gaia_id);
-}
-
-// Returns `true` if the browsing data migration is not available because it is
-// disabled by policy and not because of another reason.
-bool IsBrowsingDataMigrationDisabledByPolicy(
-    signin_metrics::AccessPoint access_point,
-    const GaiaId& gaia_id,
-    PrefService* pref_service,
-    signin::IdentityManager* identity_manager,
-    policy::ProfileSeparationDataMigrationSettings
-        profileSeparationDataMigrationSettings) {
-  bool isSignedProfile =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-  return !isSignedProfile &&
-         access_point != signin_metrics::AccessPoint::kStartPage &&
-         !GetApplicationContext()
-              ->GetAccountProfileMapper()
-              ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id)) &&
-         (profileSeparationDataMigrationSettings == policy::ALWAYS_SEPARATE ||
-          pref_service->GetInteger(
-              prefs::kProfileSeparationDataMigrationSettings) ==
-              policy::ALWAYS_SEPARATE);
-}
 
 // Returns if `identity` is available by AccountProfileMapper and if it is
 // available by IdentityManager.
@@ -301,7 +262,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // `_identityToSignin`. This is used to know if the user can convert an
   // existing profile into a managed profile.
   policy::ProfileSeparationDataMigrationSettings
-      _profileSeparationDataMigrationSettings;
+      _profileSeparationDataMigrationCloudSettings;
 
   // List of unsynced data types in the current profile. If there is no primary
   // account the set is empty.
@@ -347,7 +308,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     _anchorRect = anchorRect;
     _state = AuthenticationState::kBegin;
     _cancelationReason = signin_ui::CancelationReason::kNotCanceled;
-    _profileSeparationDataMigrationSettings =
+    _profileSeparationDataMigrationCloudSettings =
         policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
 
     ProfileIOS* profile = [self profile];
@@ -579,77 +540,60 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 // Fetches ManagedAccountsSigninRestriction policy, if needed.
 - (void)fetchProfileSeparationPoliciesIfNeededStep {
-  if (!ShouldShowManagedConfirmationForHostedDomain(
-          _identityToSignInHostedDomain, _identityToSignIn.gaiaId,
-          [self prefs])) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // As there is a single profile, the profile separation policy is not
+    // needed.
+    [self continueFlow];
+    return;
+  }
+  std::optional<signin::ManagedAccountSigninMode> mode =
+      [self managedProfileCreationMode];
+  if (!mode) {
     // The managed confirmation dialog can be skipped, therefore, there is no
     // need to fetch the policy.
     [self continueFlow];
     return;
   }
-  if (!AreSeparateProfilesForManagedAccountsEnabled() ||
-      ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaId,
-                                      [self prefs])) {
-    // The profile-separation policy affects whether browsing-data-migration
-    // is offered, so it's only needed if the migration isn't skipped.
-    [self continueFlow];
-    return;
+  switch (*mode) {
+    case signin::ManagedAccountSigninMode::kInformOfForcedMigration:
+      NOTREACHED();
+    case signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy:
+      // Device policy already forces separating data, hence the device
+      // separation policy is not needed.
+    case signin::ManagedAccountSigninMode::kAutoMergeDuringFRE:
+      // As we are currently in the FRE, there is no data to migrate, thus the
+      // device separation policy is not needed.
+    case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
+      // As the user is currently signed-in, merging data is not currently
+      // possible, so the profile separation policy is not needed.
+      [self continueFlow];
+      return;
+    case signin::ManagedAccountSigninMode::kSeparateProfileData:
+    case signin::ManagedAccountSigninMode::kMergeProfileData:
+      // We need to fetch the policy to decide whether the user has a choice. If
+      // they have a choice, the default value of this choice is the one
+      // obtained from the device’s policy.
+      ProfileIOS* profile = [self profile];
+      [_performer fetchProfileSeparationPolicies:profile
+                                     forIdentity:_identityToSignIn];
+      return;
   }
-
-  ProfileIOS* profile = [self profile];
-  [_performer fetchProfileSeparationPolicies:profile
-                                 forIdentity:_identityToSignIn];
 }
 
 // Shows a confirmation dialog for signing in to an account managed.
 - (void)showManagedConfirmationIfNeededStep {
-  if (!ShouldShowManagedConfirmationForHostedDomain(
-          _identityToSignInHostedDomain, _identityToSignIn.gaiaId,
-          [self prefs])) {
+  std::optional<signin::ManagedAccountSigninMode> mode =
+      [self managedProfileCreationMode];
+  if (!mode) {
     [self continueFlow];
     return;
-  }
-  // These value are not used if
-  // `AreSeparateProfilesForManagedAccountsEnabled()` is false.
-  BOOL skipBrowsingDataMigration = NO;
-  BOOL mergeBrowsingDataByDefault = NO;
-  BOOL browsingDataMigrationDisabledByPolicy = NO;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    // Skip browsing data migration if we are at the first run screen or if
-    // there is already a profile that exists with the account we are trying
-    // to signin with.
-    PrefService* prefService = [self prefs];
-    skipBrowsingDataMigration =
-        _profileSeparationDataMigrationSettings == policy::ALWAYS_SEPARATE ||
-        ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaId,
-                                        prefService);
-
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile([self profile]);
-
-    browsingDataMigrationDisabledByPolicy =
-        IsBrowsingDataMigrationDisabledByPolicy(
-            _accessPoint, _identityToSignIn.gaiaId, prefService,
-            identityManager, _profileSeparationDataMigrationSettings);
-
-    // Merge browsing data by default if the data migration screen is shown to
-    // the user and if a policy was set by the admin to merge the browsing data
-    // by default.
-    mergeBrowsingDataByDefault =
-        !skipBrowsingDataMigration &&
-        prefService->GetInteger(
-            prefs::kProfileSeparationDataMigrationSettings) ==
-            policy::USER_OPT_OUT;
   }
   [_performer
       showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
                                     identity:_identityToSignIn
                               viewController:_presentingViewController
                                      browser:_browser
-                   skipBrowsingDataMigration:skipBrowsingDataMigration
-                  mergeBrowsingDataByDefault:mergeBrowsingDataByDefault
-       browsingDataMigrationDisabledByPolicy:
-           browsingDataMigrationDisabledByPolicy];
+                  managedProfileCreationMode:*mode];
 }
 
 // Converts the personal profile to a managed profile, if needed.
@@ -901,7 +845,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 - (void)didFetchProfileSeparationPolicies:
     (policy::ProfileSeparationDataMigrationSettings)
         profile_separation_data_migration_settings {
-  _profileSeparationDataMigrationSettings =
+  _profileSeparationDataMigrationCloudSettings =
       profile_separation_data_migration_settings;
   [self continueFlow];
 }
@@ -916,9 +860,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
                                    gaiaIDHash, base::Value(true));
 
   _shouldConvertPersonalProfileToManaged =
-      AreSeparateProfilesForManagedAccountsEnabled() &&
-      (!browsingDataSeparate ||
-       _accessPoint == signin_metrics::AccessPoint::kStartPage);
+      AreSeparateProfilesForManagedAccountsEnabled() && !browsingDataSeparate;
 
   // When we show the managed profile screen, the profile is a new one, ensure
   // the history sync screen is shown then in case a separate profile is
@@ -973,6 +915,70 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 #pragma mark - Private methods
+
+// Returns the mode for Managed Profile Creation view, or any non-null value if
+// profiles are not separated. Returns nullopt if there is no need for this
+// view.
+- (std::optional<signin::ManagedAccountSigninMode>)managedProfileCreationMode {
+  if ([_identityToSignInHostedDomain length] == 0) {
+    // No hosted domain, don't show the dialog as there is no host.
+    return std::nullopt;
+  }
+  GaiaId gaiaId = _identityToSignIn.gaiaId;
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    BrowserPolicyConnectorIOS* policy_connector =
+        GetApplicationContext()->GetBrowserPolicyConnector();
+    bool hasMachineLevelPolicies =
+        policy_connector && policy_connector->HasMachineLevelPolicies();
+    if (hasMachineLevelPolicies) {
+      // Don't show the dialog if the browser has already machine level policies
+      // as the user already knows that their browser is managed.
+      return std::nullopt;
+    }
+
+    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaiaId);
+    const base::Value* already_seen = syncer::GetAccountKeyedPrefValue(
+        [self prefs], prefs::kSigninHasAcceptedManagementDialog, gaia_id_hash);
+
+    if (already_seen && already_seen->GetIfBool().value_or(false)) {
+      return std::nullopt;
+    }
+    // The exact value is not actually used. Only the fact that this is not
+    // nullopt.
+    return signin::ManagedAccountSigninMode::kMergeProfileData;
+  }
+  if (GetApplicationContext()
+          ->GetAccountProfileMapper()
+          ->IsProfileForGaiaIDFullyInitialized(gaiaId)) {
+    // If the corresponding profile is fully initialized, the user has
+    // already seen the confirmation screen.
+    return std::nullopt;
+  }
+  if (_accessPoint == signin_metrics::AccessPoint::kStartPage) {
+    return signin::ManagedAccountSigninMode::kAutoMergeDuringFRE;
+  }
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile([self profile]);
+  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn;
+  }
+  if (_profileSeparationDataMigrationCloudSettings == policy::ALWAYS_SEPARATE) {
+    // If `_profileSeparationDataMigrationCloudSettings` has not yet been
+    // fetched, its value is `USER_OPT_IN`. So this condition is not used when
+    // the value is yet to be fetched.
+    return signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy;
+  }
+  PrefService* prefService = [self prefs];
+  if (prefService->GetInteger(prefs::kProfileSeparationDataMigrationSettings) ==
+      policy::ALWAYS_SEPARATE) {
+    return signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy;
+  }
+  if (prefService->GetInteger(prefs::kProfileSeparationDataMigrationSettings) ==
+      policy::USER_OPT_OUT) {
+    return signin::ManagedAccountSigninMode::kMergeProfileData;
+  }
+  return signin::ManagedAccountSigninMode::kSeparateProfileData;
+}
 
 - (void)authenticationErrorDismissed {
   [self setHandlingError:NO];

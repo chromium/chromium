@@ -17,6 +17,9 @@ namespace signin_metrics {
 enum class AccessPoint;
 }
 enum class SignedInUserState;
+namespace signin {
+enum class ManagedAccountSigninMode;
+}  // namespace signin
 @protocol SystemIdentity;
 namespace syncer {
 class SyncService;
@@ -85,10 +88,8 @@ class SyncService;
                                       identity:(id<SystemIdentity>)identity
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser
-                     skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
-                    mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
-         browsingDataMigrationDisabledByPolicy:
-             (BOOL)browsingDataMigrationDisabledByPolicy;
+                    managedProfileCreationMode:
+                        (signin::ManagedAccountSigninMode)mode;
 
 @end
 

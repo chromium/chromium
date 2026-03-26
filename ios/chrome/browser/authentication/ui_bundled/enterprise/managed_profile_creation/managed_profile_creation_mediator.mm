@@ -9,6 +9,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -16,9 +17,8 @@
 
 @interface ManagedProfileCreationMediator () <
     IdentityManagerObserverBridgeDelegate> {
-  BOOL _mergeBrowsingDataByDefault;
-  BOOL _canShowBrowsingDataMigration;
-  BOOL _browsingDataMigrationDisabledByPolicy;
+  // How to present the view.
+  signin::ManagedAccountSigninMode _mode;
   GaiaId _gaiaID;
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
@@ -31,36 +31,24 @@
 
 @implementation ManagedProfileCreationMediator
 
-- (instancetype)initWithIdentityManager:
-                    (signin::IdentityManager*)identityManager
-                    accountManagerService:
-                        (ChromeAccountManagerService*)accountManagerService
-                skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
-               mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
-    browsingDataMigrationDisabledByPolicy:
-        (BOOL)browsingDataMigrationDisabledByPolicy
-                                   gaiaID:(const GaiaId&)gaiaID {
+@synthesize mode = _mode;
+
+- (instancetype)
+    initWithIdentityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+                       mode:(signin::ManagedAccountSigninMode)mode
+                     gaiaID:(const GaiaId&)gaiaID {
   self = [super init];
   if (self) {
+    _mode = mode;
+    CHECK(accountManagerService, base::NotFatalUntil::M155);
+    CHECK(identityManager, base::NotFatalUntil::M155);
     _accountManagerService = accountManagerService;
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
     _gaiaID = gaiaID;
-
-    // We can merge if either
-    // * we are at FRE,
-    // * separate profiles are not supported, or
-    // * the user is signed-in.
-    _canShowBrowsingDataMigration =
-        !skipBrowsingDataMigration &&
-        AreSeparateProfilesForManagedAccountsEnabled() &&
-        !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-    _mergeBrowsingDataByDefault = mergeBrowsingDataByDefault;
-    _browsingDataSeparate = !mergeBrowsingDataByDefault;
-    _browsingDataMigrationDisabledByPolicy =
-        browsingDataMigrationDisabledByPolicy;
   }
   return self;
 }
@@ -73,31 +61,39 @@
   _identityManagerObserver.reset();
 }
 
-- (void)setKeepBrowsingDataSeparate:(BOOL)keepSeparate {
-  _browsingDataSeparate = keepSeparate;
-  [self.consumer setKeepBrowsingDataSeparate:keepSeparate];
-}
+#pragma mark - ManagedProfileCreationDataSource
 
-- (void)setConsumer:(id<ManagedProfileCreationConsumer>)consumer {
-  if (_consumer == consumer) {
-    return;
-  }
-  _consumer = consumer;
-  _consumer.mergeBrowsingDataByDefault = _mergeBrowsingDataByDefault;
-  _consumer.canShowBrowsingDataMigration = _canShowBrowsingDataMigration;
-  _consumer.browsingDataMigrationDisabledByPolicy =
-      _browsingDataMigrationDisabledByPolicy;
-  [_consumer setKeepBrowsingDataSeparate:self.browsingDataSeparate];
+- (signin::ManagedAccountSigninMode)mode {
+  return _mode;
 }
 
 #pragma mark - BrowsingDataMigrationViewControllerDelegate
 
 - (void)updateShouldKeepBrowsingDataSeparate:(BOOL)browsingDataSeparate {
-  self.browsingDataSeparate = browsingDataSeparate;
-  [self.consumer setKeepBrowsingDataSeparate:self.browsingDataSeparate];
+  switch (_mode) {
+    case signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy:
+    case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
+    case signin::ManagedAccountSigninMode::kAutoMergeDuringFRE:
+    case signin::ManagedAccountSigninMode::kInformOfForcedMigration:
+      // The user should not have been presented with the option to make a
+      // choice.
+      NOTREACHED();
+    case signin::ManagedAccountSigninMode::kSeparateProfileData:
+      if (browsingDataSeparate) {
+        return;
+      }
+      _mode = signin::ManagedAccountSigninMode::kMergeProfileData;
+      break;
+    case signin::ManagedAccountSigninMode::kMergeProfileData:
+      if (!browsingDataSeparate) {
+        return;
+      }
+      _mode = signin::ManagedAccountSigninMode::kSeparateProfileData;
+  }
+  [self.consumer updateUI];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - BrowsingDataMigrationViewControllerMutator
 
 - (void)onAccountsOnDeviceChanged {
   id<SystemIdentity> identity =

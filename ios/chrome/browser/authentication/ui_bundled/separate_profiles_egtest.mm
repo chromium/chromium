@@ -973,6 +973,60 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should have been switched back to personal");
 }
 
+// Tests that switching from a signed in personal account to a managed account
+// behaves correctly when the separation policy suggests USER_OPT_OUT on the
+// account. This is a regression test for bug b/491524396.
+- (void)testSwitchFromPersonalToManagedWithDataMergingSuggestedOnAccount {
+  NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
+
+  // Setup: There's 1 personal and 1 managed account. The personal account is
+  // signed in.
+  FakeSystemIdentity* const personalIdentity =
+      [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:personalIdentity];
+
+  FakeSystemIdentity* const managedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:managedIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:personalIdentity];
+
+  [SigninEarlGrey setPolicyResponseForNextProfileSeparationPolicyRequest:
+                      policy::USER_OPT_OUT];
+
+  // Switch to the managed account, which triggers a switch to a new managed
+  // profile.
+  OpenAccountMenu();
+  [[EarlGrey
+      selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Wait for the enterprise onboarding screen.
+  WaitForEnterpriseOnboardingScreen();
+
+  // Regression check: the merge option (browsing data management button) should
+  // not be visible when switching from a personal account, even if the policy
+  // suggests merging on the account level.
+  [[EarlGrey selectElementWithMatcher:
+                 ManagedProfileCreationBrowsingDataButtonMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Confirm the enterprise onboarding screen.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
+      performAction:grey_tap()];
+
+  // Note: The profile switch happens here.
+
+  // Ensure you're signed into the managed account.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
+
+  // Verify that the profile was actually switched.
+  NSString* managedProfileName = [ChromeEarlGrey currentProfileName];
+  GREYAssert(![personalProfileName isEqualToString:managedProfileName],
+             @"Profile should have been switched to a managed profile");
+}
+
 @end
 
 @interface SeparateProfilesFRETestCase : ChromeTestCase

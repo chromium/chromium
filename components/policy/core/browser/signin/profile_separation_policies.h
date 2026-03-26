@@ -21,8 +21,13 @@ enum ProfileSeparationSettings : uint16_t {
 };
 
 enum ProfileSeparationDataMigrationSettings : uint16_t {
+  // Let users decide to bring existing browsing data into their managed
+  // profile.
   USER_OPT_IN = 1,
+  // Suggest to users to bring their existing data in the managed profile and
+  // give them a choice not to.
   USER_OPT_OUT = 2,
+  // Users cannot bring existing browsing data in their managed profile.
   ALWAYS_SEPARATE = 3
 };
 

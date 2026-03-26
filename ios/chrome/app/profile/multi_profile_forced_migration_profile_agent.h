@@ -7,8 +7,8 @@
 
 #import "ios/chrome/app/profile/scene_observing_profile_agent.h"
 
-// Profile agent that triggers the multi-profile force mogration screen when
-// applicable.
+// Profile agent that triggers the multi-profile force migration screen if a
+// forced migration was done during start-up.
 @interface MultiProfileForcedMigrationProfileAgent : SceneObservingProfileAgent
 
 @end

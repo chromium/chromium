@@ -19,6 +19,7 @@ source_set("managed_profile_creation") {
     "managed_profile_learn_more_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
@@ -46,4 +47,8 @@ source_set("managed_profile_creation") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+}
+
+source_set("constants") {
+  sources = [ "managed_profile_creation_constants.h" ]
 }

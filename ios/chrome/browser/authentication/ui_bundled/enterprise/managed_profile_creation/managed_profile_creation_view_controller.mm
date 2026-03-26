@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_learn_more_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -43,25 +44,18 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 @implementation ManagedProfileCreationViewController {
   NSString* _userEmail;
   NSString* _hostedDomain;
-  BOOL _keepBrowsinDataSeparate;
-  BOOL _multiProfileForceMigration;
 
   UITableView* _tableView;
   NSLayoutConstraint* _tableViewHeightConstraint;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
 }
-@synthesize mergeBrowsingDataByDefault;
-@synthesize canShowBrowsingDataMigration;
-@synthesize browsingDataMigrationDisabledByPolicy;
 
 - (instancetype)initWithUserEmail:(NSString*)userEmail
-                     hostedDomain:(NSString*)hostedDomain
-       multiProfileForceMigration:(BOOL)multiProfileForceMigration {
+                     hostedDomain:(NSString*)hostedDomain {
   self = [super init];
   if (self) {
     _userEmail = userEmail;
     _hostedDomain = hostedDomain;
-    _multiProfileForceMigration = multiProfileForceMigration;
   }
   return self;
 }
@@ -75,24 +69,41 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.scrollToEndMandatory = YES;
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
+  signin::ManagedAccountSigninMode mode =
+      self.managedProfileCreationDataSource.mode;
 
   // Set banner.
   self.bannerName = kEnterpriseSigninBannerSymbol;
 
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE);
-  if (self.canShowBrowsingDataMigration && mergeBrowsingDataByDefault) {
-    self.subtitleText = l10n_util::GetNSString(
-        IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION);
-  } else if (self.browsingDataMigrationDisabledByPolicy) {
-    self.subtitleText = l10n_util::GetNSString(
-        IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION);
-  } else if (_multiProfileForceMigration) {
-    self.subtitleText =
-        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_MIGRATION_SUBTITLE);
-  } else {
-    self.subtitleText =
-        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE);
+  switch (mode) {
+    case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
+    case signin::ManagedAccountSigninMode::kAutoMergeDuringFRE:
+    case signin::ManagedAccountSigninMode::kSeparateProfileData:
+      // Explains what the user gets from signing-in their account.
+      self.subtitleText =
+          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE);
+      break;
+    case signin::ManagedAccountSigninMode::kMergeProfileData:
+      // Same as first case, and also tells the user to select what to do with
+      // their data. This should ensure the user is aware that, by default,
+      // local data will become managed.
+      self.subtitleText = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION);
+      break;
+    case signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy:
+      // Same as first case, and also informs the user that they’ll get current
+      // data by signing-out.
+      self.subtitleText = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION);
+      break;
+    case signin::ManagedAccountSigninMode::kInformOfForcedMigration:
+      // Similar to first case, except that the user is not invited to sign-in
+      // as they already are in the managed account.
+      self.subtitleText =
+          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_MIGRATION_SUBTITLE);
+      break;
   }
 
   self.disclaimerText = l10n_util::GetNSStringF(
@@ -101,36 +112,54 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       base::SysNSStringToUTF16(_hostedDomain));
   self.disclaimerURLs = @[ [NSURL URLWithString:kManagedProfileLearnMoreURL] ];
 
-  // If _multiProfileForceMigration is YES, the user cannot refuse the
-  // migration, and the secondary button is hidden.
+  BOOL forcedMigrationDone =
+      mode == signin::ManagedAccountSigninMode::kInformOfForcedMigration;
+  // The migration is already done. This screens informs the user. The user has
+  // thus no option to cancel.
   self.configuration.primaryActionString =
-      _multiProfileForceMigration
+      forcedMigrationDone
           ? l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT)
           : l10n_util::GetNSString(
                 IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
   self.configuration.secondaryActionString =
-      _multiProfileForceMigration
+      forcedMigrationDone
           ? nil
           : l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CANCEL);
 
-  // Maybe add the data migration button
-  if (self.canShowBrowsingDataMigration) {
-    _tableView = [self createTableView];
-    _tableView.accessibilityIdentifier =
-        kBrowsingDataButtonAccessibilityIdentifier;
-    [self.specificContentView addSubview:_tableView];
-    [NSLayoutConstraint activateConstraints:@[
-      [_tableView.topAnchor
-          constraintEqualToAnchor:self.specificContentView.topAnchor],
-      [_tableView.centerXAnchor
-          constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-      [_tableView.widthAnchor
-          constraintEqualToAnchor:self.specificContentView.widthAnchor],
-      [_tableView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.specificContentView
-                                                .bottomAnchor],
-    ]];
-    [self loadBrowsingDataTableModel];
+  switch (mode) {
+    case signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy:
+      // Do not offer selection as it’s disabled.
+      break;
+    case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
+      // Do not offer selection as the data belongs to the currently signed-in
+      // account.
+      break;
+    case signin::ManagedAccountSigninMode::kAutoMergeDuringFRE:
+      // Do not offer selection as the user just installed chrome and there is
+      // no local data to migrate.
+      break;
+    case signin::ManagedAccountSigninMode::kInformOfForcedMigration:
+      // Do not offer selection as migration is already done.
+      break;
+    case signin::ManagedAccountSigninMode::kSeparateProfileData:
+    case signin::ManagedAccountSigninMode::kMergeProfileData:
+      _tableView = [self createTableView];
+      _tableView.accessibilityIdentifier =
+          kBrowsingDataButtonAccessibilityIdentifier;
+      [self.specificContentView addSubview:_tableView];
+      [NSLayoutConstraint activateConstraints:@[
+        [_tableView.topAnchor
+            constraintEqualToAnchor:self.specificContentView.topAnchor],
+        [_tableView.centerXAnchor
+            constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+        [_tableView.widthAnchor
+            constraintEqualToAnchor:self.specificContentView.widthAnchor],
+        [_tableView.bottomAnchor
+            constraintLessThanOrEqualToAnchor:self.specificContentView
+                                                  .bottomAnchor],
+      ]];
+      [self loadBrowsingDataTableModel];
+      break;
   }
 
   // Call super after setting up the strings and others, as required per super
@@ -145,8 +174,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 #pragma mark - ManagedProfileCreationConsumer
 
-- (void)setKeepBrowsingDataSeparate:(BOOL)keepSeparate {
-  _keepBrowsinDataSeparate = keepSeparate;
+- (void)updateUI {
   [self updateSnapshotForItemIdentifier:ItemIdentifierBrowsingData];
 }
 
@@ -154,6 +182,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  // The only cell of this table is the button "Keep data separate ?"; no need
+  // to check the value of the index path.
   [_tableView deselectRowAtIndexPath:indexPath animated:YES];
   [self.managedProfileCreationViewControllerPresentationDelegate
           showMergeBrowsingDataScreen];
@@ -167,11 +197,21 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [[TableViewCellContentConfiguration alloc] init];
   configuration.title = l10n_util::GetNSString(
       IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_LABEL);
-  configuration.trailingText = l10n_util::GetNSString(
-      _keepBrowsinDataSeparate
-          ? IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_YES
-          : IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_NO);
-
+  switch (self.managedProfileCreationDataSource.mode) {
+    case signin::ManagedAccountSigninMode::kSeparateProfileData:
+      configuration.trailingText = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_YES);
+      break;
+    case signin::ManagedAccountSigninMode::kMergeProfileData:
+      configuration.trailingText = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_NO);
+      break;
+    case signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy:
+    case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
+    case signin::ManagedAccountSigninMode::kAutoMergeDuringFRE:
+    case signin::ManagedAccountSigninMode::kInformOfForcedMigration:
+      NOTREACHED();
+  }
   UITableViewCell* cell =
       [TableViewCellContentConfiguration dequeueTableViewCell:_tableView];
 

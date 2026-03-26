@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -70,6 +71,17 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// The results of a view informing the user of the creation of a managed
+// profile.
+enum class ManagedProfileCreationResult {
+  // The user cancelled
+  kCancelled,
+  // Data must be merged
+  kMerge,
+  // Data must be kept separate
+  kSeparate,
+};
 
 bool& FakePolicyResponsesForTesting() {
   static bool instance = false;
@@ -277,10 +289,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                                       identity:(id<SystemIdentity>)identity
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser
-                     skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
-                    mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
-         browsingDataMigrationDisabledByPolicy:
-             (BOOL)browsingDataMigrationDisabledByPolicy {
+                    managedProfileCreationMode:
+                        (signin::ManagedAccountSigninMode)mode {
   // Sign-in related work should be done on regular browser.
   CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
   [self checkNoDialog];
@@ -292,15 +302,11 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     _managedConfirmationScreenCoordinator =
         [[ManagedProfileCreationCoordinator alloc]
-                       initWithBaseViewController:viewController
-                                         identity:identity
-                                     hostedDomain:hostedDomain
-                                          browser:browser
-                        skipBrowsingDataMigration:skipBrowsingDataMigration
-                       mergeBrowsingDataByDefault:mergeBrowsingDataByDefault
-            browsingDataMigrationDisabledByPolicy:
-                browsingDataMigrationDisabledByPolicy
-                       multiProfileForceMigration:NO];
+            initWithBaseViewController:viewController
+                              identity:identity
+                          hostedDomain:hostedDomain
+                               browser:browser
+                                  mode:mode];
     _managedConfirmationScreenCoordinator.delegate = self;
     [_managedConfirmationScreenCoordinator start];
     return;
@@ -335,7 +341,17 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   CHECK(!AreSeparateProfilesForManagedAccountsEnabled());
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
-  [self managedConfirmationDidAccept:accepted browsingDataSeparate:NO];
+  ManagedProfileCreationResult result;
+  if (accepted) {
+    if (AreSeparateProfilesForManagedAccountsEnabled()) {
+      result = ManagedProfileCreationResult::kSeparate;
+    } else {
+      result = ManagedProfileCreationResult::kMerge;
+    }
+  } else {
+    result = ManagedProfileCreationResult::kCancelled;
+  }
+  [self managedConfirmationDoneWithResult:result];
 }
 
 // Called when `_leavingPrimaryAccountConfirmationDialogCoordinator` is done.
@@ -345,31 +361,28 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   [_delegate didAcceptToLeavePrimaryAccount:continueFlow];
 }
 
-// Called when the user accepted to continue to sign-in with a managed account.
-// `accepted` is YES when the user confirmed or NO if the user canceled.
-// If `browsingDataSeparate` is `YES`, the managed account gets signed in to
-// a new empty work profile. This must only be specified if
-// AreSeparateProfilesForManagedAccountsEnabled() is true.
-// If `browsingDataSeparate` is `NO`, the account gets signed in to the
-// current profile. If AreSeparateProfilesForManagedAccountsEnabled() is true,
-// this involves converting the current profile into a work profile.
-- (void)managedConfirmationDidAccept:(BOOL)accepted
-                browsingDataSeparate:(BOOL)browsingDataSeparate {
-  if (!accepted) {
-    base::RecordAction(
-        base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
-                                "ManagedConfirmationDialog_Canceled"));
-    [_delegate didCancelManagedConfirmation];
-    return;
+// Called when the user closed the "Managed profile creation" view.
+- (void)managedConfirmationDoneWithResult:(ManagedProfileCreationResult)result {
+  BOOL separate;
+  switch (result) {
+    case ManagedProfileCreationResult::kCancelled:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
+                                  "ManagedConfirmationDialog_Canceled"));
+      [_delegate didCancelManagedConfirmation];
+      return;
+    case ManagedProfileCreationResult::kMerge:
+      separate = NO;
+      break;
+    case ManagedProfileCreationResult::kSeparate:
+      separate = YES;
+      CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+      break;
   }
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled() ||
-        !browsingDataSeparate);
   base::RecordAction(
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Confirmed"));
-
-  [_delegate didAcceptManagedConfirmationWithBrowsingDataSeparate:
-                 browsingDataSeparate];
+  [_delegate didAcceptManagedConfirmationWithBrowsingDataSeparate:separate];
 }
 
 // Called when separation policies have been fetched, and calls the delegate.
@@ -426,14 +439,32 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 - (void)managedProfileCreationCoordinator:
             (ManagedProfileCreationCoordinator*)coordinator
-                                didAccept:(BOOL)accepted
-                     browsingDataSeparate:(BOOL)browsingDataSeparate {
+                                   result:(std::optional<
+                                              signin::ManagedAccountSigninMode>)
+                                              mode {
   CHECK(!_managedConfirmationAlertCoordinator);
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
   [_managedConfirmationScreenCoordinator stop];
   _managedConfirmationScreenCoordinator = nil;
-  [self managedConfirmationDidAccept:accepted
-                browsingDataSeparate:browsingDataSeparate];
+  ManagedProfileCreationResult result;
+  if (!mode) {
+    result = ManagedProfileCreationResult::kCancelled;
+  } else {
+    switch (*mode) {
+      case signin::ManagedAccountSigninMode::kMergeProfileData:
+      case signin::ManagedAccountSigninMode::kAutoMergeDuringFRE:
+        result = ManagedProfileCreationResult::kMerge;
+        break;
+      case signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy:
+      case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
+      case signin::ManagedAccountSigninMode::kSeparateProfileData:
+        result = ManagedProfileCreationResult::kSeparate;
+        break;
+      case signin::ManagedAccountSigninMode::kInformOfForcedMigration:
+        NOTREACHED();
+    }
+  }
+  [self managedConfirmationDoneWithResult:result];
 }
 
 @end

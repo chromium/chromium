@@ -10,10 +10,23 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+namespace signin {
+enum class ManagedAccountSigninMode;
+}  // namespace signin
+
 // Delegate of Managed profile creation view controller.
 @protocol ManagedProfileCreationViewControllerDelegate <
     PromoStyleViewControllerDelegate>
+
 - (void)showMergeBrowsingDataScreen;
+
+@end
+
+@protocol ManagedProfileCreationDataSource
+
+// Returns the way the view should be presented.
+@property(nonatomic, readonly) signin::ManagedAccountSigninMode mode;
+
 @end
 
 // View controller of managed profile creation screen.
@@ -23,9 +36,11 @@
 @property(nonatomic, weak) id<ManagedProfileCreationViewControllerDelegate>
     managedProfileCreationViewControllerPresentationDelegate;
 
+@property(nonatomic, weak) id<ManagedProfileCreationDataSource>
+    managedProfileCreationDataSource;
+
 - (instancetype)initWithUserEmail:(NSString*)userEmail
                      hostedDomain:(NSString*)hostedDomain
-       multiProfileForceMigration:(BOOL)multiProfileForceMigration
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

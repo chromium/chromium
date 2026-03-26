@@ -47,8 +47,7 @@ class Browser;
         profileSeparationDataMigrationSettings;
 
 // Indicates that the user accepted signing in to a managed account.
-// If run from the FRE, the argument is ignored, and the code behaves as if
-// `browsingDataSeparate` was `NO`. If `browsingDataSeparate` is `YES`, the
+// If `browsingDataSeparate` is `YES`, the
 // managed account gets signed in to a new empty work profile. This must only be
 // specified if AreSeparateProfilesForManagedAccountsEnabled() is true. If
 // `browsingDataSeparate` is `NO`, the account gets signed in to the current

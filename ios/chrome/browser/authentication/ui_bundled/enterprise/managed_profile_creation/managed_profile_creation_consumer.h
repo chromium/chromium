@@ -10,13 +10,8 @@
 // Handles managed profile creation screen UI updates.
 @protocol ManagedProfileCreationConsumer <NSObject>
 
-@property(nonatomic, assign) BOOL mergeBrowsingDataByDefault;
-
-@property(nonatomic, assign) BOOL canShowBrowsingDataMigration;
-
-@property(nonatomic, assign) BOOL browsingDataMigrationDisabledByPolicy;
-
-- (void)setKeepBrowsingDataSeparate:(BOOL)keepSeparate;
+// Informs the UI that the user changed the selection.
+- (void)updateUI;
 
 @end
 

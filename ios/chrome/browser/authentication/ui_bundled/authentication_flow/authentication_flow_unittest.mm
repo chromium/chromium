@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/model/enterprise_policy_test_helper.h"
@@ -314,9 +315,9 @@ class AuthenticationFlowTest : public PlatformTest {
                                                 identity:identity
                                           viewController:view_controller_mock_
                                                  browser:personal_browser_.get()
-                               skipBrowsingDataMigration:YES
-                              mergeBrowsingDataByDefault:NO
-                   browsingDataMigrationDisabledByPolicy:YES])
+                              managedProfileCreationMode:
+                                  signin::ManagedAccountSigninMode::
+                                      kForceSeparateProfileDataByPolicy])
           .andDo(showManagedConfirmationForHostedDomainCallback);
 
       __block ChangeProfileContinuation continuation;
