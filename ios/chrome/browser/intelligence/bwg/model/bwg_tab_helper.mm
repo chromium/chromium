@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -628,14 +629,12 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
   // TODO(crbug.com/461595639): Remove pref checks to fully migrate logic to
   // FET.
   bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
-  bool bwg_promo_shown =
-      profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
   bool should_wait_for_new_user =
       !ShouldSkipBWGPromoNewUserDelay() && IsFirstRunRecent(base::Days(1));
 
   // Show promo if eligible.
   if (IsGeminiNavigationPromoEnabled() && !should_wait_for_new_user &&
-      !floaty_shown && !bwg_promo_shown &&
+      !floaty_shown && !gemini::DidUserSeeGeminiPromo(profile->GetPrefs()) &&
       feature_engagement::TrackerFactory::GetForProfile(profile)
           ->WouldTriggerHelpUI(
               feature_engagement::kIPHiOSGeminiFullscreenPromoFeature)) {

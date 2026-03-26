@@ -16,6 +16,7 @@ class AuthenticationService;
 struct CoreAccountInfo;
 namespace gemini {
 struct IneligibilityReasons;
+enum class FREState;
 }  // namespace gemini
 namespace signin {
 class IdentityManager;
@@ -74,6 +75,9 @@ class BwgService : public KeyedService,
   // Enterprise).
   std::optional<bool> is_disabled_by_gemini_policy_;
 
+  // The last FRE state for Gemini to have been logged this session.
+  std::optional<gemini::FREState> last_logged_fre_state_;
+
   // Checks if the account is eligible for Gemini Enterprise and populates
   // `is_disabled_by_gemini_policy_`.
   void CheckGeminiEnterpriseEligibility();
@@ -83,6 +87,9 @@ class BwgService : public KeyedService,
 
   // Clears the Gemini consent profile pref.
   void ClearConsentPref();
+
+  // Logs the current FRE state whenever deemed necessary.
+  void LogFREState();
 
   // Invoked when the eligibility check is done.
   void OnGeminiEligibilityResult(bool eligible);

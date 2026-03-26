@@ -61,6 +61,10 @@ class BwgServiceTest : public PlatformTest {
         prefs::kGeminiEnabledByPolicy, 0);
     pref_service_->registry()->RegisterIntegerPref(prefs::kGenAiEnabledByPolicy,
                                                    0);
+    pref_service_->registry()->RegisterIntegerPref(
+        prefs::kIOSBWGPromoImpressionCount, 0);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kIOSBwgConsent,
+                                                   false);
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAIHubEligibilityTriggered, false);
 
@@ -320,4 +324,33 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_ManagedAccountRestricted) {
       kGeminiIneligibilityReasonHistogram,
       IOSGeminiIneligibilityReason::kWorkspaceRestricted, 1);
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram, false, 1);
+}
+
+// Tests that LogUserConsentState correctly logs the consent flow state when
+// the profile is eligible.
+TEST_F(BwgServiceTest, LogUserConsentState_LogsWhenEligible) {
+  SignInUnmanagedAccountWithCapability(true);
+  SetWorkspaceEligibility(/*is_disabled=*/false);
+
+  // Explicitly set to no consent.
+  pref_service_.get()->SetBoolean(prefs::kIOSBwgConsent, false);
+  // Triggering IsProfileEligibleForGemini should log the state.
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForGemini());
+
+  histogram_tester_.ExpectUniqueSample(kGeminiFREStateHistogram,
+                                       gemini::FREState::kPending, 1);
+
+  // Changing state and checking eligibility again should log the new state.
+  pref_service_.get()->SetInteger(prefs::kIOSBWGPromoImpressionCount, 1);
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForGemini());
+
+  histogram_tester_.ExpectBucketCount(kGeminiFREStateHistogram,
+                                      gemini::FREState::kStarted, 1);
+
+  pref_service_.get()->SetBoolean(prefs::kIOSBwgConsent, true);
+  EXPECT_TRUE(gemini_service_->IsProfileEligibleForGemini());
+
+  histogram_tester_.ExpectBucketCount(kGeminiFREStateHistogram,
+                                      gemini::FREState::kCompleted, 1);
+  histogram_tester_.ExpectTotalCount(kGeminiFREStateHistogram, 3);
 }

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -144,7 +145,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Did consent to Gemini.
 - (void)didConsentGemini {
-  _prefService->SetBoolean(prefs::kIOSBwgConsent, YES);
+  gemini::UpdateUserConsentPrefs(YES, _prefService);
   if (IsGeminiNavigationPromoEnabled()) {
     _tracker->NotifyEvent(feature_engagement::events::kIOSGeminiConsentGiven);
   }
@@ -156,6 +157,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Did dismiss the Consent UI.
 - (void)didRefuseGeminiConsent {
+  gemini::UpdateUserConsentPrefs(NO, _prefService);
   [_delegate dismissGeminiFlow];
   [self handleFRECompletion:NO];
 }

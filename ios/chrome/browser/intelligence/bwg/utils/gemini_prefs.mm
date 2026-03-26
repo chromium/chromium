@@ -24,4 +24,29 @@ bool GeminiAllowedByEnterprise(PrefService* prefs) {
   return prefs->GetInteger(::prefs::kGeminiEnabledByPolicy) !=
          static_cast<int>(gemini::SettingsPolicy::kNotAllowed);
 }
+
+void ResetGeminiConsent(PrefService* prefs) {
+  UpdateUserConsentPrefs(false, prefs);
+}
+
+FREState CurrentFREState(PrefService* prefs) {
+  if (DidUserSeeGeminiPromo(prefs)) {
+    return DidUserConsentToGemini(prefs) ? FREState::kCompleted
+                                         : FREState::kStarted;
+  }
+
+  return FREState::kPending;
+}
+
+bool DidUserConsentToGemini(PrefService* prefs) {
+  return prefs->GetBoolean(::prefs::kIOSBwgConsent);
+}
+
+bool DidUserSeeGeminiPromo(PrefService* prefs) {
+  return prefs->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
+}
+
+void UpdateUserConsentPrefs(bool value, PrefService* prefs) {
+  prefs->SetBoolean(::prefs::kIOSBwgConsent, value);
+}
 }  // namespace gemini

@@ -14,6 +14,7 @@
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -96,9 +97,12 @@ BwgService::GeminiIneligibilityForProfile() {
           .set_authentication(!authenticated);
   RecordGeminiIneligibilityReasons(ineligibility_reasons);
   RecordGeminiEligibility(is_eligible);
+  if (is_eligible) {
+    LogFREState();
+    return std::nullopt;
+  }
 
-  return is_eligible ? std::optional<gemini::IneligibilityReasons>()
-                     : ineligibility_reasons;
+  return ineligibility_reasons;
 }
 
 #pragma mark - signin::IdentityManager::Observer
@@ -172,6 +176,15 @@ bool BwgService::CanUseGeminiModelExecution(const AccountInfo& account_info) {
 
 void BwgService::ClearConsentPref() {
   pref_service_->ClearPref(prefs::kIOSBwgConsent);
+}
+
+void BwgService::LogFREState() {
+  gemini::FREState state = gemini::CurrentFREState(pref_service_);
+  if (!last_logged_fre_state_.has_value() ||
+      last_logged_fre_state_.value() != state) {
+    RecordGeminiFREState(state);
+    last_logged_fre_state_ = state;
+  }
 }
 
 void BwgService::OnGeminiEligibilityResult(bool eligible) {

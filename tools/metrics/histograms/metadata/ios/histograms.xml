@@ -2613,6 +2613,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.FRE.State" enum="IOSGeminiFREState"
+    expires_after="2027-02-03">
+  <owner>fbeauchamp@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the user's progression for the Gemini FRE. Logged once per Chrome
+    session or whenever the state is updated during the session.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.ImageActionButton"
     enum="IOSGeminiImageActionButtonType" expires_after="2027-02-02">
   <owner>joepeplowski@google.com</owner>

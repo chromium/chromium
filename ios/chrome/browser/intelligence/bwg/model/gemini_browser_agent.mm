@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -409,7 +410,7 @@ bool GeminiBrowserAgent::HasCompletedFirstRun() {
   // If we are forcing the FRE, reset the consent pref and return false.
   if (BWGPromoConsentVariationsParam() ==
       BWGPromoConsentVariations::kForceFRE) {
-    pref_service->SetBoolean(prefs::kIOSBwgConsent, false);
+    gemini::ResetGeminiConsent(pref_service);
     return false;
   }
 

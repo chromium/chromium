@@ -102,6 +102,8 @@ const char kStartupTimeWithFREHistogram[] = "IOS.Gemini.StartupTime.FirstRun";
 
 const char kStartupTimeNoFREHistogram[] = "IOS.Gemini.StartupTime.NotFirstRun";
 
+const char kGeminiFREStateHistogram[] = "IOS.Gemini.FRE.State";
+
 const char kGeminiSessionCancellationHistogram[] =
     "IOS.Gemini.Session.CancellationReason";
 
@@ -228,6 +230,10 @@ void RecordGeminiPageAvailability(IOSGeminiPageAvailability reason) {
 
 void RecordGeminiEligibility(bool eligible) {
   base::UmaHistogramBoolean(kEligibilityHistogram, eligible);
+}
+
+void RecordGeminiFREState(gemini::FREState state) {
+  base::UmaHistogramEnumeration(kGeminiFREStateHistogram, state);
 }
 
 void RecordGeminiIneligibilityReasons(gemini::IneligibilityReasons reasons) {

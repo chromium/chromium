@@ -866,6 +866,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFREAction) -->
 
+<!-- LINT.IfChange(IOSGeminiFREState) -->
+
+<enum name="IOSGeminiFREState">
+  <summary>Current user state for the Gemini FRE.</summary>
+  <int value="0" label="Pending"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Completed"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:FREState) -->
+
 <!-- LINT.IfChange(IOSGeminiGoToOSSettingsAlertResult) -->
 
 <enum name="IOSGeminiGoToOSSettingsAlertResult">

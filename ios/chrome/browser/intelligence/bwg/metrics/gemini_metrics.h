@@ -19,6 +19,7 @@ enum class EntryPoint;
 enum class FloatyUpdateSource;
 enum class ImageActionButtonType;
 enum class InputPlateAttachmentOption;
+enum class FREState;
 // Encapsulates a set of ineligibility reasons computed during a single Gemini
 // eligibility check.
 struct IneligibilityReasons {
@@ -42,6 +43,9 @@ enum class GeminiViewState;
 
 // UMA histogram key for IOS.Gemini.Eligibility.
 extern const char kEligibilityHistogram[];
+
+// UMA histogram key for IOS.Gemini.FRE.State.
+extern const char kGeminiFREStateHistogram[];
 
 // UMA histogram key for IOS.Gemini.EntryPoint.
 extern const char kEntryPointHistogram[];
@@ -479,6 +483,9 @@ void RecordFloatyMinimizedTime(base::TimeTicks elapsed_minimized_floaty_time);
 
 // Records whether a Gemini eligibility check was successful.
 void RecordGeminiEligibility(bool eligible);
+
+// Records the FRE state for Gemini.
+void RecordGeminiFREState(gemini::FREState state);
 
 // Records all of the Gemini ineligibility reasons. One record will be sent at
 // most per associated value of IOSGeminiIneligibilityReason.
