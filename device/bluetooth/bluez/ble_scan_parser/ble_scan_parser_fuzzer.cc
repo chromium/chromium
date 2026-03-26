@@ -4,15 +4,13 @@
 
 #include "device/bluetooth/bluez/ble_scan_parser/ble_scan_parser.h"
 
-#include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // Safety: `data` is guaranteed to be at least `size` bytes long.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   // Check that the parser does not crash or do anything surprising.
-  (void)bluez::ParseBleScan(data_span);
+  (void)bluez::ParseBleScan(data);
   return 0;
 }
