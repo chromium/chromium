@@ -1054,7 +1054,8 @@ const base::FeatureParam<base::TimeDelta> kIOSSoftLockBackgroundThreshold{
 BASE_FEATURE(kAimCobrowse, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAimCobrowseEnabled() {
-  return base::FeatureList::IsEnabled(kAimCobrowse);
+  return IsAssistantContainerEnabled() ||
+         base::FeatureList::IsEnabled(kAimCobrowse);
 }
 
 BASE_FEATURE(kDisableU18FeedbackIos, base::FEATURE_DISABLED_BY_DEFAULT);
