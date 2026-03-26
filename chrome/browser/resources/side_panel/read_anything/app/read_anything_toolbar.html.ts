@@ -179,7 +179,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   <cr-lazy-render-lit id="fontSizeMenu" .template='${() => html`
   <cr-action-menu @keydown="${this.onFontSizeMenuKeydown_}"
       accessibility-label="$i18n{fontSizeTitle}"
-      role-description="$i18n{menu}">
+      role-description="$i18n{menu}"
+      class="${this.isImmersiveEnabled_ ? 'immersive-font-size-menu' : ''}">
     <cr-icon-button class="font-size" role="menuitem"
         id="font-size-decrease"
         aria-label="$i18n{decreaseFontSizeLabel}"

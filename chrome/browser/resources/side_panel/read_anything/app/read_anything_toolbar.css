@@ -220,3 +220,7 @@
 #more-options-menu-dialog::part(dialog) {
   min-width: 92px;
 }
+
+.immersive-font-size-menu::part(dialog) {
+  border-radius: var(--cornerRadii-medium-small, 12px);
+}
