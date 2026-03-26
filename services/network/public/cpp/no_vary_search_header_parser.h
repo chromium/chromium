@@ -29,6 +29,9 @@ mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
     const net::HttpResponseHeaders& headers);
 
 COMPONENT_EXPORT(NETWORK_CPP)
+bool NoVarySearchHasBooleanParamsMember(std::string_view header_value);
+
+COMPONENT_EXPORT(NETWORK_CPP)
 std::optional<std::string> GetNoVarySearchConsoleMessage(
     const mojom::NoVarySearchParseError& error,
     const GURL& prefetched_url);

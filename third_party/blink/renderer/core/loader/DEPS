@@ -37,6 +37,7 @@ include_rules = [
   "+base/no_destructor.h",
   "+base/strings/utf_string_conversions.h",
   "+services/network/public/cpp/client_hints.h",
+  "+services/network/public/cpp/no_vary_search_header_parser.h",
   "+services/network/public/cpp/shared_url_loader_factory.h",
   "+services/network/public/cpp/wrapper_shared_url_loader_factory.h",
   "+url/url_features.h",

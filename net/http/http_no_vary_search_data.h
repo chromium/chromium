@@ -79,6 +79,10 @@ class NET_EXPORT_PRIVATE HttpNoVarySearchData {
                         HttpNoVarySearchData::ParseErrorEnum>
   ParseFromHeaders(const HttpResponseHeaders& response_headers);
 
+  // Returns true if the header value contains "params" with a boolean value.
+  // This form is going to be deprecated.
+  static bool HasBooleanParamsMember(std::string_view header_value);
+
   bool operator==(const HttpNoVarySearchData& rhs) const;
 
   // HttpNoVarySearchData objects can be used as a key in a map.

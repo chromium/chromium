@@ -51,6 +51,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/no_vary_search_header_parser.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -842,6 +843,19 @@ void ResourceLoader::DidReceiveResponseInternal(
       response.HttpHeaderField(http_names::kSecureSessionRegistration)) {
     fetcher_->GetUseCounter().CountUse(
         WebFeature::kDeviceBoundSessionRegistered);
+  }
+
+  if (const AtomicString& value =
+          response.HttpHeaderField(http_names::kNoVarySearch);
+      !value.IsNull()) {
+    // Structured headers are actually required to be ASCII, but converting a
+    // String to Latin1() is cheaper and the structured headers parser will do
+    // the ASCII check for us.
+    if (value.contains("params") &&
+        network::NoVarySearchHasBooleanParamsMember(value.Latin1())) {
+      fetcher_->GetUseCounter().CountUse(
+          WebFeature::kNoVarySearchWithBooleanParams);
+    }
   }
 
   switch (response.DeviceBoundSessionUsage()) {

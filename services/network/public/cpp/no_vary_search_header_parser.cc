@@ -82,6 +82,10 @@ mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
   return ToMojom(net::HttpNoVarySearchData::ParseFromHeaders(headers));
 }
 
+bool NoVarySearchHasBooleanParamsMember(std::string_view header_value) {
+  return net::HttpNoVarySearchData::HasBooleanParamsMember(header_value);
+}
+
 std::optional<std::string> GetNoVarySearchConsoleMessage(
     const mojom::NoVarySearchParseError& error,
     const GURL& preloaded_url) {

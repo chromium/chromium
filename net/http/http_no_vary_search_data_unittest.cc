@@ -1416,6 +1416,19 @@ TEST(HttpNoVarySearchEmptyPickleTest, ReadEmptyPickle) {
   EXPECT_EQ(ReadValueFromPickle<HttpNoVarySearchData>(pickle), std::nullopt);
 }
 
+TEST(HttpNoVarySearchDataTest, HasBooleanParamsMember) {
+  EXPECT_TRUE(HttpNoVarySearchData::HasBooleanParamsMember("params"));
+  EXPECT_TRUE(HttpNoVarySearchData::HasBooleanParamsMember("params=?1"));
+  EXPECT_TRUE(HttpNoVarySearchData::HasBooleanParamsMember("params=?0"));
+  EXPECT_TRUE(
+      HttpNoVarySearchData::HasBooleanParamsMember("key-order, params"));
+  EXPECT_FALSE(HttpNoVarySearchData::HasBooleanParamsMember("key-order"));
+  EXPECT_FALSE(HttpNoVarySearchData::HasBooleanParamsMember(R"(params=("a"))"));
+  EXPECT_FALSE(HttpNoVarySearchData::HasBooleanParamsMember(R"(params="a")"));
+  EXPECT_FALSE(
+      HttpNoVarySearchData::HasBooleanParamsMember("not a dictionary"));
+}
+
 TEST(HttpNoVarySearchDataTest, AbslHashValue) {
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
       // Two identical objects.

@@ -179,6 +179,26 @@ HttpNoVarySearchData::ParseFromHeaders(
   return ParseFromHeaderValue(*normalized_header);
 }
 
+// static
+bool HttpNoVarySearchData::HasBooleanParamsMember(
+    std::string_view header_value) {
+  const auto dict = structured_headers::ParseDictionary(header_value);
+  if (!dict.has_value()) {
+    return false;
+  }
+  auto it = dict->find("params");
+  if (it == dict->end()) {
+    return false;
+  }
+  const auto& member = it->second;
+  if (member.member_is_inner_list) {
+    return false;
+  }
+  // This is guaranteed by the structured headers parser API.
+  CHECK_EQ(member.member.size(), 1u);
+  return member.member[0].item.is_boolean();
+}
+
 bool HttpNoVarySearchData::operator==(const HttpNoVarySearchData& rhs) const =
     default;
 std::strong_ordering HttpNoVarySearchData::operator<=>(
