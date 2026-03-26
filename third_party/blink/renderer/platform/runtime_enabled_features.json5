@@ -4158,10 +4158,9 @@
     },
     {
       // Enable PaintOffsetTranslation for all composited LayoutObjects.
-      // TODO(crbug.com/495746269): Enable this flag after fixing the
-      // regression.
+      // Killswitch M148.
       name: "PaintOffsetTranslationForComposited",
-      status: "test",
+      status: "stable",
     },
     {
       name: "PaintTimingMixin",
