@@ -4198,7 +4198,7 @@ failing to fetch the updates which puts users' security at risk. -->
 <histogram
     name="SafeBrowsing.V8Optimizer.DeferNavigationToComputeSiteFamiliarity"
     enum="BooleanOccurred" expires_after="2026-09-06">
-  <owner>pkotwicz@google.com</owner>
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded during NavigationRequest::OnResponseStarted(). Records whether the
@@ -4209,8 +4209,8 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram
     name="SafeBrowsing.V8Optimizer.DifferentRendererProcess.SameSite.IframeState"
-    enum="V8IframeState" expires_after="2026-04-01">
-  <owner>pkotwicz@google.com</owner>
+    enum="V8IframeState" expires_after="2026-09-06">
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded when a navigation finishes. Records the v8-optimizer state of the
@@ -4225,7 +4225,7 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram name="SafeBrowsing.V8Optimizer.IframeState" enum="V8IframeState"
     expires_after="2026-09-06">
-  <owner>pkotwicz@google.com</owner>
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded when a navigation finishes. Records the v8-optimizer state of the
