@@ -8,8 +8,6 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_IOS_INSPECT_HTML" file="inspect/inspect.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_IOS_INSPECT_JS" file="inspect/inspect.js" type="BINDATA" />
       <include name="IDR_IOS_ON_DEVICE_LLM_INTERNALS_HTML" file="../../browser/optimization_guide/resources/on_device_llm_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_IOS_OMAHA_HTML" file="omaha/omaha.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_IOS_OMAHA_JS" file="omaha/omaha.js" type="BINDATA" />

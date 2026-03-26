@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+mojom("mojom") {
+  sources = [ "inspect.mojom" ]
+  webui_module_path = "/"
+}
+
+build_webui("build") {
+  grd_prefix = "inspect"
+  static_files = [
+    "inspect.html",
+    "inspect.css",
+  ]
+  ts_files = [ "inspect.ts" ]
+  ts_deps = [
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  mojo_files_deps = [ ":mojom_ts__generator" ]
+  mojo_files = [ "$target_gen_dir/inspect.mojom-webui.ts" ]
+  grit_output_dir = "$root_gen_dir/ios/chrome"
+}
+
+source_set("inspect") {
+  sources = [
+    "inspect_ui.h",
+    "inspect_ui.mm",
+  ]
+  public_deps = [ ":mojom" ]
+  deps = [
+    ":resources",
+    "//base",
+    "//ios/chrome/app/resources:ios_resources",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/web/model/java_script_console",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/webui",
+  ]
+}

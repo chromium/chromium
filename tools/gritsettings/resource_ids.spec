@@ -1301,6 +1301,11 @@
     "includes": [850],
   },
 
+  "<(SHARED_INTERMEDIATE_DIR)/ios/chrome/browser/webui/ui_bundled/inspect/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [860],
+  },
+
   # Chromium strings and Google Chrome strings must start at the same id.
   # We only use one file depending on whether we're building Chromium or
   # Google Chrome.

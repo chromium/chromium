@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8"/>
 
-  <!-- TODO(crbug.com/41173939): Remove this once injected by web. -->
-  <script src="chrome://resources/js/ios/web_ui.js"></script>
-
   <script src="chrome://resources/js/load_time_data_deprecated.js"></script>
-  <script src="chrome://resources/js/util_deprecated.js"></script>
   <script src="strings.js"></script>
-  <script src="inspect.js"></script>
+  <script type="module" src="inspect.js"></script>
 
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="inspect.css">
+
+  <!-- TODO(crbug.com/41173939): Remove this once injected by web. -->
+  <script src="chrome://resources/js/ios/web_ui.js"></script>
+  <script src="chrome://resources/js/ios/mojo_api.js"></script>
 
   <title>JavaScript Console</title>
 </head>
