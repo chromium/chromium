@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -208,14 +207,14 @@ class ContextualTasksLensInteractionBrowserTestBase
   }
 
   content::WebContents* GetContextualTasksWebContents() {
-    auto* contextual_tasks_coordinator =
-        contextual_tasks::ContextualTasksSidePanelCoordinator::From(
+    auto* contextual_tasks_controller =
+        contextual_tasks::ContextualTasksPanelController::From(
             GetBrowserWindowInterface());
-    if (!contextual_tasks_coordinator ||
-        !contextual_tasks_coordinator->IsPanelOpenForContextualTask()) {
+    if (!contextual_tasks_controller ||
+        !contextual_tasks_controller->IsPanelOpenForContextualTask()) {
       return nullptr;
     }
-    return contextual_tasks_coordinator->GetActiveWebContents();
+    return contextual_tasks_controller->GetActiveWebContents();
   }
 
   content::WebContents* GetContextualTasksInnerWebContents() {

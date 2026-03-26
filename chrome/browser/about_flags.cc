@@ -4604,7 +4604,7 @@ const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
      "button",
      kArm7FullBundleNoAutoAddedContextInSidePanelWithCloseToExpandButton,
      nullptr}};
-// LINT.ThenChange(chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.cc)
+// LINT.ThenChange(chrome/browser/contextual_tasks/contextual_tasks_panel_controller_impl.cc)
 
 const FeatureEntry::FeatureParam kTaskScopedSidePanel[] = {
     {"ContextualTasksTaskScopedSidePanel", "true"}};
