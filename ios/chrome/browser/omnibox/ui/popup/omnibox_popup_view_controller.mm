@@ -316,7 +316,11 @@ const CGFloat kCloseButtonPadding = 16.0f;
   // Prevent update when the frame is invalid, can happen during animation:
   // crbug.com/479184311.
   if (!self.omniboxGuide || CGRectIsEmpty(self.tableView.frame) ||
-      CGRectIsInfinite(self.tableView.frame)) {
+      CGRectIsInfinite(self.tableView.frame) ||
+      isnan(self.tableView.frame.size.width) ||
+      isnan(self.tableView.frame.size.height) ||
+      isnan(self.tableView.frame.origin.x) ||
+      isnan(self.tableView.frame.origin.y)) {
     return;
   }
 
