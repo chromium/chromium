@@ -2,17 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import unittest
-
-import mock  # type: ignore
 import os
 import shutil
 import tempfile
+import unittest
 import xml.dom.minidom
 
+import mock  # type: ignore
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.expand_owners as expand_owners
+
 
 def _GetToolsParentDir():
   """Returns an absolute path to the the tools directory's parent directory.
@@ -83,8 +83,8 @@ class ExpandOwnersTest(unittest.TestCase):
 
   def testExpandOwnersUsesMetadataOverOwners(self):
     """Checks that DIR_METADATA is used if available"""
-    with open(os.path.join(self.temp_dir, 'DIR_METADATA'), "w+") as md:
-      md.write("\n".join([
+    with open(os.path.join(self.temp_dir, 'DIR_METADATA'), 'w+') as md:
+      md.write('\n'.join([
           'monorail {', 'component: "Bees"', '}', 'buganizer_public {',
           'component_id:123456', '}'
       ]))

@@ -559,7 +559,7 @@ def main() -> None:
     sys.exit(1)
 
   if not _git_cmd_available(['gs', 'fake_search_term']):
-    logging.error("`git gs` is not available in this environment.")
+    logging.error('`git gs` is not available in this environment.')
     sys.exit(1)
 
   location_map = _read_chromium_histograms()

@@ -4,7 +4,7 @@
 
 """Functions for populating enums with ukm events."""
 
-from collections import namedtuple
+import collections
 import xml.dom.minidom
 
 import setup_modules  # pylint: disable=unused-import
@@ -12,7 +12,7 @@ import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
-EventDetails = namedtuple("EventDetails", "name hash is_obsolete")
+EventDetails = collections.namedtuple('EventDetails', 'name hash is_obsolete')
 
 
 def _GetEventDetails(event):
@@ -28,7 +28,7 @@ def _GetEventDetails(event):
   name = event.getAttribute('name')
   # The value is UKM event name hash truncated to 31 bits. This is recorded in
   # https://cs.chromium.org/chromium/src/components/ukm/ukm_recorder_impl.cc?q=LogEventHashasUmaHistogram
-  hash = codegen_shared.HashName(name) & 0x7fffffff
+  name_hash = codegen_shared.HashName(name) & 0x7fffffff
 
   def _HasDirectObsoleteTag(node):
     return any(
@@ -43,7 +43,7 @@ def _GetEventDetails(event):
       for metric in event.getElementsByTagName('metric'))
 
   return EventDetails(name=name,
-                      hash=hash,
+                      hash=name_hash,
                       is_obsolete=is_event_obsolete or are_all_metrics_obsolete)
 
 

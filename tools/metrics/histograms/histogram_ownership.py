@@ -28,7 +28,7 @@ def PrintOwners(root):
     if node.tag == 'histograms':
       histograms = node
       break
-  assert histograms != None
+  assert histograms
 
   for histogram in histograms.getchildren():
     if histogram.tag != 'histogram':
@@ -69,7 +69,7 @@ def main():
     rel_path = path_util.GetInputFile(
         os.path.join('tools', 'metrics', 'histograms', sys.argv[1]))
     if not os.path.exists(rel_path):
-      raise ValueError("A histograms.xml file does not exist in %s" % rel_path)
+      raise ValueError('A histograms.xml file does not exist in %s' % rel_path)
 
     tree = ET.parse(rel_path)
     root = tree.getroot()

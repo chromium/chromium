@@ -19,8 +19,8 @@ from chromium_src.tools.metrics.histograms.update_histogram_enum import UpdateHi
 
 XML_FILE = 'tools/metrics/histograms/metadata/navigation/enums.xml'
 ENUM_NAME = 'WebSchedulerTrackedFeature'
-SOUCRE_FILE = 'third_party/blink/public/mojom/scheduler/' \
-  'web_scheduler_tracked_feature.mojom'
+SOUCRE_FILE = ('third_party/blink/public/mojom/scheduler/' +
+               'web_scheduler_tracked_feature.mojom')
 START_MARKER = r'^enum WebSchedulerTrackedFeature \{'
 END_MARKER = r'^\};'
 SCRIPT = os.path.basename(__file__)

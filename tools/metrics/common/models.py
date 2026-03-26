@@ -14,9 +14,9 @@ those files, or convert content back into a canonicalized version of the file.
 
 import abc
 import re
-import xml.etree.ElementTree as ET
-from typing import Callable, Iterable, Tuple, List, Dict, Optional, Set, Union
+from typing import Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
 from xml.dom import minidom
+import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -44,7 +44,7 @@ def IsTrailingComment(node: minidom.Comment) -> bool:
   # If all of the next siblings of this node are text nodes or comment nodes,
   # then we treat it as a trailing comment.
   only_text_next_sibling = True
-  curr_node = node
+  curr_node: Optional[minidom.Node] = node
   while curr_node := curr_node.nextSibling:
     if curr_node.nodeType not in (minidom.Element.TEXT_NODE,
                                   minidom.Element.COMMENT_NODE):
@@ -147,7 +147,7 @@ class NodeType:
   def __init__(self,
                tag: str,
                indent: bool = True,
-               extra_newlines: bool = None,
+               extra_newlines: Optional[Tuple[int, int, int]] = None,
                single_line: bool = False,
                alphabetization: Optional[List[Tuple[str, KeyFunc]]] = None):
     self.tag = tag
@@ -267,7 +267,7 @@ class TextNodeType(NodeType):
       The object representation of the node.
     """
 
-    obj = {}
+    obj: XMLObjectType = {}
     obj[PRECEDING_COMMENT_KEY] = GetPrecedingCommentsForNode(node)
     obj[TRAILING_COMMENT_KEY] = GetTrailingCommentsForNode(node)
 
@@ -279,7 +279,7 @@ class TextNodeType(NodeType):
     # TextNode shouldn't have any child.
     unexpected = GetUnexpectedChildren(node, set())
     if unexpected:
-      raise ValueError("Unexpected children: %s in <%s> node" %
+      raise ValueError('Unexpected children: %s in <%s> node' %
                        (','.join(unexpected), self.tag))
 
     return obj
@@ -359,10 +359,11 @@ class ObjectNodeType(NodeType):
 
   def __init__(self,
                tag: str,
-               attributes: Optional[List[Tuple[str, type, Optional[str]]]] = None,
+               attributes: Optional[List[Tuple[str, type,
+                                               Optional[str]]]] = None,
                required_attributes: Optional[List[str]] = None,
                children: Optional[List[ChildType]] = None,
-               text_attribute: Optional[bool] = None,
+               text_attribute: Optional[str] = None,
                **kwargs):
     NodeType.__init__(self, tag, **kwargs)
     self.attributes = attributes or []
@@ -387,16 +388,17 @@ class ObjectNodeType(NodeType):
     Raises:
       ValueError: The node is missing required children.
     """
-    obj = {}
+    obj: XMLObjectType = {}
     obj[PRECEDING_COMMENT_KEY] = GetPrecedingCommentsForNode(node)
     obj[TRAILING_COMMENT_KEY] = GetTrailingCommentsForNode(node)
 
     for attr, attr_type, attr_re in self.attributes:
       if node.hasAttribute(attr):
         obj[attr] = attr_type(node.getAttribute(attr))
+
       if attr_re is not None:
         attr_val = obj.get(attr, '')
-        if not re.match(attr_re, attr_val):
+        if not isinstance(attr_val, str) or not re.match(attr_re, attr_val):
           raise ValueError('%s "%s" does not match regex "%s"' %
                            (attr, attr_val, attr_re))
 
@@ -410,22 +412,21 @@ class ObjectNodeType(NodeType):
                                    if child.nodeValue else '')
       child = child.nextSibling
 
-    # This prevents setting a None key with empty string value
-    if obj[self.text_attribute] == '':
+    # This prevents setting a None key with empty string value.
+    if not obj[self.text_attribute]:
       del obj[self.text_attribute]
 
     for child in self.children:
       nodes = GetChildrenByTag(node, child.node_type.tag)
       if child.multiple:
-        obj[child.attr] = [
-            child.node_type.Unmarshall(n) for n in nodes]
+        obj[child.attr] = [child.node_type.Unmarshall(n) for n in nodes]
       elif nodes:
         obj[child.attr] = child.node_type.Unmarshall(nodes[0])
 
     unexpected = GetUnexpectedChildren(
         node, set([child.node_type.tag for child in self.children]))
     if unexpected:
-      raise ValueError("Unexpected children: %s in <%s> node" %
+      raise ValueError('Unexpected children: %s in <%s> node' %
                        (','.join(unexpected), self.tag))
 
     return obj

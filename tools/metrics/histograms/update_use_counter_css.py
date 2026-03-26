@@ -18,8 +18,8 @@ import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 
-USE_COUNTER_MOJOM_PATH = 'third_party/blink/public/mojom/use_counter/'\
-                         'metrics/css_property_id.mojom'
+USE_COUNTER_MOJOM_PATH = (
+    'third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom')
 
 
 def EnumToCssProperty(enum_name):
@@ -28,8 +28,8 @@ def EnumToCssProperty(enum_name):
   # uppercase letters, such as in "ZIndex" that need to convert to "z-index".
 
   # Special case total page measured for backward compat.
-  if enum_name == "TotalPagesMeasured":
-    return "Total Pages Measured"
+  if enum_name == 'TotalPagesMeasured':
+    return 'Total Pages Measured'
 
   return re.sub(r'([a-zA-Z])([A-Z])', r'\1-\2', enum_name).lower()
 

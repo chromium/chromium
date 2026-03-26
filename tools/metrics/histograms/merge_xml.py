@@ -17,6 +17,7 @@ import chromium_src.tools.metrics.histograms.histogram_configuration_model as hi
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.populate_enums as populate_enums
 
+
 def GetElementsByTagName(trees, tag, depth=2):
   """Gets all elements with the specified tag from a set of DOM trees.
 

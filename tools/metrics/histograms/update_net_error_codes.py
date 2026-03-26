@@ -25,6 +25,7 @@ NET_ERROR_LIST_PATH = 'net/base/net_error_list.h'
 POSITIVE_ERROR_REGEX = re.compile(r'^NET_ERROR\(([\w]+), -([0-9]+)\)')
 NEGATIVE_ERROR_REGEX = re.compile(r'^NET_ERROR\(([\w]+), (-[0-9]+)\)')
 
+
 def ReadNetErrorCodes(filename, error_regex):
   """Reads in values from net_error_list.h, returning a dictionary mapping
   error code to error name.

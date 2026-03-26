@@ -3,14 +3,15 @@
 # found in the LICENSE file.
 
 import logging
-from parameterized import parameterized  # type: ignore # pylint: disable=import-error
 import unittest
 import xml.dom.minidom
 
+from parameterized import parameterized  # type: ignore # pylint: disable=import-error
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
+
 
 TEST_HISTOGRAM_WITH_TOKENS = """
 <histogram-configuration>
@@ -196,44 +197,44 @@ class ExtractHistogramsTest(unittest.TestCase):
 """
     chrome_histogram_correct_expiry_date = chrome_histogram_pattern.format(
         'expires_after="2211-11-22"')
-    _, errors = extract_histograms.ExtractHistogramsFromDom(
+    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_correct_expiry_date))
-    self.assertFalse(errors)
+    self.assertFalse(had_errors)
 
     chrome_histogram_wrong_expiry_date_format = chrome_histogram_pattern.format(
         'expires_after="2211/11/22"')
-    _, errors = extract_histograms.ExtractHistogramsFromDom(
+    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_wrong_expiry_date_format))
-    self.assertTrue(errors)
+    self.assertTrue(had_errors)
 
     chrome_histogram_wrong_expiry_date_value = chrome_histogram_pattern.format(
         'expires_after="2211-22-11"')
-    _, errors = extract_histograms.ExtractHistogramsFromDom(
+    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_wrong_expiry_date_value))
-    self.assertTrue(errors)
+    self.assertTrue(had_errors)
 
     chrome_histogram_correct_expiry_milestone = chrome_histogram_pattern.format(
         'expires_after="M22"')
-    _, errors = extract_histograms.ExtractHistogramsFromDom(
+    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_correct_expiry_milestone))
-    self.assertFalse(errors)
+    self.assertFalse(had_errors)
 
     chrome_histogram_wrong_expiry_milestone = chrome_histogram_pattern.format(
         'expires_after="22"')
-    _, errors = extract_histograms.ExtractHistogramsFromDom(
+    _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_wrong_expiry_milestone))
-    self.assertTrue(errors)
+    self.assertTrue(had_errors)
 
     chrome_histogram_wrong_expiry_milestone = chrome_histogram_pattern.format(
         'expires_after="MM22"')
     _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_wrong_expiry_milestone))
-    self.assertTrue(errors)
+    self.assertTrue(had_errors)
 
     chrome_histogram_no_expiry = chrome_histogram_pattern.format('')
     _, had_errors = extract_histograms.ExtractHistogramsFromDom(
         xml.dom.minidom.parseString(chrome_histogram_no_expiry))
-    self.assertTrue(errors)
+    self.assertTrue(had_errors)
 
   def testExpiryDateExtraction(self):
     chrome_histogram_pattern = """<histogram-configuration>
@@ -762,6 +763,6 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertNotIn('improvement', histograms_dict[histogram_name])
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   logging.basicConfig(level=logging.ERROR + 1)
   unittest.main()

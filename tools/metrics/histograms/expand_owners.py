@@ -6,9 +6,9 @@
 
 import json
 import os
+import re
 import subprocess
 import sys
-import re
 
 import setup_modules  # pylint: disable=unused-import
 

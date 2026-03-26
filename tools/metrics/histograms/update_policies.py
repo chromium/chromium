@@ -18,13 +18,14 @@ from xml.dom import minidom
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.third_party.pyyaml as pyyaml
-import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 import chromium_src.tools.metrics.common.diff_util as diff_util
+import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
 
 ENUMS_PATH = 'tools/metrics/histograms/metadata/enterprise/enums.xml'
 POLICY_LIST_PATH = 'components/policy/resources/templates/policies.yaml'
 POLICIES_ENUM_NAME = 'EnterprisePolicies'
+
 
 class UserError(Exception):
   def __init__(self, message):

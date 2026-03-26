@@ -23,8 +23,8 @@ if __name__ == '__main__':
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  source_file = 'services/network/public/mojom/permissions_policy/' \
-                'permissions_policy_feature.mojom'
+  source_file = ('services/network/public/mojom/permissions_policy/' +
+                 'permissions_policy_feature.mojom')
   UpdateHistogramEnum('tools/metrics/histograms/metadata/blink/enums.xml',
                       histogram_enum_name='FeaturePolicyFeature',
                       source_enum_path=source_file,

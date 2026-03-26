@@ -207,7 +207,6 @@ class MergeXmlTest(unittest.TestCase):
 """
     self.assertMultiLineEqual(expected_merged_xml.strip(), merged.strip())
 
-
   def testMergeFiles_InvalidPrimaryOwner(self):
     histograms_without_valid_first_owner = xml.dom.minidom.parseString("""
 <histogram-configuration>

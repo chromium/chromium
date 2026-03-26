@@ -7,23 +7,22 @@
 The function PrettyPrintXml will be used for formatting both histograms.xml
 and actions.xml.
 """
+
+import abc
+import collections
 import dataclasses
 import itertools
 import logging
 import sys
 import textwrap
-import collections
-
-from abc import abstractmethod
-from typing import (Any, Iterable, Iterator, Mapping, Sequence, Protocol, List,
-                    Tuple, Optional, OrderedDict, cast)
+from typing import Any, cast, Iterable, Iterator, List, Mapping, Optional, OrderedDict, Protocol, Sequence, Tuple
 from xml.dom import minidom
-
 import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.etree_util as etree_util
+
 
 WRAP_COLUMN = 80
 
@@ -42,7 +41,7 @@ LevelIDsType = Tuple[int, ...]
 
 class Comparable(Protocol):
 
-  @abstractmethod
+  @abc.abstractmethod
   def __lt__(self, other: Any) -> bool:
     pass
 
@@ -470,7 +469,7 @@ class XmlStyle(object):
   def _PrettyPrintText(self, text, indent):
     """Pretty print an element."""
     if not text.strip():
-      return ""
+      return ''
 
     self.wrapper.initial_indent = ' ' * indent
     self.wrapper.subsequent_indent = ' ' * indent

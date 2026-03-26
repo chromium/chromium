@@ -11,18 +11,15 @@ output for correctness.
 
 from __future__ import print_function
 
-import optparse
 import os
-import sys
 
 import setup_modules  # pylint: disable=unused-import
 
-from chromium_src.tools.metrics.histograms.update_histogram_enum import ReadHistogramValues
 from chromium_src.tools.metrics.histograms.update_histogram_enum import UpdateHistogramEnum
 
 if __name__ == '__main__':
-  web_feature_source = \
-    'third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom'
+  web_feature_source = (
+      'third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom')
 
   START_MARKER = '^enum WebFeature {'
   END_MARKER = '^kNumberOfFeatures'
@@ -35,8 +32,8 @@ if __name__ == '__main__':
                       strip_k_prefix=True,
                       calling_script=os.path.basename(__file__))
 
-  webdx_feature_source = \
-      'third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom'
+  webdx_feature_source = (
+      'third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom')
   WEBDX_START_MARKER = '^enum WebDXFeature {'
 
   UpdateHistogramEnum('tools/metrics/histograms/metadata/blink/enums.xml',

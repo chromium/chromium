@@ -3,12 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-import re
-import sys
-import hashlib
 import ctypes
-
+import hashlib
+import os
 from xml.dom import minidom
 
 import setup_modules  # pylint: disable=unused-import
@@ -16,6 +13,7 @@ import setup_modules  # pylint: disable=unused-import
 import chromium_src.third_party.inspector_protocol.pdl as pdl
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
+
 
 DEV_ENUMS_XML_PATH = 'tools/metrics/histograms/metadata/dev/enums.xml'
 
@@ -47,21 +45,21 @@ def ParseProtocolCommandsFromPDL(file_path):
     A dictionary with the hashes as keys and the CDP commands as values.
   """
   file_name = path_util.GetInputFile(file_path)
-  input_file = open(file_name, "r")
+  input_file = open(file_name, 'r')
   pdl_string = input_file.read()
   protocol = pdl.loads(pdl_string, file_name, False)
   input_file.close()
 
   result = {}
-  for domain in protocol["domains"]:
-    if "commands" in domain:
-      for command in domain["commands"]:
-        command_name = domain["domain"] + "." + command["name"]
+  for domain in protocol['domains']:
+    if 'commands' in domain:
+      for command in domain['commands']:
+        command_name = domain['domain'] + '.' + command['name']
         hashed_command = GetCommandUMAId(command_name)
         if (hashed_command in result):
-          print('Hash collision between "{}" and "{}" in {} when '\
-          'generating CDPCommands for enums.xml'
-          .format(result[hashed_command], command_name, file_path))
+          print('Hash collision between "{}" and "{}" in {} when '
+                'generating CDPCommands for enums.xml'.format(
+                    result[hashed_command], command_name, file_path))
         result[hashed_command] = command_name
 
   return result
@@ -103,10 +101,8 @@ def CheckDictsForCollisions(first, second):
   """
   for hashedValue in first.keys():
     if (hashedValue in second and second[hashedValue] != first[hashedValue]):
-      print(
-        'Hash collision between "{}" and "{}" when generating CDPCommands '\
-        'for enums.xml'
-        .format(first[hashedValue], second[hashedValue]))
+      print('Hash collision between "{}" and "{}" when generating CDPCommands '
+            'for enums.xml'.format(first[hashedValue], second[hashedValue]))
 
 
 def MaybeUpdateEnumFromFile(file_path):

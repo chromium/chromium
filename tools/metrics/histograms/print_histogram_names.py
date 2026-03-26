@@ -8,9 +8,9 @@
 from __future__ import print_function
 
 import argparse
+import io
 import subprocess
 import sys
-import io
 from typing import Iterable, Set
 
 import setup_modules  # pylint: disable=unused-import
@@ -55,13 +55,13 @@ def get_names_from_contents(contents: Iterable[str]) -> Set[str]:
   if not contents_list:
     return set()
 
-  doc = merge_xml.MergeFiles(files=[io.StringIO('\n'.join(contents_list))])
+  doc = merge_xml.MergeFiles(files=[io.StringIO("\n".join(contents_list))])
   xml_utils.NormalizeAllAttributeValues(doc)
-  histograms_tree = xml_utils.GetTagSubTree(doc, 'histograms', 2)
+  histograms_tree = xml_utils.GetTagSubTree(doc, "histograms", 2)
   histogram_names = set()
 
-  for histogram in xml_utils.IterElementsWithTag(histograms_tree, 'histogram'):
-    histogram_names.add(histogram.getAttribute('name'))
+  for histogram in xml_utils.IterElementsWithTag(histograms_tree, "histogram"):
+    histogram_names.add(histogram.getAttribute("name"))
   return histogram_names
 
 
@@ -118,10 +118,10 @@ def _print_diff_names(revision):
 
 
 def main(argv):
-  parser = argparse.ArgumentParser(description='Print histogram names.')
-  parser.add_argument('--diff',
+  parser = argparse.ArgumentParser(description="Print histogram names.")
+  parser.add_argument("--diff",
                       type=str,
-                      help='Git revision to diff against (e.g. HEAD~)')
+                      help="Git revision to diff against (e.g. HEAD~)")
   args = parser.parse_args(argv[1:])
   if args.diff is not None:
     _print_diff_names(args.diff)
@@ -131,5 +131,5 @@ def main(argv):
       print(name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
   main(sys.argv)

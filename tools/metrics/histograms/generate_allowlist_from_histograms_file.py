@@ -56,8 +56,8 @@ def _GenerateStaticFile(file_path, namespace, values, allow_list_name):
     String with the generated header file content.
   """
   values = sorted(values, key=lambda d: str(d))
-  include_guard = file_path.replace('\\', '_').replace('/', '_').replace(
-      '.', '_').upper() + "_"
+  include_guard = file_path.replace("\\", "_").replace("/", "_").replace(
+      ".", "_").upper() + "_"
 
   values_string = "\n".join(
       ["  \"{name}\",".format(name=value) for value in values])
@@ -86,7 +86,7 @@ def _GenerateValueList(histograms, tag, allow_list_name):
   if tag == "variant":
     return [value.get("name") for value in values[allow_list_name]]
 
-  return [b.get('key') for b in values[allow_list_name].get('buckets', [{}])]
+  return [b.get("key") for b in values[allow_list_name].get("buckets", [{}])]
 
 
 def _GenerateFile(arguments):

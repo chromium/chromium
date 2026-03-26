@@ -28,7 +28,7 @@ def PrecheckBadMessage(input_api,
 
   # If the |bad_message.h| wasn't found in this change, then there is nothing to
   # do and histogram.xml does not need to be updated.
-  if source_path == '':
+  if not source_path:
     return []
 
   START_MARKER='^enum (class )?BadMessageReason {'

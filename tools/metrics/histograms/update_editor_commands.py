@@ -26,8 +26,8 @@ ENUMS_PATH = 'tools/metrics/histograms/metadata/web_core/enums.xml'
 ENUM_NAME = 'MappedEditingCommands'
 
 EDITOR_COMMAND_CPP = 'third_party/blink/renderer/core/editing/editor_command.cc'
-ENUM_START_MARKER = "^    static const CommandEntry commands\[\] = {"
-ENUM_END_MARKER = "^    };"
+ENUM_START_MARKER = '^    static const CommandEntry commands\[\] = {'
+ENUM_END_MARKER = '^    };'
 
 
 class UserError(Exception):
@@ -39,7 +39,7 @@ class UserError(Exception):
     return self.args[0]
 
 
-def ReadHistogramValues(filename):
+def ReadHistogramValues(filename: str) -> list[tuple[str, int]]:
   """Returns a list of pairs (label, value) corresponding to HistogramValue.
 
   Reads the EditorCommand.cpp file, locates the
@@ -51,7 +51,7 @@ def ReadHistogramValues(filename):
     content = f.readlines()
 
   # Locate the enum definition and collect all entries in it
-  inside_enum = False # We haven't found the enum definition yet
+  inside_enum = False  # We haven't found the enum definition yet
   result = []
   for line in content:
     if inside_enum:
@@ -60,13 +60,12 @@ def ReadHistogramValues(filename):
         inside_enum = False
       else:
         # Inside enum: generate new xml entry
-        m = re.match("^{ \"([\w]+)\", \{([\w]+)", line.strip())
+        m = re.match('^{ \"([\w]+)\", \{([\w]+)', line.strip())
         if m:
           result.append((m.group(1), int(m.group(2))))
     else:
       if re.match(ENUM_START_MARKER, line):
         inside_enum = True
-        enum_value = 0 # Start at 'UNKNOWN'
   return sorted(result, key=lambda pair: pair[1])
 
 

@@ -47,6 +47,7 @@ UNIT_REWRITES = {
   'percentage': '%',
 }
 
+
 def canonicalizeUnits(tree):
   """Canonicalize the spelling of certain units in histograms."""
   if tree.tag == 'histogram':
@@ -56,6 +57,7 @@ def canonicalizeUnits(tree):
 
   for child in tree:
     canonicalizeUnits(child)
+
 
 def DropNodesByTagName(tree, tag, dropped_nodes=[]):
   """Drop all nodes with named tag from the XML tree."""
@@ -70,6 +72,7 @@ def DropNodesByTagName(tree, tag, dropped_nodes=[]):
 
   for child in removes:
     tree.remove(child)
+
 
 def FixMisplacedHistogramsAndHistogramSuffixes(tree):
   """Fixes misplaced histogram and histogram_suffixes nodes."""
@@ -108,6 +111,7 @@ def FixMisplacedHistogramsAndHistogramSuffixes(tree):
 
   AddBackMisplacedHistograms(tree)
 
+
 def PrettyPrintHistograms(raw_xml):
   """Pretty-print the given histograms XML.
 
@@ -120,6 +124,7 @@ def PrettyPrintHistograms(raw_xml):
   top_level_content = etree_util.GetTopLevelContent(raw_xml)
   root = etree_util.ParseXMLString(raw_xml)
   return top_level_content + PrettyPrintHistogramsTree(root)
+
 
 def PrettyPrintHistogramsTree(tree):
   """Pretty-print the given ElementTree element.
@@ -149,6 +154,7 @@ def PrettyPrintEnums(raw_xml):
   formatted_xml = histogram_configuration_model.PrettifyTree(root)
   return top_level_content + formatted_xml
 
+
 def main():
   """Pretty-prints the histograms or enums xml file at given relative path.
 
@@ -166,14 +172,14 @@ def main():
     pretty_print.py enums.xml --cleanup
   """
   parser = argparse.ArgumentParser()
-  parser.add_argument('filepath', help="relative path to XML file")
+  parser.add_argument('filepath', help='relative path to XML file')
   # The following optional flags are used by common/presubmit_util.py
-  parser.add_argument('--non-interactive', action="store_true")
-  parser.add_argument('--presubmit', action="store_true")
-  parser.add_argument('--diff', action="store_true")
+  parser.add_argument('--non-interactive', action='store_true')
+  parser.add_argument('--presubmit', action='store_true')
+  parser.add_argument('--diff', action='store_true')
   parser.add_argument('--cleanup',
-                      action="store_true",
-                      help="Remove the backup file after a successful run.")
+                      action='store_true',
+                      help='Remove the backup file after a successful run.')
   args = parser.parse_args()
 
   utf8_encoding.setup_stdout_and_stderr_utf8_encoding()

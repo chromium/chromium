@@ -5,9 +5,10 @@
 import dataclasses
 import hashlib
 import os
+import pathlib
 import pickle
 from typing import Optional, Any, Dict
-from pathlib import Path
+
 
 @dataclasses.dataclass(frozen=True)
 class _PresubmitCheckContext:
@@ -59,6 +60,7 @@ def _CalculateCombinedDirectoryHash(directory_path):
           chunk = f.read(4096)
   return hasher.hexdigest()
 
+
 class PresubmitCache:
   """Stores and retrieves results of a presubmit checks for presubmits."""
 
@@ -67,7 +69,7 @@ class PresubmitCache:
   _observed_directory: str
 
   def __init__(self, storage_directory_path: str, observed_directory_path: str):
-    base_dir_path = Path(storage_directory_path)
+    base_dir_path = pathlib.Path(storage_directory_path)
     versioned_path = base_dir_path.joinpath(_CURRENT_CACHE_FILE_SCHEMA_VERSION)
     versioned_path.mkdir(parents=True, exist_ok=True)
 
@@ -101,7 +103,6 @@ class PresubmitCache:
       # causes issues with presubmits.
       print(f"Failed to delete the cache file ({e}). To invalidate cache,"
             f" please try to remove {self._storage_file_path} manually.")
-
 
   def _GetForContext(self, context: _PresubmitCheckContext) -> Optional[str]:
     if context.key() not in self._cache_contents.data:

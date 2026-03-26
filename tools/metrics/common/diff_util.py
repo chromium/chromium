@@ -8,13 +8,11 @@ user-managed files are correct.
 
 from __future__ import print_function
 
+import difflib
 import logging
 import os
-import sys
+import tempfile
 import webbrowser
-
-from difflib import HtmlDiff
-from tempfile import NamedTemporaryFile
 
 
 def PromptUserToAcceptDiff(old_text, new_text, prompt):
@@ -34,21 +32,21 @@ def PromptUserToAcceptDiff(old_text, new_text, prompt):
   if old_text == new_text:
     logging.info('No changes detected')
     return True
-  html_diff = HtmlDiff(wrapcolumn=80).make_file(
-      old_text.splitlines(), new_text.splitlines(), fromdesc='Original',
-      todesc='Updated', context=True, numlines=5)
-  temp = NamedTemporaryFile(suffix='.html', delete=False)
+  html_diff = difflib.HtmlDiff(wrapcolumn=80).make_file(old_text.splitlines(),
+                                                        new_text.splitlines(),
+                                                        fromdesc='Original',
+                                                        todesc='Updated',
+                                                        context=True,
+                                                        numlines=5)
+  temp = tempfile.NamedTemporaryFile(suffix='.html', delete=False)
   try:
     html_diff = html_diff.encode()
     temp.write(html_diff)
     temp.close()  # Close the file so the browser process can access it.
     webbrowser.open('file://' + temp.name)
     print(prompt)
-    if sys.version_info.major == 2:
-      response = raw_input('(Y/n): ').strip().lower()
-    else:
-      response = input('(Y/n): ').strip().lower()
+    response = input('(Y/n): ').strip().lower()
   finally:
     temp.close()  # May be called on already closed file.
     os.remove(temp.name)
-  return response == 'y' or response == ''
+  return response == 'y' or not response

@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from parameterized import parameterized  # type: ignore
-from xml.dom import minidom
 import unittest
+from xml.dom import minidom
 
+from parameterized import parameterized  # type: ignore
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.split_xml as split_xml
+
 
 class SplitXmlTest(unittest.TestCase):
 
@@ -35,5 +36,5 @@ class SplitXmlTest(unittest.TestCase):
     self.assertEqual(expected_name, result)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   unittest.main()

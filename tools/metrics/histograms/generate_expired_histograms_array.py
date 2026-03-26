@@ -13,8 +13,9 @@ import sys
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
-import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
+import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
+
 
 _DATE_FILE_RE = re.compile(r".*MAJOR_BRANCH_DATE=(.+).*")
 _CURRENT_MILESTONE_RE = re.compile(r"MAJOR=([0-9]{2,3})\n")
@@ -247,7 +248,7 @@ def _GenerateFile(arguments):
       "The --inputs is not in sync with the most updated list of xmls. Please "
       "update the inputs in "
       "components/metrics/generate_expired_histograms_array.gni.\n"
-      "  add: %s\n  remove: %s" % (', '.join(to_add), ', '.join(to_remove)))
+      "  add: %s\n  remove: %s" % (", ".join(to_add), ", ".join(to_remove)))
 
   descriptions = merge_xml.MergeFiles(arguments.inputs)
   with open(arguments.major_branch_date_filepath, "r") as date_file:
