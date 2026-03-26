@@ -1,0 +1,63 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
+
+#include <utility>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_duplicate_permission_cleaner.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+
+namespace actor_login {
+
+ActorLoginPermissionCleaningService::ActorLoginPermissionCleaningService(
+    ActorLoginPermissionService* permission_service,
+    scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
+    scoped_refptr<password_manager::PasswordStoreInterface> account_store)
+    : permission_service_(permission_service),
+      profile_store_(std::move(profile_store)),
+      account_store_(std::move(account_store)) {
+  CHECK(permission_service_);
+}
+
+ActorLoginPermissionCleaningService::~ActorLoginPermissionCleaningService() =
+    default;
+
+void ActorLoginPermissionCleaningService::Shutdown() {
+  // Clear any active cleaners immediately (implicitly cancelling ongoing jobs).
+  active_cleaners_.clear();
+}
+
+void ActorLoginPermissionCleaningService::ClearPermissions(
+    const Credential& credential,
+    std::optional<std::string> signon_realm,
+    base::OnceClosure done_callback) {
+  auto cleaner = std::make_unique<ActorLoginDuplicatePermissionCleaner>(
+      credential, signon_realm, profile_store_, account_store_,
+      permission_service_);
+
+  ActorLoginDuplicatePermissionCleaner* raw_cleaner = cleaner.get();
+
+  auto removal_callback =
+      base::BindOnce(&ActorLoginPermissionCleaningService::OnCleanerDone,
+                     base::Unretained(this), raw_cleaner);
+
+  active_cleaners_.insert(std::move(cleaner));
+
+  raw_cleaner->Start(
+      std::move(done_callback).Then(std::move(removal_callback)));
+}
+
+void ActorLoginPermissionCleaningService::OnCleanerDone(
+    ActorLoginDuplicatePermissionCleaner* cleaner) {
+  auto it = active_cleaners_.find(cleaner);
+  if (it != active_cleaners_.end()) {
+    active_cleaners_.erase(it);
+  }
+}
+
+}  // namespace actor_login

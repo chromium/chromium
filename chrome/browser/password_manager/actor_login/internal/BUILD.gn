@@ -3,14 +3,20 @@
 # found in the LICENSE file.
 import("//chrome/common/features.gni")
 
-source_set("delegate") {
+source_set("internal") {
   sources = [
     "actor_login_delegate_impl.cc",
     "actor_login_delegate_impl.h",
+    "actor_login_duplicate_permission_cleaner.cc",
+    "actor_login_duplicate_permission_cleaner.h",
     "actor_login_federated_credentials_fetcher.cc",
     "actor_login_federated_credentials_fetcher.h",
     "actor_login_metrics_helper.cc",
     "actor_login_metrics_helper.h",
+    "actor_login_permission_cleaning_service.cc",
+    "actor_login_permission_cleaning_service.h",
+    "actor_login_permission_cleaning_service_factory.cc",
+    "actor_login_permission_cleaning_service_factory.h",
     "actor_login_siwg_controller.cc",
     "actor_login_siwg_controller.h",
     "siwg_button_finder.cc",
@@ -27,6 +33,7 @@ source_set("delegate") {
     "//chrome/browser/actor",
     "//chrome/browser/glic",
     "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
+    "//chrome/browser/password_manager/factories:password_factory_headers",
     "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/webid",
@@ -51,13 +58,14 @@ if (!skip_android_unmigrated_actor_files) {
     testonly = true
     sources = [
       "actor_login_delegate_impl_unittest.cc",
+      "actor_login_duplicate_permission_cleaner_unittest.cc",
       "actor_login_federated_credentials_fetcher_unittest.cc",
       "actor_login_siwg_controller_unittest.cc",
       "siwg_button_finder_unittest.cc",
     ]
 
     deps = [
-      ":delegate",
+      ":internal",
       "//base/test:test_support",
       "//chrome/browser/actor:test_support",
       "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
@@ -65,11 +73,14 @@ if (!skip_android_unmigrated_actor_files) {
       "//chrome/browser/webid",
       "//chrome/common:mojo_bindings",
       "//chrome/test:test_support",
+      "//components/affiliations/core/browser:test_support",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/content/common/mojom",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/password_manager/core/browser/actor_login:common",
+      "//components/password_manager/core/browser/actor_login/internal:delegate",
       "//components/password_manager/core/browser/actor_login/test:test_support",
+      "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
       "//components/password_manager/core/browser/features:password_features",
       "//components/tabs:test_support",
       "//content/public/browser",

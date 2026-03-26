@@ -1,0 +1,39 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_FACTORY_H_
+
+#include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+
+class Profile;
+
+namespace actor_login {
+
+class ActorLoginPermissionCleaningService;
+
+// Singleton that owns all `ActorLoginPermissionCleaningService` instances and
+// associates them with `Profile`s.
+class ActorLoginPermissionCleaningServiceFactory
+    : public ProfileKeyedServiceFactory {
+ public:
+  static ActorLoginPermissionCleaningService* GetForProfile(Profile* profile);
+
+  static ActorLoginPermissionCleaningServiceFactory* GetInstance();
+
+ private:
+  friend base::NoDestructor<ActorLoginPermissionCleaningServiceFactory>;
+
+  ActorLoginPermissionCleaningServiceFactory();
+  ~ActorLoginPermissionCleaningServiceFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override;
+};
+
+}  // namespace actor_login
+
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_FACTORY_H_
