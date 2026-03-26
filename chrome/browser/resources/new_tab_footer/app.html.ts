@@ -61,7 +61,8 @@ separated from each other by a divider.
   ${!this.showCustomizeButtons_ ? html`<div id="spacer"></div>` : ''}
   ${this.showCustomizeButtons_ ? html`
     <ntp-customize-buttons id="customizeButtons"
-        ?info-shown-to-user="${this.managementNotice_ || this.extensionName_}"
+        ?info-shown-to-user="${!!this.managementNotice_ ||
+                               !!this.extensionName_}"
         ?show-customize="${this.isCustomizeActive_}"
         ?show-customize-chrome-text="${this.showCustomizeText_}"
         @customize-click="${this.onCustomizeClick_}">

@@ -688,6 +688,15 @@ class EslintTsTest(unittest.TestCase):
             'declaredType': 'Array',
             'tsType': 'string',
         },
+        _INCORRECT_BOOLEAN_ERROR % {
+            'attributeName': 'hidden',
+            'propertyName': 'this.getErrorMessage()',
+        },
+        _INCORRECT_ATTRIBUTE_ERROR % {
+            'attributeName': 'aria-label',
+            'propertyName': 'this.getLabels()',
+            'propertyExpression': '.ariaLabel=',
+        },
     ]
     for e in errors:
       self.assertTrue(

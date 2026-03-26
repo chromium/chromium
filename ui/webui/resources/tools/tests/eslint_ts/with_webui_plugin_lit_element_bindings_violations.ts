@@ -40,6 +40,15 @@ export class HelloWorldDummyElement extends CrLitElement {
   // Intentionally mismatching Lit reactive properties type.
   accessor someBooleanProp: boolean|number = false;
   accessor someArrayProp: string = '';
+
+  getErrorMessage(): string {
+    return 'some error';
+  }
+
+  getLabels() {
+    return ['label1', 'label2'];
+  }
+
   accessor description:
       {[key: string]: string} = {'is': 'input', 'controls': 'count'};
   accessor limits: {min: number, max: number} = {min: 0, max: 10};

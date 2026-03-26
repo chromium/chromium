@@ -17,5 +17,7 @@ export function getHtml(this: DummyElement) {
     ?disabled="${false}" ?some-multi-word-attr="${false}"
     ?hidden="${this.someBooleanProp}" some-array="${this.someArrayProp}">
 </cr-input>
+<div ?hidden="${this.getErrorMessage()}" aria-label="${this.getLabels()}">
+</div>
 `;
 }

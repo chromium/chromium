@@ -1,7 +1,7 @@
 ${this.events.map((item, index) => html`
   <ntp-calendar-event
       class="row"
-      ?double-booked="${this.isDoubleBooked_(index) ? 'double-booked' : ''}"
+      ?double-booked="${this.isDoubleBooked_(index)}"
       ?expanded="${this.isExpanded_(index)}"
       .event="${item}"
       .index="${index}"
