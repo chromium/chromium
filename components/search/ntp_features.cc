@@ -347,7 +347,7 @@ const base::FeatureParam<bool> kNtpNextShowDismissalUIParam(
 const base::FeatureParam<bool> kNtpNextDisablementContextMenuParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextDisablementContextMenuParam",
-    true);
+    false);
 const base::FeatureParam<int> kMaxTilesBeforeShowMore{
     &ntp_features::kNtpNextFeatures, "max_tiles_before_show_more", 5};
 const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick(
