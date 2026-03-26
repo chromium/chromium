@@ -1,8 +1,5 @@
 file://ui/webui/PLATFORM_OWNERS
 
-# Maintaining ownership from this file's original Chrome OS location.
-per-file device_log_ui*=stevenjb@chromium.org
-
 # TODO(crbug.com/40928765): cleanup and remove after cert management v2 is default
 # on all platforms.
 per-file certificates*=file://net/cert/OWNERS
