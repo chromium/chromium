@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
@@ -143,4 +144,28 @@ TEST_F(OmniboxContextMenuControllerTest, IsCommandIdEnabledHelper_MaxFiles) {
   EXPECT_FALSE(controller()->IsCommandIdEnabledHelper(
       IDC_OMNIBOX_CONTEXT_ADD_FILE, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
       file_infos, max_num_files, OmniboxPopupState::kNone));
+}
+
+TEST_F(OmniboxContextMenuControllerTest, GetMaxTabSuggestions_UsesServerLimit) {
+  base::FieldTrialParams params;
+  params[omnibox::kContextMenuMaxTabSuggestions.name] = "2";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::internal::kWebUIOmniboxAimPopup, params);
+
+  // Initially should use feature param limit.
+  EXPECT_EQ(controller()->GetMaxTabSuggestions(), 2);
+
+  // Set server-provided limit.
+  omnibox::InputState state;
+  state.max_inputs_by_type[omnibox::InputType::INPUT_TYPE_BROWSER_TAB] = 1;
+  controller()->OnGetInputState(state);
+
+  EXPECT_EQ(controller()->GetMaxTabSuggestions(), 1);
+
+  // Fallback to feature param limit if not in map.
+  state.max_inputs_by_type.erase(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  controller()->OnGetInputState(state);
+
+  EXPECT_EQ(controller()->GetMaxTabSuggestions(), 2);
 }

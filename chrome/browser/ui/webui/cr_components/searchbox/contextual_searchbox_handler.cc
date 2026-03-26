@@ -92,6 +92,12 @@ ContextualOmniboxClient::GetLensOverlaySuggestInputs() const {
 }
 
 int ContextualSearchboxHandler::GetContextMenuMaxTabSuggestions() {
+  omnibox::InputState input_state = GetInputState();
+  if (auto it = input_state.max_inputs_by_type.find(
+          omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+      it != input_state.max_inputs_by_type.end()) {
+    return it->second;
+  }
   return ntp_composebox::kContextMenuMaxTabSuggestions.Get();
 }
 

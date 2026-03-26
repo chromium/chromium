@@ -122,6 +122,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
                            IsCommandIdEnabledHelper_WithNonImageFile);
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
                            IsCommandIdEnabledHelper_MaxFiles);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
+                           GetMaxTabSuggestions_UsesServerLimit);
 
   // Keeps track of various bits of info that are necessary to dynamically
   // render the contents of the context menu, based on the InputState received
@@ -174,6 +176,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
 
   bool IsContentSharingEnabled() const;
+
+  int GetMaxTabSuggestions() const;
 
   OmniboxContextMenuController::ContextType CommandIdToEnum(
       int command_id) const;
