@@ -2988,6 +2988,7 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   }
 
   if (deferred_raster_paint_buffer_offset_.has_value()) {
+    CHECK(*deferred_raster_paint_buffer_offset_ <= paint_buffer_size);
     paint_buffer_size -= *deferred_raster_paint_buffer_offset_;
     UNSAFE_TODO(paint_buffer_memory += *deferred_raster_paint_buffer_offset_);
     deferred_raster_paint_buffer_offset_.reset();
