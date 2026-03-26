@@ -778,11 +778,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       // `loadAndExtractContent` is defined in the handler interface.
       this.loadAndExtractContent = undefined;
     }
-
-    if (!state.enableTrustFirstOnboarding) {
-      this.setOnboardingCompleted = undefined;
-      this.isOnboardingCompleted = undefined;
-    }
   }
 
   webClientInitialized(
