@@ -2787,11 +2787,9 @@ void ValidatePausedStateConsistency() {
       if (!window) {
         continue;
       }
-      const bool microtasks_are_paused = window->GetAgent()
-                                             ->event_loop()
-                                             ->microtask_queue()
-                                             ->GetMicrotasksScopeDepth();
-      CHECK(!microtasks_are_paused, base::NotFatalUntil::M148);
+      const bool microtasks_are_paused =
+          window->GetAgent()->event_loop()->AreMicrotasksPaused();
+      CHECK(!microtasks_are_paused, base::NotFatalUntil::M150);
     }
   }
 }
