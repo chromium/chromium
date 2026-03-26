@@ -33,8 +33,8 @@ struct COMPONENT_EXPORT(AUTHENTICATOR_MOJOM)
                device::FidoTransportProtocol> {
   static blink::mojom::AuthenticatorTransport ToMojom(
       device::FidoTransportProtocol input);
-  static bool FromMojom(blink::mojom::AuthenticatorTransport input,
-                        device::FidoTransportProtocol* output);
+  static device::FidoTransportProtocol FromMojom(
+      blink::mojom::AuthenticatorTransport input);
 };
 
 template <>
@@ -42,8 +42,8 @@ struct COMPONENT_EXPORT(AUTHENTICATOR_MOJOM)
     EnumTraits<blink::mojom::PublicKeyCredentialType, device::CredentialType> {
   static blink::mojom::PublicKeyCredentialType ToMojom(
       device::CredentialType input);
-  static bool FromMojom(blink::mojom::PublicKeyCredentialType input,
-                        device::CredentialType* output);
+  static device::CredentialType FromMojom(
+      blink::mojom::PublicKeyCredentialType input);
 };
 
 template <>
@@ -97,8 +97,8 @@ struct COMPONENT_EXPORT(AUTHENTICATOR_MOJOM)
                device::AuthenticatorAttachment> {
   static blink::mojom::AuthenticatorAttachment ToMojom(
       device::AuthenticatorAttachment input);
-  static bool FromMojom(blink::mojom::AuthenticatorAttachment input,
-                        device::AuthenticatorAttachment* output);
+  static device::AuthenticatorAttachment FromMojom(
+      blink::mojom::AuthenticatorAttachment input);
 };
 
 template <>
@@ -107,8 +107,8 @@ struct COMPONENT_EXPORT(AUTHENTICATOR_MOJOM)
                device::ResidentKeyRequirement> {
   static blink::mojom::ResidentKeyRequirement ToMojom(
       device::ResidentKeyRequirement input);
-  static bool FromMojom(blink::mojom::ResidentKeyRequirement input,
-                        device::ResidentKeyRequirement* output);
+  static device::ResidentKeyRequirement FromMojom(
+      blink::mojom::ResidentKeyRequirement input);
 };
 
 template <>
@@ -117,16 +117,16 @@ struct COMPONENT_EXPORT(AUTHENTICATOR_MOJOM)
                device::UserVerificationRequirement> {
   static blink::mojom::UserVerificationRequirement ToMojom(
       device::UserVerificationRequirement input);
-  static bool FromMojom(blink::mojom::UserVerificationRequirement input,
-                        device::UserVerificationRequirement* output);
+  static device::UserVerificationRequirement FromMojom(
+      blink::mojom::UserVerificationRequirement input);
 };
 
 template <>
 struct COMPONENT_EXPORT(AUTHENTICATOR_MOJOM)
     EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport> {
   static blink::mojom::LargeBlobSupport ToMojom(device::LargeBlobSupport input);
-  static bool FromMojom(blink::mojom::LargeBlobSupport input,
-                        device::LargeBlobSupport* output);
+  static device::LargeBlobSupport FromMojom(
+      blink::mojom::LargeBlobSupport input);
 };
 
 template <>
@@ -198,8 +198,8 @@ struct COMPONENT_EXPORT(AUTHENTICATOR_MOJOM)
                device::AttestationConveyancePreference> {
   static blink::mojom::AttestationConveyancePreference ToMojom(
       device::AttestationConveyancePreference input);
-  static bool FromMojom(blink::mojom::AttestationConveyancePreference input,
-                        device::AttestationConveyancePreference* output);
+  static device::AttestationConveyancePreference FromMojom(
+      blink::mojom::AttestationConveyancePreference input);
 };
 
 }  // namespace mojo

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/mojom/authenticator_mojom_traits.h"  // nogncheck
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -29,26 +31,20 @@ EnumTraits<blink::mojom::AuthenticatorTransport,
 }
 
 // static
-bool EnumTraits<blink::mojom::AuthenticatorTransport,
-                device::FidoTransportProtocol>::
-    FromMojom(blink::mojom::AuthenticatorTransport input,
-              device::FidoTransportProtocol* output) {
+device::FidoTransportProtocol EnumTraits<blink::mojom::AuthenticatorTransport,
+                                         device::FidoTransportProtocol>::
+    FromMojom(blink::mojom::AuthenticatorTransport input) {
   switch (input) {
     case blink::mojom::AuthenticatorTransport::USB:
-      *output = ::device::FidoTransportProtocol::kUsbHumanInterfaceDevice;
-      return true;
+      return ::device::FidoTransportProtocol::kUsbHumanInterfaceDevice;
     case blink::mojom::AuthenticatorTransport::NFC:
-      *output = ::device::FidoTransportProtocol::kNearFieldCommunication;
-      return true;
+      return ::device::FidoTransportProtocol::kNearFieldCommunication;
     case blink::mojom::AuthenticatorTransport::BLE:
-      *output = ::device::FidoTransportProtocol::kBluetoothLowEnergy;
-      return true;
+      return ::device::FidoTransportProtocol::kBluetoothLowEnergy;
     case blink::mojom::AuthenticatorTransport::HYBRID:
-      *output = ::device::FidoTransportProtocol::kHybrid;
-      return true;
+      return ::device::FidoTransportProtocol::kHybrid;
     case blink::mojom::AuthenticatorTransport::INTERNAL:
-      *output = ::device::FidoTransportProtocol::kInternal;
-      return true;
+      return ::device::FidoTransportProtocol::kInternal;
   }
   NOTREACHED();
 }
@@ -65,13 +61,12 @@ EnumTraits<blink::mojom::PublicKeyCredentialType,
 }
 
 // static
-bool EnumTraits<blink::mojom::PublicKeyCredentialType, device::CredentialType>::
-    FromMojom(blink::mojom::PublicKeyCredentialType input,
-              device::CredentialType* output) {
+device::CredentialType
+EnumTraits<blink::mojom::PublicKeyCredentialType, device::CredentialType>::
+    FromMojom(blink::mojom::PublicKeyCredentialType input) {
   switch (input) {
     case blink::mojom::PublicKeyCredentialType::PUBLIC_KEY:
-      *output = ::device::CredentialType::kPublicKey;
-      return true;
+      return ::device::CredentialType::kPublicKey;
   }
   NOTREACHED();
 }
@@ -123,20 +118,17 @@ blink::mojom::AuthenticatorAttachment EnumTraits<
 }
 
 // static
-bool EnumTraits<blink::mojom::AuthenticatorAttachment,
-                device::AuthenticatorAttachment>::
-    FromMojom(blink::mojom::AuthenticatorAttachment input,
-              device::AuthenticatorAttachment* output) {
+device::AuthenticatorAttachment
+EnumTraits<blink::mojom::AuthenticatorAttachment,
+           device::AuthenticatorAttachment>::
+    FromMojom(blink::mojom::AuthenticatorAttachment input) {
   switch (input) {
     case blink::mojom::AuthenticatorAttachment::NO_PREFERENCE:
-      *output = ::device::AuthenticatorAttachment::kAny;
-      return true;
+      return ::device::AuthenticatorAttachment::kAny;
     case blink::mojom::AuthenticatorAttachment::PLATFORM:
-      *output = ::device::AuthenticatorAttachment::kPlatform;
-      return true;
+      return ::device::AuthenticatorAttachment::kPlatform;
     case blink::mojom::AuthenticatorAttachment::CROSS_PLATFORM:
-      *output = ::device::AuthenticatorAttachment::kCrossPlatform;
-      return true;
+      return ::device::AuthenticatorAttachment::kCrossPlatform;
   }
   NOTREACHED();
 }
@@ -158,20 +150,16 @@ blink::mojom::ResidentKeyRequirement EnumTraits<
 }
 
 // static
-bool EnumTraits<blink::mojom::ResidentKeyRequirement,
-                device::ResidentKeyRequirement>::
-    FromMojom(blink::mojom::ResidentKeyRequirement input,
-              device::ResidentKeyRequirement* output) {
+device::ResidentKeyRequirement EnumTraits<blink::mojom::ResidentKeyRequirement,
+                                          device::ResidentKeyRequirement>::
+    FromMojom(blink::mojom::ResidentKeyRequirement input) {
   switch (input) {
     case blink::mojom::ResidentKeyRequirement::DISCOURAGED:
-      *output = ::device::ResidentKeyRequirement::kDiscouraged;
-      return true;
+      return ::device::ResidentKeyRequirement::kDiscouraged;
     case blink::mojom::ResidentKeyRequirement::PREFERRED:
-      *output = ::device::ResidentKeyRequirement::kPreferred;
-      return true;
+      return ::device::ResidentKeyRequirement::kPreferred;
     case blink::mojom::ResidentKeyRequirement::REQUIRED:
-      *output = ::device::ResidentKeyRequirement::kRequired;
-      return true;
+      return ::device::ResidentKeyRequirement::kRequired;
   }
   NOTREACHED();
 }
@@ -193,20 +181,17 @@ EnumTraits<blink::mojom::UserVerificationRequirement,
 }
 
 // static
-bool EnumTraits<blink::mojom::UserVerificationRequirement,
-                device::UserVerificationRequirement>::
-    FromMojom(blink::mojom::UserVerificationRequirement input,
-              device::UserVerificationRequirement* output) {
+device::UserVerificationRequirement
+EnumTraits<blink::mojom::UserVerificationRequirement,
+           device::UserVerificationRequirement>::
+    FromMojom(blink::mojom::UserVerificationRequirement input) {
   switch (input) {
     case blink::mojom::UserVerificationRequirement::REQUIRED:
-      *output = ::device::UserVerificationRequirement::kRequired;
-      return true;
+      return ::device::UserVerificationRequirement::kRequired;
     case blink::mojom::UserVerificationRequirement::PREFERRED:
-      *output = ::device::UserVerificationRequirement::kPreferred;
-      return true;
+      return ::device::UserVerificationRequirement::kPreferred;
     case blink::mojom::UserVerificationRequirement::DISCOURAGED:
-      *output = ::device::UserVerificationRequirement::kDiscouraged;
-      return true;
+      return ::device::UserVerificationRequirement::kDiscouraged;
   }
   NOTREACHED();
 }
@@ -227,19 +212,16 @@ EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport>::ToMojom(
 }
 
 // static
-bool EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport>::
-    FromMojom(blink::mojom::LargeBlobSupport input,
-              device::LargeBlobSupport* output) {
+device::LargeBlobSupport
+EnumTraits<blink::mojom::LargeBlobSupport, device::LargeBlobSupport>::FromMojom(
+    blink::mojom::LargeBlobSupport input) {
   switch (input) {
     case blink::mojom::LargeBlobSupport::NOT_REQUESTED:
-      *output = ::device::LargeBlobSupport::kNotRequested;
-      return true;
+      return ::device::LargeBlobSupport::kNotRequested;
     case blink::mojom::LargeBlobSupport::REQUIRED:
-      *output = ::device::LargeBlobSupport::kRequired;
-      return true;
+      return ::device::LargeBlobSupport::kRequired;
     case blink::mojom::LargeBlobSupport::PREFERRED:
-      *output = ::device::LargeBlobSupport::kPreferred;
-      return true;
+      return ::device::LargeBlobSupport::kPreferred;
   }
   NOTREACHED();
 }
@@ -311,24 +293,20 @@ EnumTraits<blink::mojom::AttestationConveyancePreference,
 }
 
 // static
-bool EnumTraits<blink::mojom::AttestationConveyancePreference,
-                device::AttestationConveyancePreference>::
-    FromMojom(blink::mojom::AttestationConveyancePreference input,
-              device::AttestationConveyancePreference* output) {
+device::AttestationConveyancePreference
+EnumTraits<blink::mojom::AttestationConveyancePreference,
+           device::AttestationConveyancePreference>::
+    FromMojom(blink::mojom::AttestationConveyancePreference input) {
   switch (input) {
     case blink::mojom::AttestationConveyancePreference::NONE:
-      *output = ::device::AttestationConveyancePreference::kNone;
-      return true;
+      return ::device::AttestationConveyancePreference::kNone;
     case blink::mojom::AttestationConveyancePreference::INDIRECT:
-      *output = ::device::AttestationConveyancePreference::kIndirect;
-      return true;
+      return ::device::AttestationConveyancePreference::kIndirect;
     case blink::mojom::AttestationConveyancePreference::DIRECT:
-      *output = ::device::AttestationConveyancePreference::kDirect;
-      return true;
+      return ::device::AttestationConveyancePreference::kDirect;
     case blink::mojom::AttestationConveyancePreference::ENTERPRISE:
-      *output = ::device::AttestationConveyancePreference::
+      return ::device::AttestationConveyancePreference::
           kEnterpriseIfRPListedOnAuthenticator;
-      return true;
   }
   NOTREACHED();
 }

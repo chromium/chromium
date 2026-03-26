@@ -25,13 +25,12 @@ EnumTraits<blink::mojom::Opaque, blink::FencedFrame::Opaque>::ToMojom(
 }
 
 // static
-bool EnumTraits<blink::mojom::Opaque, blink::FencedFrame::Opaque>::FromMojom(
-    blink::mojom::Opaque input,
-    blink::FencedFrame::Opaque* out) {
+blink::FencedFrame::Opaque
+EnumTraits<blink::mojom::Opaque, blink::FencedFrame::Opaque>::FromMojom(
+    blink::mojom::Opaque input) {
   switch (input) {
     case blink::mojom::Opaque::kOpaque:
-      *out = blink::FencedFrame::Opaque::kOpaque;
-      return true;
+      return blink::FencedFrame::Opaque::kOpaque;
   }
   NOTREACHED();
 }
@@ -71,42 +70,35 @@ EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
 }
 
 // static
-bool EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
-                blink::FencedFrame::DeprecatedFencedFrameMode>::
-    FromMojom(blink::mojom::DeprecatedFencedFrameMode input,
-              blink::FencedFrame::DeprecatedFencedFrameMode* out) {
+blink::FencedFrame::DeprecatedFencedFrameMode
+EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
+           blink::FencedFrame::DeprecatedFencedFrameMode>::
+    FromMojom(blink::mojom::DeprecatedFencedFrameMode input) {
   switch (input) {
     case blink::mojom::DeprecatedFencedFrameMode::kDefault:
-      *out = blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
-      return true;
+      return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
     case blink::mojom::DeprecatedFencedFrameMode::kOpaqueAds:
-      *out = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
-      return true;
+      return blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
   }
   NOTREACHED();
 }
 
 // static
-bool EnumTraits<blink::mojom::ReportingDestination,
-                blink::FencedFrame::ReportingDestination>::
-    FromMojom(blink::mojom::ReportingDestination input,
-              blink::FencedFrame::ReportingDestination* out) {
+blink::FencedFrame::ReportingDestination
+EnumTraits<blink::mojom::ReportingDestination,
+           blink::FencedFrame::ReportingDestination>::
+    FromMojom(blink::mojom::ReportingDestination input) {
   switch (input) {
     case blink::mojom::ReportingDestination::kBuyer:
-      *out = blink::FencedFrame::ReportingDestination::kBuyer;
-      return true;
+      return blink::FencedFrame::ReportingDestination::kBuyer;
     case blink::mojom::ReportingDestination::kSeller:
-      *out = blink::FencedFrame::ReportingDestination::kSeller;
-      return true;
+      return blink::FencedFrame::ReportingDestination::kSeller;
     case blink::mojom::ReportingDestination::kComponentSeller:
-      *out = blink::FencedFrame::ReportingDestination::kComponentSeller;
-      return true;
+      return blink::FencedFrame::ReportingDestination::kComponentSeller;
     case blink::mojom::ReportingDestination::kSharedStorageSelectUrl:
-      *out = blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
-      return true;
+      return blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
     case blink::mojom::ReportingDestination::kDirectSeller:
-      *out = blink::FencedFrame::ReportingDestination::kDirectSeller;
-      return true;
+      return blink::FencedFrame::ReportingDestination::kDirectSeller;
   }
   NOTREACHED();
 }

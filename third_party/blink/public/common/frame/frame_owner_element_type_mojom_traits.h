@@ -15,8 +15,8 @@ struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::FrameOwnerElementType,
                                       blink::FrameOwnerElementType> {
   static blink::mojom::FrameOwnerElementType ToMojom(
       blink::FrameOwnerElementType input);
-  static bool FromMojom(blink::mojom::FrameOwnerElementType input,
-                        blink::FrameOwnerElementType* output);
+  static blink::FrameOwnerElementType FromMojom(
+      blink::mojom::FrameOwnerElementType input);
 };
 }  // namespace mojo
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_OWNER_ELEMENT_TYPE_MOJOM_TRAITS_H_

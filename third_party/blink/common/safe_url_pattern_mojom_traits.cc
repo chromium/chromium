@@ -8,22 +8,18 @@
 
 namespace mojo {
 
-bool EnumTraits<blink::mojom::Modifier, ::liburlpattern::Modifier>::FromMojom(
-    blink::mojom::Modifier data,
-    ::liburlpattern::Modifier* out) {
+::liburlpattern::Modifier
+EnumTraits<blink::mojom::Modifier, ::liburlpattern::Modifier>::FromMojom(
+    blink::mojom::Modifier data) {
   switch (data) {
     case blink::mojom::Modifier::kZeroOrMore:
-      *out = liburlpattern::Modifier::kZeroOrMore;
-      return true;
+      return liburlpattern::Modifier::kZeroOrMore;
     case blink::mojom::Modifier::kOptional:
-      *out = liburlpattern::Modifier::kOptional;
-      return true;
+      return liburlpattern::Modifier::kOptional;
     case blink::mojom::Modifier::kOneOrMore:
-      *out = liburlpattern::Modifier::kOneOrMore;
-      return true;
+      return liburlpattern::Modifier::kOneOrMore;
     case blink::mojom::Modifier::kNone:
-      *out = liburlpattern::Modifier::kNone;
-      return true;
+      return liburlpattern::Modifier::kNone;
   }
   NOTREACHED();
 }

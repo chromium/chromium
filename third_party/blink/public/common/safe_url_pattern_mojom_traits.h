@@ -39,8 +39,7 @@ struct BLINK_COMMON_EXPORT
     }
   }
 
-  static bool FromMojom(blink::mojom::Modifier data,
-                        ::liburlpattern::Modifier* out);
+  static ::liburlpattern::Modifier FromMojom(blink::mojom::Modifier data);
 };
 
 template <>

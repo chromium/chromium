@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/link_to_text/link_to_text_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 blink::mojom::LinkGenerationError
@@ -48,59 +50,43 @@ EnumTraits<blink::mojom::LinkGenerationError,
   NOTREACHED();
 }
 
-bool EnumTraits<blink::mojom::LinkGenerationError,
-                shared_highlighting::LinkGenerationError>::
-    FromMojom(blink::mojom::LinkGenerationError input,
-              shared_highlighting::LinkGenerationError* output) {
+shared_highlighting::LinkGenerationError
+EnumTraits<blink::mojom::LinkGenerationError,
+           shared_highlighting::LinkGenerationError>::
+    FromMojom(blink::mojom::LinkGenerationError input) {
   switch (input) {
     case blink::mojom::LinkGenerationError::kNone:
-      *output = shared_highlighting::LinkGenerationError::kNone;
-      return true;
+      return shared_highlighting::LinkGenerationError::kNone;
     case blink::mojom::LinkGenerationError::kIncorrectSelector:
-      *output = shared_highlighting::LinkGenerationError::kIncorrectSelector;
-      return true;
+      return shared_highlighting::LinkGenerationError::kIncorrectSelector;
     case blink::mojom::LinkGenerationError::kNoRange:
-      *output = shared_highlighting::LinkGenerationError::kNoRange;
-      return true;
+      return shared_highlighting::LinkGenerationError::kNoRange;
     case blink::mojom::LinkGenerationError::kNoContext:
-      *output = shared_highlighting::LinkGenerationError::kNoContext;
-      return true;
+      return shared_highlighting::LinkGenerationError::kNoContext;
     case blink::mojom::LinkGenerationError::kContextExhausted:
-      *output = shared_highlighting::LinkGenerationError::kContextExhausted;
-      return true;
+      return shared_highlighting::LinkGenerationError::kContextExhausted;
     case blink::mojom::LinkGenerationError::kContextLimitReached:
-      *output = shared_highlighting::LinkGenerationError::kContextLimitReached;
-      return true;
+      return shared_highlighting::LinkGenerationError::kContextLimitReached;
     case blink::mojom::LinkGenerationError::kEmptySelection:
-      *output = shared_highlighting::LinkGenerationError::kEmptySelection;
-      return true;
+      return shared_highlighting::LinkGenerationError::kEmptySelection;
     case blink::mojom::LinkGenerationError::kTabHidden:
-      *output = shared_highlighting::LinkGenerationError::kTabHidden;
-      return true;
+      return shared_highlighting::LinkGenerationError::kTabHidden;
     case blink::mojom::LinkGenerationError::kOmniboxNavigation:
-      *output = shared_highlighting::LinkGenerationError::kOmniboxNavigation;
-      return true;
+      return shared_highlighting::LinkGenerationError::kOmniboxNavigation;
     case blink::mojom::LinkGenerationError::kTabCrash:
-      *output = shared_highlighting::LinkGenerationError::kTabCrash;
-      return true;
+      return shared_highlighting::LinkGenerationError::kTabCrash;
     case blink::mojom::LinkGenerationError::kUnknown:
-      *output = shared_highlighting::LinkGenerationError::kUnknown;
-      return true;
+      return shared_highlighting::LinkGenerationError::kUnknown;
     case blink::mojom::LinkGenerationError::kIFrame:
-      *output = shared_highlighting::LinkGenerationError::kIFrame;
-      return true;
+      return shared_highlighting::LinkGenerationError::kIFrame;
     case blink::mojom::LinkGenerationError::kTimeout:
-      *output = shared_highlighting::LinkGenerationError::kTimeout;
-      return true;
+      return shared_highlighting::LinkGenerationError::kTimeout;
     case blink::mojom::LinkGenerationError::kBlockList:
-      *output = shared_highlighting::LinkGenerationError::kBlockList;
-      return true;
+      return shared_highlighting::LinkGenerationError::kBlockList;
     case blink::mojom::LinkGenerationError::kNoRemoteConnection:
-      *output = shared_highlighting::LinkGenerationError::kNoRemoteConnection;
-      return true;
+      return shared_highlighting::LinkGenerationError::kNoRemoteConnection;
     case blink::mojom::LinkGenerationError::kNotGenerated:
-      *output = shared_highlighting::LinkGenerationError::kNotGenerated;
-      return true;
+      return shared_highlighting::LinkGenerationError::kNotGenerated;
   }
 
   NOTREACHED();
@@ -120,19 +106,17 @@ EnumTraits<blink::mojom::LinkGenerationReadyStatus,
   NOTREACHED();
 }
 
-bool EnumTraits<blink::mojom::LinkGenerationReadyStatus,
-                shared_highlighting::LinkGenerationReadyStatus>::
-    FromMojom(blink::mojom::LinkGenerationReadyStatus input,
-              shared_highlighting::LinkGenerationReadyStatus* output) {
+shared_highlighting::LinkGenerationReadyStatus
+EnumTraits<blink::mojom::LinkGenerationReadyStatus,
+           shared_highlighting::LinkGenerationReadyStatus>::
+    FromMojom(blink::mojom::LinkGenerationReadyStatus input) {
   switch (input) {
     case blink::mojom::LinkGenerationReadyStatus::kRequestedBeforeReady:
-      *output =
-          shared_highlighting::LinkGenerationReadyStatus::kRequestedBeforeReady;
-      return true;
+      return shared_highlighting::LinkGenerationReadyStatus::
+          kRequestedBeforeReady;
     case blink::mojom::LinkGenerationReadyStatus::kRequestedAfterReady:
-      *output =
-          shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady;
-      return true;
+      return shared_highlighting::LinkGenerationReadyStatus::
+          kRequestedAfterReady;
   }
 
   NOTREACHED();

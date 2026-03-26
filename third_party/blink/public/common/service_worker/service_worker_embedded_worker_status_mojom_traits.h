@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_EMBEDDED_WORKER_STATUS_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_EMBEDDED_WORKER_STATUS_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
@@ -30,23 +31,19 @@ struct BLINK_COMMON_EXPORT
     }
   }
 
-  static bool FromMojom(blink::mojom::ServiceWorkerEmbeddedWorkerStatus input,
-                        blink::EmbeddedWorkerStatus* output) {
+  static blink::EmbeddedWorkerStatus FromMojom(
+      blink::mojom::ServiceWorkerEmbeddedWorkerStatus input) {
     switch (input) {
       case blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStopped:
-        *output = blink::EmbeddedWorkerStatus::kStopped;
-        break;
+        return blink::EmbeddedWorkerStatus::kStopped;
       case blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStarting:
-        *output = blink::EmbeddedWorkerStatus::kStarting;
-        break;
+        return blink::EmbeddedWorkerStatus::kStarting;
       case blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kRunning:
-        *output = blink::EmbeddedWorkerStatus::kRunning;
-        break;
+        return blink::EmbeddedWorkerStatus::kRunning;
       case blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStopping:
-        *output = blink::EmbeddedWorkerStatus::kStopping;
-        break;
+        return blink::EmbeddedWorkerStatus::kStopping;
     }
-    return true;
+    NOTREACHED();
   }
 };
 

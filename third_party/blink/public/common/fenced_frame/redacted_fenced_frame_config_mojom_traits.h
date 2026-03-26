@@ -22,8 +22,7 @@ template <>
 struct BLINK_COMMON_EXPORT
     EnumTraits<blink::mojom::Opaque, blink::FencedFrame::Opaque> {
   static blink::mojom::Opaque ToMojom(blink::FencedFrame::Opaque input);
-  static bool FromMojom(blink::mojom::Opaque input,
-                        blink::FencedFrame::Opaque* out);
+  static blink::FencedFrame::Opaque FromMojom(blink::mojom::Opaque input);
 };
 
 template <>
@@ -32,8 +31,8 @@ struct BLINK_COMMON_EXPORT
                blink::FencedFrame::ReportingDestination> {
   static blink::mojom::ReportingDestination ToMojom(
       blink::FencedFrame::ReportingDestination input);
-  static bool FromMojom(blink::mojom::ReportingDestination input,
-                        blink::FencedFrame::ReportingDestination* out);
+  static blink::FencedFrame::ReportingDestination FromMojom(
+      blink::mojom::ReportingDestination input);
 };
 
 template <>
@@ -42,8 +41,8 @@ struct BLINK_COMMON_EXPORT
                blink::FencedFrame::DeprecatedFencedFrameMode> {
   static blink::mojom::DeprecatedFencedFrameMode ToMojom(
       blink::FencedFrame::DeprecatedFencedFrameMode input);
-  static bool FromMojom(blink::mojom::DeprecatedFencedFrameMode input,
-                        blink::FencedFrame::DeprecatedFencedFrameMode* out);
+  static blink::FencedFrame::DeprecatedFencedFrameMode FromMojom(
+      blink::mojom::DeprecatedFencedFrameMode input);
 };
 
 template <>

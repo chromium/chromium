@@ -18,8 +18,8 @@ struct BLINK_COMMON_EXPORT
                shared_highlighting::LinkGenerationError> {
   static blink::mojom::LinkGenerationError ToMojom(
       shared_highlighting::LinkGenerationError input);
-  static bool FromMojom(blink::mojom::LinkGenerationError input,
-                        shared_highlighting::LinkGenerationError* output);
+  static shared_highlighting::LinkGenerationError FromMojom(
+      blink::mojom::LinkGenerationError input);
 };
 
 template <>
@@ -28,8 +28,8 @@ struct BLINK_COMMON_EXPORT
                shared_highlighting::LinkGenerationReadyStatus> {
   static blink::mojom::LinkGenerationReadyStatus ToMojom(
       shared_highlighting::LinkGenerationReadyStatus input);
-  static bool FromMojom(blink::mojom::LinkGenerationReadyStatus input,
-                        shared_highlighting::LinkGenerationReadyStatus* output);
+  static shared_highlighting::LinkGenerationReadyStatus FromMojom(
+      blink::mojom::LinkGenerationReadyStatus input);
 };
 
 }  // namespace mojo

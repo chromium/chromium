@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -32,21 +33,17 @@ struct BLINK_COMMON_EXPORT EnumTraits<
         return blink::mojom::ServiceWorkerRouterRunningStatusEnum::kNotRunning;
     }
   }
-  static bool FromMojom(
-      blink::mojom::ServiceWorkerRouterRunningStatusEnum input,
-      blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum*
-          output) {
+  static blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum
+  FromMojom(blink::mojom::ServiceWorkerRouterRunningStatusEnum input) {
     switch (input) {
       case blink::mojom::ServiceWorkerRouterRunningStatusEnum::kRunning:
-        *output = blink::ServiceWorkerRouterRunningStatusCondition::
+        return blink::ServiceWorkerRouterRunningStatusCondition::
             RunningStatusEnum::kRunning;
-        break;
       case blink::mojom::ServiceWorkerRouterRunningStatusEnum::kNotRunning:
-        *output = blink::ServiceWorkerRouterRunningStatusCondition::
+        return blink::ServiceWorkerRouterRunningStatusCondition::
             RunningStatusEnum::kNotRunning;
-        break;
     }
-    return true;
+    NOTREACHED();
   }
 };
 
