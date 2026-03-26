@@ -711,13 +711,13 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
     schema->SetString("type", "array");
     auto items_schema = std::make_unique<JSONObject>();
     items_schema->SetString("type", "string");
-    items_schema->SetArray("oneOf", std::move(one_of));
+    items_schema->SetArray("anyOf", std::move(one_of));
     items_schema->SetArray("enum", std::move(enum_array));
     schema->SetObject("items", std::move(items_schema));
     schema->SetBoolean("uniqueItems", true);
   } else {
     schema->SetString("type", "string");
-    schema->SetArray("oneOf", std::move(one_of));
+    schema->SetArray("anyOf", std::move(one_of));
     schema->SetArray("enum", std::move(enum_array));
   }
 
@@ -781,7 +781,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
   items_schema->SetString("type", "string");
   std::unique_ptr<JSONArray> enum_array;
   items_schema->SetArray(
-      "oneOf", ComputeOneOfArray(controls_for_name, enum_array, required));
+      "anyOf", ComputeAnyOfArray(controls_for_name, enum_array, required));
   items_schema->SetArray("enum", std::move(enum_array));
   // Each checkbox value must at most appear *once* in the input.
 
@@ -801,14 +801,14 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
   schema->SetString("type", "string");
 
   std::unique_ptr<JSONArray> enum_array;
-  schema->SetArray("oneOf",
-                   ComputeOneOfArray(controls_for_name, enum_array, required));
+  schema->SetArray("anyOf",
+                   ComputeAnyOfArray(controls_for_name, enum_array, required));
   schema->SetArray("enum", std::move(enum_array));
   AddDescription(controls_for_name, *schema);
   return schema;
 }
 
-std::unique_ptr<JSONArray> FormMCPSchema::ComputeOneOfArray(
+std::unique_ptr<JSONArray> FormMCPSchema::ComputeAnyOfArray(
     const ControlVector& controls_for_name,
     std::unique_ptr<JSONArray>& enum_array,
     bool& required) {

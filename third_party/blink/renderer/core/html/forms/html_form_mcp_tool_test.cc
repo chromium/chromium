@@ -796,7 +796,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_ImplicitLabelText) {
       "properties": {
          "select": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              { "type": "string", "const": "Option 1", "title": "This is option 1" },
              { "type": "string", "const": "Option 2", "title": "This is option 2" },
              { "type": "string", "const": "Option 3", "title": "This is option 3" }
@@ -834,7 +834,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select) {
       "properties": {
          "select": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              { "type": "string", "const": "Option 1", "title": "This is option 1" },
              { "type": "string", "const": "Option 2", "title": "This is option 2" },
              { "type": "string", "const": "Option 3", "title": "This is option 3" }
@@ -873,7 +873,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Multiple) {
            "type": "array",
            "items": {
              "type": "string",
-             "oneOf": [
+             "anyOf": [
                { "type": "string", "const": "Option 1", "title": "This is option 1" },
                { "type": "string", "const": "Option 2", "title": "This is option 2" },
                { "type": "string", "const": "Option 3", "title": "This is option 3" }
@@ -1198,7 +1198,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_Multiple) {
           "type": "array",
           "items": {
             "type": "string",
-            "oneOf": [
+            "anyOf": [
               { "type": "string", "const": "apple", "title": "Apple" },
               { "type": "string", "const": "melon", "title": "Melon" },
               { "type": "string", "const": "grape", "title": "Grape" }
@@ -1249,7 +1249,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_ToolParamAttributes) {
           "type": "array",
           "items": {
             "type": "string",
-            "oneOf": [
+            "anyOf": [
               { "type": "string", "const": "apple" },
               { "type": "string", "const": "melon" },
               { "type": "string", "const": "grape" }
@@ -2322,7 +2322,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              {
                "type": "string",
                "const": "s",
@@ -2372,7 +2372,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Multiple) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              {
                "type": "string",
                "const": "s"
@@ -2390,7 +2390,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Multiple) {
          },
          "item": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              {
                "type": "string",
                "const": "hoodie"
@@ -2469,7 +2469,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Required) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              {
                "type": "string",
                "const": "s"
@@ -2515,7 +2515,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamDescription) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              {
                "type": "string",
                "const": "s"
@@ -3012,7 +3012,7 @@ TEST_F(HTMLFormMcpToolTest, FieldsetDescription_Radio_Basic) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              { "type": "string", "const": "s" },
              { "type": "string", "const": "m" },
              { "type": "string", "const": "l" }
@@ -3052,7 +3052,7 @@ TEST_F(HTMLFormMcpToolTest, FieldsetDescription_Radio_Nested) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              { "type": "string", "const": "s" },
              { "type": "string", "const": "m" }
            ],
@@ -3091,7 +3091,7 @@ TEST_F(HTMLFormMcpToolTest, FieldsetDescription_Radio_NoAttrOnNearest) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              { "type": "string", "const": "s" },
              { "type": "string", "const": "m" }
            ],
@@ -3131,7 +3131,7 @@ TEST_F(HTMLFormMcpToolTest, FieldsetDescription_Radio_CommonOutside) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              { "type": "string", "const": "s" },
              { "type": "string", "const": "m" }
            ],
@@ -3170,7 +3170,7 @@ TEST_F(HTMLFormMcpToolTest, FieldsetDescription_Radio_NoCommonFieldset) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              { "type": "string", "const": "s" },
              { "type": "string", "const": "m" }
            ],
@@ -3267,7 +3267,7 @@ TEST_F(HTMLFormMcpToolTest, FieldsetDescription_LimitToForm) {
       "properties": {
          "size": {
            "type": "string",
-           "oneOf": [
+           "anyOf": [
              { "type": "string", "const": "s" },
              { "type": "string", "const": "m" }
            ],
@@ -3306,7 +3306,7 @@ TEST_F(HTMLFormMcpToolTest, FieldsetDescription_Checkbox_Multiple_Basic) {
            "type": "array",
            "items": {
              "type": "string",
-             "oneOf": [
+             "anyOf": [
                { "type": "string", "const": "red" },
                { "type": "string", "const": "green" },
                { "type": "string", "const": "blue" }

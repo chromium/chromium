@@ -99,7 +99,7 @@ class CORE_EXPORT FormMCPSchema {
       bool& required);
 
   // Compute an array representing the values (as HTMLInputElement::Value()
-  // of the specified controls, suitable for assignment to a 'oneOf' field.
+  // of the specified controls, suitable for assignment to a 'anyOf' field.
   //
   // The return value of this function will be an array of objects
   // on the form { "const": "X", "title": "..." }. In addition to that,
@@ -111,7 +111,7 @@ class CORE_EXPORT FormMCPSchema {
   //
   // The argument to 'required' will be set if at least one of the controls
   // are required.
-  std::unique_ptr<JSONArray> ComputeOneOfArray(
+  std::unique_ptr<JSONArray> ComputeAnyOfArray(
       const ControlVector& controls_for_name,
       std::unique_ptr<JSONArray>& enum_array,
       bool& required);
