@@ -12,7 +12,7 @@
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#import "ios/chrome/browser/intelligence/actuation/model/actuation_app_interface.h"
+#import "ios/chrome/browser/intelligence/actuation/test/actuation_app_interface.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -73,10 +73,10 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
 
 }  // namespace
 
-@interface ActuationServiceTestCase : ChromeTestCase
+@interface ActuationToolsTestCase : ChromeTestCase
 @end
 
-@implementation ActuationServiceTestCase {
+@implementation ActuationToolsTestCase {
   std::unique_ptr<net::test_server::EmbeddedTestServer> _crossOriginServer;
 }
 
@@ -146,6 +146,8 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
 
 #pragma mark - Tests
 
+// Tests that the navigate tool successfully navigates the active tab to a new
+// URL.
 - (void)testNavigateTool_worksOnForegroundTab {
   const GURL destinationURL = [self URLForHTML:"Hello"];
 
@@ -160,6 +162,8 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
 }
 
+// Tests that the navigate tool successfully navigates a background tab to a new
+// URL without changing the active tab.
 - (void)testNavigateTool_worksOnBackgroundTab {
   const GURL destinationURL = [self URLForHTML:"Hello"];
 
@@ -189,6 +193,8 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
 }
 
+// Tests that the click tool successfully clicks an element using its
+// coordinates.
 - (void)testClickTool_clicksByCoordinates {
   const std::string buttonHTML =
       "<button onclick='this.innerText=\"Clicked\"'>Click Me</button>";
@@ -230,6 +236,8 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
   [ChromeEarlGrey waitForWebStateContainingText:"Clicked"];
 }
 
+// Tests that the click tool successfully clicks an element using its DOM node
+// ID and frame token.
 - (void)testClickTool_clicksByIdentifiers {
   const std::string buttonHTML =
       "<button onclick='this.innerText=\"Clicked\"'>Click Me</button>";
@@ -272,6 +280,8 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
   [ChromeEarlGrey waitForWebStateFrameContainingText:"Clicked"];
 }
 
+// Tests that the click tool successfully clicks an element inside a
+// cross-origin iframe.
 - (void)testClickTool_worksOnCrossOriginIframe {
   const std::string buttonHTML =
       "<button onclick='this.innerText=\"Clicked\"'>Click Me</button>";
@@ -320,7 +330,7 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
 
 // Tests that the history tool successfully navigates the user back when the tab
 // is on the foreground.
-- (void)testThatHistoryBackToolWorksOnForeground {
+- (void)testHistoryBackTool_worksOnForegroundTab {
   [ChromeEarlGrey loadURL:[self URLForHTML:"PageA"]];
   [ChromeEarlGrey waitForWebStateContainingText:"PageA"];
 
@@ -337,7 +347,7 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
 
 // Tests that the history tool successfully navigates the user back when the tab
 // is on the background.
-- (void)testThatHistoryBackToolWorksOnBackground {
+- (void)testHistoryBackTool_worksOnBackgroundTab {
   [ChromeEarlGrey loadURL:[self URLForHTML:"PageA"]];
   [ChromeEarlGrey waitForWebStateContainingText:"PageA"];
 
