@@ -199,7 +199,7 @@ export function getHtml(this: ManagementUiElement) {
               <tr>
                 <td class="extension-name">
                   <div .title="${item.name}" role="presentation">
-                    <img .src="${item.icon}" alt="" aria-hidden="true">
+                    <img .src="${item.icon || ''}" alt="" aria-hidden="true">
                     <span>${item.name}</span>
                   </div>
                 </td>
@@ -243,7 +243,7 @@ export function getHtml(this: ManagementUiElement) {
               <tr>
                 <td class="application-name">
                   <div .title="${item.name}" role="presentation">
-                    <img .src="${item.icon}" alt="" aria-hidden="true">
+                    <img .src="${item.icon || ''}" alt="" aria-hidden="true">
                     <span>${item.name}</span>
                   </div>
                 </td>

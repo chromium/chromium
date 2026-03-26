@@ -125,7 +125,7 @@ export function getHtml(this: GlicInternalsAppElement) {
           </label>
           <label for="invokeFreOverrideSelect">FRE Override</label>
           <select id="invokeFreOverrideSelect"
-              .value="${this.invokeFreOverride_}"
+              .value="${this.invokeFreOverride_.toString()}"
               @change="${this.onInvokeFreOverrideChange_}">
             <option value="0">Unspecified</option>
             <option value="1">TrustFirstText</option>

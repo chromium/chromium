@@ -28,7 +28,8 @@ export function getHtml(this: ChromeFindsInternalsAppElement) {
   <div class="input-group">
     <label>
       Number of history entries:
-      <input type="number" id="history-count" .value="${this.historyCount_}"
+      <input type="number" id="history-count"
+          .value="${this.historyCount_.toString()}"
           @change="${this.onHistoryCountChange_}" min="0">
     </label>
   </div>

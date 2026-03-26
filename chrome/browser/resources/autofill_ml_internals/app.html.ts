@@ -14,7 +14,9 @@ export function getHtml(this: AppElement) {
           .selectedLogEntry="${this.selectedLog_}"
           @log-selected="${this.onLogSelected_}">
       </log-list>
-      <log-details .log="${this.selectedLog_}"></log-details>
+      ${this.selectedLog_ ? html`
+        <log-details .log="${this.selectedLog_}"></log-details>
+      ` : ''}
     ` : html`
       <div class="empty-message">
         Trigger some ML predictions while this page is open to record logs.

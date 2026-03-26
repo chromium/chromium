@@ -292,7 +292,7 @@ export class AppItemElement extends CrLitElement {
     this.closeContextMenu();
   }
 
-  protected getIconUrl_() {
+  protected getIconUrl_(): string {
     const url = new URL(this.appInfo.iconUrl);
     // For web app, the backend serves grayscale image when the app is not
     // locally installed automatically and doesn't recognize this query param,
@@ -300,7 +300,7 @@ export class AppItemElement extends CrLitElement {
     if (!this.isLocallyInstalled_()) {
       url.searchParams.append('grayscale', 'true');
     }
-    return url;
+    return url.href;
   }
 }
 

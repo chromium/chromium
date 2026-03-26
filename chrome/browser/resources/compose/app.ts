@@ -192,7 +192,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
       CrFeedbackOption.UNSPECIFIED;
   protected accessor hasPartialOutput_: boolean = false;
   protected accessor input_: string = '';
-  protected accessor inputParams_: ConfigurableParams|undefined;
+  protected accessor inputParams_: ConfigurableParams = {
+    minWordLimit: 0,
+    maxWordLimit: 0,
+    maxCharacterLimit: 0,
+  };
   protected accessor isEditingSubmittedInput_: boolean = false;
   protected accessor isEditingResultText_: boolean = false;
   protected accessor isEditSubmitEnabled_: boolean = true;
