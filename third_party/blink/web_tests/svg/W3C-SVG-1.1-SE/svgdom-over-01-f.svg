@@ -46,7 +46,7 @@
       <rect id="r" width="1" height="1"/>
       <stop id="s"/>
       <feConvolveMatrix id="c"/>
-      <image id="i" xlink:href="http://example.org/image.jpg" width="1" height="1"/>
+      <image id="i" xlink:href="about:blank" width="1" height="1"/>
       <radialGradient id="g"/>
       <text id="t"/>
       <text id="tt">sometext</text>
