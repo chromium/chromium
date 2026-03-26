@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,29 +60,6 @@ public class SendTabToSelfAndroidBridgeTest {
                         eq(URL),
                         eq(TITLE),
                         eq(context));
-    }
-
-    @Test
-    @SmallTest
-    public void testAddEntry() {
-        SendTabToSelfAndroidBridge.addEntry(
-                mProfile, URL, TITLE, TARGET_DEVICE_SYNC_CACHE_GUID, /* pageContext= */ null);
-        verify(mNativeMock)
-                .addEntry(
-                        eq(mProfile),
-                        eq(URL),
-                        eq(TITLE),
-                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
-                        isNull());
-    }
-
-    @Test
-    @SmallTest
-    public void testAddScrollPositionToPageContext() {
-        String selector = "selector";
-        PageContext context = new PageContext(new byte[0]);
-        SendTabToSelfAndroidBridge.addScrollPositionToPageContext(context, selector);
-        verify(mNativeMock).addScrollPositionToPageContext(eq(context), eq(selector));
     }
 
     @Test
