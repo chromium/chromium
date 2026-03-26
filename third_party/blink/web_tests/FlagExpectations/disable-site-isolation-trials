@@ -20,6 +20,7 @@ paint/* [ Skip ]
 tables/* [ Skip ]
 svg/* [ Skip ]
 external/wpt/svg/* [ Skip ]
+crbug.com/495568057 wpt_internal/svg/* [ Skip ]
 
 fast/block/* [ Skip ]
 fast/canvas/* [ Skip ]
