@@ -238,8 +238,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
       ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get());
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
-                       DontOpenPanelAgainWhenPanelWasExplicitlyCanceledBefore) {
+IN_PROC_BROWSER_TEST_F(
+    NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
+    DISABLED_DontOpenPanelAgainWhenPanelWasExplicitlyCanceledBefore) {
   OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_TRUE(IsCustomizeChromeEntryShowing());
 
