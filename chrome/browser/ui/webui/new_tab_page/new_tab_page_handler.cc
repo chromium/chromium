@@ -93,6 +93,8 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/webui/help_bubble_handler.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -1459,7 +1461,14 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
 
 void NewTabPageHandler::TryShowRealboxContextualMenuIPH(
     ui::TrackedElement* element) {
-  if (!element) {
+  if (!element ||
+      !element->IsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()) {
+    return;
+  }
+
+  auto* anchor =
+      element->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>();
+  if (anchor->handler()->GetWebContents() != web_contents_) {
     return;
   }
 
