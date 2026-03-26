@@ -181,8 +181,6 @@ public class FeedSurfaceCoordinator
          */
         RootView(Context context) {
             super(context);
-            setClipChildren(false);
-            setClipToPadding(false);
         }
 
         @Override
@@ -960,7 +958,6 @@ public class FeedSurfaceCoordinator
         assumeNonNull(view);
         view.setId(R.id.feed_stream_recycler_view);
         view.setClipToPadding(false);
-        view.setClipChildren(false);
 
         RecyclerView.ItemAnimator animator = view.getItemAnimator();
         if (animator != null) {
