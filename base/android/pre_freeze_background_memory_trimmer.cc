@@ -100,7 +100,7 @@ void MaybeRecordPreFreezeMetric(std::optional<ByteSize> value,
 
 std::optional<ByteSize> Diff(std::optional<ByteSize> before,
                              std::optional<ByteSize> after) {
-  if (!before.has_value() || !before.has_value()) {
+  if (!before.has_value() || !after.has_value()) {
     return std::nullopt;
   }
 
