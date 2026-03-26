@@ -317,7 +317,8 @@ void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source,
   // If the source is GPU-accelerated, and the canvas is not, but could be...
   if (source_is_accelerated && canvas()->ShouldAccelerate2dContext() &&
       canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU &&
-      SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
+      SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade(
+          SharedGpuContext::ContextProviderWrapper().get())) {
     // Recreate the CRP in GPU raster mode and signal that it needs a
     // compositing update.
     canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
@@ -866,7 +867,8 @@ DOMMatrix* CanvasRenderingContext2D::drawElementImage(
 
 void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
   if (canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU &&
-      SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
+      SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade(
+          SharedGpuContext::ContextProviderWrapper().get())) {
     canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
     DropAndRecreateExistingResourceProvider();
   }

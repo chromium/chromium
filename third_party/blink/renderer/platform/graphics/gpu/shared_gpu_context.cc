@@ -255,13 +255,13 @@ bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
   return raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
 }
 
-bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
-  bool only_if_gpu_compositing = false;
-  this_ptr->CreateContextProviderIfNeeded(only_if_gpu_compositing);
-  if (!this_ptr->context_provider_wrapper_)
+// static
+bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade(
+    WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
+  if (!context_provider_wrapper) {
     return false;
-  return !this_ptr->context_provider_wrapper_->ContextProvider()
+  }
+  return !context_provider_wrapper->ContextProvider()
               .GetGpuFeatureInfo()
               .IsWorkaroundEnabled(
                   gpu::DISABLE_SOFTWARE_TO_ACCELERATED_CANVAS_UPGRADE);

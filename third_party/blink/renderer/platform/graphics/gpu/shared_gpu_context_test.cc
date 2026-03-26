@@ -142,7 +142,8 @@ TEST_F(BadSharedGpuContextTest, IsValidWithoutRestoring) {
 }
 
 TEST_F(BadSharedGpuContextTest, AllowSoftwareToAcceleratedCanvasUpgrade) {
-  EXPECT_FALSE(SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade());
+  EXPECT_FALSE(SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade(
+      SharedGpuContext::ContextProviderWrapper().get()));
 }
 
 TEST_F(BadSharedGpuContextTest, AccelerateImageBufferSurfaceCreationFails) {
