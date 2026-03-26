@@ -5895,17 +5895,28 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     if (have_svg_image && canvas()) {
       UseCounter::Count(canvas()->GetDocument(), WebFeature::kSVGInWebGL);
     }
-    // If the SVG image doesn't have natural width/height, we need to resolve
-    // against a default object size. This is 300x150 for legacy reasons.
-    // Maybe it should be the resolved destination size?.
     if (have_svg_image) {
+      // When the <img> has no explicit width/height attributes and the SVG
+      // has no intrinsic size, resolve against 0x0 instead of the legacy
+      // 300x150 default so that WebGL treats the source as zero-sized.
+      gfx::SizeF default_object_size =
+          (!image->FastHasAttribute(html_names::kWidthAttr) &&
+           !image->FastHasAttribute(html_names::kHeightAttr))
+              ? gfx::SizeF()
+              : gfx::SizeF(image->width(), image->height());
       SourceImageStatus status;
       image_for_render =
-          image->GetSourceImageForCanvas(&status, gfx::SizeF(300, 150));
-      // Since the size of the source has not been previously validated,
-      // GetSourceImageForCanvas() can return nullptr.
+          image->GetSourceImageForCanvas(&status, default_object_size);
       if (!image_for_render) {
-        image_for_render = Image::NullImage();
+        // Zero-size SVG source.  (Re)define the texture level as 0x0 so
+        // follow-up texSubImage2D validation sees the correct dimensions.
+        ScopedUnpackParametersResetRestore temporary_reset_unpack(this);
+        ContextGL()->TexImage2D(
+            params.target, params.level,
+            ConvertTexInternalFormat(params.format, params.type), 0, 0, 0,
+            params.format, params.type, nullptr);
+        SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
+        return;
       }
     }
     // DrawImageIntoBuffer always respects orientation
