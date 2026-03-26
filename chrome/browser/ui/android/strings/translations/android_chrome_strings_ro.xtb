@@ -1395,7 +1395,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6746338529702829275">Examinează datele din cont</translation>
 <translation id="6746834324024491643">Pentru a-ți accesa parolele și alte date pe toate dispozitivele tale, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Deschide rapid o filă nouă. Pentru a edita comanda rapidă, atinge-o lung.</translation>
-<translation id="6752130751133944215">Pentru a restabili o fereastră nouă, redu numărul total de ferestre active și inactive la cel mult <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Ferestrele inactive se șterg după șase luni.</translation>
 <translation id="6754359471209693699">Începe o căutare nouă</translation>
 <translation id="6756507620369789050">Trimite feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7388615499319468910">Site-urile și advertiserii pot să afle despre performanța anunțurilor. Setarea este dezactivată.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Alt fișier din listă}few{Alte # fișiere din listă}other{Alte # de fișiere din listă}}</translation>
 <translation id="7400418766976504921">Adresă URL</translation>
-<translation id="7400424692675800399">Pentru a deschide o fereastră nouă, redu numărul total de ferestre active și inactive la cel mult <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Experiența primei rulări Chrome</translation>
 <translation id="7411224099004328643">Utilizator Cont Google</translation>
 <translation id="7419565702166471774">Folosește întotdeauna conexiuni securizate</translation>

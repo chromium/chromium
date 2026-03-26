@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">יש ללחוץ פעמיים כדי להתקין.</translation>
 <translation id="1740650426894359238">החלפת פרופיל</translation>
 <translation id="1741219894094057085">שעון חכם</translation>
-<translation id="1742773766788162541">סריקת כרטיס ומילוי אוטומטי</translation>
 <translation id="1743244221910283364">מחיקת השינויים</translation>
 <translation id="1748975028205587434">בחירת הקובץ הרצוי</translation>
 <translation id="1749733017156547309">נדרשת סיסמה</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">צמצום</translation>
 <translation id="2271452184061378400">קבוצות הכרטיסיות שלך נשמרות כאן</translation>
 <translation id="2273327106802955778">התפריט 'עוד'</translation>
-<translation id="2283599456633275070">נסיעות</translation>
 <translation id="2287614783861766820">{count,plural, =1{הכתובת הזו תימחק מהמכשיר.}one{הכתובות האלו יימחקו מהמכשיר.}two{הכתובות האלו יימחקו מהמכשיר.}other{הכתובות האלו יימחקו מהמכשיר.}}</translation>
 <translation id="2295236662082735391">‏כדי לערוך תמונה באינטרנט באמצעות Gemini, צריך ללחוץ עליה לחיצה ארוכה</translation>
 <translation id="2297989278479054870">‏אחרי היציאה מהחשבון, הסימניות, הסיסמאות ופרטים נוספים בחשבון Google שלך יוסרו מהמכשיר הזה.</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">גישה לסיסמאות שמורות באפליקציות אחרות</translation>
 <translation id="4431224949908513835">צריך לבחור אמצעי תשלום למילוי.</translation>
 <translation id="4432122368769493392">הגדרות</translation>
-<translation id="443975520858086928">‏אפשר לשאול את Google כל דבר</translation>
 <translation id="4442550905108052454">פותחים את ה<ph name="BEGIN_BOLD" />הגדרות<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">אפשרויות נוספות של <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">אפשר להחליק את הקצה כדי לעבור אחורה או קדימה.</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">מעקב מחירים</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4621768135601674446">פתיחת האפשרויות של "מצב קריאה"</translation>
-<translation id="4623894491222334521">תעודות מזהות</translation>
 <translation id="4627107755957573804">מתן הרשאה לאתרים ולאפליקציות לשדרג חשבונות קיימים לשימוש במפתחות גישה</translation>
 <translation id="4629065796475200039">הסיסמה שלך לא יובאה</translation>
 <translation id="4630212057753624203">בועה לדוגמה</translation>
@@ -1726,6 +1722,7 @@
 <translation id="7128693485119315539">יכול להיות שהאדמין בארגון שלך יצטרך לראות ולנהל את נתוני הגלישה שקשורים לחשבון המנוהל שלך, כמו היסטוריית הגלישה והסיסמאות.</translation>
 <translation id="713215255510512027">‫<ph name="FILENAME" /> ‏(<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">המצלמה לא זמינה</translation>
+<translation id="7138678301420049075">אחר</translation>
 <translation id="7141960840225504692">הכרטיסיות ייסגרו ונתוני הגלישה יימחקו</translation>
 <translation id="714291438898585119">מסומנים בכוכב</translation>
 <translation id="7146301801400584641">קובץ יומן זמין</translation>
@@ -1790,7 +1787,6 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> מאמרים שלא נקראו.</translation>
 <translation id="7412027924265291969">המשך</translation>
 <translation id="741204030948306876">כן, אני רוצה</translation>
-<translation id="7417689656810783109">שינוי שם הקבוצה</translation>
 <translation id="7419565702166471774">להשתמש תמיד בחיבורים מאובטחים</translation>
 <translation id="7425053386765766120">הוספת אמצעי תשלום…</translation>
 <translation id="7425346204213733349">‏שינויים בסימניות, בהיסטוריה, בסיסמאות ובהגדרות נוספות לא יסונכרנו עוד עם חשבון Google שלך. עם זאת, הנתונים הקיימים עדיין יאוחסנו בחשבון Google שלך.</translation>
@@ -2075,6 +2071,7 @@
 <translation id="8363484128299778310">שחזור זמני במקרה של בעיות</translation>
 <translation id="8364563001733875155">כדי לשנות את קוד האימות, קודם עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="8366466717204352506">מעולם לא נעשתה בדיקה</translation>
+<translation id="8367705492654390392">אפשר לשאול הכל</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>
 <translation id="8368198938968349418">הפעלת מילוי אוטומטי…</translation>
 <translation id="8370406443343902172">מעבר להגדרות…</translation>

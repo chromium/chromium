@@ -21,6 +21,11 @@
 <translation id="1059120031266247284">Met jou gedeeld</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> met verwijderknop</translation>
 <translation id="1062407476771304334">Vervangen</translation>
+<translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. De back-up omvat app-gegevens.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />App-gegevens kunnen alle gegevens zijn die een app heeft opgeslagen (op basis van de ontwikkelaarsinstellingen), waaronder gegevens zoals contacten, berichten en foto's.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Back-upgegevens tellen niet mee voor de opslaglimiet van Drive.<ph name="END_PARAGRAPH4" />
+        <ph name="BEGIN_PARAGRAPH5" />Je kunt deze service uitzetten via Instellingen.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="1073899992769346247">Vervang de batterij of laad hem op</translation>
 <translation id="1081015718268701546">Linux-apps worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="108486256082349153">Mobiel: <ph name="ADDRESS" /></translation>
@@ -773,6 +778,10 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3470502288861289375">Kopiëren...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" /> en dan <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl-Shift-spatiebalk</translation>
+<translation id="3484174798079475132"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen bij jou in de buurt om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens zonder je te identificeren om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Je kunt Locatietoegankelijkheid op elk moment uitzetten in de locatie-instellingen van je apparaat via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang &gt; Geavanceerde locatie-instellingen. Als Locatienauwkeurigheid uitstaat, worden er geen gegevens voor locatienauwkeurigheid verzameld. Voor Android-apps en -services wordt alleen het IP-adres gebruikt (indien beschikbaar) om de locatie van je apparaat te bepalen. Dit kan van invloed zijn op de beschikbaarheid en nauwkeurigheid van locaties voor Android-apps en -services zoals Google Maps.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Meer informatie over Locatienauwkeurigheid<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Plank automatisch verborgen</translation>
 <translation id="3496797737329654668">Game erop los</translation>
@@ -877,6 +886,9 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
 <translation id="3743775386021959186">Focus staat aan, nog <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Weersuggestie verbergen</translation>
+<translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />App-gegevens kunnen alle gegevens zijn die een app heeft opgeslagen (op basis van de ontwikkelaarsinstellingen), waaronder gegevens zoals contacten, berichten en foto's.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Back-upgegevens tellen niet mee voor de Drive-opslaglimiet van je kind.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Je kunt deze service uitzetten via Instellingen.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3756485814916578707">Scherm casten</translation>
 <translation id="3765841382945324995">De sneltoets <ph name="SIX_PACK_KEY_NAME" /> is geüpdatet van <ph name="OLD_SHORTCUT" /> naar <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Vandaag bewerkt</translation>
@@ -1345,6 +1357,10 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5147567197700016471">Ontgrendeld</translation>
 <translation id="5150070631291639005">Privacyinstellingen</translation>
 <translation id="5155897006997040331">Leesnelheid</translation>
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Dit is algemene informatie over je apparaat en hoe je het gebruikt (zoals batterijniveau, systeem- en app-activiteit en fouten). De gegevens worden gebruikt om Android te verbeteren voor iedereen. Daarnaast helpen bepaalde verzamelde gegevens Google-apps en -partners, zoals Android-ontwikkelaars, bij de verbetering van hun apps en producten.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Als je deze functie uitschakelt, heeft dit geen gevolgen voor de mogelijkheid van je apparaat om de informatie te sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens verzenden naar Google.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. Op account.google.com kun je je gegevens bekijken en verwijderen, en je accountinstellingen wijzigen.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5163434717504750796">Batterijconditie <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Aantal cycli <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Bureau opslaan als template</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
@@ -1603,6 +1619,10 @@ Geen apparaten verbonden.</translation>
 <translation id="5916646100036936191">Nieuwe melding, <ph name="NOTIFICATION_COUNT" /> in totaal</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Microfoon staat uit.</translation>
+<translation id="5923808736819114609"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen in de buurt van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens die zijn verzameld op dit apparaat om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google in het algemeen te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. Deze gegevens worden niet gebruikt om een bepaalde persoon te identificeren.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />Je kunt Locatietoegankelijkheid op elk moment uitzetten in de locatie-instellingen van dit apparaat via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang &gt; Geavanceerde locatie-instellingen. Als Locatienauwkeurigheid uitstaat, worden er geen gegevens voor locatienauwkeurigheid verzameld. Voor Android-apps en -services wordt alleen het IP-adres gebruikt (indien beschikbaar) om de locatie van dit apparaat te bepalen. Dit kan van invloed zijn op de beschikbaarheid en nauwkeurigheid van locaties voor Android-apps en -services zoals Google Maps.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Meer informatie over Locatienauwkeurigheid<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">Update vereist door <ph name="MANAGER" /></translation>
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> staat aan.</translation>
@@ -1649,6 +1669,10 @@ Geen apparaten verbonden.</translation>
 <translation id="6045629311476491587">Gebruikt door <ph name="APP_COUNT" /> apps</translation>
 <translation id="6045998054441862242">Modus voor hoog contrast aanzetten</translation>
 <translation id="6047696787498798094">Scherm delen wordt gestopt wanneer je overschakelt naar een andere gebruiker. Wil je doorgaan?</translation>
+<translation id="6051212890006277572"><ph name="BEGIN_PARAGRAPH1" />Dit is algemene informatie over dit apparaat en hoe je het gebruikt (zoals batterijniveau, systeem- en app-activiteit en fouten). De gegevens worden gebruikt om Android te verbeteren voor iedereen. Daarnaast helpen bepaalde verzamelde gegevens Google-apps en -partners, zoals Android-ontwikkelaars, bij de verbetering van hun apps en producten.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Als je deze functie uitschakelt, heeft dit geen gevolgen voor de mogelijkheid van dit apparaat om de informatie te sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.<ph name="END_PARAGRAPH2" />
+        <ph name="BEGIN_PARAGRAPH3" />De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens verzenden naar Google.<ph name="END_PARAGRAPH3" />
+        <ph name="BEGIN_PARAGRAPH4" />Als de instelling voor aanvullende Web- en app-activiteit aanstaat voor je kind, kunnen deze gegevens worden opgeslagen in hun Google-account. Ga naar families.google.com voor meer informatie over deze instellingen en hoe je ze kunt aanpassen.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052614013050385269">Rechtsklikken op een link</translation>
 <translation id="6054305421211936131">Inloggen met smartkaart</translation>
 <translation id="6059276912018042191">Recente Chrome-tabbladen</translation>
@@ -1757,6 +1781,8 @@ Geen apparaten verbonden.</translation>
 <translation id="639644700271529076">CAPS LOCK staat uit</translation>
 <translation id="6406458002328242616">Timer bewerken. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />De locatieservice van Google maakt gebruik van bronnen zoals wifi, mobiele netwerken en sensoren om de locatie van je apparaat te schatten.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Je kunt Locatie uitzetten door de primaire instelling voor Locatie op je apparaat uit te zetten. Je kunt het gebruik van wifi, mobiele netwerken en sensoren voor locatie ook uitzetten via de locatie-instellingen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">Selecteer welke versie van <ph name="VM_NAME" /> je wilt installeren.</translation>
 <translation id="641469293210305670">Updates en apps installeren</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -2422,6 +2448,8 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8481187309597259238">USB-rechten bevestigen</translation>
 <translation id="8487660088084188539">Als je deze functies aanzet, kunnen de ingevoerde tekst, de documentcontent en de URL van de webpagina naar de servers van Google worden gestuurd. Deze informatie wordt gebruikt om schrijfsuggesties te genereren, samenvattingen te genereren, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />De locatieservice van Google maakt gebruik van bronnen zoals wifi, mobiele netwerken en sensoren om de locatie van dit apparaat te schatten.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Je kunt Locatie uitzetten door de primaire instelling voor Locatie op dit apparaat uit te zetten. Je kunt het gebruik van wifi, mobiele netwerken en sensoren voor locatie ook uitzetten via de locatie-instellingen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8490896350101740396">De volgende kiosk-apps '<ph name="UPDATED_APPS" />' zijn geüpdatet. Start het apparaat opnieuw op om het updateproces te voltooien.</translation>
 <translation id="8491237443345908933">Link openen in een nieuw tabblad</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>

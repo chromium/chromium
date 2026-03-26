@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Piliin ang mga account na gusto mong i-export sa ibang app.</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1506063256525392513">Nagbibigay-daan ito sa iyong kumuha at mag-upload ng mga larawan, pati na rin mag-scan ng mga QR code</translation>
+<translation id="1506733063065214205">RCS MLS Client</translation>
 <translation id="1508263560970797965">Magpatuloy sa Incognito</translation>
 <translation id="1509486075633541495">Mag-sign in sa website</translation>
 <translation id="1513858653616922153">I-delete ang password</translation>
@@ -209,7 +210,6 @@
 <translation id="1740468249224277719">I-double tap upang i-install.</translation>
 <translation id="1740650426894359238">Lumipat sa ibang profile</translation>
 <translation id="1741219894094057085">Smart Watch</translation>
-<translation id="1742773766788162541">I-scan ang Card at I-autofill</translation>
 <translation id="1743244221910283364">I-discard ang mga pagbabago</translation>
 <translation id="1748975028205587434">Piliin ang iyong file</translation>
 <translation id="1749733017156547309">Kinakailangan ng password</translation>
@@ -370,7 +370,6 @@
 <translation id="2268044343513325586">Pinuhin</translation>
 <translation id="2271452184061378400">Nase-save dito ang iyong mga grupo ng tab</translation>
 <translation id="2273327106802955778">Higit pang menu</translation>
-<translation id="2283599456633275070">Paglalakbay</translation>
 <translation id="2287614783861766820">{count,plural, =1{Made-delete ang address na ito sa device na ito.}one{Made-delete ang mga address na ito sa device na ito.}other{Made-delete ang mga address na ito sa device na ito.}}</translation>
 <translation id="2295236662082735391">Matagal na pindutin ang isang larawan sa web para i-edit gamit ang Gemini</translation>
 <translation id="2297989278479054870">Pagkatapos mong mag-sign out, maaalis sa device na ito ang mga bookmark, password, at higit pa sa iyong Google Account.</translation>
@@ -477,6 +476,7 @@
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2673508731173059946">Bisitahin ang kinopyang link</translation>
 <translation id="2679659833697380">Sine-save sa iyong device ang impormasyon mo</translation>
+<translation id="2681572445246787428">Paglagda ng Dokumento</translation>
 <translation id="2688535388040882469">Mga Banner</translation>
 <translation id="2690858294534178585">Ginagamit ang camera</translation>
 <translation id="2691653761409724435">Hindi available offline</translation>
@@ -907,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Magdagdag ng Tab sa Grupo}one{Magdagdag ng Mga Tab sa Grupo}other{Magdagdag ng Mga Tab sa Grupo}}</translation>
 <translation id="4302061870579014542">Itakda ang posisyon</translation>
 <translation id="4304713468139749426">Password Manager</translation>
+<translation id="4306349443295056740">Paglagda ng OCSP</translation>
 <translation id="4309403553630140242">Mag-double tap para sa higit pang impormasyon</translation>
 <translation id="4310738531374808763">I-customize ang iyong homepage</translation>
 <translation id="4320848494125124980">Kamakailan</translation>
 <translation id="4322394346347055525">Isara ang Ibang Mga Tab</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">I-on ang mga notification</translation>
 <translation id="4326912346867677256">I-tap ang "Gamitin ang Password" para secure na mag-sign in.</translation>
 <translation id="4327017157997423717">Subaybayan ang presyo sa <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -940,7 +942,6 @@
 <translation id="4430505936695785931">Makuha ang mga naka-save na password sa iba pang app</translation>
 <translation id="4431224949908513835">Pumili ng paraan ng pagbabayad na pupunan.</translation>
 <translation id="4432122368769493392">Mga Setting…</translation>
-<translation id="443975520858086928">Magtanong sa Google</translation>
 <translation id="4442550905108052454">Buksan ang <ph name="BEGIN_BOLD" />Mga Setting<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Higit pang opsyon para sa <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Puwede mong i-swipe ang gilid na bahagi para bumalik o lumipat sa susunod.</translation>
@@ -984,7 +985,6 @@
 <translation id="4607887340472970274">Pagsubaybay sa Presyo</translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4621768135601674446">Buksan ang mga opsyon sa Reading mode</translation>
-<translation id="4623894491222334521">Mga doc ng pagkakakilanlan</translation>
 <translation id="4627107755957573804">Payagan ang mga site at app na i-upgrade ang mga kasalukuyang account para gumamit ng mga passkey</translation>
 <translation id="4629065796475200039">Hindi na-import ang iyong password</translation>
 <translation id="4630212057753624203">Sample na bubble</translation>
@@ -1029,6 +1029,7 @@
 <translation id="4744428388659507035">Para kunin ang iyong mga bookmark sa lahat ng device mo, i-on ang “Mga Bookmark” sa mga setting.</translation>
 <translation id="4746926359847517643">Puwede mong ibalik ang mga iyon kahit kailan sa history.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Nag-import ng {count} card}one{Nag-import ng {count} card}other{Nag-import ng {count} na card}}</translation>
+<translation id="4749924365937394956">Pag-authenticate ng Server</translation>
 <translation id="4751645464639803239">Bagong Tab na Incognito</translation>
 <translation id="4752348350801431746">I-off ang mga notification sa Pag-check sa Kaligtasan…</translation>
 <translation id="4759238208242260848">Mga Download </translation>
@@ -1394,12 +1395,14 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="598634819525651074">Area</translation>
 <translation id="5988097621740394599">Tingnan ang mga pagbaba ng presyo sa iyong mga tab.</translation>
 <translation id="5988851877894965432">Buksan ang mga URL sa Chrome</translation>
+<translation id="599343768974649785">Explicit na Text</translation>
 <translation id="6006672969046233841">Bagong Tab</translation>
 <translation id="6011308810877101166">Pahusayin ang mga suhestyon sa paghahanap</translation>
 <translation id="6012140227487808125">Ine-encrypt…</translation>
 <translation id="6027619584715411062">Mag-sign in para makuha ang iyong mga bookmark, password, at higit pa sa lahat ng device mo.</translation>
 <translation id="6027945736510816438">Ang ibig mo bang sabihin ay <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">bagong feature</translation>
+<translation id="6037458223703682108">Digital na Lagda</translation>
 <translation id="6038823991892265570">Pamahalaan ang storage ng Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Isara</translation>
@@ -1543,6 +1546,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6476284679642588870">Pamahalaan ang mga paraan ng pagbabayad</translation>
 <translation id="6476800141292307438">Isinasalin ang page sa <ph name="LANGUAGE" />. May mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="647867789226964031">Palitan ang iyong mga password</translation>
+<translation id="6480363549849064919">Pag-authenticate ng Client</translation>
 <translation id="6494931198667773526">Matatapos sa</translation>
 <translation id="6503077044568424649">Pinaka-nabisita</translation>
 <translation id="6503763061813913607">Mga Notification sa Pag-check sa Kaligtasan</translation>
@@ -1588,6 +1592,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6619015782482868078">Aqua na tema</translation>
 <translation id="6620279676667515405">Kanselahin</translation>
 <translation id="6625830436658400045">Ire-restore ang iyong mga setting ng pag-sync batay sa huli mong backup. Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">I-edit ang folder</translation>
 <translation id="6629759408545977279">Mula sa: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Ilagay itong karagdagang layer ng proteksyon laban sa mga banta online.</translation>
@@ -1726,6 +1731,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7128693485119315539">Posibleng kailanganing tingnan at pamahalaan ng organisasyon mo ang data mula sa pag-browse na nauugnay sa iyong pinamamahalaang account, tulad ng history ng pag-browse at mga password mo.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Hindi available ang camera</translation>
+<translation id="7138678301420049075">Iba pa</translation>
 <translation id="7141960840225504692">Isasara ang iyong mga tab at ide-delete ang data mula sa pag-browse</translation>
 <translation id="714291438898585119">Naka-star</translation>
 <translation id="7146301801400584641">Available ang file ng kalendaryo</translation>
@@ -1790,7 +1796,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> (na) hindi pa nababasang artikulo.</translation>
 <translation id="7412027924265291969">Magpatuloy</translation>
 <translation id="741204030948306876">Oo, sali ako</translation>
-<translation id="7417689656810783109">I-rename ang Grupo</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>
 <translation id="7425053386765766120">Magdagdag ng paraan ng pagbabayad…</translation>
 <translation id="7425346204213733349">Hindi na masi-sync sa Google Account mo ang mga pagbabago sa iyong mga bookmark, history, password, at iba pang setting. Gayunpaman, mananatiling naka-store sa Google account mo ang iyong kasalukuyang data.</translation>
@@ -2075,6 +2080,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8363484128299778310">Pansamantalang pag-recover kung magkakaproblema</translation>
 <translation id="8364563001733875155">Para palitan ang iyong PIN, mag-set up muna ng passcode sa device mo.</translation>
 <translation id="8366466717204352506">Hindi kailanman nagpatakbo ng pagsusuri</translation>
+<translation id="8367705492654390392">Magtanong ng kahit na ano</translation>
 <translation id="8368001212524806591">Subaybayan ang presyo</translation>
 <translation id="8368198938968349418">I-on ang AutoFill…</translation>
 <translation id="8370406443343902172">Pumunta sa Mga Setting...</translation>
@@ -2151,6 +2157,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8614671330774943747">Pumunta sa Tab Switcher</translation>
 <translation id="862367213447108001">Palaging magpakita ng mga pop-up sa site na ito</translation>
 <translation id="8625706492572042370">I-edit ang Home Screen</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Mga naka-lock na tab na Incognito</translation>
 <translation id="8633025649649592204">Kamakailang aktibidad</translation>
 <translation id="8636825310635137004">Upang makuha ang iyong mga tab mula sa iba mo pang mga device, i-on ang pag-sync.</translation>
@@ -2338,6 +2345,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="942624946817804130">I-export</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="94870150074703282">I-delete ang grupo?</translation>
+<translation id="951090530321144895">Mga Nag-isyu ng CA</translation>
 <translation id="952704832371081537">Kanselahin</translation>
 <translation id="95332591904104970">Mga nakakonektang app</translation>
 <translation id="954667170699278022">Listahan ng Babasahin</translation>

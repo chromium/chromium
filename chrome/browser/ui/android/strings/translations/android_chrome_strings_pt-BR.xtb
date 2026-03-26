@@ -1396,7 +1396,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6746338529702829275">Analise os dados da conta</translation>
 <translation id="6746834324024491643">Para acessar senhas e muito mais em todos os seus dispositivos, faça login com a conta <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Abrir rapidamente uma nova guia. Para editar este atalho, toque e pressione.</translation>
-<translation id="6752130751133944215">Para restaurar uma nova janela, reduza o total de janelas ativas e inativas para <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos. As janelas inativas são excluídas após 6 meses.</translation>
 <translation id="6754359471209693699">Começar nova pesquisa</translation>
 <translation id="6756507620369789050">Compartilhar feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1586,7 +1585,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7388615499319468910">Sites e anunciantes podem medir a performance dos anúncios. Esta configuração está desativada.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Mais 1 arquivo na lista}one{Mais # arquivo na lista}other{Mais # arquivos na lista}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Para abrir uma nova janela, reduza o total de janelas ativas e inativas para <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos.</translation>
 <translation id="7403691278183511381">Tela de apresentação do Chrome</translation>
 <translation id="7411224099004328643">Usuário da Conta do Google</translation>
 <translation id="7419565702166471774">Sempre usar conexões seguras</translation>

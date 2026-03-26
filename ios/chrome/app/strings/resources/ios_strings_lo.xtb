@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">ແຕະສອງຄັ້ງເພື່ອຕິດຕັ້ງ.</translation>
 <translation id="1740650426894359238">ສະຫຼັບໄປໃຊ້ໂປຣໄຟລ໌ອື່ນ</translation>
 <translation id="1741219894094057085">ສະມາດວອດ</translation>
-<translation id="1742773766788162541">ສະແກນບັດ ແລະ ຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="1743244221910283364">ຍົກເລີກການປ່ຽນແປງ</translation>
 <translation id="1748975028205587434">ເລືອກໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="1749733017156547309">ຕ້ອງໃສ່ລະຫັດຜ່ານ</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">ກັ່ນ​ຕອງ</translation>
 <translation id="2271452184061378400">ລະບົບຈະບັນທຶກກຸ່ມແຖບຂອງທ່ານໄວ້ບ່ອນນີ້</translation>
 <translation id="2273327106802955778">ເມນູເພີ່ມເຕີມ</translation>
-<translation id="2283599456633275070">ການເດີນທາງ</translation>
 <translation id="2287614783861766820">{count,plural, =1{ທີ່ຢູ່ນີ້ຈະຖືກລຶບຈາກອຸປະກອນນີ້.}other{ທີ່ຢູ່ເຫຼົ່ານີ້ຈະຖືກລຶບຈາກອຸປະກອນນີ້.}}</translation>
 <translation id="2295236662082735391">ກົດຮູບຢູ່ເວັບຄ້າງໄວ້ເພື່ອແກ້ໄຂດ້ວຍ Gemini</translation>
 <translation id="2297989278479054870">ຫຼັງຈາກທີ່ທ່ານອອກຈາກລະບົບ, ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນບັນຊີ Google ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">ເບິ່ງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນແອັບອື່ນໆ</translation>
 <translation id="4431224949908513835">ເລືອກວິທີການຈ່າຍເງິນທີ່ຈະຕື່ມ.</translation>
 <translation id="4432122368769493392">ການຕັ້ງຄ່າ…</translation>
-<translation id="443975520858086928">ຖາມຫຍັງ Google ກໍໄດ້</translation>
 <translation id="4442550905108052454">ເປີດ <ph name="BEGIN_BOLD" />ການຕັ້ງຄ່າ<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">ຕົວເລືອກເພີ່ມເຕີມສຳລັບ <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">ທ່ານສາມາດປັດຂອບເພື່ອກັບຫຼັງ ຫຼື ໄປໜ້າໄດ້.</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">ການຕິດຕາມລາຄາ</translation>
 <translation id="4619564267100705184">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="4621768135601674446">ເປີດຕົວເລືອກໂໝດການອ່ານ</translation>
-<translation id="4623894491222334521">ເອກະສານລະບຸຕົວຕົນ</translation>
 <translation id="4627107755957573804">ອະນຸຍາດໃຫ້ເວັບໄຊ ແລະ ແອັບອັບເກຣດບັນຊີທີ່ມີຢູ່ເພື່ອໃຊ້ກະແຈຜ່ານ</translation>
 <translation id="4629065796475200039">ບໍ່ໄດ້ນຳເຂົ້າລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="4630212057753624203">ຟອງຕົວຢ່າງ</translation>
@@ -1726,6 +1722,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7128693485119315539">ອົງກອນຂອງທ່ານອາດຈະຕ້ອງເບິ່ງ ແລະ ຈັດການຂໍ້ມູນການທ່ອງເວັບທີ່ຜູກກັບບັນຊີທີ່ມີການຈັດການຂອງທ່ານ, ເຊັ່ນ: ປະຫວັດການທ່ອງເວັບ ແລະ ລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ກ້ອງຖ່າຍຮູບບໍ່ສາມາດໃຊ້ໄດ້</translation>
+<translation id="7138678301420049075">ອື່ນໆ</translation>
 <translation id="7141960840225504692">ແຖບຂອງທ່ານຈະຖືກປິດໄວ້ ແລະ ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບ</translation>
 <translation id="714291438898585119">ລາຍການທີ່ຕິດດາວ</translation>
 <translation id="7146301801400584641">ໄຟລ໌ປະຕິທິນພ້ອມໃຫ້ນຳໃຊ້ແລ້ວ</translation>
@@ -1790,7 +1787,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ບົດຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານ.</translation>
 <translation id="7412027924265291969">ສືບຕໍ່</translation>
 <translation id="741204030948306876">ແມ່ນ, ຂ້ອຍຂໍເຂົ້າຮ່ວມ</translation>
-<translation id="7417689656810783109">ປ່ຽນຊື່ກຸ່ມ</translation>
 <translation id="7419565702166471774">ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພທຸກເທື່ອ</translation>
 <translation id="7425053386765766120">ເພີ່ມວິທີການຈ່າຍເງິນ…</translation>
 <translation id="7425346204213733349">ການປ່ຽນແປງຕໍ່ກັບບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຈະບໍ່ຖືກຊິ້ງກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ. ແນວໃດກໍຕາມ, ຂໍ້ມູນທີ່ມີຢູ່ຂອງທ່ານຈະຍັງຄົງເກັບຮັກສາໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -2075,6 +2071,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8363484128299778310">ການກູ້ຄືນຊົ່ວຄາວໃນກໍລະນີທີ່ມີບັນຫາ</translation>
 <translation id="8364563001733875155">ເພື່ອປ່ຽນ PIN ຂອງທ່ານ, ໃຫ້ຕັ້ງຄ່າລະຫັດໃນອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="8366466717204352506">ບໍ່ເຄີຍກວດສອບ</translation>
+<translation id="8367705492654390392">ຖາມຫຍັງກໍໄດ້</translation>
 <translation id="8368001212524806591">ຕິດຕາມລາຄາ</translation>
 <translation id="8368198938968349418">ເປີດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ…</translation>
 <translation id="8370406443343902172">ເຂົ້າໄປການຕັ້ງຄ່າ...</translation>

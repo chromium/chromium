@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="2403474027143565107">Dəqiq</translation>
 <translation id="240450251994300576">İkinci Dərəcəli Başlıq Loqosu</translation>
+<translation id="2404715426538856682">Kredit və debet kartları · IBAN-lar · Loyallıq kartları</translation>
 <translation id="2404884497378469141">Faylları yenidən kopyalayın</translation>
 <translation id="2413155254802890957">Köhnə</translation>
 <translation id="2413528052993050574">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatı ləğv edilə bilər. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
@@ -2164,6 +2165,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4340810192899866471">JSON-dan import edin</translation>
 <translation id="4340982228985273705">Bu kompüter korporativ idarə edilmir, ona görə də siyasət yalnız Chrome Veb Mağazasında saxlanılan artırmaları quraşdıra bilər. Chrome Veb Mağaza güncəlləmə linki: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Tema Parkları</translation>
+<translation id="4346670990181948854">Səyahət məlumatı · Nəqliyyat vasitələri</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> saytına bağlantı güvənli deyil</translation>
 <translation id="4349365535725594680">Məxfi kontenti paylaşmaq olmur</translation>
 <translation id="4349810866125026513">İstənilən halda yükləyin</translation>
@@ -3046,6 +3048,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5752519522101347518">Bank doğrulama veb-saytı yüklənir</translation>
 <translation id="5753570386948603678">Tarixçədən silin</translation>
 <translation id="5759751709240058861">Kameranızın istifadəsi və hərəkət etdirilməsi</translation>
+<translation id="5762131895127128324">Sürücülük vəsiqələri · Şəxsiyyət vəsiqələri · Pasportlar</translation>
 <translation id="5763042198335101085">Düzgün e-poçt ünvanı daxil edin</translation>
 <translation id="5764725887548570807">Yanlış mənşə formatı.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ünvanına göndərin</translation>
@@ -3982,6 +3985,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7220786058474068424">Prosesdən keçirilir...</translation>
 <translation id="7221855153210829124">Bildirişləri göstərin</translation>
 <translation id="722454870747268814">Yeni Incognito tabı</translation>
+<translation id="7225676267118764980">Avtodoldurma təminatçısını və digər ayarları dəyişin</translation>
 <translation id="7226892411756387078">Tam mətn</translation>
 <translation id="7227293336683593977">Qiymət tarixçəsi</translation>
 <translation id="7228306718910595403">Aİ Kvalifikasiya Statusu</translation>
@@ -5038,6 +5042,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8891031436559779793">Hər hansı saytda qiymət enərsə, sizə xəbər veriləcək.</translation>
 <translation id="8891727572606052622">Yanlış proksi rejimi.</translation>
 <translation id="8894794286471754040">Əvvəlcə uzun kənar</translation>
+<translation id="8895334001368918465">Chrome-da başqa avtodoldurma xidmətindən istifadə etmək üçün onu Android ayarlarında və burada aktiv edin</translation>
 <translation id="8897221284075091877">Bu kontenti istəmək üçün Google Hesabınız ilə davam edin</translation>
 <translation id="8897428486789851669">Üzgüçülük</translation>
 <translation id="8898854704577986668">Tarixçəni yan paneldə göstərin</translation>

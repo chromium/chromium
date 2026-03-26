@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1740650426894359238">અન્ય પ્રોફાઇલ પર સ્વિચ કરો</translation>
 <translation id="1741219894094057085">સ્માર્ટ વૉચ</translation>
-<translation id="1742773766788162541">કાર્ડ સ્કૅન કરો અને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="1743244221910283364">ફેરફારો કાઢી નાખો</translation>
 <translation id="1748975028205587434">તમારી ફાઇલ પસંદ કરો</translation>
 <translation id="1749733017156547309">પાસવર્ડ જરૂરી છે</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">સુધારો</translation>
 <translation id="2271452184061378400">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે</translation>
 <translation id="2273327106802955778">વધુ મેનૂ</translation>
-<translation id="2283599456633275070">મુસાફરી</translation>
 <translation id="2287614783861766820">{count,plural, =1{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}one{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}other{આ ડિવાઇસમાંથી આ સરનામા ડિલીટ કરવામાં આવશે.}}</translation>
 <translation id="2295236662082735391">Gemini વડે ફેરફાર કરવા માટે વેબ પર છબીને થોડીવાર દબાવી રાખો</translation>
 <translation id="2297989278479054870">તમે સાઇન આઉટ કરો ત્યારબાદ તમારા Google એકાઉન્ટમાંના બુકમાર્ક, પાસવર્ડ વગેરેને આ ડિવાઇસમાંથીકાઢી નાખવામાં આવશે.</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">અન્ય ઍપમાં સાચવેલા પાસવર્ડ મેળવો</translation>
 <translation id="4431224949908513835">ભરવા માટે ચુકવણી પદ્ધતિ પસંદ કરો.</translation>
 <translation id="4432122368769493392">સેટિંગ…</translation>
-<translation id="443975520858086928">Googleને કંઈપણ પૂછો</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />સેટિંગ <ph name="END_BOLD" />ખોલો</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> માટે વધુ વિકલ્પો</translation>
 <translation id="4455710003856931944">તમે પાછળ કે આગળ જવા માટે, કિનારીને સ્વાઇપ કરી શકો છો.</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">કિંમત ટ્રૅક કરવી</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="4621768135601674446">વાંચન મોડના વિકલ્પો ખોલો</translation>
-<translation id="4623894491222334521">ઓળખના દસ્તાવેજો</translation>
 <translation id="4627107755957573804">પાસકીનો ઉપયોગ કરવા માટે સાઇટ અને ઍપને ઉપલબ્ધ હોય તેવા એકાઉન્ટને અપગ્રેડ કરવાની મંજૂરી આપો</translation>
 <translation id="4629065796475200039">તમારો પાસવર્ડ આયાત કરવામાં આવ્યો ન હતો</translation>
 <translation id="4630212057753624203">સેમ્પલ બબલ</translation>
@@ -1726,6 +1722,7 @@
 <translation id="7128693485119315539">તમારી સંસ્થાને તમારા મેનેજ કરેલા એકાઉન્ટ સાથે જોડાયેલો તમારો બ્રાઉઝિંગ ઇતિહાસ અને પાસવર્ડ જેવો બ્રાઉઝિંગ ડેટા જોવાની અને તેને મેનેજ કરવાની કદાચ જરૂર પડી શકે છે.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">કૅમેરા અનુપલબ્ધ છે</translation>
+<translation id="7138678301420049075">અન્ય</translation>
 <translation id="7141960840225504692">તમારી ટૅબ બંધ કરવામાં આવશે અને બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="714291438898585119">સ્ટાર આપેલું</translation>
 <translation id="7146301801400584641">કૅલેન્ડર ફાઇલ ઉપલબ્ધ છે</translation>
@@ -1790,7 +1787,6 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> વાંચ્યા વગરના લેખ.</translation>
 <translation id="7412027924265291969">ચાલુ રાખો</translation>
 <translation id="741204030948306876">હા, મને માન્ય છે</translation>
-<translation id="7417689656810783109">ગ્રૂપનું નામ બદલો</translation>
 <translation id="7419565702166471774">હંમેશાં સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="7425053386765766120">ચુકવણીની પદ્ધતિ ઉમેરો…</translation>
 <translation id="7425346204213733349">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગમાં ફેરફારને હવે તમારા Google એકાઉન્ટ પર સિંક કરવામાં આવશે નહીં. જોકે, તમારો હાલનો ડેટા તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
@@ -2075,6 +2071,7 @@
 <translation id="8363484128299778310">કોઈ સમસ્યા આવે ત્યારે હંગામી રીતે રિકવરી</translation>
 <translation id="8364563001733875155">તમારો પિન બદલવા માટે, પહેલા તમારા ડિવાઇસ પર પાસકોડનું સેટઅપ કરો.</translation>
 <translation id="8366466717204352506">તપાસ ક્યારેય ચાલી નથી</translation>
+<translation id="8367705492654390392">કંઈપણ પૂછો</translation>
 <translation id="8368001212524806591">કિંમત ટ્રૅક કરો</translation>
 <translation id="8368198938968349418">ઑટોમૅટિક રીતે ભરવાની સુવિધા ચાલુ કરો…</translation>
 <translation id="8370406443343902172">સેટિંગ પર જાઓ...</translation>

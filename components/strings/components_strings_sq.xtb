@@ -917,6 +917,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2400600116338235695">Mund të kërkojë të lidhet me portat seriale</translation>
 <translation id="2403474027143565107">E saktë</translation>
 <translation id="240450251994300576">Logoja dytësore e titullit</translation>
+<translation id="2404715426538856682">Kartat e kreditit dhe të debitit · Numrat IBAN · Kartat e besnikërisë</translation>
 <translation id="2404884497378469141">Provo t'i kopjosh përsëri skedarët e tu</translation>
 <translation id="2413155254802890957">I vjetër</translation>
 <translation id="2413528052993050574">Ky server nuk mund të dëshmonte se është  <ph name="DOMAIN" />; certifikata e tij e sigurisë mund të jetë e revokuar. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
@@ -2168,6 +2169,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4340810192899866471">Importo nga JSON</translation>
 <translation id="4340982228985273705">Ky kompjuter nuk është zbuluar si i menaxhuar nga ndërmarrja, prandaj politika mund të instalojë automatikisht vetëm shtesat e strehuara në "Dyqanin e uebit të Chrome". URL-ja e përditësimit të "Dyqanit të uebit të Chrome" është "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Parqe lojërash</translation>
+<translation id="4346670990181948854">Informacionet e udhëtimit · Automjetet</translation>
 <translation id="4348834659292907206">Lidhja me <ph name="SITE" /> nuk është e sigurt</translation>
 <translation id="4349365535725594680">Përmbajtja konfidenciale nuk mund të ndahet</translation>
 <translation id="4349810866125026513">Ngarko gjithsesi</translation>
@@ -3050,6 +3052,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5752519522101347518">Po ngarkohet uebsajti i verifikimit të bankës</translation>
 <translation id="5753570386948603678">Fshije nga historiku</translation>
 <translation id="5759751709240058861">Të përdorë dhe të lëvizë kamerën tënde</translation>
+<translation id="5762131895127128324">Lejet e drejtimit · Kartat e identitetit · Pasaportat</translation>
 <translation id="5763042198335101085">Fut një adresë të vlefshme email-i</translation>
 <translation id="5764725887548570807">Format i pavlefshëm i origjinës.</translation>
 <translation id="5764920692828389743">Dërgo te <ph name="EMAIL_ADDRESS" /></translation>
@@ -3985,6 +3988,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="7220786058474068424">Po përpunohet</translation>
 <translation id="7221855153210829124">Shfaq njoftimet</translation>
 <translation id="722454870747268814">Skedë e re "e fshehtë"</translation>
+<translation id="7225676267118764980">Ndrysho ofruesin e plotësimit automatik dhe cilësimet e tjera</translation>
 <translation id="7226892411756387078">Tekst i thjeshtë</translation>
 <translation id="7227293336683593977">Historiku i çmimeve</translation>
 <translation id="7228306718910595403">Statusi i kualifikuar në BE</translation>
@@ -5041,6 +5045,7 @@ Detaje shtesë:
 <translation id="8891031436559779793">Do të njoftohesh nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="8891727572606052622">Modalitet i pavlefshëm përfaqësuesi.</translation>
 <translation id="8894794286471754040">Ana e gjatë në fillim</translation>
+<translation id="8895334001368918465">Për të përdorur një shërbim tjetër të plotësimit automatik në Chrome, aktivizoje atë te cilësimet e Android dhe këtu</translation>
 <translation id="8897221284075091877">Për të kërkuar të shikosh këtë përmbajtje, vazhdo me "Llogarinë tënde të Google"</translation>
 <translation id="8897428486789851669">Noti</translation>
 <translation id="8898854704577986668">Shfaq historikun në panelin anësor</translation>

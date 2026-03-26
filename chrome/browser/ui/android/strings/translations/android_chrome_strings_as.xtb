@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">আপোনাৰ একাউণ্টৰ ডেটা পৰ্যালোচনা কৰক</translation>
 <translation id="6746834324024491643">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড আৰু অধিক পাবলৈ, <ph name="EMAIL" /> হিচাপে ছাইন ইন কৰক</translation>
 <translation id="6751521182688001123">ক্ষিপ্ৰভাৱে এটা নতুন টেব খোলক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
-<translation id="6752130751133944215">এখন নতুন ৱিণ্ড’ পুনঃস্থাপন কৰিবলৈ, সক্ৰিয় আৰু নিষ্ক্ৰিয় ৱিণ্ড’সমূহৰ মুঠ সংখ্যাক <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> বা কমলৈ হ্ৰাস কৰক। নিষ্ক্ৰিয় ৱিণ্ড’সমূহ ৬ মাহৰ পাছত মচি পেলোৱা হয়।</translation>
 <translation id="6754359471209693699">নতুন সন্ধান আৰম্ভ কৰক</translation>
 <translation id="6756507620369789050">মতামত শ্বেয়াৰ কৰক</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />।</translation>
@@ -1585,7 +1584,6 @@
 <translation id="7388615499319468910">বিজ্ঞাপনে কেনেকৈ কাম কৰে সেয়া ছাইট বিজ্ঞাপনদাতাসকলে বুজি পাব পাৰে। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{অন্য, সূচীত ১ টা ফাইল আছে}one{অন্য, সূচীত # টা ফাইল আছে}other{অন্য, সূচীত # টা ফাইল আছে}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">এখন নতুন ৱিণ্ড’ খুলিবলৈ, সক্ৰিয় আৰু নিষ্ক্ৰিয় ৱিণ্ড’সমূহৰ মুঠ সংখ্যাক <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> বা কমলৈ হ্ৰাস কৰক।</translation>
 <translation id="7403691278183511381">Chrome প্ৰথমবাৰ চলোৱাৰ অভিজ্ঞতা</translation>
 <translation id="7411224099004328643">Google একাউণ্টৰ ব্যৱহাৰকাৰী</translation>
 <translation id="7419565702166471774">সদায় সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰক</translation>

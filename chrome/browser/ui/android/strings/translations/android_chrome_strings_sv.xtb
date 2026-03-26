@@ -1396,7 +1396,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6746834324024491643">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina lösenord med mera på alla dina enheter</translation>
 <translation id="6751521182688001123">Öppna en ny flik snabbt. Tryck länge om du vill ändra genvägen.</translation>
-<translation id="6752130751133944215">Om du vill återställa ett nytt fönster minskar du det totala antalet fönster, både aktiva och inaktiva, till högst <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Inaktiva fönster raderas efter sex månader.</translation>
 <translation id="6754359471209693699">Starta en ny sökning</translation>
 <translation id="6756507620369789050">Dela feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1586,7 +1585,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7388615499319468910">Webbplatser och annonsörer kan mäta annonsernas resultat. Inställningen är inaktiverad.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Annat, 1 fil i listan}other{Annat, # filer i listan}}</translation>
 <translation id="7400418766976504921">Webbadress</translation>
-<translation id="7400424692675800399">Om du vill öppna ett nytt fönster minskar du det totala antalet fönster, både aktiva och inaktiva, till högst <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Första körningen av Chrome</translation>
 <translation id="7411224099004328643">Användare av Google-konto</translation>
 <translation id="7419565702166471774">Använd alltid en säker anslutning</translation>

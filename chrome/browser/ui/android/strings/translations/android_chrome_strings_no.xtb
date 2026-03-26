@@ -1395,7 +1395,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
 <translation id="6746834324024491643">For å få passordene dine med mer på alle enhetene dine, logg på som <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Åpner raskt en ny fane. Trykk og hold for å redigere denne snarveien.</translation>
-<translation id="6752130751133944215">For å gjenopprette et nytt vindu må du redusere det totale antallet vinduer, både aktive og inaktive, til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre. Inaktive vinduer slettes etter 6 måneder.</translation>
 <translation id="6754359471209693699">Start et nytt søk</translation>
 <translation id="6756507620369789050">Gi tilbakemelding</translation>
 <translation id="6762511428368667596"><ph name="NAME" /> (<ph name="EMAIL" />).</translation>
@@ -1585,7 +1584,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7388615499319468910">Nettsteder og annonsører kan forstå hvilke resultater annonser gir. Denne innstillingen er av.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Annet, 1 fil på listen}other{Annet, # filer på listen}}</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
-<translation id="7400424692675800399">For å åpne et nytt vindu må du redusere det totale antallet vinduer (aktive og inaktive) til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre.</translation>
 <translation id="7403691278183511381">Førsteinntrykk ved bruk av Chrome</translation>
 <translation id="7411224099004328643">Google-kontobruker</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>

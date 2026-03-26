@@ -1395,7 +1395,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6746338529702829275">Gaan jou rekeningdata na</translation>
 <translation id="6746834324024491643">Meld aan as <ph name="EMAIL" /> om jou wagwoorde en meer op al jou toestelle te kry</translation>
 <translation id="6751521182688001123">Maak vinnig 'n nuwe oortjie oop. Raak en hou om hierdie kortpad te wysig.</translation>
-<translation id="6752130751133944215">Verminder die totale aantal vensters in die aktiewe en onaktiewe afdeling na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder om ’n nuwe venster terug te stel. Onaktiewe vensters word ná 6 maande uitgevee.</translation>
 <translation id="6754359471209693699">Begin nuwe soektog</translation>
 <translation id="6756507620369789050">Deel terugvoer</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7388615499319468910">Werwe en adverteerders kan verstaan hoe advertensies vaar. Hierdie instelling is af.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Ander, 1 lêer in lys}other{Ander, # lêers in lys}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Verminder die totale aantal vensters in die aktiewe en onaktiewe afdeling na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder om ’n nuwe venster oop te maak.</translation>
 <translation id="7403691278183511381">Chrome se eerste laatloopervaring</translation>
 <translation id="7411224099004328643">Google-rekeninggebruiker</translation>
 <translation id="7419565702166471774">Gebruik altyd veilige verbindings</translation>

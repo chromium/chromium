@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">اپنے اکاؤنٹ کے ڈیٹا کا جائزہ لیں</translation>
 <translation id="6746834324024491643">اپنے تمام آلات پر اپنے پاس ورڈز وغیرہ حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="6751521182688001123">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
-<translation id="6752130751133944215">نئی ونڈو کو بحال کرنے کے لیے، فعال اور غیر فعال ونڈوز کی کل تعداد کو <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> یا اس سے کم کریں۔ غیر فعال ونڈوز کو 6 ماہ کے بعد حذف کر دیا جاتا ہے۔</translation>
 <translation id="6754359471209693699">نئی تلاش شروع کریں</translation>
 <translation id="6756507620369789050">تاثرات کا اشتراک کریں</translation>
 <translation id="6762511428368667596"><ph name="NAME" />، <ph name="EMAIL" />۔</translation>
@@ -1585,7 +1584,6 @@
 <translation id="7388615499319468910">سائٹس اور مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں۔ یہ ترتیب آف ہے۔</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{فہرست میں دیگر 1 فائل}other{فہرست میں دیگر # فائلز}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">نئی ونڈو کھولنے کے لیے، فعال اور غیر فعال ونڈوز کی کل تعداد کو <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> یا اس سے کم کریں۔</translation>
 <translation id="7403691278183511381">‏Chrome کے پہلی بار چلانے کا تجربہ</translation>
 <translation id="7411224099004328643">‏Google اکاؤنٹ کا صارف</translation>
 <translation id="7419565702166471774">ہمیشہ محفوظ کنکشنز کا استعمال کریں</translation>

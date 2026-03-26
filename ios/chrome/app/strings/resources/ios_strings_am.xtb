@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">ለመጫን ሁለቴ ነካ ያድርጉ።</translation>
 <translation id="1740650426894359238">ወደ ሌላ መገለጫ ይቀይሩ</translation>
 <translation id="1741219894094057085">ዘመናዊ ሰዓት</translation>
-<translation id="1742773766788162541">ካርድን ቃኝ እና በራስ-ሙላ</translation>
 <translation id="1743244221910283364">ለውጦችን አስወግድ</translation>
 <translation id="1748975028205587434">ፋይልዎን ይምረጡ</translation>
 <translation id="1749733017156547309">የይለፍ ቃል ያስፈልጋል</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">አጽዳ</translation>
 <translation id="2271452184061378400">የእርስዎ የትር ቡድኖች እዚህ ተቀምጠዋል</translation>
 <translation id="2273327106802955778">ተጨማሪ ምናሌ</translation>
-<translation id="2283599456633275070">ጉዞ</translation>
 <translation id="2287614783861766820">{count,plural, =1{ይህ አድራሻ ከዚህ መሣሪያ ይሰረዛል።}one{ይህ አድራሻ ከዚህ መሣሪያ ይሰረዛል።}other{እነዚህ አድራሻዎች ከዚህ መሣሪያ ይሰረዛሉ።}}</translation>
 <translation id="2295236662082735391">በGemini ለማርትዕ በድር ላይ ያለ ምስልን በረጅሙ ይጫኑ</translation>
 <translation id="2297989278479054870">ዘግተው ከወጡ በኋላ በGoogle መለያዎ ውስጥ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎች ከዚህ መሣሪያ ላይ ይወገዳል።</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">በሌሎች መተግበሪያዎች ውስጥ የተቀመጡ የይለፍ ቃላትን ያግኙ</translation>
 <translation id="4431224949908513835">ለመሙላት የመክፈያ ዘዴ ይምረጡ።</translation>
 <translation id="4432122368769493392">ቅንብሮች…</translation>
-<translation id="443975520858086928">Googleን ማንኛውንም ነገር ይጠይቁ</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ቅንብሮች<ph name="END_BOLD" />ን ይክፈቱ</translation>
 <translation id="4445840280797509738">ተጨማሪ አማራጮች ለ<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">ወደ ኋላ ወይም ወደ ፊት ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">የዋጋ ክትትል</translation>
 <translation id="4619564267100705184">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4621768135601674446">የንባብ ሁነታ አማራጮችን ክፈት</translation>
-<translation id="4623894491222334521">የማንነት ሰነዶች</translation>
 <translation id="4627107755957573804">የይለፍ ቁልፎችን ለመጠቀም ጣቢያዎች እና መተግበሪያዎች ነባር መለያዎችን እንዲያሻሽሉ ፍቀድ</translation>
 <translation id="4629065796475200039">የይለፍ ቃልዎ አልመጣም</translation>
 <translation id="4630212057753624203">የናሙና ዓረፋ</translation>
@@ -1726,6 +1722,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7128693485119315539">ደርጅትዎ እንደ የእርስዎ የአሰሳ ታሪክ እና የይለፍ ቃላት ያለ ከሚተዳደር መለያ ጋር የተያያዘ የአሰሳ ውሂብን ማየት እና ማስተዳደር ሊያስፈልገው ይችላል።</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ካሜራ አይገኝም</translation>
+<translation id="7138678301420049075">ሌላ</translation>
 <translation id="7141960840225504692">የእርስዎ ትሮች ይዘጋሉ እና የአሰሳ ውሂብ ይሰረዛሉ</translation>
 <translation id="714291438898585119">ኮከብ የተደረገባቸው</translation>
 <translation id="7146301801400584641">የቀን መቁጠሪያ ፋይል ይገኛል</translation>
@@ -1790,7 +1787,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ያልተነበቡ ጽሑፎች።</translation>
 <translation id="7412027924265291969">ቀጥል</translation>
 <translation id="741204030948306876">አዎ፣ ገብቼያለሁ</translation>
-<translation id="7417689656810783109">ቡድንን እንደገና ይሰይሙ</translation>
 <translation id="7419565702166471774">ሁልጊዜ ደህንነታቸው የተጠበቁ ግንኙነቶችን ይጠቀሙ</translation>
 <translation id="7425053386765766120">የመክፈያ ዘዴን ያክሉ…</translation>
 <translation id="7425346204213733349">በእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ላይ የተደረጉ ለውጦች ከአሁን በኋላ ከእርስዎ የGoogle መለያ ጋር አይሠምሩም። ሆኖም ግን ነባር ውሂብዎ በእርስዎ የGoogle መለያ ላይ እንደተከማቸ ይቆያል።</translation>
@@ -2075,6 +2071,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8363484128299778310">በችግር ጊዜ ጊዜያዊ መልሶ ማግኘት</translation>
 <translation id="8364563001733875155">የእርስዎን ፒን ለመቀየር መጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ያዋቅሩ።</translation>
 <translation id="8366466717204352506">በጭራሽ አታሂድ ላይ ምልክት ያድርጉ</translation>
+<translation id="8367705492654390392">ማንኛውም ነገር ይጠይቁ</translation>
 <translation id="8368001212524806591">የዋጋን ዱካ ይከታተሉ</translation>
 <translation id="8368198938968349418">ራስ-ሙላን አብራ</translation>
 <translation id="8370406443343902172">ወደ ቅንብሮች ሂድ…</translation>

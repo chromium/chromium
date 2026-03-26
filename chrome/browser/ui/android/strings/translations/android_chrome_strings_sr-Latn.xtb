@@ -1395,7 +1395,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6746338529702829275">Pregledajte podatke o nalogu</translation>
 <translation id="6746834324024491643">Da bi vam lozinke i drugi sadržaj bili dostupni na svim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
-<translation id="6752130751133944215">Da biste vratili novi prozor, smanjite ukupan broj aktivnih i neaktivnih prozora na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ili manje. Neaktivni prozori se brišu posle 6 meseci.</translation>
 <translation id="6754359471209693699">Započnite novu pretragu</translation>
 <translation id="6756507620369789050">Delite povratne informacije</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7388615499319468910">Sajtovi i oglašavači mogu da razumeju učinak oglasa. Ovo podešavanje je isključeno.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 drugi fajl na listi}one{# drugi fajl na listi}few{# druga fajla na listi}other{# drugih fajlova na listi}}</translation>
 <translation id="7400418766976504921">URL adresa</translation>
-<translation id="7400424692675800399">Da biste otvorili novi prozor, smanjite ukupan broj aktivnih i neaktivnih prozora na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ili manje.</translation>
 <translation id="7403691278183511381">Chrome doživljaj prvog pokretanja</translation>
 <translation id="7411224099004328643">Korisnik Google naloga</translation>
 <translation id="7419565702166471774">Uvek koristi bezbedne veze</translation>

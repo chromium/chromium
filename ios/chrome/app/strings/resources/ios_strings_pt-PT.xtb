@@ -210,7 +210,6 @@
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1740650426894359238">Mudar para outro perfil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
-<translation id="1742773766788162541">Ler cartão e preencher automaticamente</translation>
 <translation id="1743244221910283364">Rejeitar alterações</translation>
 <translation id="1748975028205587434">Selecionar ficheiro</translation>
 <translation id="1749733017156547309">É necessária uma palavra-passe</translation>
@@ -371,7 +370,6 @@
 <translation id="2268044343513325586">Refinar</translation>
 <translation id="2271452184061378400">Os seus grupos de separadores são guardados aqui</translation>
 <translation id="2273327106802955778">Menu Mais</translation>
-<translation id="2283599456633275070">Viagens</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta morada vai ser eliminada deste dispositivo.}other{Estas moradas vão ser eliminadas deste dispositivo.}}</translation>
 <translation id="2295236662082735391">Mantenha premida uma imagem na Web para a editar com o Gemini</translation>
 <translation id="2297989278479054870">Depois de terminar sessão, os marcadores, as palavras-passe e muito mais na sua Conta Google são removidos deste dispositivo.</translation>
@@ -944,7 +942,6 @@
 <translation id="4430505936695785931">Aceda a palavras-passe guardadas noutras apps</translation>
 <translation id="4431224949908513835">Selecione um método de pagamento para preencher.</translation>
 <translation id="4432122368769493392">Definições…</translation>
-<translation id="443975520858086928">Pergunte ao Google o que quiser</translation>
 <translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Definições<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">Mais opções para <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Pode deslizar rapidamente na extremidade para retroceder ou avançar.</translation>
@@ -988,7 +985,6 @@
 <translation id="4607887340472970274">Acompanhamento de preço</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4621768135601674446">Abrir opções do Modo de leitura</translation>
-<translation id="4623894491222334521">Documentos de identificação</translation>
 <translation id="4627107755957573804">Permitir que os sites e as apps atualizem as contas existentes para usarem chaves de acesso</translation>
 <translation id="4629065796475200039">A sua palavra-passe não foi importada</translation>
 <translation id="4630212057753624203">Balão de amostra</translation>
@@ -1735,6 +1731,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7128693485119315539">A sua organização pode ter de ver e gerir os dados de navegação associados à sua conta gerida, como o histórico de navegação e as palavras-passe.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">A câmara não está disponível</translation>
+<translation id="7138678301420049075">Outros</translation>
 <translation id="7141960840225504692">Os separadores vão ser fechados e os dados de navegação vão ser eliminados</translation>
 <translation id="714291438898585119">Marcado com estrela</translation>
 <translation id="7146301801400584641">Ficheiro de calendário disponível</translation>
@@ -1799,7 +1796,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artigos não lidos.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Sim, aceito</translation>
-<translation id="7417689656810783109">Mudar o nome do grupo</translation>
 <translation id="7419565702166471774">Usar sempre ligações seguras</translation>
 <translation id="7425053386765766120">Adicionar método de pagamento…</translation>
 <translation id="7425346204213733349">As alterações aos marcadores, ao histórico, às palavras-passe e a outras definições deixam de ser sincronizadas com a Conta Google. Contudo, os dados existentes permanecem armazenados na Conta Google.</translation>
@@ -2084,6 +2080,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8363484128299778310">Recuperação temporária em caso de problemas</translation>
 <translation id="8364563001733875155">Para alterar o PIN, configure primeiro um código secreto no dispositivo.</translation>
 <translation id="8366466717204352506">Verificação nunca executada</translation>
+<translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8368001212524806591">Monitorizar preço</translation>
 <translation id="8368198938968349418">Ativar preenchimento automático…</translation>
 <translation id="8370406443343902172">Aceder às Definições…</translation>

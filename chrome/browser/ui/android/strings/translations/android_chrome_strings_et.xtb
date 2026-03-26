@@ -1395,7 +1395,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6746338529702829275">Konto andmete ülevaatamine</translation>
 <translation id="6746834324024491643">Kõigis oma seadmetes paroolidele ja muule sisule juurdepääsuks logige sisse kontoga <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Uue vahelehe kiire avamine. Selle otsetee muutmiseks puudutage pikalt.</translation>
-<translation id="6752130751133944215">Uue akna taastamiseks vähendage aktiivsete ja mitteaktiivsete akende koguarvu tasemele<ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> või vähem. Mitteaktiivsed aknad kustutatakse kuue kuu pärast.</translation>
 <translation id="6754359471209693699">Uue otsingu alustamine</translation>
 <translation id="6756507620369789050">Tagasiside jagamine</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7388615499319468910">Saidid ja reklaamijad saavad hankida teavet reklaamide toimivuse kohta. See seade on välja lülitatud.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Muu, loendis on 1 fail}other{Muu, loendis on # faili}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Uue akna avamiseks vähendage aktiivsete ja mitteaktiivsete akende koguarvu tasemele <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> või vähem.</translation>
 <translation id="7403691278183511381">Chrome'i esmakordse käitamise kasutuskogemus</translation>
 <translation id="7411224099004328643">Google'i konto kasutaja</translation>
 <translation id="7419565702166471774">Kasuta alati turvalist ühendust</translation>

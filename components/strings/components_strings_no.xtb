@@ -917,6 +917,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2400600116338235695">Kan be om å få koble til serielle porter</translation>
 <translation id="2403474027143565107">Nøyaktig</translation>
 <translation id="240450251994300576">Sekundær topptekstlogo</translation>
+<translation id="2404715426538856682">Kreditt- og debetkort · IBAN-numre · Stamkundekort</translation>
 <translation id="2404884497378469141">Prøv å kopiere filene på nytt</translation>
 <translation id="2413155254802890957">Gamle</translation>
 <translation id="2413528052993050574">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat kan være trukket tilbake. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
@@ -2168,6 +2169,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4340810192899866471">Importer fra JSON</translation>
 <translation id="4340982228985273705">Denne datamaskinen er ikke registrert som administrert av en bedrift, så regelen kan bare automatisk installere utvidelser som finnes på Chrome Nettmarked. Nettadressen for Chrome Nettmarked-oppdateringen er «<ph name="CWS_UPDATE_URL" />».</translation>
 <translation id="4342742994656318294">Fonøyelsesparker</translation>
+<translation id="4346670990181948854">Reiseinformasjon · Kjøretøy</translation>
 <translation id="4348834659292907206">Tilkoblingen til <ph name="SITE" /> er ikke sikker</translation>
 <translation id="4349365535725594680">Kan ikke dele konfidensielt innhold</translation>
 <translation id="4349810866125026513">Last opp uansett</translation>
@@ -3050,6 +3052,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5752519522101347518">Laster inn nettstedet for bankbekreftelse</translation>
 <translation id="5753570386948603678">Slett fra loggen</translation>
 <translation id="5759751709240058861">bruke og bevege kameraet ditt</translation>
+<translation id="5762131895127128324">Førerkort · ID-kort · Pass</translation>
 <translation id="5763042198335101085">Angi en gyldig e-postadresse</translation>
 <translation id="5764725887548570807">Ugyldig opphavsformat.</translation>
 <translation id="5764920692828389743">Send til <ph name="EMAIL_ADDRESS" /></translation>
@@ -3987,6 +3990,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vis varsler</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
+<translation id="7225676267118764980">Endre autofylleverandør og andre innstillinger</translation>
 <translation id="7226892411756387078">Ren tekst</translation>
 <translation id="7227293336683593977">Prishistorikk</translation>
 <translation id="7228306718910595403">EU-kvalifisert status</translation>
@@ -5042,6 +5046,7 @@ Mer informasjon:
 <translation id="8891031436559779793">Du blir varslet hvis prisen settes ned på noe nettsted.</translation>
 <translation id="8891727572606052622">Ugyldig modus for proxy-tjener.</translation>
 <translation id="8894794286471754040">Langsiden først</translation>
+<translation id="8895334001368918465">For å bruke en annen autofylltjeneste i Chrome, slå den på i Android-innstillingene og her</translation>
 <translation id="8897221284075091877">For å be om å se dette innholdet, fortsett med Google-kontoen din</translation>
 <translation id="8897428486789851669">Svømming</translation>
 <translation id="8898854704577986668">Vis loggen i sidepanelet</translation>

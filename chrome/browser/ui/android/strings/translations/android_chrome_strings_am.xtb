@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">የመለያ ውሂብዎን ይገምግሙ</translation>
 <translation id="6746834324024491643">የእርስዎን የይለፍ ቃሎች እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት እንደ <ph name="EMAIL" /> በመለያ ይግቡ</translation>
 <translation id="6751521182688001123">አዲስ ትርን በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ነክተው ይያዙ።</translation>
-<translation id="6752130751133944215">አዲስ መስኮትን ወደነበረበት ለመመለስ በመላው ገቢር የሆኑ እና ገቢር ያልሆኑ ላይ የመስኮቶቹን ጠቅላላ ብዛት ወደ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ወይም ከዚያ በታች ይቀንሱ። ገቢር ያልሆኑ መስኮቶች ከ6 ወራት በኋላ ይሰረዛሉ።</translation>
 <translation id="6754359471209693699">አዲስ ፍለጋ ጀምር</translation>
 <translation id="6756507620369789050">ግብረመልስ ያጋሩ</translation>
 <translation id="6762511428368667596"><ph name="NAME" />፣ <ph name="EMAIL" />።</translation>
@@ -1585,7 +1584,6 @@
 <translation id="7388615499319468910">ጣቢያዎች እና አስተዋዋቂዎች የማስታወቂያዎች አፈጻጸም እንዴት እንደሆነ መረዳት ይችላሉ። ይህ ቅንብር ጠፍቷል።</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{በዝርዝር ውስጥ ሌላ 1 ፋይል}one{በዝርዝር ውስጥ ሌላ # ፋይል}other{በዝርዝር ውስጥ ሌሎች # ፋይሎች}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">አዲስ መስኮትን ለመክፈት በመላው ገቢር የሆኑ እና ገቢር ያልሆኑ ላይ የመስኮቶቹን ጠቅላላ ብዛት ወደ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ወይም ከዚያ በታች ይቀንሱ።</translation>
 <translation id="7403691278183511381">Chrome የመጀመሪያ አሂድ ተሞክሮ</translation>
 <translation id="7411224099004328643">የGoogle መለያ ተጠቃሚ</translation>
 <translation id="7419565702166471774">ሁልጊዜ ደህንነታቸው የተጠበቁ ግንኙነቶችን ይጠቀሙ</translation>

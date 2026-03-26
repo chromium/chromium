@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">ከተከታታይ ወደቦች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
 <translation id="2403474027143565107">ትክክለኛ</translation>
 <translation id="240450251994300576">ሁለተኛ የራስጌ ዓርማ</translation>
+<translation id="2404715426538856682">ክሬዲት እና ዴቢት ካርዶች · አይቢኤኤንዎች · የታማኝነት ካርዶች</translation>
 <translation id="2404884497378469141">ፋይሎችዎን እንደገና ለመቅዳት ይሞክሩ</translation>
 <translation id="2413155254802890957">የቆየ</translation>
 <translation id="2413528052993050574">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው ተሽሮ ሊሆን ይችላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
@@ -2167,6 +2168,7 @@
 <translation id="4340810192899866471">ከJSON አምጣ</translation>
 <translation id="4340982228985273705">ይህ ኮምፒውተር እንደ በድርጅት የሚተዳደር ሆኖ አይታይም፣ ስለዚህ መመሪያ በChrome የድር ማከማቻ ላይ የሚስተናገዱ ቅጥያዎችን ብቻ በራስ-ሰር ነው መጫን የሚችለው። የChrome ድር ማከማቻው ዝማኔ ዩአርኤል «<ph name="CWS_UPDATE_URL" />» ነው።</translation>
 <translation id="4342742994656318294">የመዝናኛ ፓርኮች</translation>
+<translation id="4346670990181948854">የጉዞ መረጃ · ተሽከርካሪዎች</translation>
 <translation id="4348834659292907206">ከ<ph name="SITE" /> ጋር ያለው ግንኙነት ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="4349365535725594680">ሚስጥራዊ ይዘትን ማጋራት አይቻልም</translation>
 <translation id="4349810866125026513">ቢሆንም ስቀል</translation>
@@ -3049,6 +3051,7 @@
 <translation id="5752519522101347518">የባንክ ማረጋገጫ ድር ጣቢያን በመጫን ላይ</translation>
 <translation id="5753570386948603678">ከታሪክ ሰርዝ</translation>
 <translation id="5759751709240058861">የእርስዎን ካሜራ ይጠቀሙ እና ያንቀሳቅሱ</translation>
+<translation id="5762131895127128324">የመንጃ ፈቃዶች · የመታወቂያ ካርዶች · ፓስፖርቶች</translation>
 <translation id="5763042198335101085">ትክክለኛ የኢሜይል አድራሻ ያስገቡ</translation>
 <translation id="5764725887548570807">ልክ ያልኾነ የመነሻ ቅርጸት።</translation>
 <translation id="5764920692828389743">ወደ <ph name="EMAIL_ADDRESS" /> ላክ</translation>
@@ -3986,6 +3989,7 @@
 <translation id="7220786058474068424">በማስሄድ ላይ</translation>
 <translation id="7221855153210829124">ማሳወቂያዎችን አሳይ</translation>
 <translation id="722454870747268814">አዲስ ማንነት የማያሳውቅ ትር</translation>
+<translation id="7225676267118764980">የራስ-ሙላ አቅራቢን እና ሌሎች ቅንብሮችን ይለውጡ</translation>
 <translation id="7226892411756387078">ቅርፀት አልባ ጽሑፍ</translation>
 <translation id="7227293336683593977">የዋጋ ታሪክ</translation>
 <translation id="7228306718910595403">ለአህ ብቁ የመሆን ሁኔታ</translation>
@@ -5043,6 +5047,7 @@
 <translation id="8891031436559779793">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ ማሳወቂያ ይደርስዎታል።</translation>
 <translation id="8891727572606052622">ልክ ያልሆነ የተኪ ሁነታ።</translation>
 <translation id="8894794286471754040">ረጅም ጠርዝ መጀመሪያ</translation>
+<translation id="8895334001368918465">በChrome ውስጥ ሌላ የራስ-ሙላ አገልግሎትን ለመጠቀም በAndroid ቅንብሮች ውስጥ እና እዚህ ያብሩት</translation>
 <translation id="8897221284075091877">ይህን ይዘት ለማየት ለመጠየቅ በGoogle መለያዎ ይቀጥሉ</translation>
 <translation id="8897428486789851669">ዋና</translation>
 <translation id="8898854704577986668">ታሪክን በጎን ፓነል ውስጥ አሳይ</translation>

@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">点按两次即可安装。</translation>
 <translation id="1740650426894359238">切换到另一份个人资料</translation>
 <translation id="1741219894094057085">智能手表</translation>
-<translation id="1742773766788162541">扫描卡片并自动填充</translation>
 <translation id="1743244221910283364">舍弃更改</translation>
 <translation id="1748975028205587434">选择文件</translation>
 <translation id="1749733017156547309">必须输入密码</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">优化</translation>
 <translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
 <translation id="2273327106802955778">“更多”菜单</translation>
-<translation id="2283599456633275070">旅游</translation>
 <translation id="2287614783861766820">{count,plural, =1{这个地址将被从此设备中删除。}other{这些地址将被从此设备中删除。}}</translation>
 <translation id="2295236662082735391">长按网页上的图片，即可使用 Gemini 进行编辑</translation>
 <translation id="2297989278479054870">当您退出 Google 账号后，该账号中的书签、密码等信息都将从此设备中移除。</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">获取其他应用中已保存的密码</translation>
 <translation id="4431224949908513835">选择要填充的付款方式。</translation>
 <translation id="4432122368769493392">设置…</translation>
-<translation id="443975520858086928">询问 Google 任何问题</translation>
 <translation id="4442550905108052454">打开<ph name="BEGIN_BOLD" />设置<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> 的更多选项</translation>
 <translation id="4455710003856931944">滑动边缘即可返回或前进。</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">价格跟踪</translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4621768135601674446">打开阅读模式选项</translation>
-<translation id="4623894491222334521">身份文件</translation>
 <translation id="4627107755957573804">允许网站和应用将现有账号升级为使用通行密钥</translation>
 <translation id="4629065796475200039">未导入您的密码</translation>
 <translation id="4630212057753624203">示例气泡</translation>
@@ -1726,6 +1722,7 @@
 <translation id="7128693485119315539">您的组织可能需要查看和管理与您的受管理账号相关联的浏览数据，例如您的浏览记录和密码。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">无法使用相机</translation>
+<translation id="7138678301420049075">其他</translation>
 <translation id="7141960840225504692">标签页将被关闭，而且您的浏览数据将被删除</translation>
 <translation id="714291438898585119">已加星标</translation>
 <translation id="7146301801400584641">有可用的日历文件</translation>
@@ -1790,7 +1787,6 @@
 <translation id="7409985198648820906">有 <ph name="UNREAD_COUNT" /> 篇未读文章。</translation>
 <translation id="7412027924265291969">继续</translation>
 <translation id="741204030948306876">立即开启</translation>
-<translation id="7417689656810783109">重命名分组</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>
 <translation id="7425053386765766120">添加支付方式…</translation>
 <translation id="7425346204213733349">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但现有数据将继续存储在您的 Google 账号中。</translation>
@@ -2075,6 +2071,7 @@
 <translation id="8363484128299778310">出现问题时的临时恢复方法</translation>
 <translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
 <translation id="8366466717204352506">从未检查过</translation>
+<translation id="8367705492654390392">有问题，尽管问</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8368198938968349418">开启自动填充功能…</translation>
 <translation id="8370406443343902172">前往“设置”…</translation>

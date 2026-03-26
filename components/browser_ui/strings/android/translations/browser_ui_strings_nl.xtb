@@ -64,6 +64,7 @@
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1652197001188145583">Als deze optie aanstaat, kunnen sites vragen of ze NFC-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen NFC-apparaten gebruiken.</translation>
 <translation id="1660204651932907780">Toestaan dat sites geluid afspelen (aanbevolen)</translation>
+<translation id="1676590040242013349">Altijd beveiligde verbindingen gebruiken staat aan.</translation>
 <translation id="1677097821151855053">Cookies en andere sitegegevens worden gebruikt om je te onthouden, bijvoorbeeld voor inloggen of gepersonaliseerde advertenties. Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="1679305402657584804">Sites kunnen vragen of ze NFC-apparaten mogen gebruiken</translation>
 <translation id="1686785653877010442">Sites sturen meestal meldingen om je op de hoogte te houden van actueel nieuws of nieuwe chatberichten.</translation>
@@ -573,6 +574,7 @@
 <translation id="6912998170423641340">Voorkomen dat sites tekst en afbeeldingen vanaf het klembord kunnen lezen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6950072572526089586">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagen op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
+<translation id="6964291282260073066">WebGPU staat uit.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980507581230208647">Rooskleurig thema</translation>
 <translation id="6980861169612950611">Sitegegevens verwijderen? <ph name="SITE_NAME" /></translation>
@@ -605,6 +607,9 @@
 <translation id="7276071417425470385">Als deze optie aanstaat, kunnen sites vragen of ze virtualreality-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen virtualreality-apparaten gebruiken.</translation>
 <translation id="7282197670900591579">Citroenkleurig thema</translation>
 <translation id="728412880473384942">Sites zijn sneller, maar minder goed beveiligd</translation>
+<translation id="7352902948037373520">Beheer in <ph name="BEGIN_LINK1" />Android-instellingen<ph name="END_LINK1" />
+
+Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="7366415735885268578">Een site toevoegen</translation>
 <translation id="7368695150573390554">Alle offline gegevens worden verwijderd</translation>
 <translation id="7369678931043226462">Blad onderaan voor De pagina Nieuw tabblad aanpassen is op halve hoogte geopend</translation>
@@ -715,6 +720,7 @@
 <translation id="8471525937465764768">Sites maken meestal verbinding met USB-apparaten voor functies zoals het afdrukken van een document of opslaan naar een opslagapparaat</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> is verouderd. Installeer de app opnieuw.</translation>
 <translation id="847433688444405067">Browse op verschillende apparaten</translation>
+<translation id="8484556725636319115">• JavaScript-optimalisatie is uitgezet. <ph name="BEGIN_LINK2" />Site-uitzonderingen beheren<ph name="END_LINK2" /></translation>
 <translation id="8487700953926739672">Offline beschikbaar</translation>
 <translation id="848952951823693243">Altijd mobiele site aanvragen</translation>
 <translation id="8492822722330266509">Sites kunnen pop-ups sturen en omleidingen gebruiken</translation>

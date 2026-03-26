@@ -545,7 +545,7 @@
 <translation id="1839331950812095887">用幾個字詞歸納想法</translation>
 <translation id="1839551713262164453">發生錯誤，政策值驗證失敗</translation>
 <translation id="1840009953725035797">家庭劇院系統</translation>
-<translation id="184153295865602321">使用自動填入功能付款時，請一律使用指紋、臉孔或其他螢幕鎖定功能驗證，多添一層防護</translation>
+<translation id="184153295865602321">使用自動填入功能付款時，建議一律使用指紋、臉孔或其他螢幕鎖定功能驗證，多添一層防護</translation>
 <translation id="1842969606798536927">支付</translation>
 <translation id="184517536440397176">你必須取得家長或監護人許可，才能造訪這個網站。在你向他們提出要求前，我們必須先確認你的身分。</translation>
 <translation id="1846432862466000825">塑膠 (典藏用)</translation>
@@ -916,6 +916,7 @@
 <translation id="2400600116338235695">可以要求連線至序列埠</translation>
 <translation id="2403474027143565107">精確</translation>
 <translation id="240450251994300576">次要頁首標誌</translation>
+<translation id="2404715426538856682">信用卡和簽帳金融卡 · IBAN · 會員卡</translation>
 <translation id="2404884497378469141">再次嘗試複製檔案</translation>
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已遭撤銷。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
@@ -2166,6 +2167,7 @@
 <translation id="4340810192899866471">從 JSON 匯入</translation>
 <translation id="4340982228985273705">系統偵測結果顯示這台電腦未受企業管理，因此政策只能自動安裝透過 Chrome 線上應用程式商店代管的擴充功能。Chrome 線上應用程式商店更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
 <translation id="4342742994656318294">主題樂園</translation>
+<translation id="4346670990181948854">旅遊資訊 · 車輛</translation>
 <translation id="4348834659292907206">與 <ph name="SITE" /> 的連線並不安全</translation>
 <translation id="4349365535725594680">無法分享機密內容</translation>
 <translation id="4349810866125026513">仍要上傳</translation>
@@ -2240,7 +2242,7 @@
 <translation id="4480760608050410381">MP4 影片</translation>
 <translation id="448363931695049633">比薩店</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
-<translation id="4489977488133295402">驗證身分即可自動填入付款方式</translation>
+<translation id="4489977488133295402">先驗證身分再自動填入付款方式</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">使用你的 Google 帳戶對已同步處理的密碼進行加密</translation>
 <translation id="4493480324863638523">網址無效。網址必須採用標準架構，例如 http://example.com 或 https://example.com。</translation>
@@ -3048,6 +3050,7 @@
 <translation id="5752519522101347518">正在載入銀行驗證網站</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
 <translation id="5759751709240058861">使用及調整攝影機</translation>
+<translation id="5762131895127128324">駕照 · 身分證 · 護照</translation>
 <translation id="5763042198335101085">請輸入有效的電子郵件地址</translation>
 <translation id="5764725887548570807">來源格式無效。</translation>
 <translation id="5764920692828389743">傳送到 <ph name="EMAIL_ADDRESS" /></translation>
@@ -3985,6 +3988,7 @@
 <translation id="7220786058474068424">處理中</translation>
 <translation id="7221855153210829124">顯示通知</translation>
 <translation id="722454870747268814">新無痕分頁</translation>
+<translation id="7225676267118764980">變更自動填入服務供應商和其他設定</translation>
 <translation id="7226892411756387078">純文字</translation>
 <translation id="7227293336683593977">價格記錄</translation>
 <translation id="7228306718910595403">歐盟合格狀態</translation>
@@ -5041,6 +5045,7 @@
 <translation id="8891031436559779793">如果產品在任何網站上降價，你就會收到通知。</translation>
 <translation id="8891727572606052622">Proxy 模式無效。</translation>
 <translation id="8894794286471754040">先從長邊開始</translation>
+<translation id="8895334001368918465">如要在 Chrome 中使用其他自動填入服務，請在 Android 設定和此處開啟該項服務</translation>
 <translation id="8897221284075091877">如果想要求查看這項內容，請登入 Google 帳戶再繼續操作</translation>
 <translation id="8897428486789851669">游泳</translation>
 <translation id="8898854704577986668">在側邊面板中顯示歷史記錄</translation>

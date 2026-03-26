@@ -1396,7 +1396,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6746338529702829275">Adolygu data eich cyfrif</translation>
 <translation id="6746834324024491643">I gael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau, mewngofnodwch fel <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Agor tab newydd yn gyflym. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
-<translation id="6752130751133944215">I adfer ffenestr newydd, lleihewch gyfanswm y ffenestri ar draws y rhai gweithredol ac anweithredol i <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> neu lai. Mae ffenestri anweithredol yn cael eu dileu ar ôl 6 mis.</translation>
 <translation id="6754359471209693699">Dechrau chwiliad newydd</translation>
 <translation id="6756507620369789050">Rhannu adborth</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1586,7 +1585,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7388615499319468910">Gall gwefannau a hysbysebwyr ddeall sut mae hysbysebion yn perfformio. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 ffeil arall yn y rhestr}zero{# ffeiliau eraill yn y rhestr}two{# ffeil arall yn y rhestr}few{# ffeil arall yn y rhestr}many{# ffeil arall yn y rhestr}other{# ffeil arall yn y rhestr}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">I agor ffenestr newydd, lleihewch gyfanswm y ffenestri ar draws y rhai gweithredol ac anweithredol i <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> neu lai.</translation>
 <translation id="7403691278183511381">Profiad Rhedeg Chrome am y tro Cyntaf</translation>
 <translation id="7411224099004328643">Defnyddiwr Cyfrif Google</translation>
 <translation id="7419565702166471774">Defnyddio cysylltiadau diogel bob tro</translation>

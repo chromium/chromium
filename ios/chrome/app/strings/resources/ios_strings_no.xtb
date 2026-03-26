@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">Dobbelttrykk for å installere.</translation>
 <translation id="1740650426894359238">Bytt til en annen profil</translation>
 <translation id="1741219894094057085">Smart Watch</translation>
-<translation id="1742773766788162541">Skann kortet og fyll ut automatisk</translation>
 <translation id="1743244221910283364">Forkast endringene</translation>
 <translation id="1748975028205587434">Velg den aktuelle filen</translation>
 <translation id="1749733017156547309">Et passord kreves</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">Finstem</translation>
 <translation id="2271452184061378400">Fanegruppene dine lagres her</translation>
 <translation id="2273327106802955778">Mer-menyen</translation>
-<translation id="2283599456633275070">Reise</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enheten.}other{Disse adressene slettes fra denne enheten.}}</translation>
 <translation id="2295236662082735391">Trykk lenge på et bilde på nettet for å redigere det med Gemini</translation>
 <translation id="2297989278479054870">Når du logger av, fjernes blant annet bokmerkene og passordene i Google-kontoen din fra denne enheten.</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">Få tilgang til lagrede passord i andre apper</translation>
 <translation id="4431224949908513835">Velg betalingsmåten du vil fylle ut.</translation>
 <translation id="4432122368769493392">Innstillinger</translation>
-<translation id="443975520858086928">Spør Google om hva som helst</translation>
 <translation id="4442550905108052454">Åpne <ph name="BEGIN_BOLD" />Innstillinger<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Flere alternativer for <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Du kan sveipe på kanten for å gå frem eller tilbake.</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">Prissporing</translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
 <translation id="4621768135601674446">Åpne alternativer for lesemodus</translation>
-<translation id="4623894491222334521">Identitetsdokumenter</translation>
 <translation id="4627107755957573804">Tillat at nettsteder og apper oppgraderer eksisterende kontoer til å bruke passnøkler</translation>
 <translation id="4629065796475200039">Passordet ditt ble ikke importert</translation>
 <translation id="4630212057753624203">Eksempelboble</translation>
@@ -1726,6 +1722,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7128693485119315539">Organisasjonen din kan ha behov for å se og administrere nettlesingsdata knyttet til den administrerte kontoen din, for eksempel nettleserloggen og passordene dine.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>
+<translation id="7138678301420049075">Annet</translation>
 <translation id="7141960840225504692">Fanene dine blir lukket, og nettlesingsdataene dine blir slettet</translation>
 <translation id="714291438898585119">Stjernemerket</translation>
 <translation id="7146301801400584641">En kalenderfil er tilgjengelig</translation>
@@ -1790,7 +1787,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> uleste artikler.</translation>
 <translation id="7412027924265291969">Fortsett</translation>
 <translation id="741204030948306876">Ja, jeg er med</translation>
-<translation id="7417689656810783109">Gi gruppen nytt navn</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
 <translation id="7425053386765766120">Legg til betalingsmåte…</translation>
 <translation id="7425346204213733349">Endringer i bokmerkene, loggoppføringene, passordene og de andre innstillingene dine blir ikke synkronisert med Google-kontoen din lenger. Data som allerede er lagret i Google-kontoen din, blir imidlertid ikke fjernet.</translation>
@@ -2075,6 +2071,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8363484128299778310">Midlertidig gjenoppretting i tilfelle problemer</translation>
 <translation id="8364563001733875155">For å endre PIN-koden må du først konfigurere en adgangskode på enheten.</translation>
 <translation id="8366466717204352506">Sjekken har aldri vært kjørt</translation>
+<translation id="8367705492654390392">Spør om hva som helst</translation>
 <translation id="8368001212524806591">Spor prisen</translation>
 <translation id="8368198938968349418">Slå på Autoutfyll…</translation>
 <translation id="8370406443343902172">Gå til Innstillinger…</translation>

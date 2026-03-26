@@ -1395,7 +1395,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6746338529702829275">Rishiko të dhënat e llogarisë sate</translation>
 <translation id="6746834324024491643">Për t'i marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu si <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Hap me shpejtësi një skedë të re. Për ta modifikuar këtë shkurtore, preke dhe mbaje të prekur.</translation>
-<translation id="6752130751133944215">Për të restauruar një dritare të re, zvogëlo numrin total të dritareve aktive dhe joaktive në <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ose më pak. Dritaret joaktive fshihen pas 6 muajsh.</translation>
 <translation id="6754359471209693699">Fillo një kërkim të ri</translation>
 <translation id="6756507620369789050">Ndaj komente</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7388615499319468910">Sajtet dhe reklamuesit mund të kuptojnë se si funksionojnë reklamat. Ky cilësim është joaktiv.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Tjetër, 1 skedar në listë}other{Tjetër, # skedarë në listë}}</translation>
 <translation id="7400418766976504921">URL-ja</translation>
-<translation id="7400424692675800399">Për të hapur një dritare të re, zvogëlo numrin total të dritareve aktive dhe joaktive në <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ose më pak.</translation>
 <translation id="7403691278183511381">Përvoja e ekzekutimit të parë të Chrome</translation>
 <translation id="7411224099004328643">Përdorues i "Llogarisë së Google"</translation>
 <translation id="7419565702166471774">Përdor gjithmonë lidhje të sigurta</translation>

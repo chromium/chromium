@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="2403474027143565107">সঠিক</translation>
 <translation id="240450251994300576">গৌণ হেডাৰৰ ল’গ’</translation>
+<translation id="2404715426538856682">ক্ৰেডিট আৰু ডেবিট কাৰ্ড · IBAN · লয়েল্টী কাৰ্ড</translation>
 <translation id="2404884497378469141">আপোনাৰ ফাইলসমূহ পুনৰ প্ৰতিলিপি কৰি চাওক</translation>
 <translation id="2413155254802890957">পুৰণি</translation>
 <translation id="2413528052993050574">এই ছার্ভাৰে নিজকে <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে আৰু ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ হয়তো প্ৰত্যাহাৰ কৰা হৈছে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ প্ৰতিৰোধ কৰাৰ বাবে হ‘ব পাৰে।</translation>
@@ -2164,6 +2165,7 @@
 <translation id="4340810192899866471">JSONৰ পৰা আমদানি কৰক</translation>
 <translation id="4340982228985273705">এই কম্পিউটাৰটো এণ্টাৰপ্ৰাইজৰ দ্বাৰা পৰিচালিত হোৱা হিচাপে চিনাক্ত হোৱা নাই গতিকে নীতিয়ে কেৱল Chrome Webstoreত হ’ষ্ট কৰা এক্সটেনশ্বনহে স্বয়ংক্ৰিয়ভাৱে ইনষ্টল কৰিব পাৰিব। Chrome Webstore আপডে’ট কৰা URL হৈছে "<ph name="CWS_UPDATE_URL" />"।</translation>
 <translation id="4342742994656318294">থীম পাৰ্ক</translation>
+<translation id="4346670990181948854">ভ্ৰমণৰ তথ্য · বাহন</translation>
 <translation id="4348834659292907206"><ph name="SITE" />লৈ কৰা সংযোগটো সুৰক্ষিত নহয়</translation>
 <translation id="4349365535725594680">গোপনীয় সমল শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="4349810866125026513">যিকোনো প্ৰকাৰে আপল’ড কৰক</translation>
@@ -3046,6 +3048,7 @@
 <translation id="5752519522101347518">বেংক সত্যাপনৰ ৱেবছাইট ল’ড কৰি থকা হৈছে</translation>
 <translation id="5753570386948603678">ইতিহাসৰ পৰা মচক</translation>
 <translation id="5759751709240058861">আপোনাৰ কেমেৰা ব্যৱহাৰ আৰু লৰচৰ কৰা</translation>
+<translation id="5762131895127128324">চালকৰ অনুজ্ঞাপত্ৰ · পৰিচয় পত্ৰ · পাছপ’ৰ্ট</translation>
 <translation id="5763042198335101085">এটা মান্য ইমেইল ঠিকনা দিয়ক</translation>
 <translation id="5764725887548570807">উৎসৰ ফৰ্মেট মান্য নহয়।</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />লৈ পঠিয়াওক</translation>
@@ -3981,6 +3984,7 @@
 <translation id="7220786058474068424">প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="7221855153210829124">জাননী দেখুৱাওক</translation>
 <translation id="722454870747268814">নতুন ইনক’গ্নিট’ টেব</translation>
+<translation id="7225676267118764980">স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধা প্ৰদানকাৰী আৰু অন্য ছেটিং সলনি কৰক</translation>
 <translation id="7226892411756387078">সাধাৰণ পাঠ</translation>
 <translation id="7227293336683593977">মূল্যৰ ইতিহাস</translation>
 <translation id="7228306718910595403">EUৰ অৰ্হতাসম্পন্ন হোৱাৰ স্থিতি</translation>
@@ -5037,6 +5041,7 @@
 <translation id="8891031436559779793">কোনো ছাইটত মূল্য কমিলে আপুনি সতৰ্কবাৰ্তা পাব</translation>
 <translation id="8891727572606052622">প্ৰ’ক্সিৰ ম’ড অমান্য।</translation>
 <translation id="8894794286471754040">দীঘলীয়া কাষটো প্ৰথমে</translation>
+<translation id="8895334001368918465">Chromeত অন্য এটা স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সেৱা ব্যৱহাৰ কৰিবলৈ, Androidৰ ছেটিঙত আৰু ইয়াত এইটো অন কৰক</translation>
 <translation id="8897221284075091877">এই সমলটো চাবলৈ বিচাৰিবলৈ, আপোনাৰ Google একাউণ্টেৰে অব্যাহত কৰক</translation>
 <translation id="8897428486789851669">সাঁতোৰ</translation>
 <translation id="8898854704577986668">ছাইডৰ পেনেলত ইতিহাস দেখুৱাওক</translation>

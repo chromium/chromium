@@ -210,7 +210,6 @@
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte instalaci.</translation>
 <translation id="1740650426894359238">Přepnutí na jiný profil</translation>
 <translation id="1741219894094057085">Chytré hodinky</translation>
-<translation id="1742773766788162541">Naskenovat kartu a automaticky vyplnit</translation>
 <translation id="1743244221910283364">Zahodit změny</translation>
 <translation id="1748975028205587434">Vybrat soubor</translation>
 <translation id="1749733017156547309">Heslo je povinné</translation>
@@ -371,7 +370,6 @@
 <translation id="2268044343513325586">Upřesnit</translation>
 <translation id="2271452184061378400">Tady jsou uloženy vaše skupiny karet</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
-<translation id="2283599456633275070">Cestování</translation>
 <translation id="2287614783861766820">{count,plural, =1{Tato adresa bude z tohoto zařízení smazána.}few{Tyto adresy budou z tohoto zařízení smazány.}many{Tyto adresy budou z tohoto zařízení smazány.}other{Tyto adresy budou z tohoto zařízení smazány.}}</translation>
 <translation id="2295236662082735391">Dlouhým stisknutím obrázku na webu ho můžete upravit pomocí Gemini</translation>
 <translation id="2297989278479054870">Po odhlášení budou z tohoto zařízení odstraněny záložky, hesla a další položky ve vašem účtu Google.</translation>
@@ -944,7 +942,6 @@
 <translation id="4430505936695785931">Používejte uložená hesla v jiných aplikacích</translation>
 <translation id="4431224949908513835">Vyberte platební metodu, kterou chcete vyplnit.</translation>
 <translation id="4432122368769493392">Nastavení…</translation>
-<translation id="443975520858086928">Zeptejte se Googlu na cokoli</translation>
 <translation id="4442550905108052454">Otevřete <ph name="BEGIN_BOLD" />Nastavení<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Další možnosti pro <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Přejetím přes okraj se můžete vrátit zpět nebo přejít vpřed.</translation>
@@ -988,7 +985,6 @@
 <translation id="4607887340472970274">Sledování cen</translation>
 <translation id="4619564267100705184">Ověřte svoji totožnost</translation>
 <translation id="4621768135601674446">Otevřít možnosti Režimu čtení</translation>
-<translation id="4623894491222334521">Doklady totožnosti</translation>
 <translation id="4627107755957573804">Povolit webům a aplikacím upgradovat stávající účty, aby mohly používat přístupové klíče</translation>
 <translation id="4629065796475200039">Heslo se neimportovalo</translation>
 <translation id="4630212057753624203">Ukázková bublina</translation>
@@ -1735,6 +1731,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7128693485119315539">Vaše organizace může potřebovat vidět a spravovat údaje o prohlížení spojené s vaším spravovaným účtem, jako jsou historie prohlížení a hesla.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera je nedostupná</translation>
+<translation id="7138678301420049075">Ostatní</translation>
 <translation id="7141960840225504692">Vaše karty se zavřou a vymažou se údaje o prohlížení</translation>
 <translation id="714291438898585119">S hvězdičkou</translation>
 <translation id="7146301801400584641">Je k dispozici soubor kalendáře</translation>
@@ -1799,7 +1796,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7409985198648820906">Nepřečtené články: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Pokračovat</translation>
 <translation id="741204030948306876">Ano</translation>
-<translation id="7417689656810783109">Přejmenovat skupinu</translation>
 <translation id="7419565702166471774">Vždy používat zabezpečená připojení</translation>
 <translation id="7425053386765766120">Přidat platební metodu…</translation>
 <translation id="7425346204213733349">Změny záložek, historie, hesel a dalších nastavení se již nebudou synchronizovat do vašeho účtu Google. Vaše existující data však v účtu Google uložena zůstanou.</translation>
@@ -2084,6 +2080,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8363484128299778310">Dočasné obnovení v případě potíží</translation>
 <translation id="8364563001733875155">Pokud chcete změnit PIN, nejdříve na zařízení nastavte heslo.</translation>
 <translation id="8366466717204352506">Kontrola nikdy neproběhla</translation>
+<translation id="8367705492654390392">Zeptejte se na cokoli</translation>
 <translation id="8368001212524806591">Sledovat cenu</translation>
 <translation id="8368198938968349418">Zapnout automatické vyplňování…</translation>
 <translation id="8370406443343902172">Přejít do Nastavení…</translation>

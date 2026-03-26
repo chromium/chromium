@@ -917,6 +917,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2400600116338235695">Może prosić o zgodę na połączenie z portami szeregowymi</translation>
 <translation id="2403474027143565107">Dokładna</translation>
 <translation id="240450251994300576">Logo nagłówka dodatkowego</translation>
+<translation id="2404715426538856682">Karty kredytowe i debetowe · Numery IBAN · Karty lojalnościowe</translation>
 <translation id="2404884497378469141">Spróbuj ponownie skopiować pliki</translation>
 <translation id="2413155254802890957">Stary</translation>
 <translation id="2413528052993050574">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa mógł zostać odwołany. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
@@ -2168,6 +2169,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4340810192899866471">Importuj z JSON</translation>
 <translation id="4340982228985273705">Ten komputer nie został wykryty jako zarządzany przez firmę, przez co zasada może instalować automatycznie tylko rozszerzenia hostowane w Chrome Web Store. URL sklepu Chrome Web Store służący do aktualizacji to „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4342742994656318294">Parki rozrywki</translation>
+<translation id="4346670990181948854">Informacje o podróży · Pojazdy</translation>
 <translation id="4348834659292907206">Połączenie z <ph name="SITE" /> nie jest bezpieczne</translation>
 <translation id="4349365535725594680">Nie można udostępniać treści poufnych</translation>
 <translation id="4349810866125026513">Prześlij mimo to</translation>
@@ -3050,6 +3052,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5752519522101347518">Wczytuję stronę weryfikacji banku</translation>
 <translation id="5753570386948603678">Usuń z historii</translation>
 <translation id="5759751709240058861">Używanie kamery i poruszanie nią</translation>
+<translation id="5762131895127128324">Prawa jazdy · Dowody tożsamości · Paszporty</translation>
 <translation id="5763042198335101085">Wpisz prawidłowy adres e-mail</translation>
 <translation id="5764725887548570807">Nieprawidłowy format źródła.</translation>
 <translation id="5764920692828389743">Wysyłaj na adres <ph name="EMAIL_ADDRESS" /></translation>
@@ -3987,6 +3990,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7220786058474068424">Przetwarzanie</translation>
 <translation id="7221855153210829124">Pokazywanie powiadomień</translation>
 <translation id="722454870747268814">Nowa karta incognito</translation>
+<translation id="7225676267118764980">Zmień dostawcę usługi autouzupełniania i inne ustawienia</translation>
 <translation id="7226892411756387078">Zwykły tekst</translation>
 <translation id="7227293336683593977">Historia cen</translation>
 <translation id="7228306718910595403">Status kwalifikacji UE</translation>
@@ -5043,6 +5047,7 @@ Dodatkowe informacje:
 <translation id="8891031436559779793">Otrzymasz powiadomienie, jeśli cena w którejkolwiek witrynie spadnie.</translation>
 <translation id="8891727572606052622">Nieprawidłowy tryb proxy</translation>
 <translation id="8894794286471754040">Najpierw dłuższa krawędź</translation>
+<translation id="8895334001368918465">Aby używać innej usługi autouzupełniania w Chrome, włącz ją w ustawieniach Androida i tutaj</translation>
 <translation id="8897221284075091877">Aby poprosić o możliwość wyświetlenia tych treści, zaloguj się na konto Google</translation>
 <translation id="8897428486789851669">Pływanie</translation>
 <translation id="8898854704577986668">Pokaż historię w panelu bocznym</translation>

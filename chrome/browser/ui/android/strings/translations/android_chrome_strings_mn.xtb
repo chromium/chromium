@@ -1395,7 +1395,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6746338529702829275">Бүртгэлийн өгөгдлөө шалгах</translation>
 <translation id="6746834324024491643">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="6751521182688001123">Шинэ табыг шуурхай нээнэ үү. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
-<translation id="6752130751133944215">Шинэ цонх сэргээхийн тулд идэвхтэй, идэвхгүй цонхны нийт тоог <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> эсвэл түүнээс цөөн болгож багасгана уу. Идэвхгүй цонхыг 6 сарын дараа устгадаг.</translation>
 <translation id="6754359471209693699">Шинээр хайж эхлэх</translation>
 <translation id="6756507620369789050">Санал хүсэлт хуваалцах</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7388615499319468910">Сайтууд болон сурталчлагчид зарын гүйцэтгэлийг ойлгох боломжтой. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Бусад, жагсаалтад 1 файл байна}other{Бусад, жагсаалтад # файл байна}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Шинэ цонх нээхийн тулд идэвхтэй, идэвхгүй цонхны нийт тоог <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> эсвэл түүнээс цөөн болгож багасгана уу.</translation>
 <translation id="7403691278183511381">Chrome-г анх удаа ажиллуулах туршлага</translation>
 <translation id="7411224099004328643">Google Бүртгэлийн хэрэглэгч</translation>
 <translation id="7419565702166471774">Үргэлж аюулгүй холболт ашиглана</translation>

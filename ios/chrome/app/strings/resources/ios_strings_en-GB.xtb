@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1740650426894359238">Switch to another profile</translation>
 <translation id="1741219894094057085">Smart watch</translation>
-<translation id="1742773766788162541">Scan card and autofill</translation>
 <translation id="1743244221910283364">Discard changes</translation>
 <translation id="1748975028205587434">Select your file</translation>
 <translation id="1749733017156547309">A password is required</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2271452184061378400">Your tab groups are saved here</translation>
 <translation id="2273327106802955778">More menu</translation>
-<translation id="2283599456633275070">Travel</translation>
 <translation id="2287614783861766820">{count,plural, =1{This address will be deleted from this device.}other{These addresses will be deleted from this device.}}</translation>
 <translation id="2295236662082735391">Long-press an image on the web to edit with Gemini</translation>
 <translation id="2297989278479054870">After you sign out, the bookmarks, passwords and more in your Google Account will be removed from this device.</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">Get saved passwords in other apps</translation>
 <translation id="4431224949908513835">Select a payment method to fill.</translation>
 <translation id="4432122368769493392">Settings…</translation>
-<translation id="443975520858086928">Ask Google anything</translation>
 <translation id="4442550905108052454">Open <ph name="BEGIN_BOLD" />Settings<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">More options for <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">You can swipe the edge to go back or forward.</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">Price tracking</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4621768135601674446">Open reading mode options</translation>
-<translation id="4623894491222334521">Identity docs</translation>
 <translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
 <translation id="4629065796475200039">Your password wasn't imported</translation>
 <translation id="4630212057753624203">Sample bubble</translation>
@@ -1726,6 +1722,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7128693485119315539">Your organisation may need to see and manage browsing data tied to your managed account, such as your browsing history and passwords.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
+<translation id="7138678301420049075">Other</translation>
 <translation id="7141960840225504692">Your tabs will be closed and browsing data will be deleted</translation>
 <translation id="714291438898585119">Starred</translation>
 <translation id="7146301801400584641">Calendar file available</translation>
@@ -1790,7 +1787,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> unread articles.</translation>
 <translation id="7412027924265291969">Continue</translation>
 <translation id="741204030948306876">Yes, I'm in</translation>
-<translation id="7417689656810783109">Rename group</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
 <translation id="7425053386765766120">Add payment method…</translation>
 <translation id="7425346204213733349">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.</translation>
@@ -2075,6 +2071,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8363484128299778310">Temp recovery in case of trouble</translation>
 <translation id="8364563001733875155">To change your PIN, first set up a passcode on your device.</translation>
 <translation id="8366466717204352506">Check never run</translation>
+<translation id="8367705492654390392">Ask anything</translation>
 <translation id="8368001212524806591">Track price</translation>
 <translation id="8368198938968349418">Turn on Autofill…</translation>
 <translation id="8370406443343902172">Go to Settings...</translation>

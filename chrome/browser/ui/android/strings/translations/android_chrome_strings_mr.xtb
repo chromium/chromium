@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">तुमच्या खाते डेटाचे पुनरावलोकन करा</translation>
 <translation id="6746834324024491643">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="6751521182688001123">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
-<translation id="6752130751133944215">नवीन विंडो रिस्टोअर करण्यासाठी, सर्व अ‍ॅक्टिव्ह आणि इनॅक्टिव्ह एकूण विंडोची संख्या <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> किंवा त्याहून कमी करा. इनॅक्टिव्ह विंडो ६ महिन्यांनंतर हटवल्या जातात.</translation>
 <translation id="6754359471209693699">नवीन शोध सुरू करा</translation>
 <translation id="6756507620369789050">फीडबॅक शेअर करा</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@
 <translation id="7388615499319468910">जाहिराती कशा काम करतात हे साइट आणि जाहिरातदार समजू शकतात. हे सेटिंग बंद आहे.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{सूचीमध्ये १ वेगळी फाइल आहे}other{सूचीमध्ये # वेगळ्या फाइल आहेत}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">नवीन विंडो उघडण्यासाठी, सर्व अ‍ॅक्टिव्ह आणि इनॅक्टिव्ह एकूण विंडोची संख्या <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> किंवा त्याहून कमी करा.</translation>
 <translation id="7403691278183511381">Chrome फर्स्ट रन अनुभव</translation>
 <translation id="7411224099004328643">Google खाते वापरकर्ता</translation>
 <translation id="7419565702166471774">नेहमी सुरक्षित कनेक्शन वापरा</translation>

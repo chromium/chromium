@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">Ketuk dua kali untuk memasang.</translation>
 <translation id="1740650426894359238">Alihkan ke profil lain</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
-<translation id="1742773766788162541">Pindai Kartu dan Isi Otomatis</translation>
 <translation id="1743244221910283364">Hapus perubahan</translation>
 <translation id="1748975028205587434">Pilih file Anda</translation>
 <translation id="1749733017156547309">Sandi wajib diisi</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">Saring</translation>
 <translation id="2271452184061378400">Grup tab Anda disimpan di sini</translation>
 <translation id="2273327106802955778">Menu lainnya</translation>
-<translation id="2283599456633275070">Perjalanan</translation>
 <translation id="2287614783861766820">{count,plural, =1{Alamat ini akan dihapus dari perangkat ini.}other{Alamat ini akan dihapus dari perangkat ini.}}</translation>
 <translation id="2295236662082735391">Tekan lama gambar di web untuk mengeditnya dengan Gemini</translation>
 <translation id="2297989278479054870">Setelah Anda logout, bookmark, sandi, dan data lainnya di Akun Google Anda akan dihapus dari perangkat ini.</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">Dapatkan sandi tersimpan di aplikasi lainnya</translation>
 <translation id="4431224949908513835">Pilih metode pembayaran untuk diisi.</translation>
 <translation id="4432122368769493392">Setelan…</translation>
-<translation id="443975520858086928">Tanya Google apa saja</translation>
 <translation id="4442550905108052454">Buka <ph name="BEGIN_BOLD" />Setelan<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Opsi lainnya untuk <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Anda dapat menggeser tepi untuk kembali atau maju.</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">Pemantauan Harga</translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4621768135601674446">Buka opsi Mode baca</translation>
-<translation id="4623894491222334521">Dokumen identitas</translation>
 <translation id="4627107755957573804">Izinkan situs dan aplikasi mengupgrade akun yang ada untuk menggunakan kunci sandi</translation>
 <translation id="4629065796475200039">Sandi Anda tidak diimpor</translation>
 <translation id="4630212057753624203">Contoh balon</translation>
@@ -1726,6 +1722,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7128693485119315539">Organisasi Anda mungkin perlu melihat dan mengelola data penjelajahan yang terkait dengan akun terkelola, seperti histori penjelajahan dan sandi.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>
+<translation id="7138678301420049075">Lainnya</translation>
 <translation id="7141960840225504692">Tab Anda akan ditutup dan data penjelajahan akan dihapus</translation>
 <translation id="714291438898585119">Berbintang</translation>
 <translation id="7146301801400584641">File kalender tersedia</translation>
@@ -1790,7 +1787,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artikel belum dibaca.</translation>
 <translation id="7412027924265291969">Lanjutkan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
-<translation id="7417689656810783109">Ganti Nama Grup</translation>
 <translation id="7419565702166471774">Selalu gunakan koneksi aman</translation>
 <translation id="7425053386765766120">Tambahkan metode pembayaran…</translation>
 <translation id="7425346204213733349">Perubahan pada bookmark, histori, sandi, dan setelan lainnya tidak akan disinkronkan lagi dengan Akun Google. Namun, data yang sudah ada akan tetap disimpan di Akun Google Anda.</translation>
@@ -2075,6 +2071,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8363484128299778310">Pemulihan sementara jika terjadi masalah</translation>
 <translation id="8364563001733875155">Untuk mengubah PIN, siapkan kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="8366466717204352506">Pemeriksaan tidak pernah dijalankan</translation>
+<translation id="8367705492654390392">Tanyakan apa saja</translation>
 <translation id="8368001212524806591">Pantau harga</translation>
 <translation id="8368198938968349418">Aktifkan Isi Otomatis…</translation>
 <translation id="8370406443343902172">Buka Setelan...</translation>

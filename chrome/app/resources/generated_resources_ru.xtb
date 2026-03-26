@@ -157,6 +157,7 @@
 <translation id="1099070179078143183">Чтобы детектор мошенников и другие функции работали, Chrome может использовать ИИ-модели, которые запускаются прямо на вашем устройстве, не отправляя ваши данные на серверы Google. Если этот параметр отключен, указанные функции могут не работать. Подробнее <ph name="BEGIN_LINK" />об ИИ на устройстве<ph name="END_LINK" />…</translation>
 <translation id="1099962274138857708">Изображение скопировано с устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1100504063505580045">Текущий значок</translation>
+<translation id="1101267749138963680">Проверка безопасности…</translation>
 <translation id="1102759278139578486">Не удалось скачать файлы аннотаций основного узла. Повторите попытку позже.</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Эта группа сразу станет вам недоступна и будет удалена со всех ваших устройств.</translation>
@@ -972,7 +973,6 @@
 <translation id="1652281434788353738">Задумчивое</translation>
 <translation id="1652326691684645429">Включить Обмен с окружением</translation>
 <translation id="1652862280638399816">Чтобы использовать Менеджер паролей со Связкой ключей macOS, перезапустите Chromium и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
-<translation id="1653958716132599769">Объединить связанные вкладки в группу</translation>
 <translation id="165448107578581061">Gemini выполняет вашу задачу…</translation>
 <translation id="1654580009054503925">Сайтам запрещено показывать запросы</translation>
 <translation id="1654713139320245449">Нет устройств, на которые можно транслировать контент. Нужна помощь?</translation>
@@ -1088,7 +1088,6 @@
 <translation id="1732380773380808394">Пароли и другие данные также станут доступны из аккаунта Google.</translation>
 <translation id="1734212868489994726">Голубой</translation>
 <translation id="1734824808160898225">Возможно, <ph name="PRODUCT_NAME" /> не сможет обновляться автоматически.</translation>
-<translation id="1735636854292329504"><ph name="TASK_TITLE" />\nЯ работаю над вашей задачей и сообщу, если потребуется что-то ещё.</translation>
 <translation id="1735983780784385591">Импортированные из Linux</translation>
 <translation id="173628468822554835">ОК. По умолчанию новые сайты не будут отправлять вам уведомления.</translation>
 <translation id="1737228213718001685">Выполнение задачи…</translation>
@@ -2906,6 +2905,7 @@
 <translation id="2979893796619951531">Исключить сайт</translation>
 <translation id="2979966855249721010">Вам могут показываться советы по использованию, рекомендуемые приложения и другие материалы, подобранные на основе ваших интересов.</translation>
 <translation id="2981113813906970160">Показывать большой курсор мыши</translation>
+<translation id="2981728693230031897">Краткий пересказ этой страницы от Gemini</translation>
 <translation id="2983102365694924129">Подбираются на основе ваших действий на сайте. Параметр отключен.</translation>
 <translation id="2983311431122838216">Используйте режим ИИ для Google Поиска</translation>
 <translation id="2983373101216420412">Чехол заряжен на <ph name="PERCENTAGE" /> %.</translation>
@@ -3095,7 +3095,6 @@
 <translation id="3108957152224931571">Цвет выделения</translation>
 <translation id="3109206895301430738">Сохраненные группы вкладок</translation>
 <translation id="3109724472072898302">Свернуто</translation>
-<translation id="3109876277590516364">и ещё <ph name="NUM" /></translation>
 <translation id="3112292765614504292">Размер приложения: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Пользователь добавил эту вкладку.</translation>
 <translation id="311394601889664316">Запретить сайтам изменять файлы и папки на устройстве</translation>
@@ -3273,7 +3272,6 @@
 <translation id="324366796737464147">Шумоподавление</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3244294424315804309">Не включать звук</translation>
-<translation id="3247006341013237647">Объединить вкладки?</translation>
 <translation id="3247649647204519958">Здесь вы можете узнавать, у каких расширений есть доступ к сайту, и управлять их разрешениями.</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: ошибка сети</translation>
 <translation id="3248902735035392926">Безопасность – это важно. <ph name="BEGIN_LINK" />Проверьте расширения<ph name="END_LINK" />, которые у вас установлены.</translation>
@@ -3486,7 +3484,6 @@
 <translation id="3402585168444815892">Регистрация для использования демонстрационного режима</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Для этого сайта нет сохраненных паролей</translation>
-<translation id="3405382848027996799">Оборудование Google Beam готово к настройке</translation>
 <translation id="3405664148539009465">Настроить шрифты</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">Разрешить сайтам использовать устройства и данные виртуальной реальности</translation>
@@ -4724,7 +4721,6 @@
 <translation id="4250680216510889253">Нет</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> сможет просматривать файлы в папке "<ph name="FOLDERNAME" />" и создавать их копии.</translation>
 <translation id="4251377547188244181">Регистрация устройства в режиме киоска или цифровой вывески</translation>
-<translation id="4252828488489674554">Нажмите правой кнопкой мыши на название группы вкладок, чтобы изменить ее, или нажмите левой кнопкой, чтобы свернуть группу.</translation>
 <translation id="4252899949534773101">Включите Bluetooth</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: доступ к содержимому вкладки открыт</translation>
 <translation id="4253168017788158739">Примечание</translation>
@@ -5043,7 +5039,6 @@
 <translation id="4470957202018033307">Настройки внешних накопителей</translation>
 <translation id="4471250205822310967">Оверлей выбора Gemini</translation>
 <translation id="4471354919263203780">Скачивание файлов распознавания речи: <ph name="PERCENT" /> %…</translation>
-<translation id="4472194221638903160">Группировать вкладки с помощью ИИ</translation>
 <translation id="4472298120638043495">Можно использовать предпочитаемый язык, установленный в вашем аккаунте Google (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
 <translation id="447252321002412580">Помогать повышать производительность Chrome и улучшать функции</translation>
 <translation id="4472533928615930332">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Стиль: <ph name="STYLE" />.</translation>
@@ -6789,7 +6784,6 @@
 <translation id="5731247495086897348">Вс&amp;тавить из буфера и перейти</translation>
 <translation id="5733109311583381874">Чтобы настроить варианты преобразования текста, добавьте свои слова в пользовательский словарь</translation>
 <translation id="5733669387494115331">Настройки сервисов Google</translation>
-<translation id="5733913382424854675">Группировать вкладки с помощью ИИ</translation>
 <translation id="5734362860645681824">Оборудование</translation>
 <translation id="5734697361979786483">Добавить общую папку</translation>
 <translation id="573520097779121706">Чтобы перемещать указатель, используйте клавиши 7, 8, 9, U, O, J, K, L.</translation>
@@ -7199,7 +7193,6 @@
 <translation id="6011193465932186973">Отпечатки пальцев</translation>
 <translation id="6011308810877101166">Улучшать подсказки при поиске</translation>
 <translation id="6011908034087870826">Отправка ссылки на устройство "<ph name="DEVICE_NAME" />"</translation>
-<translation id="6013003831291591200">Задача выполнена</translation>
 <translation id="6013027779243312217">Включите субтитры для аудио и видео</translation>
 <translation id="6014293228235665243">Не прочитано</translation>
 <translation id="6015776718598175635">Звезды</translation>
@@ -7694,7 +7687,6 @@
 <translation id="6367097275976877956">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox? Если да, нажмите Пробел.</translation>
 <translation id="6367196786591004737">Удалить запись</translation>
 <translation id="6367396429435748845">Чтобы приостановить или возобновить управление указателем с клавиатуры, нажмите <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
-<translation id="6367428649223439405"><ph name="TASK_TITLE" />\nЯ приостановил выполнение вашей задачи.</translation>
 <translation id="6367853307713830174">Gemini показывает ход своих действий и запрашивает подтверждение, прежде чем работать с конфиденциальной информацией. Вы можете в любой момент остановить помощника или взять управление на себя.</translation>
 <translation id="6367985768157257101">Принять через Обмен с окружением?</translation>
 <translation id="6368157733310917710">Адреса и другие данные</translation>
@@ -8431,7 +8423,6 @@
 <translation id="6870953451576517204">Самотестирование пройдено</translation>
 <translation id="6871644448911473373">Ответчик OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Языки</translation>
-<translation id="6872859537300194762"><ph name="TASK_TITLE" />\nЯ приостановил выполнение задачи из-за другого действия. Когда все будет готово, вы сможете посмотреть результат в Chrome.</translation>
 <translation id="6873156759937047811">PIN-код:</translation>
 <translation id="6873571253135628430">Изменить разрешения сайтов</translation>
 <translation id="6876155724392614295">Велосипед</translation>
@@ -8542,7 +8533,6 @@
 <translation id="695817292005698051">Порог распознавания жестов</translation>
 <translation id="6959882218873172284">Запрос POST</translation>
 <translation id="6960133692707095572">Войти без билета</translation>
-<translation id="6960408801933394526">Чтобы изменить группу вкладок, выберите ее и откройте контекстное меню</translation>
 <translation id="6960507406838246615">Требуется обновление Linux</translation>
 <translation id="6960648667961844909">Не удалось скачать файлы для распознавания речи на следующем языке: <ph name="LANGUAGE" />. Повторная попытка будет выполнена позже. Пока скачивание не завершится, записи с речью будут передаваться для обработки в Google.</translation>
 <translation id="696103774840402661">Файлы и локальные данные всех пользователей будут удалены с этого устройства <ph name="DEVICE_TYPE" />.</translation>
@@ -8867,7 +8857,6 @@
 <translation id="7191632649590906354">Теперь участники семейной группы могут использовать ваше имя пользователя и пароль в Google Менеджере паролей. Попросите их выполнить вход на сайте <ph name="WEBSITE" />.</translation>
 <translation id="7193051357671784796">Это приложение добавила ваша организация. Перезапустите его, чтобы завершить установку.</translation>
 <translation id="7193374945610105795">Для сайта <ph name="ORIGIN" /> нет сохраненных паролей</translation>
-<translation id="7193663868864659844">Оставьте отзыв о рекомендациях по группировке вкладок</translation>
 <translation id="7194343495483122559">Развернуть вкладки</translation>
 <translation id="7194873994243265344">Ваша организация заблокировала файл, так как он зашифрован. Попросите владельца его расшифровать.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{Скачивается 1 файл}one{Скачивается # файл}few{Скачивается # файла}many{Скачивается # файлов}other{Скачивается # файла}}</translation>
@@ -9240,7 +9229,6 @@
 <translation id="7444176988908839653">{COUNT,plural, =0{Сегодня файлы cookie снова будут заблокированы}=1{Завтра файлы cookie снова будут заблокированы}one{Файлы cookie будут снова заблокированы через # день}few{Файлы cookie будут снова заблокированы через # дня}many{Файлы cookie будут снова заблокированы через # дней}other{Файлы cookie будут снова заблокированы через # дня}}</translation>
 <translation id="7446716846072322308">Будут удалены данные (<ph name="TOTAL_USAGE" />), сохраненные сайтом <ph name="SITE_NAME" /> и другими, связанными с ним.</translation>
 <translation id="7448430327655618736">Устанавливайте приложения автоматически</translation>
-<translation id="7448639287059644731"><ph name="TASK_TITLE" />\nМне нужна ваша помощь, чтобы выполнить задачу.</translation>
 <translation id="7448664748118305024">Удалять данные сайтов, сохраненные на устройстве, при закрытии всех окон</translation>
 <translation id="7450761244949417357">Открывается <ph name="ALTERNATIVE_BROWSER_NAME" />…</translation>
 <translation id="7450926666485653189">Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через специальный сервер, что позволяет скрыть ваш IP-адрес.</translation>
@@ -9312,7 +9300,6 @@
 <translation id="7493386493263658176">Расширение "<ph name="EXTENSION_NAME" />" может сохранять любой текст, который вы вводите, в том числе пароли и данные банковских карт. Начать работу?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Приложение Android</translation>
-<translation id="7495217365392072364">Объединить похожие вкладки</translation>
 <translation id="7497322070873193353">ИИ от Google</translation>
 <translation id="7497981768003291373">Не обнаружено недавно сохраненных текстовых журналов WebRTC.</translation>
 <translation id="7501957181231305652">или</translation>
@@ -9600,7 +9587,6 @@
 <translation id="7685351732518564314">Нажмите кнопку на устройстве <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Сведения о рекламе, рекомендуемой сайтами</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
-<translation id="7689495576379510159">и ещё <ph name="NUM" /></translation>
 <translation id="7690378713476594306">Выбрать из списка</translation>
 <translation id="7690853182226561458">Добавить &amp;папку</translation>
 <translation id="7691077781194517083">Не удалось сбросить настройки электронного ключа. Код ошибки: <ph name="ERROR_CODE" />.</translation>
@@ -11079,7 +11065,6 @@
 <translation id="8708671767545720562">&amp;Дополнительная информация</translation>
 <translation id="8709368517685334931">Другие цвета можно найти в интернет-магазине Chrome.</translation>
 <translation id="8710414664106871428">Фэнтези</translation>
-<translation id="8710550057342691420">Объединить похожие вкладки</translation>
 <translation id="8711402221661888347">Гамбургер</translation>
 <translation id="8711538096655725662">Разрешать доступ автоматически на всех посещаемых сайтах</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -11522,7 +11507,6 @@
 <translation id="8999560016882908256">Ошибка синтаксиса раздела: <ph name="ERROR_LINE" />.</translation>
 <translation id="8999651235576960439">Меньше движений на экране</translation>
 <translation id="9000185763019430629">Приложите палец к сканеру отпечатков на правой боковой части устройства <ph name="DEVICE_TYPE" />. Данные отпечатков пальцев надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000341229894259710"><ph name="TASK_TITLE" />\nЯ выполнил ваш запрос. Результат можно посмотреть в Chrome.</translation>
 <translation id="9000529821022336229">Программа обновления не установлена.</translation>
 <translation id="900267527532832868">Ключ доступа больше не действителен. Он скоро будет удален из сервиса "<ph name="GOOGLE_PASSWORD_MANAGER" />".</translation>
 <translation id="9003031149571024583">Введите PIN-код. Знак <ph name="NUM_DIGIT" /> из 6. Чтобы удалить последнюю из введенных цифр, нажмите Backspace или Delete.</translation>

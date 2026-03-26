@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">સીરિયલ પોર્ટ સાથે કનેક્ટ થવા માટે પૂછી શકે છે</translation>
 <translation id="2403474027143565107">સચોટ</translation>
 <translation id="240450251994300576">ગૌણ હેડરનો લોગો</translation>
+<translation id="2404715426538856682">ક્રેડિટ અને ડેબિટ કાર્ડ · IBANs · લૉયલ્ટિ કાર્ડ</translation>
 <translation id="2404884497378469141">તમારી ફાઇલોની ફરીથી કૉપિ કરવાનો પ્રયાસ કરો</translation>
 <translation id="2413155254802890957">જૂનું</translation>
 <translation id="2413528052993050574">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર રદબાતલ થયું હશે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
@@ -2168,6 +2169,7 @@
 <translation id="4340810192899866471">JSON પરથી આયાત કરો</translation>
 <translation id="4340982228985273705">આ કમ્પ્યુટર એન્ટરપ્રાઇઝ દ્વારા મેનેજ થતું હોય તેવું જણાયું નથી, તેથી પૉલિસી માત્ર Chrome Webstore પર હોસ્ટ થયેલા એક્સ્ટેન્શન ઑટોમૅટિક રીતે ઇન્સ્ટૉલ કરી શકશે. Chrome Webstore અપડેટનું URL "<ph name="CWS_UPDATE_URL" />" છે.</translation>
 <translation id="4342742994656318294">થીમ પાર્ક</translation>
+<translation id="4346670990181948854">મુસાફરીની માહિતી · વાહનો</translation>
 <translation id="4348834659292907206"><ph name="SITE" />નું કનેક્શન સુરક્ષિત નથી</translation>
 <translation id="4349365535725594680">ગોપનીય કન્ટેન્ટ શેર કરી શકાતું નથી</translation>
 <translation id="4349810866125026513">કોઈપણ રીતે અપલોડ કરો</translation>
@@ -3050,6 +3052,7 @@
 <translation id="5752519522101347518">બેંક ચકાસણીની વેબસાઇટ લોડ કરી રહ્યાં છીએ</translation>
 <translation id="5753570386948603678">ઇતિહાસમાંથી ડિલીટ કરો</translation>
 <translation id="5759751709240058861">તમારા કૅમેરાનો ઉપયોગ કરો અને તેને ખસેડો</translation>
+<translation id="5762131895127128324">ડ્રાઇવિંગ લાઇસન્સ · ઓળખ કાર્ડ · પાસપોર્ટ</translation>
 <translation id="5763042198335101085">એક માન્ય ઇમેઇલ ઍડ્રેસ ઉમેરો</translation>
 <translation id="5764725887548570807">મૂળ ફૉર્મેટ અમાન્ય છે.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> પર મોકલો</translation>
@@ -3987,6 +3990,7 @@
 <translation id="7220786058474068424">પ્રક્રિયા કરી રહ્યું છે</translation>
 <translation id="7221855153210829124">સૂચનાઓ દર્શાવો</translation>
 <translation id="722454870747268814">નવું છૂપું ટૅબ</translation>
+<translation id="7225676267118764980">ઑટોમૅટિક રીતે ભરવાની સુવિધાના પ્રદાતા અને અન્ય સેટિંગ બદલો</translation>
 <translation id="7226892411756387078">સાદી ટેક્સ્ટ</translation>
 <translation id="7227293336683593977">કિંમતનો ઇતિહાસ</translation>
 <translation id="7228306718910595403">EU માટે યોગ્યતા ધરાવતું સ્ટેટસ</translation>
@@ -5043,6 +5047,7 @@
 <translation id="8891031436559779793">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને નોટિફિકેશન મળશે.</translation>
 <translation id="8891727572606052622">અમાન્ય પ્રૉક્સી મોડ.</translation>
 <translation id="8894794286471754040">પહેલાં લાંબી કિનારી</translation>
+<translation id="8895334001368918465">Chromeમાં અન્ય કોઈ ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરવા માટે, Androidના સેટિંગમાં જઈને અને અહીં તે ચાલુ કરો</translation>
 <translation id="8897221284075091877">આ કન્ટેન્ટ જોવાનું પૂછવા માટે, તમારા Google એકાઉન્ટ વડે ચાલુ રાખો</translation>
 <translation id="8897428486789851669">સ્વિમિંગ</translation>
 <translation id="8898854704577986668">બાજુની પૅનલમાં ઇતિહાસ બતાવો</translation>

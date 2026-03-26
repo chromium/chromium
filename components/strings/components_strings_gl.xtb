@@ -917,6 +917,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2400600116338235695">Pode pedirche permiso para conectarse a portos en serie</translation>
 <translation id="2403474027143565107">Precisa</translation>
 <translation id="240450251994300576">Logotipo da cabeceira secundaria</translation>
+<translation id="2404715426538856682">Tarxetas de crédito e débito · IBAN · Tarxetas de fidelidade</translation>
 <translation id="2404884497378469141">Proba a copiar os ficheiros de novo</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque quizais se revogase o certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
@@ -2168,6 +2169,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4340810192899866471">Importar desde JSON</translation>
 <translation id="4340982228985273705">Non se detectou que unha empresa xestione este ordenador, polo que a política só pode instalar automaticamente extensións aloxadas en Chrome Webstore. O URL de actualización de Chrome Webstore é <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Parques temáticos</translation>
+<translation id="4346670990181948854">Información de viaxes · Vehículos</translation>
 <translation id="4348834659292907206">A conexión a <ph name="SITE" /> non é segura</translation>
 <translation id="4349365535725594680">Non se pode compartir contido confidencial</translation>
 <translation id="4349810866125026513">Cargar igualmente</translation>
@@ -3050,6 +3052,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5752519522101347518">Cargando sitio web de verificación bancaria</translation>
 <translation id="5753570386948603678">Eliminar do historial</translation>
 <translation id="5759751709240058861">Utilizar e mover a túa cámara</translation>
+<translation id="5762131895127128324">Permisos de conducir · Documentos de identidade · Pasaportes</translation>
 <translation id="5763042198335101085">Introduce un enderezo de correo electrónico válido</translation>
 <translation id="5764725887548570807">O formato de orixe non é válido.</translation>
 <translation id="5764920692828389743">Envíanse a: <ph name="EMAIL_ADDRESS" /></translation>
@@ -3986,6 +3989,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificacións</translation>
 <translation id="722454870747268814">Nova pestana do modo de incógnito</translation>
+<translation id="7225676267118764980">Cambia o fornecedor de autocompletado e outras opcións</translation>
 <translation id="7226892411756387078">Texto sen formato</translation>
 <translation id="7227293336683593977">Historial de prezos</translation>
 <translation id="7228306718910595403">Estado de cualificación da UE</translation>
@@ -5042,6 +5046,7 @@ Detalles adicionais:
 <translation id="8891031436559779793">Recibirás unha notificación se baixa o prezo en calquera sitio.</translation>
 <translation id="8891727572606052622">Modo de proxy non válido.</translation>
 <translation id="8894794286471754040">Co bordo longo primeiro</translation>
+<translation id="8895334001368918465">Para usar outro servizo de autocompletar en Chrome, actívao na configuración de Android e aquí</translation>
 <translation id="8897221284075091877">Para pedir acceso a este contido, continúa coa túa Conta de Google</translation>
 <translation id="8897428486789851669">Natación</translation>
 <translation id="8898854704577986668">Mostrar historial no panel lateral</translation>

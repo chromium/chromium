@@ -1395,7 +1395,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6746338529702829275">Pregledajte podatke o računu</translation>
 <translation id="6746834324024491643">Da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
-<translation id="6752130751133944215">Da biste vratili novi prozor, smanjite ukupni broj aktivnih i neaktivnih prozora na najviše <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Neaktivni prozori brišu se nakon šest mjeseci.</translation>
 <translation id="6754359471209693699">Pokretanje novog pretraživanja</translation>
 <translation id="6756507620369789050">Pošaljite povratne informacije</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7388615499319468910">Web-lokacije i oglašivači mogu razumjeti izvedbu oglasa. Postavka je isključena.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Drugo, 1 datoteka na popisu}one{Drugo, # datoteka na popisu}few{Drugo, # datoteke na popisu}other{Drugo, # datoteka na popisu}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Da biste otvorili novi prozor, smanjite ukupan broj aktivnih i neaktivnih prozora na najviše <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Chromeov doživljaj prvog pokretanja</translation>
 <translation id="7411224099004328643">Korisnik Google računa</translation>
 <translation id="7419565702166471774">Uvijek upotrebljavaj sigurne veze</translation>

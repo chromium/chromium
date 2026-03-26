@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">ສາມາດຂໍເຊື່ອມຕໍ່ຫາຜອດຊີຣຽວ</translation>
 <translation id="2403474027143565107">ແບບລະອຽດ</translation>
 <translation id="240450251994300576">ໂລໂກ້ສ່ວນຫົວສຳຮອງ</translation>
+<translation id="2404715426538856682">ບັດເຄຣດິດ ແລະ ບັດເດບິດ · IBAN · ບັດສະມາຊິກ</translation>
 <translation id="2404884497378469141">ລອງສຳເນົາໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="2413155254802890957">ເກົ່າ</translation>
 <translation id="2413528052993050574">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນອາດຈະຖືກຖອນຄືນແລ້ວ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
@@ -2168,6 +2169,7 @@
 <translation id="4340810192899866471">ນຳເຂົ້າຈາກ JSON</translation>
 <translation id="4340982228985273705">ບໍ່ມີການກວດເຫັນວ່າຄອມພິວເຕີນີ້ເປັນຄອມພິວເຕີທີ່ຈັດການໂດຍອົງກອນ. ສະນັ້ນ, ນະໂຍບາຍສາມາດຕິດຕັ້ງໄດ້ແຕ່ສ່ວນຂະຫຍາຍທີ່ມີໂຮສໃນ Chrome Webstore ໂດຍອັດຕະໂນມັດເທົ່ານັ້ນ. URL ການອັບເດດ Chrome Webstore ແມ່ນ "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">ສວນສະໜຸກ</translation>
+<translation id="4346670990181948854">ຂໍ້ມູນການເດີນທາງ · ພາຫະນະ</translation>
 <translation id="4348834659292907206">ການເຊື່ອມຕໍ່ຫາ <ph name="SITE" /> ນັ້ນບໍ່ປອດໄພ</translation>
 <translation id="4349365535725594680">ບໍ່ສາມາດແບ່ງປັນເນື້ອຫາທີ່ເປັນຄວາມລັບໄດ້</translation>
 <translation id="4349810866125026513">ຢືນຢັນການອັບໂຫຼດ</translation>
@@ -3050,6 +3052,7 @@
 <translation id="5752519522101347518">ກຳລັງໂຫຼດເວັບໄຊການຢັ້ງຢືນທະນາຄານ</translation>
 <translation id="5753570386948603678">ລຶບອອກຈາກປະຫວັດ</translation>
 <translation id="5759751709240058861">ໃຊ້ ແລະ ຍ້າຍກ້ອງຂອງທ່ານ</translation>
+<translation id="5762131895127128324">ໃບອະນຸຍາດຂັບຂີ່ · ບັດປະຈຳຕົວ · ໜັງສືຜ່ານແດນ</translation>
 <translation id="5763042198335101085">ປ້ອນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ</translation>
 <translation id="5764725887548570807">ຮູບແບບຕົ້ນທາງບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="5764920692828389743">ສົ່ງໄປ <ph name="EMAIL_ADDRESS" /></translation>
@@ -3986,6 +3989,7 @@
 <translation id="7220786058474068424">ກຳລັງດຳເນີນການ</translation>
 <translation id="7221855153210829124">ສະ​ແດງ​ການ​ແຈ້ງ​ເຕືອນ</translation>
 <translation id="722454870747268814">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນໃໝ່</translation>
+<translation id="7225676267118764980">ປ່ຽນຜູ້ໃຫ້ບໍລິການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການຕັ້ງຄ່າອື່ນໆ</translation>
 <translation id="7226892411756387078">ຂໍ້ຄວາມທຳມະດາ</translation>
 <translation id="7227293336683593977">ປະຫວັດລາຄາ</translation>
 <translation id="7228306718910595403">ສະຖານະຜ່ານການຮັບຮອງ EU</translation>
@@ -5042,6 +5046,7 @@
 <translation id="8891031436559779793">ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກລາຄາຫຼຸດລົງໃນເວັບໄຊໃດກໍຕາມ.</translation>
 <translation id="8891727572606052622">ໂໝດພຣັອກຊີໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="8894794286471754040">ດ້ານຂອບຍາວກ່ອນ</translation>
+<translation id="8895334001368918465">ເພື່ອໃຊ້ບໍລິການຕື່ມຂໍ້ມູນອັດຕະໂນມັດອື່ນໃນ Chrome, ໃຫ້ເປີດບໍລິການດັ່ງກ່າວໃນການຕັ້ງຄ່າ Android ແລະ ບ່ອນນີ້</translation>
 <translation id="8897221284075091877">ເພື່ອຂໍເບິ່ງເນື້ອຫານີ້, ໃຫ້ດຳເນີນການຕໍ່ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="8897428486789851669">ລອຍນໍ້າ</translation>
 <translation id="8898854704577986668">ສະແດງປະຫວັດໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>

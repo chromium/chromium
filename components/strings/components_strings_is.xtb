@@ -917,6 +917,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2400600116338235695">Getur beðið um að tengjast raðtengjum</translation>
 <translation id="2403474027143565107">Nákvæm</translation>
 <translation id="240450251994300576">Lógó aukahauss</translation>
+<translation id="2404715426538856682">Kredit- og debetkort · IBAN-númer · Vildarkort</translation>
 <translation id="2404884497378469141">Prófaðu að afrita skrárnar þínar aftur</translation>
 <translation id="2413155254802890957">Gamalt</translation>
 <translation id="2413528052993050574">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans gæti hafa verið afturkallað. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
@@ -2168,6 +2169,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4340810192899866471">Flytja inn úr JSON</translation>
 <translation id="4340982228985273705">Tölvunni virðist ekki vera stýrt af fyrirtæki og því getur reglan aðeins sett sjálfkrafa upp viðbætur sem hýstar eru í vefverslun Chrome. Uppfærsluvefslóð vefverslunar Chrome er „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4342742994656318294">Skemmtigarðar</translation>
+<translation id="4346670990181948854">Ferðaupplýsingar · Ökutæki</translation>
 <translation id="4348834659292907206">Tengingin við <ph name="SITE" /> er ekki örugg</translation>
 <translation id="4349365535725594680">Ekki er hægt að deila trúnaðarupplýsingum</translation>
 <translation id="4349810866125026513">Hlaða samt upp</translation>
@@ -3050,6 +3052,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5752519522101347518">Hleður vefsvæði um staðfestingu bankaupplýsinga</translation>
 <translation id="5753570386948603678">Eyða úr ferli</translation>
 <translation id="5759751709240058861">Nota og hreyfa myndavélina</translation>
+<translation id="5762131895127128324">Ökuskírteini · Nafnskírteini · Vegabréf</translation>
 <translation id="5763042198335101085">Sláðu inn gilt netfang</translation>
 <translation id="5764725887548570807">Ógilt snið upprunastaðar.</translation>
 <translation id="5764920692828389743">Senda á <ph name="EMAIL_ADDRESS" /></translation>
@@ -3986,6 +3989,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7220786058474068424">Í vinnslu</translation>
 <translation id="7221855153210829124">Sýna tilkynningar</translation>
 <translation id="722454870747268814">Nýr huliðsflipi</translation>
+<translation id="7225676267118764980">Breyta þjónustu sjálfvirkrar útfyllingar og öðrum stillingum</translation>
 <translation id="7226892411756387078">Ósniðinn texti</translation>
 <translation id="7227293336683593977">Verðferill</translation>
 <translation id="7228306718910595403">ESB fullgild staða</translation>
@@ -5042,6 +5046,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8891031436559779793">Þú færð tilkynningu ef verð lækkar á einhverju vefsvæði.</translation>
 <translation id="8891727572606052622">Ógild proxy-stilling.</translation>
 <translation id="8894794286471754040">Langhlið fyrst</translation>
+<translation id="8895334001368918465">Til að nota aðra sjálfvirka útfyllingarþjónustu í Chrome skaltu kveikja á henni hér og í stillingum Android</translation>
 <translation id="8897221284075091877">Haltu áfram af Google-reikningnum þínum til að óska eftir því að sjá þetta efni.</translation>
 <translation id="8897428486789851669">Sund</translation>
 <translation id="8898854704577986668">Sýna feril í hliðarglugga</translation>

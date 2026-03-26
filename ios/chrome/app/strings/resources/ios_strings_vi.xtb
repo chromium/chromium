@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Chọn những tài khoản bạn muốn xuất sang một ứng dụng khác.</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1506063256525392513">Quyền này cho phép bạn chụp ảnh, tải ảnh lên và quét mã QR.</translation>
+<translation id="1506733063065214205">Ứng dụng RCS MLS</translation>
 <translation id="1508263560970797965">Tiếp tục ở chế độ ẩn danh</translation>
 <translation id="1509486075633541495">Đăng nhập vào trang web</translation>
 <translation id="1513858653616922153">Xóa mật khẩu</translation>
@@ -209,7 +210,6 @@
 <translation id="1740468249224277719">Nhấn đúp để cài đặt.</translation>
 <translation id="1740650426894359238">Chuyển sang một hồ sơ khác</translation>
 <translation id="1741219894094057085">Đồng hồ thông minh</translation>
-<translation id="1742773766788162541">Quét thẻ và tự động điền</translation>
 <translation id="1743244221910283364">Loại bỏ thay đổi</translation>
 <translation id="1748975028205587434">Chọn tệp của bạn</translation>
 <translation id="1749733017156547309">Cần nhập mật khẩu</translation>
@@ -370,7 +370,6 @@
 <translation id="2268044343513325586">Tinh chỉnh</translation>
 <translation id="2271452184061378400">Các nhóm thẻ của bạn được lưu tại đây</translation>
 <translation id="2273327106802955778">Menu khác</translation>
-<translation id="2283599456633275070">Du lịch</translation>
 <translation id="2287614783861766820">{count,plural, =1{Địa chỉ này sẽ bị xoá khỏi thiết bị này.}other{Các địa chỉ này sẽ bị xoá khỏi thiết bị này.}}</translation>
 <translation id="2295236662082735391">Nhấn và giữ một hình ảnh trên web để chỉnh sửa bằng Gemini</translation>
 <translation id="2297989278479054870">Sau khi bạn đăng xuất, dấu trang, mật khẩu và nhiều nội dung khác trong Tài khoản Google của bạn sẽ bị xoá khỏi thiết bị này.</translation>
@@ -477,6 +476,7 @@
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2673508731173059946">Truy cập vào đường liên kết đã sao chép</translation>
 <translation id="2679659833697380">Thông tin sẽ được lưu vào thiết bị của bạn</translation>
+<translation id="2681572445246787428">Ký tài liệu</translation>
 <translation id="2688535388040882469">Biểu ngữ</translation>
 <translation id="2690858294534178585">Máy ảnh đang được sử dụng</translation>
 <translation id="2691653761409724435">Ko khả dụng khi ngoại tuyến</translation>
@@ -907,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Thêm thẻ vào nhóm}other{Thêm các thẻ vào nhóm}}</translation>
 <translation id="4302061870579014542">Thiết lập vị trí</translation>
 <translation id="4304713468139749426">Trình quản lý mật khẩu</translation>
+<translation id="4306349443295056740">Ký OCSP</translation>
 <translation id="4309403553630140242">Nhấn đúp để xem thêm thông tin</translation>
 <translation id="4310738531374808763">Tuỳ chỉnh trang chủ của bạn</translation>
 <translation id="4320848494125124980">Gần đây</translation>
 <translation id="4322394346347055525">Đóng các thẻ khác</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Bật thông báo</translation>
 <translation id="4326912346867677256">Nhấn vào "Sử dụng mật khẩu" để đăng nhập một cách an toàn.</translation>
 <translation id="4327017157997423717">Theo dõi giá của <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -940,7 +942,6 @@
 <translation id="4430505936695785931">Sử dụng mật khẩu đã lưu trong các ứng dụng khác</translation>
 <translation id="4431224949908513835">Chọn phương thức thanh toán cần điền.</translation>
 <translation id="4432122368769493392">Cài đặt…</translation>
-<translation id="443975520858086928">Hỏi Google bất cứ điều gì</translation>
 <translation id="4442550905108052454">Mở phần <ph name="BEGIN_BOLD" />Cài đặt<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Lựa chọn khác cho <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Bạn có thể vuốt từ mép này để quay lại mục trước hoặc chuyển đến mục tiếp theo.</translation>
@@ -984,7 +985,6 @@
 <translation id="4607887340472970274">Theo dõi giá</translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
 <translation id="4621768135601674446">Mở các lựa chọn của Chế độ đọc</translation>
-<translation id="4623894491222334521">Giấy tờ tuỳ thân</translation>
 <translation id="4627107755957573804">Cho phép các trang web và ứng dụng nâng cấp các tài khoản hiện có để sử dụng khoá truy cập</translation>
 <translation id="4629065796475200039">Mật khẩu của bạn chưa được nhập</translation>
 <translation id="4630212057753624203">Bong bóng mẫu</translation>
@@ -1029,6 +1029,7 @@
 <translation id="4744428388659507035">Để sử dụng dấu trang trên tất cả các thiết bị của bạn, hãy bật "Dấu trang" trong phần cài đặt.</translation>
 <translation id="4746926359847517643">Bạn có thể khôi phục các thẻ này bất cứ lúc nào trong phần nhật ký.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Đã nhập {count} thẻ}other{Đã nhập {count} thẻ}}</translation>
+<translation id="4749924365937394956">Xác thực máy chủ</translation>
 <translation id="4751645464639803239">Thẻ ẩn danh mới</translation>
 <translation id="4752348350801431746">Tắt thông báo của tính năng Kiểm tra an toàn…</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
@@ -1394,12 +1395,14 @@
 <translation id="598634819525651074">Diện tích</translation>
 <translation id="5988097621740394599">Xem các mặt hàng giảm giá trong thẻ của bạn.</translation>
 <translation id="5988851877894965432">Mở URL trong Chrome</translation>
+<translation id="599343768974649785">Văn bản phản cảm</translation>
 <translation id="6006672969046233841">Thẻ mới</translation>
 <translation id="6011308810877101166">Cải thiện cụm từ tìm kiếm được đề xuất</translation>
 <translation id="6012140227487808125">Đang mã hóa...</translation>
 <translation id="6027619584715411062">Đăng nhập để sử dụng dấu trang, mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn.</translation>
 <translation id="6027945736510816438">Ý của bạn là <ph name="WEBSITE" /> phải không?</translation>
 <translation id="6032845897905314562">tính năng mới</translation>
+<translation id="6037458223703682108">Chữ ký số</translation>
 <translation id="6038823991892265570">Quản lý bộ nhớ trên Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Đóng</translation>
@@ -1543,6 +1546,7 @@
 <translation id="6476284679642588870">Quản lý phương thức thanh toán</translation>
 <translation id="6476800141292307438">Đang dịch trang sang <ph name="LANGUAGE" />. Các tùy chọn nằm ở gần cuối màn hình.</translation>
 <translation id="647867789226964031">Thay đổi mật khẩu của bạn</translation>
+<translation id="6480363549849064919">Xác thực ứng dụng</translation>
 <translation id="6494931198667773526">Kết thúc</translation>
 <translation id="6503077044568424649">Truy cập nhiều nhất</translation>
 <translation id="6503763061813913607">Thông báo của tính năng Kiểm tra an toàn</translation>
@@ -1588,6 +1592,7 @@
 <translation id="6619015782482868078">Giao diện màu xanh lơ</translation>
 <translation id="6620279676667515405">Huỷ</translation>
 <translation id="6625830436658400045">Chế độ cài đặt đồng bộ hoá sẽ được khôi phục dựa trên lần sao lưu gần đây nhất. Bạn có thể chọn nội dung cần đồng bộ hoá trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> bất cứ lúc nào.</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Chỉnh sửa thư mục</translation>
 <translation id="6629759408545977279">Từ: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Bổ sung lớp bảo vệ tăng cường này trước các mối đe doạ trên mạng.</translation>
@@ -1726,6 +1731,7 @@
 <translation id="7128693485119315539">Tổ chức của bạn có thể cần xem và quản lý dữ liệu duyệt web liên quan đến tài khoản được quản lý của bạn, chẳng hạn như nhật ký duyệt web và mật khẩu.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Máy ảnh không khả dụng</translation>
+<translation id="7138678301420049075">Khác</translation>
 <translation id="7141960840225504692">Hệ thống sẽ đóng các thẻ và xoá dữ liệu duyệt web</translation>
 <translation id="714291438898585119">Có gắn dấu sao</translation>
 <translation id="7146301801400584641">Có sẵn tệp lịch</translation>
@@ -1790,7 +1796,6 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> bài viết chưa đọc.</translation>
 <translation id="7412027924265291969">Tiếp tục</translation>
 <translation id="741204030948306876">Có, tôi đồng ý</translation>
-<translation id="7417689656810783109">Đổi tên nhóm</translation>
 <translation id="7419565702166471774">Luôn sử dụng kết nối bảo mật</translation>
 <translation id="7425053386765766120">Thêm phương thức thanh toán…</translation>
 <translation id="7425346204213733349">Các thay đổi đối với dấu trang, lịch sử, mật khẩu và các tùy chọn cài đặt khác sẽ không đồng bộ hóa với Tài khoản Google của bạn nữa. Tuy nhiên, dữ liệu hiện có của bạn sẽ vẫn được lưu trữ trong tài khoản Google của bạn.</translation>
@@ -2075,6 +2080,7 @@
 <translation id="8363484128299778310">Khôi phục tạm thời trong trường hợp gặp sự cố</translation>
 <translation id="8364563001733875155">Để thay đổi mã PIN, trước tiên, hãy thiết lập mật mã trên thiết bị của bạn.</translation>
 <translation id="8366466717204352506">Chưa kiểm tra lần nào</translation>
+<translation id="8367705492654390392">Đặt câu hỏi bất kỳ</translation>
 <translation id="8368001212524806591">Theo dõi giá</translation>
 <translation id="8368198938968349418">Bật tính năng Tự động điền…</translation>
 <translation id="8370406443343902172">Chuyển đến phần Cài đặt...</translation>
@@ -2151,6 +2157,7 @@
 <translation id="8614671330774943747">Chuyển đến Trình chuyển đổi thẻ</translation>
 <translation id="862367213447108001">Luôn hiển thị cửa sổ bật lên trên trang web này</translation>
 <translation id="8625706492572042370">Chỉnh sửa Màn hình chính</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Thẻ ẩn danh bị khoá</translation>
 <translation id="8633025649649592204">Hoạt động gần đây</translation>
 <translation id="8636825310635137004">Để có các thẻ từ các thiết bị khác của bạn, hãy bật đồng bộ hóa.</translation>
@@ -2337,6 +2344,7 @@
 <translation id="942624946817804130">Xuất</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="94870150074703282">Xoá nhóm này?</translation>
+<translation id="951090530321144895">Tổ chức phát hành CA</translation>
 <translation id="952704832371081537">Huỷ</translation>
 <translation id="95332591904104970">Các ứng dụng có thể kết nối</translation>
 <translation id="954667170699278022">Danh sách đọc</translation>

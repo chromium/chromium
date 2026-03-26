@@ -917,6 +917,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2400600116338235695">Yn gallu gofyn am gysylltu â phyrth cyfresol</translation>
 <translation id="2403474027143565107">Cywir</translation>
 <translation id="240450251994300576">Logo'r Pennawd Eilaidd</translation>
+<translation id="2404715426538856682">Cardiau credyd a debyd · IBANau · Cardiau teyrngarwch</translation>
 <translation id="2404884497378469141">Rhowch gynnig ar gopïo'ch ffeiliau eto</translation>
 <translation id="2413155254802890957">Hen</translation>
 <translation id="2413528052993050574">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; mae'n bosib bod ei dystysgrif ddiogelwch wedi'i dirymu. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
@@ -2168,6 +2169,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4340810192899866471">Mewnforio o JSON</translation>
 <translation id="4340982228985273705">Nid yw'r cyfrifiadur hwn yn cael ei ganfod fel un a reolir gan fenter, felly dim ond estyniadau a gynhelir ar Chrome Webstore y gall y polisi eu gosod yn awtomatig. Yr URL diweddaru Chrome Webstore yw "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Parciau Thema</translation>
+<translation id="4346670990181948854">Gwybodaeth teithio · Cerbydau</translation>
 <translation id="4348834659292907206">Nid yw'r cysylltiad â <ph name="SITE" /> yn ddiogel</translation>
 <translation id="4349365535725594680">Methu â rhannu cynnwys cyfrinachol</translation>
 <translation id="4349810866125026513">Uwchlwytho beth bynnag</translation>
@@ -3050,6 +3052,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5752519522101347518">Wrthi'n llwytho gwefan dilysu banc</translation>
 <translation id="5753570386948603678">Dileu o hanes</translation>
 <translation id="5759751709240058861">Defnyddio a symud eich camera</translation>
+<translation id="5762131895127128324">Trwyddedau gyrru · Cardiau adnabod · Pasbortau</translation>
 <translation id="5763042198335101085">Rhowch gyfeiriad e-bost dilys</translation>
 <translation id="5764725887548570807">Fformat tarddiad annilys.</translation>
 <translation id="5764920692828389743">Anfon at <ph name="EMAIL_ADDRESS" /></translation>
@@ -3986,6 +3989,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="7220786058474068424">Yn prosesu</translation>
 <translation id="7221855153210829124">Dangos hysbysiadau</translation>
 <translation id="722454870747268814">Tab Anhysbys Newydd</translation>
+<translation id="7225676267118764980">Newid darparwr awtolenwi a gosodiadau eraill</translation>
 <translation id="7226892411756387078">Testun Plaen</translation>
 <translation id="7227293336683593977">Hanes Prisiau</translation>
 <translation id="7228306718910595403">Statws Cymwysedig yr UE</translation>
@@ -5042,6 +5046,7 @@ Manylion ychwanegol:
 <translation id="8891031436559779793">Byddwch yn cael hysbysiad os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="8891727572606052622">Modd dirprwy annilys.</translation>
 <translation id="8894794286471754040">Ymyl hir yn gyntaf</translation>
+<translation id="8895334001368918465">I ddefnyddio gwasanaeth awtolenwi arall yn Chrome, trowch ef ymlaen yn y gosodiadau Android ac yma</translation>
 <translation id="8897221284075091877">I ofyn am weld y cynnwys hwn, parhewch â'ch Cyfrif Google</translation>
 <translation id="8897428486789851669">Nofio</translation>
 <translation id="8898854704577986668">Dangos hanes yn y panel ochr</translation>

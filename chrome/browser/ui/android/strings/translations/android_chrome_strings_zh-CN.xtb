@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6746834324024491643">如需将您的密码等信息同步到您的所有设备上，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="6751521182688001123">快速打开一个新标签页。若要修改此快捷方式，请轻触并按住这里。</translation>
-<translation id="6752130751133944215">如需恢复新窗口，请将活跃窗口和非活跃窗口的总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。非活跃窗口在 6 个月后会被删除。</translation>
 <translation id="6754359471209693699">开始新的搜索</translation>
 <translation id="6756507620369789050">分享反馈</translation>
 <translation id="6762511428368667596"><ph name="NAME" />，<ph name="EMAIL" />。</translation>
@@ -1583,7 +1582,6 @@
 <translation id="7388615499319468910">网站和广告主可以了解广告效果。此设置已关闭。</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{其他，列表中有 1 个文件}other{其他，列表中有 # 个文件}}</translation>
 <translation id="7400418766976504921">网址</translation>
-<translation id="7400424692675800399">如需打开新窗口，请将活跃窗口和非活跃窗口的总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。</translation>
 <translation id="7403691278183511381">Chrome 首次运行体验</translation>
 <translation id="7411224099004328643">Google 账号用户</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>

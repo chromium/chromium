@@ -1395,7 +1395,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
 <translation id="6746834324024491643">Para acceder a tus contraseñas y a más cosas en todos tus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Abre una pestaña nueva rápidamente. Para editar este acceso directo, mantenlo pulsado.</translation>
-<translation id="6752130751133944215">Para restaurar una ventana nueva, reduce el número total de ventanas activas e inactivas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o menos. Las ventanas inactivas se eliminan después de 6 meses.</translation>
 <translation id="6754359471209693699">Iniciar nueva búsqueda</translation>
 <translation id="6756507620369789050">Enviar comentarios</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7388615499319468910">Los sitios y los anunciantes pueden comprender el rendimiento de los anuncios. Esta opción está desactivada.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Otros, 1 archivo en la lista}other{Otros, # archivos en la lista}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Para abrir una ventana nueva, reduce el número total de ventanas activas e inactivas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o menos.</translation>
 <translation id="7403691278183511381">Primera experiencia de ejecución de Chrome</translation>
 <translation id="7411224099004328643">Usuario de cuenta de Google</translation>
 <translation id="7419565702166471774">Usar siempre conexiones seguras</translation>

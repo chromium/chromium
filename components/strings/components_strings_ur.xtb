@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">سائٹ سیریل پورٹس سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
 <translation id="2403474027143565107">قطعی</translation>
 <translation id="240450251994300576">ثانوی ہیڈر لوگو</translation>
+<translation id="2404715426538856682">‏کریڈٹ اور ڈیبٹ کارڈز · IBANs · لائلٹی کارڈز</translation>
 <translation id="2404884497378469141">اپنی فائلز کو دوبارہ کاپی کرنے کی کوشش کریں</translation>
 <translation id="2413155254802890957">پرانا</translation>
 <translation id="2413528052993050574">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ کالعدم قرار دے دیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
@@ -2169,6 +2170,7 @@
 <translation id="4340810192899866471">‏JSON سے درآمد کریں</translation>
 <translation id="4340982228985273705">‏اس کمپیوٹر کا انٹرپرائز کے زیر انتظام کے طور پر پتہ نہیں چلا ہے، اسلئے پالیسی خودکار طور پر صرف Chrome ویب اسٹور پر میزبانی کردہ ایکسٹینشنز انسٹال کر سکتی ہے۔ Chrome ویب اسٹور اپ ڈیٹ URL "<ph name="CWS_UPDATE_URL" />" ہے۔</translation>
 <translation id="4342742994656318294">تھیم پارکس</translation>
+<translation id="4346670990181948854">سفر کی معلومات · گاڑیاں</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> سے کنکشن محفوظ نہیں ہے</translation>
 <translation id="4349365535725594680">رازدارانہ مواد کا اشتراک نہیں کیا جا سکتا</translation>
 <translation id="4349810866125026513">بہر حال اپ لوڈ کریں</translation>
@@ -3051,6 +3053,7 @@
 <translation id="5752519522101347518">بینک کی توثیق کی ویب سائٹ لوڈ ہو رہی ہے</translation>
 <translation id="5753570386948603678">سرگزشت سے حذف کریں</translation>
 <translation id="5759751709240058861">اپنا کیمرا استعمال کریں اور منتقل کریں</translation>
+<translation id="5762131895127128324">ڈرائیونگ لائسنسز · شناختی کارڈز · پاسپورٹس</translation>
 <translation id="5763042198335101085">ایک درست ای میل پتہ درج کریں</translation>
 <translation id="5764725887548570807">اصل فارمیٹ غلط ہے۔</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> پر بھیجیں</translation>
@@ -3988,6 +3991,7 @@
 <translation id="7220786058474068424">کارروائی ہورہی ہے</translation>
 <translation id="7221855153210829124">اطلاعات دکھائیں</translation>
 <translation id="722454870747268814">نیا پوشیدگی ٹیب</translation>
+<translation id="7225676267118764980">آٹو فل فراہم کنندہ اور دیگر ترتیبات کو تبدیل کریں</translation>
 <translation id="7226892411756387078">سادہ ٹیکسٹ</translation>
 <translation id="7227293336683593977">قیمت کی سرگزشت</translation>
 <translation id="7228306718910595403">‏‫EU کے اہل اسٹیٹس</translation>
@@ -5044,6 +5048,7 @@
 <translation id="8891031436559779793">کسی بھی سائٹ پر قیمت کم ہونے پر آپ کو مطلع کر دیا جائے گا۔</translation>
 <translation id="8891727572606052622">پراکسی کی غلط وضع۔</translation>
 <translation id="8894794286471754040">طویل کنارہ پہلے</translation>
+<translation id="8895334001368918465">‏‫Chrome میں دیگر آٹو فِل سروس استعمال کرنے کے لیے، اسے Android کی ترتیبات میں اور یہاں، آن کریں</translation>
 <translation id="8897221284075091877">‏اس مواد کو دیکھنے کی درخواست کرنے کے لیے، اپنے Google اکاؤنٹ کے ساتھ جاری رکھیں</translation>
 <translation id="8897428486789851669">تیراکی</translation>
 <translation id="8898854704577986668">سائیڈ پینل میں سرگزشت دکھائیں</translation>

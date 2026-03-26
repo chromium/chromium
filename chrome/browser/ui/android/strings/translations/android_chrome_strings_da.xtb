@@ -1395,7 +1395,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6746338529702829275">Gennemgå dine kontodata</translation>
 <translation id="6746834324024491643">Log ind som <ph name="EMAIL" /> for at få adgang til dine adgangskoder m.m. på alle dine enheder</translation>
 <translation id="6751521182688001123">Åbn hurtigt en ny fane. Hold fingeren på genvejen for at redigere.</translation>
-<translation id="6752130751133944215">Hvis du vil gendanne et nyt vindue, skal du reducere det samlede antal vinduer (aktive og inaktive) til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre. Inaktive vinduer slettes efter 6 måneder.</translation>
 <translation id="6754359471209693699">Start en ny søgning</translation>
 <translation id="6756507620369789050">Del feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7388615499319468910">Websites og annoncører kan få indblik i, hvordan annoncer klarer sig. Denne indstilling er deaktiveret.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 anden fil på listen}one{# anden fil på listen}other{# andre filer på listen}}</translation>
 <translation id="7400418766976504921">Webadresse</translation>
-<translation id="7400424692675800399">Hvis du vil åbne et nyt vindue, skal du reducere det samlede antal vinduer (aktive og inaktive) til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre.</translation>
 <translation id="7403691278183511381">Førstegangsoplevelse af Chrome</translation>
 <translation id="7411224099004328643">Google-kontoens bruger</translation>
 <translation id="7419565702166471774">Brug altid sikre forbindelser</translation>

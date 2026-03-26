@@ -762,6 +762,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2188375229972301266">Quyidan bir nechta teshik ochish</translation>
 <translation id="218940509700321686">Vergul bilan ajratilgan qiymatlar (CSV)</translation>
 <translation id="2190094353033916816">Bu siyosatda kompyuter va foydalanuvchi darajalari uchun turli qiymatlar belgilangan. Siyosat kutilganidek ishlayapti.</translation>
+<translation id="219061769324072544">Kredit,karta,debet</translation>
 <translation id="2191980191135734720">Keyingi ekranda ekranni qulfdan chiqaring, odatda barmoq izi ishlatiladi. Yana bajarish mumkin: <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Bularni hisobga olish kerak</translation>
 <translation id="2195729137168608510">Elektron pochta himoyasi</translation>
@@ -1365,6 +1366,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3134859781443140237">Mahalliy tarmoq</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> qidiruvi</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Mavjud emas}=1{1 ta tizimga kirgan hisob axborotlari}other{# ta tizimga kirgan hisob axborotlari}}</translation>
+<translation id="3139503241401248626">Bu sozlamalarni yoqib, Google hisobingizdagi axborotdan foydalanish uchun avtomatik kiritish xizmati sozlamalariga kiring.</translation>
 <translation id="3140646734028448730">Biznes xizmatlar</translation>
 <translation id="3141093262818886744">Baribir ochilsin</translation>
 <translation id="3141337053413339205">Shu varaqni ochish</translation>
@@ -2295,6 +2297,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4594403342090139922">&amp;O‘chirishni bekor qilish</translation>
 <translation id="4598556348158889687">Xotira boshqaruvi</translation>
 <translation id="459914240367517409">Veb-dizayn va dasturlash</translation>
+<translation id="4599572944836204718">Karta saqlanganda Google Pay bilan tezroq toʻlang. Google Walletda karta tafsilotlari shifrlanadi.</translation>
 <translation id="4602465984861132303">Bouling</translation>
 <translation id="4603727370377253901">Parvoz bandlovlari</translation>
 <translation id="4607608436550361748">Chrome maslahatlarini ochish</translation>
@@ -2584,6 +2587,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, Bu qidiruv taklifidan keyin mavjud boshqa qidiruv uchun yorliqlari uchun Tab tugmasini bosing</translation>
 <translation id="5052488928733955073">Axborot kiritilmadi. Aloqani tekshiring.</translation>
 <translation id="5052517576853118371">Faol mavzular</translation>
+<translation id="5053116470141135293">Haqiqiy tafsilotlaringizni himoya qilish uchun bu karta bilan toʻlov qilganingizda virtual karta raqami kiritiladi. Google Wallet orqali boshqarish. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share yordamida bu faylni yuborish uchun qurilmangizda (<ph name="DISK_SPACE_SIZE" />) joy boʻshating}other{Nearby Share yordamida bu faylni yuborish uchun qurilmangizda (<ph name="DISK_SPACE_SIZE" />) joy boʻshating}}</translation>
 <translation id="5056587122125565772">Rasm yaratish</translation>
 <translation id="505757197798929356">Ochish sababini yozing (majburiy)</translation>
@@ -3359,6 +3363,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6250932670816326647">Vanna va tana uchun mahsulotlar</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faylni koʻchirish taqiqlangan}other{<ph name="FILE_COUNT" /> ta faylni koʻchirish taqiqlangan}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeda yuklab olingan fayllarni boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="6253380015872250643">Kartani Google Walletga saqlash</translation>
 <translation id="6254436959401408446">Sahifani ochish uchun xotira yetishmayapti</translation>
 <translation id="625463612687472648">Ruxsat bekor qilinsin</translation>
 <translation id="6259156558325130047">&amp;Qayta tartiblashni qaytarish</translation>
@@ -4255,6 +4260,7 @@ Batafsil axborot:
 <translation id="7615932826417658001">ID karta kiritish</translation>
 <translation id="7616390733770379387">Variantlar tasodifiy tartibda.</translation>
 <translation id="7616645509853975347">Brauzeringizda administrator tomonidan Chrome korporativ konnektorlari yoqilgan. Bu konnektorlar ayrim axborotlaringizdan foydalana oladi.</translation>
+<translation id="7616747402308801775">Bu karta Google Walletga saqlandi va undan Google xizmatlarida foydalanish mumkin</translation>
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7618270539713451657">Jangovar yakkakurash</translation>
 <translation id="7619838219691048931">Oxirgi varaq</translation>
@@ -4577,6 +4583,7 @@ Batafsil axborot:
 <translation id="8120720167840853945">Bu siyosat har qanday boshqa siyosatning birlamchi xatti-harakatini nazorat qilmaydi.</translation>
 <translation id="8127301229239896662">Kompyuter yoki tarmog‘ingizda “<ph name="SOFTWARE_NAME" />” dasturi noto‘g‘ri o‘rnatilgan. Muammo yechimini administratordan so‘rang.</translation>
 <translation id="8130113808541743942">Bu joyga olish...</translation>
+<translation id="813024282736408069">Avtomatik kiritish uchun virtual kartani yoqing</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8133495915926741232">Reklamani moslashtirishda ishlatilishi mumkin mavzularning kengroq turkumlarini tanlang. Kengroq turkum faolsizlantirilsa, aloqador mavzular ham bloklanadi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Ishga yonlash va xodimlar boshqaruvi</translation>
@@ -5041,6 +5048,7 @@ Batafsil axborot:
 <translation id="8891031436559779793">Istalgan saytda narx tushganda xabar olasiz.</translation>
 <translation id="8891727572606052622">Yaroqsiz proksi-server rejimi.</translation>
 <translation id="8894794286471754040">Avval uzunasiga</translation>
+<translation id="8895334001368918465">Chrome orqali boshqa avtomatik kiritish xizmatidan foydalanish uchun uni Android sozlamalari va shu yerda yoqing</translation>
 <translation id="8897221284075091877">Bu kontentni koʻrishga ruxsat soʻrash uchun Google hisobiga kiring</translation>
 <translation id="8897428486789851669">Suzish</translation>
 <translation id="8898854704577986668">Tarixni yon panelda chiqarish</translation>

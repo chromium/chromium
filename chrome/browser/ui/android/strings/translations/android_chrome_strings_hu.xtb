@@ -1395,7 +1395,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6746338529702829275">A fiókadatok ellenőrzése</translation>
 <translation id="6746834324024491643">Ha az összes eszközén szeretne hozzáférni jelszavaihoz és egyéb tartalmaihoz, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Új lap gyors megnyitása. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
-<translation id="6752130751133944215">Új ablak visszaállításához csökkentse az aktív és inaktív ablakok teljes számát legfeljebb ennyire: <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Az inaktív ablakokat 6 hónap elteltével törli a rendszer.</translation>
 <translation id="6754359471209693699">Új keresés indítása</translation>
 <translation id="6756507620369789050">Visszajelzés megosztása</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7388615499319468910">A webhelyek és a hirdetők megismerhetik a hirdetések teljesítményét. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{További 1 fájl a listában}other{További # fájl a listában}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Új ablak megnyitásához csökkentse az aktív és inaktív ablakok teljes számát, hogy legfeljebb <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> legyen megnyitva.</translation>
 <translation id="7403691278183511381">Chrome – Első futtatási élmény</translation>
 <translation id="7411224099004328643">Google-fiók-felhasználó</translation>
 <translation id="7419565702166471774">Mindig használjon biztonságos kapcsolatokat</translation>

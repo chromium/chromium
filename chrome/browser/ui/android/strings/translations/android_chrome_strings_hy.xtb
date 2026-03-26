@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">Ստուգեք ձեր հաշվի տվյալները</translation>
 <translation id="6746834324024491643">Ձեր գաղտնաբառերն ու մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մտեք <ph name="EMAIL" /> հաշիվ</translation>
 <translation id="6751521182688001123">Արագ բացեք նոր ներդիր։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
-<translation id="6752130751133944215">Նոր պատուհան վերականգնելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ և ոչ ակտիվ պատուհան։ Ոչ ակտիվ պատուհանները 6 ամիս հետո ջնջվում են։</translation>
 <translation id="6754359471209693699">Սկսել նոր որոնում</translation>
 <translation id="6756507620369789050">Կարծիք հայտնել</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />։</translation>
@@ -1585,7 +1584,6 @@
 <translation id="7388615499319468910">Կայքերն ու գովազդատուները կարող են գնահատել իրենց գովազդի արդյունավետությունը։ Այս կարգավորումն անջատված է։</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Եվս 1 ֆայլ ցանկում}one{Եվս # ֆայլ ցանկում}other{Եվս # ֆայլ ցանկում}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Նոր պատուհան բացելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ և ոչ ակտիվ պատուհան։</translation>
 <translation id="7403691278183511381">Chrome-ի առաջին գործարկում</translation>
 <translation id="7411224099004328643">Google հաշվի օգտատեր</translation>
 <translation id="7419565702166471774">Միշտ օգտագործել անվտանգ միացումներ</translation>

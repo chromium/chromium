@@ -1395,7 +1395,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
 <translation id="6746834324024491643">Aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Szybko otwórz nową kartę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
-<translation id="6752130751133944215">Aby przywrócić nowe okno, zmniejsz łączną liczbę okien aktywnych i nieaktywnych do maksymalnie <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Nieaktywne okna są usuwane po 6 miesiącach.</translation>
 <translation id="6754359471209693699">Rozpocznij nowe wyszukiwanie</translation>
 <translation id="6756507620369789050">Prześlij opinię</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7388615499319468910">Witryny i reklamodawcy mogą poznać skuteczność reklam. To ustawienie jest wyłączone.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 inny plik na liście}few{# inne pliki na liście}many{# innych plików na liście}other{# innego pliku na liście}}</translation>
 <translation id="7400418766976504921">Adres URL</translation>
-<translation id="7400424692675800399">Aby otworzyć nowe okno, zmniejsz łączną liczbę okien aktywnych i nieaktywnych do maksymalnie <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Pierwsze uruchomienie Chrome</translation>
 <translation id="7411224099004328643">Użytkownik konta Google</translation>
 <translation id="7419565702166471774">Zawsze używaj bezpiecznych połączeń</translation>

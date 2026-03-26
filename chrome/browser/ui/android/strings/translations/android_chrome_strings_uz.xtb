@@ -1395,7 +1395,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
 <translation id="6746834324024491643">Barcha qurilmalarda parollaringiz va boshqalarni olish uchun <ph name="EMAIL" /> sifatida kiring</translation>
 <translation id="6751521182688001123">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
-<translation id="6752130751133944215">Yangi oynani tiklash uchun jami faol va nofaol oynalar sonini <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> yoki undan kam miqdorga kamaytiring. Nofaol oynalar 6 oydan keyin avtomatik oʻchiriladi.</translation>
 <translation id="6754359471209693699">Yangi qidiruvni boshlash</translation>
 <translation id="6756507620369789050">Fikr-mulohaza</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7388615499319468910">Saytlar va reklama beruvchilar reklamalar qanday chiqishini oʻrganishi mumkin. Bu sozlama oʻchiq.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Boshqa, roʻyxatdagi 1 ta fayl}other{Boshqa, roʻyxatdagi # ta fayl}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Yangi oyna ochish uchun jami faol va nofaol oynalar sonini <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> yoki undan kam miqdorga kamaytiring.</translation>
 <translation id="7403691278183511381">Chromening birinchi marta ishga tushirilishi</translation>
 <translation id="7411224099004328643">Google hisobi foydalanuvchisi</translation>
 <translation id="7419565702166471774">Doim xavfsiz ulanish ishlatilsin</translation>

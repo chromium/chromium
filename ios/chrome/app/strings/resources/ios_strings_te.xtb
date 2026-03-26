@@ -210,7 +210,6 @@
 <translation id="1740468249224277719">ఇన్‌స్టాల్ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1740650426894359238">మరొక ప్రొఫైల్‌కు మారండి</translation>
 <translation id="1741219894094057085">స్మార్ట్ వాచ్</translation>
-<translation id="1742773766788162541">కార్డ్‌ను స్కాన్ చేసి, ఆటోఫిల్ చేయండి</translation>
 <translation id="1743244221910283364">మార్పులను విస్మరించండి</translation>
 <translation id="1748975028205587434">మీ ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="1749733017156547309">పాస్‌వర్డ్‌ను తప్పక అందించాలి</translation>
@@ -371,7 +370,6 @@
 <translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
 <translation id="2271452184061378400">మీ ట్యాబ్ గ్రూప్‌లు ఇక్కడ సేవ్ చేయబడ్డాయి</translation>
 <translation id="2273327106802955778">మరిన్ని మెనూ</translation>
-<translation id="2283599456633275070">ప్రయాణం</translation>
 <translation id="2287614783861766820">{count,plural, =1{ఈ అడ్రస్ ఈ పరికరం నుండి తొలగించబడుతుంది.}other{ఈ అడ్రస్‌లు ఈ పరికరం నుండి తొలగించబడతాయి.}}</translation>
 <translation id="2295236662082735391">Geminiతో ఎడిట్ చేయడానికి వెబ్‌లోని ఇమేజ్‌ను ఎక్కువసేపు నొక్కి, ఉంచండి</translation>
 <translation id="2297989278479054870">మీరు సైన్ అవుట్ చేసిన తర్వాత, మీ Google ఖాతాలోని బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, ఇంకా మరిన్ని ఈ పరికరం నుండి తీసివేయబడతాయి.</translation>
@@ -944,7 +942,6 @@
 <translation id="4430505936695785931">ఇతర యాప్‌లలో సేవ్ చేసిన పాస్‌వర్డ్‌లను పొందండి</translation>
 <translation id="4431224949908513835">పూరించడం కోసం ఒక పేమెంట్ ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="4432122368769493392">సెట్టింగ్‌లు…</translation>
-<translation id="443975520858086928">Googleలో దేని కోసమైనా అడగండి</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />సెట్టింగ్‌ల<ph name="END_BOLD" />ను తెరవండి</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> కోసం మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="4455710003856931944">మీరు వెనుకకు లేదా ముందుకు వెళ్లడానికి అంచుని స్వైప్ చేయవచ్చు.</translation>
@@ -988,7 +985,6 @@
 <translation id="4607887340472970274">ధర ట్రాకింగ్</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4621768135601674446">రీడింగ్ మోడ్ ఆప్షన్‌లను తెరవండి</translation>
-<translation id="4623894491222334521">ఐడెంటిటీ డాక్యుమెంట్‌లు</translation>
 <translation id="4627107755957573804">పాస్-కీలను ఉపయోగించడానికి ఇప్పటికే ఉన్న ఖాతాలను అప్‌గ్రేడ్ చేయడానికి సైట్‌లు, యాప్‌లను అనుమతించండి</translation>
 <translation id="4629065796475200039">మీ పాస్‌వర్డ్ దిగుమతి కాలేదు</translation>
 <translation id="4630212057753624203">శాంపిల్ బబుల్</translation>
@@ -1735,6 +1731,7 @@
 <translation id="7128693485119315539">మీ బ్రౌజింగ్ హిస్టరీ, పాస్‌వర్డ్‌ల వంటి మీ మేనేజ్ చేయబడే ఖాతాతో ముడిపడి ఉన్న బ్రౌజింగ్ డేటాను మీ సంస్థ చూడవలసి రావచ్చు, మేనేజ్ చేయవలసి రావచ్చు.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">కెమెరా అందుబాటులో లేదు</translation>
+<translation id="7138678301420049075">ఇతరం</translation>
 <translation id="7141960840225504692">మీ ట్యాబ్‌లు మూసివేయబడతాయి, ఇంకా బ్రౌజింగ్ డేటా తొలగించబడుతుంది</translation>
 <translation id="714291438898585119">స్టార్ ఉన్నవి</translation>
 <translation id="7146301801400584641">క్యాలెండర్ ఫైల్ అందుబాటులో ఉంది</translation>
@@ -1799,7 +1796,6 @@
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> చదవని కథనాలు ఉన్నాయి.</translation>
 <translation id="7412027924265291969">కొనసాగించండి</translation>
 <translation id="741204030948306876">సరే, సమ్మతమే</translation>
-<translation id="7417689656810783109">గ్రూప్ పేరుమార్చు</translation>
 <translation id="7419565702166471774">ఎల్లప్పుడూ సురక్షిత కనెక్షన్‌లను ఉపయోగించండి</translation>
 <translation id="7425053386765766120">పేమెంట్ ఆప్షన్‌ను జోడించండి…</translation>
 <translation id="7425346204213733349">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌లకు చేసే మార్పులు ఇకపై మీ Google ఖాతాకు సింక్ చేయ‌బడవు. అయితే, ఇప్పటికే ఉన్న మీ డేటా మీ Google ఖాతాలో అలాగే స్టోరేజ్‌ చేయబడి ఉంటుంది.</translation>
@@ -2084,6 +2080,7 @@
 <translation id="8363484128299778310">సమస్య ఉన్నప్పుడు ఉపయోగించే తాత్కాలిక రికవరీ</translation>
 <translation id="8364563001733875155">మీ PINను మార్చడానికి, ముందుగా మీ పరికరంలో పాస్‌కోడ్‌ను సెటప్ చేయండి.</translation>
 <translation id="8366466717204352506">ఎప్పుడూ చెక్ చేయలేదు</translation>
+<translation id="8367705492654390392">ఏదైనా అడగండి</translation>
 <translation id="8368001212524806591">ధరను ట్రాక్ చేయండి</translation>
 <translation id="8368198938968349418">ఆటోఫిల్‌ను ఆన్ చేయండి…</translation>
 <translation id="8370406443343902172">సెట్టింగ్‌లకు వెళ్లండి...</translation>

@@ -917,6 +917,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2400600116338235695">Pot demanar permís per connectar-se a ports en sèrie</translation>
 <translation id="2403474027143565107">Exacta</translation>
 <translation id="240450251994300576">Logotip secundari de la capçalera</translation>
+<translation id="2404715426538856682">Targetes de crèdit i de dèbit · IBAN · Targetes de fidelització</translation>
 <translation id="2404884497378469141">Prova de tornar a copiar els fitxers</translation>
 <translation id="2413155254802890957">Anteriors</translation>
 <translation id="2413528052993050574">El servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè és possible que el seu certificat de seguretat s'hagi revocat. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
@@ -2168,6 +2169,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4340810192899866471">Importa des de JSON</translation>
 <translation id="4340982228985273705">No ens consta que aquest ordinador estigui gestionat per una empresa. Per tant, la política només pot instal·lar automàticament extensions allotjades a Chrome Web Store. L'URL d'actualització de Chrome Web Store és <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Parcs temàtics</translation>
+<translation id="4346670990181948854">Informació de viatge · Vehicles</translation>
 <translation id="4348834659292907206">La connexió a <ph name="SITE" /> no és segura</translation>
 <translation id="4349365535725594680">No es pot compartir el contingut confidencial</translation>
 <translation id="4349810866125026513">Penja igualment</translation>
@@ -2956,6 +2958,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5596939519753369075">2 x 3,5 polzades</translation>
 <translation id="5597254438174353289">Blau 3</translation>
+<translation id="5600044805561809264">Pots fer preguntes fàcilment sobre les pestanyes que comparteixes mentre navegues.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gestió no compatible</translation>
 <translation id="5605249000617390290">Més informació sobre el seguiment de preus</translation>
@@ -3050,6 +3053,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5752519522101347518">S'està carregant el lloc web de verificació del banc</translation>
 <translation id="5753570386948603678">Suprimeix de l'historial</translation>
 <translation id="5759751709240058861">Utilitzar i moure la càmera</translation>
+<translation id="5762131895127128324">Permisos de conduir · Documents d'identitat · Passaports</translation>
 <translation id="5763042198335101085">Introdueix una adreça electrònica vàlida</translation>
 <translation id="5764725887548570807">El format de l'origen no és vàlid.</translation>
 <translation id="5764920692828389743">Envia a <ph name="EMAIL_ADDRESS" /></translation>
@@ -3987,6 +3991,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="7220786058474068424">S'està processant</translation>
 <translation id="7221855153210829124">Mostrar notificacions</translation>
 <translation id="722454870747268814">Pestanya d'incògnit nova</translation>
+<translation id="7225676267118764980">Canvia el proveïdor d'emplenament automàtic i altres opcions de configuració</translation>
 <translation id="7226892411756387078">Text sense format</translation>
 <translation id="7227293336683593977">Historial de preus</translation>
 <translation id="7228306718910595403">Estat de certificació a la UE</translation>
@@ -5043,6 +5048,7 @@ Detalls addicionals:
 <translation id="8891031436559779793">Si baixa el preu en qualsevol lloc web, rebràs una notificació.</translation>
 <translation id="8891727572606052622">El mode de servidor intermediari no és vàlid.</translation>
 <translation id="8894794286471754040">La vora llarga primer</translation>
+<translation id="8895334001368918465">Per utilitzar un altre servei d'emplenament automàtic a Chrome, activa'l a la configuració d'Android i aquí</translation>
 <translation id="8897221284075091877">Per demanar veure aquest contingut, continua al teu Compte de Google</translation>
 <translation id="8897428486789851669">Natació</translation>
 <translation id="8898854704577986668">Mostra l'historial al tauler lateral</translation>

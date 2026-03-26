@@ -970,7 +970,6 @@
 <translation id="1652281434788353738">ช่างคิด</translation>
 <translation id="1652326691684645429">เปิดใช้การแชร์ใกล้เคียง</translation>
 <translation id="1652862280638399816">หากต้องการใช้เครื่องมือจัดการรหัสผ่านกับ Keychain ของ macOS ให้เปิด Chromium อีกครั้งแล้วอนุญาตให้มีการเข้าถึง Keychain แท็บจะเปิดขึ้นมาใหม่หลังจากที่เปิดอีกครั้ง</translation>
-<translation id="1653958716132599769">จัดกลุ่มแท็บที่เกี่ยวข้อง</translation>
 <translation id="165448107578581061">Gemini กำลังทำงานตามที่คุณขอ...</translation>
 <translation id="1654580009054503925">ไม่ได้รับอนุญาตให้แสดงคำขอ</translation>
 <translation id="1654713139320245449">ไม่พบปลายทางการแคสต์ หากต้องการความช่วยเหลือ</translation>
@@ -1086,7 +1085,6 @@
 <translation id="1732380773380808394">อีกทั้งคุณยังรับรหัสผ่านและข้อมูลอื่นๆ จากบัญชี Google ได้ด้วย</translation>
 <translation id="1734212868489994726">สีฟ้าอ่อน</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> อาจอัปเดตตัวเองตลอดเวลาไม่ได้</translation>
-<translation id="1735636854292329504"><ph name="TASK_TITLE" />\nฉันกำลังทำงานของคุณ และจะแจ้งให้คุณทราบหากต้องดำเนินการเพิ่มเติม</translation>
 <translation id="1735983780784385591">นำเข้าจาก Linux</translation>
 <translation id="173628468822554835">รับทราบ โดยค่าเริ่มต้นแล้ว เว็บไซต์ใหม่ที่คุณเข้าชมจะไม่ส่งการแจ้งเตือนให้คุณ</translation>
 <translation id="1737228213718001685">กำลังทำงานของคุณ</translation>
@@ -3093,7 +3091,6 @@
 <translation id="3108957152224931571">สีไฮไลต์</translation>
 <translation id="3109206895301430738">กลุ่มแท็บที่บันทึกไว้</translation>
 <translation id="3109724472072898302">ยุบแล้ว</translation>
-<translation id="3109876277590516364">อีก <ph name="NUM" /> รายการ</translation>
 <translation id="3112292765614504292">ขนาดแอป: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">เพิ่มแท็บนี้แล้ว</translation>
 <translation id="311394601889664316">ไม่อนุญาตให้เว็บไซต์แก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ของคุณ</translation>
@@ -3269,7 +3266,6 @@
 <translation id="324366796737464147">การลดเสียงรบกวน</translation>
 <translation id="3244271242291266297">ดด</translation>
 <translation id="3244294424315804309">ดำเนินการปิดเสียงไว้ต่อไป</translation>
-<translation id="3247006341013237647">จัดระเบียบแท็บไหม</translation>
 <translation id="3247649647204519958">จากที่นี่ คุณจะดูและจัดการสิทธิ์ของส่วนขยายสำหรับเว็บไซต์ที่กำลังเข้าชมได้</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ข้อผิดพลาดของเครือข่าย</translation>
 <translation id="3248902735035392926">ความปลอดภัยเป็นสิ่งสำคัญ โปรดใช้เวลาสักครู่เพื่อ<ph name="BEGIN_LINK" />ตรวจสอบส่วนขยายตอนนี้เลย<ph name="END_LINK" /></translation>
@@ -3482,7 +3478,6 @@
 <translation id="3402585168444815892">ลงทะเบียนในโหมดสาธิต</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">ไม่มีรหัสผ่านบันทึกไว้สำหรับเว็บไซต์นี้</translation>
-<translation id="3405382848027996799">ฮาร์ดแวร์ของ Google Beam พร้อมตั้งค่าแล้ว</translation>
 <translation id="3405664148539009465">กำหนดค่าแบบอักษร</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">ได้รับอนุญาตให้ใช้อุปกรณ์และข้อมูล Virtual Reality</translation>
@@ -4720,7 +4715,6 @@
 <translation id="4250680216510889253">ไม่</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> จะดูและทำสำเนาไฟล์ของตัวเองใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="4251377547188244181">การลงทะเบียนอุปกรณ์คีออสก์และป้าย</translation>
-<translation id="4252828488489674554">คลิกขวาชื่อกลุ่มแท็บเพื่อแก้ไขกลุ่มนี้หรือคลิกเพื่อยุบ</translation>
 <translation id="4252899949534773101">บลูทูธปิดอยู่</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - แชร์เนื้อหาในแท็บอยู่</translation>
 <translation id="4253168017788158739">หมายเหตุ</translation>
@@ -5039,7 +5033,6 @@
 <translation id="4470957202018033307">ค่ากำหนดพื้นที่เก็บข้อมูลภายนอก</translation>
 <translation id="4471250205822310967">โอเวอร์เลย์การเลือกของ Gemini</translation>
 <translation id="4471354919263203780">กำลังดาวน์โหลดไฟล์การจดจำคำพูด... <ph name="PERCENT" />%</translation>
-<translation id="4472194221638903160">จัดกลุ่มแท็บด้วย AI</translation>
 <translation id="4472298120638043495">คุณใช้ภาษาของบัญชี Google ที่ต้องการได้ (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome</translation>
 <translation id="4472533928615930332">สร้างรูปภาพ <ph name="INDEX" /> ของ <ph name="SUBJECT" /> ในรูปแบบ <ph name="STYLE" /> แล้ว</translation>
@@ -6782,7 +6775,6 @@
 <translation id="5731247495086897348">&amp;วางแล้วไป</translation>
 <translation id="5733109311583381874">เพิ่มคำของคุณเองลงในพจนานุกรมผู้ใช้เพื่อปรับแต่งคำที่แนะนำในการแปลง</translation>
 <translation id="5733669387494115331">การตั้งค่าบริการของ Google</translation>
-<translation id="5733913382424854675">จัดกลุ่มแท็บด้วย AI</translation>
 <translation id="5734362860645681824">การสื่อสาร</translation>
 <translation id="5734697361979786483">เพิ่มพื้นที่แชร์ไฟล์</translation>
 <translation id="573520097779121706">ใช้ปุ่ม 7, 8, 9, u, o, j, k, l เพื่อเลื่อนเคอร์เซอร์</translation>
@@ -7191,7 +7183,6 @@
 <translation id="6011193465932186973">ลายนิ้วมือ</translation>
 <translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
 <translation id="6011908034087870826">กำลังส่งลิงก์ไปยัง <ph name="DEVICE_NAME" /></translation>
-<translation id="6013003831291591200">งานเสร็จแล้ว</translation>
 <translation id="6013027779243312217">รับคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอของคุณ</translation>
 <translation id="6014293228235665243">ยังไม่อ่าน</translation>
 <translation id="6015776718598175635">ดาว</translation>
@@ -7686,7 +7677,6 @@
 <translation id="6367097275976877956">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม ถ้าต้องการ ให้กดแป้นเว้นวรรค</translation>
 <translation id="6367196786591004737">ลบรายการข้อมูล</translation>
 <translation id="6367396429435748845">กด <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> เพื่อหยุดชั่วคราวและใช้งานแป้นเมาส์ต่อ</translation>
-<translation id="6367428649223439405"><ph name="TASK_TITLE" />\nฉันได้หยุดงานของคุณชั่วคราวแล้ว</translation>
 <translation id="6367853307713830174">Gemini จะแสดงขั้นตอนและพยายามยืนยันก่อนดำเนินการขั้นตอนที่ละเอียดอ่อน ซึ่งคุณสามารถหยุดหรือควบคุมได้ทุกเมื่อ</translation>
 <translation id="6367985768157257101">ต้องการรับด้วยการแชร์ใกล้เคียงไหม</translation>
 <translation id="6368157733310917710">ที่อยู่และอื่นๆ</translation>
@@ -8417,7 +8407,6 @@
 <translation id="6870953451576517204">การทดสอบด้วยตนเองสำเร็จ</translation>
 <translation id="6871644448911473373">OCSP Responder: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">ภาษา...</translation>
-<translation id="6872859537300194762"><ph name="TASK_TITLE" />\nฉันได้หยุดงานของคุณไว้ชั่วคราวเนื่องจากมีกิจกรรมอื่น คุณกลับไปที่ Chrome เพื่อดูได้เมื่อพร้อม</translation>
 <translation id="6873156759937047811">PIN:</translation>
 <translation id="6873571253135628430">เปลี่ยนสิทธิ์ของเว็บไซต์</translation>
 <translation id="6876155724392614295">จักรยาน</translation>
@@ -8528,7 +8517,6 @@
 <translation id="695817292005698051">เกณฑ์การตรวจจับท่าทางสัมผัส</translation>
 <translation id="6959882218873172284">คำขอ POST</translation>
 <translation id="6960133692707095572">เข้าชมโดยไม่ต้องมีตั๋ว</translation>
-<translation id="6960408801933394526">เลือกกลุ่มแท็บและเปิดใช้งานเมนูตามบริบทเพื่อแก้ไข</translation>
 <translation id="6960507406838246615">ต้องอัปเดต Linux</translation>
 <translation id="6960648667961844909">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />ไม่ได้ ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google จนกว่าจะดาวน์โหลดเสร็จ</translation>
 <translation id="696103774840402661">ระบบได้ลบไฟล์ทั้งหมดและข้อมูลในเครื่องสำหรับผู้ใช้ทุกคนใน <ph name="DEVICE_TYPE" /> ออกแล้วอย่างถาวร</translation>
@@ -8853,7 +8841,6 @@
 <translation id="7191632649590906354">ตอนนี้สมาชิกในครอบครัวสามารถใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google โปรดบอกให้สมาชิกไปที่ <ph name="WEBSITE" /> เพื่อลงชื่อเข้าใช้</translation>
 <translation id="7193051357671784796">องค์กรของคุณเป็นผู้เพิ่มแอปนี้ รีสตาร์ทแอปเพื่อติดตั้งให้เสร็จ</translation>
 <translation id="7193374945610105795">ไม่มีรหัสผ่านบันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>
-<translation id="7193663868864659844">ส่งความคิดเห็นสำหรับกลุ่มที่แนะนำ</translation>
 <translation id="7194343495483122559">ขยายแท็บ</translation>
 <translation id="7194873994243265344">องค์กรบล็อกไฟล์นี้เนื่องจากไฟล์มีการเข้ารหัส โปรดขอให้เจ้าของไฟล์ถอดรหัส</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{อยู่ระหว่างการดาวน์โหลด 1 รายการ}other{อยู่ระหว่างการดาวน์โหลด # รายการ}}</translation>
@@ -9226,7 +9213,6 @@
 <translation id="7444176988908839653">{COUNT,plural, =0{คุกกี้จะถูกบล็อกอีกครั้งในวันนี้}=1{คุกกี้จะถูกบล็อกอีกครั้งในวันพรุ่งนี้}other{คุกกี้จะถูกบล็อกอีกครั้งในอีก # วัน}}</translation>
 <translation id="7446716846072322308">การดำเนินการนี้จะลบข้อมูลที่ <ph name="SITE_NAME" /> และเว็บไซต์ที่เกี่ยวข้องจัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="7448430327655618736">ติดตั้งแอปโดยอัตโนมัติ</translation>
-<translation id="7448639287059644731"><ph name="TASK_TITLE" />\nฉันต้องการความช่วยเหลือจากคุณเพื่อทำงานของคุณต่อ</translation>
 <translation id="7448664748118305024">ลบเว็บไซต์ข้อมูลที่บันทึกไว้ในอุปกรณ์เมื่อคุณปิดหน้าต่างทั้งหมด</translation>
 <translation id="7450761244949417357">เปิดอยู่ใน <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7450926666485653189">นำเฉพาะบางส่วนของ URL มาปรับให้ยากต่อการอ่าน (Obfuscate) แล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ</translation>
@@ -9298,7 +9284,6 @@
 <translation id="7493386493263658176">ส่วนขยาย <ph name="EXTENSION_NAME" /> อาจรวบรวมข้อความทั้งหมดที่คุณพิมพ์ ซึ่งรวมถึงข้อมูลส่วนตัว เช่น รหัสผ่านและหมายเลขบัตรเครดิต คุณต้องการใช้ส่วนขยายนี้ไหม</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">แอป Android</translation>
-<translation id="7495217365392072364">จัดระเบียบแท็บที่คล้ายกัน</translation>
 <translation id="7497322070873193353">AI ของ Google</translation>
 <translation id="7497981768003291373">คุณไม่มีบันทึกข้อความ WebRTC ที่จับภาพเมื่อเร็วๆ นี้</translation>
 <translation id="7501957181231305652">หรือ</translation>
@@ -9586,7 +9571,6 @@
 <translation id="7685351732518564314">กดปุ่มบน <ph name="DEVICE_NAME" /></translation>
 <translation id="7686086654630106285">ข้อมูลเพิ่มเติมเกี่ยวกับโฆษณาที่เว็บไซต์แนะนำ</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
-<translation id="7689495576379510159">อีก <ph name="NUM" /> รายการ</translation>
 <translation id="7690378713476594306">เลือกจากรายการ</translation>
 <translation id="7690853182226561458">เพิ่ม&amp;โฟลเดอร์</translation>
 <translation id="7691077781194517083">รีเซ็ตคีย์ความปลอดภัยนี้ไม่ได้ ข้อผิดพลาด <ph name="ERROR_CODE" /></translation>
@@ -11065,7 +11049,6 @@
 <translation id="8708671767545720562">&amp;ข้อมูลเพิ่มเติม</translation>
 <translation id="8709368517685334931">คุณค้นหาสีที่เก่ากว่าได้ใน Chrome เว็บสโตร์</translation>
 <translation id="8710414664106871428">แฟนตาซี</translation>
-<translation id="8710550057342691420">จัดระเบียบแท็บที่คล้ายกัน</translation>
 <translation id="8711402221661888347">พิกเคิลส์</translation>
 <translation id="8711538096655725662">เรียกใช้โดยอัตโนมัติในทุกเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
@@ -11505,7 +11488,6 @@
 <translation id="8999560016882908256">ข้อผิดพลาดทางไวยากรณ์ของส่วน: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">การเคลื่อนไหวบนหน้าจอลดลง</translation>
 <translation id="9000185763019430629">แตะเซ็นเซอร์ลายนิ้วมือที่ด้านขวาของ <ph name="DEVICE_TYPE" /> ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
-<translation id="9000341229894259710"><ph name="TASK_TITLE" />\nฉันดำเนินการตามคำขอของคุณได้ ซึ่งคุณสามารถดูใน Chrome</translation>
 <translation id="9000529821022336229">ไม่พบการติดตั้งโปรแกรมอัปเดต</translation>
 <translation id="900267527532832868">พาสคีย์นี้ใช้งานไม่ได้แล้ว ระบบจะลบออกจาก <ph name="GOOGLE_PASSWORD_MANAGER" /> ในเร็วๆ นี้</translation>
 <translation id="9003031149571024583">ป้อนหมายเลข PIN ลำดับที่ <ph name="NUM_DIGIT" /> จาก 6 กด Backspace หรือ Delete เพื่อนำตัวเลขสุดท้ายออก</translation>

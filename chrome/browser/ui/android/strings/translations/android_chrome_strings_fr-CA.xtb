@@ -213,7 +213,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1900260903084164610">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1910950723001426294">La liste d'options de partage est fermée.</translation>
-<translation id="1912367671208932516">Ouvrir menu des extensions</translation>
+<translation id="1912367671208932516">Ouvrir le menu d'extensions</translation>
 <translation id="191726024256261717">Examiner les autorisations</translation>
 <translation id="1917766536967060661">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> » et <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ne pourra plus interagir avec vous dans les services Google.</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
@@ -1395,7 +1395,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6746338529702829275">Vérifiez les données de votre compte</translation>
 <translation id="6746834324024491643">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
-<translation id="6752130751133944215">Pour restaurer une nouvelle fenêtre, réduisez le nombre total de fenêtres actives et inactives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins. Les fenêtres inactives sont supprimées après six mois.</translation>
 <translation id="6754359471209693699">Lancer une nouvelle recherche</translation>
 <translation id="6756507620369789050">Partager vos commentaires</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est désactivé.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Autre, 1 fichier dans la liste}one{Autre, # fichier dans la liste}other{Autre, # fichiers dans la liste}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Pour ouvrir une nouvelle fenêtre, réduisez le nombre total de fenêtres actives et inactives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins.</translation>
 <translation id="7403691278183511381">Expérience de première utilisation de Chrome</translation>
 <translation id="7411224099004328643">Utilisateur du compte Google</translation>
 <translation id="7419565702166471774">Toujours utiliser des connexions sécurisées</translation>

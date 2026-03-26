@@ -1395,7 +1395,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6746338529702829275">Suriin ang data ng iyong account</translation>
 <translation id="6746834324024491643">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Mabilis na magbukas ng bagong tab. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
-<translation id="6752130751133944215">Para mag-restore ng bagong window, bawasan sa <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o mas kaunti ang kabuuang bilang ng mga window sa aktibo at hindi aktibo. Dine-delete ang mga hindi aktibong window pagkalipas ng 6 na buwan.</translation>
 <translation id="6754359471209693699">Magsimula ng bagong paghahanap</translation>
 <translation id="6756507620369789050">Magbahagi ng feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7388615499319468910">Mauunawaan ng mga site at advertiser ang performance ng mga ad. Naka-off ang setting na ito.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Iba pa, may 1 file sa listahan}one{Iba pa, may # file sa listahan}other{Iba pa, may # na file sa listahan}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Para magbukas ng bagong window, bawasan sa <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o mas kaunti ang kabuuang bilang ng mga window sa aktibo at hindi aktibo.</translation>
 <translation id="7403691278183511381">Unang Karanasan sa Pagtakbo ng Chrome</translation>
 <translation id="7411224099004328643">User ng Google Account</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>

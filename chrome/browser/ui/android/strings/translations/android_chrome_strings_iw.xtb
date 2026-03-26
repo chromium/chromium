@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6746834324024491643">כדי לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס לחשבון <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
-<translation id="6752130751133944215">כדי לפתוח שוב חלון שנסגר, צריך לסגור כמה חלונות פעילים ולא פעילים עד שרק <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> חלונות או פחות יישארו פתוחים. חלונות לא פעילים נמחקים לאחר 6 חודשים.</translation>
 <translation id="6754359471209693699">התחלת חיפוש חדש</translation>
 <translation id="6756507620369789050">שיתוף משוב</translation>
 <translation id="6762511428368667596"><ph name="NAME" />,‏ <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@
 <translation id="7388615499319468910">האתרים והמפרסמים יכולים להבין את רמת הביצועים של המודעות. ההגדרה הזו מושבתת.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{סוג אחר, קובץ אחד ברשימה}one{סוג אחר, # קבצים ברשימה}two{סוג אחר, # קבצים ברשימה}other{סוג אחר, # קבצים ברשימה}}</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
-<translation id="7400424692675800399">כדי לפתוח חלון חדש, צריך לסגור כמה חלונות פעילים ולא פעילים עד שרק <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> חלונות או פחות יישארו פתוחים.</translation>
 <translation id="7403691278183511381">‏חוויית ההפעלה הראשונה של Chrome</translation>
 <translation id="7411224099004328643">‏משתמש בחשבון Google</translation>
 <translation id="7419565702166471774">להשתמש תמיד בחיבורים מאובטחים</translation>

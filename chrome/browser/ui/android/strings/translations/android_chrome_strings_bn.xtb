@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">আপনার অ্যাকাউন্ট ডেটা পর্যালোচনা করুন</translation>
 <translation id="6746834324024491643">আপনার সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="6751521182688001123">দ্রুত একটি নতুন ট্যাব খুলুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
-<translation id="6752130751133944215">কোনও নতুন উইন্ডো ফিরিয়ে আনতে, অ্যাক্টিভ এবং ইনঅ্যাক্টিভ উইন্ডোর মোট সংখ্যা <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />টি বা তার কম রাখুন। ইনঅ্যাক্টিভ উইন্ডো ৬ মাস পরে মুছে দেওয়া হয়।</translation>
 <translation id="6754359471209693699">নতুন সার্চ শুরু করুন</translation>
 <translation id="6756507620369789050">মতামত জানান</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />।</translation>
@@ -1585,7 +1584,6 @@
 <translation id="7388615499319468910">বিজ্ঞাপনগুলি কীভাবে কাজ করে তা সাইট এবং বিজ্ঞাপনদাতারা বুঝতে পারেন। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{তালিকাতে অন্য ১টি ফাইল আছে}one{তালিকাতে অন্য #টি ফাইল আছে}other{তালিকাতে অন্য #টি ফাইল আছে}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">কোনও নতুন উইন্ডো খুলতে, অ্যাক্টিভ এবং ইনঅ্যাক্টিভ উইন্ডোর মোট সংখ্যা <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />টি বা তার কম রাখুন।</translation>
 <translation id="7403691278183511381">Chrome প্রথম চালানোর অভিজ্ঞতা</translation>
 <translation id="7411224099004328643">Google অ্যাকাউন্ট ব্যবহারকারী</translation>
 <translation id="7419565702166471774">সবসময় সুরক্ষিত কানেকশন ব্যবহার করুন</translation>

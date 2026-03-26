@@ -1395,7 +1395,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6746338529702829275">Peržiūrėkite paskyros duomenis</translation>
 <translation id="6746834324024491643">Jei norite pasiekti slaptažodžius ir kitas funkcijas visuose įrenginiuose, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Sparčiai atidarykite naują skirtuką. Jei norite redaguoti šį spartųjį klavišą, palieskite ir palaikykite.</translation>
-<translation id="6752130751133944215">Jei norite atkurti naują langą, sumažinkite bendrą aktyvių ir neaktyvių langų skaičių iki <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ar mažiau. Neaktyvūs langai ištrinami po šešių mėnesių.</translation>
 <translation id="6754359471209693699">Pradėti naują paiešką</translation>
 <translation id="6756507620369789050">Bendrinti atsiliepimą</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7388615499319468910">Svetainės ir reklamuotojai gali geriau suprasti skelbimų našumą. Šis nustatymas išjungtas.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Dar vienas failas sąraše}one{Dar # failas sąraše}few{Dar # failai sąraše}many{Dar # failo sąraše}other{Dar # failų sąraše}}</translation>
 <translation id="7400418766976504921">URL adresas</translation>
-<translation id="7400424692675800399">Jei norite atidaryti naują langą, sumažinkite bendrą aktyvių ir neaktyvių langų skaičių iki <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ar mažiau.</translation>
 <translation id="7403691278183511381">„Chrome“ pirmosios paleisties patirtis</translation>
 <translation id="7411224099004328643">„Google“ paskyros naudotojas</translation>
 <translation id="7419565702166471774">Visada naudoti saugų ryšį</translation>

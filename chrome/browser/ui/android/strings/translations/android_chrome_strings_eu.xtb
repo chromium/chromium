@@ -1395,7 +1395,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6746338529702829275">Berrikusi kontuko datuak</translation>
 <translation id="6746834324024491643">Pasahitz guztiak eta gauza gehiago gailu guztietan lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="6751521182688001123">Ireki fitxa bat bizkor. Lasterbidea editatzeko, eduki ezazu sakatuta.</translation>
-<translation id="6752130751133944215">Beste leiho bat leheneratzeko, murriztu guztizko leiho kopurua (aktiboak nahiz inaktiboak) <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> edo gutxiagora. Leiho inaktiboak 6 hilabeteren buruan ezabatzen dira.</translation>
 <translation id="6754359471209693699">Egin beste bilaketa bat</translation>
 <translation id="6756507620369789050">Partekatu iritzia</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7388615499319468910">Webguneek eta iragarleek iragarkien errendimendua uler dezakete. Desaktibatuta dago ezarpena.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Beste 1 fitxategi zerrendan}other{Beste # fitxategi zerrendan}}</translation>
 <translation id="7400418766976504921">URLa</translation>
-<translation id="7400424692675800399">Beste leiho bat irekitzeko, murriztu guztizko leiho kopurua (aktiboak nahiz inaktiboak) <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> edo gutxiagora.</translation>
 <translation id="7403691278183511381">Chrome-ren lehenengo erabilera</translation>
 <translation id="7411224099004328643">Google-ko kontuaren erabiltzailea</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>

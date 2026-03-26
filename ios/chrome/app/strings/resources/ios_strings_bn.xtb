@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
 <translation id="1740650426894359238">অন্য কোনও প্রোফাইলে পাল্টান</translation>
 <translation id="1741219894094057085">স্মার্ট ওয়াচ</translation>
-<translation id="1742773766788162541">কার্ড স্ক্যান করে অটোফিল করুন</translation>
 <translation id="1743244221910283364">পরিবর্তন বাতিল করুন</translation>
 <translation id="1748975028205587434">আপনার ফাইল বেছে নিন</translation>
 <translation id="1749733017156547309">পাসওয়ার্ড দিতে হবে</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">রিফাইন করুন</translation>
 <translation id="2271452184061378400">আপনার ট্যাব গ্রুপ এখানে সেভ করা হয়েছে</translation>
 <translation id="2273327106802955778">‘আরও’ মেনু</translation>
-<translation id="2283599456633275070">ভ্রমণ</translation>
 <translation id="2287614783861766820">{count,plural, =1{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}one{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}other{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}}</translation>
 <translation id="2295236662082735391">Gemini-র সাহায্যে এডিট করতে, ওয়েবে কোনও ছবি বেশিক্ষণ প্রেস করে রাখুন</translation>
 <translation id="2297989278479054870">আপনি সাইন-আউট করার পরে আপনার Google অ্যাকাউন্টে থাকা বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু আপনার ডিভাইস থেকে সরে যাবে।</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">অন্য অ্যাপে সেভ করা পাসওয়ার্ড পান</translation>
 <translation id="4431224949908513835">সম্পূর্ণ করার জন্য পেমেন্ট পদ্ধতি বেছে নিন।</translation>
 <translation id="4432122368769493392">সেটিংস…</translation>
-<translation id="443975520858086928">Google-কে যেকোনও কিছু সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />সেটিংস<ph name="END_BOLD" /> খুলুন</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />-এর জন্য আরও বিকল্প</translation>
 <translation id="4455710003856931944">পিছনে বা সামনে যেতে স্ক্রিনের প্রান্তটি সোয়াইপ করুন।</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">প্রাইস ট্র্যাকিং</translation>
 <translation id="4619564267100705184">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="4621768135601674446">রিডিং মোড বিকল্প খুলুন</translation>
-<translation id="4623894491222334521">পরিচয়পত্র সংক্রান্ত ডকুমেন্ট</translation>
 <translation id="4627107755957573804">পাসকী ব্যবহার করার জন্য, সাইট ও অ্যাপকে বর্তমানে থাকা অ্যাকাউন্ট আপগ্রেড করার অনুমতি দিন</translation>
 <translation id="4629065796475200039">আপনার পাসওয়ার্ড ইম্পোর্ট করা হয়নি</translation>
 <translation id="4630212057753624203">নমুনা বুদবুদ</translation>
@@ -1727,6 +1723,7 @@
 <translation id="7128693485119315539">আপনার ম্যানেজ করা অ্যাকাউন্টের সাথে যুক্ত থাকা ব্রাউজ করা ডেটা, আপনার প্রতিষ্ঠান দেখতে চাইতে পারে, যেমন আপনার ব্রাউজিং ইতিহাস ও পাসওয়ার্ড।</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ক্যামেরা অনুপলব্ধ</translation>
+<translation id="7138678301420049075">অন্যান্য</translation>
 <translation id="7141960840225504692">আপনার ট্যাব বন্ধ করে এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="714291438898585119">তারা চিহ্নিত</translation>
 <translation id="7146301801400584641">ক্যালেন্ডার ফাইল উপলভ্য</translation>
@@ -1791,7 +1788,6 @@
 <translation id="7409985198648820906">পড়া হয়নি এমন <ph name="UNREAD_COUNT" />টি নিবন্ধ।</translation>
 <translation id="7412027924265291969">চালিয়ে যান</translation>
 <translation id="741204030948306876">হ্যাঁ, আমি রাজি</translation>
-<translation id="7417689656810783109">গ্রুপের নাম পরিবর্তন করুন</translation>
 <translation id="7419565702166471774">সবসময় সুরক্ষিত কানেকশন ব্যবহার করুন</translation>
 <translation id="7425053386765766120">পেমেন্ট পদ্ধতি যোগ করুন…</translation>
 <translation id="7425346204213733349">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংসে করা পরিবর্তন আর আপনার Google অ্যাকাউন্টের সাথে সিঙ্ক করা হবে না। অবশ্য, আপনার বিদ্যমান ডেটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে।</translation>
@@ -2076,6 +2072,7 @@
 <translation id="8363484128299778310">সমস্যার ক্ষেত্রে অস্থায়ী ফাইল থেকে পাসওয়ার্ড ফেরানো</translation>
 <translation id="8364563001733875155">আপনার পিন পরিবর্তন করতে, প্রথমে নিজের ডিভাইসে পাসকোড সেট-আপ করুন।</translation>
 <translation id="8366466717204352506">কখনও চেক করা হয়নি</translation>
+<translation id="8367705492654390392">যেকোনও কিছু জিজ্ঞাসা করুন</translation>
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
 <translation id="8368198938968349418">অটোফিল চালু করুন…</translation>
 <translation id="8370406443343902172">সেটিংসে যান...</translation>

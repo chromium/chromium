@@ -1395,7 +1395,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6746338529702829275">Review your account data</translation>
 <translation id="6746834324024491643">To get your passwords and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Quickly open a new tab. To edit this shortcut, touch and hold.</translation>
-<translation id="6752130751133944215">To restore a new window, reduce the total number of windows across active and inactive to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer. Inactive windows are deleted after 6 months.</translation>
 <translation id="6754359471209693699">Start new search</translation>
 <translation id="6756507620369789050">Share feedback</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7388615499319468910">Sites and advertisers can understand how ads perform. This setting is off.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Other 1 file in list}other{Other # files in list}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">To open a new window, reduce the total number of windows across active and inactive to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer.</translation>
 <translation id="7403691278183511381">Chrome First Run Experience</translation>
 <translation id="7411224099004328643">Google Account user</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>

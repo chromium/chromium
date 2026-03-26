@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">Цуваа портуудад холбогдохыг хүсэх боломжтой</translation>
 <translation id="2403474027143565107">Нарийвчилсан</translation>
 <translation id="240450251994300576">Хоёрдогч толгой хэсгийн лого</translation>
+<translation id="2404715426538856682">Кредит, дебит карт · IBAN · лояалти карт</translation>
 <translation id="2404884497378469141">Файлуудаа дахин хуулж үзнэ үү</translation>
 <translation id="2413155254802890957">Хуучин</translation>
 <translation id="2413528052993050574">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; хамгаалалтын сертификат хүчингүй болсон байж болзошгүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтон саад учруулж байж болох юм.</translation>
@@ -2169,6 +2170,7 @@
 <translation id="4340810192899866471">JSON-с импорт хийх</translation>
 <translation id="4340982228985273705">Энэ компьютерийг байгууллагаас удирддаг гэж илрүүлээгүй тул удирдамж нь зөвхөн Chrome Webstore-т хост хийсэн өргөтгөлийг автоматаар суулгах боломжтой. Chrome Webstore шинэчлэлтийн URL нь "<ph name="CWS_UPDATE_URL" />" юм.</translation>
 <translation id="4342742994656318294">Сэдэвчилсэн паркууд</translation>
+<translation id="4346670990181948854">Аяллын мэдээлэл · тээврийн хэрэгсэл</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-н холболт аюултай байна</translation>
 <translation id="4349365535725594680">Нууцлалтай контент хуваалцах боломжгүй</translation>
 <translation id="4349810866125026513">Ямартай ч байршуулах</translation>
@@ -2957,6 +2959,7 @@
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5596939519753369075">2 x 3.5 инч</translation>
 <translation id="5597254438174353289">Хөх 3</translation>
+<translation id="5600044805561809264">Та үзэх явцдаа хуваалцаж буй табуудынхаа талаар асуултыг хялбархан тавьж болно.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Удирдлагын зүгээс зөвшөөрөл олгоогүй байна</translation>
 <translation id="5605249000617390290">Үнэ хянах талаар нэмэлт мэдээлэл авах</translation>
@@ -3051,6 +3054,7 @@
 <translation id="5752519522101347518">Банкны баталгаажуулалтын вебсайтыг ачаалж байна</translation>
 <translation id="5753570386948603678">Түүхээс устгах</translation>
 <translation id="5759751709240058861">Таны камерыг ашиглах, хөдөлгөх</translation>
+<translation id="5762131895127128324">Жолооны үнэмлэх · иргэний үнэмлэх · паспорт</translation>
 <translation id="5763042198335101085">Зөв имэйл хаяг оруулна уу</translation>
 <translation id="5764725887548570807">Эхийн формат буруу байна.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />-д илгээх</translation>
@@ -3986,6 +3990,7 @@
 <translation id="7220786058474068424">Боловсруулж байна</translation>
 <translation id="7221855153210829124">Мэдэгдэл харуулах</translation>
 <translation id="722454870747268814">Шинэ Нууцлалтай таб</translation>
+<translation id="7225676267118764980">Автоматаар бөглөх хэсгийн үйлчилгээ үзүүлэгч болон бусад тохиргоог өөрчлөх</translation>
 <translation id="7226892411756387078">Энгийн бичвэр</translation>
 <translation id="7227293336683593977">Үнийн түүх</translation>
 <translation id="7228306718910595403">ЕХ-ны шаардлага хангасан төлөв</translation>
@@ -5042,6 +5047,7 @@
 <translation id="8891031436559779793">Аль нэг сайт дээр үнэ буурсан тохиолдолд танд мэдэгдэнэ.</translation>
 <translation id="8891727572606052622">Орлон ашиглах горим хүчингүй байна</translation>
 <translation id="8894794286471754040">Эхлээд урт зах</translation>
+<translation id="8895334001368918465">Chrome-д автоматаар бөглөх хэсгийн өөр үйлчилгээг ашиглахын тулд тухайн үйлчилгээг Android-н тохиргоонд болон энд асаана уу</translation>
 <translation id="8897221284075091877">Энэ контентыг харахыг хүсэхийн тулд Google Бүртгэлээрээ үргэлжлүүлнэ үү</translation>
 <translation id="8897428486789851669">Усанд сэлэлт</translation>
 <translation id="8898854704577986668">Хажуугийн самбарт түүхийг харуулах</translation>

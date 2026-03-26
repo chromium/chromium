@@ -1395,7 +1395,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6746338529702829275">Tarkista tilin data</translation>
 <translation id="6746834324024491643">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi</translation>
 <translation id="6751521182688001123">Avaa uusi välilehti nopeasti. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
-<translation id="6752130751133944215">Jos haluat palauttaa uuden ikkunan, vähennä aktiivisten ja ei-aktiivisten ikkunoiden kokonaismäärää niin, että niitä on enintään <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Ei-aktiiviset ikkunat poistetaan kuuden kuukauden kuluttua.</translation>
 <translation id="6754359471209693699">Aloita uusi haku</translation>
 <translation id="6756507620369789050">Anna palautetta</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7388615499319468910">Sivustot ja mainostajat saavat tietoa mainostuloksista. Tämä asetus on poissa päältä.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Muu, 1 tiedosto listassa}other{Muu, # tiedostoa listalla}}</translation>
 <translation id="7400418766976504921">URL-osoite</translation>
-<translation id="7400424692675800399">Jos haluat avata uuden ikkunan, vähennä aktiivisten ja ei-aktiivisten ikkunoiden kokonaismäärää niin, että niitä on enintään <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Chromen ensimmäinen käyttökerta</translation>
 <translation id="7411224099004328643">Google-tilin käyttäjä</translation>
 <translation id="7419565702166471774">Käytä aina turvallisia yhteyksiä</translation>

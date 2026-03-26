@@ -1395,7 +1395,6 @@
 <translation id="6746338529702829275">ඔබේ ගිණුම් දත්ත සමාලෝචනය කරන්න</translation>
 <translation id="6746834324024491643">ඔබේ සියලු ම උපාංගවල මුරපද සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරනය වන්න</translation>
 <translation id="6751521182688001123">ඉක්මනින් නව ටැබයක් විවෘත කරන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, ස්පර්ශ කර අල්ලාගෙන සිටින්න.</translation>
-<translation id="6752130751133944215">නව කවුළුවක් ප්‍රතිසාධනය කිරීමට, සක්‍රිය සහ අක්‍රිය හරහා ඇති මුළු කවුළු ගණන <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />ක් හෝ ඊට අඩු කරන්න. අක්‍රිය කවුළු මාස ​​6කට පසු මකා දමනු ලැබේ.</translation>
 <translation id="6754359471209693699">නව සෙවීම ආරම්භ කරන්න</translation>
 <translation id="6756507620369789050">ප්‍රතිපෝෂණය බෙදා ගන්න</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@
 <translation id="7388615499319468910">අඩවි සහ වෙළඳ ප්‍රචාරකයන්ට දැන්වීම් ක්‍රියා කරන ආකාරය වටහා ගත හැක. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{ලැයිස්තුවේ ඇති අනෙකුත් ගොනු 1ක්}one{ලැයිස්තුවේ ඇති අනෙකුත් ගොනු #ක්}other{ලැයිස්තුවේ ඇති අනෙකුත් ගොනු #ක්}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">නව කවුළුවක් විවෘත කිරීමට, සක්‍රිය සහ අක්‍රිය හරහා ඇති මුළු කවුළු ගණන <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />ක් හෝ ඊට අඩු කරන්න.</translation>
 <translation id="7403691278183511381">Chrome පළමු ධාවන අත්දැකීම</translation>
 <translation id="7411224099004328643">Google ගිණුම් පරිශීලක</translation>
 <translation id="7419565702166471774">සෑම විටම ආරක්ෂිත සබැඳුම් භාවිත කරන්න.</translation>

@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Vælg de konti, du vil eksportere til en anden app.</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
 <translation id="1506063256525392513">Det giver dig mulighed for at tage og uploade billeder samt scanne QR-koder</translation>
+<translation id="1506733063065214205">RCS MLS-klient</translation>
 <translation id="1508263560970797965">Fortsæt i inkognito</translation>
 <translation id="1509486075633541495">Log ind på website</translation>
 <translation id="1513858653616922153">Slet adgangskoden</translation>
@@ -209,7 +210,6 @@
 <translation id="1740468249224277719">Tryk to gange for at installere.</translation>
 <translation id="1740650426894359238">Skift til en anden profil</translation>
 <translation id="1741219894094057085">Smart-ur</translation>
-<translation id="1742773766788162541">Scan kort, og udfyld automatisk</translation>
 <translation id="1743244221910283364">Kassér ændringer</translation>
 <translation id="1748975028205587434">Vælg din fil</translation>
 <translation id="1749733017156547309">En adgangskode er påkrævet</translation>
@@ -370,7 +370,6 @@
 <translation id="2268044343513325586">Juster</translation>
 <translation id="2271452184061378400">Dine fanegrupper gemmes her</translation>
 <translation id="2273327106802955778">Menuen Mere</translation>
-<translation id="2283599456633275070">Rejser</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enhed.}one{Adressen slettes fra denne enhed.}other{Adresserne slettes fra denne enhed.}}</translation>
 <translation id="2295236662082735391">Tryk længe på et billede på nettet for at redigere det med Gemini</translation>
 <translation id="2297989278479054870">Når du er logget ud, fjernes bogmærkerne, adgangskoderne m.m. på din Google-konto fra denne enhed.</translation>
@@ -477,6 +476,7 @@
 <translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2673508731173059946">Gå til kopieret link</translation>
 <translation id="2679659833697380">Dine oplysninger gemmes på din enhed</translation>
+<translation id="2681572445246787428">Dokumentsignering</translation>
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i brug</translation>
 <translation id="2691653761409724435">Ikke tilgængelig offline</translation>
@@ -907,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="4302061870579014542">Vælg placering</translation>
 <translation id="4304713468139749426">Adgangskode­administrator</translation>
+<translation id="4306349443295056740">OCSP-signering</translation>
 <translation id="4309403553630140242">Tryk to gange for at få flere oplysninger</translation>
 <translation id="4310738531374808763">Tilpas din startside</translation>
 <translation id="4320848494125124980">Seneste</translation>
 <translation id="4322394346347055525">Luk alle andre faner</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Aktivér notifikationer</translation>
 <translation id="4326912346867677256">Tryk på "Brug adgangskode" for at logge ind på en sikker måde.</translation>
 <translation id="4327017157997423717">Overvåg prisen på <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -940,7 +942,6 @@
 <translation id="4430505936695785931">Få adgang til gemte adgangskoder i andre apps</translation>
 <translation id="4431224949908513835">Vælg en betalingsmetode, der skal udfyldes.</translation>
 <translation id="4432122368769493392">Indstillinger…</translation>
-<translation id="443975520858086928">Spørg Google om alt</translation>
 <translation id="4442550905108052454">Åbn <ph name="BEGIN_BOLD" />Indstillinger<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Flere valgmuligheder for <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Du kan stryge fra kanten for at gå tilbage eller frem.</translation>
@@ -984,7 +985,6 @@
 <translation id="4607887340472970274">Prissporing</translation>
 <translation id="4619564267100705184">Verificer din identitet</translation>
 <translation id="4621768135601674446">Åbn indstillinger for Læsetilstand</translation>
-<translation id="4623894491222334521">Id-dokumenter</translation>
 <translation id="4627107755957573804">Tillad, at websites og apps opgraderer eksisterende konti for at bruge adgangsnøgler</translation>
 <translation id="4629065796475200039">Din adgangskode blev ikke importeret</translation>
 <translation id="4630212057753624203">Eksempelboble</translation>
@@ -1029,6 +1029,7 @@
 <translation id="4744428388659507035">Aktivér "Bogmærker" i indstillingerne for at få vist dine bogmærker på alle dine enheder.</translation>
 <translation id="4746926359847517643">Du kan altid finde dem i historikken igen.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} kort blev importeret}one{{count} kort blev importeret}other{{count} kort blev importeret}}</translation>
+<translation id="4749924365937394956">Servergodkendelse</translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4752348350801431746">Deaktiver notifikationer om Sikkerhedstjek…</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -1394,12 +1395,14 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="598634819525651074">Areal</translation>
 <translation id="5988097621740394599">Se prisfald på dine faner</translation>
 <translation id="5988851877894965432">Åbn webadresser i Chrome</translation>
+<translation id="599343768974649785">Eksplicit tekst</translation>
 <translation id="6006672969046233841">Ny fane</translation>
 <translation id="6011308810877101166">Gør søgeforslag bedre</translation>
 <translation id="6012140227487808125">Krypterer...</translation>
 <translation id="6027619584715411062">Log ind for at få dine bogmærker, adgangskoder og meget mere på alle dine enheder.</translation>
 <translation id="6027945736510816438">Mente du <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">ny funktion</translation>
+<translation id="6037458223703682108">Digital signatur</translation>
 <translation id="6038823991892265570">Administrer Google-lagerplads</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Luk</translation>
@@ -1543,6 +1546,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6476284679642588870">Administrer betalingsmetoder</translation>
 <translation id="6476800141292307438">Siden oversættes til <ph name="LANGUAGE" />. Valgmulighederne findes nederst på skærmen.</translation>
 <translation id="647867789226964031">Skift dine adgangskoder</translation>
+<translation id="6480363549849064919">Klientgodkendelse</translation>
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6503077044568424649">Mest besøgte</translation>
 <translation id="6503763061813913607">Notifikationer om Sikkerhedstjek</translation>
@@ -1588,6 +1592,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6619015782482868078">Turkis tema</translation>
 <translation id="6620279676667515405">Annuller</translation>
 <translation id="6625830436658400045">Dine indstillinger for synkronisering gendannes på baggrund af din seneste sikkerhedskopi. Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6629759408545977279">Fra: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Tilføj denne ekstra beskyttelse mod onlinetrusler.</translation>
@@ -1726,6 +1731,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7128693485119315539">Din organisation skal muligvis se og administrere browserdata, der er knyttet til din administrerede konto, f.eks. din browserhistorik og dine adgangskoder.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameraet er ikke tilgængeligt</translation>
+<translation id="7138678301420049075">Andet</translation>
 <translation id="7141960840225504692">Dine faner lukkes, og browserdataene slettes</translation>
 <translation id="714291438898585119">Stjernemarkeret</translation>
 <translation id="7146301801400584641">Tilgængelig kalenderfil</translation>
@@ -1790,7 +1796,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ulæste artikler.</translation>
 <translation id="7412027924265291969">Fortsæt</translation>
 <translation id="741204030948306876">Ja tak</translation>
-<translation id="7417689656810783109">Omdøb gruppe</translation>
 <translation id="7419565702166471774">Brug altid sikre forbindelser</translation>
 <translation id="7425053386765766120">Tilføj betalingsmetode…</translation>
 <translation id="7425346204213733349">Ændringer af dine bogmærker, din historik, dine adgangskoder og andre indstillinger synkroniseres ikke længere til din Google-konto. Dine eksisterende data er dog stadig gemt på din Google-konto.</translation>
@@ -2075,6 +2080,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8363484128299778310">Midlertidig gendannelse i tilfælde af problemer</translation>
 <translation id="8364563001733875155">Hvis du vil ændre din pinkode, skal du først oprette en adgangskode på din enhed.</translation>
 <translation id="8366466717204352506">Der er aldrig kørt et tjek</translation>
+<translation id="8367705492654390392">Stil et spørgsmål</translation>
 <translation id="8368001212524806591">Overvåg pris</translation>
 <translation id="8368198938968349418">Aktivér Autofyld…</translation>
 <translation id="8370406443343902172">Gå til Indstillinger…</translation>
@@ -2151,6 +2157,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8614671330774943747">Gå til Faneskift</translation>
 <translation id="862367213447108001">Vis altid pop op-vinduer på dette website</translation>
 <translation id="8625706492572042370">Rediger hjemmeskærm</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Låste inkognitofaner</translation>
 <translation id="8633025649649592204">Seneste aktivitet</translation>
 <translation id="8636825310635137004">Aktivér synkronisering for at få adgang til dine faner på dine andre enheder.</translation>
@@ -2337,6 +2344,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="942624946817804130">Eksportér</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="94870150074703282">Vil du slette gruppen?</translation>
+<translation id="951090530321144895">CA-udstedere</translation>
 <translation id="952704832371081537">Annuller</translation>
 <translation id="95332591904104970">Tilknyttede apps</translation>
 <translation id="954667170699278022">Læseliste</translation>

@@ -1395,7 +1395,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6746338529702829275">계정 데이터 검토</translation>
 <translation id="6746834324024491643">모든 기기에서 비밀번호 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="6751521182688001123">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
-<translation id="6752130751133944215">새 창을 복원하려면 활성 및 비활성 창의 총개수를 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />개 이하로 줄이세요. 비활성 창은 6개월 후에 삭제됩니다.</translation>
 <translation id="6754359471209693699">새 검색 시작</translation>
 <translation id="6756507620369789050">의견 공유</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" /></translation>
@@ -1585,7 +1584,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7388615499319468910">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{목록에 있는 기타 파일 1개}other{목록에 있는 기타 파일 #개}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">새 창을 열려면 활성 및 비활성 창의 총개수를 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />개 이하로 줄이세요.</translation>
 <translation id="7403691278183511381">Chrome 첫 실행</translation>
 <translation id="7411224099004328643">Google 계정 사용자</translation>
 <translation id="7419565702166471774">항상 보안 연결 사용</translation>

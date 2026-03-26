@@ -1395,7 +1395,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6746338529702829275">Pārskatīt konta datus</translation>
 <translation id="6746834324024491643">Lai piekļūtu parolēm un citiem datiem visās savās ierīcēs, pierakstieties kā <ph name="EMAIL" />.</translation>
 <translation id="6751521182688001123">Ātra jaunas cilnes atvēršana. Lai rediģētu šo īsinājumtaustiņu, pieskarieties un turiet.</translation>
-<translation id="6752130751133944215">Lai atjaunotu jaunu logu, samaziniet aktīvo un neaktīvo logu kopskaitu līdz <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> vai mazākam skaitam. Neaktīvie logi tiek dzēsti pēc 6 mēnešiem.</translation>
 <translation id="6754359471209693699">Sākt jaunu meklēšanu</translation>
 <translation id="6756507620369789050">Sniegt atsauksmes</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7388615499319468910">Vietnes un reklāmdevēji var izprast reklāmu veiktspēju. Šis iestatījums ir izslēgts.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Citi, sarakstā ir 1 fails}zero{Citi, sarakstā ir # faili}one{Citi, sarakstā ir # fails}other{Citi, sarakstā ir # faili}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Lai atvērtu jaunu logu, samaziniet aktīvo un neaktīvo logu kopskaitu līdz <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> vai mazākam skaitam.</translation>
 <translation id="7403691278183511381">Chrome pirmās palaišanas pieredze</translation>
 <translation id="7411224099004328643">Google konta lietotājs</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>

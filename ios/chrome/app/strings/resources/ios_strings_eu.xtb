@@ -209,7 +209,6 @@
 <translation id="1740468249224277719">Instalatzeko, sakatu birritan.</translation>
 <translation id="1740650426894359238">Aldatu beste profil batera</translation>
 <translation id="1741219894094057085">Erloju adimenduna</translation>
-<translation id="1742773766788162541">Eskaneatu txartela eta bete automatikoki</translation>
 <translation id="1743244221910283364">Baztertu aldaketak</translation>
 <translation id="1748975028205587434">Hautatu fitxategia</translation>
 <translation id="1749733017156547309">Pasahitz bat behar da</translation>
@@ -370,7 +369,6 @@
 <translation id="2268044343513325586">Mugatu</translation>
 <translation id="2271452184061378400">Hemen gordetzen dira fitxa taldeak</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
-<translation id="2283599456633275070">Bidaiak</translation>
 <translation id="2287614783861766820">{count,plural, =1{Helbidea gailutik ezabatuko da.}other{Helbideak gailutik ezabatuko dira.}}</translation>
 <translation id="2295236662082735391">Sakatu luze sareko irudi bat Gemini-rekin editatzeko</translation>
 <translation id="2297989278479054870">Saioa amaitu ondoren, Google-ko kontuko laster-markak, pasahitzak eta bestelako elementuak kendu egingo dira gailu honetatik.</translation>
@@ -940,7 +938,6 @@
 <translation id="4430505936695785931">Lortu gordetako pasahitzak beste aplikazio batzuetan</translation>
 <translation id="4431224949908513835">Hautatu ordainketa-metodo bat.</translation>
 <translation id="4432122368769493392">Ezarpenak…</translation>
-<translation id="443975520858086928">Galdetu edozer Google-ri</translation>
 <translation id="4442550905108052454">Ireki <ph name="BEGIN_BOLD" />Ezarpenak<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> elementuaren aukera gehiago</translation>
 <translation id="4455710003856931944">Aurrera edo atzera egiteko, hatza ertzetik pasa dezakezu.</translation>
@@ -984,7 +981,6 @@
 <translation id="4607887340472970274">Prezioen jarraipena</translation>
 <translation id="4619564267100705184">Egiaztatu zeu zarela</translation>
 <translation id="4621768135601674446">Ireki irakurtzeko moduaren aukerak</translation>
-<translation id="4623894491222334521">Identitate-dokumentuak</translation>
 <translation id="4627107755957573804">Eman dauden kontuak bertsio-berritzeko baimena webguneei eta aplikazioei, kontuok sarbide-gakoak erabil ditzaten</translation>
 <translation id="4629065796475200039">Pasahitza ez da inportatu</translation>
 <translation id="4630212057753624203">Adibide gisako burbuila</translation>
@@ -1726,6 +1722,7 @@
 <translation id="7128693485119315539">Baliteke zure erakundeak kontu kudeatuarekin lotutako arakatze-datuak ikusi eta kudeatu behar izatea; adibidez, arakatze-historia eta pasahitzak.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera ez dago erabilgarri</translation>
+<translation id="7138678301420049075">Beste bat</translation>
 <translation id="7141960840225504692">Fitxak itxiko dira, eta arakatze-datuak ezabatuko dira</translation>
 <translation id="714291438898585119">Izardunak</translation>
 <translation id="7146301801400584641">Egutegiko fitxategi bat dago</translation>
@@ -1790,7 +1787,6 @@
 <translation id="7409985198648820906">Irakurri gabeko <ph name="UNREAD_COUNT" /> artikulu.</translation>
 <translation id="7412027924265291969">Egin aurrera</translation>
 <translation id="741204030948306876">Bai, ados</translation>
-<translation id="7417689656810783109">Aldatu taldearen izena</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>
 <translation id="7425053386765766120">Gehitu ordainketa-metodo bat…</translation>
 <translation id="7425346204213733349">Aurrerantzean, ez dira Google-ko kontuarekin sinkronizatuko laster-marketan, historian, pasahitzetan eta bestelako ezarpenetan egiten dituzun aldaketak. Hala ere, orain arteko datuak Google-ko kontuan izaten jarraituko duzu.</translation>
@@ -2075,6 +2071,7 @@
 <translation id="8363484128299778310">Aldi baterako berreskuratzea, arazorik balego</translation>
 <translation id="8364563001733875155">PINa aldatzeko, konfiguratu pasakode bat gailuan.</translation>
 <translation id="8366466717204352506">Ez da inoiz gauzatu egiaztapena</translation>
+<translation id="8367705492654390392">Galdetu edozer</translation>
 <translation id="8368001212524806591">Egin prezioen jarraipena</translation>
 <translation id="8368198938968349418">Aktibatu automatikoki betetzeko aukera…</translation>
 <translation id="8370406443343902172">Joan Ezarpenak atalera…</translation>

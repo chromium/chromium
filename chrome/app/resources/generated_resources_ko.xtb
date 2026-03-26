@@ -971,7 +971,6 @@
 <translation id="1652281434788353738">세심함</translation>
 <translation id="1652326691684645429">Nearby Share 사용</translation>
 <translation id="1652862280638399816">비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chromium을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
-<translation id="1653958716132599769">관련 탭 그룹화</translation>
 <translation id="165448107578581061">Gemini가 작업을 처리하는 중…</translation>
 <translation id="1654580009054503925">요청 표시가 허용되지 않음</translation>
 <translation id="1654713139320245449">전송 대상을 찾을 수 없습니다. 도움이 필요하신가요?</translation>
@@ -1095,7 +1094,6 @@
 <translation id="1732380773380808394">Google 계정에서 비밀번호 등의 항목을 가져오게 됩니다.</translation>
 <translation id="1734212868489994726">연한 파란색</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" />에서 자동 업데이트를 수행하지 못할 수 있습니다</translation>
-<translation id="1735636854292329504"><ph name="TASK_TITLE" />\n할 일을 처리 중이며 추가 조치가 필요한 경우 알려드리겠습니다.</translation>
 <translation id="1735983780784385591">Linux에서 가져옴</translation>
 <translation id="173628468822554835">알겠습니다. 앞으로 새로 방문하는 사이트에서는 기본적으로 알림을 표시하지 않습니다.</translation>
 <translation id="1737228213718001685">할 일 처리하는 중</translation>
@@ -3108,7 +3106,6 @@
 <translation id="3108957152224931571">강조 색상</translation>
 <translation id="3109206895301430738">저장된 탭 그룹</translation>
 <translation id="3109724472072898302">접힘</translation>
-<translation id="3109876277590516364">외 <ph name="NUM" />개</translation>
 <translation id="3112292765614504292">앱 크기: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">이 탭이 추가되었습니다.</translation>
 <translation id="311394601889664316">사이트에서 기기에 있는 파일이나 폴더를 수정하도록 허용하지 않음</translation>
@@ -3286,7 +3283,6 @@
 <translation id="324366796737464147">주변 소음 제거</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">계속 음소거</translation>
-<translation id="3247006341013237647">탭을 정리하시겠습니까?</translation>
 <translation id="3247649647204519958">여기에서 현재 사용 중인 사이트의 확장 프로그램 권한을 보고 관리할 수 있습니다.</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 네트워크 오류</translation>
 <translation id="3248902735035392926">안전은 그 무엇보다도 중요합니다. 잠시 시간을 내어 <ph name="BEGIN_LINK" />확장 프로그램을 검토<ph name="END_LINK" />해 보세요.</translation>
@@ -3499,7 +3495,6 @@
 <translation id="3402585168444815892">데모 모드에 등록</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">이 사이트의 비밀번호가 저장되지 않음</translation>
-<translation id="3405382848027996799">Google Beam 하드웨어 설정 준비가 완료되었습니다</translation>
 <translation id="3405664148539009465">글꼴 맞춤설정</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">가상 현실 기기 및 데이터 사용이 허용됨</translation>
@@ -4735,7 +4730,6 @@
 <translation id="4250680216510889253">아니요</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />에 있는 파일을 보고 사본을 만들 수 있게 됩니다.</translation>
 <translation id="4251377547188244181">키오스크 및 사이니지 기기 등록</translation>
-<translation id="4252828488489674554">탭 그룹 이름을 마우스 오른쪽 버튼으로 클릭하면 이 그룹을 수정할 수 있고 클릭하면 접을 수 있습니다.</translation>
 <translation id="4252899949534773101">블루투스가 사용 중지됨</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 탭 콘텐츠 공유됨</translation>
 <translation id="4253168017788158739">메모</translation>
@@ -5054,7 +5048,6 @@
 <translation id="4470957202018033307">외부 저장소 환경설정</translation>
 <translation id="4471250205822310967">Gemini 선택 오버레이</translation>
 <translation id="4471354919263203780">음성 인식 파일 다운로드 중... <ph name="PERCENT" />%</translation>
-<translation id="4472194221638903160">AI로 탭 그룹화</translation>
 <translation id="4472298120638043495">원하는 Google 계정 언어(<ph name="NEW_LOCALE_FROM_GAIA" />)를 사용할 수 있습니다.</translation>
 <translation id="447252321002412580">Chrome의 기능 및 성능 개선에 참여</translation>
 <translation id="4472533928615930332"><ph name="STYLE" /> 스타일로 생성된 <ph name="SUBJECT" />의 이미지 <ph name="INDEX" /></translation>
@@ -6801,7 +6794,6 @@
 <translation id="5731247495086897348">붙여넣어 바로가기(&amp;S)</translation>
 <translation id="5733109311583381874">변환 후보를 맞춤설정하려면 나만의 단어를 사용자 사전에 추가하세요</translation>
 <translation id="5733669387494115331">Google 서비스 설정</translation>
-<translation id="5733913382424854675">AI로 탭 그룹화</translation>
 <translation id="5734362860645681824">커뮤니케이션</translation>
 <translation id="5734697361979786483">파일 공유 추가</translation>
 <translation id="573520097779121706">커서를 이동하려면 7, 8, 9, u, o, j, k, l 키를 사용하세요.</translation>
@@ -7211,7 +7203,6 @@
 <translation id="6011193465932186973">지문</translation>
 <translation id="6011308810877101166">추천 검색어 개선</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> 기기로 링크 전송 중</translation>
-<translation id="6013003831291591200">작업 완료됨</translation>
 <translation id="6013027779243312217">음성 및 영상 자막 생성하기</translation>
 <translation id="6014293228235665243">읽지 않음</translation>
 <translation id="6015776718598175635">별</translation>
@@ -7706,7 +7697,6 @@
 <translation id="6367097275976877956">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="6367196786591004737">항목 삭제</translation>
 <translation id="6367396429435748845">마우스 키를 일시중지하고 다시 시작하려면 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 키를 누르세요.</translation>
-<translation id="6367428649223439405"><ph name="TASK_TITLE" />\n할 일이 일시중지되었습니다.</translation>
 <translation id="6367853307713830174">Gemini는 작업 단계를 표시하고, 민감한 작업은 수행 전에 확인을 시도합니다. 언제든지 중지하거나 직접 작업을 수행할 수 있습니다.</translation>
 <translation id="6367985768157257101">Nearby Share로 받으시겠습니까?</translation>
 <translation id="6368157733310917710">주소 및 기타</translation>
@@ -8437,7 +8427,6 @@
 <translation id="6870953451576517204">자동 테스트 성공</translation>
 <translation id="6871644448911473373">OCSP 응답자: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">언어…</translation>
-<translation id="6872859537300194762"><ph name="TASK_TITLE" />\n다른 활동으로 인해 할 일이 일시중지되었습니다. 준비가 되면 Chrome으로 돌아가서 확인하세요.</translation>
 <translation id="6873156759937047811">PIN:</translation>
 <translation id="6873571253135628430">사이트 권한 변경하기</translation>
 <translation id="6876155724392614295">자전거</translation>
@@ -8548,7 +8537,6 @@
 <translation id="695817292005698051">동작 감지 기준</translation>
 <translation id="6959882218873172284">POST 요청</translation>
 <translation id="6960133692707095572">티켓 없이 방문</translation>
-<translation id="6960408801933394526">탭 그룹 선택 및 수정할 컨텍스트 메뉴 활성화</translation>
 <translation id="6960507406838246615">Linux 업데이트 필요</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> 음성 파일을 다운로드할 수 없습니다. 다운로드가 나중에 시도됩니다. 다운로드가 완료될 때까지는 음성이 Google로 전송되어 처리됩니다.</translation>
 <translation id="696103774840402661">이 <ph name="DEVICE_TYPE" /> 기기 내 모든 사용자의 파일 및 로컬 데이터가 영구적으로 삭제되었습니다.</translation>
@@ -8873,7 +8861,6 @@
 <translation id="7191632649590906354">이제 가족 구성원이 Google 비밀번호 관리자를 사용할 때 내 사용자 이름과 비밀번호를 사용할 수 있습니다. <ph name="WEBSITE" /> 페이지로 이동하여 로그인하도록 안내하세요.</translation>
 <translation id="7193051357671784796">조직에서 추가한 앱입니다. 설치를 완료하려면 앱을 다시 시작하세요.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />의 비밀번호가 저장되지 않음</translation>
-<translation id="7193663868864659844">추천 그룹에 관한 의견 보내기</translation>
 <translation id="7194343495483122559">탭 펼치기</translation>
 <translation id="7194873994243265344">파일이 암호화되어 있기 때문에 조직에서 파일을 차단했습니다. 소유자에게 복호화를 요청하세요.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{다운로드 1개 진행 중}other{다운로드 #개 진행 중}}</translation>
@@ -9246,7 +9233,6 @@
 <translation id="7444176988908839653">{COUNT,plural, =0{오늘 쿠키가 다시 차단됩니다.}=1{내일 쿠키가 다시 차단됩니다.}other{#일 후 쿠키가 다시 차단됩니다.}}</translation>
 <translation id="7446716846072322308"><ph name="SITE_NAME" /> 및 관련 사이트에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="7448430327655618736">앱 자동 설치</translation>
-<translation id="7448639287059644731"><ph name="TASK_TITLE" />\n할 일을 계속하려면 도움이 필요합니다.</translation>
 <translation id="7448664748118305024">창을 전부 닫으면 사이트에서 기기에 저장한 데이터 삭제</translation>
 <translation id="7450761244949417357">지금 <ph name="ALTERNATIVE_BROWSER_NAME" />에서 여는 중</translation>
 <translation id="7450926666485653189">IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다.</translation>
@@ -9318,7 +9304,6 @@
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> 확장 프로그램에서 비밀번호와 신용카드 번호 등의 개인정보를 포함해 입력하는 모든 텍스트를 수집할 수 있습니다. 이 확장 프로그램을 사용하시겠어요?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android 앱</translation>
-<translation id="7495217365392072364">비슷한 탭 정리</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">최근 캡처한 WebRTC 텍스트 로그가 없습니다.</translation>
 <translation id="7501957181231305652">또는</translation>
@@ -9606,7 +9591,6 @@
 <translation id="7685351732518564314"><ph name="DEVICE_NAME" />에서 버튼을 누르세요.</translation>
 <translation id="7686086654630106285">사이트 추천 광고에 관해 자세히 알아보기</translation>
 <translation id="7686938547853266130"><ph name="DEVICE_PATH" /> <ph name="FRIENDLY_NAME" /></translation>
-<translation id="7689495576379510159">외 <ph name="NUM" />개</translation>
 <translation id="7690378713476594306">목록에서 선택</translation>
 <translation id="7690853182226561458">폴더 추가(&amp;F)...</translation>
 <translation id="7691077781194517083">보안 키를 재설정할 수 없습니다. <ph name="ERROR_CODE" /> 오류입니다.</translation>
@@ -11085,7 +11069,6 @@
 <translation id="8708671767545720562">추가 정보</translation>
 <translation id="8709368517685334931">Chrome 웹 스토어에서 이전 색상을 찾을 수 있습니다.</translation>
 <translation id="8710414664106871428">판타지</translation>
-<translation id="8710550057342691420">비슷한 탭 정리</translation>
 <translation id="8711402221661888347">피클</translation>
 <translation id="8711538096655725662">방문하는 모든 사이트에서 자동으로 실행됩니다.</translation>
 <translation id="8712637175834984815">확인</translation>
@@ -11525,7 +11508,6 @@
 <translation id="8999560016882908256">섹션 구문 오류: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">화면상의 움직임 감소</translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> 오른쪽에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
-<translation id="9000341229894259710"><ph name="TASK_TITLE" />\n요청을 처리했습니다. Chrome에서 확인할 수 있습니다.</translation>
 <translation id="9000529821022336229">업데이터 설치를 찾을 수 없습니다.</translation>
 <translation id="900267527532832868">이 패스키는 더 이상 작동하지 않습니다. <ph name="GOOGLE_PASSWORD_MANAGER" />에서 곧 삭제됩니다.</translation>
 <translation id="9003031149571024583">PIN 6자리 중 <ph name="NUM_DIGIT" />번째 자리를 입력하세요. 백스페이스 또는 Delete 키를 사용하여 마지막 자리를 삭제하세요.</translation>

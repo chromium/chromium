@@ -1395,7 +1395,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6746338529702829275">Revisa les dades del compte</translation>
 <translation id="6746834324024491643">Per accedir a les teves contrasenyes i altres dades des de tots els teus dispositius, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Obre ràpidament una pestanya nova. Mantingues premuda aquesta drecera per editar-la.</translation>
-<translation id="6752130751133944215">Per restaurar-ne una de nova, redueix el nombre total de finestres, tant actives com inactives, a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o menys. Les finestres inactives se suprimeixen al cap de 6 mesos.</translation>
 <translation id="6754359471209693699">Inicia una cerca nova</translation>
 <translation id="6756507620369789050">Comparteix suggeriments</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7388615499319468910">Els llocs web i els anunciants poden entendre el rendiment dels anuncis. Aquesta opció de configuració està desactivada.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Altres, 1 fitxer a la llista}other{Altres, # fitxers a la llista}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Per obrir-ne una de nova, redueix el nombre total de finestres, tant actives com inactives, a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o menys.</translation>
 <translation id="7403691278183511381">Experiència de primera execució de Chrome</translation>
 <translation id="7411224099004328643">Usuari del Compte de Google</translation>
 <translation id="7419565702166471774">Utilitza sempre connexions segures</translation>

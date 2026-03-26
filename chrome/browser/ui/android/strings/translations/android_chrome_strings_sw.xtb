@@ -1395,7 +1395,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6746338529702829275">Kagua data ya akaunti yako</translation>
 <translation id="6746834324024491643">Ili upate manenosiri yako na maudhui mengineyo kwenye vifaa vyako vyote, ingia katika akaunti ukitumia <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Fungua kichupo kipya kwa haraka. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
-<translation id="6752130751133944215">Ili urejeshe dirisha jipya, punguza idadi ya jumla ya madirisha yanayotumika na yasiyotumika yasizidi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Madirisha yasiyotumika hufutwa baada ya miezi 6.</translation>
 <translation id="6754359471209693699">Anzisha utafutaji mpya</translation>
 <translation id="6756507620369789050">Shiriki maoni</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7388615499319468910">Tovuti na watangazaji wanaweza kuelewa utendaji wa matangazo. Mipangilio hii imezimwa.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Nyingine, faili 1 kwenye orodha}other{Nyingine, faili # kwenye orodha}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Ili ufungue dirisha jipya, punguza idadi ya jumla ya madirisha yanayotumika na yasiyotumika yasizidi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7403691278183511381">Hali ya Utekelezaji wa Kwanza wa Chrome</translation>
 <translation id="7411224099004328643">Mtumiaji wa Akaunti ya Google</translation>
 <translation id="7419565702166471774">Tumia miunganisho salama kila wakati</translation>

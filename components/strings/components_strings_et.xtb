@@ -917,6 +917,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2400600116338235695">Saab küsida luba jadaportidega ühenduse loomiseks</translation>
 <translation id="2403474027143565107">Täpne</translation>
 <translation id="240450251994300576">Teisene päiselogo</translation>
+<translation id="2404715426538856682">Krediit- ja deebetkaardid · IBAN-id · Kliendikaardid</translation>
 <translation id="2404884497378469141">Proovige oma failid uuesti kopeerida</translation>
 <translation id="2413155254802890957">Vana</translation>
 <translation id="2413528052993050574">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, selle turvasertifikaat võib olla tühistatud. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
@@ -2168,6 +2169,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4340810192899866471">Impordi JSON-ist</translation>
 <translation id="4340982228985273705">Tuvastati, et tegemist ei ole ettevõtte hallatava arvutiga, seega saab reegel installida ainult Chrome'i veebipoes hostitavaid laiendusi. Chrome'i veebipoe värskenduse URL on „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4342742994656318294">Teemapargid</translation>
+<translation id="4346670990181948854">Reisiteave · Sõidukid</translation>
 <translation id="4348834659292907206">Ühendus saidiga <ph name="SITE" /> pole turvaline</translation>
 <translation id="4349365535725594680">Ei saa konfidentsiaalset sisu jagada</translation>
 <translation id="4349810866125026513">Laadi siiski üles</translation>
@@ -3050,6 +3052,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5752519522101347518">Panga kinnituse veebisaidi laadimine</translation>
 <translation id="5753570386948603678">Kustuta ajaloost</translation>
 <translation id="5759751709240058861">Kaamera kasutamine ja liigutamine</translation>
+<translation id="5762131895127128324">Juhiload · ID-kaardid · Passid</translation>
 <translation id="5763042198335101085">Sisestage kehtiv e-posti aadress</translation>
 <translation id="5764725887548570807">Vale lähtekoha vorming.</translation>
 <translation id="5764920692828389743">Saada aadressile <ph name="EMAIL_ADDRESS" /></translation>
@@ -3987,6 +3990,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="7220786058474068424">Töötlemine</translation>
 <translation id="7221855153210829124">märguandeid näidata</translation>
 <translation id="722454870747268814">Uus inkognito vaheleht</translation>
+<translation id="7225676267118764980">Automaattäite teenusepakkuja ja muude seadete muutmine.</translation>
 <translation id="7226892411756387078">Lihttekst</translation>
 <translation id="7227293336683593977">Hinna ajalugu</translation>
 <translation id="7228306718910595403">Olek EL-is kvalifitseeritud</translation>
@@ -5043,6 +5047,7 @@ Lisateave:
 <translation id="8891031436559779793">Saate märguande, kui hind mõnel saidil langeb.</translation>
 <translation id="8891727572606052622">Kehtetu puhverserveri režiim.</translation>
 <translation id="8894794286471754040">Pikem serv enne</translation>
+<translation id="8895334001368918465">Chrome'is mõne muu automaattäite teenuse kasutamiseks lülitage see Androidi seadetes ja siin sisse</translation>
 <translation id="8897221284075091877">Et taotleda selle sisu nägemist, liigu oma Google'i kontole</translation>
 <translation id="8897428486789851669">Ujumine</translation>
 <translation id="8898854704577986668">Kuva ajalugu külgpaneelil</translation>

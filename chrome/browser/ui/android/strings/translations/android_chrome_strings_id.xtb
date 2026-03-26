@@ -1395,7 +1395,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6746338529702829275">Tinjau data akun Anda</translation>
 <translation id="6746834324024491643">Untuk mendapatkan sandi dan info Anda yang lain di semua perangkat Anda, login sebagai <ph name="EMAIL" /></translation>
 <translation id="6751521182688001123">Buka tab baru dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
-<translation id="6752130751133944215">Untuk memulihkan jendela baru, kurangi jumlah total jendela aktif dan tidak aktif menjadi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang. Jendela yang tidak aktif akan dihapus setelah 6 bulan.</translation>
 <translation id="6754359471209693699">Mulai penelusuran baru</translation>
 <translation id="6756507620369789050">Bagikan masukan</translation>
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
@@ -1585,7 +1584,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7388615499319468910">Situs dan pengiklan dapat memahami performa iklan. Setelan ini nonaktif.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{Lainnya, 1 file dalam daftar}other{Lainnya, # file dalam daftar}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">Untuk membuka jendela baru, kurangi jumlah total jendela aktif dan tidak aktif menjadi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang.</translation>
 <translation id="7403691278183511381">Pengalaman Penggunaan Pertama Chrome</translation>
 <translation id="7411224099004328643">Pengguna Akun Google</translation>
 <translation id="7419565702166471774">Selalu gunakan koneksi aman</translation>
