@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_FILE = Object.freeze({
+const TESTING_FILE = Object.freeze({
   isDirectory: false,
   name: 'tiramisu.txt',
   size: 4096,
@@ -21,7 +21,7 @@ var TESTING_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_BROKEN_FILE = Object.freeze({
+const TESTING_BROKEN_FILE = Object.freeze({
   isDirectory: false,
   name: 'broken-file.txt',
   size: 4096,
@@ -41,12 +41,12 @@ function onRemoveWatcherRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (options.entryPath === '/' + TESTING_FILE.name) {
+  if (options.entryPath === `/${TESTING_FILE.name}`) {
     onSuccess();
     return;
   }
 
-  if (options.entryPath === '/' + TESTING_BROKEN_FILE.name) {
+  if (options.entryPath === `/${TESTING_BROKEN_FILE.name}`) {
     onError('INVALID_OPERATION');
     return;
   }
@@ -66,8 +66,8 @@ function setUp(callback) {
   chrome.fileSystemProvider.onAddWatcherRequested.addListener(
       testUtil.onAddWatcherRequested);
 
-  testUtil.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
-  testUtil.defaultMetadata['/' + TESTING_BROKEN_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_FILE.name}`] = TESTING_FILE;
+  testUtil.defaultMetadata[`/${TESTING_BROKEN_FILE.name}`] =
       TESTING_BROKEN_FILE;
 
   chrome.fileSystemProvider.onRemoveWatcherRequested.addListener(

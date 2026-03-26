@@ -11,14 +11,14 @@ let testUtil;
  * </code>.
  * @type {Object<number, string>}
  */
-var openedFiles = {};
+const openedFiles = {};
 
 /**
  * Metadata for a testing file.
  * @type {Object}
  * @const
  */
-var TESTING_TOO_LARGE_CHUNK_FILE = Object.freeze({
+const TESTING_TOO_LARGE_CHUNK_FILE = Object.freeze({
   isDirectory: false,
   name: 'too-large-chunk.txt',
   size: 2 * 1024 * 1024,  // 2MB
@@ -30,7 +30,7 @@ var TESTING_TOO_LARGE_CHUNK_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_INVALID_CALLBACK_FILE = Object.freeze({
+const TESTING_INVALID_CALLBACK_FILE = Object.freeze({
   isDirectory: false,
   name: 'invalid-request.txt',
   size: 1 * 1024 * 1024,  // 1MB
@@ -42,7 +42,7 @@ var TESTING_INVALID_CALLBACK_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_NEGATIVE_SIZE_FILE = Object.freeze({
+const TESTING_NEGATIVE_SIZE_FILE = Object.freeze({
   isDirectory: false,
   name: 'negative-size.txt',
   size: -1 * 1024 * 1024,  // -1MB
@@ -54,7 +54,7 @@ var TESTING_NEGATIVE_SIZE_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_RELATIVE_NAME_FILE = Object.freeze({
+const TESTING_RELATIVE_NAME_FILE = Object.freeze({
   isDirectory: false,
   name: '../../../b.txt',
   size: 1 * 1024 * 1024,  // 1MB
@@ -80,10 +80,10 @@ function onOpenFileRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (options.filePath !== '/' + TESTING_TOO_LARGE_CHUNK_FILE.name &&
-      options.filePath !== '/' + TESTING_INVALID_CALLBACK_FILE.name &&
-      options.filePath !== '/' + TESTING_NEGATIVE_SIZE_FILE.name &&
-      options.filePath !== '/' + TESTING_RELATIVE_NAME_FILE.name) {
+  if (options.filePath !== `/${TESTING_TOO_LARGE_CHUNK_FILE.name}` &&
+      options.filePath !== `/${TESTING_INVALID_CALLBACK_FILE.name}` &&
+      options.filePath !== `/${TESTING_NEGATIVE_SIZE_FILE.name}` &&
+      options.filePath !== `/${TESTING_RELATIVE_NAME_FILE.name}`) {
     onError('NOT_FOUND');  // enum ProviderError.
     return;
   }
@@ -120,18 +120,18 @@ function onCloseFileRequested(options, onSuccess, onError) {
  * @param {function(string)} onError Error callback.
  */
 function onReadFileRequested(options, onSuccess, onError) {
-  var filePath = openedFiles[options.openRequestId];
+  const filePath = openedFiles[options.openRequestId];
   if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID || !filePath) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
   }
 
-  if (filePath === '/' + TESTING_TOO_LARGE_CHUNK_FILE.name) {
-    var buffer = '';
+  if (filePath === `/${TESTING_TOO_LARGE_CHUNK_FILE.name}`) {
+    let buffer = '';
     while (buffer.length < 4 * TESTING_TOO_LARGE_CHUNK_FILE.size) {
       buffer += 'I-LIKE-ICE-CREAM!';
     }
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function(e) {
       onSuccess(e.target.result, true /* hasMore */);
       onSuccess(e.target.result, true /* hasMore */);
@@ -142,7 +142,7 @@ function onReadFileRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (filePath === '/' + TESTING_INVALID_CALLBACK_FILE.name) {
+  if (filePath === `/${TESTING_INVALID_CALLBACK_FILE.name}`) {
     // Calling onSuccess after onError is unexpected. After handling the error
     // the request should be removed.
     onError('NOT_FOUND');
@@ -150,13 +150,13 @@ function onReadFileRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (filePath === '/' + TESTING_NEGATIVE_SIZE_FILE.name) {
+  if (filePath === `/${TESTING_NEGATIVE_SIZE_FILE.name}`) {
     onSuccess(new ArrayBuffer(-TESTING_NEGATIVE_SIZE_FILE.size * 2),
               false /* hasMore */);
     return;
   }
 
-  if (filePath === '/' + TESTING_RELATIVE_NAME_FILE.name) {
+  if (filePath === `/${TESTING_RELATIVE_NAME_FILE.name}`) {
     onSuccess(new ArrayBuffer(options.length), false /* hasMore */);
     return;
   }
@@ -174,13 +174,13 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_TOO_LARGE_CHUNK_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_TOO_LARGE_CHUNK_FILE.name}`] =
     TESTING_TOO_LARGE_CHUNK_FILE;
-  testUtil.defaultMetadata['/' + TESTING_INVALID_CALLBACK_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_INVALID_CALLBACK_FILE.name}`] =
     TESTING_INVALID_CALLBACK_FILE;
-  testUtil.defaultMetadata['/' + TESTING_NEGATIVE_SIZE_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_NEGATIVE_SIZE_FILE.name}`] =
     TESTING_NEGATIVE_SIZE_FILE;
-  testUtil.defaultMetadata['/' + TESTING_RELATIVE_NAME_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_RELATIVE_NAME_FILE.name}`] =
     TESTING_RELATIVE_NAME_FILE;
 
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
@@ -207,8 +207,8 @@ function runTests() {
           chrome.test.callbackPass(function(fileEntry) {
             fileEntry.file(chrome.test.callbackPass(function(file) {
               // Read 1 KB of data.
-              var fileSlice = file.slice(0, 1024);
-              var fileReader = new FileReader();
+              const fileSlice = file.slice(0, 1024);
+              const fileReader = new FileReader();
               fileReader.onload = function(e) {
                 chrome.test.fail('Reading should fail.');
               };
@@ -233,8 +233,8 @@ function runTests() {
           chrome.test.callbackPass(function(fileEntry) {
             fileEntry.file(chrome.test.callbackPass(function(file) {
               // Read 1 KB of data.
-              var fileSlice = file.slice(0, 1024);
-              var fileReader = new FileReader();
+              const fileSlice = file.slice(0, 1024);
+              const fileReader = new FileReader();
               fileReader.onload = function(e) {
                 chrome.test.fail('Reading should fail.');
               };
@@ -258,10 +258,10 @@ function runTests() {
           chrome.test.callbackPass(function(fileEntry) {
             fileEntry.file(chrome.test.callbackPass(function(file) {
               // Read 1 KB of data.
-              var fileSlice = file.slice(0, 1024);
-              var fileReader = new FileReader();
+              const fileSlice = file.slice(0, 1024);
+              const fileReader = new FileReader();
               fileReader.onload = chrome.test.callbackPass(function(e) {
-                var text = fileReader.result;
+                const text = fileReader.result;
                 chrome.test.assertEq(0, text.length);
               });
               fileReader.onerror = function(error) {

@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_FILE = Object.freeze({
+const TESTING_FILE = Object.freeze({
   isDirectory: false,
   name: 'kitty',
   size: 1024,
@@ -21,7 +21,7 @@ var TESTING_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_ANOTHER_FILE = Object.freeze({
+const TESTING_ANOTHER_FILE = Object.freeze({
   isDirectory: false,
   name: 'bunny',
   size: 2048,
@@ -32,7 +32,7 @@ var TESTING_ANOTHER_FILE = Object.freeze({
  * @type {string}
  * @const
  */
-var TESTING_NEW_FILE_NAME = 'puppy.txt';
+const TESTING_NEW_FILE_NAME = 'puppy.txt';
 
 /**
  * Moves an entry within the same file system.
@@ -63,7 +63,7 @@ function onMoveEntryRequested(options, onSuccess, onError) {
   }
 
   // Move the metadata with changing the 'name' field.
-  var newMetadata =
+  const newMetadata =
       structuredClone(testUtil.defaultMetadata[options.sourcePath]);
   newMetadata.name = options.targetPath.split('/').pop();
   testUtil.defaultMetadata[options.targetPath] = newMetadata;
@@ -84,8 +84,8 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
-  testUtil.defaultMetadata['/' + TESTING_ANOTHER_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_FILE.name}`] = TESTING_FILE;
+  testUtil.defaultMetadata[`/${TESTING_ANOTHER_FILE.name}`] =
       TESTING_ANOTHER_FILE;
 
   chrome.fileSystemProvider.onMoveEntryRequested.addListener(

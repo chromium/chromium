@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_FILE = Object.freeze({
+const TESTING_FILE = Object.freeze({
   isDirectory: false,
   name: 'kitty',
   size: 1024,
@@ -21,7 +21,7 @@ var TESTING_FILE = Object.freeze({
  * @type {string}
  * @const
  */
-var TESTING_NEW_FILE_NAME = 'puppy.txt';
+const TESTING_NEW_FILE_NAME = 'puppy.txt';
 
 /**
  * Copies an entry within the same file system.
@@ -52,7 +52,7 @@ function onCopyEntryRequested(options, onSuccess, onError) {
   }
 
   // Copy the metadata, but change the 'name' field.
-  var newMetadata =
+  const newMetadata =
       structuredClone(testUtil.defaultMetadata[options.sourcePath]);
   newMetadata.name = options.targetPath.split('/').pop();
   testUtil.defaultMetadata[options.targetPath] = newMetadata;
@@ -70,7 +70,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
+  testUtil.defaultMetadata[`/${TESTING_FILE.name}`] = TESTING_FILE;
 
   chrome.fileSystemProvider.onCopyEntryRequested.addListener(
       onCopyEntryRequested);

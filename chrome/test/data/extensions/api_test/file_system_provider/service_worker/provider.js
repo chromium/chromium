@@ -514,7 +514,7 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (options.entryPath === '/' + TestFileSystemProvider.FILE_FAIL) {
+    if (options.entryPath === `/${TestFileSystemProvider.FILE_FAIL}`) {
       onError(chrome.fileSystemProvider.ProviderError.FAILED);
       return;
     }
@@ -736,13 +736,13 @@ export class TestFileSystemProvider {
     }
 
     if (options.entryPaths.indexOf(
-            '/' + TestFileSystemProvider.DIR_WITH_NO_ACTIONS) !== -1) {
+            `/${TestFileSystemProvider.DIR_WITH_NO_ACTIONS}`) !== -1) {
       onSuccess([]);
       return;
     }
 
     if (options.entryPaths.indexOf(
-            '/' + TestFileSystemProvider.DIR_WITH_ACTIONS) !== -1) {
+            `/${TestFileSystemProvider.DIR_WITH_ACTIONS}`) !== -1) {
       onSuccess(TestFileSystemProvider.ACTIONS);
       return;
     }
@@ -817,7 +817,7 @@ export class TestFileSystemProvider {
     this.maxOpenedFiles =
         Math.max(this.maxOpenedFiles, Object.keys(this.openedFiles).length);
 
-    if (options.filePath === '/' + TestFileSystemProvider.FILE_BLOCK_OPEN) {
+    if (options.filePath === `/${TestFileSystemProvider.FILE_BLOCK_OPEN}`) {
       this.stallRequest('onOpenFileRequested', options).then(onSuccess);
       return;
     }
@@ -945,7 +945,7 @@ export class TestFileSystemProvider {
       }
     };
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_TOO_LARGE_CHUNK) {
+    if (filePath === `/${TestFileSystemProvider.FILE_TOO_LARGE_CHUNK}`) {
       // Invalid file: returns more data than the file size.
       const buffer = textToBuffer('A'.repeat(entry.metadata.size * 4));
       onSuccess(buffer, /*hasMore=*/ true);
@@ -955,7 +955,7 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_INVALID_CALLBACK) {
+    if (filePath === `/${TestFileSystemProvider.FILE_INVALID_CALLBACK}`) {
       // Invalid file: invokes both success and error callbacks.
       const buffer = textToBuffer('A'.repeat(options.length));
       onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
@@ -963,24 +963,24 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_FAIL) {
+    if (filePath === `/${TestFileSystemProvider.FILE_FAIL}`) {
       onError(chrome.fileSystemProvider.ProviderError.FAILED);
       return;
     }
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_DENIED) {
+    if (filePath === `/${TestFileSystemProvider.FILE_DENIED}`) {
       onError(chrome.fileSystemProvider.ProviderError.ACCESS_DENIED);
       return;
     }
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_BLOCK_IO) {
+    if (filePath === `/${TestFileSystemProvider.FILE_BLOCK_IO}`) {
       // Block the read until it's unblocked.
       this.stallRequest('onReadFileRequested', options)
           .then(() => sendFileInChunks(entry));
       return;
     }
 
-    if (filePath == '/' + TestFileSystemProvider.FILE_BIG) {
+    if (filePath == `/${TestFileSystemProvider.FILE_BIG}`) {
       // This file is not intended to be read below the max 32-bit unsigned
       // value, so fail immediately.
       if (options.offset <= 2 ** 32 - 1) {
@@ -1122,12 +1122,12 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_FAIL) {
+    if (filePath === `/${TestFileSystemProvider.FILE_FAIL}`) {
       onError(chrome.fileSystemProvider.ProviderError.FAILED);
       return;
     }
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_DENIED) {
+    if (filePath === `/${TestFileSystemProvider.FILE_DENIED}`) {
       onError(chrome.fileSystemProvider.ProviderError.ACCESS_DENIED);
       return;
     }
@@ -1153,7 +1153,7 @@ export class TestFileSystemProvider {
       onSuccess();
     };
 
-    if (filePath === '/' + TestFileSystemProvider.FILE_BLOCK_IO) {
+    if (filePath === `/${TestFileSystemProvider.FILE_BLOCK_IO}`) {
       // Block the write until it's unblocked.
       this.stallRequest('onWriteFileRequested', options).then(continueWrite);
       return;

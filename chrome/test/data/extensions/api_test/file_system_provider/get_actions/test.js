@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_ACTIONS_DIR = Object.freeze({
+const TESTING_ACTIONS_DIR = Object.freeze({
   isDirectory: true,
   name: 'actions',
   size: 0,
@@ -21,7 +21,7 @@ var TESTING_ACTIONS_DIR = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_NO_ACTIONS_DIR = Object.freeze({
+const TESTING_NO_ACTIONS_DIR = Object.freeze({
   isDirectory: true,
   name: 'no-actions',
   size: 0,
@@ -32,15 +32,8 @@ var TESTING_NO_ACTIONS_DIR = Object.freeze({
  * @type {Array<Object>}
  * @const
  */
-var TESTING_ACTIONS_DIR_ACTIONS = Object.freeze([
-  {
-    id: "SHARE"
-  },
-  {
-    id: "SomeCustomAction",
-    title: "Do something custom"
-  }
-]);
+const TESTING_ACTIONS_DIR_ACTIONS = Object.freeze(
+    [{id: 'SHARE'}, {id: 'SomeCustomAction', title: 'Do something custom'}]);
 
 /**
  * Returns a list of actions for the requested entry
@@ -56,12 +49,12 @@ function onGetActionsRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (options.entryPaths.indexOf('/' + TESTING_NO_ACTIONS_DIR.name) !== -1) {
+  if (options.entryPaths.indexOf(`/${TESTING_NO_ACTIONS_DIR.name}`) !== -1) {
     onSuccess([]);
     return;
   }
 
-  if (options.entryPaths.indexOf('/' + TESTING_ACTIONS_DIR.name) !== -1) {
+  if (options.entryPaths.indexOf(`/${TESTING_ACTIONS_DIR.name}`) !== -1) {
     onSuccess(TESTING_ACTIONS_DIR_ACTIONS);
     return;
   }
@@ -79,9 +72,9 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_ACTIONS_DIR.name] =
+  testUtil.defaultMetadata[`/${TESTING_ACTIONS_DIR.name}`] =
       TESTING_ACTIONS_DIR;
-  testUtil.defaultMetadata['/' + TESTING_NO_ACTIONS_DIR.name] =
+  testUtil.defaultMetadata[`/${TESTING_NO_ACTIONS_DIR.name}`] =
       TESTING_NO_ACTIONS_DIR;
 
   chrome.fileSystemProvider.onGetActionsRequested.addListener(

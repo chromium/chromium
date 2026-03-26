@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_ROOT = Object.freeze({
+const TESTING_ROOT = Object.freeze({
   isDirectory: true,
   name: '',
   size: 0,
@@ -21,7 +21,7 @@ var TESTING_ROOT = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_FILE = Object.freeze({
+const TESTING_FILE = Object.freeze({
   isDirectory: false,
   name: 'tiramisu.txt',
   size: 4096,
@@ -32,7 +32,7 @@ var TESTING_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_WRONG_TIME_FILE = Object.freeze({
+const TESTING_WRONG_TIME_FILE = Object.freeze({
   isDirectory: false,
   name: 'invalid-time.txt',
   size: 4096,
@@ -43,7 +43,7 @@ var TESTING_WRONG_TIME_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_ONLY_BASIC_FILE = Object.freeze({
+const TESTING_ONLY_BASIC_FILE = Object.freeze({
   isDirectory: false,
   name: 'invalid-time.txt',
 });
@@ -52,22 +52,19 @@ var TESTING_ONLY_BASIC_FILE = Object.freeze({
  * @type {string}
  * @const
  */
-var TESTING_ONLY_BASIC_FILE_NAME = 'basic.txt';
+const TESTING_ONLY_BASIC_FILE_NAME = 'basic.txt';
 
 /**
  * @type {Object}
  * @const
  */
-var TESTING_ONLY_SIZE_FILE = Object.freeze({
-  isDirectory: false,
-  size: 4096
-});
+const TESTING_ONLY_SIZE_FILE = Object.freeze({isDirectory: false, size: 4096});
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_ONLY_SIZE_FILE_NAME = 'only-size.txt';
+const TESTING_ONLY_SIZE_FILE_NAME = 'only-size.txt';
 
 /**
  * Returns metadata for a requested entry.
@@ -88,22 +85,22 @@ function onGetMetadataRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (options.entryPath === '/' + TESTING_FILE.name) {
+  if (options.entryPath === `/${TESTING_FILE.name}`) {
     onSuccess(TESTING_FILE);
     return;
   }
 
-  if (options.entryPath === '/' + TESTING_WRONG_TIME_FILE.name) {
+  if (options.entryPath === `/${TESTING_WRONG_TIME_FILE.name}`) {
     onSuccess(TESTING_WRONG_TIME_FILE);
     return;
   }
 
-  if (options.entryPath === '/' + TESTING_ONLY_BASIC_FILE_NAME) {
+  if (options.entryPath === `/${TESTING_ONLY_BASIC_FILE_NAME}`) {
     onSuccess(TESTING_ONLY_BASIC_FILE);
     return;
   }
 
-  if (options.entryPath === '/' + TESTING_ONLY_SIZE_FILE_NAME) {
+  if (options.entryPath === `/${TESTING_ONLY_SIZE_FILE_NAME}`) {
     onSuccess(TESTING_ONLY_SIZE_FILE);
     return;
   }

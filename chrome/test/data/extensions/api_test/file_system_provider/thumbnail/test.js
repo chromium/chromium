@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_ROOT = Object.freeze({
+const TESTING_ROOT = Object.freeze({
   isDirectory: true,
   name: '',
   size: 0,
@@ -21,35 +21,35 @@ var TESTING_ROOT = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_WITH_VALID_THUMBNAIL_FILE = Object.freeze({
+const TESTING_WITH_VALID_THUMBNAIL_FILE = Object.freeze({
   isDirectory: false,
   name: 'valid-thumbnail.txt',
   size: 4096,
   modificationTime: new Date(2014, 4, 28, 10, 39, 15),
   thumbnail: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA' +
-             'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO' +
-             '9TXL0Y4OHwAAAABJRU5ErkJggg=='
+      'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO' +
+      '9TXL0Y4OHwAAAABJRU5ErkJggg=='
 });
 
 /**
  * @type {Object}
  * @const
  */
-var TESTING_ALWAYS_WITH_THUMBNAIL_FILE = Object.freeze({
+const TESTING_ALWAYS_WITH_THUMBNAIL_FILE = Object.freeze({
   isDirectory: false,
   name: 'always-with-thumbnail.txt',
   size: 4096,
   modificationTime: new Date(2014, 4, 28, 10, 39, 15),
   thumbnail: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA' +
-             'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO' +
-             '9TXL0Y4OHwAAAABJRU5ErkJggg=='
+      'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO' +
+      '9TXL0Y4OHwAAAABJRU5ErkJggg=='
 });
 
 /**
  * @type {Object}
  * @const
  */
-var TESTING_WITH_INVALID_THUMBNAIL_FILE = Object.freeze({
+const TESTING_WITH_INVALID_THUMBNAIL_FILE = Object.freeze({
   isDirectory: false,
   name: 'invalid-thumbnail.txt',
   size: 4096,
@@ -72,22 +72,22 @@ function onGetMetadataRequested(options, onSuccess, onError) {
   }
 
   // Metadata to be returned.
-  var metadata;
+  let metadata;
 
   switch (options.entryPath) {
     case '/':
       metadata = TESTING_ROOT;
       break;
 
-    case '/' + TESTING_WITH_VALID_THUMBNAIL_FILE.name:
+    case `/${TESTING_WITH_VALID_THUMBNAIL_FILE.name}`:
       metadata = TESTING_WITH_VALID_THUMBNAIL_FILE;
       break;
 
-    case '/' + TESTING_ALWAYS_WITH_THUMBNAIL_FILE.name:
+    case `/${TESTING_ALWAYS_WITH_THUMBNAIL_FILE.name}`:
       metadata = TESTING_ALWAYS_WITH_THUMBNAIL_FILE;
       break;
 
-    case '/' + TESTING_WITH_INVALID_THUMBNAIL_FILE.name:
+    case `/${TESTING_WITH_INVALID_THUMBNAIL_FILE.name}`:
       metadata = TESTING_WITH_INVALID_THUMBNAIL_FILE;
       break;
 
@@ -100,8 +100,8 @@ function onGetMetadataRequested(options, onSuccess, onError) {
   // reasons. Remove the field if needed. However, do not remove it for one
   // file, to simulate an error.
   if (!options.thumbnail && metadata.thumbnail &&
-      options.entryPath !== '/' + TESTING_ALWAYS_WITH_THUMBNAIL_FILE.name) {
-    var metadataWithoutThumbnail = {
+      options.entryPath !== `/${TESTING_ALWAYS_WITH_THUMBNAIL_FILE.name}`) {
+    const metadataWithoutThumbnail = {
       isDirectory: metadata.isDirectory,
       name: metadata.name,
       size: metadata.size,

@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_DIRECTORY = Object.freeze({
+const TESTING_DIRECTORY = Object.freeze({
   isDirectory: true,
   name: 'nakameguro',
   size: 0,
@@ -21,32 +21,32 @@ var TESTING_DIRECTORY = Object.freeze({
  * @type {string}
  * @const
  */
-var TESTING_TAG1 = 'hello-puppy';
+const TESTING_TAG1 = 'hello-puppy';
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_TAG2 = 'hello-cat';
+const TESTING_TAG2 = 'hello-cat';
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_TAG3 = 'hello-giraffe';
+const TESTING_TAG3 = 'hello-giraffe';
 
 /**
  * List of directory changed events received from the chrome.fileManagerPrivate
  * API.
  * @type {Array<Object>}
  */
-var directoryChangedEvents = [];
+const directoryChangedEvents = [];
 
 /**
  * Callback to be called when a directory changed event arrives.
  * @type {function()|null}
  */
-var directoryChangedCallback = null;
+let directoryChangedCallback = null;
 
 /**
  * Handles an event dispatched from the chrome.fileManagerPrivate API.
@@ -74,7 +74,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onRemoveWatcherRequested.addListener(
       testUtil.onRemoveWatcherRequested);
 
-  testUtil.defaultMetadata['/' + TESTING_DIRECTORY.name] = TESTING_DIRECTORY;
+  testUtil.defaultMetadata[`/${TESTING_DIRECTORY.name}`] = TESTING_DIRECTORY;
 
   testUtil.mountFileSystem(callback, {supportsNotifyTag: true});
 }
@@ -116,7 +116,7 @@ function runTests() {
                                     chrome.test.assertEq(1, items.length);
                                     chrome.test.assertEq(
                                         1, items[0].watchers.length);
-                                    var watcher = items[0].watchers[0];
+                                    const watcher = items[0].watchers[0];
                                     chrome.test.assertEq(
                                         TESTING_TAG1, watcher.lastTag);
                                   }));

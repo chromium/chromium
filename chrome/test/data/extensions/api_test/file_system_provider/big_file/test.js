@@ -7,35 +7,30 @@
 let testUtil;
 
 /**
- * @type {DOMFileSystem}
- */
-var fileSystem = null;
-
-/**
  * Map of opened files, from a <code>openRequestId</code> to <code>filePath
  * </code>.
  * @type {Object<number, string>}
  */
-var openedFiles = {};
+const openedFiles = {};
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_TEXT = 'We are bytes at the 5th GB of the file!';
+const TESTING_TEXT = 'We are bytes at the 5th GB of the file!';
 
 /**
  * @type {number}
  * @const
  */
-var TESTING_TEXT_OFFSET = 5 * 1000 * 1000 * 1000;
+const TESTING_TEXT_OFFSET = 5 * 1000 * 1000 * 1000;
 
 /**
  * Metadata for a testing file with 6GB file size.
  * @type {Object}
  * @const
  */
-var TESTING_6GB_FILE = Object.freeze({
+const TESTING_6GB_FILE = Object.freeze({
   isDirectory: false,
   name: '6gb.txt',
   size: 6 * 1024 * 1024 * 1024,
@@ -61,7 +56,7 @@ function onOpenFileRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (options.filePath !== '/' + TESTING_6GB_FILE.name) {
+  if (options.filePath !== `/${TESTING_6GB_FILE.name}`) {
     onError('NOT_FOUND');  // enum ProviderError.
     return;
   }
@@ -98,13 +93,13 @@ function onCloseFileRequested(options, onSuccess, onError) {
  * @param {function(string)} onError Error callback.
  */
 function onReadFileRequested(options, onSuccess, onError) {
-  var filePath = openedFiles[options.openRequestId];
+  const filePath = openedFiles[options.openRequestId];
   if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID || !filePath) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
   }
 
-  if (filePath === '/' + TESTING_6GB_FILE.name) {
+  if (filePath === `/${TESTING_6GB_FILE.name}`) {
     if (options.offset < TESTING_TEXT_OFFSET ||
         options.offset >= TESTING_TEXT_OFFSET + TESTING_TEXT.length) {
       console.error('Reading from a wrong location in the file!');
@@ -112,9 +107,9 @@ function onReadFileRequested(options, onSuccess, onError) {
       return;
     }
 
-    var buffer = TESTING_TEXT.substr(
+    const buffer = TESTING_TEXT.substr(
         options.offset - TESTING_TEXT_OFFSET, options.length);
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function(e) {
       onSuccess(e.target.result, false /* hasMore */);
     };
@@ -135,7 +130,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_6GB_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_6GB_FILE.name}`] =
       TESTING_6GB_FILE;
 
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
@@ -165,12 +160,12 @@ function runTests() {
           chrome.test.callbackPass(function(fileEntry) {
             fileEntry.file(chrome.test.callbackPass(function(file) {
               // Read 10 bytes from the 5th GB.
-              var fileSlice =
-                  file.slice(TESTING_TEXT_OFFSET,
-                             TESTING_TEXT_OFFSET + TESTING_TEXT.length);
-              var fileReader = new FileReader();
+              const fileSlice = file.slice(
+                  TESTING_TEXT_OFFSET,
+                  TESTING_TEXT_OFFSET + TESTING_TEXT.length);
+              const fileReader = new FileReader();
               fileReader.onload = chrome.test.callbackPass(function(e) {
-                var text = fileReader.result;
+                const text = fileReader.result;
                 chrome.test.assertEq(TESTING_TEXT, text);
               });
               fileReader.onerror = function(e) {

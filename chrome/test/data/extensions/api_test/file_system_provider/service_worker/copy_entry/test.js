@@ -12,7 +12,7 @@ async function main() {
   const fileSystem = await mountTestFileSystem();
 
   const srcPath = TestFileSystemProvider.FILE_READ_SUCCESS;
-  const dstPath = srcPath + '-copy';
+  const dstPath = `${srcPath}-copy`;
 
   chrome.test.runTests([
     // Copy an existing file to a non-existing destination. Should succeed.

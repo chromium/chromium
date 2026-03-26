@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_DIRECTORY = Object.freeze({
+const TESTING_DIRECTORY = Object.freeze({
   isDirectory: true,
   name: 'kitty',
   size: 0,
@@ -54,7 +54,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_DIRECTORY.name] =
+  testUtil.defaultMetadata[`/${TESTING_DIRECTORY.name}`] =
       TESTING_DIRECTORY;
 
   chrome.fileSystemProvider.onCreateDirectoryRequested.addListener(

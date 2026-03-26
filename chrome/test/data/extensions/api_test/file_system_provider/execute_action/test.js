@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_ACTIONS_DIR = Object.freeze({
+const TESTING_ACTIONS_DIR = Object.freeze({
   isDirectory: true,
   name: 'actions',
   size: 0,
@@ -21,13 +21,13 @@ var TESTING_ACTIONS_DIR = Object.freeze({
  * @type {string}
  * @const
  */
-var TESTING_ACTION_ID = "testing-action";
+const TESTING_ACTION_ID = 'testing-action';
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_UNKNOWN_ACTION_ID = "testing-unknown-action";
+const TESTING_UNKNOWN_ACTION_ID = 'testing-unknown-action';
 
 /**
  * Sets up the tests. Called once per all test cases. In case of a failure,
@@ -39,7 +39,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_ACTIONS_DIR.name] =
+  testUtil.defaultMetadata[`/${TESTING_ACTIONS_DIR.name}`] =
       TESTING_ACTIONS_DIR;
 
   testUtil.mountFileSystem(callback);
@@ -52,12 +52,12 @@ function runTests() {
   chrome.test.runTests([
     // Executes an existing action.
     function executeActionSuccess() {
-      var onExecuteActionRequested = chrome.test.callbackPass(
-          function(options, onSuccess, onError) {
+      const onExecuteActionRequested =
+          chrome.test.callbackPass(function(options, onSuccess, onError) {
             chrome.test.assertEq(testUtil.FILE_SYSTEM_ID,
                 options.fileSystemId);
             chrome.test.assertEq(1, options.entryPaths.length);
-            chrome.test.assertEq('/' + TESTING_ACTIONS_DIR.name,
+            chrome.test.assertEq(`/${TESTING_ACTIONS_DIR.name}`,
                 options.entryPaths[0]);
             chrome.test.assertEq(TESTING_ACTION_ID, options.actionId);
             chrome.fileSystemProvider.onExecuteActionRequested.removeListener(
@@ -82,12 +82,12 @@ function runTests() {
 
     // Tries to execute a non-existing action.
     function executeNonExistingActionFailure() {
-      var onExecuteActionRequested = chrome.test.callbackPass(
-          function(options, onSuccess, onError) {
+      const onExecuteActionRequested =
+          chrome.test.callbackPass(function(options, onSuccess, onError) {
             chrome.test.assertEq(testUtil.FILE_SYSTEM_ID,
                 options.fileSystemId);
             chrome.test.assertEq(1, options.entryPaths.length);
-            chrome.test.assertEq('/' + TESTING_ACTIONS_DIR.name,
+            chrome.test.assertEq(`/${TESTING_ACTIONS_DIR.name}`,
                 options.entryPaths[0]);
             chrome.test.assertEq(TESTING_UNKNOWN_ACTION_ID, options.actionId);
             chrome.fileSystemProvider.onExecuteActionRequested.removeListener(

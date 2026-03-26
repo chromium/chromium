@@ -29,7 +29,7 @@ const TESTING_NEW_FILE = Object.freeze({
 async function main() {
   await navigator.serviceWorker.ready;
   await remoteProvider.addFiles({
-    ['/' + TESTING_FILE.name]: {
+    [`/${TESTING_FILE.name}`]: {
       metadata: TESTING_FILE,
       contents: '',
     },

@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_A_DIRECTORY = Object.freeze({
+const TESTING_A_DIRECTORY = Object.freeze({
   isDirectory: true,
   name: 'a',
   size: 0,
@@ -21,7 +21,7 @@ var TESTING_A_DIRECTORY = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_B_DIRECTORY = Object.freeze({
+const TESTING_B_DIRECTORY = Object.freeze({
   isDirectory: true,
   name: 'b',
   size: 0,
@@ -32,7 +32,7 @@ var TESTING_B_DIRECTORY = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_C_FILE = Object.freeze({
+const TESTING_C_FILE = Object.freeze({
   isDirectory: false,
   name: 'c',
   size: 0,
@@ -57,7 +57,7 @@ function onDeleteEntryRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (options.entryPath === '/' + TESTING_A_DIRECTORY.name) {
+  if (options.entryPath === `/${TESTING_A_DIRECTORY.name}`) {
     if (options.recursive)
       onSuccess();
     else
@@ -65,9 +65,9 @@ function onDeleteEntryRequested(options, onSuccess, onError) {
     return;
   }
 
-  if (options.entryPath === '/' + TESTING_C_FILE.name ||
-      options.entryPath === '/' + TESTING_A_DIRECTORY.name + '/' +
-      TESTING_B_DIRECTORY.name) {
+  if (options.entryPath === `/${TESTING_C_FILE.name}` ||
+      options.entryPath ===
+          `/${TESTING_A_DIRECTORY.name}/${TESTING_B_DIRECTORY.name}`) {
     onSuccess();
     return;
   }
@@ -85,11 +85,12 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_A_DIRECTORY.name] =
+  testUtil.defaultMetadata[`/${TESTING_A_DIRECTORY.name}`] =
       TESTING_A_DIRECTORY;
-  testUtil.defaultMetadata['/' + TESTING_A_DIRECTORY.name + '/' +
-      TESTING_B_DIRECTORY.name] = TESTING_B_DIRECTORY;
-  testUtil.defaultMetadata['/' + TESTING_C_FILE.name] =
+  testUtil.defaultMetadata[
+      `/${TESTING_A_DIRECTORY.name}/${TESTING_B_DIRECTORY.name}`] =
+      TESTING_B_DIRECTORY;
+  testUtil.defaultMetadata[`/${TESTING_C_FILE.name}`] =
       TESTING_C_FILE;
 
   chrome.fileSystemProvider.onDeleteEntryRequested.addListener(

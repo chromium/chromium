@@ -10,7 +10,7 @@ let testUtil;
  * Id of the last created tab.
  * @type {number}
  */
-var lastTabId = -1;
+let lastTabId = -1;
 
 /**
  * Handles a configuration request and simulates a delayed success. Note, that

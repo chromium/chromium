@@ -10,7 +10,7 @@ let testUtil;
  * @type {string}
  * @const
  */
-var TESTING_TIRAMISU_FILE_NAME = 'tiramisu.txt';
+const TESTING_TIRAMISU_FILE_NAME = 'tiramisu.txt';
 
 /**
  * Requests truncating a file to the specified length.
@@ -30,7 +30,7 @@ function onTruncateRequested(options, onSuccess, onError) {
     return;
   }
 
-  var metadata = testUtil.defaultMetadata[options.filePath];
+  const metadata = testUtil.defaultMetadata[options.filePath];
 
   // Truncating beyond the end of the file.
   if (options.length > metadata.size) {
@@ -58,7 +58,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onCreateFileRequested.addListener(
       testUtil.onCreateFileRequested);
 
-  testUtil.defaultMetadata['/' + TESTING_TIRAMISU_FILE_NAME] = {
+  testUtil.defaultMetadata[`/${TESTING_TIRAMISU_FILE_NAME}`] = {
     isDirectory: false,
     name: TESTING_TIRAMISU_FILE_NAME,
     size: 128,
@@ -92,7 +92,7 @@ function runTests() {
                     chrome.test.assertEq(
                         64,
                         testUtil.defaultMetadata[
-                            '/' + TESTING_TIRAMISU_FILE_NAME].size);
+                            `/${TESTING_TIRAMISU_FILE_NAME}`].size);
                   });
                   fileWriter.onerror = function(e) {
                     chrome.test.fail(fileWriter.error.name);
@@ -128,7 +128,7 @@ function runTests() {
                         'InvalidModificationError', fileWriter.error.name);
                   });
                   fileWriter.truncate(testUtil.defaultMetadata[
-                      '/' + TESTING_TIRAMISU_FILE_NAME].size * 2);
+                      `/${TESTING_TIRAMISU_FILE_NAME}`].size * 2);
                 }),
                 function(error) {
                   chrome.test.fail();

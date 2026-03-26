@@ -10,13 +10,13 @@ let testUtil;
  * @type {string}
  * @const
  */
-var TESTING_MIME_TYPE = 'text/secret-testing-mime-type';
+const TESTING_MIME_TYPE = 'text/secret-testing-mime-type';
 
 /**
  * @type {Object}
  * @const
  */
-var TESTING_WITH_MIME_FILE = Object.freeze({
+const TESTING_WITH_MIME_FILE = Object.freeze({
   isDirectory: false,
   name: 'first-file.abc',
   size: 4096,
@@ -28,7 +28,7 @@ var TESTING_WITH_MIME_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_WITHOUT_MIME_FILE = Object.freeze({
+const TESTING_WITHOUT_MIME_FILE = Object.freeze({
   isDirectory: false,
   name: 'second-file.abc',
   size: 4096,
@@ -45,9 +45,9 @@ function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       testUtil.onGetMetadataRequestedDefault);
 
-  testUtil.defaultMetadata['/' + TESTING_WITH_MIME_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_WITH_MIME_FILE.name}`] =
       TESTING_WITH_MIME_FILE;
-  testUtil.defaultMetadata['/' + TESTING_WITHOUT_MIME_FILE.name] =
+  testUtil.defaultMetadata[`/${TESTING_WITHOUT_MIME_FILE.name}`] =
       TESTING_WITHOUT_MIME_FILE;
 
   testUtil.mountFileSystem(callback);
@@ -112,8 +112,8 @@ function runTests() {
                         chrome.test.assertEq(
                             'magic_handler',
                             tasks[0].descriptor.actionId);
-                        var onLaunched = chrome.test.callbackPass(
-                            function(event) {
+                        const onLaunched =
+                            chrome.test.callbackPass(function(event) {
                               chrome.test.assertTrue(!!event);
                               chrome.test.assertEq('magic_handler', event.id);
                               chrome.test.assertTrue(!!event.items);

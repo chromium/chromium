@@ -10,7 +10,7 @@ let testUtil;
  * @type {Object}
  * @const
  */
-var TESTING_FILE = Object.freeze({
+const TESTING_FILE = Object.freeze({
   isDirectory: false,
   name: 'kitty',
   size: 0,
@@ -21,7 +21,7 @@ var TESTING_FILE = Object.freeze({
  * @type {Object}
  * @const
  */
-var TESTING_NEW_FILE = Object.freeze({
+const TESTING_NEW_FILE = Object.freeze({
   isDirectory: false,
   name: 'puppy',
   size: 0,
@@ -40,7 +40,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onCreateFileRequested.addListener(
       testUtil.onCreateFileRequested);
 
-  testUtil.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
+  testUtil.defaultMetadata[`/${TESTING_FILE.name}`] = TESTING_FILE;
 
   testUtil.mountFileSystem(callback);
 }

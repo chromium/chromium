@@ -23,8 +23,8 @@ function runTests() {
   chrome.test.runTests([
     // Verify that the configuration flag is propagated properly.
     function configureConfigurable() {
-      var onConfigureRequested = chrome.test.callbackPass(
-          function(options, onSuccess, onError) {
+      const onConfigureRequested =
+          chrome.test.callbackPass(function(options, onSuccess, onError) {
             chrome.fileSystemProvider.onConfigureRequested.removeListener(
                 onConfigureRequested);
             onSuccess();
@@ -37,7 +37,7 @@ function runTests() {
             providers = providers.filter(function(provider) {
               // Filter out native providers.
               return provider.providerId.length == 0 ||
-                     provider.providerId[0] != "@";
+                  provider.providerId[0] != '@';
             });
             chrome.test.assertEq(providers.length, 1);
             // For extension based providers, provider id is the same as
@@ -57,9 +57,9 @@ function runTests() {
     // Verify that chrome.fileManager.configureVolume is well wired
     // to onConfigureRequested().
     function configureSuccess() {
-      var configured = false;
-      var onConfigureRequested = chrome.test.callbackPass(
-          function(options, onSuccess, onError) {
+      let configured = false;
+      const onConfigureRequested =
+          chrome.test.callbackPass(function(options, onSuccess, onError) {
             chrome.fileSystemProvider.onConfigureRequested.removeListener(
                 onConfigureRequested);
             configured = true;
@@ -76,8 +76,8 @@ function runTests() {
 
     // Verify that a failure is propagated properly.
     function configureFailure() {
-      var onConfigureRequested = chrome.test.callbackPass(
-          function(options, onSuccess, onError) {
+      const onConfigureRequested =
+          chrome.test.callbackPass(function(options, onSuccess, onError) {
             chrome.fileSystemProvider.onConfigureRequested.removeListener(
                 onConfigureRequested);
             onError('FAILED');

@@ -58,7 +58,7 @@ export const openedFiles = {};
  */
 export const getVolumeInfo = function(fileSystemId, callback) {
   chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeList) {
-    for (var i = 0; i < volumeList.length; i++) {
+    for (let i = 0; i < volumeList.length; i++) {
       // For extension backed providers, the provider id is equal to extension
       // id.
       if (volumeList[i].providerId === chrome.runtime.id &&
@@ -80,7 +80,7 @@ export const getVolumeInfo = function(fileSystemId, callback) {
  * @param {Object=} opt_options Optional extra options.
  */
 export const mountFileSystem = function(callback, opt_options) {
-  var options = {
+  const options = {
     fileSystemId: FILE_SYSTEM_ID,
     displayName: FILE_SYSTEM_NAME,
     writable: true
@@ -89,7 +89,7 @@ export const mountFileSystem = function(callback, opt_options) {
   // If any extra options are provided then merge then. They may override the
   // default ones.
   if (opt_options) {
-    for (var key in opt_options)
+    for (const key in opt_options)
       options[key] = opt_options[key];
   }
 
@@ -155,7 +155,7 @@ export const onOpenFileRequested = function(options, onSuccess, onError) {
     return;
   }
 
-  var metadata = defaultMetadata[options.filePath];
+  const metadata = defaultMetadata[options.filePath];
   if (metadata && !metadata.is_directory) {
     openedFiles[options.requestId] = options.filePath;
     onSuccess();

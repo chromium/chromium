@@ -10,51 +10,51 @@ let testUtil;
  * Map from a file path to contents of the file.
  * @type {Object<string, string>}
  */
-var fileContents = {};
+const fileContents = {};
 
 /**
  * Initial contents of testing files.
  * @type {string}
  * @const
  */
-var TESTING_INITIAL_TEXT = 'Hello world. How are you today?';
+const TESTING_INITIAL_TEXT = 'Hello world. How are you today?';
 
 /**
  * Initial contents of testing files.
  * @type {string}
  * @const
  */
-var TESTING_TEXT_TO_WRITE = 'Vanilla ice creams are the best.';
+const TESTING_TEXT_TO_WRITE = 'Vanilla ice creams are the best.';
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_NEW_FILE_NAME = 'perfume.txt';
+const TESTING_NEW_FILE_NAME = 'perfume.txt';
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_TIRAMISU_FILE_NAME = 'tiramisu.txt';
+const TESTING_TIRAMISU_FILE_NAME = 'tiramisu.txt';
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_BROKEN_TIRAMISU_FILE_NAME = 'broken-tiramisu.txt';
+const TESTING_BROKEN_TIRAMISU_FILE_NAME = 'broken-tiramisu.txt';
 
 /**
  * @type {string}
  * @const
  */
-var TESTING_CHOCOLATE_FILE_NAME = 'chocolate.txt';
+const TESTING_CHOCOLATE_FILE_NAME = 'chocolate.txt';
 
 /**
  * List of callbacks to be called when a file write is requested.
  * @type {Array<function(string)>}
  */
-var writeFileRequestedCallbacks = [];
+const writeFileRequestedCallbacks = [];
 
 /**
  * Requests writing contents to a file, previously opened with <code>
@@ -65,7 +65,7 @@ var writeFileRequestedCallbacks = [];
  * @param {function(string)} onError Error callback.
  */
 function onWriteFileRequested(options, onSuccess, onError) {
-  var filePath = testUtil.openedFiles[options.openRequestId];
+  const filePath = testUtil.openedFiles[options.openRequestId];
   writeFileRequestedCallbacks.forEach(function(callback) {
     callback(filePath);
   });
@@ -80,14 +80,14 @@ function onWriteFileRequested(options, onSuccess, onError) {
     return;
   }
 
-  var metadata = testUtil.defaultMetadata[filePath];
+  const metadata = testUtil.defaultMetadata[filePath];
 
-  if (filePath === '/' + TESTING_BROKEN_TIRAMISU_FILE_NAME) {
+  if (filePath === `/${TESTING_BROKEN_TIRAMISU_FILE_NAME}`) {
     onError('FAILED');
     return;
   }
 
-  if (filePath === '/' + TESTING_CHOCOLATE_FILE_NAME) {
+  if (filePath === `/${TESTING_CHOCOLATE_FILE_NAME}`) {
     // Do not call any callback to simulate a very slow network connection.
     return;
   }
@@ -129,30 +129,30 @@ function setUp(callback) {
   chrome.fileSystemProvider.onCreateFileRequested.addListener(
       testUtil.onCreateFileRequested);
 
-  testUtil.defaultMetadata['/' + TESTING_TIRAMISU_FILE_NAME] = {
+  testUtil.defaultMetadata[`/${TESTING_TIRAMISU_FILE_NAME}`] = {
     isDirectory: false,
     name: TESTING_TIRAMISU_FILE_NAME,
     size: TESTING_INITIAL_TEXT.length,
     modificationTime: new Date(2014, 1, 24, 6, 35, 11)
   };
 
-  testUtil.defaultMetadata['/' + TESTING_BROKEN_TIRAMISU_FILE_NAME] = {
+  testUtil.defaultMetadata[`/${TESTING_BROKEN_TIRAMISU_FILE_NAME}`] = {
     isDirectory: false,
     name: TESTING_BROKEN_TIRAMISU_FILE_NAME,
     size: TESTING_INITIAL_TEXT.length,
     modificationTime: new Date(2014, 1, 25, 7, 36, 12)
   };
 
-  testUtil.defaultMetadata['/' + TESTING_CHOCOLATE_FILE_NAME] = {
+  testUtil.defaultMetadata[`/${TESTING_CHOCOLATE_FILE_NAME}`] = {
     isDirectory: false,
     name: TESTING_CHOCOLATE_FILE_NAME,
     size: TESTING_INITIAL_TEXT.length,
     modificationTime: new Date(2014, 1, 26, 8, 37, 13)
   };
 
-  fileContents['/' + TESTING_TIRAMISU_FILE_NAME] = TESTING_INITIAL_TEXT;
-  fileContents['/' + TESTING_BROKEN_TIRAMISU_FILE_NAME] = TESTING_INITIAL_TEXT;
-  fileContents['/' + TESTING_CHOCOLATE_FILE_NAME] = TESTING_INITIAL_TEXT;
+  fileContents[`/${TESTING_TIRAMISU_FILE_NAME}`] = TESTING_INITIAL_TEXT;
+  fileContents[`/${TESTING_BROKEN_TIRAMISU_FILE_NAME}`] = TESTING_INITIAL_TEXT;
+  fileContents[`/${TESTING_CHOCOLATE_FILE_NAME}`] = TESTING_INITIAL_TEXT;
 
   chrome.fileSystemProvider.onWriteFileRequested.addListener(
       onWriteFileRequested);
@@ -180,13 +180,13 @@ function runTests() {
                       return;
                     chrome.test.assertEq(
                         TESTING_TEXT_TO_WRITE,
-                        fileContents['/' + TESTING_NEW_FILE_NAME]);
+                        fileContents[`/${TESTING_NEW_FILE_NAME}`]);
                   });
                   fileWriter.onerror = function(e) {
                     chrome.test.fail(fileWriter.error.name);
                   };
-                  var blob = new Blob(
-                      [TESTING_TEXT_TO_WRITE], {type: 'text/plain'});
+                  const blob =
+                      new Blob([TESTING_TEXT_TO_WRITE], {type: 'text/plain'});
                   fileWriter.write(blob);
                 }),
                 function(error) {
@@ -211,13 +211,13 @@ function runTests() {
                     return;
                   chrome.test.assertEq(
                       TESTING_TEXT_TO_WRITE,
-                      fileContents['/' + TESTING_TIRAMISU_FILE_NAME]);
+                      fileContents[`/${TESTING_TIRAMISU_FILE_NAME}`]);
                 });
                 fileWriter.onerror = function(e) {
                   chrome.test.fail(fileWriter.error.name);
                 };
-                var blob = new Blob(
-                    [TESTING_TEXT_TO_WRITE], {type: 'text/plain'});
+                const blob =
+                    new Blob([TESTING_TEXT_TO_WRITE], {type: 'text/plain'});
                 fileWriter.write(blob);
               }),
               function(error) {
@@ -242,12 +242,12 @@ function runTests() {
                       return;
                     chrome.test.assertEq(
                         TESTING_TEXT_TO_WRITE + TESTING_TEXT_TO_WRITE,
-                        fileContents['/' + TESTING_TIRAMISU_FILE_NAME]);
+                        fileContents[`/${TESTING_TIRAMISU_FILE_NAME}`]);
                   });
                   fileWriter.onerror = function(e) {
                     chrome.test.fail(fileWriter.error.name);
                   };
-                  var blob =
+                  const blob =
                       new Blob([TESTING_TEXT_TO_WRITE], {type: 'text/plain'});
                   fileWriter.write(blob);
                 }),
@@ -271,17 +271,17 @@ function runTests() {
                   fileWriter.onwriteend = chrome.test.callbackPass(function(e) {
                     if (fileWriter.error)
                       return;
-                    var expectedContents =
+                    const expectedContents =
                         TESTING_TEXT_TO_WRITE.replace('creams', 'skates') +
                         TESTING_TEXT_TO_WRITE;
                     chrome.test.assertEq(
                         expectedContents,
-                        fileContents['/' + TESTING_TIRAMISU_FILE_NAME]);
+                        fileContents[`/${TESTING_TIRAMISU_FILE_NAME}`]);
                   });
                   fileWriter.onerror = function(e) {
                     chrome.test.fail(fileWriter.error.name);
                   };
-                  var blob = new Blob(['skates'], {type: 'text/plain'});
+                  const blob = new Blob(['skates'], {type: 'text/plain'});
                   fileWriter.write(blob);
                 }),
                 function(error) {
@@ -310,7 +310,7 @@ function runTests() {
                     chrome.test.assertEq(
                         'InvalidStateError', fileWriter.error.name);
                   });
-                  var blob =
+                  const blob =
                       new Blob(['A lot of flowers.'], {type: 'text/plain'});
                   fileWriter.write(blob);
                 }),
@@ -326,7 +326,7 @@ function runTests() {
     // Abort writing to a valid file with a registered abort handler. Should
     // result in a gracefully terminated writing operation.
     function abortWritingSuccess() {
-      var onAbortRequested = chrome.test.callbackPass(function(
+      const onAbortRequested = chrome.test.callbackPass(function(
           options, onSuccess, onError) {
         chrome.fileSystemProvider.onAbortRequested.removeListener(
             onAbortRequested);
@@ -351,10 +351,10 @@ function runTests() {
                   });
                   writeFileRequestedCallbacks.push(function(filePath) {
                     // Abort the operation after it's started.
-                    if (filePath === '/' + TESTING_CHOCOLATE_FILE_NAME)
+                    if (filePath === `/${TESTING_CHOCOLATE_FILE_NAME}`)
                       fileWriter.abort();
                   });
-                  var blob =
+                  const blob =
                       new Blob(['A lot of cherries.'], {type: 'text/plain'});
                   fileWriter.write(blob);
                 }),
