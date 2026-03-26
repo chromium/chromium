@@ -301,6 +301,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/site_isolation/features.h"
@@ -7238,6 +7239,16 @@ bool ChromeContentBrowserClient::HandleWebUI(
           autofill::features::kYourSavedInfoSettingsPage)) {
     GURL::Replacements replacements;
     replacements.SetPathStr(chrome::kChromeUIContactInfoPath);
+    *url = url->ReplaceComponents(replacements);
+  }
+
+  // Rewrite chrome://settings/searchEngines to chrome://settings/search.
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->GetHost() == chrome::kChromeUISettingsHost &&
+      (url->GetPath() == chrome::kChromeUISearchEngineSettingsPath) &&
+      base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)) {
+    GURL::Replacements replacements;
+    replacements.SetPathStr(chrome::kChromeUISearchSettingsPath);
     *url = url->ReplaceComponents(replacements);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

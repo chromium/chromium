@@ -172,7 +172,9 @@ function createRoutes(): SettingsRoutes {
   // Search page.
   r.SEARCH = r.BASIC.createSection(
       '/search', 'search', loadTimeData.getString('searchPageTitle'));
-  r.SEARCH_ENGINES = r.SEARCH.createChild('/searchEngines');
+  if (!loadTimeData.getBoolean('searchSettingsUpdate')) {
+    r.SEARCH_ENGINES = r.SEARCH.createChild('/searchEngines');
+  }
 
   const visibility = pageVisibility || {};
 

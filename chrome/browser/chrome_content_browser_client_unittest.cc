@@ -65,6 +65,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_isolation/features.h"
 #include "components/variations/variations_associated_data.h"
@@ -1262,6 +1263,17 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectAddressesURL) {
   GURL dest_url = addresses_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(GURL("chrome://settings/contactInfo"), dest_url);
+}
+
+TEST_F(ChromeContentSettingsRedirectTest, RedirectSearchSettingsURL) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSearchSettingsUpdate};
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  const GURL search_engines_url("chrome://settings/searchEngines");
+  GURL dest_url = search_engines_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL("chrome://settings/search"), dest_url);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

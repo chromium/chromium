@@ -10,22 +10,22 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
 
-/**
- * Returns a new promise that resolves after a window 'popstate' event.
- */
-function whenPopState(causeEvent: () => void): Promise<void> {
-  const promise = new Promise<void>(function(resolve) {
-    window.addEventListener('popstate', function callback() {
-      window.removeEventListener('popstate', callback);
-      resolve();
-    });
-  });
-
-  causeEvent();
-  return promise;
-}
-
 suite('Basic', function() {
+  /**
+   * Returns a new promise that resolves after a window 'popstate' event.
+   */
+  function whenPopState(causeEvent: () => void): Promise<void> {
+    const promise = new Promise<void>(function(resolve) {
+      window.addEventListener('popstate', function callback() {
+        window.removeEventListener('popstate', callback);
+        resolve();
+      });
+    });
+
+    causeEvent();
+    return promise;
+  }
+
   teardown(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
@@ -33,17 +33,20 @@ suite('Basic', function() {
   /**
    * Tests a specific navigation situation.
    */
-  async function testNavigateBackUsesHistory(
+  function testNavigateBackUsesHistory(
       previousRoute: Route, currentRoute: Route,
       expectedNavigatePreviousResult: Route): Promise<void> {
     Router.getInstance().navigateTo(previousRoute);
     Router.getInstance().navigateTo(currentRoute);
 
-    await whenPopState(function() {
-      Router.getInstance().navigateToPreviousRoute();
-    });
-    assertEquals(
-        expectedNavigatePreviousResult, Router.getInstance().getCurrentRoute());
+    return whenPopState(function() {
+             Router.getInstance().navigateToPreviousRoute();
+           })
+        .then(function() {
+          assertEquals(
+              expectedNavigatePreviousResult,
+              Router.getInstance().getCurrentRoute());
+        });
   }
 
   /**
@@ -208,7 +211,7 @@ suite('Basic', function() {
     assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
   });
 
-  test('popstate flag works', async function() {
+  test('popstate flag works', function() {
     const router = Router.getInstance();
     router.navigateTo(routes.BASIC);
     assertFalse(router.lastRouteChangeWasPopstate());
@@ -216,14 +219,16 @@ suite('Basic', function() {
     router.navigateTo(routes.PEOPLE);
     assertFalse(router.lastRouteChangeWasPopstate());
 
-    await whenPopState(function() {
-      window.history.back();
-    });
-    assertEquals(routes.BASIC, router.getCurrentRoute());
-    assertTrue(router.lastRouteChangeWasPopstate());
+    return whenPopState(function() {
+             window.history.back();
+           })
+        .then(function() {
+          assertEquals(routes.BASIC, router.getCurrentRoute());
+          assertTrue(router.lastRouteChangeWasPopstate());
 
-    router.navigateTo(routes.ADVANCED);
-    assertFalse(router.lastRouteChangeWasPopstate());
+          router.navigateTo(routes.ADVANCED);
+          assertFalse(router.lastRouteChangeWasPopstate());
+        });
   });
 
   test('getRouteForPath trailing slashes', function() {
@@ -430,6 +435,18 @@ suite('Basic', function() {
     assertTrue(!!routes.GOOGLE_SERVICES);
   });
   // </if>
+
+  test('search engines route existence', function() {
+    loadTimeData.overrideValues({searchSettingsUpdate: false});
+    resetPageVisibilityForTesting();
+
+    resetRouterForTesting();
+    assertTrue(!!routes.SEARCH_ENGINES);
+
+    loadTimeData.overrideValues({searchSettingsUpdate: true});
+    resetRouterForTesting();
+    assertFalse(!!routes.SEARCH_ENGINES);
+  });
 });
 
 suite('DynamicParameters', function() {
@@ -440,7 +457,7 @@ suite('DynamicParameters', function() {
     document.body.appendChild(settingsUi);
   });
 
-  test('get parameters from URL and navigation', async function() {
+  test('get parameters from URL and navigation', function(done) {
     assertEquals(routes.SEARCH, Router.getInstance().getCurrentRoute());
     assertEquals('a/b', Router.getInstance().getQueryParameters().get('guid'));
     assertEquals('42', Router.getInstance().getQueryParameters().get('foo'));
@@ -454,13 +471,15 @@ suite('DynamicParameters', function() {
     assertEquals('3', Router.getInstance().getQueryParameters().get('biz'));
     assertEquals('?bar=b%3Dz&biz=3', window.location.search);
 
-    await whenPopState(function() {
-      window.history.back();
+    window.addEventListener('popstate', function() {
+      assertEquals('/search', Router.getInstance().getCurrentRoute().path);
+      assertEquals(routes.SEARCH, Router.getInstance().getCurrentRoute());
+      assertEquals(
+          'a/b', Router.getInstance().getQueryParameters().get('guid'));
+      assertEquals('42', Router.getInstance().getQueryParameters().get('foo'));
+      done();
     });
-    assertEquals('/search', Router.getInstance().getCurrentRoute().path);
-    assertEquals(routes.SEARCH, Router.getInstance().getCurrentRoute());
-    assertEquals('a/b', Router.getInstance().getQueryParameters().get('guid'));
-    assertEquals('42', Router.getInstance().getQueryParameters().get('foo'));
+    window.history.back();
   });
 });
 

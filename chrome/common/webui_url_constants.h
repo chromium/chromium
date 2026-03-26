@@ -407,6 +407,8 @@ inline constexpr char kChromeUISearchEngineChoiceHost[] =
     "search-engine-choice";
 inline constexpr char kChromeUISearchEngineChoiceURL[] =
     "chrome://search-engine-choice";
+inline constexpr char kChromeUISearchEngineSettingsPath[] = "/searchEngines";
+inline constexpr char kChromeUISearchSettingsPath[] = "/search";
 inline constexpr char kChromeUITabSearchHost[] = "tab-search.top-chrome";
 inline constexpr char kChromeUITabSearchURL[] =
     "chrome://tab-search.top-chrome/";

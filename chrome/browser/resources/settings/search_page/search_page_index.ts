@@ -8,8 +8,10 @@ import './search_page.js';
 import '../settings_shared.css.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin} from '../router.js';
 import type {Route, SettingsRoutes} from '../router.js';
@@ -46,11 +48,17 @@ export class SettingsSearchPageIndexElement extends
         type: Object,
         value: () => routes,
       },
+
+      searchSettingsUpdateEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('searchSettingsUpdate'),
+      },
     };
   }
 
   declare prefs: {[key: string]: any};
   declare private routes_: SettingsRoutes;
+  declare private searchSettingsUpdateEnabled_: boolean;
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     super.currentRouteChanged(newRoute, oldRoute);
@@ -64,6 +72,7 @@ export class SettingsSearchPageIndexElement extends
               'parent', 'no-animation', 'no-animation');
           break;
         case routes.SEARCH_ENGINES:
+          assert(!this.searchSettingsUpdateEnabled_);
           this.$.viewManager.switchView(
               'searchEngines', 'no-animation', 'no-animation');
           break;

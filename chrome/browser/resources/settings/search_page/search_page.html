@@ -96,10 +96,12 @@
       </div>
     </template>
 
-    <!-- Manage search engines -->
-    <cr-link-row class="hr" id="enginesSubpageTrigger"
-        label="$i18n{searchEnginesManageSiteSearch}"
-        on-click="onManageSearchEnginesClick_"
-        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]" restamp>
+      <!-- Manage search engines -->
+      <cr-link-row class="hr" id="enginesSubpageTrigger"
+          label="$i18n{searchEnginesManageSiteSearch}"
+          on-click="onManageSearchEnginesClick_"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    </template>
   </div>
 </settings-section>

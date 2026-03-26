@@ -67,6 +67,13 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       // The label of the confirmation toast that is displayed when the user
       // chooses a default search engine.
       confirmationToastLabel_: String,
+
+      // With this enabled, the shortcuts settings are present on this page
+      // rather than the search engines subpage.
+      searchSettingsUpdateEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('searchSettingsUpdate'),
+      },
     };
   }
 
@@ -81,6 +88,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   // in the binary or smaller because we get them from the favicon service.
   private isEeaChoiceCountry_: boolean =
       loadTimeData.getBoolean('isEeaChoiceCountry');
+
+  declare private searchSettingsUpdateEnabled_: boolean;
 
   declare private confirmationToastLabel_: string;
 
@@ -154,13 +163,17 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   // SettingsViewMixin implementation.
   override getFocusConfig() {
-    return new Map([
-      [routes.SEARCH_ENGINES.path, '#enginesSubpageTrigger'],
-    ]);
+    const map = new Map();
+
+    if (!this.searchSettingsUpdateEnabled_) {
+      map.set(routes.SEARCH_ENGINES.path, '#enginesSubpageTrigger');
+    }
+    return map;
   }
 
   // SettingsViewMixin implementation.
   override getAssociatedControlFor(childViewId: string): HTMLElement {
+    assert(!this.searchSettingsUpdateEnabled_);
     assert(childViewId === 'searchEngines');
     const control =
         this.shadowRoot!.querySelector<HTMLElement>('#enginesSubpageTrigger');

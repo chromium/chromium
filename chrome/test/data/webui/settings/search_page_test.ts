@@ -9,8 +9,8 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSearchEngineListDialogElement, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
-import {SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {SearchEnginesBrowserProxyImpl, loadTimeData} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -43,6 +43,8 @@ suite('SearchPageTests', function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     browserProxy.setSearchEnginesInfo(generateSearchEngineInfo());
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
+    loadTimeData.overrideValues(
+        {searchSettingsUpdate: false, isEeaChoiceCountry: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-search-page');
     page.prefs = {
@@ -110,9 +112,12 @@ suite('SearchPageTests', function() {
     webUIListenerCallback('search-engines-changed', searchEnginesInfo);
     flush();
     assertEquals('2', radioGroupElement.selected);
-    // Since the change happened in a different tab, there should be
-    // no new call to |setDefaultSearchEngine|.
-    assertEquals(0, browserProxy.getCallCount('setDefaultSearchEngine'));
+
+    browserProxy.whenCalled('setDefaultSearchEngine').then(function() {
+      // Since the change happened in a different tab, there should be
+      // no new call to |setDefaultSearchEngine|.
+      assertNotReached('Should not call setDefaultSearchEngine again');
+    });
   });
 
   test('ControlledByExtension', async function() {
@@ -196,5 +201,43 @@ suite('SearchPageTests', function() {
     const [, , saveGuestChoice] =
         await browserProxy.whenCalled('setDefaultSearchEngine');
     assertFalse(saveGuestChoice);
+  });
+
+  test('Link row to search engines subpage is visible', async function() {
+    await flushTasks();
+    const trigger =
+        page.shadowRoot!.querySelector<HTMLElement>('#enginesSubpageTrigger');
+    assertTrue(!!trigger);
+  });
+});
+
+suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
+  let page: SettingsSearchPageElement;
+  let browserProxy: TestSearchEnginesBrowserProxy;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues(
+        {searchSettingsUpdate: true, isEeaChoiceCountry: false});
+
+    browserProxy = new TestSearchEnginesBrowserProxy();
+    SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
+
+    page = document.createElement('settings-search-page');
+    page.prefs = {
+      default_search_provider_data: {
+        template_url_data: {},
+      },
+    };
+    document.body.appendChild(page);
+
+    return flushTasks();
+  });
+
+  test('Link row to search engines subpage is not visible', async function() {
+    await flushTasks();
+    const trigger =
+        page.shadowRoot!.querySelector<HTMLElement>('#enginesSubpageTrigger');
+    assertFalse(!!trigger);
   });
 });
