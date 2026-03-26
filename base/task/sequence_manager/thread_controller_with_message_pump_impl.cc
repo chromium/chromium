@@ -17,7 +17,6 @@
 #include "base/memory/stack_allocated.h"
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/histogram.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/lock_metrics_recorder.h"

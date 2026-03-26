@@ -7,7 +7,7 @@
 #include <optional>
 #include <string_view>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram.h"
 #include "base/profiler/thread_group_profiler.h"
 #include "base/sequence_token.h"
 #include "base/strings/stringprintf.h"

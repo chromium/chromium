@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"

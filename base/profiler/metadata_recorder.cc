@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/metrics/histogram_macros.h"
 
 namespace base {
 
