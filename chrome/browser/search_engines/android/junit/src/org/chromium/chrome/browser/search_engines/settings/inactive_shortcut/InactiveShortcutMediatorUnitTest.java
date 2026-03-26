@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
@@ -56,6 +57,7 @@ public class InactiveShortcutMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
+    @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
 
     private Context mContext;
     private InactiveShortcutMediator mMediator;
@@ -97,10 +99,15 @@ public class InactiveShortcutMediatorUnitTest {
                 .thenReturn(urls);
     }
 
+    private void initMediator() {
+        mMediator =
+                new InactiveShortcutMediator(mContext, mModelList, mProfile, mOnRemoveSearchEngine);
+    }
+
     @Test
     public void testSiteSearchList_underMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 3);
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 3);
     }
@@ -108,7 +115,7 @@ public class InactiveShortcutMediatorUnitTest {
     @Test
     public void testSiteSearchList_exactMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 5);
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 5);
     }
@@ -116,7 +123,7 @@ public class InactiveShortcutMediatorUnitTest {
     @Test
     public void testSiteSearchList_overMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 7);
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 7);
 
@@ -146,7 +153,7 @@ public class InactiveShortcutMediatorUnitTest {
     @Test
     public void testSiteSearchList_templateUrlServiceChanged() {
         setUpTemplateUrlService(7);
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 7);
 
@@ -175,7 +182,7 @@ public class InactiveShortcutMediatorUnitTest {
                 .thenReturn(List.of(templateUrl));
         when(templateUrl.getStarterPackId()).thenReturn(StarterPackId.NONE);
 
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
 
         PropertyModel model = mModelList.get(0).model;
         ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
@@ -209,7 +216,7 @@ public class InactiveShortcutMediatorUnitTest {
                 .thenReturn(List.of(templateUrl));
         when(templateUrl.getStarterPackId()).thenReturn(StarterPackId.GEMINI);
 
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
 
         PropertyModel model = mModelList.get(0).model;
         ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
@@ -227,7 +234,7 @@ public class InactiveShortcutMediatorUnitTest {
 
     @Test
     public void testActivateClicked() {
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
         TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
 
         mMediator.onMenuItemClicked(R.string.site_search_list_menu_activate, templateUrl);
@@ -237,7 +244,7 @@ public class InactiveShortcutMediatorUnitTest {
 
     @Test
     public void testMakeDefaultClicked() {
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
         TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
 
         mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, templateUrl);
@@ -247,12 +254,12 @@ public class InactiveShortcutMediatorUnitTest {
 
     @Test
     public void testDeleteClicked() {
-        mMediator = new InactiveShortcutMediator(mContext, mModelList, mProfile);
+        initMediator();
         TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
 
         mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, templateUrl);
 
-        verify(mTemplateUrlService).removeSearchEngine("keyword");
+        verify(mOnRemoveSearchEngine).onResult(templateUrl);
     }
 
     private void verifyCollapsedModelListView(int searchEngineCount) {

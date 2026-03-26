@@ -8,9 +8,12 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
+import org.chromium.chrome.browser.search_engines.settings.dialog.SiteSearchDialogCoordinator;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -23,12 +26,28 @@ public class InactiveShortcutCoordinator {
     private final InactiveShortcutMediator mMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private final SiteSearchDialogCoordinator mSiteSearchDialogCoordinator;
 
     public InactiveShortcutCoordinator(
-            Context context, Profile profile, SearchEngineListPreference pref) {
+            Context context,
+            Profile profile,
+            SearchEngineListPreference pref,
+            ModalDialogManager modalDialogManager) {
         mModelList = new ModelList();
         mAdapter = new InactiveShortcutAdapter(context, mModelList);
-        mMediator = new InactiveShortcutMediator(context, mModelList, profile);
+
+        mSiteSearchDialogCoordinator =
+                new SiteSearchDialogCoordinator(
+                        context,
+                        modalDialogManager,
+                        TemplateUrlServiceFactory.getForProfile(profile));
+
+        mMediator =
+                new InactiveShortcutMediator(
+                        context,
+                        mModelList,
+                        profile,
+                        mSiteSearchDialogCoordinator::removeTemplateUrl);
 
         mPropertyModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)

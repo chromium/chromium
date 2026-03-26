@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
@@ -25,9 +26,15 @@ import java.util.List;
 
 @NullMarked
 public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
+    private final Callback<TemplateUrl> mOnRemoveSearchEngine;
 
-    public InactiveShortcutMediator(Context context, ModelList modelList, Profile profile) {
+    public InactiveShortcutMediator(
+            Context context,
+            ModelList modelList,
+            Profile profile,
+            Callback<TemplateUrl> onRemoveSearchEngine) {
         super(context, modelList, profile);
+        mOnRemoveSearchEngine = onRemoveSearchEngine;
 
         initializeTemplateUrlService();
     }
@@ -84,7 +91,7 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
         } else if (R.string.site_search_list_menu_make_default == textId) {
             mTemplateUrlService.setSearchEngine(url.getKeyword());
         } else if (R.string.site_search_list_menu_delete == textId) {
-            mTemplateUrlService.removeSearchEngine(url.getKeyword());
+            mOnRemoveSearchEngine.onResult(url);
         }
     }
 }

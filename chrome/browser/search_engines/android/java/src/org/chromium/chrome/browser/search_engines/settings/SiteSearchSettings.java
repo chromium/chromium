@@ -82,7 +82,8 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
         SearchEngineListPreference inactiveShortcutPref =
                 findPreference(INACTIVE_SHORTCUT_LIST_PREF);
         mInactiveShortcutCoordinator =
-                new InactiveShortcutCoordinator(context, profile, inactiveShortcutPref);
+                new InactiveShortcutCoordinator(
+                        context, profile, inactiveShortcutPref, modalDialogManager);
 
         // Extensions
         SettingsUtils.addPreferencesFromResource(this, R.xml.extensions_preferences);
