@@ -34,10 +34,8 @@ source_set("page_info") {
   }
 }
 
-# The reason `impl` is needed is because
-# about_this_site_controller_android.cc includes
-# c/b/android/android_theme_resources.h and c/b/android/resource_mapper.h,
-# both part of //c/b:b, which causes a circular dependency against it.
+# The reason `impl` is needed is because of the circular dependency
+# against //chrome/browser.
 #
 # TODO(crbug.com/353332589): Merge `impl` into `page_info` when they get
 # componentized.

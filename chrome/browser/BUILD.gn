@@ -2400,7 +2400,6 @@ static_library("browser") {
       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.cc",
       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.h",
       "after_startup_task_utils_android.cc",
-      "android/android_theme_resources.h",
       "android/background_sync_launcher_android.cc",
       "android/background_sync_launcher_android.h",
       "android/background_tab_manager.cc",
@@ -2634,9 +2633,6 @@ static_library("browser") {
       "android/recently_closed_tabs_bridge.cc",
       "android/recently_closed_tabs_bridge.h",
       "android/reparenting_task.cc",
-      "android/resource_id.h",
-      "android/resource_mapper.cc",
-      "android/resource_mapper.h",
       "android/restore_entity_tracker_android.cc",
       "android/restore_entity_tracker_android.h",
       "android/rlz/revenue_stats.cc",
@@ -3353,10 +3349,6 @@ static_library("browser") {
       "//chrome/browser/webapps:android_impl",
       "//chrome/browser/webapps/installable:impl",
 
-      # TODO(crbug.com/353332589): Remove this circular dependency when
-      # c/b/android/resource_mapper.h gets modularized.
-      "//chrome/browser/ui/android/hats:impl",
-
       # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get modularized.
       "//chrome/browser/ui/android/tab_model:impl",
       "//chrome/browser/glic/common",
@@ -3369,12 +3361,6 @@ static_library("browser") {
       # - c/b/android/tab_android.h
       # - c/b/ntp_tiles/chrome_most_visited_sites_factory.h
       "//chrome/browser/auxiliary_search:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the following
-      # headers get componentized:
-      # - c/b/android/android_theme_resources.h
-      # - c/b/android/resource_mapper.h
-      "//chrome/browser/send_tab_to_self:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the following
       # headers get componentized:
@@ -3394,18 +3380,6 @@ static_library("browser") {
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # c/b/profiles/profile_manager.h gets modularized.
       "//chrome/browser/long_screenshots:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the following
-      # headers get componentized:
-      # - c/b/android/android_theme_resources.h
-      # - c/b/android/resource_mapper.h
-      "//chrome/browser/lookalikes:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the following
-      # headers get componentized:
-      # - c/b/android/android_theme_resources.h
-      # - c/b/android/resource_mapper.h
-      "//chrome/browser/page_info:impl",
 
       # TODO(crbug.com/): Remove this circular dependency when the following
       # headers get componentized:
@@ -8192,6 +8166,7 @@ group("browser_public_dependencies") {
   if (is_android) {
     public_deps += [
       "//chrome/android/features/dev_ui:buildflags",
+      "//chrome/browser/android:resource_mapper",
       "//components/image_fetcher/core",
     ]
   } else {

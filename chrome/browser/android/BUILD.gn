@@ -50,3 +50,22 @@ source_set("tabs_impl") {
     "//content/public/browser",
   ]
 }
+
+source_set("resource_mapper") {
+  sources = [
+    "android_theme_resources.h",
+    "resource_id.h",
+    "resource_mapper.cc",
+    "resource_mapper.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/page_info:page_info_buildflags",
+    "//components/password_manager/core/browser:password_manager_buildflags",
+    "//components/resources:android_resources",
+    "//components/resources:components_scaled_resources",
+  ]
+}
