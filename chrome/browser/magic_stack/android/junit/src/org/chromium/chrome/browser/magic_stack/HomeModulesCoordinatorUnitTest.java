@@ -301,10 +301,7 @@ public class HomeModulesCoordinatorUnitTest {
                 .getValue()
                 .onModuleConfigChanged(ModuleType.DEFAULT_BROWSER_PROMO, false);
         Set<Integer> expectedModuleListAfterHidingModule =
-                Set.of(
-                        ModuleType.PRICE_CHANGE,
-                        ModuleType.SINGLE_TAB,
-                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
+                Set.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
         assertEquals(
                 expectedModuleListAfterHidingModule,
                 mCoordinator.getFilteredEnabledModuleSetForTesting());
@@ -347,11 +344,8 @@ public class HomeModulesCoordinatorUnitTest {
         mHomeModulesStateListener
                 .getValue()
                 .onModuleConfigChanged(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, false);
-        Set<Integer> expectedModuleListAfterHidingContainer =
-                new HashSet<>(expectedModuleListBeforeHidingModule);
-        expectedModuleListAfterHidingContainer.remove(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
         assertEquals(
-                expectedModuleListAfterHidingContainer,
+                expectedModuleListAfterHidingModule,
                 mCoordinator.getFilteredEnabledModuleSetForTesting());
 
         mHomeModulesStateListener

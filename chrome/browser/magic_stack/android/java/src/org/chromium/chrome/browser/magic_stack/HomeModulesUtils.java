@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAVE_PASSWORDS_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SETUP_LIST_CELEBRATORY_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SETUP_LIST_TWO_CELL_CONTAINER;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SIGN_IN_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
@@ -81,6 +82,7 @@ public class HomeModulesUtils {
                             SIGN_IN_PROMO,
                             SAVE_PASSWORDS_PROMO,
                             PASSWORD_CHECKUP_PROMO,
+                            SETUP_LIST_TWO_CELL_CONTAINER,
                             SETUP_LIST_CELEBRATORY_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
@@ -136,6 +138,7 @@ public class HomeModulesUtils {
             case SIGN_IN_PROMO:
             case SAVE_PASSWORDS_PROMO:
             case PASSWORD_CHECKUP_PROMO:
+            case SETUP_LIST_TWO_CELL_CONTAINER:
             case SETUP_LIST_CELEBRATORY_PROMO:
                 // All tips use the same name.
                 return context.getString(R.string.educational_tip_module_name);
