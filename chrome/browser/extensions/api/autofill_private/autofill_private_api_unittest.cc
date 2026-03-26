@@ -520,6 +520,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 
   base::ListValue args;
   args.Append(api_entity.ToValue());
+  args.Append(extensions::api::autofill_private::EntityUiContext().ToValue());
   std::string json_args;
   base::JSONWriter::Write(args, &json_args);
 
@@ -569,6 +570,7 @@ IN_PROC_BROWSER_TEST_F(
 
   base::ListValue args;
   args.Append(api_entity.ToValue());
+  args.Append(extensions::api::autofill_private::EntityUiContext().ToValue());
   std::string json_args;
   base::JSONWriter::Write(args, &json_args);
 
@@ -638,6 +640,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
 
   base::ListValue args;
   args.Append(api_entity.ToValue());
+  args.Append(extensions::api::autofill_private::EntityUiContext().ToValue());
   std::string json_args;
   base::JSONWriter::Write(args, &json_args);
 
@@ -675,6 +678,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
 
   base::ListValue args;
   args.Append(api_entity.ToValue());
+  args.Append(extensions::api::autofill_private::EntityUiContext().ToValue());
   std::string json_args;
   base::JSONWriter::Write(args, &json_args);
 

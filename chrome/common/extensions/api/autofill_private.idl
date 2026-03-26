@@ -424,6 +424,16 @@ namespace autofillPrivate {
     boolean? storedInWallet;
   };
 
+  // Details about the UI that was shown to the user when adding/updating an
+  // EntityInstance in the settings UI.
+  dictionary EntityUiContext {
+    // String IDs of all the static UI elements, like the dialog title and
+    // footer. Does not include attribute values of the entity.
+    long[] uiStringIds;
+    // The string ID of the button that the user clicked to dismiss the dialog.
+    long clickedButtonStringId;
+  };
+
   // Contains the minimum amount of information needed to display an entity
   // instance, along with the guid. The guid is needed to retrieve the complete
   // information of the entity instance.
@@ -612,7 +622,8 @@ namespace autofillPrivate {
     // Adds a new entity instance if it doesn't exist yet. Otherwise, it updates
     // the entity instance.
     static void addOrUpdateEntityInstance(
-        EntityInstance entityInstance, optional VoidCallback callback);
+        EntityInstance entityInstance, EntityUiContext uiContext,
+        optional VoidCallback callback);
 
     // Deletes an entity instance by its guid.
     static void removeEntityInstance(

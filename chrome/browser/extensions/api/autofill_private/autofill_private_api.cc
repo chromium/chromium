@@ -1159,7 +1159,8 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
                                entity_instance->record_type())) {
     // If the request is successfully started, the callback will handle the
     // response.
-    if (TrySavePrivatePassWithWalletAPI(*entity_instance)) {
+    if (TrySavePrivatePassWithWalletAPI(*entity_instance,
+                                        parameters->ui_context)) {
       return RespondLater();
     }
 
@@ -1180,7 +1181,9 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
 }
 
 bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
-    TrySavePrivatePassWithWalletAPI(const EntityInstance& entity_instance) {
+    TrySavePrivatePassWithWalletAPI(
+        const EntityInstance& entity_instance,
+        const api::autofill_private::EntityUiContext& ui_context) {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses)) {
     return false;
@@ -1192,8 +1195,8 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
 
   if (autofill::WalletPassAccessManager* pass_manager =
           autofill_client()->GetWalletPassAccessManager()) {
-    // TODO(crbug.com/489354073): Log consent and replace with the correct
-    // session ID.
+    // TODO(crbug.com/489354073): Log consent using `ui_context` and replace the
+    // parameter with the correct session ID.
     pass_manager->SaveWalletEntityInstance(
         entity_instance, consent_auditor::ConsentAuditor::GenerateSessionId(),
         base::BindOnce(&AutofillPrivateAddOrUpdateEntityInstanceFunction::

@@ -279,6 +279,11 @@ declare global {
         storedInWallet?: boolean;
       }
 
+      export interface EntityUiContext {
+        uiStringIds: number[];
+        clickedButtonStringId: number;
+      }
+
       export interface EntityInstanceWithLabels {
         guid: string;
         type: EntityType;
@@ -324,8 +329,9 @@ declare global {
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
-      export function addOrUpdateEntityInstance(entityInstance: EntityInstance):
-          Promise<void>;
+      export function addOrUpdateEntityInstance(
+          entityInstance: EntityInstance,
+          uiContext: EntityUiContext): Promise<void>;
       export function removeEntityInstance(guid: string): void;
       export function loadEntityInstances():
           Promise<EntityInstanceWithLabels[]>;

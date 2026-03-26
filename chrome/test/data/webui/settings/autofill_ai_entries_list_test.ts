@@ -704,9 +704,13 @@ suite('AutofillAiEntriesListUiTest', function() {
               detail: testEntityInstance,
             }));
 
-        const addedOrEditedEntityInstance =
+        const args =
             await entityDataManager.whenCalled('addOrUpdateEntityInstance');
+        const addedOrEditedEntityInstance = args[0];
+        const uiContext = args[1];
         assertDeepEquals(testEntityInstance, addedOrEditedEntityInstance);
+        assertDeepEquals(
+            {uiStringIds: [], clickedButtonStringId: 0}, uiContext);
       }));
 
   test('AddButtonShowsEntityInstancesList', async function() {

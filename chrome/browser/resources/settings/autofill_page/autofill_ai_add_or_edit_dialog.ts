@@ -669,7 +669,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
           this.i18n('saveToWalletLoadingStateA11y'));
 
       try {
-        await this.entityDataManager_.addOrUpdateEntityInstance(entityToSave);
+        // TODO(crbug.com/489354073): Pass the correct UI context.
+        await this.entityDataManager_.addOrUpdateEntityInstance(entityToSave, {
+          uiStringIds: [],
+          clickedButtonStringId: 0,
+        });
         this.saveInProgress_ = false;
       } catch (e) {
         this.saveInProgress_ = false;

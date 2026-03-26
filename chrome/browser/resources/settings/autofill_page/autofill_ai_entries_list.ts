@@ -420,7 +420,11 @@ export class SettingsAutofillAiEntriesListElement extends
     // TODO(crbug.com/477845712): Remove this method once
     // `kAutofillAiWalletPrivatePasses` gets launched.
     if (!loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses')) {
-      void this.entityDataManager_.addOrUpdateEntityInstance(e.detail);
+      // TODO(crbug.com/489354073): Pass the correct UI context.
+      this.entityDataManager_.addOrUpdateEntityInstance(e.detail, {
+        uiStringIds: [],
+        clickedButtonStringId: 0,
+      });
     }
   }
 
