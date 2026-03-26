@@ -37,6 +37,9 @@ class PasswordGenerationPopupView {
   // Called when the button selection state has changed.
   virtual void ButtonSelectionUpdated() = 0;
 
+  // Returns true if the popup's widget is currently active (has focus).
+  virtual bool IsWidgetActive() const = 0;
+
   // Note that PasswordGenerationPopupView owns itself, and will only be deleted
   // when Hide() is called.
   static PasswordGenerationPopupView* Create(

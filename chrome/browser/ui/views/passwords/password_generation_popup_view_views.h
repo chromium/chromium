@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/widget/widget.h"
 
 class PasswordGenerationPopupController;
 
@@ -20,6 +21,7 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
 
  public:
   PasswordGenerationPopupViewViews(
+      views::Widget::InitParams::Activatable widget_activatable,
       base::WeakPtr<PasswordGenerationPopupController> controller,
       views::Widget* parent_widget);
 
@@ -35,6 +37,7 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
   void UpdateGeneratedPasswordValue() override;
   [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
   void ButtonSelectionUpdated() override;
+  bool IsWidgetActive() const override;
 
   const views::ViewAccessibility& GetPasswordViewViewAccessibilityForTest();
   const views::ViewAccessibility& GetAcceptButtonViewAccessibilityForTest();

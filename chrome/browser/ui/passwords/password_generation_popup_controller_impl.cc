@@ -310,6 +310,13 @@ void PasswordGenerationPopupControllerImpl::FrameWasScrolled() {
 }
 
 void PasswordGenerationPopupControllerImpl::GenerationElementLostFocus() {
+  // Popup's widget will only be activated in generation state with an active
+  // screen reader, resulting in the focus moving to the popup. Prevent hiding
+  // the popup here.
+  if (view_->IsWidgetActive()) {
+    return;
+  }
+
   HideImpl();
 }
 
