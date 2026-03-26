@@ -403,10 +403,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.valueExists('clearAllInputsWhenSubmittingQuery') ?
       loadTimeData.getBoolean('clearAllInputsWhenSubmittingQuery') :
       false;
-  private autoSubmitVoiceSearch: boolean =
-      loadTimeData.valueExists('autoSubmitVoiceSearchQuery') ?
-      loadTimeData.getBoolean('autoSubmitVoiceSearchQuery') :
-      true;
   private selectedMatch_: AutocompleteMatch|null = null;
   // Whether the composebox is actively waiting for an autocomplete response. If
   // this is false, that means at least one response has been received (even if
@@ -1282,36 +1278,25 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.transcript_ = '';
   }
 
-  protected async onVoiceSearchFinalResult_(e: CustomEvent<string>) {
+  protected onVoiceSearchFinalResult_(e: CustomEvent<string>) {
     e.stopPropagation();
     this.voiceSearchEndCleanup_();
     // For contextual tasks composebox voice metrics.
     // TODO(crbug.com/466412331): Don't only fire this for composebox, this
     // should be recorded for all.
     this.fire('composebox-voice-search-transcription-success');
-    if (this.autoSubmitVoiceSearch) {
-      // TODO(crbug.com/466412331): Remove, only recorded for the NTP.
-      this.fire(
-          'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
-      this.input = e.detail;
-      const metricName = `ContextualSearch.UserAction.SubmitVoiceQuery.${
-          this.composeboxSource_}`;
-      recordUserAction(metricName);
-      recordBoolean(metricName, true);
-      this.searchboxHandler_.submitQuery(
-          e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
-          /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
-      this.submitCleanup_();
-    } else {
-      // If auto-submit is not enabled, update the input to the voice search
-      // query, clear autocomplete matches, and recompute whether submission
-      // should be enabled.
-      this.input = e.detail;
-      this.queryAutocomplete_(/* clearMatches= */ true);
-      this.submitEnabled_ = this.computeSubmitEnabled_();
-      await this.updateComplete;
-      this.focusInput();
-    }
+    // TODO(crbug.com/466412331): Remove, only recorded for the NTP.
+    this.fire(
+        'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
+    this.input = e.detail;
+    const metricName = `ContextualSearch.UserAction.SubmitVoiceQuery.${
+        this.composeboxSource_}`;
+    recordUserAction(metricName);
+    recordBoolean(metricName, true);
+    this.searchboxHandler_.submitQuery(
+        e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
+        /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
+    this.submitCleanup_();
   }
 
   protected onVoiceSearchButtonClick_() {

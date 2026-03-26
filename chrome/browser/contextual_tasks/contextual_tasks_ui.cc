@@ -413,8 +413,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
   source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
   source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);
-  source->AddBoolean("autoSubmitVoiceSearchQuery",
-                     contextual_tasks::GetAutoSubmitVoiceSearchQuery());
   source->AddBoolean("enableGhostLoader",
                      contextual_tasks::GetIsGhostLoaderEnabled());
   source->AddBoolean(

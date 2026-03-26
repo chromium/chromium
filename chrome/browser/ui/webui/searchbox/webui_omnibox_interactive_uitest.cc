@@ -70,18 +70,13 @@ class OmniboxWebUiInteractiveTestBase
 
  protected:
   static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
-      bool enable_aim_popup,
-      std::optional<bool> auto_submit_voice = std::nullopt) {
+      bool enable_aim_popup) {
     std::vector<base::test::FeatureRefAndParams> features = {
         {omnibox::kWebUIOmniboxPopup, {}}};
     if (enable_aim_popup) {
       base::FieldTrialParams aim_params = {
           {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
            "below_results"}};
-      if (auto_submit_voice.has_value()) {
-        aim_params[omnibox::kAutoSubmitVoiceSearchQuery.name] =
-            auto_submit_voice.value() ? "true" : "false";
-      }
       features.emplace_back(omnibox::internal::kWebUIOmniboxAimPopup,
                             aim_params);
       features.emplace_back(omnibox::kAiModeOmniboxEntryPoint,
@@ -329,19 +324,13 @@ class OmniboxAimWebUiInteractiveTestBase
                      OmniboxPopupPresenterBase::kRoundedResultsFrame)));
   }
 
-  auto TriggerAimVoiceSearch(const std::string& result,
-                             bool auto_submit = false) {
-    auto steps = Steps(InSameContext(ExecuteJsAt(
+  auto TriggerAimVoiceSearch(const std::string& result) {
+    return Steps(InSameContext(ExecuteJsAt(
         kPopupWebView, kVoiceSearch,
         base::StringPrintf("el => el.dispatchEvent(new CustomEvent("
                            "'voice-search-final-result', "
                            "{detail: '%s', bubbles: true, composed: true}))",
                            result.c_str()))));
-    if (!auto_submit) {
-      steps +=
-          InSameContext(WaitForAimInputValue(kPopupWebView, kAimInput, result));
-    }
-    return steps;
   }
 };
 
@@ -442,76 +431,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnEscape) {
                           u"foo bar"));
 }
 
-class OmniboxAimNoAutoSubmitVoiceTest
-    : public OmniboxAimWebUiInteractiveTestBase {
- public:
-  OmniboxAimNoAutoSubmitVoiceTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        GetEnabledFeatures(/*enable_aim_popup=*/true,
-                           /*auto_submit_voice=*/false),
-        {omnibox::kAimServerEligibilityEnabled,
-         omnibox::kAimFuseboxEligibilityCheckEnabled});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest,
-                       VoiceTextClearsOnCancel) {
-  RunTestSequence(
-      // Open the AIM popup.
-      OpenAimPopupInNewTab(),
-      // Simulate a voice search result event.
-      TriggerAimVoiceSearch("foo"),
-      // Click the cancel button to clear the query.
-      InSameContext(
-          ExecuteJsAt(kPopupWebView, kCancelIcon, "el => el.click()")),
-      // Ensure input field is cleared in the popup.
-      InSameContext(WaitForAimInputValue(kPopupWebView, kAimInput, "")),
-      // Click the cancel button again to close the popup.
-      InSameContext(
-          ExecuteJsAt(kPopupWebView, kCancelIcon, "el => el.click()")),
-      InAnyContext(
-          WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
-      // Ensure text didn't transfer to the Omnibox.
-      WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
-                          std::u16string()));
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest,
-                       TextTransfersOnDismiss) {
-  RunTestSequence(
-      // Open the AIM popup.
-      OpenAimPopupInNewTab(),
-      // Simulate a voice search result event.
-      TriggerAimVoiceSearch("foo bar"),
-      // Close the popup by removing focus from it.
-      RemoveFocusFromPopup(),
-      // Ensure text transfers to the Omnibox.
-      WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
-                          u"foo bar"));
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest, TextTransfersOnEscape) {
-  RunTestSequence(
-      // Open the AIM popup.
-      OpenAimPopupInNewTab(),
-      // Simulate a voice search result event.
-      TriggerAimVoiceSearch("foo bar baz"),
-      // Press Escape to close the popup.
-      SendKeyPress(kOmniboxElementId, ui::VKEY_ESCAPE),
-      InAnyContext(
-          WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
-      // Ensure text transfers to the Omnibox.
-      WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
-                          u"foo bar baz"));
-}
 
 struct AimSearchParam {
   bool is_voice = false;
   bool submit_via_keyboard = false;
-  bool auto_submit_voice = false;
 };
 
 class OmniboxAimSearchFulfillmentTest
@@ -520,8 +443,7 @@ class OmniboxAimSearchFulfillmentTest
  public:
   OmniboxAimSearchFulfillmentTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        GetEnabledFeatures(/*enable_aim_popup=*/true,
-                           /*auto_submit_voice=*/GetParam().auto_submit_voice),
+        GetEnabledFeatures(/*enable_aim_popup=*/true),
         {omnibox::kAimServerEligibilityEnabled,
          omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
@@ -533,16 +455,10 @@ class OmniboxAimSearchFulfillmentTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     OmniboxAimSearchFulfillmentTest,
-    testing::Values(
-        AimSearchParam{},
-        AimSearchParam{.submit_via_keyboard = true},
-        AimSearchParam{.is_voice = true},
-        AimSearchParam{.is_voice = true, .submit_via_keyboard = true},
-        AimSearchParam{.is_voice = true, .auto_submit_voice = true}),
+    testing::Values(AimSearchParam{},
+                    AimSearchParam{.submit_via_keyboard = true},
+                    AimSearchParam{.is_voice = true}),
     [](const testing::TestParamInfo<AimSearchParam>& info) {
-      if (info.param.auto_submit_voice) {
-        return std::string("VoiceAutoSubmit");
-      }
       return base::StringPrintf(
           "%s%s", info.param.is_voice ? "Voice" : "Typed",
           info.param.submit_via_keyboard ? "Keyboard" : "Click");
@@ -558,11 +474,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
       // Open the AIM popup.
       OpenAimPopup(),
       // Write something into the input field.
-      param.is_voice ? TriggerAimVoiceSearch(query, param.auto_submit_voice)
-                     : InputAimPopupText(query),
+      param.is_voice ? TriggerAimVoiceSearch(query) : InputAimPopupText(query),
       // Submit query by pressing enter key or by clicking the submit button.
       // Skip this step if voice search auto-submits.
-      If([&]() { return !param.is_voice || !param.auto_submit_voice; },
+      If([&]() { return !param.is_voice; },
          Then(param.submit_via_keyboard
                   ? InAnyContext(
                         SendKeyPress(kOmniboxElementId, ui::VKEY_RETURN))

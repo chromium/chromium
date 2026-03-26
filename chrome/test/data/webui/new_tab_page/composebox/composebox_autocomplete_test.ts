@@ -13,7 +13,7 @@ import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_u
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, getSubmitContainer, MockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, MockInputState, setupComposeboxTest} from './test_support.js';
 
 enum Attributes {
   SELECTED = 'selected',
@@ -1228,78 +1228,11 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
 
 suite('NewTabPageComposeboxAutocompleteVoiceSearchTest', () => {
   const testProxy = setupComposeboxTest();
-
-  test('`autoSubmitVoiceSearchQuery` disabled updates input', async () => {
-    // Set loadTimeData so that voice search does not auto submit.
-    loadTimeData.overrideValues({
-      autoSubmitVoiceSearchQuery: false,
-      composeboxShowVoiceSearch: true,
-      composeboxShowZps: true,  // For predictable queryAutocomplete count.
-    });
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-    testProxy.searchboxHandler.reset();
-
-    const voiceQuery = 'hello';
-    const voiceSearchElement = $$<ComposeboxVoiceSearchElement>(
-        testProxy.element, 'cr-composebox-voice-search');
-    assertTrue(!!voiceSearchElement);
-    voiceSearchElement.dispatchEvent(new CustomEvent(
-        'voice-search-final-result',
-        {detail: voiceQuery, bubbles: true, composed: true}));
-    await microtasksFinished();
-
-    // Assertions.
-    assertEquals(
-        testProxy.element.getInputElement().inputElement.value, voiceQuery);
-    // Ensure the query isn't auto submitted.
-    assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
-    // Ensure autocomplete is queried since there's input in the composebox.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
-    assertEquals(
-        voiceQuery,
-        testProxy.searchboxHandler.getArgs('queryAutocomplete')[0][0]);
-
-    // Mock an autocomplete result so that submitQuery assertion passes.
-    const matches =
-        [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: voiceQuery,
-          matches,
-        }));
-    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    assertFalse(testProxy.element.getInputElement().inputElement.hidden);
-    assertEquals(
-        testProxy.element.shadowRoot.activeElement,
-        testProxy.element.getInputElement());
-
-    // Simulate submit button click.
-    getSubmitContainer(testProxy).dispatchEvent(new FocusEvent('focusin'));
-    getSubmitContainer(testProxy).click();
-
-    // Since a match is selected, openAutocompleteMatch is called instead of
-    // submitQuery.
-    await testProxy.searchboxHandler.whenCalled('openAutocompleteMatch');
-    await microtasksFinished();
-
-    assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
-    const [index] =
-        testProxy.searchboxHandler.getArgs('openAutocompleteMatch')[0];
-    assertEquals(index, 0);
-  });
-
   test(
-      '`autoSubmitVoiceSearchQuery` enabled submits w/o querying autocomplete',
+      'submits w/o querying autocomplete on voice search final result',
       async () => {
         // Set loadTimeData so that voice search does auto submit.
         loadTimeData.overrideValues({
-          autoSubmitVoiceSearchQuery: true,
           composeboxShowVoiceSearch: true,
           composeboxShowZps: true,  // For predictable queryAutocomplete count.
         });

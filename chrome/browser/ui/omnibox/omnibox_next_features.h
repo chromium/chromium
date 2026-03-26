@@ -79,8 +79,6 @@ extern const base::FeatureParam<bool> kShowSmartCompose;
 extern const base::FeatureParam<bool> kShowToolsAndModels;
 // Whether to show section headers in the context menu.
 extern const base::FeatureParam<bool> kShowContextMenuHeaders;
-// Whether to auto submit voice queries in the composebox.
-extern const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery;
 
 // Returns true if the `kWebUIOmniboxAimPopup` base::Feature is enabled.
 // This does NOT include user eligibility checks. Most UI code should use the

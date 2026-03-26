@@ -20,7 +20,7 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -374,123 +374,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             'Voice search button clicked metric count is incorrect');
       });
 
-  test(
-      'on voice search result updates the searchbox' +
-          'input (final, continuous) but no submit',
-      async () => {
-        composebox.autoSubmitVoiceSearch = false;
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        const voiceSearchButton = getVoiceSearchButton(composebox);
-        voiceSearchButton!.click();
-
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        assertEquals(
-            composebox.animationState, GlowAnimationState.LISTENING,
-            'Animation state should be LISTENING');
-        assertTrue(
-            composebox.inVoiceSearchMode_,
-            'Should be in voice search mode after clicking button');
-
-        assertEquals(
-            1,
-            metrics.count(
-                'ContextualTasks.VoiceSearch.State',
-                /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
-            'Voice search button clicked metric count is incorrect');
-        assertTrue(
-            composebox.inVoiceSearchMode_,
-            'Should be in voice search mode after clicking button');
-
-        const result = createResults(2);
-        Object.assign(result.results[0]![0]!, {transcript: 'hello'});
-        Object.assign(result.results[1]![0]!, {transcript: 'world'});
-
-        mockSpeechRecognition.onresult!(result);
-
-        const voiceSearchElement = composebox.$.voiceSearch;
-        const voiceSearchInput = voiceSearchElement.$.input;
-
-        await microtasksFinished();
-        await composebox.updateComplete;
-        await voiceSearchElement.updateComplete;
-        await voiceSearchInput.updateComplete;
-
-        assertEquals(
-            'helloworld', voiceSearchInput.value,
-            'Input should be updated immediately on result');
-        assertEquals(
-            'helloworld', composebox.transcript_,
-            'Composebox transcript should be updated with voice result');
-        assertEquals(
-            'helloworld', voiceSearchElement.transcript_,
-            'Voice search transcript should be updated with voice result');
-
-        assertEquals(
-            '', composebox.input,
-            'Composebox input should be empty if not final result');
-
-        assertEquals(
-            0,
-            metrics.count(
-                'ContextualTasks.VoiceSearch.State',
-                /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 2),
-            'Voice search transcription success\
-                metric count is incorrect for helloworld');
-
-        const result2 = createResults(2);
-        Object.assign(result2.results[0]![0]!, {transcript: 'hello'});
-        Object.assign(result2.results[1]![0]!, {transcript: 'hellogoodbye'});
-        /* Done with transcribing once there is one `isFinal`.
-         * This is because it is in continuous mode. Means terminate and
-         * take the specific result marked with `resultIndex`.
-         * Only 'hellogoodbye' should be taken as final result given
-         * we set its flag 'isFinal' to true. There
-         * can only be one final result.
-         */
-        Object.assign(result2.results[1]!, {isFinal: true});
-        (result2 as any).resultIndex = 1;
-        mockSpeechRecognition.onresult!(result2);
-
-        await microtasksFinished();
-        await composebox.updateComplete;
-
-
-        assertEquals(
-            'hellogoodbye', composebox.input,
-            'Composebox input should be updated with final result');
-
-        assertEquals(
-            '', voiceSearchElement.transcript_,
-            'Voice search transcript should be cleared with final result');
-        assertEquals(
-            '', voiceSearchInput.value,
-            'Voice search input value should be cleared with final result');
-
-        assertEquals(
-            1,
-            metrics.count(
-                'ContextualTasks.VoiceSearch.State',
-                /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 1),
-            'Voice transcription success metric count is wrong: hellogoodbye');
-
-        assertNotEquals(
-            composebox.animationState, GlowAnimationState.SUBMITTING,
-            'Query is not submitted via submitQuery_()');
-        assertFalse(
-            composebox.inVoiceSearchMode_,
-            'Should exit voice search mode after submit');
-        assertEquals(
-            composebox.transcript_, '',
-            'Composebox transcript should be cleared after voice mode end');
-      });
-
-  test('on voice search result submits if auto submit enabled', async () => {
-    composebox.autoSubmitVoiceSearch = true;
-
+  test('on voice search result submits', async () => {
     const voiceSearchButton = getVoiceSearchButton(composebox);
     voiceSearchButton!.click();
     await composebox.updateComplete;

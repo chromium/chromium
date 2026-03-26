@@ -207,13 +207,6 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
     &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.0"};
 
-// TODO(b/481079194): Remove `kAutoSubmitVoiceSearchQuery` and the code that
-// respects its disabled state.
-const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
-    &kContextualTasks,
-    "ContextualTasksAutoSubmitVoiceSearchQuery",
-    true);
-
 const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     &kContextualTasks,
     "ContextualTasksHelpUrl",
@@ -316,9 +309,6 @@ int ContextualTasksInactiveSidePanelKeepInCacheMinutes() {
   return kContextualTasksInactiveSidePanelKeepInCacheMinutes.Get();
 }
 
-bool GetAutoSubmitVoiceSearchQuery() {
-  return kAutoSubmitVoiceSearchQuery.Get();
-}
 
 bool GetIsProtectedPageErrorEnabled() {
   return kEnableProtectedPageError.Get();

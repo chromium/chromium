@@ -153,8 +153,6 @@ extern int GetContextualTasksOnboardingTooltipImpressionDelay();
 // Expired side panel WebContents will be destroyed.
 extern int ContextualTasksInactiveSidePanelKeepInCacheMinutes();
 
-// Returns if voice search queries should be auto submitted.
-extern bool GetAutoSubmitVoiceSearchQuery();
 
 // Returns if the protected page error is enabled.
 extern bool GetIsProtectedPageErrorEnabled();

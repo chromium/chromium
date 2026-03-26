@@ -317,12 +317,6 @@ const base::FeatureParam<bool> kShowContextMenuHeaders(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowContextMenuHeaders",
     true);
-// TODO(b/481079194): Remove `kAutoSubmitVoiceSearchQuery` and the code that
-// respects its disabled state.
-const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
-    &internal::kWebUIOmniboxAimPopup,
-    "Omnibox_AutoSubmitVoiceSearchQuery",
-    true);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
