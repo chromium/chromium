@@ -24,6 +24,7 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+  uses_machine_and_user_values: true
 future_on:
 - fuchsia
 owners:
