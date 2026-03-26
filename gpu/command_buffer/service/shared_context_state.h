@@ -199,6 +199,14 @@ class GPU_GLES2_EXPORT SharedContextState
   skgpu::graphite::Recorder* viz_compositor_graphite_recorder() const {
     return viz_compositor_graphite_recorder_.get();
   }
+  // Returns the Graphite cache controller for the Viz compositor thread.
+  // This is a weak pointer that is invalidated and dereferenced on the Viz
+  // compositor thread. Returned as a pointer to the WeakPtr so that the caller
+  // can create a new cache controller if needed.
+  base::WeakPtr<raster::GraphiteCacheController>*
+  viz_compositor_graphite_cache_controller_weak_ptr() {
+    return &viz_compositor_graphite_cache_controller_;
+  }
   GrContextType gr_context_type() const { return gr_context_type_; }
   // Handles Skia-reported shader compilation errors.
   void compileError(const char* shader,
@@ -414,6 +422,12 @@ class GPU_GLES2_EXPORT SharedContextState
   // |gpu_main_graphite_recorder_|.
   scoped_refptr<raster::GraphiteCacheController>
       gpu_main_graphite_cache_controller_;
+
+  // The graphite cache controller for |viz_compositor_graphite_recorder_|.
+  // Held as a weak pointer that is invalidated and dereferenced on the Viz
+  // compositor thread.
+  base::WeakPtr<raster::GraphiteCacheController>
+      viz_compositor_graphite_cache_controller_;
 
   std::optional<int> max_texture_size_;
 

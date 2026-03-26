@@ -415,6 +415,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gpu::GrContextType gr_context_type_ = gpu::GrContextType::kGL;
   sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe_;
   raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
+  raw_ptr<base::WeakPtr<gpu::raster::GraphiteCacheController>>
+      graphite_cache_controller_weak_ptr_;
   scoped_refptr<gpu::raster::GraphiteCacheController>
       graphite_cache_controller_;
   skgpu::graphite::Volatile graphite_use_volatile_promise_images_ =
