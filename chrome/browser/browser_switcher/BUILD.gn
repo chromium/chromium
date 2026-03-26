@@ -7,11 +7,11 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 assert(is_win || is_mac || is_linux)
 
 source_set("browser_switcher") {
-  sources = []
+  public = []
   public_deps = [ "//base" ]
 
   if (is_win) {
-    sources += [
+    public += [
       "browser_switcher_policy_migrator.h",
       "browser_switcher_service_win.h",
     ]
@@ -19,7 +19,7 @@ source_set("browser_switcher") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [
+    public += [
       "alternative_browser_driver.h",
       "browser_switcher_navigation_throttle.h",
       "browser_switcher_prefs.h",
@@ -29,7 +29,7 @@ source_set("browser_switcher") {
       "ieem_sitelist_parser.h",
     ]
     public_deps += [
-      "//chrome/browser/profiles:profile",
+      "//components/keyed_service/content",
       "//components/keyed_service/core",
       "//components/policy/core/common",
       "//components/prefs",
@@ -62,7 +62,9 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/preloading/prefetch/no_state_prefetch",
+      "//chrome/browser/profiles:profile",
       "//chrome/common",
+      "//components/keyed_service/content",
       "//components/navigation_interception",
       "//components/no_state_prefetch/browser",
       "//components/pref_registry",

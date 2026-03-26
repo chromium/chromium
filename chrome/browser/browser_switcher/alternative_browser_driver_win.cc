@@ -13,6 +13,7 @@
 
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_path.h"

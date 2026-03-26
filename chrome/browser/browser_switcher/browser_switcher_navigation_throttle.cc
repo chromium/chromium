@@ -14,7 +14,6 @@
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
@@ -104,9 +103,8 @@ void BrowserSwitcherNavigationThrottle::MaybeCreateAndAdd(
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   content::BrowserContext* browser_context =
       handle.GetWebContents()->GetBrowserContext();
-  Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  if (!profile->IsRegularProfile()) {
+  if (!BrowserSwitcherServiceFactory::GetForBrowserContext(browser_context)) {
     return;
   }
 

@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
 #include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -98,15 +99,15 @@ RulesetSource::RulesetSource(RulesetSource&&) = default;
 
 RulesetSource::~RulesetSource() = default;
 
-XmlDownloader::XmlDownloader(Profile* profile,
-                             BrowserSwitcherService* service,
-                             base::TimeDelta first_fetch_delay,
-                             base::RepeatingCallback<void()> all_done_callback)
+XmlDownloader::XmlDownloader(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    BrowserSwitcherService* service,
+    base::TimeDelta first_fetch_delay,
+    base::RepeatingCallback<void()> all_done_callback)
     : service_(service), all_done_callback_(std::move(all_done_callback)) {
   file_url_factory_.Bind(
       content::CreateFileURLLoaderFactory(base::FilePath(), nullptr));
-  other_url_factory_ = profile->GetDefaultStoragePartition()
-                           ->GetURLLoaderFactoryForBrowserProcess();
+  other_url_factory_ = std::move(shared_url_loader_factory);
 
   sources_ = service_->GetRulesetSources();
 
@@ -237,7 +238,8 @@ void XmlDownloader::Refresh() {
 
 BrowserSwitcherService::BrowserSwitcherService(Profile* profile)
     : profile_(profile),
-      prefs_(profile),
+      prefs_(profile->GetPrefs(),
+             profile->GetProfilePolicyConnector()->policy_service()),
       driver_(new AlternativeBrowserDriverImpl(&prefs_)),
       sitelist_(new BrowserSwitcherSitelistImpl(&prefs_)) {
   prefs_subscription_ =
@@ -267,7 +269,9 @@ void BrowserSwitcherService::StartDownload(base::TimeDelta delay) {
   // This destroys the previous XmlDownloader, which cancels any scheduled
   // refresh operations.
   sitelist_downloader_ = std::make_unique<XmlDownloader>(
-      profile_, this, delay,
+      profile_->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      this, delay,
       base::BindRepeating(&BrowserSwitcherService::OnAllRulesetsParsed,
                           base::Unretained(this)));
 }

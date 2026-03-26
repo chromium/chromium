@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
-#include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class GURL;

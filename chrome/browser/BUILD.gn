@@ -6588,19 +6588,6 @@ static_library("browser") {
 
   if (is_linux || is_win || is_mac) {
     sources += [
-      "browser_switcher/alternative_browser_driver.h",
-      "browser_switcher/browser_switcher_navigation_throttle.cc",
-      "browser_switcher/browser_switcher_navigation_throttle.h",
-      "browser_switcher/browser_switcher_prefs.cc",
-      "browser_switcher/browser_switcher_prefs.h",
-      "browser_switcher/browser_switcher_service.cc",
-      "browser_switcher/browser_switcher_service.h",
-      "browser_switcher/browser_switcher_service_factory.cc",
-      "browser_switcher/browser_switcher_service_factory.h",
-      "browser_switcher/browser_switcher_sitelist.cc",
-      "browser_switcher/browser_switcher_sitelist.h",
-      "browser_switcher/ieem_sitelist_parser.cc",
-      "browser_switcher/ieem_sitelist_parser.h",
       "enterprise/connectors/device_trust/browser/signing_key_policy_observer.cc",
       "enterprise/connectors/device_trust/browser/signing_key_policy_observer.h",
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.cc",

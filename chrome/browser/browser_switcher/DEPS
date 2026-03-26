@@ -1,0 +1,37 @@
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/browser_switcher",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/policy/policy_migrator.h",
+  "+chrome/browser/policy/profile_policy_connector.h",
+  "+chrome/browser/policy/chrome_extension_policy_migrator.h",
+  "+chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h",
+
+  "-components",
+  "+components/keyed_service/content",
+  "+components/keyed_service/core",
+  "+components/policy/core/common",
+  "+components/policy/policy_constants.h",
+  "+components/prefs",
+  "+components/navigation_interception",
+  "+components/no_state_prefetch/browser",
+  "+components/pref_registry",
+  "+components/url_formatter",
+
+  # Other explicitly allowed dependencies based on BUILD.gn
+  "+content/public/browser",
+  "+services/data_decoder/public/cpp",
+  "+services/data_decoder/public/mojom",
+  "+mojo/public/cpp",
+  "+services/network/public/cpp",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*_(unittest|browsertest)\\.cc": [
+    "+chrome/browser/ui/browser.h",
+    "+components/policy/core/browser/browser_policy_connector.h",
+    "+components/policy/policy_constants.h",
+    "+components/sync_preferences/testing_pref_service_syncable.h",
+  ],
+}

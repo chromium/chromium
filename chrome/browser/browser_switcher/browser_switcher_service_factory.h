@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -17,7 +17,7 @@ namespace browser_switcher {
 class BrowserSwitcherService;
 
 // Creates a |BrowserSwitcherService| for a BrowserContext.
-class BrowserSwitcherServiceFactory : public ProfileKeyedServiceFactory {
+class BrowserSwitcherServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static BrowserSwitcherServiceFactory* GetInstance();
   static BrowserSwitcherService* GetForBrowserContext(
@@ -33,7 +33,7 @@ class BrowserSwitcherServiceFactory : public ProfileKeyedServiceFactory {
   BrowserSwitcherServiceFactory();
   ~BrowserSwitcherServiceFactory() override;
 
-  // BrowserContextKeyedServiceFactory overrides.
+  // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };

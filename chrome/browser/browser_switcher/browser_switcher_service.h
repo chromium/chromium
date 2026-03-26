@@ -58,10 +58,11 @@ class BrowserSwitcherService;
 
 class XmlDownloader {
  public:
-  XmlDownloader(Profile* profile,
-                BrowserSwitcherService* service,
-                base::TimeDelta first_fetch_delay,
-                base::RepeatingCallback<void()> all_done_callback);
+  XmlDownloader(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      BrowserSwitcherService* service,
+      base::TimeDelta first_fetch_delay,
+      base::RepeatingCallback<void()> all_done_callback);
   virtual ~XmlDownloader();
 
   base::Time last_refresh_time() const;
