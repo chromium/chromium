@@ -171,9 +171,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION)
 
   std::string root_prefix_ = "";
 
-  base::ScopedObservation<TypecdClient, TypecdClient::Observer>
+  // TODO(crbug.com/496467429): remove when the PeripheralNotificationManager is
+  // no longer outliving the TypecdClient and the PciguardClient it observes.
+  base::ScopedObservation<TypecdClient,
+                          TypecdClient::Observer>::LeakedDanglingUntriaged
       typecd_client_observation_{this};
-  base::ScopedObservation<PciguardClient, PciguardClient::Observer>
+  base::ScopedObservation<PciguardClient,
+                          PciguardClient::Observer>::LeakedDanglingUntriaged
       pciguard_client_observation_{this};
 
   // Used for callbacks.
