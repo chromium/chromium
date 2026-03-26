@@ -4,6 +4,7 @@
 
 import '/strings.m.js';
 
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -14,6 +15,7 @@ import type {AudioCapturer} from './audio_capturer.js';
 import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
 import {Conversation, State} from './conversation.js';
+import type {Persona} from './conversation.js';
 import type {PageContext} from './page_context_manager.js';
 
 enum UiState {
@@ -28,13 +30,6 @@ interface MockAudioButton {
   wavdata: string;
 }
 
-interface Persona {
-  id: string;
-  name: string;
-  persona: string;
-  voice: string;
-}
-
 interface PersonaConfig {
   personas: Persona[];
 }
@@ -44,6 +39,14 @@ interface ResourceBundle {
   talkingBlob: Blob;
   listeningBlob: Blob;
 }
+
+const DEFAULT_PERSONA: Persona = {
+  id: 'chromium',
+  name: 'TheButton',
+  persona: 'You are a friendly assistant that lives in a button in Chrome\'s ' +
+      'overlay dialog',
+  voice: 'Puck',
+};
 
 export class AppElement extends CrLitElement {
   static get is() {
@@ -103,6 +106,8 @@ export class AppElement extends CrLitElement {
   // initialize so keep track of any page context that arrives before those are
   // setup so that it can be provided when these objects initialize.
   private initialPageContext?: PageContext;
+  private personaPromise: Promise<Persona>;
+  private unregisterPageContextListeners: (() => void)|null;
 
   protected get uiState(): UiState {
     if (this.isConnecting) {
@@ -137,8 +142,15 @@ export class AppElement extends CrLitElement {
     super();
 
     const ttcBundleUrl = loadTimeData.getString('ttcBundleUrl');
-    this.initializeResourceBundle(ttcBundleUrl)
-        .then(this.onResourcesInitialized.bind(this));
+    const initializedPromise = this.initializeResourceBundle(ttcBundleUrl);
+    initializedPromise.then((bundle: ResourceBundle) => {
+      console.info('Blobs initialized');
+      this.talkingBlobUrl = URL.createObjectURL(bundle.talkingBlob);
+      this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
+    });
+    this.personaPromise =
+        initializedPromise.then((bundle: ResourceBundle) => bundle.persona);
+    initializedPromise.catch(e => console.error('Failed to fetch bundle: ', e));
 
     // Setup Mojo connection
     this.pageCallbackRouter = new PageCallbackRouter();
@@ -157,27 +169,19 @@ export class AppElement extends CrLitElement {
                 this.initialPageContext.content = content;
               }
             });
+    this.unregisterPageContextListeners = () => {
+      // Now that the conversation is initialized, we can stop listening for
+      // the initial page context.
+      this.pageCallbackRouter.removeListener(didChangePageId);
+      this.pageCallbackRouter.removeListener(updateContextId);
+      this.initialPageContext = undefined;
+      this.unregisterPageContextListeners = null;
+    };
 
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.pageHandler.$.bindNewPipeAndPassReceiver(),
         this.pageCallbackRouter.$.bindNewPipeAndPassRemote());
-
-    const apiKey = loadTimeData.getString('apiKey');
-    this.conversation = new Conversation(
-        apiKey, {
-          sendToUI: (msg) => this.onMessageFromConversation(msg),
-          onStateChange: (state, oldState) =>
-              this.onConversationStateChanged(state, oldState),
-          onResponse: (audioData) => this.onAudioOutput(audioData),
-        },
-        this.pageCallbackRouter, this.initialPageContext);
-
-    // Now that the conversation is initialized, we can stop listening for the
-    // initial page context.
-    this.pageCallbackRouter.removeListener(didChangePageId);
-    this.pageCallbackRouter.removeListener(updateContextId);
-    this.initialPageContext = undefined;
   }
 
   override disconnectedCallback() {
@@ -257,13 +261,20 @@ export class AppElement extends CrLitElement {
     return null;
   }
 
-  protected onContainerClick() {
-    if (!this.conversation) {
+  protected async onContainerClick() {
+    if (this.isConnecting) {
       return;
     }
 
-    if (this.isConnecting) {
-      return;
+    if (!this.conversation) {
+      this.isConnecting = true;
+      let persona: Persona|undefined;
+      try {
+        persona = await this.personaPromise;
+      } catch (e) {
+        persona = DEFAULT_PERSONA;
+      }
+      this.conversation = this.createConversation(persona);
     }
 
     if (!this.conversation.connected) {
@@ -315,53 +326,55 @@ export class AppElement extends CrLitElement {
   }
 
   private async initializeResourceBundle(baseUrl: string):
-      Promise<ResourceBundle|null> {
+      Promise<ResourceBundle> {
     if (!baseUrl) {
-      console.warn('No resource bundle URL given');
-      return null;
+      throw new Error('No resource bundle URL provided');
     }
 
     console.info('Loading resource bundle: ', baseUrl);
 
     const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 
-    try {
-      const [personaResponse, talkingResponse, listeningResponse] =
-          await Promise.all([
-            fetch(base + 'persona.json'),
-            fetch(base + 'talking.webm'),
-            fetch(base + 'listening.webm'),
-          ]);
+    const [personaResponse, talkingResponse, listeningResponse] =
+        await Promise.all([
+          fetch(base + 'persona.json'),
+          fetch(base + 'talking.webm'),
+          fetch(base + 'listening.webm'),
+        ]);
 
-      const personaConfig: PersonaConfig = await personaResponse.json();
-      const talkingBlob = await talkingResponse.blob();
-      const listeningBlob = await listeningResponse.blob();
+    const personaConfig: PersonaConfig = await personaResponse.json();
+    const talkingBlob = await talkingResponse.blob();
+    const listeningBlob = await listeningResponse.blob();
 
-      if (!Array.isArray(personaConfig.personas) ||
-          personaConfig.personas[0] === undefined) {
-        console.warn('Invalid persona config', personaConfig);
-        return null;
-      }
-
-      return {
-        persona: personaConfig.personas[0],
-        talkingBlob,
-        listeningBlob,
-      };
-    } catch (e) {
-      console.error('Failed to initialize resource bundle', e);
-      return null;
+    if (!Array.isArray(personaConfig.personas) ||
+        personaConfig.personas[0] === undefined) {
+      console.warn('Invalid persona config', personaConfig);
+      throw new Error('Invalid persona config');
     }
+
+    return {
+      persona: personaConfig.personas[0],
+      talkingBlob,
+      listeningBlob,
+    };
   }
 
-  private onResourcesInitialized(bundle: ResourceBundle|null) {
-    if (!bundle) {
-      return;
-    }
-    console.info('Resources initialized', bundle);
+  private createConversation(persona: Persona) {
+    const apiKey = loadTimeData.getString('apiKey');
+    const conversation = new Conversation(
+        apiKey, persona, {
+          sendToUI: (msg) => this.onMessageFromConversation(msg),
+          onStateChange: (state, oldState) =>
+              this.onConversationStateChanged(state, oldState),
+          onResponse: (audioData) => this.onAudioOutput(audioData),
+        },
+        this.pageCallbackRouter, this.initialPageContext);
 
-    this.talkingBlobUrl = URL.createObjectURL(bundle.talkingBlob);
-    this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
+    // The conversation should only ever be created once.
+    assert(this.unregisterPageContextListeners);
+    this.unregisterPageContextListeners();
+
+    return conversation;
   }
 }
 

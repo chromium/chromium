@@ -11,6 +11,14 @@ import type {PageContext} from './page_context_manager.js';
 import {PageContextManager} from './page_context_manager.js';
 import {buildSystemInstruction} from './persona.js';
 
+/* A bundle of information about how to initialize the model's personality */
+export interface Persona {
+  id: string;
+  name: string;
+  persona: string;
+  voice: string;
+}
+
 /**
  * States for the conversation.
  */
@@ -35,6 +43,7 @@ export class Conversation implements ApiSessionDelegate {
   private readonly uiDelegate: UiDelegate;
   private readonly pageContextManager: PageContextManager =
       new PageContextManager(() => this.didUpdatePageContent());
+  private readonly persona: Persona;
 
   private session: ApiSession|null = null;
   private state: State = State.STOPPED;
@@ -42,9 +51,11 @@ export class Conversation implements ApiSessionDelegate {
   private currentOutput: string = '';
 
   constructor(
-      apiKey: string, uiDelegate: UiDelegate, router: PageCallbackRouter,
-      initialPageContext?: PageContext) {
+      apiKey: string, persona: Persona, uiDelegate: UiDelegate,
+      router: PageCallbackRouter, initialPageContext?: PageContext) {
+    console.info(`Conversation with ${persona.name}`, persona);
     this.apiKey = apiKey;
+    this.persona = persona;
     this.uiDelegate = uiDelegate;
 
     if (initialPageContext) {
@@ -167,8 +178,8 @@ export class Conversation implements ApiSessionDelegate {
 
     const context = this.pageContextManager.pageContext;
     const systemInstruction = buildSystemInstruction(
-        'You are a helpful assistant.', context?.title ?? '',
-        context?.url || '', context?.content ?? undefined);
+        this.persona.persona, context?.title ?? '', context?.url || '',
+        context?.content ?? undefined);
 
     this.session = new ApiSession(this.apiKey, systemInstruction, this);
     this.session.connect();

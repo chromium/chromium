@@ -8,10 +8,7 @@ export function buildSystemInstruction(
   let instruction = `${persona}
 
 ## Current Page
-[${title ?? '<N/A>'}](${url})
-
-You are a helpful assistant in a Chrome overlay. Keep responses brief and
-conversational.`;
+[${title ?? '<N/A>'}](${url})`;
 
   if (pageContent) {
     instruction += `
