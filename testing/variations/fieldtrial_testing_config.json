@@ -1205,21 +1205,6 @@
             ]
         }
     ],
-    "AndroidSettingsContainment": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidSettingsContainment"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSetupList": [
         {
             "platforms": [
