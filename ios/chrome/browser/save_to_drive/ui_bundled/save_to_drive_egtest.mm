@@ -477,6 +477,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:AccountPicker()];
   // Wait for the consistency sign in promo to appear.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SigninPromo()];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SIGNIN_PROMO_SAVE_TO_DRIVE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Test that the account picker is displayed when signed out with account on
@@ -512,6 +515,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:AccountPicker()];
   // Wait for the consistency sign in promo to appear.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SigninPromo()];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SIGNIN_PROMO_SAVE_TO_DRIVE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
   // Tap the "Sign in" button.
   [[EarlGrey selectElementWithMatcher:SigninPromoPrimaryButton()]
       performAction:grey_tap()];
