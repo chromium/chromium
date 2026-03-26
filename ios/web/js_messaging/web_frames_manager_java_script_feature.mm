@@ -142,8 +142,7 @@ void WebFramesManagerJavaScriptFeature::ConfigureHandlers(
 
 void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
     WKScriptMessage* message) {
-  WebState* web_state = WebViewWebStateMap::FromBrowserState(browser_state_)
-                            ->GetWebStateForWebView(message.webView);
+  WebState* web_state = web::GetWebStateForWebView(message.webView);
   if (!web_state) {
     // Ignore this message if `message.webView` is no longer associated with a
     // WebState.
@@ -188,8 +187,7 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
 
 void WebFramesManagerJavaScriptFeature::FrameUnavailableMessageReceived(
     WKScriptMessage* message) {
-  WebState* web_state = WebViewWebStateMap::FromBrowserState(browser_state_)
-                            ->GetWebStateForWebView(message.webView);
+  WebState* web_state = web::GetWebStateForWebView(message.webView);
   if (!web_state) {
     // Ignore this message if `message.webView` is no longer associated with a
     // WebState.

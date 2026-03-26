@@ -313,10 +313,7 @@ void JavaScriptContentWorld::ScriptMessageReceived(
     return;
   }
 
-  web::WebViewWebStateMap* map =
-      web::WebViewWebStateMap::FromBrowserState(browser_state_);
-  web::WebState* web_state = map->GetWebStateForWebView(script_message.webView);
-
+  web::WebState* web_state = web::GetWebStateForWebView(script_message.webView);
   if (!web_state) {
     return;
   }
@@ -344,10 +341,7 @@ void JavaScriptContentWorld::ScriptMessageReceivedWithReply(
     return;
   }
 
-  web::WebViewWebStateMap* map =
-      web::WebViewWebStateMap::FromBrowserState(browser_state_);
-  web::WebState* web_state = map->GetWebStateForWebView(script_message.webView);
-
+  web::WebState* web_state = web::GetWebStateForWebView(script_message.webView);
   if (!web_state) {
     reply_handler(nullptr, kInternalError);
     return;

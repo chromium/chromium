@@ -116,8 +116,7 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
-    WebViewWebStateMap::FromBrowserState(GetBrowserState())
-        ->SetAssociatedWebViewForWebState(web_view_, web_state());
+    SetAssociatedWebViewForWebState(web_view_, web_state());
   }
 
   WKWebView* web_view_ = nil;
@@ -254,16 +253,14 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
 }
 
 // Tests that WebFramesManagerImpl will ignore JS messages from previous
-// WKWebView after WebViewWebStateMap is updated with a new WKWebView.
+// WKWebView after the WebView has been disassociated from the WebState.
 TEST_F(WebFramesManagerJavaScriptFeatureTest, OnWebViewUpdated) {
   SendFrameBecameAvailableMessage(main_frame_.get());
   SendFrameBecameAvailableMessage(frame_1_.get());
   EXPECT_EQ(2ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
 
-  // Update the WKWebView associated with web_state().
-  WKWebView* web_view_2 = OCMClassMock([WKWebView class]);
-  WebViewWebStateMap::FromBrowserState(GetBrowserState())
-      ->SetAssociatedWebViewForWebState(web_view_2, web_state());
+  // Disassociate the WebView from the WebState.
+  ClearAssociatedWebViewForWebState(web_view_, web_state());
   WebStateImpl::FromWebState(web_state())->RemoveAllWebFrames();
 
   // Send JS message of loaded/unloaded web frames in previous WKWebView (i.e.

@@ -421,9 +421,13 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
   }
   self.webViewNavigationObserver.webView = nil;
 
-  web::WebViewWebStateMap::FromBrowserState(
-      self.webStateImpl->GetBrowserState())
-      ->SetAssociatedWebViewForWebState(webView, self.webStateImpl);
+  if (_webView) {
+    ClearAssociatedWebViewForWebState(_webView, self.webStateImpl);
+  }
+
+  if (webView) {
+    SetAssociatedWebViewForWebState(webView, self.webStateImpl);
+  }
 
   if (_webView) {
     self.webStateImpl->RemoveAllWebFrames();

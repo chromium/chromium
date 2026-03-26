@@ -4,88 +4,79 @@
 
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 
-#import "base/memory/ptr_util.h"
-#import "ios/web/public/browser_state.h"
+#import <objc/runtime.h>
+
+#import "base/apple/foundation_util.h"
+#import "base/check.h"
+#import "base/check_op.h"
+#import "base/memory/weak_ptr.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
 const char kWebViewWebStateMapKeyName[] = "web_view_web_state_map";
 }  // namespace
 
+// Holds a pointer to a WebState.
+@interface WebStateHandleForWebView : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithWebState:(web::WebState*)webState
+    NS_DESIGNATED_INITIALIZER;
+
+@property(nonatomic, readonly) web::WebState* webState;
+
+@end
+
+@implementation WebStateHandleForWebView {
+  base::WeakPtr<web::WebState> _webState;
+}
+
+- (instancetype)initWithWebState:(web::WebState*)webState {
+  CHECK(webState);
+  if ((self = [super init])) {
+    _webState = webState->GetWeakPtr();
+  }
+  return self;
+}
+
+- (web::WebState*)webState {
+  return _webState.get();
+}
+
+@end
+
 namespace web {
 
-WebViewWebStateMap::WebViewWebStateMap(BrowserState* browser_state) {}
+void SetAssociatedWebViewForWebState(WKWebView* web_view, WebState* web_state) {
+  CHECK(web_view);
+  CHECK(web_state);
 
-WebViewWebStateMap::~WebViewWebStateMap() {
-  for (const WebViewWebStateAssociation& association : mappings_) {
-    association.web_state->RemoveObserver(this);
-  }
+  objc_setAssociatedObject(
+      web_view, kWebViewWebStateMapKeyName,
+      [[WebStateHandleForWebView alloc] initWithWebState:web_state],
+      OBJC_ASSOCIATION_RETAIN);
 }
 
-WebViewWebStateMap* WebViewWebStateMap::FromBrowserState(
-    BrowserState* browser_state) {
-  DCHECK(browser_state);
+void ClearAssociatedWebViewForWebState(WKWebView* web_view,
+                                       WebState* web_state) {
+  CHECK(web_view);
+  CHECK(web_state);
+  CHECK_EQ(GetWebStateForWebView(web_view), web_state);
 
-  WebViewWebStateMap* web_view_web_state_map = static_cast<WebViewWebStateMap*>(
-      browser_state->GetUserData(kWebViewWebStateMapKeyName));
-  if (!web_view_web_state_map) {
-    web_view_web_state_map = new WebViewWebStateMap(browser_state);
-    browser_state->SetUserData(kWebViewWebStateMapKeyName,
-                               base::WrapUnique(web_view_web_state_map));
-  }
-  return web_view_web_state_map;
+  objc_setAssociatedObject(web_view, kWebViewWebStateMapKeyName, nil,
+                           OBJC_ASSOCIATION_RETAIN);
 }
 
-void WebViewWebStateMap::SetAssociatedWebViewForWebState(WKWebView* web_view,
-                                                         WebState* web_state) {
-  DCHECK(web_state);
+WebState* GetWebStateForWebView(WKWebView* web_view) {
+  CHECK(web_view);
 
-  auto it = mappings_.begin();
-  while (it != mappings_.end()) {
-    if (it->web_state == web_state) {
-      if (web_view) {
-        // Update existing entry with new webview.
-        it->web_view = web_view;
-      } else {
-        // Remove mapping since no web view is assocaited.
-        mappings_.erase(it);
-        web_state->RemoveObserver(this);
-      }
-      return;
-    }
-    it++;
+  if (WebStateHandleForWebView* handle =
+          base::apple::ObjCCast<WebStateHandleForWebView>(
+              objc_getAssociatedObject(web_view, kWebViewWebStateMapKeyName))) {
+    return handle.webState;
   }
 
-  web_state->AddObserver(this);
-  mappings_.push_back(WebViewWebStateAssociation(web_view, web_state));
+  return nil;
 }
-
-WebState* WebViewWebStateMap::GetWebStateForWebView(WKWebView* web_view) {
-  for (const WebViewWebStateAssociation& association : mappings_) {
-    if (association.web_view == web_view) {
-      return association.web_state;
-    }
-  }
-  return nullptr;
-}
-
-void WebViewWebStateMap::WebStateDestroyed(WebState* web_state) {
-  auto it = mappings_.begin();
-  while (it != mappings_.end()) {
-    if (it->web_state == web_state) {
-      mappings_.erase(it);
-      web_state->RemoveObserver(this);
-      break;
-    }
-    it++;
-  }
-}
-
-WebViewWebStateMap::WebViewWebStateAssociation::WebViewWebStateAssociation(
-    WKWebView* web_view,
-    WebState* web_state)
-    : web_view(web_view), web_state(web_state) {}
-WebViewWebStateMap::WebViewWebStateAssociation::~WebViewWebStateAssociation() =
-    default;
 
 }  // namespace web

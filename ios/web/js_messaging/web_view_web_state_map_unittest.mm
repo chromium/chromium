@@ -17,71 +17,54 @@ typedef WebTest WebViewWebStateMapTest;
 
 // Tests that web views are correctly mapped to web states.
 TEST_F(WebViewWebStateMapTest, CreateMappings) {
-  WebViewWebStateMap* web_view_web_state_map =
-      WebViewWebStateMap::FromBrowserState(GetBrowserState());
-  ASSERT_TRUE(web_view_web_state_map);
-
   WKWebView* web_view = [[WKWebView alloc] init];
   WKWebView* web_view2 = [[WKWebView alloc] init];
-  ASSERT_FALSE(web_view_web_state_map->GetWebStateForWebView(web_view));
-  ASSERT_FALSE(web_view_web_state_map->GetWebStateForWebView(web_view2));
+  ASSERT_FALSE(GetWebStateForWebView(web_view));
+  ASSERT_FALSE(GetWebStateForWebView(web_view2));
 
   FakeWebState web_state;
-  web_view_web_state_map->SetAssociatedWebViewForWebState(web_view, &web_state);
-  FakeWebState web_state2;
-  web_view_web_state_map->SetAssociatedWebViewForWebState(web_view2,
-                                                          &web_state2);
+  SetAssociatedWebViewForWebState(web_view, &web_state);
 
-  EXPECT_EQ(&web_state,
-            web_view_web_state_map->GetWebStateForWebView(web_view));
-  EXPECT_EQ(&web_state2,
-            web_view_web_state_map->GetWebStateForWebView(web_view2));
+  FakeWebState web_state2;
+  SetAssociatedWebViewForWebState(web_view2, &web_state2);
+
+  EXPECT_EQ(&web_state, GetWebStateForWebView(web_view));
+  EXPECT_EQ(&web_state2, GetWebStateForWebView(web_view2));
 }
 
 // Tests that a mapping is correctly updated as web view change for a given web
 // state.
 TEST_F(WebViewWebStateMapTest, UpdateMapping) {
-  WebViewWebStateMap* web_view_web_state_map =
-      WebViewWebStateMap::FromBrowserState(GetBrowserState());
-  ASSERT_TRUE(web_view_web_state_map);
-
   FakeWebState web_state;
   WKWebView* web_view = [[WKWebView alloc] init];
   WKWebView* web_view2 = [[WKWebView alloc] init];
 
-  web_view_web_state_map->SetAssociatedWebViewForWebState(web_view, &web_state);
-  EXPECT_EQ(&web_state,
-            web_view_web_state_map->GetWebStateForWebView(web_view));
+  SetAssociatedWebViewForWebState(web_view, &web_state);
+  EXPECT_EQ(&web_state, GetWebStateForWebView(web_view));
+  EXPECT_FALSE(GetWebStateForWebView(web_view2));
 
-  web_view_web_state_map->SetAssociatedWebViewForWebState(web_view2,
-                                                          &web_state);
-  EXPECT_EQ(&web_state,
-            web_view_web_state_map->GetWebStateForWebView(web_view2));
+  SetAssociatedWebViewForWebState(web_view2, &web_state);
+  EXPECT_EQ(&web_state, GetWebStateForWebView(web_view2));
+  EXPECT_EQ(&web_state, GetWebStateForWebView(web_view));
 
-  web_view_web_state_map->SetAssociatedWebViewForWebState(nil, &web_state);
-  EXPECT_FALSE(web_view_web_state_map->GetWebStateForWebView(web_view2));
+  ClearAssociatedWebViewForWebState(web_view2, &web_state);
+  EXPECT_EQ(&web_state, GetWebStateForWebView(web_view));
+  EXPECT_FALSE(GetWebStateForWebView(web_view2));
 
-  web_view_web_state_map->SetAssociatedWebViewForWebState(web_view, &web_state);
-  EXPECT_EQ(&web_state,
-            web_view_web_state_map->GetWebStateForWebView(web_view));
+  ClearAssociatedWebViewForWebState(web_view, &web_state);
+  EXPECT_FALSE(GetWebStateForWebView(web_view));
 }
 
 // Tests that mappings are removed when the web state is destroyed.
 TEST_F(WebViewWebStateMapTest, WebStateDestroyed) {
-  WebViewWebStateMap* web_view_web_state_map =
-      WebViewWebStateMap::FromBrowserState(GetBrowserState());
-  ASSERT_TRUE(web_view_web_state_map);
-
   WKWebView* web_view = [[WKWebView alloc] init];
   std::unique_ptr<FakeWebState> web_state = std::make_unique<FakeWebState>();
-  web_view_web_state_map->SetAssociatedWebViewForWebState(web_view,
-                                                          web_state.get());
-  ASSERT_EQ(web_state.get(),
-            web_view_web_state_map->GetWebStateForWebView(web_view));
+  SetAssociatedWebViewForWebState(web_view, web_state.get());
+  ASSERT_EQ(web_state.get(), GetWebStateForWebView(web_view));
 
   web_state.reset();
 
-  EXPECT_FALSE(web_view_web_state_map->GetWebStateForWebView(web_view));
+  EXPECT_FALSE(GetWebStateForWebView(web_view));
 }
 
 }  // namespace web
