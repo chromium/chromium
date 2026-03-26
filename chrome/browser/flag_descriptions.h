@@ -4211,13 +4211,6 @@ inline constexpr char kDataSharingDebugLogsDescription[] =
     "Enables the data sharing infrastructure to log and save debug messages "
     "that can be shown in the internals page.";
 
-inline constexpr char kTabGroupMenuImprovementsName[] =
-    "Add context menu when left-clicking a tab group";
-inline constexpr char kTabGroupMenuImprovementsDescription[] =
-    "When clicking a tab group in the bookmarks bar, the left click will be "
-    "given a context menu, similar to the one that appears when right clicking "
-    "the tab group.";
-
 inline constexpr char kTabGroupMenuMoreEntryPointsName[] =
     "Make options menus to include more tab group actions";
 inline constexpr char kTabGroupMenuMoreEntryPointsDescription[] =

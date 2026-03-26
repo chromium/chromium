@@ -52,9 +52,6 @@ BookmarkMenuController::BookmarkMenuController(
     run_type |= views::MenuRunner::FOR_DROP;
   }
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements)) {
-    run_type |= views::MenuRunner::HAS_MNEMONICS;
-  }
   menu_runner_ = std::make_unique<views::MenuRunner>(
       base::WrapUnique<MenuItemView>(menu_delegate_->menu()), run_type);
 }
@@ -196,8 +193,7 @@ views::MenuItemView* BookmarkMenuController::GetSiblingMenu(
   menu_delegate_->SetActiveMenu(*folder, start_index);
   *button = bookmark_bar_->GetMenuButtonForFolder(*folder);
   bookmark_bar_->GetAnchorPositionForButton(*button, anchor);
-  *has_mnemonics =
-      base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements);
+  *has_mnemonics = false;
   return this->menu();
 }
 

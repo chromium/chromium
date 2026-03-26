@@ -70,7 +70,6 @@ class SharedTabGroupInteractiveUiTest
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {data_sharing::features::kDataSharingFeature, {}},
-        {features::kTabGroupMenuImprovements, {}},
         {features::kTabGroupMenuMoreEntryPoints, {}}};
 
     std::vector<base::test::FeatureRef> disabled_features = {};
@@ -337,14 +336,12 @@ IN_PROC_BROWSER_TEST_P(SharedTabGroupInteractiveUiTest,
   RunTestSequence(FinishTabstripAnimations(), ShowBookmarksBar(),
                   EnsurePresent(kSavedTabGroupButtonElementId),
                   PressButton(kSavedTabGroupButtonElementId),
-                  WaitForShow(STGTabsMenuModel::kOpenGroup),
-                  SelectMenuItem(STGTabsMenuModel::kOpenGroup),
                   WaitForShow(kTabGroupHeaderElementId));
 
   histogram_tester.ExpectUniqueSample(
       kRecallHistogram,
       saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
-          kOpenedFromSubmenuFromBookmarksBar,
+          kOpenedFromBookmarksBar,
       1);
 }
 

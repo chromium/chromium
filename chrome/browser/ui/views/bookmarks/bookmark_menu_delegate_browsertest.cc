@@ -61,16 +61,6 @@ MATCHER_P(BookmarkVariantMatcher, node, "") {
   }
 }
 
-// Returns number of menu items in |folder| assuming it is
-// a root folder (no other bookmark folder contains it). This is
-// because we add two new menu items to such folders, see
-// BookmarkMenuDelegate::CreateMenu for more details.
-int RootFolderSizeOffset() {
-  if (base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements)) {
-    return 2;
-  }
-  return 0;
-}
 
 }  // namespace
 
@@ -502,8 +492,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
   ui::DropTargetEvent target_event(drop_data, gfx::PointF(menu_loc),
                                    gfx::PointF(menu_loc),
                                    ui::DragDropTypes::DRAG_COPY);
-  auto* f1a_item =
-      root_item->GetSubmenu()->GetMenuItemAt(0 + RootFolderSizeOffset());
+  auto* f1a_item = root_item->GetSubmenu()->GetMenuItemAt(0);
   EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f1a_item, drop_data));
   EXPECT_EQ(f1->children().size(), 2u);
 
@@ -541,8 +530,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
   ui::DropTargetEvent target_event(drop_data, gfx::PointF(menu_loc),
                                    gfx::PointF(menu_loc),
                                    ui::DragDropTypes::DRAG_COPY);
-  auto* f11_item =
-      root_item->GetSubmenu()->GetMenuItemAt(1 + RootFolderSizeOffset());
+  auto* f11_item = root_item->GetSubmenu()->GetMenuItemAt(1);
   const BookmarkNode* f11_node = f1->children()[1].get();
   EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f11_item, drop_data));
   EXPECT_EQ(f11_node->children().size(), 1u);
@@ -581,8 +569,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
   ui::DropTargetEvent target_event(drop_data, gfx::PointF(menu_loc),
                                    gfx::PointF(menu_loc),
                                    ui::DragDropTypes::DRAG_COPY);
-  auto* f11_item =
-      root_item->GetSubmenu()->GetMenuItemAt(1 + RootFolderSizeOffset());
+  auto* f11_item = root_item->GetSubmenu()->GetMenuItemAt(1);
   EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f11_item, drop_data));
   EXPECT_EQ(f1->children().size(), 2u);
 
@@ -1113,217 +1100,4 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   // Nothing should happen if the menu wasn't built yet.
   bookmark_menu_delegate_->SetMenuStartIndex(bookmark_bar_folder, 2u);
   EXPECT_EQ(menu(), nullptr);
-}
-
-class BookmarkMenuDelegateOpenAllTest : public BookmarkMenuDelegateTest {
- public:
-  BookmarkMenuDelegateOpenAllTest() {
-    features_.InitAndEnableFeature(features::kTabGroupMenuImprovements);
-  }
-
- protected:
-  views::MenuItemView* GetDirectChildByCommandId(views::MenuItemView* menu,
-                                                 int command_id) {
-    if (!menu->HasSubmenu()) {
-      return nullptr;
-    }
-    for (views::MenuItemView* child : menu->GetSubmenu()->GetMenuItems()) {
-      if (child->GetCommand() == command_id) {
-        return child;
-      }
-    }
-    return nullptr;
-  }
-
-  bool HasOpenAllItems(views::MenuItemView* menu) {
-    return GetDirectChildByCommandId(menu, IDC_BOOKMARK_BAR_OPEN_ALL) !=
-           nullptr;
-  }
-
-  std::u16string GetExpectedOpenAllTitle(int count) {
-    return l10n_util::GetPluralStringFUTF16(IDS_BOOKMARK_BAR_OPEN_ALL_COUNT,
-                                            count);
-  }
-
-  const BookmarkNode* GetF1() {
-    return bookmark_service()->GetNodeAtIndex(
-        BookmarkParentFolder::BookmarkBarFolder(), 1u);
-  }
-
-  void AddExtraUrlToF1() {
-    const BookmarkNode* f1 = GetF1();
-    model()->AddURL(f1, f1->children().size(), u"f1b",
-                    GURL("file:///c:/tmp/f1b"));
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
-                       OpenAllOnlyForDirectBookmarkBarChildren) {
-  const BookmarkNode* f1 = GetF1();
-  NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
-  views::MenuItemView* f1_menu = menu();
-  LoadAllMenus(f1_menu);
-
-  EXPECT_TRUE(HasOpenAllItems(f1_menu));
-
-  // F11 is a nested subfolder inside F1 (at index 1, after f1a).
-  views::MenuItemView* f11_item = f1_menu->GetSubmenu()->GetMenuItemAt(3);
-  ASSERT_TRUE(f11_item->HasSubmenu());
-  bookmark_menu_delegate_->WillShowMenu(f11_item);
-
-  EXPECT_FALSE(HasOpenAllItems(f11_item));
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
-                       OpenAllCountUpdatedAfterRemove) {
-  AddExtraUrlToF1();
-  const BookmarkNode* f1 = GetF1();
-
-  NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
-  views::MenuItemView* f1_menu = menu();
-  LoadAllMenus(f1_menu);
-
-  views::MenuItemView* open_all_item =
-      GetDirectChildByCommandId(f1_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(2));
-
-  const BookmarkNode* f1a = f1->children()[0].get();
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
-      {f1a};
-  bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
-  model()->Remove(f1a, bookmarks::metrics::BookmarkEditSource::kOther,
-                  FROM_HERE);
-  bookmark_menu_delegate_->DidRemoveBookmarks();
-
-  open_all_item = GetDirectChildByCommandId(f1_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(1));
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
-                       OpenAllDisabledWhenAllBookmarksDeleted) {
-  const BookmarkNode* f1 = GetF1();
-
-  NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
-  views::MenuItemView* f1_menu = menu();
-  LoadAllMenus(f1_menu);
-
-  views::MenuItemView* open_all_item =
-      GetDirectChildByCommandId(f1_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_TRUE(open_all_item->GetEnabled());
-
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove;
-  for (const auto& child : f1->children()) {
-    nodes_to_remove.push_back(child.get());
-  }
-  bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
-  for (const BookmarkNode* node : nodes_to_remove) {
-    model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther,
-                    FROM_HERE);
-  }
-  bookmark_menu_delegate_->DidRemoveBookmarks();
-
-  // The "Open all" item should still exist but be disabled.
-  open_all_item = GetDirectChildByCommandId(f1_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_FALSE(open_all_item->GetEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
-                       OpenAllCountUpdatedAfterMoveOut) {
-  AddExtraUrlToF1();
-  const BookmarkNode* f1 = GetF1();
-
-  NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
-  views::MenuItemView* f1_menu = menu();
-  LoadAllMenus(f1_menu);
-
-  views::MenuItemView* open_all_item =
-      GetDirectChildByCommandId(f1_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(2));
-
-  const BookmarkNode* f1a = f1->children()[0].get();
-  bookmark_service()->Move(f1a, BookmarkParentFolder::OtherFolder(), 0,
-                           /*browser=*/nullptr);
-
-  open_all_item = GetDirectChildByCommandId(f1_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(1));
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
-                       OpenAllCountUpdatedAfterMoveIn) {
-  const BookmarkNode* f1 = GetF1();
-
-  NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f1), 0);
-  views::MenuItemView* f1_menu = menu();
-  LoadAllMenus(f1_menu);
-
-  views::MenuItemView* open_all_item =
-      GetDirectChildByCommandId(f1_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(1));
-
-  BookmarkParentFolderChildren other_children =
-      bookmark_service()->GetChildren(BookmarkParentFolder::OtherFolder());
-  ASSERT_GT(other_children.size(), 0u);
-  const BookmarkNode* oa = other_children[0];
-  bookmark_service()->Move(oa, BookmarkParentFolder::FromFolderNode(f1), 0,
-                           /*browser=*/nullptr);
-
-  open_all_item = GetDirectChildByCommandId(f1_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(2));
-}
-
-// Tests that "Open all" commands are created when a URL is moved into a folder
-// that previously had no direct URL children (only subfolders).
-IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
-                       OpenAllCreatedWhenUrlMovedIntoFolderWithOnlySubfolders) {
-  // Create a folder F3 on the bookmark bar that contains only a subfolder.
-  const BookmarkNode* bb_node = model()->bookmark_bar_node();
-  const BookmarkNode* f3 = model()->AddFolder(bb_node, 0, u"F3");
-  model()->AddFolder(f3, 0, u"F3Sub");
-
-  // Create a URL in other folder to move later (same storage type as F3).
-  const BookmarkNode* url_to_move =
-      model()->AddURL(model()->other_node(), 0, u"url_to_move",
-                      GURL("file:///c:/tmp/url_to_move"));
-
-  NewDelegate();
-  bookmark_menu_delegate_->SetActiveMenu(
-      BookmarkParentFolder::FromFolderNode(f3), 0);
-  views::MenuItemView* f3_menu = menu();
-  LoadAllMenus(f3_menu);
-
-  // Initially, F3 has no direct URL children, so "Open all" should not exist.
-  EXPECT_FALSE(HasOpenAllItems(f3_menu));
-
-  // Move the URL into F3.
-  bookmark_service()->Move(url_to_move,
-                           BookmarkParentFolder::FromFolderNode(f3), 0,
-                           /*browser=*/nullptr);
-
-  // Now F3 has a direct URL child, so "Open all" should be created.
-  views::MenuItemView* open_all_item =
-      GetDirectChildByCommandId(f3_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
-  ASSERT_NE(open_all_item, nullptr);
-  EXPECT_TRUE(open_all_item->GetEnabled());
-  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(1));
 }

@@ -217,14 +217,14 @@ class SavedTabGroupInteractiveTest
   void SetUp() override {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kTabGroupMenuImprovements,
-           features::kTabGroupMenuMoreEntryPoints,
+          {features::kTabGroupMenuMoreEntryPoints,
+           features::kBookmarkTabGroupConversion,
            data_sharing::features::kDataSharingFeature},
           {data_sharing::features::kDataSharingJoinOnly});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {features::kTabGroupMenuImprovements,
-           features::kTabGroupMenuMoreEntryPoints},
+          {features::kTabGroupMenuMoreEntryPoints,
+           features::kBookmarkTabGroupConversion},
           {data_sharing::features::kDataSharingFeature,
            data_sharing::features::kDataSharingJoinOnly});
     }
@@ -404,7 +404,7 @@ class SavedTabGroupInteractiveTest
       // tabs: Open, move, unpin, delete, [convert to bookmark], and the tabs
       // title
       int num_non_tab_items_in_menu = 5;
-      if (features::IsTabGroupMenuImprovementsEnabled()) {
+      if (features::IsBookmarkTabGroupConversionEnabled()) {
         num_non_tab_items_in_menu++;
       }
       const int total_items = submenu->GetMenuItems().size();
@@ -882,8 +882,6 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       FinishTabstripAnimations(), CheckIfSavedGroupIsClosed(&saved_guid),
       // Reopen the tab group and expect the saved group is linked again.
       PressButton(kSavedTabGroupButtonElementId),
-      EnsurePresent(STGTabsMenuModel::kOpenGroup),
-      SelectMenuItem(STGTabsMenuModel::kOpenGroup),
       WaitForShow(kTabGroupHeaderElementId),
       CheckIfSavedGroupIsOpen(&saved_guid),
       // Verify the first tab in the group is the active tab.
@@ -1167,36 +1165,6 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       EnsureNotPresent(STGEverythingMenu::kTabGroup));
 }
 
-class SavedTabGroupContextMenuFeatureInteractiveTest
-    : public SavedTabGroupInteractiveTestBase {
- public:
-  SavedTabGroupContextMenuFeatureInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kTabGroupMenuImprovements);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SavedTabGroupContextMenuFeatureInteractiveTest,
-                       CheckContextMenuShowsOnLeftClick) {
-  browser()->tab_strip_model()->AddToNewGroup({0});
-
-  RunTestSequence(
-      // Show the bookmarks bar where the buttons will be displayed.
-      FinishTabstripAnimations(), ShowBookmarksBar(),
-      // Ensure the group was saved when created.
-      EnsurePresent(kSavedTabGroupButtonElementId), FinishTabstripAnimations(),
-      PressButton(kSavedTabGroupButtonElementId),
-      EnsurePresent(STGTabsMenuModel::kOpenGroup),
-      EnsurePresent(STGTabsMenuModel::kDeleteGroupMenuItem),
-      EnsurePresent(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
-      EnsurePresent(STGTabsMenuModel::kToggleGroupPinStateMenuItem),
-      EnsurePresent(STGTabsMenuModel::kConvertToBookmarkMenuItem),
-      EnsurePresent(STGTabsMenuModel::kTabsTitleItem),
-      EnsurePresent(STGTabsMenuModel::kTab));
-}
 
 class SavedTabGroupEverythingMenuMoreEntryPointsFeature
     : public SavedTabGroupInteractiveTestBase {
@@ -1278,10 +1246,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
 class TabGroupShortcutsInteractiveTest
     : public SavedTabGroupInteractiveTestBase {
  public:
-  TabGroupShortcutsInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kTabGroupMenuImprovements);
-  }
+  TabGroupShortcutsInteractiveTest() = default;
   ~TabGroupShortcutsInteractiveTest() override = default;
 
   void SetUp() override { SavedTabGroupInteractiveTestBase::SetUp(); }
