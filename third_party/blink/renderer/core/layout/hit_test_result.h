@@ -49,6 +49,7 @@ class HTMLAreaElement;
 class HTMLMediaElement;
 class HitTestLocation;
 class Image;
+class ImageResourceContent;
 class KURL;
 class LocalFrame;
 class MediaSourceHandle;
@@ -221,6 +222,7 @@ class CORE_EXPORT HitTestResult {
   std::tuple<bool, ListBasedHitTestBehavior>
   AddNodeToListBasedTestResultInternal(Node* node,
                                        const HitTestLocation& location);
+  static const ImageResourceContent* GetImageContent(const Node* node);
 
   HitTestRequest hit_test_request_;
   bool cacheable_;

@@ -31,6 +31,7 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
  public:
   ~ImageResourceInfo() = default;
   virtual const KURL& Url() const = 0;
+  virtual bool IsAutomaticUpgrade() const = 0;
   virtual base::TimeTicks LoadResponseEnd() const = 0;
   virtual base::TimeTicks LoadStart() const = 0;
   virtual base::TimeTicks LoadEnd() const = 0;

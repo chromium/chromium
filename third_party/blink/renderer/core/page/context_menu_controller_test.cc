@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -2492,6 +2493,27 @@ TEST_F(InterestForTouchscreenTest, LinkWithInterestFor) {
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_EQ(link->GetInterestState(),
             Element::InterestState::kExplicitInterest);
+}
+
+TEST_F(ContextMenuControllerTest, MixedContentImageAutoupgrade) {
+  RegisterMockedImageURLLoad("https://example.com/image.png");
+
+  frame_test_helpers::LoadHTMLString(
+      LocalMainFrame(), "<img id='target' src='http://example.com/image.png'>",
+      url_test_helpers::ToKURL("https://example.com/"));
+
+  GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* img_element = GetDocument()->getElementById(AtomicString("target"));
+  ASSERT_TRUE(IsA<HTMLImageElement>(img_element));
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      img_element, ui::mojom::blink::MenuSourceType::kMouse));
+
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kImage);
+  EXPECT_EQ(context_menu_data.src_url.spec(), "https://example.com/image.png");
 }
 
 }  // namespace blink

@@ -170,6 +170,9 @@ class ImageResource::ImageResourceInfoImpl final
 
  private:
   const KURL& Url() const override { return resource_->Url(); }
+  bool IsAutomaticUpgrade() const override {
+    return resource_->GetResourceRequest().IsAutomaticUpgrade();
+  }
   base::TimeTicks LoadEnd() const override {
     if (ResourceLoadTiming* load_timing =
             resource_->GetResponse().GetResourceLoadTiming()) {

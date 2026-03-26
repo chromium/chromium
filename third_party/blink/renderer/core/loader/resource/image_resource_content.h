@@ -140,6 +140,7 @@ class CORE_EXPORT ImageResourceContent final
 
   // Redirecting methods to Resource.
   const KURL& Url() const override;
+  bool IsAutomaticUpgrade() const;
   bool IsDataUrl() const override;
   base::TimeTicks LoadResponseEnd() const;
   base::TimeTicks DiscoveryTime() const override;

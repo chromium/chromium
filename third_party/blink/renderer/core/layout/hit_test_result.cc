@@ -442,21 +442,7 @@ Image* HitTestResult::GetImage() const {
 }
 
 Image* HitTestResult::GetImage(const Node* node) {
-  if (!node) {
-    return nullptr;
-  }
-  const LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object) {
-    return nullptr;
-  }
-  const LayoutImageResource* layout_image_resource = nullptr;
-  if (layout_object->IsImage()) {
-    layout_image_resource = To<LayoutImage>(layout_object)->ImageResource();
-  } else if (auto* svg_image = DynamicTo<LayoutSVGImage>(layout_object)) {
-    layout_image_resource = svg_image->ImageResource();
-  }
-  const ImageResourceContent* image_content =
-      layout_image_resource ? layout_image_resource->CachedImage() : nullptr;
+  const ImageResourceContent* image_content = GetImageContent(node);
   if (image_content && !image_content->ErrorOccurred() &&
       image_content->HasImage()) {
     return image_content->GetImage();
@@ -477,6 +463,11 @@ KURL HitTestResult::AbsoluteImageURL(const Node* node) {
   if (!node || !HasImageSourceURL(*node)) {
     return KURL();
   }
+  const ImageResourceContent* image_content = GetImageContent(node);
+  if (image_content && image_content->IsAutomaticUpgrade()) {
+    return image_content->Url();
+  }
+
   AtomicString url_string = To<Element>(*node).ImageSourceURL();
   if (url_string.empty()) {
     return KURL();
@@ -592,6 +583,25 @@ HitTestResult::AddNodeToListBasedTestResultInternal(
 
   // The second argument will be ignored.
   return std::make_tuple(true, kContinueHitTesting);
+}
+
+const ImageResourceContent* HitTestResult::GetImageContent(const Node* node) {
+  if (!node) {
+    return nullptr;
+  }
+  const LayoutObject* layout_object = node->GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+  const LayoutImageResource* layout_image_resource = nullptr;
+  if (const auto* layout_image = DynamicTo<LayoutImage>(layout_object)) {
+    layout_image_resource = layout_image->ImageResource();
+  } else if (const auto* svg_image = DynamicTo<LayoutSVGImage>(layout_object)) {
+    layout_image_resource = svg_image->ImageResource();
+  }
+  const ImageResourceContent* image_content =
+      layout_image_resource ? layout_image_resource->CachedImage() : nullptr;
+  return image_content;
 }
 
 ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(

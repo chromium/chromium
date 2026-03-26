@@ -48,6 +48,7 @@ class NullImageResourceInfo final
 
  private:
   const KURL& Url() const override { return url_; }
+  bool IsAutomaticUpgrade() const override { return false; }
   base::TimeTicks LoadResponseEnd() const override { return base::TimeTicks(); }
   base::TimeTicks LoadStart() const override { return base::TimeTicks(); }
   base::TimeTicks LoadEnd() const override { return base::TimeTicks(); }
@@ -702,6 +703,10 @@ bool ImageResourceContent::IsPaintedFirstFrame() const {
 // redirecting to ImageResource.
 const KURL& ImageResourceContent::Url() const {
   return info_->Url();
+}
+
+bool ImageResourceContent::IsAutomaticUpgrade() const {
+  return info_->IsAutomaticUpgrade();
 }
 
 bool ImageResourceContent::IsDataUrl() const {
