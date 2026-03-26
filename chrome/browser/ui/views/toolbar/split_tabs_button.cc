@@ -159,6 +159,11 @@ void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {
 }
 
 void SplitTabsToolbarButton::UpdateButtonVisibility() {
+  // Force the menu to close if it's open because the active tab or split may
+  // have changed and invalidated the menu.
+  if (menu_runner_) {
+    menu_runner_->Cancel();
+  }
   const bool is_active_tab_in_split = IsActiveTabInSplit();
   UpdateButtonIcon();
   UpdateStatusIndicator(is_active_tab_in_split);

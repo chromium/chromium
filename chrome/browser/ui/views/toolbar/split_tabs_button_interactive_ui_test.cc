@@ -503,3 +503,19 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, A11y) {
       CheckSplitTabButtonStrings(IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_ENABLED),
       CheckSplitTabButtonRole(ax::mojom::Role::kPopUpButton));
 }
+
+// Regression test for https://crbug.com/495303521
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest,
+                       MenuHidesOnActiveTabChange) {
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  RunTestSequence(UpdateSplitTabButtonPinState(true),
+                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+                  AddInstrumentedTab(kWebContents1Id, url1),
+                  AddInstrumentedTab(kWebContents2Id, url1),
+                  AddInstrumentedTab(kWebContents3Id, url1),
+                  SelectTab(kTabStripElementId, 1), EnterSplitView(1, 2),
+                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
+                  WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
+                  SelectTab(kTabStripElementId, 0),
+                  WaitForHide(SplitTabMenuModel::kReversePositionMenuItem));
+}
