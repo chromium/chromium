@@ -48,7 +48,7 @@ class AppMenuButton : public ToolbarButton {
   void CloseMenu();
 
   // Called by the app menu when it closes.
-  void OnMenuClosed();
+  virtual void OnMenuClosed();
 
   // Whether the app menu is currently showing.
   bool IsMenuShowing() const;

@@ -15,6 +15,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/throb_animation.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/view.h"
 
@@ -51,6 +52,7 @@ class BrowserAppMenuButton : public AppMenuButton {
   void UpdateInkdrop();
 
   // AppMenuButton:
+  void OnMenuClosed() override;
   void OnThemeChanged() override;
   // Updates the presentation according to |severity_| and the theme provider.
   void UpdateIcon() override;
@@ -98,6 +100,8 @@ class BrowserAppMenuButton : public AppMenuButton {
                               base::Unretained(this)));
 
   std::unique_ptr<lottie::Animation> lottie_animation_;
+
+  std::unique_ptr<gfx::ThrobAnimation> click_animation_;
 
   // Used to spawn weak pointers for delayed tasks to open the overflow menu.
   base::WeakPtrFactory<BrowserAppMenuButton> weak_factory_{this};

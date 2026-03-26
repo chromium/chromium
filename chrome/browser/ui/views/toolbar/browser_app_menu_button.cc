@@ -66,7 +66,8 @@
 
 namespace {
 constexpr int kChromeRefreshImageLabelPadding = 2;
-constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
+constexpr int kGlowUpImageLabelPadding = 4;
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
 class LottieIconSource : public gfx::CanvasImageSource {
  public:
@@ -108,7 +109,9 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
                                         base::Unretained(this))),
       toolbar_view_(toolbar_view) {
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  SetImageLabelSpacing(kChromeRefreshImageLabelPadding);
+  SetImageLabelSpacing(base::FeatureList::IsEnabled(features::kToolbarGlowUp)
+                           ? kGlowUpImageLabelPadding
+                           : kChromeRefreshImageLabelPadding);
   label()->SetPaintToLayer();
   label()->SetSkipSubpixelRenderingOpacityCheck(true);
   label()->layer()->SetFillsBoundsOpaquely(false);
@@ -116,6 +119,8 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
   if (base::FeatureList::IsEnabled(features::kToolbarGlowUp)) {
     SetAnimateOnStateChange(true);
     SetAnimationDuration(kAnimationDuration);
+    click_animation_ = std::make_unique<gfx::ThrobAnimation>(this);
+    click_animation_->SetSlideDuration(kAnimationDuration);
   }
 }
 
@@ -171,6 +176,13 @@ AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
   return AlertMenuItem::kNone;
 }
 
+void BrowserAppMenuButton::OnMenuClosed() {
+  if (base::FeatureList::IsEnabled(features::kToolbarGlowUp)) {
+    click_animation_->Hide();
+  }
+  AppMenuButton::OnMenuClosed();
+}
+
 void BrowserAppMenuButton::OnThemeChanged() {
   UpdateThemeBasedState();
   AppMenuButton::OnThemeChanged();
@@ -194,7 +206,10 @@ void BrowserAppMenuButton::UpdateIcon() {
                                     ? kBrowserToolsTouchIcon
                                     : kBrowserToolsChromeRefreshIcon;
 
-  const double animation_value = hover_animation().GetCurrentValue();
+  const double click_animation_value =
+      base::FeatureList::IsEnabled(features::kToolbarGlowUp)
+          ? click_animation_->GetCurrentValue()
+          : 0;
   const int icon_size = GetIconSize();
 
   for (auto state : kButtonStates) {
@@ -203,7 +218,7 @@ void BrowserAppMenuButton::UpdateIcon() {
         ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size);
 
     if (base::FeatureList::IsEnabled(features::kToolbarGlowUp) &&
-        animation_value > 0 && GetColorProvider()) {
+        click_animation_value > 0 && GetColorProvider()) {
       if (!lottie_animation_) {
         std::optional<std::vector<uint8_t>> lottie_bytes =
             ui::ResourceBundle::GetSharedInstance().GetLottieData(
@@ -217,7 +232,8 @@ void BrowserAppMenuButton::UpdateIcon() {
 
       model = ui::ImageModel::FromImageSkia(
           gfx::CanvasImageSource::MakeImageSkia<LottieIconSource>(
-              lottie_animation_.get(), animation_value, icon_size, icon_color));
+              lottie_animation_.get(), click_animation_value, icon_size,
+              icon_color));
     }
     SetImageModel(state, model);
   }
@@ -225,7 +241,8 @@ void BrowserAppMenuButton::UpdateIcon() {
 
 void BrowserAppMenuButton::AnimationProgressed(
     const gfx::Animation* animation) {
-  if (animation == &hover_animation()) {
+  if (base::FeatureList::IsEnabled(features::kToolbarGlowUp) &&
+      animation == click_animation_.get()) {
     UpdateIcon();
   }
   AppMenuButton::AnimationProgressed(animation);
@@ -348,6 +365,10 @@ void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (base::FeatureList::IsEnabled(features::kToolbarGlowUp)) {
+    click_animation_->Show();
+  }
 
   ShowMenu(event.IsKeyEvent() ? (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
                                  views::MenuRunner::INVOKED_FROM_KEYBOARD)
