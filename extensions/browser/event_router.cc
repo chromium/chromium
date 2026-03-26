@@ -1329,10 +1329,20 @@ void EventRouter::ReportEvent(events::HistogramValue histogram_value,
 void EventRouter::DispatchPendingEvent(
     std::unique_ptr<Event> event,
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> params) {
+  DCHECK(event);
+
   if (!params) {
+    if (event->cannot_dispatch_callback) {
+      // The context failed to start, so there won't be any registered listener
+      // associated with this event. In this case, notify the caller and drop
+      // the event. Failure to do so can cause full navigation block if an
+      // extension with webRequestBlocking permissions fails to start.
+      // See crbug.com/484218883.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(event->cannot_dispatch_callback));
+    }
     return;
   }
-  DCHECK(event);
 
   // TODO(crbug.com/40267088): We shouldn't dispatch events to processes
   // that don't have a listener for that event. Currently, we enforce this for
@@ -1363,7 +1373,8 @@ void EventRouter::DispatchPendingEvent(
     // callback) and drop the event.
     // TODO(crbug.com/40954888): We should provide feedback to
     // developers (e.g. emit a warning) when an event has no listeners.
-    event->cannot_dispatch_callback.Run();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(event->cannot_dispatch_callback));
   }
 }
 
