@@ -298,7 +298,7 @@ def GetChangedTestFiles() -> list[str]:
   test_files: list[str] = []
 
   for f in changed_files:
-    if IsTestFile(f) is const.TestValidity.VALID_TEST:
+    if IsTestFile(f) is not const.TestValidity.NOT_A_TEST:
       test_files.append(f)
   return test_files
 
