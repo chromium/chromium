@@ -730,53 +730,91 @@ INSTANTIATE_TEST_SUITE_P(
                            .is_trust_first_enabled = true,
                            .expected_result = true}));
 
-// --- Context Menu Item Tests ---
+struct ContextMenuFeatureParams {
+  std::string name;
+  bool is_feature_enabled = false;
+  bool has_user_consented = false;
+  bool is_trust_first_enabled = false;
+  bool expected_result = false;
+};
 
-class GlicEnablingContextMenuTest : public GlicEnablingGatedFeatureTest {
+class GlicEnablingContextMenuTest
+    : public GlicEnablingProfileReadyStateTestBase,
+      public testing::WithParamInterface<ContextMenuFeatureParams> {
  public:
   void SetUp() override {
-    SetUpFeature(features::kGlicContextMenu,
-                 features::kGlicContextMenuWithOnboarding);
+    GlicEnablingProfileReadyStateTestBase::SetUp();
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    // Always enable multi-instance features as a prerequisite.
+    enabled_features.push_back({features::kGlicMultiInstance, {}});
+    enabled_features.push_back({mojom::features::kGlicMultiTab, {}});
+    enabled_features.push_back({features::kGlicMultitabUnderlines, {}});
+
+    if (GetParam().is_feature_enabled) {
+      enabled_features.push_back({features::kGlicContextMenu, {}});
+    } else {
+      disabled_features.push_back(features::kGlicContextMenu);
+    }
+
+    if (GetParam().is_trust_first_enabled) {
+      enabled_features.push_back({features::kGlicTrustFirstOnboarding, {}});
+    } else {
+      disabled_features.push_back(features::kGlicTrustFirstOnboarding);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
+
+ protected:
+  void SetConsent(bool has_consent) {
+    const auto fre_status = has_consent ? prefs::FreStatus::kCompleted
+                                        : prefs::FreStatus::kIncomplete;
+    profile()->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
+                                      static_cast<int>(fre_status));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(GlicEnablingContextMenuTest, ExpectedBehavior) {
   SetConsent(GetParam().has_user_consented);
-  EXPECT_EQ(GetParam().expected_result,
-            GlicEnabling::IsContextualMenuItemEnabled(profile()))
+  base::HistogramTester histogram_tester;
+  bool expected = GetParam().expected_result;
+  EXPECT_EQ(expected, GlicEnabling::IsContextualMenuItemEnabled(profile()))
       << "Failed for case: " << GetParam().name;
+  histogram_tester.ExpectUniqueSample("Glic.WebContentContextMenu.Enabled",
+                                      expected, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     GlicEnablingContextMenuTest,
     testing::Values(
-        GatedFeatureParams{.name = "Default (All Off)",
-                           .expected_result = false},
-        GatedFeatureParams{.name = "TrustFirstOnly (Not Enough)",
-                           .is_trust_first_enabled = true,
-                           .expected_result = false},
-        GatedFeatureParams{.name = "Consented (Pure)",
-                           .is_feature_enabled = true,
-                           .has_user_consented = true,
-                           .expected_result = true},
-        GatedFeatureParams{.name = "ConsentedWithTrustFirst",
-                           .is_feature_enabled = true,
-                           .has_user_consented = true,
-                           .is_trust_first_enabled = true,
-                           .expected_result = true},
-        GatedFeatureParams{.name = "FeatureEnabledWithTrustFirst (No Gate)",
-                           .is_feature_enabled = true,
-                           .is_trust_first_enabled = true,
-                           .expected_result = false},
-        GatedFeatureParams{.name = "OnboardingGatedOnly (No TrustFirst)",
-                           .is_feature_enabled = true,
-                           .is_onboarding_param_enabled = true,
-                           .expected_result = false},
-        GatedFeatureParams{.name = "OnboardingGatedWithTrustFirst (Success)",
-                           .is_feature_enabled = true,
-                           .is_onboarding_param_enabled = true,
-                           .is_trust_first_enabled = true,
-                           .expected_result = true}));
+        ContextMenuFeatureParams{.name = "Default (All Off)",
+                                 .expected_result = false},
+        ContextMenuFeatureParams{.name = "TrustFirstOnly (Not Enough)",
+                                 .is_trust_first_enabled = true,
+                                 .expected_result = false},
+        ContextMenuFeatureParams{.name = "Consented (Pure)",
+                                 .is_feature_enabled = true,
+                                 .has_user_consented = true,
+                                 .expected_result = true},
+        ContextMenuFeatureParams{.name = "ConsentedWithTrustFirst",
+                                 .is_feature_enabled = true,
+                                 .has_user_consented = true,
+                                 .is_trust_first_enabled = true,
+                                 .expected_result = true},
+        ContextMenuFeatureParams{.name = "FeatureEnabledWithTrustFirst",
+                                 .is_feature_enabled = true,
+                                 .is_trust_first_enabled = true,
+                                 .expected_result = true},
+        ContextMenuFeatureParams{.name = "FeatureEnabledNoTrustFirstNoConsent",
+                                 .is_feature_enabled = true,
+                                 .expected_result = false}));
 }  // namespace
 }  // namespace glic
