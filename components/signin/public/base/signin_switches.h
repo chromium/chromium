@@ -343,15 +343,6 @@ BASE_DECLARE_FEATURE(kFirstRunDesktopRefresh);
 // instead.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFirstRunDesktopChoiceScreenRefresh);
-// Controls whether the First Run animations are disabled or not. If the feature
-// is enabled, animations in the First Run are disabled, otherwise they're
-// enabled. It should be only used for the testing purposes (e.g. pixel tests)
-// and always disabled by default.
-//
-// NOTE: The tests must setup this feature in advance before the First Run flow
-// starts, otherwise the animations will start.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kDisableFirstRunAnimationsForTesting);
 // A helper function to determine if the first run desktop refresh is enabled
 // (see `kFirstRunDesktopRefresh` and `kFirstRunDesktopChoiceScreenRefresh`
 // flags).

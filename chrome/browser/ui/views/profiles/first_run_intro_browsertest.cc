@@ -60,12 +60,7 @@ const FirstRunTestParam kTestParams[] = {
 #endif
     {.pixel_test_param = {.test_suffix = "LongerStringsFixedSize"},
      .use_fixed_size = true,
-     .use_longer_strings = true,
-     .use_refresh = false},
-    {.pixel_test_param = {.test_suffix = "LongerStringsFixedSizeRefreshedUI"},
-     .use_fixed_size = true,
-     .use_longer_strings = true,
-     .use_refresh = true},
+     .use_longer_strings = true},
     {.pixel_test_param = {.test_suffix = "RightToLeftLanguage",
                           .use_right_to_left_language = true}},
     // Refresh parameters
@@ -82,31 +77,16 @@ const FirstRunTestParam kTestParams[] = {
      .use_refresh = true},
 };
 
-std::string_view GetMakeCardDescriptionLongerJsString() {
-  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
-    return "(() => {"
-           "  const signInPromo = "
-           "  document.querySelector('sign-in-promo-refresh');"
-           "  const cardDescriptions = signInPromo.shadowRoot.querySelectorAll("
-           "      '.benefit-card-description');"
-           "  cardDescriptions[0].textContent = "
-           "      cardDescriptions[0].textContent.repeat(20);"
-           "  return true;"
-           "})();";
-  }
-
-  return "(() => {"
-         "  const introApp = document.querySelector('intro-app');"
-         "  const signInPromo = "
-         "introApp.shadowRoot.querySelector('sign-in-promo');"
-         "  const cardDescriptions = signInPromo.shadowRoot.querySelectorAll("
-         "      '.benefit-card-description');"
-         "  cardDescriptions[0].textContent = "
-         "      cardDescriptions[0].textContent.repeat(20);"
-         "  return true;"
-         "})();";
-}
-
+const char kMakeCardDescriptionLongerJsString[] =
+    "(() => {"
+    "  const introApp = document.querySelector('intro-app');"
+    "  const signInPromo = introApp.shadowRoot.querySelector('sign-in-promo');"
+    "  const cardDescriptions = signInPromo.shadowRoot.querySelectorAll("
+    "      '.benefit-card-description');"
+    "  cardDescriptions[0].textContent = "
+    "      cardDescriptions[0].textContent.repeat(20);"
+    "  return true;"
+    "})();";
 }  // namespace
 
 class FirstRunIntroPixelTest
@@ -120,9 +100,7 @@ class FirstRunIntroPixelTest
           GetParam().decline_signin_cta_experiment_enabled},
          {switches::kUsePrimaryAndTonalButtonsForPromos,
           GetParam().use_primary_and_tonal_buttons_for_promos_enabled},
-         {switches::kFirstRunDesktopRefresh, GetParam().use_refresh},
-         {switches::kDisableFirstRunAnimationsForTesting,
-          GetParam().use_refresh}});
+         {switches::kFirstRunDesktopRefresh, GetParam().use_refresh}});
   }
 
   void ShowUi(const std::string& name) override {
@@ -148,7 +126,7 @@ class FirstRunIntroPixelTest
 
     if (GetParam().use_longer_strings) {
       EXPECT_EQ(true, content::EvalJs(profile_picker_view_->GetPickerContents(),
-                                      GetMakeCardDescriptionLongerJsString()));
+                                      kMakeCardDescriptionLongerJsString));
     }
   }
 

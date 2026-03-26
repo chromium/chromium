@@ -407,8 +407,6 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kFirstRunDesktopRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFirstRunDesktopChoiceScreenRefresh,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDisableFirstRunAnimationsForTesting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsFirstRunDesktopRefreshEnabled(bool is_in_search_engine_choice_region) {
   if (is_in_search_engine_choice_region &&
       !base::FeatureList::IsEnabled(kFirstRunDesktopChoiceScreenRefresh)) {

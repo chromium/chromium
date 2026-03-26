@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
 #include "base/check_deref.h"
-#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -27,7 +26,6 @@
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
@@ -129,13 +127,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
                      base::FeatureList::IsEnabled(
                          switches::kUsePrimaryAndTonalButtonsForPromos));
-  if (base::FeatureList::IsEnabled(
-          switches::kDisableFirstRunAnimationsForTesting)) {
-    CHECK_IS_TEST();
-    source->AddBoolean("disableAnimations", true);
-  } else {
-    source->AddBoolean("disableAnimations", false);
-  }
 
   if (is_first_run_desktop_refresh_enabled) {
     source->AddInteger(
@@ -165,12 +156,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath("images/gshield.svg", IDR_GSHIELD_ICON_SVG);
 #endif
-
-  if (is_first_run_desktop_refresh_enabled) {
-    source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::WorkerSrc,
-        "worker-src blob: chrome://resources 'self';");
-  }
 
   // Unretained ok: `this` owns the handler.
   auto intro_handler = std::make_unique<IntroHandler>(

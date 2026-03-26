@@ -9,19 +9,6 @@ import type {SignInPromoRefreshElement} from './sign_in_promo_refresh.js';
 export function getHtml(this: SignInPromoRefreshElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-lottie id="left-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('left')}"
-    ?autoplay="${!this.shouldDisableAnimations_}">
-</cr-lottie>
-<cr-lottie id="right-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('right')}"
-    ?autoplay="${!this.shouldDisableAnimations_}">
-</cr-lottie>
-<cr-lottie id="bottom-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('bottom')}"
-    ?autoplay="${!this.shouldDisableAnimations_}">
-</cr-lottie>
-
 ${this.isTopRightCornerVariation_ ? html`
   <div id="top-right-corner-container">
     <cr-button id="declineSignInButton"
@@ -34,9 +21,9 @@ ${this.isTopRightCornerVariation_ ? html`
   </div>
 ` : ''}
 
-<div id="product-logo-container">
-  <img id="product-logo-animation" src="images/product-logo-animation.svg"
-    alt="$i18n{productLogoAltText}">
+<div id="illustrationContainer">
+  <img id="productLogo" src="images/product-logo.svg"
+      alt="$i18n{productLogoAltText}">
 </div>
 
 <h1 class="title fade-in">$i18n{pageTitle}</h1>
