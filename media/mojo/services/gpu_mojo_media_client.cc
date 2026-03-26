@@ -63,6 +63,18 @@ gpu::CommandBufferStub* GetCommandBufferStub(
   return stub;
 }
 
+bool IsAcceleratedDecodingDisabled(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuFeatureInfo& gpu_feature_info) {
+  return gpu_preferences.disable_accelerated_video_decode ||
+         gpu_feature_info.status_values
+                 [gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] !=
+             gpu::kGpuFeatureStatusEnabled ||
+         // For some reason the GpuPreferences and GpuFeatureInfo may not be
+         // up to date in this case.
+         gl::GetGLImplementation() == gl::kGLImplementationDisabled;
+}
+
 }  // namespace
 
 // Forward declaration of the platform specific GpuMojoMediaClient factory
@@ -153,10 +165,7 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_) {
     // Only bother to query if accelerated video decoding is enabled.
     // (RenderMediaClient does not know about GPU features before it asks.)
-    if (gpu_preferences_.disable_accelerated_video_decode ||
-        (gpu_feature_info_
-             .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] !=
-         gpu::kGpuFeatureStatusEnabled)) {
+    if (IsAcceleratedDecodingDisabled(gpu_preferences_, gpu_feature_info_)) {
       supported_config_cache_ = SupportedVideoDecoderConfigs();
     } else {
       supported_config_cache_ = GetPlatformSupportedVideoDecoderConfigs();
@@ -215,11 +224,7 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space,
     mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder) {
-  // Always respect GPU features.
-  if (gpu_preferences_.disable_accelerated_video_decode ||
-      (gpu_feature_info_
-           .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] !=
-       gpu::kGpuFeatureStatusEnabled)) {
+  if (IsAcceleratedDecodingDisabled(gpu_preferences_, gpu_feature_info_)) {
     return nullptr;
   }
   // All implementations require a command buffer.

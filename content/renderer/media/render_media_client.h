@@ -36,6 +36,9 @@ class RenderMediaClient : public media::MediaClient {
   // is not exposed because no content code needs to directly access it.
   static void Initialize();
 
+  // Called by RenderThreadImpl when gpu feature info may have changed.
+  static void SetGpuFeatureInfo(const gpu::GpuFeatureInfo& gpu_feature_info);
+
   // MediaClient implementation.
   bool IsDecoderSupportedAudioType(const media::AudioType& type) final;
   bool IsDecoderSupportedVideoType(const media::VideoType& type) final;
@@ -48,6 +51,7 @@ class RenderMediaClient : public media::MediaClient {
   media::ExternalMemoryAllocator* GetMediaAllocator() final;
 
  private:
+  friend class base::NoDestructor<RenderMediaClient>;
   RenderMediaClient();
   ~RenderMediaClient() override;
 
@@ -66,6 +70,9 @@ class RenderMediaClient : public media::MediaClient {
       media::VideoDecoderType type);
   void OnGetSupportedVideoEncoderConfigs(
       const media::VideoEncodeAccelerator::SupportedProfiles& configs);
+
+  // Checks if features have changed and clears supported profiles if needed.
+  void SetGpuFeatureInfoInternal(const gpu::GpuFeatureInfo& gpu_feature_info);
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   SEQUENCE_CHECKER(main_thread_sequence_checker_);

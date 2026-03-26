@@ -297,6 +297,17 @@ bool IsBackgrounded(std::optional<base::Process::Priority> process_priority) {
   }
 }
 
+// Helper function to update the content and media clients when the
+// GpuChannelHost may have been updated.
+void OnPotentialNewGpuChannelHost(gpu::GpuChannelHost* host) {
+  if (host) {
+    RenderMediaClient::SetGpuFeatureInfo(host->gpu_feature_info());
+    GetContentClient()->SetGpuInfo(host->gpu_info());
+  } else {
+    RenderMediaClient::SetGpuFeatureInfo(gpu::GpuFeatureInfo());
+  }
+}
+
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -485,6 +496,8 @@ void RenderThreadImpl::Init() {
   // to wait on a sync call.
   gpu_->EstablishGpuChannel(
       base::BindOnce([](scoped_refptr<gpu::GpuChannelHost> host) {
+        // We don't call OnPotentialNewGpuChannelHost() here since this occurs
+        // before the RenderMediaClient has been initialized.
         if (host) {
           GetContentClient()->SetGpuInfo(host->gpu_info());
         }
@@ -1293,8 +1306,7 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync() {
 
   scoped_refptr<gpu::GpuChannelHost> gpu_channel =
       gpu_->EstablishGpuChannelSync();
-  if (gpu_channel)
-    GetContentClient()->SetGpuInfo(gpu_channel->gpu_info());
+  OnPotentialNewGpuChannelHost(gpu_channel.get());
   return gpu_channel;
 }
 
@@ -1306,8 +1318,7 @@ void RenderThreadImpl::EstablishGpuChannel(
       [](EstablishGpuChannelCallback callback, RenderThreadImpl* thread,
          scoped_refptr<gpu::GpuChannelHost> host) {
         TRACE_EVENT_END("gpu", perfetto::Track::FromPointer(thread));
-        if (host)
-          GetContentClient()->SetGpuInfo(host->gpu_info());
+        OnPotentialNewGpuChannelHost(host.get());
         std::move(callback).Run(std::move(host));
       },
       // The GPU process can crash; in that case, run the callback with no host
