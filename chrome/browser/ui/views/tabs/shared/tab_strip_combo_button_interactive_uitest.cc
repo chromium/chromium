@@ -8,8 +8,10 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -21,15 +23,19 @@
 
 namespace {
 
-class TabStripComboButtonInteractiveUiTest : public InteractiveBrowserTest {
+class TabStripComboButtonInteractiveUiTest
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   TabStripComboButtonInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {tabs::kHorizontalTabStripComboButton, tab_groups::kProjectsPanel}, {});
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   }
   ~TabStripComboButtonInteractiveUiTest() override = default;
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{tabs::kVerticalTabs, {}}, {tab_groups::kProjectsPanel, {}}};
+  }
 
   auto SetPinned(const char* pref, bool pinned) {
     return Do([this, pref, pinned]() {
@@ -79,7 +85,6 @@ class TabStripComboButtonInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
@@ -183,13 +188,19 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
 }
 
 class TabStripComboButtonEverythingMenuInteractiveUiTest
-    : public InteractiveBrowserTest {
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  TabStripComboButtonEverythingMenuInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {tabs::kHorizontalTabStripComboButton}, {tab_groups::kProjectsPanel});
-  }
+  TabStripComboButtonEverythingMenuInteractiveUiTest() = default;
   ~TabStripComboButtonEverythingMenuInteractiveUiTest() override = default;
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{tabs::kVerticalTabs, {}}};
+  }
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {tab_groups::kProjectsPanel};
+  }
 
   auto SetPinned(const char* pref, bool pinned) {
     return Do([this, pref, pinned]() {
@@ -210,9 +221,6 @@ class TabStripComboButtonEverythingMenuInteractiveUiTest
           ->ExecuteCommand(command_id, 0);
     });
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
@@ -229,6 +237,38 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
                 prefs::kEverythingMenuPinnedToTabstrip);
           },
           false));
+}
+
+class TabStripComboButtonHorizontalInteractiveUiTest
+    : public InteractiveBrowserTest {
+ public:
+  TabStripComboButtonHorizontalInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {tabs::kHorizontalTabStripComboButton, tab_groups::kProjectsPanel}, {});
+  }
+  ~TabStripComboButtonHorizontalInteractiveUiTest() override = default;
+
+  auto SetPinned(const char* pref, bool pinned) {
+    return Do([this, pref, pinned]() {
+      browser()->profile()->GetPrefs()->SetBoolean(pref, pinned);
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonHorizontalInteractiveUiTest,
+                       OnlyTabSearchIsPresent) {
+  RunTestSequence(
+      // Pin both tab search and projects panel.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      SetPinned(prefs::kProjectsPanelPinnedToTabstrip, true),
+      // Tab search should be visible.
+      WaitForShow(kTabSearchButtonElementId),
+      // Projects panel should NOT be present in the view hierarchy of the combo
+      // button.
+      EnsureNotPresent(kVerticalTabStripProjectsButtonElementId));
 }
 
 }  // namespace

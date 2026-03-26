@@ -43,11 +43,17 @@ class TabStripComboButton : public views::View,
                             public gfx::AnimationDelegate {
   METADATA_HEADER(TabStripComboButton, views::View)
  public:
+  enum class Context {
+    kHorizontalTabStrip,
+    kVerticalTabStrip,
+  };
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabSearchUnpinMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelUnpinMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEverythingMenuUnpinMenuItem);
 
-  explicit TabStripComboButton(BrowserWindowInterface* browser);
+  explicit TabStripComboButton(BrowserWindowInterface* browser,
+                               Context context);
   TabStripComboButton(const TabStripComboButton&) = delete;
   TabStripComboButton& operator=(const TabStripComboButton&) = delete;
   ~TabStripComboButton() override;
@@ -108,6 +114,7 @@ class TabStripComboButton : public views::View,
   actions::ActionItem* GetEndButtonActionItem();
 
   const raw_ptr<BrowserWindowInterface> browser_;
+  const Context context_;
   raw_ptr<TabStripFlatEdgeButton> start_button_ = nullptr;
   raw_ptr<TabStripFlatEdgeButton> end_button_ = nullptr;
 

@@ -52,7 +52,8 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
     unfocus_button_->SetVisible(false);
   }
 
-  combo_button_ = AddChildView(std::make_unique<TabStripComboButton>(browser_));
+  combo_button_ = AddChildView(std::make_unique<TabStripComboButton>(
+      browser_, TabStripComboButton::Context::kVerticalTabStrip));
   combo_button_->SetOrientation(
       combo_button_orientation_ = state_controller->IsCollapsed()
                                       ? views::LayoutOrientation::kVertical
