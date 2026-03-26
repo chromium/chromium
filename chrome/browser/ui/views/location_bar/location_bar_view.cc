@@ -2205,10 +2205,7 @@ void LocationBarView::OnLocationIconGestureEvent(ui::GestureEvent* event) {
 }
 
 void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
-  if (!OpenContextMenu()) {
-    return;
-  }
-
+  // "Paste-and-Go" behavior should take priority over all other interactions.
   if (event.IsOnlyMiddleMouseButton() &&
       ui::Clipboard::IsMiddleClickPasteEnabled() &&
       ui::Clipboard::IsSupportedClipboardBuffer(
@@ -2217,7 +2214,10 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
         ui::ClipboardBuffer::kSelection, /* data_dst = */ std::nullopt,
         base::BindOnce(&LocationBarView::OnMiddleClickPaste,
                        weak_factory_.GetWeakPtr(), event.time_stamp()));
+    return;
   }
+
+  OpenContextMenu();
 }
 
 void LocationBarView::OnMiddleClickPaste(base::TimeTicks event_timestamp,
