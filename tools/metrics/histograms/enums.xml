@@ -9224,6 +9224,7 @@ from previous Chrome versions.
   <int value="-1607175130" label="force-enable-metrics-reporting"/>
   <int value="-1606890766"
       label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:disabled"/>
+  <int value="-1606249906" label="Prerender2CrossOriginIframes:enabled"/>
   <int value="-1606215707" label="WebAppWindowControlsOverlay:enabled"/>
   <int value="-1606029246" label="NtpSimplification:disabled"/>
   <int value="-1605920602" label="AVFoundationCaptureV2:disabled"/>
@@ -9591,6 +9592,7 @@ from previous Chrome versions.
   <int value="-1481990501" label="Windows10CustomTitlebar:disabled"/>
   <int value="-1481918315" label="SmsReceiverCrossDevice:enabled"/>
   <int value="-1481777496" label="DragAndDropAndroid:disabled"/>
+  <int value="-1480967537" label="Prerender2CrossOriginIframes:disabled"/>
   <int value="-1480926949" label="MaterialDesignBookmarks:enabled"/>
   <int value="-1480906156" label="IsolatedWebAppUnmanagedInstall:enabled"/>
   <int value="-1480866718" label="ash-disable-login-dim-and-blur"/>
@@ -17493,6 +17495,7 @@ from previous Chrome versions.
   <int value="1184093076" label="WebRtcUseMinMaxVEADimensions:enabled"/>
   <int value="1184225265" label="AllowSyncXHRInPageDismissal:enabled"/>
   <int value="1185029400" label="AndroidBottomToolbar:disabled"/>
+  <int value="1185125500" label="prerender2-cross-origin-iframes:disabled"/>
   <int value="1185424279" label="enable-media-router"/>
   <int value="1185669166" label="AlwaysAbandonScheduledTask:disabled"/>
   <int value="1186484930"
@@ -19263,6 +19266,7 @@ from previous Chrome versions.
       label="AutofillEnableIbanClientSideUrlFiltering:enabled"/>
   <int value="1761566860" label="ImageDescriptionsAlternateRouting:enabled"/>
   <int value="1761576233" label="OmniboxReportAssistedQueryStats:disabled"/>
+  <int value="1761791334" label="prerender2-cross-origin-iframes:enabled"/>
   <int value="1761920078"
       label="OverrideSimilarLanguagesForHrefTranslate:enabled"/>
   <int value="1762013378" label="AimUsePecApi:enabled"/>

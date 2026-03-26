@@ -8875,6 +8875,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrerender2ReuseHostDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPrerender2ReuseHost)},
 
+    {"prerender2-cross-origin-iframes",
+     flag_descriptions::kPrerender2CrossOriginIframesName,
+     flag_descriptions::kPrerender2CrossOriginIframesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kPrerender2CrossOriginIframes)},
+
     {"prerender-until-script", flag_descriptions::kPrerenderUntilScriptName,
      flag_descriptions::kPrerenderUntilScriptDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPrerenderUntilScript)},

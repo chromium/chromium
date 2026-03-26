@@ -7561,6 +7561,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "prerender2-cross-origin-iframes",
+    "owners": [
+      "yoichio@chromium.org",
+      "//content/browser/preloading/prerender/OWNERS"
+    ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "prerender2-reuse-host",
     "owners": [
       "gjc@google.com",
