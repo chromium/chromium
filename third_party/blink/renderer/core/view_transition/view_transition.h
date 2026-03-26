@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
@@ -478,6 +479,9 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool pending_skip_view_transitions_ = false;
 
   int wait_until_pending_promise_count_ = 0;
+
+  // Time at which we processed the initial state, used for metrics.
+  base::TimeTicks initial_state_processing_time_;
 
   static int next_id_;
 };

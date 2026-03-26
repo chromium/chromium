@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_host.h"
@@ -462,6 +463,8 @@ void ViewTransition::ProcessCurrentState() {
     switch (state_) {
       // Initial state: nothing to do, just advance the state
       case State::kInitial:
+        initial_state_processing_time_ = base::TimeTicks::Now();
+
         // We require a new effect node to be generated for the LayoutView when
         // a transition is not in terminal state. Dirty paint to ensure
         // generation of this effect node.
@@ -479,6 +482,13 @@ void ViewTransition::ProcessCurrentState() {
         DCHECK(in_main_lifecycle_update_);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kCompositingInputsClean);
+
+        if (creation_type_ == CreationType::kForSnapshot) {
+          UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+              "Blink.ViewTransitions.InitialFrameDelay",
+              base::TimeTicks::Now() - initial_state_processing_time_,
+              base::Microseconds(1), base::Milliseconds(20), 100);
+        }
 
         if (UnsupportedCapture()) {
           SkipTransition(PromiseResponse::kRejectInvalidState);
