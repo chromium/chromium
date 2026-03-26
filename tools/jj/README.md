@@ -26,6 +26,13 @@ when you switch between submitted commits), you will need to run `gclient sync`.
 ### Syncing code
 `jj sync` (using the config in `tools/jj/config.toml`)
 
+If a sync (or any other operation) results in a conflict, you can resolve the
+conflict by directly editing the conflicted file(s) and/or using `jj resolve`.
+
+If you would like to look at the pre-conflict state of a change (e.g. for a
+pre-jj dormant branch) you can use `jj evolog -r <revision>` to find its
+last unconflicted revision (e.g. `<change_id>/10`).
+
 ### Uploading code
 `jj upload` (using the config in `tools/jj/config.toml`)
 
