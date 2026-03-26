@@ -21,6 +21,8 @@
 // Coordinator for the Gemini settings view.
 @interface GeminiSettingsCoordinator : ChromeCoordinator
 
+@property(nonatomic, weak) id<GeminiSettingsCoordinatorDelegate> delegate;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
@@ -31,8 +33,6 @@
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
-
-@property(nonatomic, weak) id<GeminiSettingsCoordinatorDelegate> delegate;
 
 @end
 

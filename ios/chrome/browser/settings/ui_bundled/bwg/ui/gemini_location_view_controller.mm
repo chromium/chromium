@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_location_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -16,7 +16,7 @@
 
 namespace {
 
-// Section identifiers in the BWG Location settings table view.
+// Section identifiers in the Gemini Location settings table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierLocation = kSectionIdentifierEnumZero,
 };
@@ -27,15 +27,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 // Table identifier.
-NSString* const kBWGLocationViewTableIdentifier =
-    @"BWGLocationViewTableIdentifier";
+NSString* const kGeminiLocationViewTableIdentifier =
+    @"GeminiLocationViewTableIdentifier";
 
 // Row identifiers.
 NSString* const kPreciseLocationCellId = @"PreciseLocationCellId";
 
 }  // namespace
 
-@implementation BWGLocationViewController {
+@implementation GeminiLocationViewController {
   // Switch item for toggling precise location.
   TableViewSwitchItem* _preciseLocationSwitchItem;
   // Precise location preference value.
@@ -44,7 +44,7 @@ NSString* const kPreciseLocationCellId = @"PreciseLocationCellId";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.tableView.accessibilityIdentifier = kBWGLocationViewTableIdentifier;
+  self.tableView.accessibilityIdentifier = kGeminiLocationViewTableIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_TITLE);
   [self loadModel];
 }

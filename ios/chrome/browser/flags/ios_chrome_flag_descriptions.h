@@ -161,9 +161,6 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeName[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 
-extern const char kBWGPreciseLocationName[];
-extern const char kBWGPreciseLocationDescription[];
-
 extern const char kBWGPromoConsentName[];
 extern const char kBWGPromoConsentDescription[];
 
@@ -441,6 +438,9 @@ extern const char kGeminiMapsRichUIDescription[];
 
 extern const char kGeminiNavigationPromoName[];
 extern const char kGeminiNavigationPromoDescription[];
+
+extern const char kGeminiPreciseLocationName[];
+extern const char kGeminiPreciseLocationDescription[];
 
 extern const char kGeminiRefactoredFREName[];
 extern const char kGeminiRefactoredFREDescription[];

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_coordinator.h"
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mediator.h"
-#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_settings_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -16,7 +16,7 @@
 
 @implementation GeminiSettingsCoordinator {
   // View controller presented by this coordinator.
-  BWGSettingsViewController* _viewController;
+  GeminiSettingsViewController* _viewController;
   // Mediator used by this coordinator.
   GeminiSettingsMediator* _mediator;
 }
@@ -42,8 +42,8 @@
               prefService:self.profile->GetPrefs()];
   _mediator.sceneHandler = HandlerForProtocol(commandDispatcher, SceneCommands);
 
-  _viewController =
-      [[BWGSettingsViewController alloc] initWithStyle:ChromeTableViewStyle()];
+  _viewController = [[GeminiSettingsViewController alloc]
+      initWithStyle:ChromeTableViewStyle()];
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
 

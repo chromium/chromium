@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_settings_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_action_type.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
-#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_camera_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_location_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -54,8 +54,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 // Table identifier.
-NSString* const kBWGSettingsViewTableIdentifier =
-    @"BWGSettingsViewTableIdentifier";
+NSString* const kGeminiSettingsViewTableIdentifier =
+    @"GeminiSettingsViewTableIdentifier";
 
 // Row identifiers.
 NSString* const kLocationCellId = @"LocationCellId";
@@ -68,10 +68,11 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 }  // namespace
 
-@interface BWGSettingsViewController () <TableViewLinkHeaderFooterItemDelegate>
+@interface GeminiSettingsViewController () <
+    TableViewLinkHeaderFooterItemDelegate>
 @end
 
-@implementation BWGSettingsViewController {
+@implementation GeminiSettingsViewController {
   // Precise location item.
   TableViewMultiDetailTextItem* _preciseLocationItem;
   // Camera item.
@@ -79,7 +80,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   // Switch item for toggling page content sharing.
   TableViewSwitchItem* _pageContentSharingItem;
   // Location view controller shown when precise location row is tapped.
-  BWGLocationViewController* _locationViewController;
+  GeminiLocationViewController* _locationViewController;
   // Camera view controller shown when camera row is tapped.
   GeminiCameraViewController* _cameraViewController;
   // Precise location preference value.
@@ -96,7 +97,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.tableView.accessibilityIdentifier = kBWGSettingsViewTableIdentifier;
+  self.tableView.accessibilityIdentifier = kGeminiSettingsViewTableIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_TITLE);
   RecordGeminiSettingsOpened();
   [self loadModel];
@@ -133,7 +134,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
       headerFooterItemWithType:ItemTypeLocationFooter
                           text:l10n_util::GetNSString(
                                    IDS_IOS_BWG_SETTINGS_LOCATION_FOOTER_TEXT)
-                       linkURL:GURL(kBWGPreciseLocationURL)];
+                       linkURL:GURL(kGeminiPreciseLocationURL)];
   TableViewLinkHeaderFooterItem* cameraFooterItem = [self
       headerFooterItemWithType:ItemTypeCameraFooter
                           text:l10n_util::GetNSString(
@@ -144,8 +145,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                           text:
                               l10n_util::GetNSString(
                                   IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_FOOTER_TEXT)
-                       linkURL:GURL(kBWGPageContentSharingURL)];
-  TableViewLinkHeaderFooterItem* BWGAppActivityFooterItem = [self
+                       linkURL:GURL(kGeminiPageContentSharingURL)];
+  TableViewLinkHeaderFooterItem* geminiAppActivityFooterItem = [self
       headerFooterItemWithType:ItemTypeAppActivityFooter
                           text:
                               l10n_util::GetNSString(
@@ -153,7 +154,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                        linkURL:GURL()];
 
   TableViewModel* model = self.tableViewModel;
-  if (IsBWGPreciseLocationEnabled()) {
+  if (IsGeminiPreciseLocationEnabled()) {
     [model addSectionWithIdentifier:SectionIdentifierLocation];
     [model addItem:_preciseLocationItem
         toSectionWithIdentifier:SectionIdentifierLocation];
@@ -176,14 +177,14 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
   if (!IsGeminiDynamicSettingsEnabled()) {
     [model addSectionWithIdentifier:SectionIdentifierActivity];
-    [model addItem:[self BWGAppActivityItem]
+    [model addItem:[self GeminiAppActivityItem]
         toSectionWithIdentifier:SectionIdentifierActivity];
-    [model setFooter:BWGAppActivityFooterItem
+    [model setFooter:geminiAppActivityFooterItem
         forSectionWithIdentifier:SectionIdentifierActivity];
     RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kGeminiAppsActivity);
 
     [model addSectionWithIdentifier:SectionIdentifierExtensions];
-    [model addItem:[self BWGExtensionsItem]
+    [model addItem:[self GeminiExtensionsItem]
         toSectionWithIdentifier:SectionIdentifierExtensions];
     RecordGeminiSettingsItemShown(IOSGeminiSettingsItem::kExtensions);
   }
@@ -285,27 +286,27 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 }
 
 // Creates the Gemini app activity item.
-- (TableViewDetailTextItem*)BWGAppActivityItem {
-  TableViewDetailTextItem* BWGAppActivityItem =
+- (TableViewDetailTextItem*)GeminiAppActivityItem {
+  TableViewDetailTextItem* geminiAppActivityItem =
       [[TableViewDetailTextItem alloc] initWithType:ItemTypeAppActivity];
-  BWGAppActivityItem.text =
+  geminiAppActivityItem.text =
       l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_TITLE);
-  BWGAppActivityItem.accessorySymbol =
+  geminiAppActivityItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
-  BWGAppActivityItem.accessibilityTraits = UIAccessibilityTraitLink;
-  return BWGAppActivityItem;
+  geminiAppActivityItem.accessibilityTraits = UIAccessibilityTraitLink;
+  return geminiAppActivityItem;
 }
 
 // Creates the Gemini extensions item.
-- (TableViewDetailTextItem*)BWGExtensionsItem {
-  TableViewDetailTextItem* BWGExtensionsItem =
+- (TableViewDetailTextItem*)GeminiExtensionsItem {
+  TableViewDetailTextItem* geminiExtensionsItem =
       [[TableViewDetailTextItem alloc] initWithType:ItemTypeExtensions];
-  BWGExtensionsItem.text =
+  geminiExtensionsItem.text =
       l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_EXTENSIONS_TITLE);
-  BWGExtensionsItem.accessorySymbol =
+  geminiExtensionsItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
-  BWGExtensionsItem.accessibilityTraits = UIAccessibilityTraitLink;
-  return BWGExtensionsItem;
+  geminiExtensionsItem.accessibilityTraits = UIAccessibilityTraitLink;
+  return geminiExtensionsItem;
 }
 
 // Called from the PageContentSharing setting's UIControlEventTouchUpInside.
@@ -339,7 +340,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeLocation) {
-    _locationViewController = [[BWGLocationViewController alloc]
+    _locationViewController = [[GeminiLocationViewController alloc]
         initWithStyle:ChromeTableViewStyle()];
     _locationViewController.navigationItem.backButtonTitle =
         l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_BACK_BUTTON_TITLE);
@@ -362,14 +363,14 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
       ItemTypeAppActivity) {
     RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kGeminiAppsActivity);
     RecordGeminiSettingsAppsActivity();
-    [self.mutator openNewTabWithURL:GURL(kBWGAppActivityURL)];
+    [self.mutator openNewTabWithURL:GURL(kGeminiAppActivityURL)];
   }
 
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeExtensions) {
     RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem::kExtensions);
     RecordGeminiSettingsExtensions();
-    [self.mutator openNewTabWithURL:GURL(kBWGExtensionsURL)];
+    [self.mutator openNewTabWithURL:GURL(kGeminiExtensionsURL)];
   }
 
   if (IsGeminiDynamicSettingsEnabled()) {

@@ -235,13 +235,13 @@ PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
 
 BASE_FEATURE(kExplainGeminiEditMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBWGPreciseLocation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiPreciseLocation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsBWGPreciseLocationEnabled() {
+bool IsGeminiPreciseLocationEnabled() {
   if (!IsPageActionMenuEnabled()) {
     return false;
   }
-  return base::FeatureList::IsEnabled(kBWGPreciseLocation);
+  return base::FeatureList::IsEnabled(kGeminiPreciseLocation);
 }
 
 BASE_FEATURE(kAIHubNewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
