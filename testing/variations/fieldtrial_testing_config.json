@@ -14957,21 +14957,6 @@
             ]
         }
     ],
-    "MojoUseEventFd": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoUseEventFd"
-                    ]
-                }
-            ]
-        }
-    ],
     "MovePasswordLeakDetectionToggleIos": [
         {
             "platforms": [
