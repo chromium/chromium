@@ -520,6 +520,8 @@ enum class XKeyTagMethod {
 enum class XKeyTagKeyFormat {
   kIdentity,
   kClearKey,
+  kClearKeyCENC,
+  kClearKeyCBCS,
   kWidevine,
   kUnsupported,
 };

@@ -1657,10 +1657,20 @@ constexpr char const* kMethodSampleAESCTR = "SAMPLE-AES-CTR";
 constexpr char const* kMethodSampleAESCENC = "SAMPLE-AES-CENC";
 constexpr char const* kMethodISO230017 = "ISO-23001-7";
 
-constexpr char const* kFmtClearkey = "org.w3.clearkey";
+// Note: The UUIDs are from https://dashif.org/identifiers/content_protection/
+// Clear Key AES-128 CBC
+constexpr char const* kFmtClearkeyCENC =
+    "urn:uuid:3ea8778f-7742-4bf9-b18b-e834b2acbd47";
+// Clear Key SAMPLE-AES CBCS
+constexpr char const* kFmtClearkeyCBCS =
+    "urn:uuid:be58615b-19c4-4684-88b3-c8c57e99e957";
 constexpr char const* kFmtWidevine =
     "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
+
 constexpr char const* kFmtIdentity = "identity";
+
+// This appears in the wild.
+constexpr char const* kFmtClearkey = "org.w3.clearkey";
 
 ParseStatus::Or<XKeyTagMethod> RecognizeMethod(SourceString content) {
   if (content.Str() == kMethodNone) {
@@ -1687,6 +1697,10 @@ ParseStatus::Or<XKeyTagKeyFormat> RecognizeFormat(
     std::optional<ResolvedSourceString> content) {
   if (!content.has_value()) {
     return XKeyTagKeyFormat::kIdentity;
+  } else if (content->Str() == kFmtClearkeyCENC) {
+    return XKeyTagKeyFormat::kClearKeyCENC;
+  } else if (content->Str() == kFmtClearkeyCBCS) {
+    return XKeyTagKeyFormat::kClearKeyCBCS;
   } else if (content->Str() == kFmtClearkey) {
     return XKeyTagKeyFormat::kClearKey;
   } else if (content->Str() == kFmtWidevine) {
@@ -1722,6 +1736,24 @@ ParseStatus::Or<T> ValidateKeyTag(
     case XKeyTagKeyFormat::kIdentity:
     case XKeyTagKeyFormat::kUnsupported:
       break;  // Identity and others always are ok.
+    case XKeyTagKeyFormat::kClearKeyCENC:
+      switch (method) {
+        case XKeyTagMethod::kSampleAESCTR:
+        case XKeyTagMethod::kSampleAESCENC:
+        case XKeyTagMethod::kAES128:
+          break;  // Acceptable methods for CENC
+        default:
+          return ParseStatusCode::kConflictingKeyTagAttributes;
+      }
+      break;
+    case XKeyTagKeyFormat::kClearKeyCBCS:
+      switch (method) {
+        case XKeyTagMethod::kSampleAES:
+          break;  // Acceptable methods for CBCS
+        default:
+          return ParseStatusCode::kConflictingKeyTagAttributes;
+      }
+      break;
     case XKeyTagKeyFormat::kClearKey:
     case XKeyTagKeyFormat::kWidevine:
       switch (method) {
@@ -1729,7 +1761,7 @@ ParseStatus::Or<T> ValidateKeyTag(
         case XKeyTagMethod::kSampleAESCTR:
         case XKeyTagMethod::kSampleAESCENC:
         case XKeyTagMethod::kISO230017:
-          break;  // Acceptable methods for widevine and clearkey
+          break;  // Acceptable methods for widevine and old clearkey.
         case XKeyTagMethod::kNone:
         case XKeyTagMethod::kAES128:
         case XKeyTagMethod::kAES256:

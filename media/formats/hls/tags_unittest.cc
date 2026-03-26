@@ -1741,6 +1741,30 @@ TEST(HlsTagsTest, ParseXKeyTag) {
   {
     auto result = OkTest<XKeyTag>(
         "METHOD=SAMPLE-AES-CTR,URI=\"https://example.com\","
+        "KEYFORMAT=\"urn:uuid:3ea8778f-7742-4bf9-b18b-e834b2acbd47\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAESCTR);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kClearKeyCENC);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=SAMPLE-AES,URI=\"https://example.com\","
+        "KEYFORMAT=\"urn:uuid:be58615b-19c4-4684-88b3-c8c57e99e957\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAES);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kClearKeyCBCS);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=SAMPLE-AES-CTR,URI=\"https://example.com\","
         "KEYFORMAT=\"org.w3.clearkey\"",
         dict, subs);
     EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAESCTR);
@@ -1748,6 +1772,18 @@ TEST(HlsTagsTest, ParseXKeyTag) {
     EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
     EXPECT_FALSE(result.tag.iv.has_value());
     EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kClearKey);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "KEYFORMAT=\"urn:uuid:3ea8778f-7742-4bf9-b18b-e834b2acbd47\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kClearKeyCENC);
     EXPECT_FALSE(result.tag.keyformat_versions.has_value());
   }
 }
