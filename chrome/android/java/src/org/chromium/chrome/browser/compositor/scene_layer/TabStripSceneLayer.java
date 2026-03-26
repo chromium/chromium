@@ -62,7 +62,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                                 StripLayoutGroupTitle.REORDER_BACKGROUND_PADDING_START * mDpToPx),
                         Math.round(StripLayoutGroupTitle.REORDER_BACKGROUND_PADDING_END * mDpToPx),
                         Math.round(
-                                StripLayoutGroupTitle.REORDER_BACKGROUND_CORNER_RADIUS * mDpToPx));
+                                StripLayoutGroupTitle.REORDER_BACKGROUND_CORNER_RADIUS * mDpToPx),
+                        StripLayoutTab.TAB_UNDERLINE_THICKNESS_DP * mDpToPx,
+                        StripLayoutTab.TAB_UNDERLINE_CORNER_RADIUS_DP * mDpToPx,
+                        StripLayoutTab.TAB_UNDERLINE_BOTTOM_MARGIN_DP * mDpToPx);
     }
 
     public static void setTestFlag(boolean testFlag) {
@@ -262,6 +265,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutTab[] stripTabs,
             @TabId int selectedTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
+        @ColorInt
+        int underlineColor = TabUiThemeUtil.getTabUnderlineColor(layoutHelper.getContext());
 
         // TODO(crbug.com/40270147): Cleanup params, as some don't change and others are now
         //  unused.
@@ -345,7 +350,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getLineWidth(),
                             Math.round(FOLIO_FOOT_LENGTH_DP * mDpToPx),
                             isPinned,
-                            Math.round(st.getPinnedTabFaviconOffsetX() * mDpToPx));
+                            Math.round(st.getPinnedTabFaviconOffsetX() * mDpToPx),
+                            st.isUnderlined(),
+                            underlineColor);
         }
     }
 
@@ -402,7 +409,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int reorderBackgroundBottomMargin,
                 int reorderBackgroundPaddingShort,
                 int reorderBackgroundPaddingLong,
-                int reorderBackgroundCornerRadius);
+                int reorderBackgroundCornerRadius,
+                float tabUnderlineThickness,
+                float tabUnderlineCornerRadius,
+                float tabUnderlineBottomMargin);
 
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer,
@@ -541,7 +551,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int strokeWidth,
                 float folioFootLength,
                 boolean isPinned,
-                float pinnedIconOffsetX);
+                float pinnedIconOffsetX,
+                boolean isUnderlined,
+                @ColorInt int underlineColor);
 
         void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,

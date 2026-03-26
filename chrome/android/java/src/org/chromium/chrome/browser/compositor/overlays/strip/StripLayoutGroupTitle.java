@@ -83,7 +83,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // avatar is present, the start padding should match the end padding, using `TEXT_PADDING_DP`.
     private static final int AVATAR_START_PADDING_DP = 4;
     private static final int CORNER_RADIUS_DP = 9;
-    private static final float BOTTOM_INDICATOR_HEIGHT_DP = 2.f;
+    public static final float BOTTOM_INDICATOR_HEIGHT_DP = 2.f;
     private static final float NOTIFICATION_BUBBLE_SIZE_DP = 6.f;
     private static final float NOTIFICATION_BUBBLE_PADDING_DP = 4.f;
 

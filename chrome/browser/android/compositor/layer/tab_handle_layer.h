@@ -13,6 +13,7 @@ namespace cc::slim {
 class Layer;
 class NinePatchLayer;
 class UIResourceLayer;
+class SolidColorLayer;
 }  // namespace cc::slim
 
 namespace ui {
@@ -27,6 +28,9 @@ class TabHandleLayer : public Layer {
  public:
   static scoped_refptr<TabHandleLayer> Create(
       LayerTitleCache* layer_title_cache);
+  static void SetConstants(float tab_underline_thickness,
+                           float tab_underline_corner_radius,
+                           float tab_underline_bottom_margin);
 
   TabHandleLayer(const TabHandleLayer&) = delete;
   TabHandleLayer& operator=(const TabHandleLayer&) = delete;
@@ -73,7 +77,9 @@ class TabHandleLayer : public Layer {
                      int stroke_width,
                      float folio_foot_length,
                      float width_to_hide_tab_title,
-                     float pinned_icon_offset_x);
+                     float pinned_icon_offset_x,
+                     bool is_underlined,
+                     SkColor underline_color);
   bool foreground();
   bool is_pinned();
   scoped_refptr<cc::slim::Layer> layer() override;
@@ -83,6 +89,10 @@ class TabHandleLayer : public Layer {
   ~TabHandleLayer() override;
 
  private:
+  UI_ANDROID_EXPORT static inline float tab_underline_thickness_;
+  UI_ANDROID_EXPORT static inline float tab_underline_corner_radius_;
+  UI_ANDROID_EXPORT static inline float tab_underline_bottom_margin_;
+
   raw_ptr<LayerTitleCache> layer_title_cache_;
 
   scoped_refptr<cc::slim::Layer> layer_;
@@ -96,6 +106,7 @@ class TabHandleLayer : public Layer {
   scoped_refptr<cc::slim::NinePatchLayer> decoration_tab_;
   scoped_refptr<cc::slim::NinePatchLayer> tab_outline_;
   scoped_refptr<cc::slim::Layer> title_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> underline_layer_;
 
   scoped_refptr<cc::slim::NinePatchLayer> keyboard_focus_ring_;
 

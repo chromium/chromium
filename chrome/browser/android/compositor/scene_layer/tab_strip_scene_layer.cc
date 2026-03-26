@@ -131,17 +131,23 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
 
 TabStripSceneLayer::~TabStripSceneLayer() = default;
 
-void TabStripSceneLayer::SetConstants(
-    JNIEnv* env,
-    int32_t reorder_background_top_margin,
-    int32_t reorder_background_bottom_margin,
-    int32_t reorder_background_padding_short,
-    int32_t reorder_background_padding_long,
-    int32_t reorder_background_corner_radius) {
+void TabStripSceneLayer::SetConstants(JNIEnv* env,
+                                      int32_t reorder_background_top_margin,
+                                      int32_t reorder_background_bottom_margin,
+                                      int32_t reorder_background_padding_short,
+                                      int32_t reorder_background_padding_long,
+                                      int32_t reorder_background_corner_radius,
+                                      float tab_underline_thickness,
+                                      float tab_underline_corner_radius,
+                                      float tab_underline_bottom_margin) {
   GroupIndicatorLayer::SetConstants(
       reorder_background_top_margin, reorder_background_bottom_margin,
       reorder_background_padding_short, reorder_background_padding_long,
       reorder_background_corner_radius);
+
+  TabHandleLayer::SetConstants(tab_underline_thickness,
+                               tab_underline_corner_radius,
+                               tab_underline_bottom_margin);
 }
 
 void TabStripSceneLayer::SetContentTree(JNIEnv* env,
@@ -635,7 +641,9 @@ void TabStripSceneLayer::PutStripTabLayer(
     int32_t stroke_width,
     float folio_foot_length,
     bool is_pinned,
-    float pinned_icon_offset_x) {
+    float pinned_icon_offset_x,
+    bool is_underlined,
+    int32_t underline_color) {
   DCHECK(layer_title_cache_);
   scoped_refptr<TabHandleLayer> layer = GetNextTabLayer(layer_title_cache_);
 
@@ -698,7 +706,8 @@ void TabStripSceneLayer::PutStripTabLayer(
       is_end_divider_visible, is_loading, spinner_rotation, opacity,
       is_keyboard_focused, keyboard_focus_ring_drawable,
       keyboard_focus_ring_offset, stroke_width, folio_foot_length,
-      width_to_hide_tab_title, pinned_icon_offset_x);
+      width_to_hide_tab_title, pinned_icon_offset_x, is_underlined,
+      static_cast<SkColor>(underline_color));
 }
 
 void TabStripSceneLayer::PutGroupIndicatorLayer(

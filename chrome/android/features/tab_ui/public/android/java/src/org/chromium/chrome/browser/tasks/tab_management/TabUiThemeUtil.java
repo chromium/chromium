@@ -129,6 +129,11 @@ public class TabUiThemeUtil {
                         : R.color.compositor_tab_title_bar_text);
     }
 
+    /** Returns the color for the tab strip tab underline. */
+    public static @ColorInt int getTabUnderlineColor(Context context) {
+        return SemanticColorUtils.getColorPrimary(context);
+    }
+
     /**
      * Returns the mini thumbnail placeholder color for the given group color.
      *

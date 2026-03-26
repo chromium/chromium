@@ -156,6 +156,13 @@ public class StripLayoutTab extends StripLayoutView {
                             - CLOSE_BUTTON_PADDING_DP
                             - MEDIA_INDICATOR_INTERNAL_PADDING_DP);
 
+    // Tab Underline Constants
+    public static final float TAB_UNDERLINE_THICKNESS_DP = 2.f;
+    public static final float TAB_UNDERLINE_CORNER_RADIUS_DP = TAB_UNDERLINE_THICKNESS_DP / 2;
+    // Used to ensure a 2dp gap between tab group underline and Glic underline.
+    public static final float TAB_UNDERLINE_BOTTOM_MARGIN_DP =
+            StripLayoutGroupTitle.BOTTOM_INDICATOR_HEIGHT_DP + 2.f;
+
     // Divider Constants
     private static final int DIVIDER_OFFSET_X = 13;
 
@@ -186,6 +193,7 @@ public class StripLayoutTab extends StripLayoutView {
     private float mBottomMargin;
     private float mContainerOpacity;
     private @MediaState int mMediaState;
+    private boolean mIsUnderlined;
 
     // For avoiding unnecessary accessibility description updates.
     private @Nullable String mCachedA11yDescriptionTitle;
@@ -368,6 +376,20 @@ public class StripLayoutTab extends StripLayoutView {
 
     public @MediaState int getMediaState() {
         return mMediaState;
+    }
+
+    /**
+     * Sets whether this tab is underlined
+     *
+     * @param isUnderlined whether this tab is underlined.
+     */
+    public void setIsUnderlined(boolean isUnderlined) {
+        mIsUnderlined = isUnderlined;
+    }
+
+    /** Gets whether this tab is underlined. */
+    public boolean isUnderlined() {
+        return mIsUnderlined;
     }
 
     /**

@@ -1168,6 +1168,10 @@ public class StripLayoutHelperManager
         return mEventFilter;
     }
 
+    public Context getContext() {
+        return mContext;
+    }
+
     @Override
     public void onSizeChanged(
             float width, float height, float visibleViewportOffsetY, int orientation) {

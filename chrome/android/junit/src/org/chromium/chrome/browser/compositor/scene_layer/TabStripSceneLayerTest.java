@@ -158,6 +158,7 @@ public class TabStripSceneLayerTest {
         when(mStripLayoutHelperManager.getNewTabButton()).thenReturn(mNewTabButton);
         when(mStripLayoutHelperManager.getGlicButton()).thenReturn(mGlicButton);
         when(mStripLayoutHelperManager.getModelSelectorButton()).thenReturn(mModelSelectorButton);
+        when(mStripLayoutHelperManager.getContext()).thenReturn(mContext);
         when(mStripLayoutTab.getCloseButton()).thenReturn(mCloseButton);
         when(mStripGroupTitle.getKeyboardFocusRingColor())
                 .thenReturn(
@@ -322,7 +323,9 @@ public class TabStripSceneLayerTest {
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
                         anyBoolean(),
-                        anyFloat());
+                        anyFloat(),
+                        anyBoolean(),
+                        anyInt());
     }
 
     @Test
@@ -391,7 +394,9 @@ public class TabStripSceneLayerTest {
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
                         anyBoolean(),
-                        anyFloat());
+                        anyFloat(),
+                        anyBoolean(),
+                        anyInt());
     }
 
     @Test
@@ -462,7 +467,9 @@ public class TabStripSceneLayerTest {
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
                         anyBoolean(),
-                        anyFloat());
+                        anyFloat(),
+                        anyBoolean(),
+                        anyInt());
     }
 
     @Test
@@ -532,7 +539,9 @@ public class TabStripSceneLayerTest {
                                 FOLIO_FOOT_LENGTH_DP
                                         * mContext.getResources().getDisplayMetrics().density),
                         anyBoolean(),
-                        anyFloat());
+                        anyFloat(),
+                        anyBoolean(),
+                        anyInt());
     }
 
     @Test

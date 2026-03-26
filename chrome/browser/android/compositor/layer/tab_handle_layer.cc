@@ -10,10 +10,12 @@
 
 #include "cc/slim/layer.h"
 #include "cc/slim/nine_patch_layer.h"
+#include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/decoration_tab_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/base/l10n/l10n_util_android.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace android {
 
@@ -21,6 +23,15 @@ namespace android {
 scoped_refptr<TabHandleLayer> TabHandleLayer::Create(
     LayerTitleCache* layer_title_cache) {
   return base::WrapRefCounted(new TabHandleLayer(layer_title_cache));
+}
+
+// static
+void TabHandleLayer::SetConstants(float tab_underline_thickness,
+                                  float tab_underline_corner_radius,
+                                  float tab_underline_bottom_margin) {
+  tab_underline_thickness_ = tab_underline_thickness;
+  tab_underline_corner_radius_ = tab_underline_corner_radius;
+  tab_underline_bottom_margin_ = tab_underline_bottom_margin;
 }
 
 void TabHandleLayer::SetProperties(
@@ -66,7 +77,9 @@ void TabHandleLayer::SetProperties(
     int stroke_width,
     float folio_foot_length,
     float width_to_hide_tab_title,
-    float pinned_icon_offset_x) {
+    float pinned_icon_offset_x,
+    bool is_underlined,
+    SkColor underline_color) {
   if (foreground != foreground_ || opacity != opacity_ ||
       is_pinned != is_pinned_) {
     foreground_ = foreground;
@@ -342,6 +355,21 @@ void TabHandleLayer::SetProperties(
     media_indicator_layer_->SetPosition(gfx::PointF(media_x, media_y));
   }
 
+  if (is_underlined) {
+    underline_layer_->SetIsDrawable(true);
+    underline_layer_->SetBackgroundColor(SkColor4f::FromColor(underline_color));
+    underline_layer_->SetBounds(
+        gfx::Size(std::round(width - padding_left - padding_right),
+                  std::round(tab_underline_thickness_)));
+    underline_layer_->SetPosition(gfx::PointF(
+        padding_left,
+        height - tab_underline_thickness_ - tab_underline_bottom_margin_));
+    underline_layer_->SetRoundedCorner(
+        gfx::RoundedCornersF(tab_underline_corner_radius_));
+  } else {
+    underline_layer_->SetIsDrawable(false);
+  }
+
   if (is_keyboard_focused) {
     keyboard_focus_ring_->SetIsDrawable(true);
     keyboard_focus_ring_->SetUIResourceId(
@@ -401,6 +429,7 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       media_indicator_layer_(cc::slim::UIResourceLayer::Create()),
       decoration_tab_(cc::slim::NinePatchLayer::Create()),
       tab_outline_(cc::slim::NinePatchLayer::Create()),
+      underline_layer_(cc::slim::SolidColorLayer::Create()),
       keyboard_focus_ring_(cc::slim::NinePatchLayer::Create()),
       foreground_(false) {
   decoration_tab_->SetIsDrawable(true);
@@ -420,6 +449,7 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
   layer_->AddChild(start_divider_);
   layer_->AddChild(end_divider_);
   layer_->AddChild(close_keyboard_focus_ring_);
+  layer_->AddChild(underline_layer_);
   layer_->AddChild(keyboard_focus_ring_);
 }
 

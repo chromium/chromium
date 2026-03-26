@@ -44,7 +44,10 @@ class TabStripSceneLayer : public SceneLayer {
                     int32_t reorder_background_bottom_margin,
                     int32_t reorder_background_padding_short,
                     int32_t reorder_background_padding_long,
-                    int32_t reorder_background_corner_radius);
+                    int32_t reorder_background_corner_radius,
+                    float tab_underline_thickness,
+                    float tab_underline_corner_radius,
+                    float tab_underline_bottom_margin);
 
   void SetContentTree(JNIEnv* env,
                       const base::android::JavaRef<jobject>& jcontent_tree);
@@ -180,7 +183,9 @@ class TabStripSceneLayer : public SceneLayer {
                         int32_t stroke_width,
                         float folio_foot_length,
                         bool is_pinned,
-                        float pinned_icon_offset_x);
+                        float pinned_icon_offset_x,
+                        bool is_underlined,
+                        int32_t underline_color);
 
   void PutGroupIndicatorLayer(
       JNIEnv* env,
