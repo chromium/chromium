@@ -4,15 +4,19 @@
 
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 # Public C++ classes
 source_set("android") {
   sources = [
+    "android_side_panel_enabled_fn.cc",
+    "android_side_panel_enabled_fn.h",
     "side_panel_native_view_android.cc",
     "side_panel_native_view_android.h",
   ]
 
   deps = [
+    ":jni_headers",
     "//base",
     "//third_party/jni_zero",
     "//ui/base",
@@ -22,15 +26,19 @@ source_set("android") {
 # Public Java interfaces
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/side_panel/AndroidSidePanelEnabledFn.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroid.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/TabScopedSidePanelRegistryBridge.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridge.java",
   ]
   deps = [
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/browser_window/public/android:java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
 }
 
 # Public Java factory
@@ -43,4 +51,9 @@ android_library_factory("factory_java") {
     ":java",
     "//chrome/browser/tab:java",
   ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [ ":*" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/AndroidSidePanelEnabledFn.java" ]
 }
