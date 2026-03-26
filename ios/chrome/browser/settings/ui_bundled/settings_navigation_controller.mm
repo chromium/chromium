@@ -1140,6 +1140,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   // This command should only be triggered by the settinsg, therefore there is
   // no issue for the UI to be available or not.
   CHECK(!skipIfUINotAvailable);
+  [self stopManageAccountsCoordinator];
   self.manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser
