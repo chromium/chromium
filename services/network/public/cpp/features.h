@@ -418,6 +418,15 @@ BASE_DECLARE_FEATURE_PARAM(int, kDurableMessagesGlobalBufferSize);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kBypassRequestForbiddenHeadersCheck);
 
+// When enabled, NetworkContext, and all mojoms passed through it, will receive
+// IPCs directly without the intermediate I/O thread hop. This is relevant when
+// the NetworkService is run in the browser process (i.e. on Android).
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kNetworkContextDirectReceiver);
+
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+bool ShouldBindNetworkContextDirectReceiver();
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

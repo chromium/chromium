@@ -135,6 +135,7 @@
 #include "services/network/proxy_resolving_socket_factory_mojo.h"
 #include "services/network/public/cpp/cert_verifier/mojo_cert_verifier.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -688,7 +689,7 @@ NetworkContext::NetworkContext(
 #endif  // BUILDFLAG(ENABLE_REPORTING)
       params_(std::move(params)),
       on_connection_close_callback_(std::move(on_connection_close_callback)),
-      receiver_(this, std::move(receiver)),
+      receiver_(std::in_place_type<Receiver>, this),
       first_party_sets_access_delegate_(
           std::move(params_->first_party_sets_access_delegate_receiver),
           std::move(params_->first_party_sets_access_delegate_params),
@@ -703,6 +704,15 @@ NetworkContext::NetworkContext(
           features::kCorsNonWildcardRequestHeadersSupport)),
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
                                         : nullptr) {
+
+  if (features::ShouldBindNetworkContextDirectReceiver()) {
+    receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
+  }
+  std::visit(
+      [&](auto& receiver_to_bind) {
+        receiver_to_bind.Bind(std::move(receiver));
+      },
+      receiver_);
 #if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
   if (params_->file_paths) {
     DCHECK(params_->win_permissions_set)
@@ -790,8 +800,12 @@ NetworkContext::NetworkContext(
   // by the NetworkService. In the other constructors, lifetime is shared with
   // other consumers, and thus self-deletion is not safe and can result in
   // double-frees.
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &NetworkContext::OnConnectionError, base::Unretained(this)));
+  std::visit(
+      [&](auto& receiver) {
+        receiver.set_disconnect_handler(base::BindOnce(
+            &NetworkContext::OnConnectionError, base::Unretained(this)));
+      },
+      receiver_);
 
   socket_factory_ = std::make_unique<SocketFactory>(
       url_request_context_->net_log(), url_request_context_);
@@ -862,7 +876,7 @@ NetworkContext::NetworkContext(
 #if BUILDFLAG(ENABLE_REPORTING)
       is_observing_reporting_service_(false),
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-      receiver_(this, std::move(receiver)),
+      receiver_(std::in_place_type<Receiver>, this),
       first_party_sets_access_delegate_(
           /*receiver=*/mojo::NullReceiver(),
           /*params=*/nullptr,
@@ -885,6 +899,15 @@ NetworkContext::NetworkContext(
            net::handles::kInvalidNetworkHandle)),
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
                                         : nullptr) {
+
+  if (features::ShouldBindNetworkContextDirectReceiver()) {
+    receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
+  }
+  std::visit(
+      [&](auto& receiver_to_bind) {
+        receiver_to_bind.Bind(std::move(receiver));
+      },
+      receiver_);
 
   shared_resource_checker_ = std::make_unique<SharedResourceChecker>(
       cookie_manager_->cookie_settings());

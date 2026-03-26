@@ -13,6 +13,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -27,6 +28,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -908,7 +910,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       app_status_listeners_;
 #endif
 
-  mojo::Receiver<mojom::NetworkContext> receiver_;
+  using Receiver = mojo::Receiver<mojom::NetworkContext>;
+  using DirectReceiver = mojo::DirectReceiver<mojom::NetworkContext>;
+  std::variant<Receiver, DirectReceiver> receiver_;
 
   FirstPartySetsAccessDelegate first_party_sets_access_delegate_;
 

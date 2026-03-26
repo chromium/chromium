@@ -9,7 +9,9 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/current_thread.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "net/base/mime_sniffer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -628,5 +630,12 @@ BASE_FEATURE_PARAM(int,
                    &kDurableMessages,
                    /*name=*/"max_global_buffer_size",
                    /*default_value=*/base::MiB(350).InBytes());
+
+BASE_FEATURE(kNetworkContextDirectReceiver, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldBindNetworkContextDirectReceiver() {
+  return mojo::IsDirectReceiverSupported() && base::CurrentIOThread::IsSet() &&
+         base::FeatureList::IsEnabled(features::kNetworkContextDirectReceiver);
+}
 
 }  // namespace network::features

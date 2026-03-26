@@ -28,21 +28,25 @@
 
 namespace blink {
 class WidgetInputHandlerImpl;
-}
+}  // namespace blink
 
 namespace cc::mojo_embedder {
 class AsyncLayerTreeFrameSink;
-}
+}  // namespace cc::mojo_embedder
 
 namespace cc::slim {
 class FrameSinkImpl;
-}
+}  // namespace cc::slim
 
 namespace viz {
 class CompositorFrameSinkImpl;
 class FrameSinkManagerImpl;
 class ExternalBeginFrameSourceMojoMac;
 }  // namespace viz
+
+namespace network {
+class NetworkContext;
+}  // namespace network
 
 namespace mojo {
 
@@ -140,6 +144,7 @@ class DirectReceiverKey {
   friend class viz::CompositorFrameSinkImpl;
   friend class viz::FrameSinkManagerImpl;
   friend class viz::ExternalBeginFrameSourceMojoMac;
+  friend class network::NetworkContext;
 };
 
 // DirectReceiver is a wrapper around the standard Receiver<T> type that always
