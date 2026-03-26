@@ -58,7 +58,7 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
 
   // Helper class to manage lifetimes of objects that live on the UI thread.
   struct Core {
-    explicit Core(on_device_model::mojom::AsrStreamResponder* responder);
+    Core();
     ~Core();
 
     struct Deleter {
@@ -68,8 +68,6 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
     mojo::Remote<on_device_model::mojom::Session> session;
     base::WeakPtr<optimization_guide::ModelClient> model_client;
     std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client;
-    mojo::Receiver<on_device_model::mojom::AsrStreamResponder>
-        asr_stream_responder;
   };
 
  private:
@@ -80,7 +78,9 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
       base::WeakPtr<optimization_guide::ModelClient> client);
   void CreateSessionOnUI();
   void OnAsrStreamCreated(
-      mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> remote);
+      mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> asr_stream,
+      mojo::PendingReceiver<on_device_model::mojom::AsrStreamResponder>
+          asr_stream_responder);
 
   void OnRecognizerDisconnected();
 
@@ -97,6 +97,8 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
   SpeechRecognitionSessionConfig config_;
   std::unique_ptr<Core, Core::Deleter> core_;
   mojo::Remote<on_device_model::mojom::AsrStreamInput> asr_stream_;
+  mojo::Receiver<on_device_model::mojom::AsrStreamResponder>
+      asr_stream_responder_{this};
   std::vector<int16_t> accumulated_audio_data_;
 
   bool session_created_ = false;

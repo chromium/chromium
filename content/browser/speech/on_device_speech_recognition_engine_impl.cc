@@ -22,9 +22,7 @@
 
 namespace content {
 
-OnDeviceSpeechRecognitionEngine::Core::Core(
-    on_device_model::mojom::AsrStreamResponder* responder)
-    : asr_stream_responder(responder) {}
+OnDeviceSpeechRecognitionEngine::Core::Core() = default;
 OnDeviceSpeechRecognitionEngine::Core::~Core() = default;
 
 void OnDeviceSpeechRecognitionEngine::Core::Deleter::operator()(
@@ -41,7 +39,7 @@ OnDeviceSpeechRecognitionEngine::OnDeviceSpeechRecognitionEngine(
     : ui_task_runner_(GetUIThreadTaskRunner({})),
       io_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       config_(config),
-      core_(new Core(this)) {
+      core_(new Core()) {
   ui_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&OnDeviceSpeechRecognitionEngine::CreateModelClientOnUI,
@@ -58,6 +56,7 @@ void OnDeviceSpeechRecognitionEngine::EndRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   core_.reset();
   asr_stream_.reset();
+  asr_stream_responder_.reset();
 }
 
 void OnDeviceSpeechRecognitionEngine::SetAudioParameters(
@@ -120,6 +119,7 @@ void OnDeviceSpeechRecognitionEngine::AudioChunksEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   core_.reset();
   asr_stream_.reset();
+  asr_stream_responder_.reset();
 }
 
 int OnDeviceSpeechRecognitionEngine::GetDesiredAudioChunkDurationMs() const {
@@ -175,21 +175,28 @@ void OnDeviceSpeechRecognitionEngine::CreateSessionOnUI() {
   auto asr_options = on_device_model::mojom::AsrStreamOptions::New();
   asr_options->sample_rate_hz = audio_parameters_.sample_rate();
 
-  mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> remote;
+  mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> asr_stream;
+  mojo::PendingReceiver<on_device_model::mojom::AsrStreamResponder>
+      asr_stream_responder;
+
   core_->session->AsrStream(
-      std::move(asr_options), remote.InitWithNewPipeAndPassReceiver(),
-      core_->asr_stream_responder.BindNewPipeAndPassRemote());
+      std::move(asr_options), asr_stream.InitWithNewPipeAndPassReceiver(),
+      asr_stream_responder.InitWithNewPipeAndPassRemote());
 
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&OnDeviceSpeechRecognitionEngine::OnAsrStreamCreated,
-                     weak_factory_.GetWeakPtr(), std::move(remote)));
+                     weak_factory_.GetWeakPtr(), std::move(asr_stream),
+                     std::move(asr_stream_responder)));
 }
 
 void OnDeviceSpeechRecognitionEngine::OnAsrStreamCreated(
-    mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> remote) {
+    mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> asr_stream,
+    mojo::PendingReceiver<on_device_model::mojom::AsrStreamResponder>
+        asr_stream_responder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  asr_stream_.Bind(std::move(remote));
+  asr_stream_.Bind(std::move(asr_stream));
+  asr_stream_responder_.Bind(std::move(asr_stream_responder));
 }
 
 void OnDeviceSpeechRecognitionEngine::OnRecognizerDisconnected() {
