@@ -34,6 +34,7 @@ static_library("settings") {
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
     "//chrome/browser/ui/webui/nearby_share:mojom",
+    "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//chrome/common",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/services/auth_factor_config/public/mojom",

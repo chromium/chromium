@@ -44,7 +44,7 @@ include_rules = [
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/ui/webui/plural_string_handler.h",
-  "+chrome/browser/ui/webui/sanitized_image_source.h",
+  "+chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h",
   "+chrome/browser/web_applications/extension_status_utils.h",
   "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",

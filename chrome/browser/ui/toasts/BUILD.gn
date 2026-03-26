@@ -55,7 +55,7 @@ source_set("impl") {
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/multistep_filter/ui",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/skills:ui",
+    "//chrome/browser/skills:public",
     "//chrome/browser/translate",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/side_panel",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SOURCE_H_
-#define CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SOURCE_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SANITIZED_IMAGE_SOURCE_H_
+#define CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SANITIZED_IMAGE_SOURCE_H_
 
 #include <memory>
 #include <optional>
@@ -155,4 +155,4 @@ class SanitizedImageSource : public content::URLDataSource {
   base::WeakPtrFactory<SanitizedImageSource> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SOURCE_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SANITIZED_IMAGE_SOURCE_H_

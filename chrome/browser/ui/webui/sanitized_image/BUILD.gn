@@ -1,0 +1,55 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(!is_android)
+
+source_set("sanitized_image_source") {
+  sources = [
+    "sanitized_image_source.cc",
+    "sanitized_image_source.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//services/data_decoder/public/cpp",
+    "//services/data_decoder/public/mojom",
+  ]
+
+  deps = [
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/common:constants",
+    "//google_apis",
+    "//ipc",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//skia",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sanitized_image_source_unittest.cc" ]
+
+  deps = [
+    ":sanitized_image_source",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}
