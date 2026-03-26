@@ -208,7 +208,7 @@ declare_args() {
   # warning serves as a flip switch to allow a gradual migration of targets
   # away from the opt-in wexit_time_destructors config, and into the default
   # compiler config.
-  is_wexit_time_destructors_default = true
+  is_wexit_time_destructors_default = build_with_chromium
 }
 
 declare_args() {
@@ -2338,8 +2338,7 @@ config("default_warnings") {
       cflags += [ "-Wno-gnu-line-marker" ]
     }
 
-    if (is_wexit_time_destructors_default &&
-        use_clang_warning_suppression_file) {
+    if (is_wexit_time_destructors_default) {
       # TODO(crbug.com/40031409): We are migrating towards making this warning
       # enabled by default. Once that is completed, the warning
       # should always be added for clang builds.
