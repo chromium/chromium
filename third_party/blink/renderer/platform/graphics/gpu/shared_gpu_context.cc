@@ -255,16 +255,4 @@ bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
   return raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
 }
 
-// static
-bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade(
-    WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
-  if (!context_provider_wrapper) {
-    return false;
-  }
-  return !context_provider_wrapper->ContextProvider()
-              .GetGpuFeatureInfo()
-              .IsWorkaroundEnabled(
-                  gpu::DISABLE_SOFTWARE_TO_ACCELERATED_CANVAS_UPGRADE);
-}
-
 }  // namespace blink

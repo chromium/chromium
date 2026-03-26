@@ -22,6 +22,9 @@ class WebGraphicsContext3DProviderWrapper;
 PLATFORM_EXPORT bool Accelerated2DCanvasFeatureEnabled(
     WebGraphicsContext3DProviderWrapper*);
 
+PLATFORM_EXPORT bool AllowSoftwareToAcceleratedCanvasUpgrade(
+    WebGraphicsContext3DProviderWrapper*);
+
 PLATFORM_EXPORT bool IsScanoutSupportedForCanvasWithFormat(
     viz::SharedImageFormat format,
     const gpu::Capabilities& capabilities);

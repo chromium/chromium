@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/public/common/features.h"
@@ -64,6 +65,17 @@ bool Accelerated2DCanvasFeatureEnabled(
   return gpu::kGpuFeatureStatusEnabled ==
          gpu_feature_info
              .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS];
+}
+
+bool AllowSoftwareToAcceleratedCanvasUpgrade(
+    WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
+  if (!context_provider_wrapper) {
+    return false;
+  }
+  return !context_provider_wrapper->ContextProvider()
+              .GetGpuFeatureInfo()
+              .IsWorkaroundEnabled(
+                  gpu::DISABLE_SOFTWARE_TO_ACCELERATED_CANVAS_UPGRADE);
 }
 
 bool IsScanoutSupportedForCanvasWithFormat(

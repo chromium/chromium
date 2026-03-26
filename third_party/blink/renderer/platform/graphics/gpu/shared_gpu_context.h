@@ -43,8 +43,6 @@ class PLATFORM_EXPORT SharedGpuContext {
   static base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   GetExistingContextProviderWrapper();
 
-  static bool AllowSoftwareToAcceleratedCanvasUpgrade(
-      WebGraphicsContext3DProviderWrapper*);
   static bool IsValidWithoutRestoringForTesting();
 
   static WebGraphicsSharedImageInterfaceProvider*
