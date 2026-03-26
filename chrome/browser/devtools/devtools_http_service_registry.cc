@@ -70,9 +70,9 @@ DevToolsHttpServiceRegistry::DevToolsHttpServiceRegistry() {
                               std::make_unique<AidaServiceHandler>()));
   services_.push_back(Service("gcaService",
                               {
-                                  {"/v1alpha:generateContent", "POST"},
-                                  {"/v1alpha:streamGenerateContent", "POST"},
-                                  {"/v1alpha:sendTelemetry", "POST"},
+                                  {"/v1beta:generateContent", "POST"},
+                                  {"/v1beta:streamGenerateContent", "POST"},
+                                  {"/v1beta:sendTelemetry", "POST"},
                               },
                               std::make_unique<GcaServiceHandler>()));
   services_.push_back(
