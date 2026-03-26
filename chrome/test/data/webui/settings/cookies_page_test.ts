@@ -66,6 +66,10 @@ suite('CookiesPageTest', function() {
   });
 
   setup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
+    });
+
     resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -239,6 +243,25 @@ suite('CookiesPageTest', function() {
         page.prefs.generated.third_party_cookie_blocking_setting.value);
     assertTrue(
         relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
+  });
+
+  test('privacySandboxToast_adPrivacyDeprecationEnabled', async function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxAdPrivacyUxDeprecationEnabled: true,
+      isPrivacySandboxRestricted: false,
+    });
+    resetRouterForTesting();
+    await createPage();
+    assertFalse(page.$.toast.open);
+
+    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
+    blockAll3pc().click();
+
+    assertEquals(
+        'Settings.ThirdPartyCookies.Block',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+    assertFalse(page.$.toast.open);
   });
 });
 
