@@ -107,7 +107,7 @@ if (enable_extensions) {
       "accessibility_private.json",
       "accessibility_service_private.webidl",
       "certificate_provider.webidl",
-      "certificate_provider_internal.idl",
+      "certificate_provider_internal.webidl",
       "document_scan.idl",
       "echo_private.json",
       "enterprise_device_attributes.idl",

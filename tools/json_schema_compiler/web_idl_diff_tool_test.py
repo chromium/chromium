@@ -74,6 +74,8 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('appview_tag.idl', 'appview_tag.webidl'),
         ('autotest_private.idl', 'autotest_private.webidl'),
         ('certificate_provider.idl', 'certificate_provider.webidl'),
+        ('certificate_provider_internal.idl',
+         'certificate_provider_internal.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'
