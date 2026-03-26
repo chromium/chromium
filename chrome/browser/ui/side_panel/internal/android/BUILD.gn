@@ -86,3 +86,18 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "side_panel_coordinator_android_browsertest.cc" ]
+  deps = [
+    ":android",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
