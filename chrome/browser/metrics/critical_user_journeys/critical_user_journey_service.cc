@@ -33,27 +33,16 @@ void CriticalUserJourneyService::Initialize() {
     }
 
     const auto& trigger_step = journey->steps()[0];
-    ui::ElementIdentifier trigger_id = trigger_step->id;
-    auto callback =
-        base::BindRepeating(&CriticalUserJourneyService::OnJourneyStarted,
-                            base::Unretained(this), journey.get());
-
-    switch (trigger_step->type) {
-      case ui::InteractionSequence::StepType::kShown:
-        subscriptions_.push_back(ui::ElementTracker::GetElementTracker()
-                                     ->AddElementShownInAnyContextCallback(
-                                         trigger_id, std::move(callback)));
-        break;
-      case ui::InteractionSequence::StepType::kActivated:
-        subscriptions_.push_back(ui::ElementTracker::GetElementTracker()
-                                     ->AddElementActivatedInAnyContextCallback(
-                                         trigger_id, std::move(callback)));
-        break;
-      case ui::InteractionSequence::StepType::kHidden:
-      case ui::InteractionSequence::StepType::kCustomEvent:
-      case ui::InteractionSequence::StepType::kSubsequence:
-        NOTIMPLEMENTED();
-        break;
+    if (trigger_step->type == ui::InteractionSequence::StepType::kSubsequence) {
+      for (const auto& branch : trigger_step->branches) {
+        if (branch->steps().empty()) {
+          continue;
+        }
+        RegisterJourneyTrigger(journey.get(), branch->steps()[0].get(),
+                               branch->steps()[0]->metric_id);
+      }
+    } else {
+      RegisterJourneyTrigger(journey.get(), trigger_step.get(), std::nullopt);
     }
   }
 }
@@ -63,8 +52,41 @@ void CriticalUserJourneyService::RegisterJourneys(
   // TODO(crbug.com/488075669): Populate registry with journeys.
 }
 
+void CriticalUserJourneyService::RegisterJourneyTrigger(
+    const CriticalUserJourney* journey,
+    const CriticalUserJourneyStep* step,
+    std::optional<int> metric_id) {
+  ui::ElementIdentifier trigger_id = step->id;
+  auto callback =
+      base::BindRepeating(&CriticalUserJourneyService::OnJourneyStarted,
+                          base::Unretained(this), journey, metric_id);
+
+  switch (step->type) {
+    case ui::InteractionSequence::StepType::kShown:
+      subscriptions_.push_back(ui::ElementTracker::GetElementTracker()
+                                   ->AddElementShownInAnyContextCallback(
+                                       trigger_id, std::move(callback)));
+      break;
+    case ui::InteractionSequence::StepType::kActivated:
+      subscriptions_.push_back(ui::ElementTracker::GetElementTracker()
+                                   ->AddElementActivatedInAnyContextCallback(
+                                       trigger_id, std::move(callback)));
+      break;
+    case ui::InteractionSequence::StepType::kCustomEvent:
+      subscriptions_.push_back(
+          ui::ElementTracker::GetElementTracker()
+              ->AddCustomEventInAnyContextCallback(step->custom_event_type,
+                                                   std::move(callback)));
+      break;
+    case ui::InteractionSequence::StepType::kHidden:
+    case ui::InteractionSequence::StepType::kSubsequence:
+      NOTREACHED();
+  }
+}
+
 void CriticalUserJourneyService::OnJourneyStarted(
     const CriticalUserJourney* journey,
+    std::optional<int> metric_id,
     ui::TrackedElement* element) {
   auto session = std::make_unique<CriticalUserJourneySession>(journey);
   auto* session_ptr = session.get();
@@ -73,7 +95,7 @@ void CriticalUserJourneyService::OnJourneyStarted(
                      base::Unretained(this), base::Unretained(session_ptr)));
 
   active_sessions_.push_back(std::move(session));
-  session_ptr->Start(element);
+  session_ptr->Start(metric_id, element);
 }
 
 void CriticalUserJourneyService::OnJourneyEnded(

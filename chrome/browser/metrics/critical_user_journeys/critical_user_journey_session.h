@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_CRITICAL_USER_JOURNEYS_CRITICAL_USER_JOURNEY_SESSION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -33,8 +34,10 @@ class CriticalUserJourneySession {
       delete;
 
   // Starts the journey. If |element| is provided, it is treated as the trigger
-  // that already matched the first step of the journey.
-  void Start(ui::TrackedElement* element);
+  // that already matched the first step of the journey, with the specified
+  // metric ID.
+  void Start(std::optional<int> first_step_metric_id,
+             ui::TrackedElement* element);
 
   void set_on_done_callback(base::OnceClosure on_done_callback) {
     on_done_callback_ = std::move(on_done_callback);
@@ -47,7 +50,8 @@ class CriticalUserJourneySession {
       ui::ElementContext context,
       const CriticalUserJourney* journey,
       bool is_root,
-      ui::TrackedElement* initial_element = nullptr);
+      std::optional<int> first_step_metric_id,
+      ui::TrackedElement* initial_element);
 
   // Callbacks for InteractionSequence events.
   void OnStepStarted(int metric_id);

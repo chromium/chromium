@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_CRITICAL_USER_JOURNEYS_CRITICAL_USER_JOURNEY_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -44,7 +45,14 @@ class CriticalUserJourneyService : public KeyedService {
   virtual void RegisterJourneys(CriticalUserJourneyRegistry* registry);
 
  private:
+  // Helper function to subscribe the first step of a journey into
+  // `subscriptions_` so it can be tracked.
+  void RegisterJourneyTrigger(const CriticalUserJourney* journey,
+                              const CriticalUserJourneyStep* step,
+                              std::optional<int> metric_id);
+
   void OnJourneyStarted(const CriticalUserJourney* journey,
+                        std::optional<int> metric_id,
                         ui::TrackedElement* element);
   void OnJourneyEnded(CriticalUserJourneySession* session);
 

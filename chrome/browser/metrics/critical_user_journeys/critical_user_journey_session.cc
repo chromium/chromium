@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -27,14 +28,15 @@ CriticalUserJourneySession::CriticalUserJourneySession(
 
 CriticalUserJourneySession::~CriticalUserJourneySession() = default;
 
-void CriticalUserJourneySession::Start(ui::TrackedElement* element) {
-  if (journey_->steps().empty()) {
+void CriticalUserJourneySession::Start(std::optional<int> first_step_metric_id,
+                                       ui::TrackedElement* element) {
+  if (journey_->steps().empty() || !element) {
     return;
   }
 
-  sequence_ =
-      BuildSequence(element->context(), journey_, /*is_root=*/true, element)
-          .Build();
+  sequence_ = BuildSequence(element->context(), journey_, /*is_root=*/true,
+                            first_step_metric_id, element)
+                  .Build();
   sequence_->Start();
 }
 
@@ -42,6 +44,7 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
     ui::ElementContext context,
     const CriticalUserJourney* journey,
     bool is_root,
+    std::optional<int> first_step_metric_id,
     ui::TrackedElement* initial_element) {
   ui::InteractionSequence::Builder builder;
   builder.SetContext(context);
@@ -59,7 +62,8 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
                   self->OnStepStarted(metric_id);
                 }
               },
-              weak_factory_.GetWeakPtr(), step->metric_id)));
+              weak_factory_.GetWeakPtr(),
+              first_step_metric_id.value_or(step->metric_id))));
       continue;
     }
 
@@ -77,8 +81,8 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
               step->mode));
       for (const auto& branch : step->branches) {
         // Recursively add subsequences for each branch.
-        step_builder.AddSubsequence(
-            BuildSequence(context, branch.get(), /*is_root=*/false));
+        step_builder.AddSubsequence(BuildSequence(
+            context, branch.get(), /*is_root=*/false, std::nullopt, nullptr));
       }
       builder.AddStep(std::move(step_builder));
     }

@@ -27,8 +27,9 @@
 namespace metrics {
 
 namespace {
-const char kAppMenuJourneyName[] = "AppMenuJourney";
-const char kBranchingJourneyName[] = "BranchingJourney";
+constexpr char kAppMenuJourneyName[] = "AppMenuJourney";
+constexpr char kBranchingJourneyName[] = "BranchingJourney";
+constexpr char kAnyOfStartJourneyName[] = "AnyOfStartJourney";
 
 const std::string GetMetricJourneyPrefix(const std::string& journey) {
   return base::StrCat({"CriticalUserJourney.", journey});
@@ -62,9 +63,23 @@ class TestCriticalUserJourneyService : public CriticalUserJourneyService {
             .AddAnyOf({
                 Branch(kNewTabButtonElementId,
                        ui::InteractionSequence::StepType::kActivated, 2),
-                Branch(kToolbarForwardButtonElementId,
+                Branch(kReloadButtonElementId,
                        ui::InteractionSequence::StepType::kActivated, 3),
             })
+            .Build());
+
+    // AnyOf Start Journey: Click New Tab button or Avatar button (triggers
+    // start), then click the App Menu Button.
+    registry->AddJourney(
+        CriticalUserJourney::Builder("AnyOfStartJourney")
+            .AddAnyOf({
+                Branch(kNewTabButtonElementId,
+                       ui::InteractionSequence::StepType::kActivated, 1),
+                Branch(kReloadButtonElementId,
+                       ui::InteractionSequence::StepType::kActivated, 2),
+            })
+            .AddStep(kToolbarAppMenuButtonElementId,
+                     ui::InteractionSequence::StepType::kActivated, 3)
             .Build());
   }
 };
@@ -148,6 +163,54 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
 
   histograms.ExpectBucketCount(step_reached, 1, 1);
   histograms.ExpectBucketCount(step_reached, 2, 1);
+  histograms.ExpectUniqueSample(completed, true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
+                       AnyOfStartJourneyFirstBranch) {
+  base::HistogramTester histograms;
+
+  const std::string step_reached = base::StrCat(
+      {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".StepReached"});
+  const std::string completed = base::StrCat(
+      {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".Completed"});
+
+  RunTestSequence(
+      // Step 1: Click New Tab Button (triggers start).
+      PressButton(kNewTabButtonElementId),
+
+      // Step 2: Click the App Menu Button.
+      PressButton(kToolbarAppMenuButtonElementId));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return histograms.GetBucketCount(completed, true) > 0; }));
+
+  histograms.ExpectBucketCount(step_reached, 1, 1);
+  histograms.ExpectBucketCount(step_reached, 3, 1);
+  histograms.ExpectUniqueSample(completed, true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
+                       AnyOfStartJourneySecondBranch) {
+  base::HistogramTester histograms;
+
+  const std::string step_reached = base::StrCat(
+      {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".StepReached"});
+  const std::string completed = base::StrCat(
+      {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".Completed"});
+
+  RunTestSequence(
+      // Step 1: Click the Avatar Button (triggers start).
+      PressButton(kReloadButtonElementId),
+
+      // Step 2: Click the App Menu Button.
+      PressButton(kToolbarAppMenuButtonElementId));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return histograms.GetBucketCount(completed, true) > 0; }));
+
+  histograms.ExpectBucketCount(step_reached, 2, 1);
+  histograms.ExpectBucketCount(step_reached, 3, 1);
   histograms.ExpectUniqueSample(completed, true, 1);
 }
 

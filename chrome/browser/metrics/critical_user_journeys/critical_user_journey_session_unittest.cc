@@ -54,7 +54,7 @@ TEST_F(CriticalUserJourneySessionTest, SimpleJourneyCompletion) {
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
 
-  session->Start(&el1);
+  session->Start(/*first_step_metric_id=*/std::nullopt, &el1);
 
   // Step 2: Show element 2
   ui::test::TestElement el2(kTestElementId2, kTestContext);
@@ -80,7 +80,7 @@ TEST_F(CriticalUserJourneySessionTest, JourneyAborted) {
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
 
-  session->Start(&el1);
+  session->Start(/*first_step_metric_id=*/std::nullopt, &el1);
 
   // Abort: Hide element 1 before Step 2 starts
   el1.Hide();
@@ -105,7 +105,7 @@ TEST_F(CriticalUserJourneySessionTest, CompletionCallbackTriggered) {
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
 
-  session->Start(&el1);
+  session->Start(/*first_step_metric_id=*/std::nullopt, &el1);
 
   EXPECT_TRUE(base::test::RunUntil([&]() { return session_done; }));
   EXPECT_TRUE(journey_completed);
@@ -133,7 +133,7 @@ TEST_F(CriticalUserJourneySessionTest, BranchingJourneyCompletion) {
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
 
-  session->Start(&el1);
+  session->Start(/*first_step_metric_id=*/std::nullopt, &el1);
 
   // Step 2: Choose one branch (e.g., show element 2)
   ui::test::TestElement el2(kTestElementId2, kTestContext);
