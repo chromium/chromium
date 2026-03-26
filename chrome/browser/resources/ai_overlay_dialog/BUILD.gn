@@ -9,10 +9,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 build_webui("build") {
   grd_prefix = "ai_overlay_dialog_untrusted"
 
-  static_files = [
-    "ai_overlay_dialog.html",
-    "api_config.json",
-  ]
+  static_files = [ "ai_overlay_dialog.html" ]
 
   css_files = [ "app.css" ]
 

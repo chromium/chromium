@@ -9,6 +9,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
+import type {ApiConfig} from './api_session.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AudioCapturer} from './audio_capturer.js';
@@ -36,10 +37,18 @@ interface PersonaConfig {
 
 interface ResourceBundle {
   persona: Persona;
+  apiConfig: ApiConfig;
   talkingBlob: Blob;
   listeningBlob: Blob;
   instruction: string;
 }
+
+// TODO(bokan): Allow providing this via a switch so we can remove it.
+const DEFAULT_API_CONFIG = {
+  endpointUrl:
+      'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent',
+  model: 'models/gemini-2.5-flash-native-audio-preview-12-2025',
+};
 
 const DEFAULT_PERSONA: Persona = {
   id: 'chromium',
@@ -150,9 +159,16 @@ export class AppElement extends CrLitElement {
       this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
     });
     this.configPromise = initializedPromise.then((bundle: ResourceBundle) => {
+      // Locally specified key overrides the fetched one.
+      const apiKey =
+          loadTimeData.getString('apiKey') || bundle.apiConfig.apiKey;
       return {
         persona: bundle.persona,
         system_instruction: bundle.instruction,
+        api_config: {
+          ...bundle.apiConfig,
+          apiKey,
+        },
       };
     });
     initializedPromise.catch(e => console.error('Failed to fetch bundle: ', e));
@@ -277,9 +293,14 @@ export class AppElement extends CrLitElement {
       try {
         config = await this.configPromise;
       } catch (e) {
+        console.warn('Using DEFAULT ApiConfig');
         config = {
           persona: DEFAULT_PERSONA,
           system_instruction: '${persona}',
+          api_config: {
+            ...DEFAULT_API_CONFIG,
+            apiKey: loadTimeData.getString('apiKey'),
+          },
         };
       }
       this.conversation = this.createConversation(config);
@@ -345,17 +366,20 @@ export class AppElement extends CrLitElement {
 
     const [
       personaResponse,
+      apiConfigResponse,
       talkingResponse,
       listeningResponse,
       instructionResponse,
     ] = await Promise.all([
       fetch(base + 'persona.json'),
+      fetch(base + 'api_config.json'),
       fetch(base + 'talking.webm'),
       fetch(base + 'listening.webm'),
       fetch(base + 'instruction.tmpl'),
     ]);
 
     const personaConfig: PersonaConfig = await personaResponse.json();
+    const apiConfig: ApiConfig = await apiConfigResponse.json();
     const talkingBlob = await talkingResponse.blob();
     const listeningBlob = await listeningResponse.blob();
     const instruction = await instructionResponse.text();
@@ -368,6 +392,7 @@ export class AppElement extends CrLitElement {
 
     return {
       persona: personaConfig.personas[0],
+      apiConfig,
       talkingBlob,
       listeningBlob,
       instruction,
@@ -375,9 +400,8 @@ export class AppElement extends CrLitElement {
   }
 
   private createConversation(config: ConversationConfig) {
-    const apiKey = loadTimeData.getString('apiKey');
     const conversation = new Conversation(
-        apiKey, config, {
+        config, {
           sendToUI: (msg) => this.onMessageFromConversation(msg),
           onStateChange: (state, oldState) =>
               this.onConversationStateChanged(state, oldState),

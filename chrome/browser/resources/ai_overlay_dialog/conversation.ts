@@ -5,8 +5,8 @@
 import {assert} from '//resources/js/assert.js';
 
 import type {PageCallbackRouter} from './ai_overlay_dialog.mojom-webui.js';
+import type {ApiConfig, ApiSessionDelegate} from './api_session.js';
 import {ApiSession} from './api_session.js';
-import type {ApiSessionDelegate} from './api_session.js';
 import type {PageContext} from './page_context_manager.js';
 import {PageContextManager} from './page_context_manager.js';
 import {buildSystemInstruction} from './persona.js';
@@ -22,6 +22,7 @@ export interface Persona {
 export interface ConversationConfig {
   system_instruction: string;
   persona: Persona;
+  api_config: ApiConfig;
 }
 
 /**
@@ -44,7 +45,6 @@ interface UiDelegate {
  * conversation state and bridges the UI with the API session.
  */
 export class Conversation implements ApiSessionDelegate {
-  private readonly apiKey: string;
   private readonly uiDelegate: UiDelegate;
   private readonly pageContextManager: PageContextManager =
       new PageContextManager(() => this.didUpdatePageContent());
@@ -56,10 +56,9 @@ export class Conversation implements ApiSessionDelegate {
   private currentOutput: string = '';
 
   constructor(
-      apiKey: string, config: ConversationConfig, uiDelegate: UiDelegate,
+      config: ConversationConfig, uiDelegate: UiDelegate,
       router: PageCallbackRouter, initialPageContext?: PageContext) {
-    console.info(`Conversation with ${config.persona.name}`, config.persona);
-    this.apiKey = apiKey;
+    console.info(`Conversation with ${config.persona.name}, config`, config);
     this.config = config;
     this.uiDelegate = uiDelegate;
 
@@ -188,7 +187,8 @@ export class Conversation implements ApiSessionDelegate {
 
     console.info('System Instruction', systemInstruction);
 
-    this.session = new ApiSession(this.apiKey, systemInstruction, this);
+    this.session =
+        new ApiSession(systemInstruction, this.config.api_config, this);
     this.session.connect();
   }
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
-
 const kLogWebSocketMessages = false;
 
 /**
@@ -62,9 +60,10 @@ interface ServerContentMessage {
   setupComplete?: {};
 }
 
-interface ApiConfig {
-  endpoint_url: string;
+export interface ApiConfig {
+  endpointUrl: string;
   model: string;
+  apiKey: string;
 }
 
 export interface ApiSessionDelegate {
@@ -79,35 +78,23 @@ export interface ApiSessionDelegate {
  * Manages the connection and communication with the server.
  */
 export class ApiSession {
-  private readonly apiKey: string;
   private readonly systemInstruction: string;
+  private readonly config: ApiConfig;
 
   private ws: WebSocket|null = null;
-  private config_: ApiConfig|null = null;
 
   private delegate: ApiSessionDelegate;
 
   constructor(
-      apiKey: string, systemInstruction: string, delegate: ApiSessionDelegate) {
-    this.apiKey = apiKey;
+      systemInstruction: string, config: ApiConfig,
+      delegate: ApiSessionDelegate) {
     this.systemInstruction = systemInstruction;
+    this.config = config;
     this.delegate = delegate;
   }
 
-  async connect() {
-    if (!this.config_) {
-      try {
-        const response = await fetch('api_config.json');
-        this.config_ = await response.json();
-      } catch (e) {
-        console.error('ApiSession failed to load api_config.json', e);
-        this.stop();
-        return;
-      }
-    }
-
-    assert(this.config_);
-    const url = `${this.config_.endpoint_url}?key=${this.apiKey}`;
+  connect() {
+    const url = `${this.config.endpointUrl}?key=${this.config.apiKey}`;
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
@@ -165,10 +152,9 @@ export class ApiSession {
   }
 
   private sendSetup() {
-    assert(this.config_);
     const setup: SetupMessage = {
       setup: {
-        model: this.config_.model,
+        model: this.config.model,
         generationConfig: {
           responseModalities: ['AUDIO'],
           speechConfig: {
