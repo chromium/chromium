@@ -6,7 +6,6 @@
 
 #include "components/input/fling_controller.h"
 #include "components/input/render_input_router.h"
-#include "components/viz/common/features.h"
 
 namespace viz {
 
@@ -81,11 +80,8 @@ void FlingSchedulerAndroid::StartObservingBeginFrames() {
 
   if (GetBeginFrameSource()) {
     observing_begin_frame_source_ = true;
-    if (base::FeatureList::IsEnabled(features::kFlingSchedulingImprovements)) {
-      GetBeginFrameSource()->SetInputClient(this);
-    } else {
-      GetBeginFrameSource()->AddObserver(this);
-    }
+    GetBeginFrameSource()->AddObserver(this);
+    GetBeginFrameSource()->SetInputClient(this);
   }
 }
 
@@ -93,11 +89,8 @@ void FlingSchedulerAndroid::StopObservingBeginFrames() {
   if (!observing_begin_frame_source_) {
     return;
   }
-  if (base::FeatureList::IsEnabled(features::kFlingSchedulingImprovements)) {
-    GetBeginFrameSource()->SetInputClient(nullptr);
-  } else {
-    GetBeginFrameSource()->RemoveObserver(this);
-  }
+  GetBeginFrameSource()->SetInputClient(nullptr);
+  GetBeginFrameSource()->RemoveObserver(this);
   observing_begin_frame_source_ = false;
 }
 
@@ -118,7 +111,10 @@ bool FlingSchedulerAndroid::FlingProgress(const BeginFrameArgs& args) {
 
 bool FlingSchedulerAndroid::OnBeginFrameDerivedImpl(
     const BeginFrameArgs& args) {
-  return FlingProgress(args);
+  // We use `OnBeginFrameForInput` for fling progressing instead.
+  // We still register as a BeginFrameObserver to ensure the
+  // BeginFrameSource remains active while a fling is progressing.
+  return true;
 }
 
 void FlingSchedulerAndroid::OnBeginFrameForInput(const BeginFrameArgs& args) {

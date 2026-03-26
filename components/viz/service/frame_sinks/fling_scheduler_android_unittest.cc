@@ -58,8 +58,7 @@ class FlingSchedulerTest : public testing::Test,
     frame_sink_manager_ =
         std::make_unique<FrameSinkManagerImpl>(std::move(init_params));
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */ {input::features::kInputOnViz,
-                                features::kFlingSchedulingImprovements},
+        /* enabled_features */ {input::features::kInputOnViz},
         /* disabled_features */ {});
   }
 
