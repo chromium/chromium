@@ -555,6 +555,7 @@ crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_
 crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGPUCopyExternalImageWebGLCanvas [ Failure ]
 crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGPUImportVideoFrameHDR [ Failure ]
 crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
+crbug.com/495477984 [ angle-metal intel-0x3e9b mac passthrough graphite-enabled ] Pixel_Canvas2DTabSwitch [ Failure ]
 
 # Flaky Timeout on Mac ARM
 crbug.com/425739516 [ mac arch-arm64 angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
