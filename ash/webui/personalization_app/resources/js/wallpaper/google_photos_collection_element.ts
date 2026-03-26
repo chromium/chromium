@@ -18,7 +18,6 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import type {GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {GooglePhotosEnablementState} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -74,13 +73,6 @@ export class GooglePhotosCollectionElement extends WithPersonalizationStore {
         type: String,
         value: GooglePhotosTab.PHOTOS,
       },
-
-      isSharedAlbumsEnabled_: {
-        type: Boolean,
-        value() {
-          return isGooglePhotosSharedAlbumsEnabled();
-        },
-      },
     };
   }
 
@@ -126,9 +118,6 @@ export class GooglePhotosCollectionElement extends WithPersonalizationStore {
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
 
-  /** Whether feature flag |kGooglePhotosSharedAlbums| is enabled. */
-  private isSharedAlbumsEnabled_: boolean;
-
   override ready() {
     super.ready();
     afterNextRender(this, () => {
@@ -143,13 +132,11 @@ export class GooglePhotosCollectionElement extends WithPersonalizationStore {
         'albums_', state => state.wallpaper.googlePhotos.albums);
     this.watch<GooglePhotosCollectionElement['albumsLoading_']>(
         'albumsLoading_', state => state.wallpaper.loading.googlePhotos.albums);
-    if (this.isSharedAlbumsEnabled_) {
-      this.watch<GooglePhotosCollectionElement['albumsShared_']>(
-          'albumsShared_', state => state.wallpaper.googlePhotos.albumsShared);
-      this.watch<GooglePhotosCollectionElement['albumsSharedLoading_']>(
-          'albumsSharedLoading_',
-          state => state.wallpaper.loading.googlePhotos.albumsShared);
-    }
+    this.watch<GooglePhotosCollectionElement['albumsShared_']>(
+        'albumsShared_', state => state.wallpaper.googlePhotos.albumsShared);
+    this.watch<GooglePhotosCollectionElement['albumsSharedLoading_']>(
+        'albumsSharedLoading_',
+        state => state.wallpaper.loading.googlePhotos.albumsShared);
     this.watch<GooglePhotosCollectionElement['enabled_']>(
         'enabled_', state => state.wallpaper.googlePhotos.enabled);
     this.watch<GooglePhotosCollectionElement['photos_']>(
@@ -192,10 +179,7 @@ export class GooglePhotosCollectionElement extends WithPersonalizationStore {
       if (this.albums_ === undefined && !this.albumsLoading_ &&
           this.albumsShared_ === undefined && !this.albumsSharedLoading_) {
         fetchGooglePhotosAlbums(this.wallpaperProvider_, this.getStore());
-        if (this.isSharedAlbumsEnabled_) {
-          fetchGooglePhotosSharedAlbums(
-              this.wallpaperProvider_, this.getStore());
-        }
+        fetchGooglePhotosSharedAlbums(this.wallpaperProvider_, this.getStore());
       }
     }
   }
@@ -219,12 +203,8 @@ export class GooglePhotosCollectionElement extends WithPersonalizationStore {
   private isAlbumsEmpty_(
       albums: GooglePhotosCollectionElement['albums_'],
       albumsShared: GooglePhotosCollectionElement['albumsShared_']): boolean {
-    if (this.isSharedAlbumsEnabled_) {
-      // The list of (owned+shared) albums is empty only if both albums are
-      // enpty.
-      return !isNonEmptyArray(albums) && !isNonEmptyArray(albumsShared);
-    }
-    return !isNonEmptyArray(albums);
+    // The list of (owned+shared) albums is empty only if both albums are empty.
+    return !isNonEmptyArray(albums) && !isNonEmptyArray(albumsShared);
   }
 
   /** Whether the albums tab is currently selected. */

@@ -92,7 +92,6 @@ suite('PersonalizationRouterElementTest', function() {
   });
 
   test('puts googlePhotosAlbumIsShared query param in url', async () => {
-    loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
     const isSharedParam = 'googlePhotosAlbumIsShared';
     const sharedAlbum: GooglePhotosAlbum = {
       id: 'aaa',

@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert.js';
  */
 export enum WallpaperGooglePhotosSource {
   PHOTOS = 0,
-  ALBUMS = 1,  // This enum will be retired with the shared albums feature.
+  ALBUMS_DEPRECATED = 1,  // Deprecated.
   OWNED_ALBUMS = 2,
   SHARED_ALBUMS = 3,
   NUM_SOURCES = 4,

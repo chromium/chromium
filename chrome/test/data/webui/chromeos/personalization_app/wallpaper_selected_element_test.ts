@@ -8,7 +8,6 @@ import 'chrome://personalization/strings.m.js';
 
 import type {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto} from 'chrome://personalization/js/personalization_app.js';
 import {DailyRefreshType, GooglePhotosSharedAlbumDialogElement, Paths, WallpaperLayout, WallpaperSelectedElement, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -548,7 +547,6 @@ suite('WallpaperSelectedElementTest', function() {
   test(
       'shows google photos shared album confirmation dialog for daily refresh',
       async () => {
-        loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
         const currentSelected: CurrentWallpaper = {
           descriptionContent: '',
           descriptionTitle: '',
@@ -587,7 +585,6 @@ suite('WallpaperSelectedElementTest', function() {
   test(
       'clicks cancel on the Google Photos shared album confirmation dialog',
       async () => {
-        loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',
@@ -630,7 +627,6 @@ suite('WallpaperSelectedElementTest', function() {
   test(
       'clicks proceed on the Google Photos shared album confirmation dialog',
       async () => {
-        loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',
@@ -713,7 +709,6 @@ suite('WallpaperSelectedElementTest', function() {
   test(
       'does not show confirmation dialog for google photos unshared album',
       async () => {
-        loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',

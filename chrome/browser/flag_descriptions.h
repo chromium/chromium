@@ -4560,12 +4560,6 @@ inline constexpr char kWallpaperFastRefreshDescription[] =
     "Allows developers to see a new wallpaper once every ten seconds rather "
     "than once per day when using the daily refresh feature.";
 
-inline constexpr char kWallpaperGooglePhotosSharedAlbumsName[] =
-    "Enable Google Photos shared albums for wallpaper";
-inline constexpr char kWallpaperGooglePhotosSharedAlbumsDescription[] =
-    "Allow users to set shared Google Photos albums as the source for their "
-    "wallpaper.";
-
 inline constexpr char kWallpaperSearchSettingsVisibilityName[] =
     "Wallpaper Search Settings Visibility";
 inline constexpr char kWallpaperSearchSettingsVisibilityDescription[] =

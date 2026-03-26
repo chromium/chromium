@@ -20,7 +20,6 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import type {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import type {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -87,13 +86,6 @@ export class GooglePhotosPhotosByAlbumIdElement extends
       photosByAlbumIdLoading_: Object,
       photosByAlbumIdResumeTokens_: Object,
 
-      isSharedAlbumsEnabled_: {
-        type: Boolean,
-        value() {
-          return isGooglePhotosSharedAlbumsEnabled();
-        },
-      },
-
       error_: {
         type: Object,
         value: null,
@@ -138,9 +130,6 @@ export class GooglePhotosPhotosByAlbumIdElement extends
 
   /** The resume tokens needed to fetch the next page of photos by album id. */
   private photosByAlbumIdResumeTokens_: Record<string, string|null>|undefined;
-
-  /** Whether feature flag |kGooglePhotosSharedAlbums| is enabled. */
-  private isSharedAlbumsEnabled_: boolean;
 
   /** The current personalization error state. */
   private error_: PersonalizationStateError|null;
@@ -312,20 +301,13 @@ export class GooglePhotosPhotosByAlbumIdElement extends
     assert(e.model.photo, 'google photos album photo selected event has photo');
     if (!this.isPhotoPlaceholder_(e.model.photo)) {
       selectWallpaper(e.model.photo, this.wallpaperProvider_, this.getStore());
-      // Depends on whether shared albums feature is enabled, records Google
-      // Photos source metric for all albums, owned albums or shared albums
-      // accordingly.
-      if (!this.isSharedAlbumsEnabled_) {
+
+      const isAlbumShared =
+          this.isAlbumShared_(this.albumId, this.albums_, this.albumsShared_);
+      if (isAlbumShared !== null) {
         recordWallpaperGooglePhotosSourceUMA(
-            WallpaperGooglePhotosSource.ALBUMS);
-      } else {
-        const isAlbumShared =
-            this.isAlbumShared_(this.albumId, this.albums_, this.albumsShared_);
-        if (isAlbumShared !== null) {
-          recordWallpaperGooglePhotosSourceUMA(
-              isAlbumShared ? WallpaperGooglePhotosSource.SHARED_ALBUMS :
-                              WallpaperGooglePhotosSource.OWNED_ALBUMS);
-        }
+            isAlbumShared ? WallpaperGooglePhotosSource.SHARED_ALBUMS :
+                            WallpaperGooglePhotosSource.OWNED_ALBUMS);
       }
     }
   }

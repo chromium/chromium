@@ -15,10 +15,6 @@ export function isGooglePhotosIntegrationEnabled() {
   return loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled');
 }
 
-export function isGooglePhotosSharedAlbumsEnabled() {
-  return loadTimeData.getBoolean('isGooglePhotosSharedAlbumsEnabled');
-}
-
 export function isAmbientModeAllowed() {
   return loadTimeData.getBoolean('isAmbientModeAllowed');
 }

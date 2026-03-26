@@ -9506,11 +9506,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "wallpaper-google-photos-shared-albums",
-    "owners": ["cowmoo@google.com", "assistive-eng@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "wallpaper-search-settings-visibility",
     "owners": [ "pauladedeji@gooogle.com","tbansal@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 130

@@ -3011,8 +3011,6 @@ const FeatureEntry::FeatureVariation kSystemShortcutBehaviorVariations[] = {
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
-constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
-    "wallpaper-google-photos-shared-albums";
 constexpr char kGlanceablesTimeManagementClassroomStudentViewInternalName[] =
     "glanceables-time-management-classroom-student-view";
 constexpr char kGlanceablesTimeManagementTasksViewInternalName[] =
@@ -8677,10 +8675,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWallpaperFastRefreshName,
      flag_descriptions::kWallpaperFastRefreshDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperFastRefresh)},
-    {kWallpaperGooglePhotosSharedAlbumsInternalName,
-     flag_descriptions::kWallpaperGooglePhotosSharedAlbumsName,
-     flag_descriptions::kWallpaperGooglePhotosSharedAlbumsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kWallpaperGooglePhotosSharedAlbums)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-global-vaapi-lock", flag_descriptions::kGlobalVaapiLockName,

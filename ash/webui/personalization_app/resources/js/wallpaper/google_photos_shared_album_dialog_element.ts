@@ -10,10 +10,7 @@
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 
 import {getTemplate} from './google_photos_shared_album_dialog_element.html.js';
 
@@ -53,13 +50,6 @@ export class GooglePhotosSharedAlbumDialogElement extends PolymerElement {
 
   static get properties() {
     return {};
-  }
-
-  override connectedCallback(): void {
-    assert(
-        isGooglePhotosSharedAlbumsEnabled(),
-        'google photos shared albums must be enabled');
-    super.connectedCallback();
   }
 
   private onClickAccept_() {

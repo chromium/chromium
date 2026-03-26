@@ -2866,7 +2866,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 
 <enum name="WallpaperGooglePhotosSource">
   <int value="0" label="Photos"/>
-  <int value="1" label="Albums"/>
+  <int value="1" label="(Obsolete) Albums"/>
   <int value="2" label="Owned Albums"/>
   <int value="3" label="Shared Albums"/>
 </enum>

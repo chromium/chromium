@@ -24,7 +24,6 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import type {CurrentAttribution, CurrentWallpaper, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 import {WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -163,13 +162,6 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
         type: String,
         value: null,
       },
-
-      googlePhotosSharedAlbumsEnabled_: {
-        type: Boolean,
-        value() {
-          return isGooglePhotosSharedAlbumsEnabled();
-        },
-      },
     };
   }
 
@@ -200,7 +192,6 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
   private fillIcon_: string;
   private centerIcon_: string;
   private error_: string;
-  private googlePhotosSharedAlbumsEnabled_: boolean;
   private imagesByCollectionId_:
       Record<WallpaperCollection['id'], WallpaperImage[]|null>|undefined;
   private photosByAlbumId_: Record<string, GooglePhotosPhoto[]|null|undefined>|
@@ -439,8 +430,7 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
   private enableDailyRefresh_() {
     if (this.googlePhotosAlbumId) {
       assert(!this.collectionId);
-      if (this.googlePhotosSharedAlbumsEnabled_ &&
-          this.isGooglePhotosAlbumShared) {
+      if (this.isGooglePhotosAlbumShared) {
         this.showDailyRefreshConfirmationDialog_ = true;
       } else {
         this.enableGooglePhotosAlbumDailyRefresh_();

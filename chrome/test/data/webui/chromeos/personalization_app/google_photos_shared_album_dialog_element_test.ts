@@ -9,7 +9,6 @@
 import 'chrome://personalization/strings.m.js';
 
 import {AcceptEvent, GooglePhotosSharedAlbumDialogElement} from 'chrome://personalization/js/personalization_app.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -17,10 +16,6 @@ import {initElement} from './personalization_app_test_utils.js';
 
 suite('GooglePhotosSharedAlbumDialogElementTest', function() {
   let dialogElement: GooglePhotosSharedAlbumDialogElement|null;
-
-  setup(() => {
-    loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
-  });
 
   teardown(async () => {
     if (dialogElement) {
