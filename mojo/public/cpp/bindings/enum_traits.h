@@ -18,7 +18,7 @@ namespace mojo {
 //
 //     // Returning false results in deserialization failure and causes the
 //     // message pipe receiving it to be disconnected.
-//     static bool FromMojom(MojomType input, T* output);
+//     static T FromMojom(MojomType input);
 //   };
 //
 template <typename MojomType, typename T>

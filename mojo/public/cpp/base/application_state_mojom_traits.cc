@@ -29,32 +29,26 @@ mojo_base::mojom::ApplicationState EnumTraits<
 }
 
 // static
-bool EnumTraits<mojo_base::mojom::ApplicationState,
-                base::android::ApplicationState>::
-    FromMojom(mojo_base::mojom::ApplicationState input,
-              base::android::ApplicationState* output) {
+base::android::ApplicationState EnumTraits<mojo_base::mojom::ApplicationState,
+                                           base::android::ApplicationState>::
+    FromMojom(mojo_base::mojom::ApplicationState input) {
   switch (input) {
     case mojo_base::mojom::ApplicationState::UNKNOWN:
-      *output = base::android::ApplicationState::APPLICATION_STATE_UNKNOWN;
-      return true;
+      return base::android::ApplicationState::APPLICATION_STATE_UNKNOWN;
     case mojo_base::mojom::ApplicationState::HAS_RUNNING_ACTIVITIES:
-      *output = base::android::ApplicationState::
+      return base::android::ApplicationState::
           APPLICATION_STATE_HAS_RUNNING_ACTIVITIES;
-      return true;
     case mojo_base::mojom::ApplicationState::HAS_PAUSED_ACTIVITIES:
-      *output = base::android::ApplicationState::
+      return base::android::ApplicationState::
           APPLICATION_STATE_HAS_PAUSED_ACTIVITIES;
-      return true;
     case mojo_base::mojom::ApplicationState::HAS_STOPPED_ACTIVITIES:
-      *output = base::android::ApplicationState::
+      return base::android::ApplicationState::
           APPLICATION_STATE_HAS_STOPPED_ACTIVITIES;
-      return true;
     case mojo_base::mojom::ApplicationState::HAS_DESTROYED_ACTIVITIES:
-      *output = base::android::ApplicationState::
+      return base::android::ApplicationState::
           APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES;
-      return true;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

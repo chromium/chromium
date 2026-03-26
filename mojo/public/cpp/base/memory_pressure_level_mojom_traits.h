@@ -18,8 +18,8 @@ struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
                base::MemoryPressureLevel> {
   static mojo_base::mojom::MemoryPressureLevel ToMojom(
       base::MemoryPressureLevel input);
-  static bool FromMojom(mojo_base::mojom::MemoryPressureLevel input,
-                        base::MemoryPressureLevel* output);
+  static base::MemoryPressureLevel FromMojom(
+      mojo_base::mojom::MemoryPressureLevel input);
 };
 
 }  // namespace mojo

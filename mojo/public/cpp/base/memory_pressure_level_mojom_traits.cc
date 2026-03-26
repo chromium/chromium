@@ -24,22 +24,18 @@ mojo_base::mojom::MemoryPressureLevel EnumTraits<
 }
 
 // static
-bool EnumTraits<mojo_base::mojom::MemoryPressureLevel,
-                base::MemoryPressureLevel>::
-    FromMojom(mojo_base::mojom::MemoryPressureLevel input,
-              base::MemoryPressureLevel* output) {
+base::MemoryPressureLevel
+EnumTraits<mojo_base::mojom::MemoryPressureLevel, base::MemoryPressureLevel>::
+    FromMojom(mojo_base::mojom::MemoryPressureLevel input) {
   switch (input) {
     case mojo_base::mojom::MemoryPressureLevel::NONE:
-      *output = base::MEMORY_PRESSURE_LEVEL_NONE;
-      return true;
+      return base::MEMORY_PRESSURE_LEVEL_NONE;
     case mojo_base::mojom::MemoryPressureLevel::MODERATE:
-      *output = base::MEMORY_PRESSURE_LEVEL_MODERATE;
-      return true;
+      return base::MEMORY_PRESSURE_LEVEL_MODERATE;
     case mojo_base::mojom::MemoryPressureLevel::CRITICAL:
-      *output = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
-      return true;
+      return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

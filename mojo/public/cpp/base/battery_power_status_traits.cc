@@ -26,22 +26,19 @@ EnumTraits<mojo_base::mojom::BatteryPowerStatus,
 }
 
 // static
-bool EnumTraits<mojo_base::mojom::BatteryPowerStatus,
-                base::PowerStateObserver::BatteryPowerStatus>::
-    FromMojom(mojo_base::mojom::BatteryPowerStatus input,
-              base::PowerStateObserver::BatteryPowerStatus* out) {
+base::PowerStateObserver::BatteryPowerStatus
+EnumTraits<mojo_base::mojom::BatteryPowerStatus,
+           base::PowerStateObserver::BatteryPowerStatus>::
+    FromMojom(mojo_base::mojom::BatteryPowerStatus input) {
   switch (input) {
     case mojo_base::mojom::BatteryPowerStatus::kBatteryPower:
-      *out = base::PowerStateObserver::BatteryPowerStatus::kBatteryPower;
-      return true;
+      return base::PowerStateObserver::BatteryPowerStatus::kBatteryPower;
     case mojo_base::mojom::BatteryPowerStatus::kExternalPower:
-      *out = base::PowerStateObserver::BatteryPowerStatus::kExternalPower;
-      return true;
+      return base::PowerStateObserver::BatteryPowerStatus::kExternalPower;
     case mojo_base::mojom::BatteryPowerStatus::kUnknown:
-      *out = base::PowerStateObserver::BatteryPowerStatus::kUnknown;
-      return true;
+      return base::PowerStateObserver::BatteryPowerStatus::kUnknown;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

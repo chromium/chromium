@@ -29,8 +29,7 @@ struct StructTraits<test::NestedStructWithTraitsDataView,
 template <>
 struct EnumTraits<test::EnumWithTraits, test::EnumWithTraitsImpl> {
   static test::EnumWithTraits ToMojom(test::EnumWithTraitsImpl input);
-  static bool FromMojom(test::EnumWithTraits input,
-                        test::EnumWithTraitsImpl* output);
+  static test::EnumWithTraitsImpl FromMojom(test::EnumWithTraits input);
 };
 
 template <>

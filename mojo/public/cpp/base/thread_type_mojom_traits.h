@@ -18,8 +18,7 @@ template <>
 struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType> {
   static mojo_base::mojom::ThreadType ToMojom(base::ThreadType thread_type);
-  static bool FromMojom(mojo_base::mojom::ThreadType input,
-                        base::ThreadType* out);
+  static base::ThreadType FromMojom(mojo_base::mojom::ThreadType input);
 };
 
 }  // namespace mojo

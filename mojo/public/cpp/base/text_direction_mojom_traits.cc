@@ -24,21 +24,18 @@ EnumTraits<mojo_base::mojom::TextDirection, base::i18n::TextDirection>::ToMojom(
 }
 
 // static
-bool EnumTraits<mojo_base::mojom::TextDirection, base::i18n::TextDirection>::
-    FromMojom(mojo_base::mojom::TextDirection input,
-              base::i18n::TextDirection* out) {
+base::i18n::TextDirection
+EnumTraits<mojo_base::mojom::TextDirection, base::i18n::TextDirection>::
+    FromMojom(mojo_base::mojom::TextDirection input) {
   switch (input) {
     case mojo_base::mojom::TextDirection::UNKNOWN_DIRECTION:
-      *out = base::i18n::UNKNOWN_DIRECTION;
-      return true;
+      return base::i18n::UNKNOWN_DIRECTION;
     case mojo_base::mojom::TextDirection::RIGHT_TO_LEFT:
-      *out = base::i18n::RIGHT_TO_LEFT;
-      return true;
+      return base::i18n::RIGHT_TO_LEFT;
     case mojo_base::mojom::TextDirection::LEFT_TO_RIGHT:
-      *out = base::i18n::LEFT_TO_RIGHT;
-      return true;
+      return base::i18n::LEFT_TO_RIGHT;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

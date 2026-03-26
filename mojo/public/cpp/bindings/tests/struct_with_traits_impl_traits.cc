@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/bindings/tests/struct_with_traits_impl_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -35,19 +37,17 @@ EnumTraits<test::EnumWithTraits, test::EnumWithTraitsImpl>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<test::EnumWithTraits, test::EnumWithTraitsImpl>::FromMojom(
-    test::EnumWithTraits input,
-    test::EnumWithTraitsImpl* output) {
+test::EnumWithTraitsImpl
+EnumTraits<test::EnumWithTraits, test::EnumWithTraitsImpl>::FromMojom(
+    test::EnumWithTraits input) {
   switch (input) {
     case test::EnumWithTraits::VALUE_0:
-      *output = test::EnumWithTraitsImpl::CUSTOM_VALUE_0;
-      return true;
+      return test::EnumWithTraitsImpl::CUSTOM_VALUE_0;
     case test::EnumWithTraits::VALUE_1:
-      *output = test::EnumWithTraitsImpl::CUSTOM_VALUE_1;
-      return true;
+      return test::EnumWithTraitsImpl::CUSTOM_VALUE_1;
   };
 
-  return false;
+  NOTREACHED();
 }
 
 // static

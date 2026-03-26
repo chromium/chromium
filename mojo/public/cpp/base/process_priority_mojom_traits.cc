@@ -24,19 +24,16 @@ EnumTraits<mojo_base::mojom::ProcessPriority, base::Process::Priority>::ToMojom(
 }
 
 // static
-bool EnumTraits<mojo_base::mojom::ProcessPriority, base::Process::Priority>::
-    FromMojom(mojo_base::mojom::ProcessPriority input,
-              base::Process::Priority* output) {
+base::Process::Priority
+EnumTraits<mojo_base::mojom::ProcessPriority, base::Process::Priority>::
+    FromMojom(mojo_base::mojom::ProcessPriority input) {
   switch (input) {
     case mojo_base::mojom::ProcessPriority::kBestEffort:
-      *output = base::Process::Priority::kBestEffort;
-      return true;
+      return base::Process::Priority::kBestEffort;
     case mojo_base::mojom::ProcessPriority::kUserVisible:
-      *output = base::Process::Priority::kUserVisible;
-      return true;
+      return base::Process::Priority::kUserVisible;
     case mojo_base::mojom::ProcessPriority::kUserBlocking:
-      *output = base::Process::Priority::kUserBlocking;
-      return true;
+      return base::Process::Priority::kUserBlocking;
   }
   NOTREACHED();
 }

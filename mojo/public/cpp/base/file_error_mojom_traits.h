@@ -55,60 +55,42 @@ struct EnumTraits<mojo_base::mojom::FileError, base::File::Error> {
     NOTREACHED();
   }
 
-  static bool FromMojom(mojo_base::mojom::FileError in,
-                        base::File::Error* out) {
+  static base::File::Error FromMojom(mojo_base::mojom::FileError in) {
     switch (in) {
       case mojo_base::mojom::FileError::OK:
-        *out = base::File::FILE_OK;
-        return true;
+        return base::File::FILE_OK;
       case mojo_base::mojom::FileError::FAILED:
-        *out = base::File::FILE_ERROR_FAILED;
-        return true;
+        return base::File::FILE_ERROR_FAILED;
       case mojo_base::mojom::FileError::IN_USE:
-        *out = base::File::FILE_ERROR_IN_USE;
-        return true;
+        return base::File::FILE_ERROR_IN_USE;
       case mojo_base::mojom::FileError::EXISTS:
-        *out = base::File::FILE_ERROR_EXISTS;
-        return true;
+        return base::File::FILE_ERROR_EXISTS;
       case mojo_base::mojom::FileError::NOT_FOUND:
-        *out = base::File::FILE_ERROR_NOT_FOUND;
-        return true;
+        return base::File::FILE_ERROR_NOT_FOUND;
       case mojo_base::mojom::FileError::ACCESS_DENIED:
-        *out = base::File::FILE_ERROR_ACCESS_DENIED;
-        return true;
+        return base::File::FILE_ERROR_ACCESS_DENIED;
       case mojo_base::mojom::FileError::TOO_MANY_OPENED:
-        *out = base::File::FILE_ERROR_TOO_MANY_OPENED;
-        return true;
+        return base::File::FILE_ERROR_TOO_MANY_OPENED;
       case mojo_base::mojom::FileError::NO_MEMORY:
-        *out = base::File::FILE_ERROR_NO_MEMORY;
-        return true;
+        return base::File::FILE_ERROR_NO_MEMORY;
       case mojo_base::mojom::FileError::NO_SPACE:
-        *out = base::File::FILE_ERROR_NO_SPACE;
-        return true;
+        return base::File::FILE_ERROR_NO_SPACE;
       case mojo_base::mojom::FileError::NOT_A_DIRECTORY:
-        *out = base::File::FILE_ERROR_NOT_A_DIRECTORY;
-        return true;
+        return base::File::FILE_ERROR_NOT_A_DIRECTORY;
       case mojo_base::mojom::FileError::INVALID_OPERATION:
-        *out = base::File::FILE_ERROR_INVALID_OPERATION;
-        return true;
+        return base::File::FILE_ERROR_INVALID_OPERATION;
       case mojo_base::mojom::FileError::SECURITY:
-        *out = base::File::FILE_ERROR_SECURITY;
-        return true;
+        return base::File::FILE_ERROR_SECURITY;
       case mojo_base::mojom::FileError::ABORT:
-        *out = base::File::FILE_ERROR_ABORT;
-        return true;
+        return base::File::FILE_ERROR_ABORT;
       case mojo_base::mojom::FileError::NOT_A_FILE:
-        *out = base::File::FILE_ERROR_NOT_A_FILE;
-        return true;
+        return base::File::FILE_ERROR_NOT_A_FILE;
       case mojo_base::mojom::FileError::NOT_EMPTY:
-        *out = base::File::FILE_ERROR_NOT_EMPTY;
-        return true;
+        return base::File::FILE_ERROR_NOT_EMPTY;
       case mojo_base::mojom::FileError::INVALID_URL:
-        *out = base::File::FILE_ERROR_INVALID_URL;
-        return true;
+        return base::File::FILE_ERROR_INVALID_URL;
       case mojo_base::mojom::FileError::IO:
-        *out = base::File::FILE_ERROR_IO;
-        return true;
+        return base::File::FILE_ERROR_IO;
     }
     NOTREACHED();
   }

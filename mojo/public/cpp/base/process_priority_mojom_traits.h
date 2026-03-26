@@ -16,8 +16,8 @@ struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::ProcessPriority, base::Process::Priority> {
   static mojo_base::mojom::ProcessPriority ToMojom(
       base::Process::Priority input);
-  static bool FromMojom(mojo_base::mojom::ProcessPriority input,
-                        base::Process::Priority* output);
+  static base::Process::Priority FromMojom(
+      mojo_base::mojom::ProcessPriority input);
 };
 
 }  // namespace mojo

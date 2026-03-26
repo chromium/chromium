@@ -16,8 +16,8 @@ template <>
 struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType> {
   static mojo_base::mojom::MessagePumpType ToMojom(base::MessagePumpType input);
-  static bool FromMojom(mojo_base::mojom::MessagePumpType input,
-                        base::MessagePumpType* output);
+  static base::MessagePumpType FromMojom(
+      mojo_base::mojom::MessagePumpType input);
 };
 
 }  // namespace mojo

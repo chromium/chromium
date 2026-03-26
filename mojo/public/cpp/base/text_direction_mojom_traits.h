@@ -16,8 +16,8 @@ struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::TextDirection, base::i18n::TextDirection> {
   static mojo_base::mojom::TextDirection ToMojom(
       base::i18n::TextDirection text_direction);
-  static bool FromMojom(mojo_base::mojom::TextDirection input,
-                        base::i18n::TextDirection* out);
+  static base::i18n::TextDirection FromMojom(
+      mojo_base::mojom::TextDirection input);
 };
 
 }  // namespace mojo

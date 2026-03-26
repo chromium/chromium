@@ -17,8 +17,8 @@ struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
                base::PowerStateObserver::BatteryPowerStatus> {
   static mojo_base::mojom::BatteryPowerStatus ToMojom(
       base::PowerStateObserver::BatteryPowerStatus battery_power_status);
-  static bool FromMojom(mojo_base::mojom::BatteryPowerStatus input,
-                        base::PowerStateObserver::BatteryPowerStatus* out);
+  static base::PowerStateObserver::BatteryPowerStatus FromMojom(
+      mojo_base::mojom::BatteryPowerStatus input);
 };
 
 }  // namespace mojo

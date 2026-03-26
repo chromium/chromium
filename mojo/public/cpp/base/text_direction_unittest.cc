@@ -19,10 +19,9 @@ TEST(TextDirectionTest, TextDirection) {
     mojo_base::mojom::TextDirection serialized_direction =
         mojo::EnumTraits<mojo_base::mojom::TextDirection,
                          base::i18n::TextDirection>::ToMojom(direction_in);
-    ASSERT_TRUE((mojo::EnumTraits<
-                 mojo_base::mojom::TextDirection,
-                 base::i18n::TextDirection>::FromMojom(serialized_direction,
-                                                       &direction_out)));
+    direction_out = mojo::EnumTraits<
+        mojo_base::mojom::TextDirection,
+        base::i18n::TextDirection>::FromMojom(serialized_direction);
     EXPECT_EQ(direction_in, direction_out);
   }
 }

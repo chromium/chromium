@@ -31,30 +31,24 @@ EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType>::ToMojom(
 }
 
 // static
-bool EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType>::FromMojom(
-    mojo_base::mojom::ThreadType input,
-    base::ThreadType* out) {
+base::ThreadType
+EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType>::FromMojom(
+    mojo_base::mojom::ThreadType input) {
   switch (input) {
     case mojo_base::mojom::ThreadType::kBackground:
-      *out = base::ThreadType::kBackground;
-      return true;
+      return base::ThreadType::kBackground;
     case mojo_base::mojom::ThreadType::kUtility:
-      *out = base::ThreadType::kUtility;
-      return true;
+      return base::ThreadType::kUtility;
     case mojo_base::mojom::ThreadType::kDefault:
-      *out = base::ThreadType::kDefault;
-      return true;
+      return base::ThreadType::kDefault;
     case mojo_base::mojom::ThreadType::kPresentation:
-      *out = base::ThreadType::kPresentation;
-      return true;
+      return base::ThreadType::kPresentation;
     case mojo_base::mojom::ThreadType::kAudioProcessing:
-      *out = base::ThreadType::kAudioProcessing;
-      return true;
+      return base::ThreadType::kAudioProcessing;
     case mojo_base::mojom::ThreadType::kRealtimeAudio:
-      *out = base::ThreadType::kRealtimeAudio;
-      return true;
+      return base::ThreadType::kRealtimeAudio;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

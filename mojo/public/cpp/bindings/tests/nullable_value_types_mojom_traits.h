@@ -27,16 +27,14 @@ struct EnumTraits<test::nullable_value_types::mojom::TypemappedEnum,
     NOTREACHED();
   }
 
-  static bool FromMojom(MojomType in, CppType* out) {
+  static CppType FromMojom(MojomType in) {
     switch (in) {
       case MojomType::kThisOtherValue:
-        *out = CppType::kValueOne;
-        return true;
+        return CppType::kValueOne;
       case MojomType::kThatOtherValue:
-        *out = CppType::kValueTwo;
-        return true;
+        return CppType::kValueTwo;
     }
-    return false;
+    NOTREACHED();
   }
 };
 

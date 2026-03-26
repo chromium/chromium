@@ -20,10 +20,9 @@ TEST(ThreadTypeTest, ThreadType) {
     mojo_base::mojom::ThreadType serialized_thread_type =
         mojo::EnumTraits<mojo_base::mojom::ThreadType,
                          base::ThreadType>::ToMojom(thread_type_in);
-    ASSERT_TRUE(
-        (mojo::EnumTraits<mojo_base::mojom::ThreadType,
-                          base::ThreadType>::FromMojom(serialized_thread_type,
-                                                       &thread_type_out)));
+    thread_type_out =
+        mojo::EnumTraits<mojo_base::mojom::ThreadType,
+                         base::ThreadType>::FromMojom(serialized_thread_type);
     EXPECT_EQ(thread_type_in, thread_type_out);
   }
 }
