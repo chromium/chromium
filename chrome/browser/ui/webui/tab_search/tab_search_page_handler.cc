@@ -58,6 +58,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_alert.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
@@ -381,7 +382,13 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
         if (!ShouldTrackBrowser(browser)) {
           return true;
         }
-        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+
+        auto* service = GetTabStripService(browser);
+        CHECK(service);
+        auto get_tabs_result = service->GetTabs();
+        if (!get_tabs_result.has_value()) {
+          return true;
+        }
 
         auto window = tab_search::mojom::Window::New();
         window->active = browser->IsActive();
@@ -390,42 +397,13 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
                              ->window()
                              ->GetContentsSize()
                              .height();
-        for (int i = 0; i < tab_strip_model->count(); ++i) {
-          content::WebContents* const web_contents =
-              tab_strip_model->GetWebContentsAt(i);
-          // A Tab can potentially be in a state where it has no committed
-          // entries during loading and thus has no title/URL. Skip any such
-          // pending tabs. These tabs will be added to the list later on once
-          // loading has finished.
-          if (!web_contents->GetController().GetLastCommittedEntry()) {
-            continue;
-          }
-          tab_search::mojom::TabPtr tab =
-              GetTab(tab_strip_model, web_contents, i);
-          tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
-          window->tabs.push_back(std::move(tab));
-        }
+
+        int tab_index = 0;
+        WalkContainer(get_tabs_result.value(), tab_index, window.get(),
+                      profile_data.get(), tab_dedup_keys, tab_group_ids);
+
         profile_data->windows.push_back(std::move(window));
 
-        // Collect tab groups from this browser
-        if (tab_strip_model->group_model()) {
-          for (auto tab_group_id :
-               tab_strip_model->group_model()->ListTabGroups()) {
-            const tab_groups::TabGroupVisualData* const tab_group_visual_data =
-                tab_strip_model->group_model()
-                    ->GetTabGroup(tab_group_id)
-                    ->visual_data();
-
-            auto tab_group = tab_search::mojom::TabGroup::New();
-            tab_group->id = tab_group_id.token();
-            tab_group->title =
-                base::UTF16ToUTF8(tab_group_visual_data->title());
-            tab_group->color = tab_group_visual_data->color();
-
-            tab_group_ids.insert(tab_group_id);
-            profile_data->tab_groups.push_back(std::move(tab_group));
-          }
-        }
         return true;
       });
 
@@ -437,6 +415,55 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
       Profile::FromWebUI(web_ui_)->GetPrefs()->GetBoolean(
           tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
   return profile_data;
+}
+
+void TabSearchPageHandler::WalkContainer(
+    const tabs_api::mojom::ContainerPtr& container,
+    int& tab_index,
+    tab_search::mojom::Window* window,
+    tab_search::mojom::ProfileData* profile_data,
+    std::set<DedupKey>& tab_dedup_keys,
+    std::set<tab_groups::TabGroupId>& tab_group_ids) {
+  if (container->data->is_tab()) {
+    const std::optional<tabs::TabHandle> handle =
+        container->data->get_tab()->id.ToTabHandle();
+    if (handle) {
+      tabs::TabInterface* const tab_interface = handle->Get();
+      // A Tab can potentially be in a state where it has no committed
+      // entries during loading and thus has no title/URL. Skip any such
+      // pending tabs. These tabs will be added to the list later on once
+      // loading has finished.
+      if (tab_interface && tab_interface->GetContents()
+                               ->GetController()
+                               .GetLastCommittedEntry()) {
+        tab_search::mojom::TabPtr tab = GetTab(tab_interface, tab_index++);
+        tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
+        window->tabs.push_back(std::move(tab));
+      }
+    }
+  } else if (container->data->is_tab_group()) {
+    const auto& group_data = container->data->get_tab_group();
+    auto tab_group = tab_search::mojom::TabGroup::New();
+    tab_group->title = base::UTF16ToUTF8(group_data->data.title());
+    tab_group->color = group_data->data.color();
+
+    std::optional<tabs::TabCollectionHandle> collection_handle =
+        group_data->id.ToTabCollectionHandle();
+    if (collection_handle.has_value()) {
+      const tab_groups::TabGroupId& group_id =
+          static_cast<tabs::TabGroupTabCollection*>(
+              collection_handle.value().Get())
+              ->GetTabGroupId();
+      tab_group->id = group_id.token();
+      tab_group_ids.insert(group_id);
+      profile_data->tab_groups.push_back(std::move(tab_group));
+    }
+  }
+
+  for (const auto& child : container->children) {
+    WalkContainer(child, tab_index, window, profile_data, tab_dedup_keys,
+                  tab_group_ids);
+  }
 }
 
 void TabSearchPageHandler::AddRecentlyClosedEntries(
@@ -565,12 +592,10 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
   return true;
 }
 
-tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
-    const TabStripModel* tab_strip_model,
-    content::WebContents* contents,
-    int index) const {
+tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(tabs::TabInterface* tab,
+                                                       int index) const {
   auto tab_mojom_data = tab_search::mojom::Tab::New();
-  tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
+  content::WebContents* contents = tab->GetContents();
 
   tab_mojom_data->active = tab->IsActivated();
   tab_mojom_data->visible = tab->IsVisible();
@@ -767,8 +792,7 @@ void TabSearchPageHandler::OnTabChangedAt(tabs::TabInterface* tab,
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   tab_update_info->in_active_window = browser->IsActive();
   tab_update_info->in_host_window = browser == browser_;
-  tab_update_info->tab =
-      GetTab(browser->GetTabStripModel(), tab->GetContents(), index);
+  tab_update_info->tab = GetTab(tab, index);
   page_->TabUpdated(std::move(tab_update_info));
 }
 

@@ -36,7 +36,11 @@ class TabInterface;
 
 namespace tabs_api {
 class TabStripService;
-}
+namespace mojom {
+class Container;
+using ContainerPtr = mojo::StructPtr<Container>;
+}  // namespace mojom
+}  // namespace tabs_api
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -131,6 +135,14 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
 
+  // Walk the tab strip tree to collect tab and group data.
+  void WalkContainer(const tabs_api::mojom::ContainerPtr& container,
+                     int& tab_index,
+                     tab_search::mojom::Window* window,
+                     tab_search::mojom::ProfileData* profile_data,
+                     std::set<DedupKey>& tab_dedup_keys,
+                     std::set<tab_groups::TabGroupId>& tab_group_ids);
+
   // Adds recently closed tabs and tab groups.
   void AddRecentlyClosedEntries(
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
@@ -152,9 +164,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       std::set<tab_groups::TabGroupId>& tab_group_ids,
       std::vector<tab_search::mojom::TabGroupPtr>& tab_groups);
 
-  tab_search::mojom::TabPtr GetTab(const TabStripModel* tab_strip_model,
-                                   content::WebContents* contents,
-                                   int index) const;
+  tab_search::mojom::TabPtr GetTab(tabs::TabInterface* tab, int index) const;
   tab_search::mojom::RecentlyClosedTabPtr GetRecentlyClosedTab(
       sessions::tab_restore::Tab* tab,
       const base::Time& close_time);
