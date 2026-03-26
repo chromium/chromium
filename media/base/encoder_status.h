@@ -74,8 +74,34 @@ struct EncoderStatusTraits {
     kUnsupportedGLFeature = 28,
     // A GL error occurred during initialization.
     kGLInitializationError = 29,
+    // Failure in calling ID3D12CommandAllocator::Reset().
+    kD3D12CommandAllocatorResetFailed = 30,
+    // Failure in calling ID3D12VideoEncodeCommandList::Reset().
+    kD3D12CommandListResetFailed = 31,
+    // Failure in calling ID3D12VideoEncodeCommandList::Close().
+    kD3D12CommandListCloseFailed = 32,
+    // Failure in waiting for a D3D12 fence.
+    kD3D12FenceWaitFailed = 33,
+    // Failure in calling ID3D12Resource::Map().
+    kD3D12ResourceMapFailed = 34,
+    // Failure in calling ID3D12Device::CreateCommittedResource().
+    kD3D12CreateCommittedResourceFailed = 35,
+    // Failure in calling ID3D12Device::OpenSharedHandle().
+    kD3D12OpenSharedHandleFailed = 36,
+    // Failure in validating D3D12 video encoder metadata.
+    kD3D12InvalidVideoEncoderMetadata = 37,
+    // Failure in calling ID3D12VideoDevice::CheckFeatureSupport().
+    kD3D12CheckFeatureSupportFailed = 38,
+    // Failure in calling ID3D12VideoProcessCommandList::ProcessFrames().
+    kD3D12VideoProcessorProcessFramesFailed = 39,
+    // Failure in calling ID3D12Device::CreateFence().
+    kD3D12CreateFenceFailed = 40,
+    // Failure in creating D3D12CopyCommandQueueWrapper.
+    kD3D12CreateCopyQueueFailed = 41,
+    // Failure in resolving a SharedImage.
+    kSharedImageResolveFailed = 42,
 
-    kMaxValue = kGLInitializationError,
+    kMaxValue = kSharedImageResolveFailed,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

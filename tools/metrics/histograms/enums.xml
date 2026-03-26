@@ -3557,6 +3557,19 @@ Called by update_net_error_codes.py.-->
   <int value="27" label="kGLMakeCurrentFailed"/>
   <int value="28" label="kUnsupportedGLFeature"/>
   <int value="29" label="kGLInitializationError"/>
+  <int value="30" label="kD3D12CommandAllocatorResetFailed"/>
+  <int value="31" label="kD3D12CommandListResetFailed"/>
+  <int value="32" label="kD3D12CommandListCloseFailed"/>
+  <int value="33" label="kD3D12FenceWaitFailed"/>
+  <int value="34" label="kD3D12ResourceMapFailed"/>
+  <int value="35" label="kD3D12CreateCommittedResourceFailed"/>
+  <int value="36" label="kD3D12OpenSharedHandleFailed"/>
+  <int value="37" label="kD3D12InvalidVideoEncoderMetadata"/>
+  <int value="38" label="kD3D12CheckFeatureSupportFailed"/>
+  <int value="39" label="kD3D12VideoProcessorProcessFramesFailed"/>
+  <int value="40" label="kD3D12CreateFenceFailed"/>
+  <int value="41" label="kD3D12CreateCopyQueueFailed"/>
+  <int value="42" label="kSharedImageResolveFailed"/>
 </enum>
 
 <enum name="EncryptionScheme">

@@ -73,7 +73,7 @@ EncoderStatus CheckD3D12VideoEncoderCodecConfigurationSupportImpl(
       hr,
       "CheckFeatureSupport for "
       "D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT failed",
-      EncoderStatus::Codes::kSystemAPICallError);
+      EncoderStatus::Codes::kD3D12CheckFeatureSupportFailed);
   if (!support->IsSupported) {
     return {EncoderStatus::Codes::kEncoderUnsupportedProfile,
             "D3D12VideoEncoder cannot get a valid codec configuration"};
@@ -91,7 +91,7 @@ EncoderStatus CheckD3D12VideoEncoderCodec(
   RETURN_ON_HR_FAILURE(hr,
                        "CheckFeatureSupport for "
                        "D3D12_FEATURE_VIDEO_ENCODER_CODEC failed",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CheckFeatureSupportFailed);
   if (!codec->IsSupported) {
     return {EncoderStatus::Codes::kEncoderUnsupportedCodec,
             "D3D12VideoEncoder does not support codec"};
@@ -161,7 +161,7 @@ EncoderStatus CheckD3D12VideoEncoderInputFormat(
   RETURN_ON_HR_FAILURE(hr,
                        "CheckFeatureSupport for "
                        "D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT failed",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CheckFeatureSupportFailed);
   if (!input_format->IsSupported) {
     return {EncoderStatus::Codes::kUnsupportedFrameFormat,
             base::StrCat({"D3D12VideoEncoder does not support input format ",
@@ -179,7 +179,7 @@ EncoderStatus CheckD3D12VideoEncoderProfileLevel(
   RETURN_ON_HR_FAILURE(hr,
                        "CheckFeatureSupport for "
                        "D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL failed",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CheckFeatureSupportFailed);
   if (!profile_level->IsSupported) {
     return {EncoderStatus::Codes::kEncoderUnsupportedProfile,
             "D3D12VideoEncoder does not support profile"};
@@ -198,7 +198,7 @@ EncoderStatus CheckD3D12VideoEncoderResourceRequirements(
                        "CheckFeatureSupport for "
                        "D3D12_FEATURE_VIDEO_ENCODER_RESOURCE_REQUIREMENTS "
                        "failed",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CheckFeatureSupportFailed);
   if (!resource_requirements->IsSupported) {
     return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
             "D3D12VideoEncoder does not support resource requirements"};
@@ -214,7 +214,7 @@ EncoderStatus CheckD3D12VideoEncoderSupport(
   RETURN_ON_HR_FAILURE(hr,
                        "CheckFeatureSupport for "
                        "D3D12_FEATURE_VIDEO_ENCODER_SUPPORT failed",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CheckFeatureSupportFailed);
   if (!(support->SupportFlags &
         D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK)) {
     std::stringstream error;
@@ -283,7 +283,7 @@ EncoderStatus CheckD3D12VideoEncoderSupport1(
   RETURN_ON_HR_FAILURE(hr,
                        "CheckFeatureSupport for "
                        "D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1 failed",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CheckFeatureSupportFailed);
   if (!(support->SupportFlags &
         D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK)) {
     std::string error;
@@ -370,7 +370,7 @@ EncoderStatus CheckD3D12VideoEncoderCodecPictureControlSupport(
       hr,
       "CheckFeatureSupport for "
       "D3D12_FEATURE_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT failed",
-      EncoderStatus::Codes::kSystemAPICallError);
+      EncoderStatus::Codes::kD3D12CheckFeatureSupportFailed);
   if (!picture_control_support->IsSupported) {
     return {EncoderStatus::Codes::kEncoderUnsupportedProfile,
             "D3D12VideoEncoder does not support profile"};

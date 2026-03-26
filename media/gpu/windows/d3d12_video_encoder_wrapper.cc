@@ -186,10 +186,10 @@ EncoderStatus D3D12VideoEncoderWrapper::Encode(
     const D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE& reconstructed_picture) {
   HRESULT hr = command_allocator_->Reset();
   RETURN_ON_HR_FAILURE(hr, "Failed to Reset video_encode_command_allocator_",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CommandAllocatorResetFailed);
   hr = command_list_->Reset(command_allocator_.Get());
   RETURN_ON_HR_FAILURE(hr, "Failed to Reset video_encode_command_list_",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CommandListResetFailed);
 
   // Encode frame
 
@@ -257,7 +257,7 @@ EncoderStatus D3D12VideoEncoderWrapper::Encode(
 
   hr = command_list_->Close();
   RETURN_ON_HR_FAILURE(hr, "Failed to Close video_encode_command_list_",
-                       EncoderStatus::Codes::kSystemAPICallError);
+                       EncoderStatus::Codes::kD3D12CommandListCloseFailed);
 
   // Execution
 
@@ -265,18 +265,19 @@ EncoderStatus D3D12VideoEncoderWrapper::Encode(
   command_queue_->ExecuteCommandLists(std::size(command_lists), command_lists);
   return fence_->SignalAndWaitCPU(*command_queue_.Get()) == D3D11StatusCode::kOk
              ? EncoderStatus::Codes::kOk
-             : EncoderStatus::Codes::kSystemAPICallError;
+             : EncoderStatus::Codes::kD3D12FenceWaitFailed;
 }
 
 EncoderStatus::Or<ScopedD3D12ResourceMap>
 D3D12VideoEncoderWrapper::GetEncoderOutputMetadata() const {
   ScopedD3D12ResourceMap mapped_metadata;
   if (!mapped_metadata.Map(metadata_buffer_.Get(), 0, nullptr)) {
-    return EncoderStatus::Codes::kSystemAPICallError;
+    return EncoderStatus::Codes::kD3D12ResourceMapFailed;
   }
   if (mapped_metadata.data().size() <
       sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA)) {
-    return {EncoderStatus::Codes::kSystemAPICallError, "Bad mapped metadata"};
+    return {EncoderStatus::Codes::kD3D12InvalidVideoEncoderMetadata,
+            "Bad mapped metadata"};
   }
   D3D12_VIDEO_ENCODER_OUTPUT_METADATA* metadata =
       reinterpret_cast<D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
@@ -316,7 +317,7 @@ EncoderStatus D3D12VideoEncoderWrapper::ReadbackBitstream(
   ScopedD3D12ResourceMap mapped_bitstream;
   if (!mapped_bitstream.Map(bitstream_buffer_.Get(), 0,
                             &bitstream_read_range)) {
-    return EncoderStatus::Codes::kSystemAPICallError;
+    return EncoderStatus::Codes::kD3D12ResourceMapFailed;
   }
   data.copy_from(mapped_bitstream.data().first(data.size()));
   D3D12_RANGE bitstream_written_range{0, 0};
