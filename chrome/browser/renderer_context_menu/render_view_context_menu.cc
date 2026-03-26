@@ -2298,10 +2298,12 @@ void RenderViewContextMenu::AppendPageItems() {
         IDC_CONTENT_CONTEXT_GLIC,
         show_summarize_page ? IDS_GLIC_CONTEXT_MENU_SUMMARIZE_PAGE_WITH_GEMINI
                             : IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL,
-        ui::ImageModel::FromVectorIcon(
-            glic::GlicVectorIconManager::GetVectorIcon(
-                IDR_GLIC_BUTTON_VECTOR_ICON),
-            ui::kColorMenuIcon, kTabMenuIconSize));
+        ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateResizedImage(
+                *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                    IDR_GLIC_BUTTON_ALT_ICON),
+                skia::ImageOperations::RESIZE_BEST,
+                gfx::Size(kTabMenuIconSize, kTabMenuIconSize))));
     menu_model_.SetIsNewFeatureAt(
         menu_model_.GetItemCount() - 1,
         UserEducationService::MaybeShowNewBadge(GetBrowserContext(),
