@@ -94,17 +94,3 @@ TEST_F(BubbleViewControllerTest, BubbleTypeRichContent) {
                                         delegate:nil];
   ExpectBubbleViewContent(bubble_view_controller, false, true, false);
 }
-
-// Tests that with BubbleViewTypeRichWithSnooze, bubble view contains the
-// expected subviews.
-TEST_F(BubbleViewControllerTest, BubbleTypeRichWithSnoozeContent) {
-  BubbleViewController* bubble_view_controller =
-      [[BubbleViewController alloc] initWithText:text_
-                                           title:title_text_
-                                  arrowDirection:arrow_direction_
-                                       alignment:alignment_
-                                  bubbleViewType:BubbleViewTypeRichWithSnooze
-                                 pageControlPage:BubblePageControlPageNone
-                                        delegate:nil];
-  ExpectBubbleViewContent(bubble_view_controller, false, true, true);
-}

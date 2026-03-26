@@ -34,10 +34,6 @@
   _tapCounter += 1;
 }
 
-- (void)didTapSnoozeButton {
-  _tapCounter += 1;
-}
-
 - (void)didTapNextButton {
   _tapCounter += 1;
 }
@@ -107,7 +103,6 @@ TEST_F(BubbleViewTest, CloseButtonIsNotPresent) {
                              alignment:alignment_
                       showsCloseButton:NO
                                  title:nil
-                     showsSnoozeButton:NO
                        showsNextButton:NO
                                   page:BubblePageControlPageNone
                          textAlignment:text_alignment_
@@ -127,7 +122,6 @@ TEST_F(BubbleViewTest, CloseButtonActionAndPresent) {
                              alignment:alignment_
                       showsCloseButton:YES
                                  title:nil
-                     showsSnoozeButton:NO
                        showsNextButton:NO
                                   page:BubblePageControlPageNone
                          textAlignment:text_alignment_
@@ -160,7 +154,6 @@ TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
                              alignment:alignment_
                       showsCloseButton:NO
                                  title:short_text_
-                     showsSnoozeButton:NO
                        showsNextButton:NO
                                   page:BubblePageControlPageNone
                          textAlignment:text_alignment_
@@ -180,7 +173,6 @@ TEST_F(BubbleViewTest, TitleIsAligned) {
                              alignment:alignment_
                       showsCloseButton:NO
                                  title:short_text_
-                     showsSnoozeButton:NO
                        showsNextButton:NO
                                   page:BubblePageControlPageNone
                          textAlignment:NSTextAlignmentNatural
@@ -200,7 +192,6 @@ TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
                              alignment:alignment_
                       showsCloseButton:NO
                                  title:nil
-                     showsSnoozeButton:NO
                        showsNextButton:NO
                                   page:BubblePageControlPageNone
                          textAlignment:text_alignment_
@@ -209,29 +200,6 @@ TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
   [superview addSubview:bubble];
   UIButton* snooze_button = GetSnoozeButtonFromBubbleView(bubble);
   ASSERT_FALSE(snooze_button);
-}
-
-// Tests the snooze button action and its presence.
-TEST_F(BubbleViewTest, SnoozeButtonActionAndPresent) {
-  BubbleViewDelegateTest* delegate = [[BubbleViewDelegateTest alloc] init];
-  BubbleView* bubble =
-      [[BubbleView alloc] initWithText:long_text_
-                        arrowDirection:arrow_direction_
-                             alignment:alignment_
-                      showsCloseButton:NO
-                                 title:nil
-                     showsSnoozeButton:YES
-                       showsNextButton:NO
-                                  page:BubblePageControlPageNone
-                         textAlignment:text_alignment_
-                              delegate:delegate];
-  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
-  [superview addSubview:bubble];
-  UIButton* snooze_button = GetSnoozeButtonFromBubbleView(bubble);
-  ASSERT_TRUE(snooze_button);
-  // Tests snooze button action.
-  [snooze_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_EQ(delegate.tapCounter, 1);
 }
 
 // Tests the arrow view is aligned properly with BubbleAlignmentTopOrLeading.
@@ -294,7 +262,6 @@ TEST_F(BubbleViewTest, NextButtonActionAndPresent) {
                              alignment:alignment_
                       showsCloseButton:NO
                                  title:nil
-                     showsSnoozeButton:NO
                        showsNextButton:YES
                                   page:BubblePageControlPageNone
                          textAlignment:text_alignment_
@@ -317,7 +284,6 @@ TEST_F(BubbleViewTest, HighlightedPagePresent) {
                              alignment:alignment_
                       showsCloseButton:NO
                                  title:nil
-                     showsSnoozeButton:NO
                        showsNextButton:YES
                                   page:BubblePageControlPageThird
                          textAlignment:text_alignment_

@@ -18,8 +18,6 @@ typedef NS_ENUM(NSInteger, BubblePageControlPage);
 
 // User tapped on the close button.
 - (void)didTapCloseButton;
-// User tapped on the snooze button.
-- (void)didTapSnoozeButton;
 // User tapped on the next button.
 - (void)didTapNextButton;
 
@@ -36,7 +34,6 @@ typedef NS_ENUM(NSInteger, BubblePageControlPage);
                    alignment:(BubbleAlignment)alignment
             showsCloseButton:(BOOL)shouldShowCloseButton
                        title:(NSString*)titleString
-           showsSnoozeButton:(BOOL)shouldShowSnoozeButton
              showsNextButton:(BOOL)showsNextButton
                         page:(BubblePageControlPage)page
                textAlignment:(NSTextAlignment)textAlignment

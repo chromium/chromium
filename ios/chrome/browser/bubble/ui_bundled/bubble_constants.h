@@ -69,8 +69,6 @@ typedef NS_ENUM(NSInteger, BubbleViewType) {
   BubbleViewTypeWithClose,
   // Bubble view with title and text.
   BubbleViewTypeRich,
-  // Bubble view with title, text and snooze button.
-  BubbleViewTypeRichWithSnooze,
   // Bubble view with title, text, and a next button.
   BubbleViewTypeRichWithNext,
 };
