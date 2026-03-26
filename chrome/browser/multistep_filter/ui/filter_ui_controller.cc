@@ -42,8 +42,14 @@ void FilterUiController::OnSuggestionGenerated(
   }
 
   content::WebContents* web_contents = tab().GetContents();
-  if (web_contents &&
-      ShouldSuppressSuggestions(web_contents->GetLastCommittedURL())) {
+  if (!web_contents) {
+    return;
+  }
+
+  const GURL& current_url = web_contents->GetLastCommittedURL();
+
+  if (ShouldSuppressSuggestions(current_url) ||
+      IsUrlSubsumedBy(suggestion->url(), current_url)) {
     return;
   }
 

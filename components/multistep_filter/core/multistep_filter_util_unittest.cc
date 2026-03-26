@@ -131,4 +131,32 @@ TEST_F(MultistepFilterUtilTest, IsSameDomainOrHost) {
                                   GURL("http://127.0.0.1")));
 }
 
+TEST_F(MultistepFilterUtilTest, IsUrlSubsumedBy) {
+  GURL reference_url("https://example.com/search?q=foo&filter=bar");
+
+  // Identical URL.
+  EXPECT_TRUE(IsUrlSubsumedBy(reference_url, reference_url));
+
+  // Subset of parameters.
+  EXPECT_TRUE(
+      IsUrlSubsumedBy(GURL("https://example.com/search?q=foo"), reference_url));
+
+  // Different base URL (different path).
+  EXPECT_FALSE(
+      IsUrlSubsumedBy(GURL("https://example.com/other?q=foo"), reference_url));
+
+  // Additional parameters.
+  EXPECT_FALSE(IsUrlSubsumedBy(
+      GURL("https://example.com/search?q=foo&filter=bar&sort=new"),
+      reference_url));
+
+  // Different parameter values.
+  EXPECT_FALSE(
+      IsUrlSubsumedBy(GURL("https://example.com/search?q=baz"), reference_url));
+
+  // Invalid URLs.
+  EXPECT_FALSE(IsUrlSubsumedBy(GURL(), reference_url));
+  EXPECT_FALSE(IsUrlSubsumedBy(reference_url, GURL()));
+}
+
 }  // namespace multistep_filter

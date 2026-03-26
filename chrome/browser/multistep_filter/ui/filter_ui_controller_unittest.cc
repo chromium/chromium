@@ -209,21 +209,23 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForEtldPlusOne) {
 }
 
 TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForLocalhost) {
-  GURL url("http://localhost:8080/page");
-  UrlFilterSuggestion suggestion("Localhost", url);
+  GURL source_url("http://localhost:8080/source");
+  GURL target_url("http://localhost:8080/target");
+  UrlFilterSuggestion suggestion("Localhost", target_url);
 
-  content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(source_url);
 
   // Set the current suggestion.
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
   controller_->OnSuggestionGenerated(suggestion);
 
   // Simulate dismissal.
-  base::OnceClosure callback = controller_->GetOnDismissedCallback(url);
+  base::OnceClosure callback = controller_->GetOnDismissedCallback(source_url);
   std::move(callback).Run();
 
   // Verify suppression works for localhost (host fallback).
-  EXPECT_TRUE(controller_->ShouldSuppressSuggestions(url));
+  EXPECT_TRUE(controller_->ShouldSuppressSuggestions(source_url));
 }
 
 TEST_F(FilterUiControllerTest, DismissalDoesNotClearNewSuggestion) {
@@ -313,6 +315,43 @@ TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
           });
 
   controller->NavigateTo(url);
+}
+
+TEST_F(FilterUiControllerTest, ShouldSuppressSubsumedSuggestions) {
+  GURL current_url("https://example.com/search?q=foo&filter=bar");
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(current_url);
+
+  // 1. Identical URL should be suppressed.
+  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
+  controller_->OnSuggestionGenerated(
+      UrlFilterSuggestion("Example", current_url));
+
+  // 2. Subset of parameters should be suppressed.
+  GURL redundant_url("https://example.com/search?q=foo");
+  controller_->OnSuggestionGenerated(
+      UrlFilterSuggestion("Example", redundant_url));
+
+  // 3. Different base URL should NOT be suppressed even if parameters match.
+  GURL different_base_url("https://example.com/other?q=foo&filter=bar");
+  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(UrlFilterSuggestion(
+                                "Example", different_base_url))));
+  controller_->OnSuggestionGenerated(
+      UrlFilterSuggestion("Example", different_base_url));
+
+  // 4. Additional parameters should NOT be suppressed.
+  GURL new_filter_url("https://example.com/search?q=foo&filter=bar&sort=new");
+  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(UrlFilterSuggestion(
+                                "Example", new_filter_url))));
+  controller_->OnSuggestionGenerated(
+      UrlFilterSuggestion("Example", new_filter_url));
+
+  // 5. Different parameter values should NOT be suppressed.
+  GURL different_value_url("https://example.com/search?q=baz&filter=bar");
+  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(UrlFilterSuggestion(
+                                "Example", different_value_url))));
+  controller_->OnSuggestionGenerated(
+      UrlFilterSuggestion("Example", different_value_url));
 }
 
 }  // namespace multistep_filter
