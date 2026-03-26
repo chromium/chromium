@@ -29,7 +29,7 @@ export class CrToggleDemoElement extends CrLitElement {
     };
   }
 
-  protected accessor checked_: boolean|undefined;
+  protected accessor checked_: boolean = false;
 
   protected onCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.checked_ = e.detail.value;

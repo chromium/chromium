@@ -138,8 +138,8 @@ export function getHtml(this: ComposeAppElement) {
                   @change="${this.onModifierChange_}"
                   @keydown="${this.onModifierMenuKeydown_}">
                 ${this.modifierOptions_.map(item => html`
-                  <option value="${item.value}" ?disabled="${item.isDefault}"
-                      ?selected="${item.isDefault}">
+                  <option value="${item.value}" ?disabled="${!!item.isDefault}"
+                      ?selected="${!!item.isDefault}">
                     ${item.label}
                   </option>
                 `)}

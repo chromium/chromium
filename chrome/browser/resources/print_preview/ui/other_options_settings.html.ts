@@ -18,7 +18,7 @@ ${this.options_.map((item, index) => html`
     <div slot="controls" class="checkbox">
       <cr-checkbox id="${item.name}" data-index="${index}"
           ?disabled="${this.getDisabled_(item.managed)}"
-          @change="${this.onChange_}" ?checked="${item.value}">
+          @change="${this.onChange_}" ?checked="${!!item.value}">
         <span>${this.i18n(item.label)}</span>
       </cr-checkbox>
     </div>

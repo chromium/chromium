@@ -697,6 +697,11 @@ class EslintTsTest(unittest.TestCase):
             'propertyName': 'this.getLabels()',
             'propertyExpression': '.ariaLabel=',
         },
+        _PROPERTY_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'buttonDisabled',
+            'declaredType': 'Boolean',
+            'tsType': 'boolean | undefined',
+        },
     ]
     for e in errors:
       self.assertTrue(

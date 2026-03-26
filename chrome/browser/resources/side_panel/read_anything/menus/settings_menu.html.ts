@@ -21,7 +21,7 @@ export function getHtml(this: SettingsMenuElement) {
           data-index="${index}"
           title="${item.ariaLabel || item.title}"
           aria-label="${item.ariaLabel || item.title}"
-          ?disabled="${item.disabled}"
+          ?disabled="${!!item.disabled}"
           aria-haspopup="${item.itemType === SettingsItemType.MENU ?
              'menu' : 'false'}"
           aria-expanded="${this.getAriaExpanded_(item)}"
@@ -41,7 +41,7 @@ export function getHtml(this: SettingsMenuElement) {
             <cr-toggle
               title="${item.ariaLabel || item.title}"
               aria-label="${item.ariaLabel || item.title}"
-              ?disabled="${item.disabled}"
+              ?disabled="${!!item.disabled}"
               @click="${this.onMenuItemClick_}"
               ?checked="${item.checked || false}"
               data-index="${index}">

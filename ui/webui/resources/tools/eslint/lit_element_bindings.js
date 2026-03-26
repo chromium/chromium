@@ -155,12 +155,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           const tsNode = services.esTreeNodeToTSNodeMap.get(expression);
           assert.ok(tsNode);
           const type = checker.getTypeAtLocation(tsNode);
-          // Convert to non-nullable type for purposes of matching for now.
-          // Optionally undefined types are commonly used for code migrated
-          // from Polymer that relies on a parent passing a value via data
-          // binding.
-          const typeStr =
-              checker.typeToString(checker.getNonNullableType(type));
+          const typeStr = checker.typeToString(type);
           const isTsBoolean = typeStr === 'boolean' || typeStr === 'true' ||
               typeStr === 'false';
           const isTsObjectOrArray = (type.flags & ts.TypeFlags.Object) !== 0 ||
