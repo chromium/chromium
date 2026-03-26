@@ -911,29 +911,39 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       has_url ? command_line->GetSwitchValueASCII(
                     ::switches::kGlicShortcutsLearnMoreURL)
               : features::kGlicShortcutsLearnMoreURL.Get();
-  html_source->AddString("glicKeyboardShortcutLearnMoreUrl",
-                         keyboard_shortcut_learn_more_url);
-  html_source->AddString("glicLauncherToggleLearnMoreUrl",
-                         features::kGlicLauncherToggleLearnMoreURL.Get());
-  html_source->AddString("glicLocationToggleLearnMoreUrl",
-                         features::kGlicLocationToggleLearnMoreURL.Get());
-  html_source->AddString("glicTabAccessToggleLearnMoreUrl",
-                         features::kGlicTabAccessToggleLearnMoreURL.Get());
-  html_source->AddString(
+
+  const std::string& application_locale =
+      g_browser_process->GetApplicationLocale();
+
+  auto add_localized_url = [&](std::string_view name,
+                               std::string_view url_string) {
+    html_source->AddString(name, google_util::AppendGoogleLocaleParam(
+                                     GURL(url_string), application_locale)
+                                     .spec());
+  };
+
+  add_localized_url("glicKeyboardShortcutLearnMoreUrl",
+                    keyboard_shortcut_learn_more_url);
+  add_localized_url("glicLauncherToggleLearnMoreUrl",
+                    features::kGlicLauncherToggleLearnMoreURL.Get());
+  add_localized_url("glicLocationToggleLearnMoreUrl",
+                    features::kGlicLocationToggleLearnMoreURL.Get());
+  add_localized_url("glicTabAccessToggleLearnMoreUrl",
+                    features::kGlicTabAccessToggleLearnMoreURL.Get());
+  add_localized_url(
       "glicTabAccessToggleLearnMoreUrlDataProtected",
       features::kGlicTabAccessToggleLearnMoreURLDataProtected.Get());
-  html_source->AddString(
-      "glicDefaultTabAccessToggleLearnMoreUrl",
-      features::kGlicDefaultTabAccessToggleLearnMoreURL.Get());
-  html_source->AddString(
+  add_localized_url("glicDefaultTabAccessToggleLearnMoreUrl",
+                    features::kGlicDefaultTabAccessToggleLearnMoreURL.Get());
+  add_localized_url(
       "glicDefaultTabAccessToggleLearnMoreUrlDataProtected",
       features::kGlicDefaultTabAccessToggleLearnMoreURLDataProtected.Get());
-  html_source->AddString("glicSettingsPageLearnMoreUrl",
-                         features::kGlicSettingsPageLearnMoreURL.Get());
-  html_source->AddString("glicExtensionsManagementUrl",
-                         features::kGlicExtensionsManagementUrl.Get());
-  html_source->AddString("glicWebActuationToggleLearnMoreUrl",
-                         features::kGlicWebActuationToggleLearnMoreURL.Get());
+  add_localized_url("glicSettingsPageLearnMoreUrl",
+                    features::kGlicSettingsPageLearnMoreURL.Get());
+  add_localized_url("glicExtensionsManagementUrl",
+                    features::kGlicExtensionsManagementUrl.Get());
+  add_localized_url("glicWebActuationToggleLearnMoreUrl",
+                    features::kGlicWebActuationToggleLearnMoreURL.Get());
   html_source->AddString(
       "glicWebActuationToggleConsider2",
       l10n_util::GetStringFUTF16(

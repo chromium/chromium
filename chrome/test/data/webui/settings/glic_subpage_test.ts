@@ -545,7 +545,7 @@ suite('GlicSubpage', function() {
 
       const learnMoreElement = $<HTMLAnchorElement>('shortcutsLearnMoreLabel');
       assertTrue(!!learnMoreElement);
-      assertEquals('https://google.com/', learnMoreElement.href);
+      assertEquals('https://google.com/?hl=en-US', learnMoreElement.href);
 
       learnMoreElement.click();
       await assertFeatureInteractionMetrics(
@@ -559,7 +559,7 @@ suite('GlicSubpage', function() {
           page.shadowRoot!.querySelector<HTMLElement>('#launcherToggle')!
               .shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more');
       assertTrue(!!learnMoreElement);
-      assertEquals(learnMoreElement.href, 'https://google.com/');
+      assertEquals('https://google.com/?hl=en-US', learnMoreElement.href);
 
       learnMoreElement.click();
       await assertFeatureInteractionMetrics(
@@ -573,7 +573,7 @@ suite('GlicSubpage', function() {
           page.shadowRoot!.querySelector<HTMLElement>('#geolocationToggle')!
               .shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more');
       assertTrue(!!learnMoreElement);
-      assertEquals(learnMoreElement.href, 'https://google.com/');
+      assertEquals('https://google.com/?hl=en-US', learnMoreElement.href);
 
       learnMoreElement.click();
       await assertFeatureInteractionMetrics(
@@ -1045,7 +1045,8 @@ suite('GlicSubpage', function() {
           tabAccessToggle.subLabel);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
-      assertEquals('https://example.com/data-protection', learnMoreLabel.href);
+      assertEquals(
+          'https://example.com/data-protection?hl=en-US', learnMoreLabel.href);
     });
 
     test('DataProtectionStringsNotShownForIneligibleUser', () => {
@@ -1069,7 +1070,8 @@ suite('GlicSubpage', function() {
           page.i18n('glicTabAccessToggleSublabel'), tabAccessToggle.subLabel);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
-      assertEquals('https://example.com/tab-access', learnMoreLabel.href);
+      assertEquals(
+          'https://example.com/tab-access?hl=en-US', learnMoreLabel.href);
     });
   });
 
@@ -1095,7 +1097,8 @@ suite('GlicSubpage', function() {
           page.i18n('glicTabAccessToggleSublabel'), tabAccessToggle.subLabel);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
-      assertEquals('https://example.com/tab-access', learnMoreLabel.href);
+      assertEquals(
+          'https://example.com/tab-access?hl=en-US', learnMoreLabel.href);
     });
   });
 });

@@ -56,7 +56,7 @@ suite('GlicPage', function() {
 
   suite('HeaderLearnMoreEnabled', () => {
     test('settingsPageLearnMoreShown', async () => {
-      assertEquals('https://google.com/', page.$.learnMoreLabel.href);
+      assertEquals('https://google.com/?hl=en-US', page.$.learnMoreLabel.href);
 
       page.$.learnMoreLabel.click();
       assertEquals(
