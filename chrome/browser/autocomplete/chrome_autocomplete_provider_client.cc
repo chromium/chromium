@@ -770,11 +770,13 @@ void ChromeAutocompleteProviderClient::IssueContextualSearchRequest(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* lens_search_controller =
-          GetLensSearchController(GetWebContents(web_contents_getter_))) {
-    lens_search_controller->IssueContextualSearchRequest(
-        lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion,
-        destination_url, match_type, is_zero_prefix_suggestion);
+  if (auto* web_contents = GetWebContents(web_contents_getter_)) {
+    web_contents->Focus();
+    if (auto* lens_search_controller = GetLensSearchController(web_contents)) {
+      lens_search_controller->IssueContextualSearchRequest(
+          lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion,
+          destination_url, match_type, is_zero_prefix_suggestion);
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
