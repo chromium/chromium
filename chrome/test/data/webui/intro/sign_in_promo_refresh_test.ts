@@ -231,4 +231,65 @@ suite('SignInPromoRefreshTest', function() {
         signInPromoElement.shadowRoot.querySelector('#declineSignInButton');
     assertFalse(!!declineSignInButton);
   });
+
+  test('change animation file depending on the theme', async function() {
+    let mediaQueryChangeListener: (e: MediaQueryListEvent) => void;
+    let currentMatches = false;
+
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = function(_query) {
+      return {
+        get matches() {
+          return currentMatches;
+        },
+        addEventListener: function(event: string, listener: any) {
+          if (event === 'change') {
+            mediaQueryChangeListener = listener;
+          }
+        },
+        removeEventListener: function(event: string, listener: any) {
+          if (event === 'change' && mediaQueryChangeListener === listener) {
+            mediaQueryChangeListener = undefined as any;
+          }
+        },
+      } as any;
+    };
+
+    loadTimeData.overrideValues({
+      isDeviceManaged: false,
+      signInPromoVariation: Variation.DEFAULT,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    signInPromoElement = document.createElement('sign-in-promo-refresh');
+    document.body.appendChild(signInPromoElement);
+    await microtasksFinished();
+
+    const leftAnimation =
+        signInPromoElement.shadowRoot.querySelector<HTMLElement>(
+            '#left-animation');
+    const rightAnimation =
+        signInPromoElement.shadowRoot.querySelector<HTMLElement>(
+            '#right-animation');
+    const bottomAnimation =
+        signInPromoElement.shadowRoot.querySelector<HTMLElement>(
+            '#bottom-animation');
+
+    assertTrue(!!leftAnimation);
+    assertTrue(leftAnimation.getAttribute('animation-url')!.includes('light'));
+    assertTrue(!!rightAnimation);
+    assertTrue(rightAnimation.getAttribute('animation-url')!.includes('light'));
+    assertTrue(!!bottomAnimation);
+    assertTrue(
+        bottomAnimation.getAttribute('animation-url')!.includes('light'));
+
+    currentMatches = true;
+    mediaQueryChangeListener!({matches: true} as MediaQueryListEvent);
+    await microtasksFinished();
+
+    assertTrue(leftAnimation.getAttribute('animation-url')!.includes('dark'));
+    assertTrue(rightAnimation.getAttribute('animation-url')!.includes('dark'));
+    assertTrue(bottomAnimation.getAttribute('animation-url')!.includes('dark'));
+
+    window.matchMedia = originalMatchMedia;
+  });
 });
