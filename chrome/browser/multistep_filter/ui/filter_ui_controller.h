@@ -34,10 +34,11 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   ~FilterUiController() override;
 
   // Callback for when a suggestion is generated.
-  void OnSuggestionGenerated(std::optional<UrlFilterSuggestion> suggestion);
+  virtual void OnSuggestionGenerated(
+      std::optional<UrlFilterSuggestion> suggestion);
 
   // Clears the current suggestion and hides the UI.
-  void ClearSuggestion();
+  virtual void ClearSuggestion();
 
   // Applies the current suggestion by navigating to the suggested URL.
   void ApplySuggestion();

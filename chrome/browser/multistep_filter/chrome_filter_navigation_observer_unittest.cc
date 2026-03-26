@@ -29,6 +29,19 @@ using ::testing::_;
 
 namespace {
 
+class MockFilterUiController : public FilterUiController {
+ public:
+  explicit MockFilterUiController(tabs::TabInterface& tab)
+      : FilterUiController(tab) {}
+  ~MockFilterUiController() override = default;
+
+  MOCK_METHOD(void,
+              OnSuggestionGenerated,
+              (std::optional<UrlFilterSuggestion> suggestion),
+              (override));
+  MOCK_METHOD(void, ClearSuggestion, (), (override));
+};
+
 class MockMultistepFilterService : public MultistepFilterService {
  public:
   MockMultistepFilterService(
@@ -94,6 +107,16 @@ class ChromeFilterNavigationObserverTest
         MultistepFilterServiceFactory::GetForProfile(profile()));
   }
 
+  base::WeakPtr<MultistepFilterUiDelegate> NavigateAndGetDelegate(
+      const GURL& url) {
+    base::WeakPtr<MultistepFilterUiDelegate> captured_delegate;
+    EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(url, _))
+        .WillOnce(testing::SaveArg<1>(&captured_delegate));
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                               url);
+    return captured_delegate;
+  }
+
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<ChromeFilterNavigationObserverWrapper> chrome_observer_;
@@ -134,25 +157,70 @@ TEST_F(ChromeFilterNavigationObserverTest, WebContentsDestruction) {
   EXPECT_TRUE(chrome_observer_);
 }
 
+TEST_F(ChromeFilterNavigationObserverTest, DelegateClearSuggestion) {
+  auto mock_controller =
+      std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
+
+  base::WeakPtr<MultistepFilterUiDelegate> captured_delegate =
+      NavigateAndGetDelegate(GURL("https://www.example.com"));
+
+  ASSERT_TRUE(captured_delegate);
+
+  EXPECT_CALL(*mock_controller, ClearSuggestion());
+  captured_delegate->ClearSuggestion();
+
+  // Verify that ClearSuggestion also invalidates weak pointers to the delegate.
+  EXPECT_FALSE(captured_delegate);
+}
+
+TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
+  auto mock_controller =
+      std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
+
+  base::WeakPtr<MultistepFilterUiDelegate> captured_delegate =
+      NavigateAndGetDelegate(GURL("https://www.example.com"));
+
+  ASSERT_TRUE(captured_delegate);
+
+  UrlFilterSuggestion suggestion("Test", GURL("https://suggestion.com"));
+  EXPECT_CALL(*mock_controller,
+              OnSuggestionGenerated(testing::Optional(suggestion)));
+  captured_delegate->OnSuggestionGenerated(suggestion);
+}
+
+TEST_F(ChromeFilterNavigationObserverTest, DelegateGetWeakPtr) {
+  base::WeakPtr<MultistepFilterUiDelegate> captured_delegate =
+      NavigateAndGetDelegate(GURL("https://www.example.com"));
+
+  ASSERT_TRUE(captured_delegate);
+  EXPECT_EQ(captured_delegate.get(), captured_delegate->GetWeakPtr().get());
+}
+
+TEST_F(ChromeFilterNavigationObserverTest, DelegateHandlesNullController) {
+  base::WeakPtr<MultistepFilterUiDelegate> captured_delegate =
+      NavigateAndGetDelegate(GURL("https://www.example.com"));
+
+  ASSERT_TRUE(captured_delegate);
+
+  // No controller is attached to the tab, so calls should be gracefully
+  // handled without crashing.
+  captured_delegate->OnSuggestionGenerated(std::nullopt);
+  captured_delegate->ClearSuggestion();
+}
+
 TEST_F(ChromeFilterNavigationObserverTest, NavigationWithController) {
   std::optional<FilterUiController> filter_ui_controller;
   filter_ui_controller.emplace(*mock_tab_);
 
   const GURL url("https://www.example.com");
   EXPECT_CALL(*mock_service(), ExtractAnnotation(url));
-  EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(url, _));
-
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                             url);
+  NavigateAndGetDelegate(url);
 }
 
 TEST_F(ChromeFilterNavigationObserverTest, NavigationWithNullController) {
   const GURL url("https://www.example.com");
   EXPECT_CALL(*mock_service(), ExtractAnnotation(url));
-  EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(url, _));
-
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                             url);
+  NavigateAndGetDelegate(url);
 }
 
 TEST_F(ChromeFilterNavigationObserverTest, HandlesNullService) {
