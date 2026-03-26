@@ -174,28 +174,21 @@ IN_PROC_BROWSER_TEST_P(SyncAuthTest, RetryOnInternalServerError500) {
 
 class SyncAuthTokenFetcherDependentTest
     : public SyncAuthTestBase,
-      public testing::WithParamInterface<
-          std::tuple<bool, SyncTest::SetupSyncMode>> {
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SyncAuthTokenFetcherDependentTest() : SyncAuthTestBase(GetSetupSyncMode()) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    scoped_feature_list_.InitWithFeatureState(
-        switches::kUseIssueTokenToFetchAccessTokens, IsIssueTokenEnabled());
-#else
-    CHECK(!IsIssueTokenEnabled());
-#endif
-  }
+  SyncAuthTokenFetcherDependentTest() : SyncAuthTestBase(GetParam()) {}
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return std::get<1>(GetParam());
+    return GetParam();
   }
 
-  bool IsIssueTokenEnabled() const { return std::get<0>(GetParam()); }
-
- private:
+  bool IsIssueTokenEnabled() const {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  base::test::ScopedFeatureList scoped_feature_list_;
+    return true;
+#else
+    return false;
 #endif
+  }
 };
 
 // Verifies the behavior when the access token fetcher encounters an
@@ -248,17 +241,9 @@ IN_PROC_BROWSER_TEST_P(SyncAuthTokenFetcherDependentTest, MalformedToken) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     SyncAuthTokenFetcherDependentTest,
-    testing::Combine(testing::Values(false
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-                                     ,
-                                     true
-#endif
-                                     ),
-                     GetSyncTestModes()),
-    [](const testing::TestParamInfo<std::tuple<bool, SyncTest::SetupSyncMode>>&
-           info) {
-      return (std::get<0>(info.param) ? "WithIssueToken_" : "WithGetToken_") +
-             (SetupSyncModeAsString(std::get<1>(info.param)));
+    GetSyncTestModes(),
+    [](const testing::TestParamInfo<SyncTest::SetupSyncMode>& info) {
+      return SetupSyncModeAsString(info.param);
     });
 
 // Verify that SyncServiceImpl continues trying to fetch access tokens

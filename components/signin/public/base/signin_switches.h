@@ -592,11 +592,6 @@ BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kBookmarksMigrateUiChanges);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kUseIssueTokenToFetchAccessTokens);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 // If enabled, buttons for sign-in promos / intercepts will use consistent
 // primary - tonal button class pattern.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

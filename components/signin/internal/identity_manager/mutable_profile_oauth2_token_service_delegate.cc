@@ -211,8 +211,7 @@ bool ShouldUseIssueTokenForUnboundTokens() {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(
-      switches::kUseIssueTokenToFetchAccessTokens);
+  return true;
 }
 
 }  // namespace

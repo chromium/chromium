@@ -215,16 +215,15 @@ class MutableProfileOAuth2TokenServiceDelegateTest
     token_web_data_->Init(base::NullCallback());
   }
 
-  // "/GetToken" is a default endpoint for issuing access tokens.
+  // "/GetToken" is a fallback endpoint for issuing access tokens in
+  // non-official builds.
   void AddSuccessfulOAuthTokenResponse() {
     client_->GetTestURLLoaderFactory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_token_url().spec(),
         GetValidTokenResponse("token", 3600));
   }
 
-  // "/IssueToken" is an endpoint for issuing access tokens used with bound
-  // refresh tokens or when `switches::kUseIssueTokenToFetchAccessTokens` is
-  // enabled.
+  // "/IssueToken" is a default Chrome endpoint for issuing access tokens.
   void AddSuccessfulIssueTokenResponse() {
     client_->GetTestURLLoaderFactory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_issue_token_url().spec(),
@@ -1262,8 +1261,6 @@ class MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest
   bool ShouldUseIssueToken() { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kUseIssueTokenToFetchAccessTokens};
   base::ScopedClosureRunner scoped_config_override_;
 };
 
@@ -2251,9 +2248,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
 }
 
 TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
-       UseIssueTokenToFetchAccessTokensFeature) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kUseIssueTokenToFetchAccessTokens};
+       FetchWithUnboundToken) {
   MutableProfileOAuth2TokenServiceDelegate::
       SetIgnoreNonOfficialApiKeysForTesting();
 
