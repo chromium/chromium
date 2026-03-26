@@ -883,6 +883,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/webview.ts:WebviewExitReason) -->
 
+<!-- LINT.IfChange(GlicYoutubeSummarizeVideoZSSResult) -->
+
+<enum name="GlicYoutubeSummarizeVideoZSSResult">
+  <int value="0" label="Button found on first check"/>
+  <int value="1" label="Button found on second check"/>
+  <int value="2" label="Button not found"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/context/glic_page_features_manager.h:GlicYoutubeSummarizeVideoZSSResult) -->
+
 <!-- LINT.IfChange(LoadingStage) -->
 
 <enum name="LoadingStage">
