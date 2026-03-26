@@ -14,11 +14,3 @@ include_rules = [
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
   # keep-sorted end
 ]
-
-specific_include_rules = {
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "history_system_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-}

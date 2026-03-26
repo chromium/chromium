@@ -4,11 +4,3 @@ include_rules = [
   "+ios/chrome/browser/web/model/print/print_handler.h",
   # keep-sorted end
 ]
-
-specific_include_rules = {
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "print_controller_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-}
