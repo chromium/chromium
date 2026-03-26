@@ -1,3 +1,5 @@
 include_rules = [
+  "+components/browser_ui/bottomsheet/android",
+  "+components/browser_ui/device_lock/android",
   "+components/crash/android"
 ]

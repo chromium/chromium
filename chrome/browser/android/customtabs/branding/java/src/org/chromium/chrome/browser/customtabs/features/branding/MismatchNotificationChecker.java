@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -11,27 +12,40 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.util.HashUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.GaiaId;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /**
  * Class that drives the account mismatch notification flow. Works in conjunction with {@link
  * BrandingController} for global branding rate-limiting policy.
  */
 @NullMarked
-public class MismatchNotificationChecker implements MismatchNotificationSigninDelegate {
+public class MismatchNotificationChecker
+        implements MismatchNotificationSigninDelegate,
+                BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private final Context mContext;
     private final Profile mProfile;
     private final Delegate mDelegate;
@@ -47,6 +61,9 @@ public class MismatchNotificationChecker implements MismatchNotificationSigninDe
      * mismatch notification UI is on the screen.
      */
     private boolean mShouldSuppressPromptUis;
+
+    // TODO(crbug.com/448227402): Removing nullability after migration
+    private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
 
     /** Interface bridging the checker with the account mismatch rate-limiting logic. */
     public interface Delegate {
@@ -71,23 +88,52 @@ public class MismatchNotificationChecker implements MismatchNotificationSigninDe
     /**
      * Constructor.
      *
-     * @param context The context is used to start the sign-in activity.
+     * @param activity The hosting activity, used by sign-in launcher to anchor the bottomsheet.
+     * @param windowAndroid The window android.
+     * @param activityResultTracker The activity result tracker.
+     * @param deviceLockActivityLauncher The device lock activity launcher.
      * @param profile The current profile object.
      * @param identityManager The manager providing the account info.
      * @param signinLauncher The launcher for sign-in activity.
+     * @param bottomSheetControllerSupplier The bottom sheet controller supplier.
+     * @param modalDialogManager The modal dialog manager.
+     * @param snackbarManager The snackbar manager.
      * @param delegate Delegate providing the actual decision/UI logic.
      */
     public MismatchNotificationChecker(
-            Context context,
+            Activity activity,
+            WindowAndroid windowAndroid,
+            ActivityResultTracker activityResultTracker,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
             Profile profile,
             IdentityManager identityManager,
             SigninAndHistorySyncActivityLauncher signinLauncher,
+            Supplier<BottomSheetController> bottomSheetControllerSupplier,
+            ModalDialogManager modalDialogManager,
+            SnackbarManager snackbarManager,
             Delegate delegate) {
-        mContext = context;
+        mContext = activity;
         mProfile = profile;
         mIdentityManager = identityManager;
         mSigninLauncher = signinLauncher;
         mDelegate = delegate;
+
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+            profileSupplier.set(profile);
+            mSigninCoordinator =
+                    mSigninLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                            windowAndroid,
+                            activity,
+                            activityResultTracker,
+                            this,
+                            deviceLockActivityLauncher,
+                            profileSupplier,
+                            bottomSheetControllerSupplier,
+                            modalDialogManager,
+                            snackbarManager,
+                            SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION);
+        }
     }
 
     /** Show account mismatch notification UI if all the conditions are met. */
@@ -109,6 +155,7 @@ public class MismatchNotificationChecker implements MismatchNotificationSigninDe
                                     mShouldSuppressPromptUis = false;
                                     if (mFeatureEngagementLock != null) {
                                         mFeatureEngagementLock.release();
+                                        mFeatureEngagementLock = null;
                                     }
                                     // The UI was not visible. Do not do the update.
                                     if (closeType == CloseType.UNKNOWN.getNumber()) return;
@@ -138,14 +185,20 @@ public class MismatchNotificationChecker implements MismatchNotificationSigninDe
     /** Implements {@link MismatchNotificationControllerDelegate}. */
     @Override
     public void startSignin(BottomSheetSigninAndHistorySyncConfig config) {
-        @Nullable Intent intent =
-                mSigninLauncher.createBottomSheetSigninIntentOrShowError(
-                        mContext,
-                        mProfile,
-                        config,
-                        SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION);
-        if (intent != null) {
-            mContext.startActivity(intent);
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            assert mSigninCoordinator != null;
+            mSigninCoordinator.startSigninFlow(config);
+        } else {
+            // Fallback activity flow
+            @Nullable Intent intent =
+                    mSigninLauncher.createBottomSheetSigninIntentOrShowError(
+                            mContext,
+                            mProfile,
+                            config,
+                            SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION);
+            if (intent != null) {
+                mContext.startActivity(intent);
+            }
         }
     }
 
@@ -168,6 +221,13 @@ public class MismatchNotificationChecker implements MismatchNotificationSigninDe
     public void destroy() {
         mCallbackController.destroy();
         mShouldSuppressPromptUis = false;
-        if (mFeatureEngagementLock != null) mFeatureEngagementLock.release();
+        if (mFeatureEngagementLock != null) {
+            mFeatureEngagementLock.release();
+            mFeatureEngagementLock = null;
+        }
+        if (mSigninCoordinator != null) {
+            mSigninCoordinator.destroy();
+            mSigninCoordinator = null;
+        }
     }
 }
