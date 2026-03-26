@@ -379,7 +379,7 @@ uintptr_t RTCRtpTransceiverImpl::Id() const {
 
 String RTCRtpTransceiverImpl::Mid() const {
   const auto& mid = internal_->state().mid();
-  return mid ? String::FromUTF8(*mid) : String();
+  return mid ? String::FromUtf8(*mid) : String();
 }
 
 std::unique_ptr<blink::RTCRtpSenderPlatform> RTCRtpTransceiverImpl::Sender()

@@ -1735,7 +1735,7 @@ MediaStreamSource* UserMediaProcessor::InitializeVideoSourceObject(
   source->SetCapabilities(ComputeCapabilitiesForVideoSource(
       // TODO(crbug.com/704136): Change ComputeCapabilitiesForVideoSource to
       // operate over Vector.
-      String::FromUTF8(device.id),
+      String::FromUtf8(device.id),
       ToStdVector(*current_request_info_->GetNativeVideoFormats(device_id)),
       static_cast<mojom::blink::FacingMode>(device.video_facing),
       current_request_info_->is_video_device_capture(), device.group_id));
@@ -1849,9 +1849,9 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
                             std::max(fallback_latency, max_latency)};
   }
 
-  capabilities.device_id = String::FromUTF8(device.id);
+  capabilities.device_id = String::FromUtf8(device.id);
   if (device.group_id) {
-    capabilities.group_id = String::FromUTF8(*device.group_id);
+    capabilities.group_id = String::FromUtf8(*device.group_id);
   }
 
   MediaStreamSource* source =
@@ -2236,11 +2236,11 @@ MediaStreamSource* UserMediaProcessor::InitializeSourceObject(
                                            : MediaStreamSource::kTypeVideo;
 
   auto* source = MakeGarbageCollected<MediaStreamSource>(
-      String::FromUTF8(device.id), device.display_id, type,
-      String::FromUTF8(device.name), false /* remote */,
+      String::FromUtf8(device.id), device.display_id, type,
+      String::FromUtf8(device.name), false /* remote */,
       std::move(platform_source));
   if (device.group_id) {
-    source->SetGroupId(String::FromUTF8(*device.group_id));
+    source->SetGroupId(String::FromUtf8(*device.group_id));
   }
   return source;
 }

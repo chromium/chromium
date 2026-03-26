@@ -162,10 +162,10 @@ void FontAccess::DidGetEnumerationResponse(
     }
 
     auto entry = FontEnumerationEntry{
-        .postscript_name = String::FromUTF8(element.postscript_name()),
-        .full_name = String::FromUTF8(element.full_name()),
-        .family = String::FromUTF8(element.family()),
-        .style = String::FromUTF8(element.style()),
+        .postscript_name = String::FromUtf8(element.postscript_name()),
+        .full_name = String::FromUtf8(element.full_name()),
+        .family = String::FromUtf8(element.family()),
+        .style = String::FromUtf8(element.style()),
     };
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }

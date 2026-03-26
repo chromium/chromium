@@ -345,7 +345,7 @@ void GPUBuffer::MapSyncImpl(ScriptState* script_state,
           case wgpu::MapAsyncStatus::Aborted:
           case wgpu::MapAsyncStatus::Error:
             exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                              String::FromUTF8(message));
+                                              String::FromUtf8(message));
             break;
         }
       });
@@ -511,15 +511,15 @@ void GPUBuffer::OnMapAsyncCallback(
       break;
     case wgpu::MapAsyncStatus::CallbackCancelled:
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                       String::FromUTF8(message));
+                                       String::FromUtf8(message));
       break;
     case wgpu::MapAsyncStatus::Aborted:
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                       String::FromUTF8(message));
+                                       String::FromUtf8(message));
       break;
     case wgpu::MapAsyncStatus::Error:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       String::FromUTF8(message));
+                                       String::FromUtf8(message));
       break;
   }
   map_async_future_ = std::nullopt;

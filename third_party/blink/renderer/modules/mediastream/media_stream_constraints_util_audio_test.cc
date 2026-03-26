@@ -90,7 +90,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   void ResetFactory() {
     constraint_factory_.Reset();
     constraint_factory_.basic().media_stream_source.SetExact(
-        String::FromUTF8(GetMediaStreamSource()));
+        String::FromUtf8(GetMediaStreamSource()));
   }
 
   // If not overridden, this function will return device capture by default.

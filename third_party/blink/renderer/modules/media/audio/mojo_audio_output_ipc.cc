@@ -203,7 +203,7 @@ void MojoAudioOutputIPC::DoRequestDeviceAuthorization(
       MakeProviderReceiver(),
       session_id.is_empty() ? std::optional<base::UnguessableToken>()
                             : session_id,
-      String::FromUTF8(device_id), std::move(callback));
+      String::FromUtf8(device_id), std::move(callback));
 }
 
 void MojoAudioOutputIPC::ReceivedDeviceAuthorization(

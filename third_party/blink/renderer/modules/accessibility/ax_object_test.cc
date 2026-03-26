@@ -1203,7 +1203,7 @@ TEST_F(AccessibilityTest, SlotIsLineBreakingObject) {
   SetBodyContent(body_content);
   ShadowRoot& shadow_root =
       GetElementById("host")->AttachShadowRootForTesting(ShadowRootMode::kOpen);
-  shadow_root.SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(shadow_content),
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(String::FromUtf8(shadow_content),
                                               ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 

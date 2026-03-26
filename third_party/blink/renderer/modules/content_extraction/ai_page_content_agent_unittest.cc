@@ -3490,7 +3490,7 @@ TEST_F(AIPageContentAgentTest, CustomPasswordJSPlainTextThenMaskedAgain) {
   EXPECT_EQ(field2.content_attributes->form_control_data->redaction_decision,
             mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
 
-  input_element->SetValue(String::FromUTF8("••••z"));
+  input_element->SetValue(String::FromUtf8("••••z"));
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   GetAIPageContent();

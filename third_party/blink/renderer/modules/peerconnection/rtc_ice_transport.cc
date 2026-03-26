@@ -44,7 +44,7 @@ RTCIceCandidate* ConvertToRtcIceCandidate(const webrtc::Candidate& candidate) {
   // The "" mid and sdpMLineIndex 0 are wrong, see https://crbug.com/1385446
   const bool kIncludeUfrag = true;
   return RTCIceCandidate::Create(MakeGarbageCollected<RTCIceCandidatePlatform>(
-      String::FromUTF8(candidate.ToCandidateAttribute(kIncludeUfrag)), "", 0,
+      String::FromUtf8(candidate.ToCandidateAttribute(kIncludeUfrag)), "", 0,
       String(candidate.username()), String(candidate.url())));
 }
 

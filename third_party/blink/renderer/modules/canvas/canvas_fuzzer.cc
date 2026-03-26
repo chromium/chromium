@@ -50,7 +50,7 @@ class PageHelper {
     FuzzedDataProvider provider(data, size);
     std::string body_content = provider.ConsumeBytesAsString(size);
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-        String::FromUTF8(body_content));
+        String::FromUtf8(body_content));
     UpdateAllLifecyclePhasesForTest();
   }
 

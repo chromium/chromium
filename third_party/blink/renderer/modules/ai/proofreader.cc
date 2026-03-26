@@ -670,7 +670,7 @@ void Proofreader::OnLabelComplete(
   std::string_view response = adaptor.AsStringView();
   std::string_view label_value;
   if (RE2::FullMatch(response, pattern, &label_value)) {
-    label = String::FromUTF8(label_value);
+    label = String::FromUtf8(label_value);
   }
   result->corrections()[correction_index]->setTypes(
       {GetV8CorrectionTypeFromString(label)});

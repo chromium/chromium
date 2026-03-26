@@ -496,7 +496,7 @@ void MLTensor::OnDidExportTensor(
 
   gpu_buffer_ = MakeGarbageCollected<GPUBuffer>(gpu_device_, tensor_buffer_desc.size,
                                                 std::move(mailbox_buffer),
-                                                String::FromUTF8(tensor_buffer_desc.label));
+                                                String::FromUtf8(tensor_buffer_desc.label));
   resolver->Resolve(gpu_buffer_);
 }
 

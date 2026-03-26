@@ -232,7 +232,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
         scheduler::GetSingleThreadTaskRunnerForTesting(), true);
     auto* audio_source_ptr = audio_source.get();
     auto* source = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8(id), MediaStreamSource::kTypeAudio,
+        String::FromUtf8(id), MediaStreamSource::kTypeAudio,
         "local_audio_track", false, std::move(audio_source));
 
     auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(

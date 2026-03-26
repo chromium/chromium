@@ -419,7 +419,7 @@ void RemoteObject::EnsureRemoteIsBound() {
 v8::Local<v8::Value> RemoteObject::GetNamedProperty(
     v8::Isolate* isolate,
     const std::string& property) {
-  auto wtf_property = String::FromUTF8(property);
+  auto wtf_property = String::FromUtf8(property);
 
   v8::Local<v8::String> v8_property = V8AtomicString(isolate, wtf_property);
   v8::Local<v8::Object> wrapper = GetWrapper(isolate).ToLocalChecked();

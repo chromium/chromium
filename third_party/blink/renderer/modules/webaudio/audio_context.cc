@@ -1742,7 +1742,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
         output_device_ids_.insert(
             String(media::AudioDeviceDescription::kDefaultDeviceId));
       } else {
-        output_device_ids_.insert(String::FromUTF8(device.device_id));
+        output_device_ids_.insert(String::FromUtf8(device.device_id));
       }
     }
   }

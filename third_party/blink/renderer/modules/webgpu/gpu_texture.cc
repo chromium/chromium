@@ -219,7 +219,7 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
 
   return MakeGarbageCollected<GPUTexture>(
       device, device->GetHandle().CreateTexture(desc),
-      String::FromUTF8(desc->label));
+      String::FromUtf8(desc->label));
 }
 
 // static
@@ -229,7 +229,7 @@ GPUTexture* GPUTexture::CreateError(GPUDevice* device,
   DCHECK(desc);
   return MakeGarbageCollected<GPUTexture>(
       device, device->GetHandle().CreateErrorTexture(desc),
-      String::FromUTF8(desc->label));
+      String::FromUtf8(desc->label));
 }
 
 GPUTexture::GPUTexture(GPUDevice* device,

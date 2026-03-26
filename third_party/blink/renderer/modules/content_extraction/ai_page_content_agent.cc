@@ -213,7 +213,7 @@ String ReplaceUnpairedSurrogates(const String& node_text) {
     return node_text;
   }
 
-  return String::FromUTF8(
+  return String::FromUtf8(
       node_text.Utf8(Utf8ConversionMode::kStrictReplacingErrors));
 }
 

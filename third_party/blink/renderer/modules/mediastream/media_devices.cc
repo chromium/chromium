@@ -864,9 +864,9 @@ void MediaDevices::OnSelectAudioOutputResult(
     mojom::blink::SelectAudioOutputResultPtr result) {
   if (result->status == mojom::blink::AudioOutputStatus::kSuccess) {
     MediaDeviceInfo* media_device_info = MakeGarbageCollected<MediaDeviceInfo>(
-        String::FromUTF8(result->device_info.device_id),
-        String::FromUTF8(result->device_info.label),
-        String::FromUTF8(result->device_info.group_id),
+        String::FromUtf8(result->device_info.device_id),
+        String::FromUtf8(result->device_info.label),
+        String::FromUtf8(result->device_info.group_id),
         mojom::MediaDeviceType::kMediaAudioOutput);
     resolver->Resolve(media_device_info, AudioOutputSelectionResult::kSuccess);
     return;
@@ -1448,7 +1448,7 @@ void MediaDevices::DevicesEnumerated(
       mojom::blink::MediaDeviceType device_type =
           static_cast<mojom::blink::MediaDeviceType>(i);
       WebMediaDeviceInfo device_info = enumeration[i][j];
-      String device_label = String::FromUTF8(device_info.label);
+      String device_label = String::FromUtf8(device_info.label);
       if (device_type == mojom::blink::MediaDeviceType::kMediaAudioInput ||
           device_type == mojom::blink::MediaDeviceType::kMediaVideoInput) {
         if (!device_info.device_id.empty()) {
@@ -1456,8 +1456,8 @@ void MediaDevices::DevicesEnumerated(
         }
         InputDeviceInfo* input_device_info =
             MakeGarbageCollected<InputDeviceInfo>(
-                String::FromUTF8(device_info.device_id), device_label,
-                String::FromUTF8(device_info.group_id), device_type);
+                String::FromUtf8(device_info.device_id), device_label,
+                String::FromUtf8(device_info.group_id), device_type);
         if (device_type == mojom::blink::MediaDeviceType::kMediaVideoInput &&
             !video_input_capabilities.empty()) {
           input_device_info->SetVideoInputCapabilities(
@@ -1471,8 +1471,8 @@ void MediaDevices::DevicesEnumerated(
         media_devices.push_back(input_device_info);
       } else {
         media_devices.push_back(MakeGarbageCollected<MediaDeviceInfo>(
-            String::FromUTF8(device_info.device_id), device_label,
-            String::FromUTF8(device_info.group_id), device_type));
+            String::FromUtf8(device_info.device_id), device_label,
+            String::FromUtf8(device_info.group_id), device_type));
       }
     }
   }

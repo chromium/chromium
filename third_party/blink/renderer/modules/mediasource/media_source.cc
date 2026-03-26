@@ -620,8 +620,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     std::string filtered_type =
         mime_type.Ascii() + "; codecs=\"" + filtered_codecs + "\"";
     DVLOG(1) << __func__ << " filtered_type=" << filtered_type;
-    filtered_content_type =
-        ContentType(String::FromUTF8(filtered_type.c_str()));
+    filtered_content_type = ContentType(String::FromUtf8(filtered_type));
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 

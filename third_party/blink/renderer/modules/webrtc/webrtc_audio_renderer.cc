@@ -534,7 +534,7 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
     return;
   }
 
-  if (sink_ && output_device_id_ == String::FromUTF8(device_id)) {
+  if (sink_ && output_device_id_ == String::FromUtf8(device_id)) {
     std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_OK);
     return;
   }
@@ -565,7 +565,7 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
   // stopping the thread on which it runs.
   sink_->Stop();
   sink_ = new_sink;
-  output_device_id_ = String::FromUTF8(device_id);
+  output_device_id_ = String::FromUtf8(device_id);
   {
     base::AutoLock auto_lock(lock_);
     source_->AudioRendererThreadStopped();

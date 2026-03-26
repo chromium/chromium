@@ -65,7 +65,7 @@ ScriptPromise<IDLUndefined> MulticastController::joinGroup(
   if (!parsed_ip_opt.has_value()) {
     return {};
   }
-  auto normalized_ip = String::FromUTF8(parsed_ip_opt->ToString());
+  auto normalized_ip = String::FromUtf8(parsed_ip_opt->ToString());
   if (joined_groups_.Contains(normalized_ip)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot join the same group again");
@@ -108,7 +108,7 @@ ScriptPromise<IDLUndefined> MulticastController::leaveGroup(
     return {};
   }
 
-  auto normalized_ip = String::FromUTF8(parsed_ip_opt->ToString());
+  auto normalized_ip = String::FromUtf8(parsed_ip_opt->ToString());
   if (!joined_groups_.Contains(normalized_ip)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot leave group which is not joined");

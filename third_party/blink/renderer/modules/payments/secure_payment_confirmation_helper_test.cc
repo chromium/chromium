@@ -314,7 +314,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_TooLargeInstrumentDetails) {
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
 
-  request->instrument()->setDetails(String::FromUTF8(std::string(4097, '.')));
+  request->instrument()->setDetails(String::FromUtf8(std::string(4097, '.')));
 
   ScriptValue script_value(scope.GetIsolate(),
                            ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(

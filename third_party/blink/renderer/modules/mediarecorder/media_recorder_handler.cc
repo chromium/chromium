@@ -325,11 +325,11 @@ bool MediaRecorderHandler::CanSupportMimeTypeForCodec(const String& type,
   // after first '.' to do the case insensitive match based on historical
   // logic. For `video/mp4`, and `audio/mp4`, preserve the whole string to do
   // the case sensitive match.
-  String codec_string = String::FromUTF8(codec);
+  String codec_string = String::FromUtf8(codec);
   if (!mp4_mime_type) {
     auto str_index = codec.find_first_of('.');
     if (str_index != std::string::npos) {
-      codec_string = String::FromUTF8(codec.substr(0, str_index));
+      codec_string = String::FromUtf8(codec.substr(0, str_index));
     }
   }
 

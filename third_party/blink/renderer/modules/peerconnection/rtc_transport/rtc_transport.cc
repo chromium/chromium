@@ -443,9 +443,9 @@ void RtcTransport::OnCandidateGatheredOnMainThread(
     webrtc::Candidate candidate) {
   DispatchEvent(*MakeGarbageCollected<RtcTransportIceEvent>(
       MakeGarbageCollected<RtcTransportIceCandidate>(
-          String::FromUTF8(candidate.username()),
-          String::FromUTF8(candidate.password()),
-          String::FromUTF8(candidate.address().ipaddr().ToString()),
+          String::FromUtf8(candidate.username()),
+          String::FromUtf8(candidate.password()),
+          String::FromUtf8(candidate.address().ipaddr().ToString()),
           candidate.address().port(), IceCandidateTypeFrom(candidate.type()))));
 }
 

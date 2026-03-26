@@ -226,12 +226,12 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
  protected:
   // SecurityOrigin used as the owner in most tests.
   const scoped_refptr<const SecurityOrigin> kOrigin =
-      SecurityOrigin::CreateFromString(String::FromUTF8(kOriginString));
+      SecurityOrigin::CreateFromString(String::FromUtf8(kOriginString));
 
-  const String kName = String::FromUTF8(kNameString);
+  const String kName = String::FromUtf8(kNameString);
   const scoped_refptr<const SecurityOrigin> kCoordinatorOrigin =
       SecurityOrigin::CreateFromString(
-          String::FromUTF8(kCoordinatorOriginString));
+          String::FromUtf8(kCoordinatorOriginString));
   test::TaskEnvironment task_environment_;
 };
 
@@ -390,7 +390,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         blink_interest_group,
         /*expected_error_field_name=*/"biddingLogicURL",
         /*expected_error_field_value=*/rejected_url.GetString(),
-        /*expected_error=*/String::FromUTF8(kBadBiddingUrlError));
+        /*expected_error=*/String::FromUtf8(kBadBiddingUrlError));
 
     // Test `bidding_wasm_helper_url`
     blink_interest_group = CreateMinimalInterestGroup();
@@ -399,7 +399,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         blink_interest_group,
         /*expected_error_field_name=*/"biddingWasmHelperURL",
         /*expected_error_field_value=*/rejected_url.GetString(),
-        /*expected_error=*/String::FromUTF8(kBadBiddingWasmHelperUrlError));
+        /*expected_error=*/String::FromUtf8(kBadBiddingWasmHelperUrlError));
 
     // Test `update_url`.
     blink_interest_group = CreateMinimalInterestGroup();
@@ -408,7 +408,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         blink_interest_group,
         /*expected_error_field_name=*/"updateURL",
         /*expected_error_field_value=*/rejected_url.GetString(),
-        /*expected_error=*/String::FromUTF8(kBadUpdateUrlError));
+        /*expected_error=*/String::FromUtf8(kBadUpdateUrlError));
   }
 }
 
@@ -473,7 +473,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TrustedBiddingSignalsUrl) {
           "trustedBiddingSignalsURL",
           /*expected_error_field_value=*/test_url.GetString(),
           /*expected_error=*/
-          String::FromUTF8(
+          String::FromUtf8(
               "trustedBiddingSignalsURL must have https schema and have no "
               "query string, fragment identifier or embedded credentials."));
     }
@@ -520,7 +520,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.url);
 
-    KURL test_case_url = KURL(String::FromUTF8(test_case.url));
+    KURL test_case_url = KURL(String::FromUtf8(test_case.url));
 
     // Add an InterestGroup with the test cases's URL as the only ad's URL.
     mojom::blink::InterestGroupPtr blink_interest_group =
@@ -534,7 +534,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
           blink_interest_group,
           /*expected_error_field_name=*/"ads[0].renderURL",
           /*expected_error_field_value=*/test_case_url.GetString(),
-          /*expected_error=*/String::FromUTF8(kBadAdUrlError));
+          /*expected_error=*/String::FromUtf8(kBadAdUrlError));
     }
 
     // Add an InterestGroup with the test cases's URL as the second ad's URL.
@@ -550,7 +550,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
           blink_interest_group,
           /*expected_error_field_name=*/"ads[1].renderURL",
           /*expected_error_field_value=*/test_case_url.GetString(),
-          /*expected_error=*/String::FromUTF8(kBadAdUrlError));
+          /*expected_error=*/String::FromUtf8(kBadAdUrlError));
     }
   }
 }
@@ -595,7 +595,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.url);
 
-    KURL test_case_url = KURL(String::FromUTF8(test_case.url));
+    KURL test_case_url = KURL(String::FromUtf8(test_case.url));
 
     // Add an InterestGroup with the test cases's URL as the only ad
     // component's URL.
@@ -612,7 +612,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
           /*expected_error_field_name=*/
           "adComponents[0].renderURL",
           /*expected_error_field_value=*/test_case_url.GetString(),
-          /*expected_error=*/String::FromUTF8(kBadAdUrlError));
+          /*expected_error=*/String::FromUtf8(kBadAdUrlError));
     }
 
     // Add an InterestGroup with the test cases's URL as the second ad
@@ -631,7 +631,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
           /*expected_error_field_name=*/
           "adComponents[1].renderURL",
           /*expected_error_field_value=*/test_case_url.GetString(),
-          /*expected_error=*/String::FromUTF8(kBadAdUrlError));
+          /*expected_error=*/String::FromUtf8(kBadAdUrlError));
     }
   }
 }
@@ -663,7 +663,7 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
   EXPECT_EQ(error_field_name, "ads[0].renderURL");
   // The invalid ^ gets escaped.
   EXPECT_EQ(error_field_value, "https://invalid%5E/");
-  EXPECT_EQ(error, String::FromUTF8(kBadAdUrlError));
+  EXPECT_EQ(error, String::FromUtf8(kBadAdUrlError));
 
   // Now, test against blink::InterestGroup.
   blink::InterestGroup interest_group;
@@ -715,7 +715,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePriorityVector) {
   // this should be estimated to be 51000 bytes.
   for (int i = 0; i < 510; ++i) {
     // Use a unique 92-byte value for each key.
-    String key = String::FromUTF8(base::StringPrintf("%92i", i));
+    String key = String::FromUtf8(base::StringPrintf("%92i", i));
     blink_interest_group->priority_vector->Set(key, i);
   }
   size_t current_estimate =
@@ -756,7 +756,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePrioritySignalsOverride) {
   // this should be estimated to be 51000 bytes.
   for (int i = 0; i < 510; ++i) {
     // Use a unique 92-byte value for each key.
-    String key = String::FromUTF8(base::StringPrintf("%92i", i));
+    String key = String::FromUtf8(base::StringPrintf("%92i", i));
     blink_interest_group->priority_signals_overrides->Set(key, i);
   }
   size_t current_estimate =
@@ -800,7 +800,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSellerCapabilities) {
     // "https://", 5 bytes for the ".test" suffix, 4 bytes for the flags, and
     // 100 - 8 - 5 - 4 = 83 bytes of numerical characters.
     String origin_string =
-        String::FromUTF8(base::StringPrintf("https://%.83i.test", i));
+        String::FromUtf8(base::StringPrintf("https://%.83i.test", i));
     blink_interest_group->seller_capabilities->insert(
         SecurityOrigin::CreateFromString(origin_string),
         mojom::blink::SellerCapabilities::New());
@@ -846,7 +846,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAdSizes) {
     // "size ", and 100 - 8 - 8 - 4 - 4 - 5 = 71 bytes of numerical characters,
     // where 8 is the size of the each double value in the size, 4 is the
     // size of the length unit, and 5 is the length of the string "size ".
-    String name_string = String::FromUTF8(base::StringPrintf("size %.71i", i));
+    String name_string = String::FromUtf8(base::StringPrintf("size %.71i", i));
     blink_interest_group->ad_sizes->insert(
         name_string,
         mojom::blink::AdSize::New(150, blink::AdSize::LengthUnit::kPixels, 100,
@@ -900,7 +900,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSizeGroups) {
     // Use a unique 100-byte value for each name -- 6 bytes for the
     // "group ", and 100 - 6 - 5 = 89 bytes of numerical characters, where the 5
     // represents the length of the 1 size name being stored in the vector.
-    String name_string = String::FromUTF8(base::StringPrintf("group %.89i", i));
+    String name_string = String::FromUtf8(base::StringPrintf("group %.89i", i));
     blink_interest_group->size_groups->insert(name_string,
                                               Vector<String>{"size1"});
   }
@@ -1191,7 +1191,7 @@ TEST_F(ValidateBlinkInterestGroupTest,
       "ads[0].selectableBuyerAndSellerReportingIds",
       /*expected_error_field_value=*/"",
       /*expected_error=*/
-      String::FromUTF8(
+      String::FromUtf8(
           "selectableBuyerAndSellerReportingIds cannot have more than "
           "2 elements."));
 }
@@ -1269,7 +1269,7 @@ TEST_F(ValidateBlinkInterestGroupTest,
       "ads[0].selectableBuyerAndSellerReportingIds",
       /*expected_error_field_value=*/"",
       /*expected_error=*/
-      String::FromUTF8(
+      String::FromUtf8(
           "selectableBuyerAndSellerReportingIds cannot have more than "
           "2 elements."));
 }

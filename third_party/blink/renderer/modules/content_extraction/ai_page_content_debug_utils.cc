@@ -88,16 +88,16 @@ void AppendNodeToBuilder(const mojom::blink::AIPageContentNode* node,
           node->content_attributes->geometry->visible_bounding_box;
       if (is_same_box) {
         builder.Append(" [box: ");
-        builder.Append(String::FromUTF8(
+        builder.Append(String::FromUtf8(
             node->content_attributes->geometry->outer_bounding_box.ToString()));
         builder.Append(']');
       } else {
         builder.Append(" [outerBox: ");
-        builder.Append(String::FromUTF8(
+        builder.Append(String::FromUtf8(
             node->content_attributes->geometry->outer_bounding_box.ToString()));
         builder.Append(']');
         builder.Append(" [visibleBox: ");
-        builder.Append(String::FromUTF8(node->content_attributes->geometry
+        builder.Append(String::FromUtf8(node->content_attributes->geometry
                                             ->visible_bounding_box.ToString()));
         builder.Append(']');
       }
@@ -107,7 +107,7 @@ void AppendNodeToBuilder(const mojom::blink::AIPageContentNode* node,
         builder.Append(" [fragmentBox#");
         builder.AppendNumber(fragment_index++);
         builder.Append(' ');
-        builder.Append(String::FromUTF8(fragment_rect.ToString()));
+        builder.Append(String::FromUtf8(fragment_rect.ToString()));
         builder.Append(']');
       }
     }
@@ -134,16 +134,16 @@ void AppendNodeToBuilder(const mojom::blink::AIPageContentNode* node,
       builder.Append('\n');
       if (is_same_box) {
         builder.Append("  bounding_box: [");
-        builder.Append(String::FromUTF8(
+        builder.Append(String::FromUtf8(
             node->content_attributes->geometry->outer_bounding_box.ToString()));
         builder.Append(']');
       } else {
         builder.Append("  outer_bounding_box: [");
-        builder.Append(String::FromUTF8(
+        builder.Append(String::FromUtf8(
             node->content_attributes->geometry->outer_bounding_box.ToString()));
         builder.Append("]\n");
         builder.Append("  visible_bounding_box: [");
-        builder.Append(String::FromUTF8(node->content_attributes->geometry
+        builder.Append(String::FromUtf8(node->content_attributes->geometry
                                             ->visible_bounding_box.ToString()));
         builder.Append(']');
       }
@@ -157,7 +157,7 @@ void AppendNodeToBuilder(const mojom::blink::AIPageContentNode* node,
                  ->fragment_visible_bounding_boxes) {
           builder.Append('\n');
           builder.Append("    [");
-          builder.Append(String::FromUTF8(fragment_rect.ToString()));
+          builder.Append(String::FromUtf8(fragment_rect.ToString()));
           builder.Append(']');
         }
       }

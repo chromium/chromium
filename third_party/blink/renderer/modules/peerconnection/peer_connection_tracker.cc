@@ -852,7 +852,7 @@ void PeerConnectionTracker::TrackTransceiver(
   if (id == -1)
     return;
   String callback_type =
-      StrCat({"transceiver", String::FromUTF8(callback_type_ending)});
+      StrCat({"transceiver", String::FromUtf8(callback_type_ending)});
   std::unique_ptr<JSONObject> json = SerializeTransceiver(transceiver);
   json->SetString("reason", GetTransceiverUpdatedReasonString(reason));
   json->SetInteger("transceiverIndex", transceiver_index);
@@ -872,7 +872,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
     return;
   // See https://w3c.github.io/webrtc-pc/#dom-rtcdatachannelinit
   auto json = std::make_unique<JSONObject>();
-  json->SetString("label", String::FromUTF8(data_channel->label()));
+  json->SetString("label", String::FromUtf8(data_channel->label()));
   json->SetBoolean("ordered", data_channel->ordered());
   std::optional<uint16_t> maxPacketLifeTime = data_channel->maxPacketLifeTime();
   if (maxPacketLifeTime.has_value()) {
@@ -883,7 +883,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
     json->SetInteger("maxRetransmits", *maxRetransmits);
   }
   if (!data_channel->protocol().empty()) {
-    json->SetString("protocol", String::FromUTF8(data_channel->protocol()));
+    json->SetString("protocol", String::FromUtf8(data_channel->protocol()));
   }
   bool negotiated = data_channel->negotiated();
   if (negotiated) {

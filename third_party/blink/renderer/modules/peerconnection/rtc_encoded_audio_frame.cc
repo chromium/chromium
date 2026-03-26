@@ -166,7 +166,7 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata(
   }
   metadata->setRtpTimestamp(delegate_->RtpTimestamp());
   if (delegate_->MimeType()) {
-    metadata->setMimeType(String::FromUTF8(*delegate_->MimeType()));
+    metadata->setMimeType(String::FromUtf8(*delegate_->MimeType()));
   }
   if (RuntimeEnabledFeatures::RTCEncodedFrameTimestampsEnabled()) {
     if (std::optional<base::TimeTicks> receive_time =

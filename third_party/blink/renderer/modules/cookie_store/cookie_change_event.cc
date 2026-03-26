@@ -88,8 +88,8 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
     bool is_deleted) {
   CookieListItem* list_item = CookieListItem::Create();
 
-  list_item->setName(String::FromUTF8(canonical_cookie.Name()));
-  list_item->setPath(String::FromUTF8(canonical_cookie.Path()));
+  list_item->setName(String::FromUtf8(canonical_cookie.Name()));
+  list_item->setPath(String::FromUtf8(canonical_cookie.Path()));
 
   list_item->setSecure(canonical_cookie.SecureAttribute());
   // Use effective same site if available, otherwise use same site.
@@ -102,7 +102,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
   }
 
   // The domain of host-only cookies is the host name, without a dot (.) prefix.
-  String cookie_domain = String::FromUTF8(canonical_cookie.Domain());
+  String cookie_domain = String::FromUtf8(canonical_cookie.Domain());
   if (cookie_domain.starts_with('.')) {
     list_item->setDomain(cookie_domain.substr(1));
   } else {
@@ -110,7 +110,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
   }
 
   if (!is_deleted) {
-    list_item->setValue(String::FromUTF8(canonical_cookie.Value()));
+    list_item->setValue(String::FromUtf8(canonical_cookie.Value()));
     if (canonical_cookie.ExpiryDate().is_null()) {
       list_item->setExpires(std::nullopt);
     } else {

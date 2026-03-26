@@ -98,7 +98,7 @@ RTCSessionDescriptionPlatform* CreateWebKitSessionDescription(
     const std::string& sdp,
     const std::string& type) {
   return MakeGarbageCollected<RTCSessionDescriptionPlatform>(
-      String::FromUTF8(type), String::FromUTF8(sdp));
+      String::FromUtf8(type), String::FromUtf8(sdp));
 }
 
 RTCSessionDescriptionPlatform* CreateWebKitSessionDescription(
@@ -177,16 +177,16 @@ class CreateSessionDescriptionRequest
         std::string value;
         desc->ToString(&value);
         auto json = std::make_unique<JSONObject>();
-        json->SetString("type", String::FromUTF8(desc->type()));
+        json->SetString("type", String::FromUtf8(desc->type()));
         if (!value.empty()) {
-          json->SetString("sdp", String::FromUTF8(value));
+          json->SetString("sdp", String::FromUtf8(value));
         }
         json->WriteJSON(&result);
       }
       tracker->TrackSessionDescriptionCallback(handler_.get(), action_,
                                                "OnSuccess", result.ToString());
       tracker->TrackSessionId(handler_.get(),
-                              String::FromUTF8(desc->session_id()));
+                              String::FromUtf8(desc->session_id()));
     }
     webkit_request_->RequestSucceeded(
         CreateWebKitSessionDescription(desc.get()));
@@ -207,7 +207,7 @@ class CreateSessionDescriptionRequest
     if (handler_ && tracker) {
       tracker->TrackSessionDescriptionCallback(
           handler_.get(), action_, "OnFailure",
-          String::FromUTF8(error.message()));
+          String::FromUtf8(error.message()));
     }
     // TODO(hta): Convert CreateSessionDescriptionRequest.OnFailure
     webkit_request_->RequestFailed(error);
@@ -350,7 +350,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
       if (tracker && handler_) {
         tracker->TrackSessionDescriptionCallback(
             handler_.get(), action_, "OnFailure",
-            String::FromUTF8(error.message()));
+            String::FromUtf8(error.message()));
       }
       web_request_->RequestFailed(error);
       web_request_ = nullptr;
@@ -393,9 +393,9 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
 
         auto json = std::make_unique<JSONObject>();
         json->SetString("type",
-                        String::FromUTF8(created_session_description->type()));
+                        String::FromUtf8(created_session_description->type()));
         if (!sdp.empty()) {
-          json->SetString("sdp", String::FromUTF8(sdp));
+          json->SetString("sdp", String::FromUtf8(sdp));
         }
         json->WriteJSON(&result);
       }
@@ -623,12 +623,12 @@ class RTCPeerConnectionHandler::Observer
         *main_thread_.get(), FROM_HERE,
         CrossThreadBindOnce(
             &RTCPeerConnectionHandler::Observer::OnIceCandidateImpl,
-            WrapCrossThreadPersistent(this), String::FromUTF8(sdp),
-            String::FromUTF8(candidate->sdp_mid()),
+            WrapCrossThreadPersistent(this), String::FromUtf8(sdp),
+            String::FromUtf8(candidate->sdp_mid()),
             candidate->sdp_mline_index(), candidate->candidate().component(),
             candidate->candidate().address().family(),
-            String::FromUTF8(candidate->candidate().username()),
-            String::FromUTF8(candidate->server_url()),
+            String::FromUtf8(candidate->candidate().username()),
+            String::FromUtf8(candidate->server_url()),
             std::move(pending_local_description),
             std::move(current_local_description),
             std::move(pending_remote_description),
@@ -645,10 +645,10 @@ class RTCPeerConnectionHandler::Observer
         CrossThreadBindOnce(
             &RTCPeerConnectionHandler::Observer::OnIceCandidateErrorImpl,
             WrapCrossThreadPersistent(this),
-            port ? String::FromUTF8(address) : String(),
+            port ? String::FromUtf8(address) : String(),
             static_cast<uint16_t>(port),
             String::Format("%s:%d", address.c_str(), port),
-            String::FromUTF8(url), error_code, String::FromUTF8(error_text)));
+            String::FromUtf8(url), error_code, String::FromUtf8(error_text)));
   }
 
   void OnDataChannelImpl(webrtc::scoped_refptr<DataChannelInterface> channel) {

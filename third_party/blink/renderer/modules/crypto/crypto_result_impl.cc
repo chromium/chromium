@@ -153,7 +153,7 @@ void CryptoResultImpl::CompleteWithJson(std::string_view utf8_data) {
 
   v8::TryCatch try_catch(script_state->GetIsolate());
   v8::Local<v8::Value> json_dictionary =
-      FromJSONString(script_state, String::FromUTF8(utf8_data));
+      FromJSONString(script_state, String::FromUtf8(utf8_data));
   CHECK_EQ(type_, ResolverType::kAny);
   if (try_catch.HasCaught()) {
     resolver_->Reject(try_catch.Exception());

@@ -98,7 +98,7 @@ void AnimationWorkletGlobalScope::UpdateAnimatorsList(
   for (const auto& animation : input.added_and_updated_animations) {
     int id = animation.worklet_animation_id.animation_id;
     DCHECK(!animators_.Contains(id));
-    const String name = String::FromUTF8(animation.name);
+    const String name = String::FromUtf8(animation.name);
 
     WorkletAnimationOptions options(nullptr);
     // Down casting to blink type to access the serialized value.

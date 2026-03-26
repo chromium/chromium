@@ -94,15 +94,15 @@ GPUAdapter::GPUAdapter(
   // TODO(crbug.com/359418629): Report xr compatibility in GetInfo()
   is_xr_compatible_ = options->xrCompatible();
 
-  vendor_ = String::FromUTF8(info.vendor);
-  architecture_ = String::FromUTF8(info.architecture);
+  vendor_ = String::FromUtf8(info.vendor);
+  architecture_ = String::FromUtf8(info.architecture);
   if (info.deviceID <= 0xffff) {
     device_ = String::Format("0x%04x", info.deviceID);
   } else {
     device_ = String::Format("0x%08x", info.deviceID);
   }
-  description_ = String::FromUTF8(info.device);
-  driver_ = String::FromUTF8(info.description);
+  description_ = String::FromUtf8(info.device);
+  driver_ = String::FromUtf8(info.description);
   if (supportsPropertiesD3D) {
     d3d_shader_model_ = d3dProperties.shaderModel;
   }

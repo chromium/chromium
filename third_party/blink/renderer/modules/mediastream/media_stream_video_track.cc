@@ -1205,7 +1205,7 @@ MediaStreamVideoTrack::GetCaptureHandle() {
 
   if (!info->capture_handle->origin.opaque()) {
     capture_handle.origin =
-        String::FromUTF8(info->capture_handle->origin.Serialize());
+        String::FromUtf8(info->capture_handle->origin.Serialize());
   }
   capture_handle.handle =
       WebString::FromUTF16(info->capture_handle->capture_handle);

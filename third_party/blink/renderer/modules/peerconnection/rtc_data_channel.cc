@@ -330,7 +330,7 @@ void RTCDataChannel::RegisterObserver() {
 
 String RTCDataChannel::label() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return String::FromUTF8(channel()->label());
+  return String::FromUtf8(channel()->label());
 }
 
 bool RTCDataChannel::reliable() const {
@@ -359,7 +359,7 @@ std::optional<uint16_t> RTCDataChannel::maxRetransmits() const {
 
 String RTCDataChannel::protocol() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return String::FromUTF8(channel()->protocol());
+  return String::FromUtf8(channel()->protocol());
 }
 
 bool RTCDataChannel::negotiated() const {

@@ -12,8 +12,8 @@ namespace blink {
 // Create blink::String from a null-terminated char string. Treat the provided
 // message as UTF-8 string, with Latin1 as fallback if the string is not valid
 // UTF-8. Parts of Dawn's messages are user-defined strings like identifiers
-// that could possibly be invalid UTF8, and blink::String::FromUTF8 would result
-// in a null string in this case. So use the FromUTF8WithLatin1Fallback methods
+// that could possibly be invalid UTF8, and blink::String::FromUtf8 would result
+// in a null string in this case. So use the FromUtf8WithLatin1Fallback methods
 // that fallbacks to Latin1 for invalid UTF8 strings so that we are always able
 // to display something.
 String StringFromASCIIAndUTF8(std::string_view message);

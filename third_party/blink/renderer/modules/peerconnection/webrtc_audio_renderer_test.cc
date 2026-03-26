@@ -460,7 +460,7 @@ TEST_F(WebRtcAudioRendererTest, SwitchOutputDevice) {
       .WillOnce(SaveArg<2>(&params));
   EXPECT_CALL(*source_.get(), AudioRendererThreadStopped());
   EXPECT_CALL(*source_.get(),
-              SetOutputDeviceForAec(String::FromUTF8(kOtherOutputDeviceId)));
+              SetOutputDeviceForAec(String::FromUtf8(kOtherOutputDeviceId)));
   EXPECT_CALL(*this, MockSwitchDeviceCallback(media::OUTPUT_DEVICE_STATUS_OK));
   base::RunLoop loop;
   renderer_proxy_->SwitchOutputDevice(

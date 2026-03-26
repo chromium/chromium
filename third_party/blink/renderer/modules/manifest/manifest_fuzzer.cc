@@ -16,7 +16,7 @@ namespace blink {
 DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
-  String string = String::FromUTF8(data);
+  String string = String::FromUtf8(data);
   KURL manifest_url("https://whatever.test/manifest.json");
   KURL document_url("https://whatever.test/");
   ManifestParser parser(string, manifest_url, document_url,

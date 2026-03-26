@@ -452,7 +452,7 @@ void RecordOperatorsUsed(const blink_mojom::GraphInfo& graph_info) {
 
 #define ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(lhs, rexpr)                \
   ASSIGN_OR_RETURN(lhs, rexpr, [&exception_state](std::string error) { \
-    exception_state.ThrowTypeError(String::FromUTF8(error));           \
+    exception_state.ThrowTypeError(String::FromUtf8(error));           \
     return nullptr;                                                    \
   });
 
@@ -582,7 +582,7 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
 }
 
 String BuildErrorMessage(const std::string& label, StringView message) {
-  return StrCat({String::FromUTF8(webnn::GetErrorLabelPrefix(label)), message});
+  return StrCat({String::FromUtf8(webnn::GetErrorLabelPrefix(label)), message});
 }
 
 template <typename MLConv2dOptionsType, typename Conv2dAttributesType>
@@ -1068,7 +1068,7 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
                        ExceptionState& exception_state) {
   auto pool2d_attributes = ConvertToPool2dAttributes(options);
   if (!pool2d_attributes.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(pool2d_attributes.error()));
+    exception_state.ThrowTypeError(String::FromUtf8(pool2d_attributes.error()));
     return nullptr;
   }
 
@@ -1957,7 +1957,7 @@ MLOperand* MLGraphBuilder::clamp(MLOperand* input,
       ml_context_->GetProperties().data_type_limits.clamp_input;
   if (!tensor_constraint.Supports(input->Descriptor())) {
     exception_state.ThrowTypeError(StrCat(
-        {String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())),
+        {String::FromUtf8(webnn::GetErrorLabelPrefix(options->label().Utf8())),
          String(NotSupportedInputArgumentError(input->Descriptor(),
                                                tensor_constraint))}));
     return nullptr;
@@ -1969,7 +1969,7 @@ MLOperand* MLGraphBuilder::clamp(MLOperand* input,
           : webnn::MLNumber::NegativeInfinity();
   if (!min_value.has_value()) {
     exception_state.ThrowTypeError(StrCat(
-        {String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())),
+        {String::FromUtf8(webnn::GetErrorLabelPrefix(options->label().Utf8())),
          min_value.error()}));
     return nullptr;
   }
@@ -2424,7 +2424,7 @@ HeapVector<Member<MLOperand>> MLGraphBuilder::gru(
       recurrent_weight->Descriptor(), steps, hidden_size,
       ConvertToGruAttributes(this, options));
   if (!validated_outputs.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
+    exception_state.ThrowTypeError(String::FromUtf8(validated_outputs.error()));
     return {};
   }
   auto* gru =
@@ -2659,7 +2659,7 @@ HeapVector<Member<MLOperand>> MLGraphBuilder::lstm(
       recurrent_weight->Descriptor(), steps, hidden_size,
       ConvertToLstmAttributes(options));
   if (!validated_outputs.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
+    exception_state.ThrowTypeError(String::FromUtf8(validated_outputs.error()));
     return {};
   }
 
@@ -2721,7 +2721,7 @@ HeapVector<Member<MLOperand>> MLGraphBuilder::lstmCell(
       cell_state->Descriptor(), hidden_size,
       ConvertToLstmCellAttributes(options));
   if (!validated_outputs.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
+    exception_state.ThrowTypeError(String::FromUtf8(validated_outputs.error()));
     return {};
   }
 
@@ -3231,7 +3231,7 @@ HeapVector<Member<MLOperand>> MLGraphBuilder::split(
        .axis = options->axis(),
        .label = options->label().Utf8()});
   if (!validated_outputs.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
+    exception_state.ThrowTypeError(String::FromUtf8(validated_outputs.error()));
     return {};
   }
 
@@ -3260,7 +3260,7 @@ HeapVector<Member<MLOperand>> MLGraphBuilder::split(
        .axis = options->axis(),
        .label = options->label().Utf8()});
   if (!validated_outputs.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
+    exception_state.ThrowTypeError(String::FromUtf8(validated_outputs.error()));
     return {};
   }
 

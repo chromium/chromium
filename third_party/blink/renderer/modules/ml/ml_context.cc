@@ -332,7 +332,7 @@ void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
     context_lost_info->setMessage(
         "WebNN context is lost due to connection error.");
   } else {
-    context_lost_info->setMessage(String::FromUTF8(description));
+    context_lost_info->setMessage(String::FromUtf8(description));
   }
 
   CHECK_EQ(lost_property_->GetState(), LostProperty::kPending);

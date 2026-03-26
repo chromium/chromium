@@ -311,7 +311,7 @@ MediaStreamSource::Capabilities ComputeCapabilitiesForVideoSource(
   if (is_device_capture) {
     capabilities.facing_mode = ToPlatformFacingMode(facing_mode);
     if (group_id)
-      capabilities.group_id = String::FromUTF8(*group_id);
+      capabilities.group_id = String::FromUtf8(*group_id);
   }
   if (!formats.empty()) {
     int max_width = 1;

@@ -116,7 +116,7 @@ MediaConstraints CreateFacingModeConstraints(
     const char* advanced_exact_value = nullptr) {
   blink::MockConstraintFactory factory;
   if (basic_exact_value) {
-    factory.basic().facing_mode.SetExact(String::FromUTF8(basic_exact_value));
+    factory.basic().facing_mode.SetExact(String::FromUtf8(basic_exact_value));
   }
   if (basic_ideal_value) {
     factory.basic().device_id.SetIdeal(Vector<String>({basic_ideal_value}));
@@ -124,7 +124,7 @@ MediaConstraints CreateFacingModeConstraints(
 
   auto& advanced = factory.AddAdvanced();
   if (advanced_exact_value) {
-    String value = String::FromUTF8(advanced_exact_value);
+    String value = String::FromUtf8(advanced_exact_value);
     advanced.device_id.SetExact(value);
   }
 
