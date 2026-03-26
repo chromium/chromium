@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var config;
-var MAIN_HOST = 'b.com';
-var OTHER_HOST = 'c.com';
+let config;
+const MAIN_HOST = 'b.com';
+const OTHER_HOST = 'c.com';
 
-var DOMContentLoadedEventsInFrame = [];
+let DOMContentLoadedEventsInFrame = [];
 
 chrome.test.getConfig(function(testConfig) {
   config = testConfig;
 
-  var testUrl = 'http://' + MAIN_HOST + ':' + config.testServer.port +
-    '/extensions/api_test/executescript/http204/page_with_204_frame.html';
+  const testUrl = `http://${MAIN_HOST}:${config.testServer.port}` +
+      '/extensions/api_test/executescript/http204/page_with_204_frame.html';
   chrome.runtime.onMessage.addListener(function listener(msg, sender) {
     // This message should be sent when the frame and all sub frames have
     // completely finished loading.
@@ -46,9 +46,9 @@ chrome.test.getConfig(function(testConfig) {
 });
 
 function startTest(tabId) {
-  var kDefaultColor = 'rgb(0, 0, 0)';
-  var kExpectedFontFamily = '"expected font-family"';
-  var kExpectedColor = 'rgb(123, 123, 123)';
+  const kDefaultColor = 'rgb(0, 0, 0)';
+  const kExpectedFontFamily = '"expected font-family"';
+  const kExpectedColor = 'rgb(123, 123, 123)';
 
   // The page has a child frame containing a HTTP 204 page.
   // In response to HTTP 204 (No Content), the browser stops navigating away and
@@ -138,7 +138,7 @@ function startTest(tabId) {
       // HTTP 204 = stay at previous page, which was a blank page, so insertCSS
       // without matchAboutBlank shouldn't change the frame's CSS.
       chrome.tabs.insertCSS(tabId, {
-        code: 'body { color: ' + kExpectedColor + '; }',
+        code: `body { color: ${kExpectedColor}; }`,
         allFrames: true,
       }, chrome.test.callbackPass());
       // The result is verified hereafter, in verifyInsertCss204NoAbout.
@@ -247,9 +247,8 @@ function startTest(tabId) {
 
 // Navigates to a page that navigates to a 204 page via a script.
 function navigateToFrameAndWaitUntil204Loaded(tabId, hostname, hostname204) {
-  var doneListening = chrome.test.listenForever(
-      chrome.webNavigation.onErrorOccurred,
-      function(details) {
+  const doneListening = chrome.test.listenForever(
+      chrome.webNavigation.onErrorOccurred, function(details) {
         if (details.tabId === tabId && details.frameId > 0) {
           chrome.test.assertTrue(details.url.includes('page204.html'),
               'frame URL should be page204.html, but was ' + details.url);
@@ -257,12 +256,12 @@ function navigateToFrameAndWaitUntil204Loaded(tabId, hostname, hostname204) {
         }
       });
 
-  var url = 'http://' + hostname + ':' + config.testServer.port +
-    '/extensions/api_test/executescript/http204/navigate_to_204.html?' +
-    hostname204;
+  const url = `http://${hostname}:${config.testServer.port}` +
+      '/extensions/api_test/executescript/http204/navigate_to_204.html?' +
+      hostname204;
 
   chrome.tabs.executeScript(tabId, {
-    code: 'document.body.innerHTML = \'<iframe src="' + url + '"></iframe>\';',
+    code: `document.body.innerHTML = '<iframe src="${url}"></iframe>';`,
   });
 }
 

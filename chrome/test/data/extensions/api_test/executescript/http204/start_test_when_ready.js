@@ -8,9 +8,9 @@
 // the child frame.
 
 // Wait for at most 2 seconds.
-var kMaxDelayMs = 2000;
+const kMaxDelayMs = 2000;
 
-var timeStart;
+let timeStart;
 window.onload = function() {
   window.onload = null;
   timeStart = Date.now();

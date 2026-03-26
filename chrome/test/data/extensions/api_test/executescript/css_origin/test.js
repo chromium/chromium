@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-  var testUrl = 'http://b.com:' + config.testServer.port +
-                '/extensions/api_test/executescript/css_origin/test.html';
+  const testUrl = `http://b.com:${config.testServer.port}` +
+      '/extensions/api_test/executescript/css_origin/test.html';
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
     if (changeInfo.status != 'complete')
       return;
@@ -13,7 +13,7 @@ chrome.test.getConfig(function(config) {
       // Until we have tabs.removeCSS we just have to target a different
       // element on the page for each test.
       function authorOriginShouldSucceed() {
-        var injectDetails = {};
+        const injectDetails = {};
         injectDetails.code = '#author {' +
                              ' color: blue !important;' +
                              ' background-color: white !important;' +
@@ -31,7 +31,7 @@ chrome.test.getConfig(function(config) {
         }));
       },
       function userOriginShouldSucceed() {
-        var injectDetails = {};
+        const injectDetails = {};
         injectDetails.code = '#user {' +
                              ' color: blue !important;' +
                              ' background-color: white !important;' +
@@ -51,7 +51,7 @@ chrome.test.getConfig(function(config) {
       },
       function noneOriginShouldSucceed() {
         // When no CSS origin is specified, it should default to author origin.
-        var injectDetails = {};
+        const injectDetails = {};
         injectDetails.code = '#none {' +
                              ' color: blue !important;' +
                              ' background-color: white !important;' +
@@ -68,7 +68,7 @@ chrome.test.getConfig(function(config) {
         }));
       },
       function unknownOriginShouldFail() {
-        var injectDetails = {};
+        const injectDetails = {};
         injectDetails.code = '#unknown { color: black !important }';
         injectDetails.cssOrigin = 'unknown';
         try {
@@ -79,7 +79,7 @@ chrome.test.getConfig(function(config) {
         }
       },
       function originInExecuteScriptShouldFail() {
-        var injectDetails = {};
+        const injectDetails = {};
         injectDetails.code = '(function(){})();';
         injectDetails.cssOrigin = 'author';
         chrome.tabs.executeScript(tabId, injectDetails,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var relativePath = 'extensions/api_test/executescript/permissions/';
-var port;
+const RELATIVE_PATH = 'extensions/api_test/executescript/permissions/';
+let port;
 
 function fixPort(url) {
   return url.replace(/PORT/, port);
@@ -24,15 +24,14 @@ chrome.test.runTests([
   // should appear to work (no error -- it could have been a developer
   // mistake), but not actually do anything.
   function testRace() {
-    var testFile = relativePath + 'empty.html';
-    var openUrl = fixPort('http://c.com:PORT/') + testFile;
-    var executeUrl = fixPort('http://a.com:PORT/') + testFile;
-    var expectedError =
-        'Cannot access contents of url "' + openUrl + '". ' +
+    const testFile = `${RELATIVE_PATH}empty.html`;
+    const openUrl = `${fixPort('http://c.com:PORT/')}testFile`;
+    const executeUrl = `${fixPort('http://a.com:PORT/')}testFile`;
+    const expectedError = `Cannot access contents of url "${openUrl}". ` +
         'Extension manifest must request permission to access this host.';
 
     // This promise waits for the second URL to finish loading.
-    let tabLoadedPromise = new Promise((resolve) => {
+    const tabLoadedPromise = new Promise((resolve) => {
       chrome.tabs.onUpdated.addListener(function listener(
           tabId, changeInfo, tab) {
         if (tab.status == 'complete' && tab.url == executeUrl) {
@@ -44,7 +43,7 @@ chrome.test.runTests([
 
     // This promise waits for both the first URL to finish loading and
     // the subsequent script execution to finish.
-    let executePromise = new Promise((resolve, reject) => {
+    const executePromise = new Promise((resolve, reject) => {
       chrome.tabs.onUpdated.addListener(function listener(
           tabId, changeInfo, tab) {
         if (tab.status == 'complete') {
@@ -56,8 +55,8 @@ chrome.test.runTests([
                 if (results != undefined || !chrome.runtime.lastError) {
                   reject('Unexpected success in execute callback');
                 } else if (chrome.runtime.lastError.message != expectedError) {
-                  reject('Unexpected error: ' +
-                         chrome.runtime.lastError.message);
+                  reject(
+                      `Unexpected error: ${chrome.runtime.lastError.message}`);
                 } else {
                   resolve();
                 }
@@ -81,14 +80,14 @@ chrome.test.runTests([
   // b.com, and c.com. We have access to two of those, plus the root
   // frame, so we should get three responses.
   function testAllFrames() {
-    var testFileFrames = relativePath + 'frames.html';
-    var tabUrl = fixPort('http://a.com:PORT/') + testFileFrames;
+    const testFileFrames = `${RELATIVE_PATH}frames.html`;
+    const tabUrl = `${fixPort('http://a.com:PORT/')}${testFileFrames}`;
     // A sorted list of the expected scripts results. The script returns
     // window.location.href.
-    var expectedResults = [
-      tabUrl,
-      fixPort('http://a.com:PORT/') + relativePath + 'empty.html',
-      fixPort('http://b.com:PORT/') + relativePath + 'empty.html'].sort();
+    const expectedResults = [
+      tabUrl, `${fixPort('http://a.com:PORT/')}${RELATIVE_PATH}empty.html`,
+      `${fixPort('http://b.com:PORT/')}${RELATIVE_PATH}empty.html`
+    ].sort();
 
     function executeScriptCallback(results) {
       chrome.test.assertEq(expectedResults, results.sort());

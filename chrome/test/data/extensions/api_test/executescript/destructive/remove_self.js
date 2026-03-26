@@ -10,7 +10,7 @@ if (top === window) {
 }
 
 function testTop() {
-  var testMessage = {};
+  const testMessage = {};
   function reportFrames() {
     testMessage.frameCount = frames.length;
     testMessage.frameHTML = window.frameHTML;
@@ -20,12 +20,12 @@ function testTop() {
   if (window.frameHTML) {  // Set by child frame...
     // about:blank frames are synchronously parsed, so their document_end script
     // injection happens before the main frame's injection.
-    var expectChildBeforeMain = location.search.includes('?blankend');
+    const expectChildBeforeMain = location.search.includes('?blankend');
     if (!expectChildBeforeMain) {
       // Add a message to the test notification to cause the test to fail,
       // with some useful information for diagnostics.
       testMessage.warning = 'Content script in child frame was executed ' +
-          'before the main frame\'s content script!';
+          `before the main frame's content script!`;
     }
     reportFrames();
   } else {
@@ -38,7 +38,7 @@ function testTop() {
 }
 
 function testChild() {
-  var TEST_HOST = parent.location.hostname;
+  const TEST_HOST = parent.location.hostname;
 
   if (TEST_HOST === 'synchronous') {
     doRemove();
@@ -63,7 +63,7 @@ function testChild() {
   }
 
   function removeOnEvent(eventName) {
-    var expected = parseInt(TEST_HOST.match(/\d+/)[0]);
+    let expected = parseInt(TEST_HOST.match(/\d+/)[0]);
     document.addEventListener(eventName, function() {
       // Synchronously remove the frame in the mutation event.
       if (--expected === 0)

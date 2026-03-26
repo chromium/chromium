@@ -5,21 +5,20 @@
 // This script is run multiple times with different configurations. The content
 // scripts need to determine synchronously which subtest is being run. This
 // state is communicated via the URL.
-var TEST_HOST = location.search.slice(1);
+const testHost = location.search.slice(1);
 chrome.test.assertTrue(
-    TEST_HOST !== '',
-    'The subtest type must be specified in the query string.');
+    testHost !== '', 'The subtest type must be specified in the query string.');
 
-var config;
-var tabId;
+let config;
+let tabId;
 
 function getTestUrl(page) {
-  return 'http://' + TEST_HOST + ':' + config.testServer.port +
-      '/extensions/api_test/executescript/destructive/' + page;
+  return `http://${testHost}:${config.testServer.port}` +
+      `/extensions/api_test/executescript/destructive/${page}`;
 }
 
-chrome.test.getConfig(function(config) {
-  window.config = config;
+chrome.test.getConfig(function(retrievedConfig) {
+  config = retrievedConfig;
 
   chrome.tabs.create({url: 'about:blank'}, function(tab) {
     tabId = tab.id;
@@ -35,9 +34,9 @@ function startTest() {
   // - ?start = Load a script in the non-blank frame at document_start.
   // - ?end = Load a script in the non-blank frame at document_end.
 
-  var kEmptyHtmlBodyPattern = /<body><\/body>/;
+  const kEmptyHtmlBodyPattern = /<body><\/body>/;
 
-  var allTests = [
+  const allTests = [
     // Empty document.
     function removeHttpFrameAtDocumentStart() {
       testRemoveSelf('empty_frame.html?start');
@@ -158,10 +157,10 @@ function startTest() {
   ];
 
   // Parameters defined in execute_script_apitest.cc.
-  var testParams = new URLSearchParams(location.hash.slice(1));
-  var kBucketCount = parseInt(testParams.get('bucketcount'));
-  var kBucketIndex = parseInt(testParams.get('bucketindex'));
-  var kTestsPerBucket = Math.ceil(allTests.length / kBucketCount);
+  const testParams = new URLSearchParams(location.hash.slice(1));
+  const kBucketCount = parseInt(testParams.get('bucketcount'));
+  const kBucketIndex = parseInt(testParams.get('bucketindex'));
+  const kTestsPerBucket = Math.ceil(allTests.length / kBucketCount);
 
   chrome.test.assertTrue(kBucketCount * kTestsPerBucket >= allTests.length,
       'To cover all tests, the number of buckets multiplied by the number of ' +
@@ -174,12 +173,12 @@ function startTest() {
   // last run (i.e. |kBucketIndex| = |kBucketCount| - 1) may contain fewer tests
   // if there are not enough remaining tests, since the total number of tests is
   // not necessarily divisible by |kTestsPerBucket|.
-  var filteredTests =
-    allTests.slice(kBucketIndex * kTestsPerBucket).slice(0, kTestsPerBucket);
+  let filteredTests =
+      allTests.slice(kBucketIndex * kTestsPerBucket).slice(0, kTestsPerBucket);
 
   // At the document_end stage, the parser will not modify the DOM any more, so
   // we can skip those tests that wait for DOM mutations to save time.
-  if (TEST_HOST.startsWith('dom')) {
+  if (testHost.startsWith('dom')) {
     filteredTests = filteredTests.filter(function(testfn) {
       // Omit the *Documentend tests = keep the *DocumentStart tests.
       return !testfn.name.endsWith('DocumentEnd');
@@ -196,28 +195,28 @@ function startTest() {
 // still testing the expected document in the future.
 function testRemoveSelf(page, pattern) {
   // By default, the serialization of the document must be non-empty.
-  var kDefaultPattern = /</;
+  const kDefaultPattern = /</;
 
   if (page.includes('start')) {
     pattern = pattern || /^<\s*html[^>]*><\/html>$/;
-    pattern = TEST_HOST === 'synchronous' ? pattern : kDefaultPattern;
+    pattern = testHost === 'synchronous' ? pattern : kDefaultPattern;
   } else if (page.includes('end')) {
     pattern = pattern || kDefaultPattern;
   } else {
-    chrome.test.fail('URL must contain "start" or "end": ' + page);
+    chrome.test.fail(`URL must contain 'start' or 'end': ${page}`);
   }
 
   chrome.test.listenOnce(chrome.runtime.onMessage, function(msg, sender) {
     chrome.test.assertEq(tabId, sender.tab && sender.tab.id);
     chrome.test.assertEq(0, sender.frameId);
 
-    var frameHTML = msg.frameHTML;
+    const frameHTML = msg.frameHTML;
     delete msg.frameHTML;
     chrome.test.assertEq({frameCount: 0}, msg);
 
     chrome.test.assertTrue(
         pattern.test(frameHTML),
-        'The pattern ' + pattern + ' should be matched by: ' + frameHTML);
+        `The pattern ${pattern} should be matched by: ${frameHTML}`);
   });
   chrome.tabs.update(tabId, {url: getTestUrl(page)});
 }
@@ -226,16 +225,16 @@ function testRemoveSelf(page, pattern) {
 // are not supported.
 function maybeSkipPluginTest() {
   // This MIME-type should be handled by a browser plugin.
-  var kPluginMimeType = 'application/pdf';
-  for (var i = 0; i < navigator.plugins.length; ++i) {
-    var plugin = navigator.plugins[i];
-    for (var j = 0; j < plugin.length; ++j) {
-      var mimeType = plugin[j];
+  const kPluginMimeType = 'application/pdf';
+  for (let i = 0; i < navigator.plugins.length; ++i) {
+    const plugin = navigator.plugins[i];
+    for (let j = 0; j < plugin.length; ++j) {
+      const mimeType = plugin[j];
       if (mimeType.type === kPluginMimeType)
         return false;
     }
   }
-  var kMessage = 'Plugin not found for ' + kPluginMimeType + ', skipping test.';
+  const kMessage = `Plugin not found for ${kPluginMimeType}, skipping test.`;
   console.log(kMessage);
   chrome.test.log(kMessage);
   chrome.test.succeed();

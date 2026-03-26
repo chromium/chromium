@@ -2,38 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var got_request = false;
-
-var test_url = "http://localhost:PORT/extensions/test_file.html";
+let gotRequest = false;
+let testUrl;
 
 // For running in normal chrome (ie outside of the browser_tests environment),
 // set debug to 1 here.
-var debug = 0;
+const debug = 0;
 if (debug) {
-  test_url = "http://www.google.com/";
+  testUrl = 'http://www.google.com/';
   chrome.test.log = function(msg) { console.log(msg) };
   chrome.test.runTests = function(tests) {
-    for (var i in tests) {
+    for (let i in tests) {
       tests[i]();
     }
   };
-  chrome.test.succeed = function(){ console.log("succeed"); };
-  chrome.test.fail = function(){ console.log("fail"); };
+  chrome.test.succeed = function() {
+    console.log('succeed');
+  };
+  chrome.test.fail = function() {
+    console.log('fail');
+  };
 }
 
-function navigate_to_fragment(tab, callback) {
-  var new_url = test_url + "#foo";
-  chrome.test.log("navigating tab to " + new_url);
-  chrome.tabs.update(tab.id, {"url": new_url}, callback);
+function navigateToFragment(tab, callback) {
+  const newUrl = `${testUrl}#foo`;
+  chrome.test.log(`navigating tab to ${newUrl}`);
+  chrome.tabs.update(tab.id, {url: newUrl}, callback);
 }
 
-var succeeded = false;
+let succeeded = false;
 
-function do_execute(tab) {
-  chrome.tabs.executeScript(tab.id, {"file": "execute_script.js"});
+function doExecute(tab) {
+  chrome.tabs.executeScript(tab.id, {file: 'execute_script.js'});
   setTimeout(function() {
     if (!succeeded) {
-      chrome.test.fail("timed out");
+      chrome.test.fail('timed out');
     }
   }, 10000);
 }
@@ -45,16 +48,16 @@ function runTests() {
     // running chrome.tabs.executeScript.
     function test1() {
       chrome.runtime.onMessage.addListener(function(req, sender) {
-        chrome.test.log("got request: " + JSON.stringify(req));
-        if (req == "content_script") {
-          navigate_to_fragment(sender.tab, do_execute);
-        } else if (req == "execute_script") {
+        chrome.test.log(`got request: ${JSON.stringify(req)}`);
+        if (req == 'content_script') {
+          navigateToFragment(sender.tab, doExecute);
+        } else if (req == 'execute_script') {
           succeeded = true;
           chrome.test.succeed();
         }
       });
-      chrome.test.log("creating tab");
-      chrome.tabs.create({"url": test_url});
+      chrome.test.log('creating tab');
+      chrome.tabs.create({url: testUrl});
     }
   ]);
 }
@@ -64,7 +67,8 @@ if (debug) {
   runTests();
 } else {
   chrome.test.getConfig(function(config) {
-    test_url = test_url.replace(/PORT/, config.testServer.port);
+    testUrl =
+        `http://localhost:${config.testServer.port}/extensions/test_file.html`;
     runTests();
   });
 }

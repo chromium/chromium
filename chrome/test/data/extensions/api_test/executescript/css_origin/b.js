@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-  var element = document.getElementById(message.id);
-  var style = getComputedStyle(element);
-  var response = {
+  const element = document.getElementById(message.id);
+  const style = getComputedStyle(element);
+  const response = {
     color: style.getPropertyValue('color'),
     backgroundColor: style.getPropertyValue('background-color')
   };

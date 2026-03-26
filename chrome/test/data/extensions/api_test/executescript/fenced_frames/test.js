@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var listenOnce = chrome.test.listenOnce;
-var listenForever = chrome.test.listenForever;
+const listenOnce = chrome.test.listenOnce;
+const listenForever = chrome.test.listenForever;
 
 // Keep track of the tab that we're running tests in, for simplicity.
-var testTab = null;
+let testTab = null;
 
-var tests = [
+const tests = [
   // Waits for fenced frame to load.
   function waitForFencedFrameLoad() {
     // We have to wait for the fenced frame to be loaded before we can
@@ -54,10 +54,10 @@ var tests = [
 ];
 
 chrome.test.getConfig(async (config) => {
-  var serverOrigin = `https://a.test:${config.testServer.port}`;
-  var serverURL = serverOrigin + '/extensions/api_test/executescript/'
-                           + 'fenced_frames/';
-  const url = serverURL + 'main.html';
+  const serverOrigin = `https://a.test:${config.testServer.port}`;
+  const serverURL = `${serverOrigin}/extensions/api_test/executescript/` +
+      'fenced_frames/';
+  const url = `${serverURL}main.html`;
 
   testTab = await new Promise(function(resolve, reject) {
     chrome.tabs.create({url: url}, (value) => {

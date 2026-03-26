@@ -18,18 +18,18 @@ chrome.test.getConfig(function(config) {
 
         // Inject a script into this tab.
         chrome.tabs.executeScript(
-          tabs[0].id, { code: 'console.log("injected");' }, function() {
-            if (canExecuteScript) {
-              chrome.test.assertTrue(chrome.runtime.lastError === undefined);
-            } else {
-              const expectedError =
-                  `Cannot access contents of url "${tabs[0].url}". Extension `+
-                  `manifest must request permission to access this host.`;
-              chrome.test.assertEq(
-                  expectedError, chrome.runtime.lastError.message);
-            }
-            chrome.test.succeed();
-          });
+            tabs[0].id, {code: `console.log('injected');`}, function() {
+              if (canExecuteScript) {
+                chrome.test.assertTrue(chrome.runtime.lastError === undefined);
+              } else {
+                const expectedError = `Cannot access contents of url "${
+                                          tabs[0].url}". Extension ` +
+                    `manifest must request permission to access this host.`;
+                chrome.test.assertEq(
+                    expectedError, chrome.runtime.lastError.message);
+              }
+              chrome.test.succeed();
+            });
       });
     }
   ]);

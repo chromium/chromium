@@ -5,18 +5,18 @@
 function executeCodeInTab(tabId, callback) {
   chrome.tabs.executeScript(
       tabId,
-      {code: "document.title = 'hi, I\\'m on ' + location;"},
+      {code: `document.title = \`hi, I'm on \${location};\``},
       callback);
 }
 
 chrome.test.getConfig(function(config) {
-  var path = "/extensions/test_file.txt";
-  var urlC = "http://c.com:" + config.testServer.port + path;
-  var urlB = "http://b.com:" + config.testServer.port + path;
-  var testTabId;
+  const path = '/extensions/test_file.txt';
+  const urlC = `http://c.com:${config.testServer.port}${path}`;
+  const urlB = `http://b.com:${config.testServer.port}${path}`;
+  let testTabId;
 
   function onTabUpdated(tabId, changeInfo, tab) {
-    if (testTabId == tab.id && tab.status == "complete") {
+    if (testTabId == tab.id && tab.status == 'complete') {
       chrome.tabs.onUpdated.removeListener(onTabUpdated);
       chrome.tabs.update(tabId, {url: urlB});
       executeCodeInTab(testTabId, function() {
@@ -25,8 +25,8 @@ chrome.test.getConfig(function(config) {
         // permission to run it.
         if (chrome.runtime.lastError) {
           chrome.test.assertLastError(
-              'Cannot access contents of url "' + urlC +
-              '". Extension manifest must request permission to access this ' +
+              `Cannot access contents of url "${urlC}". ` +
+              'Extension manifest must request permission to access this ' +
               'host.');
           chrome.test.notifyPass();
         } else {
@@ -34,7 +34,7 @@ chrome.test.getConfig(function(config) {
           // have run on on b.com (where we do have permission).
           chrome.tabs.get(tabId, function(tab) {
             chrome.test.assertTrue(
-                tab.title.indexOf("hi, I'm on http://b.com:") == 0);
+                tab.title.indexOf(`hi, I'm on http://b.com:`) == 0);
             chrome.test.notifyPass();
           });
         }
