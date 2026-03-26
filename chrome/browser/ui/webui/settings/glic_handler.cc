@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -26,13 +28,18 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -92,7 +99,6 @@ void GlicHandler::RegisterMessages() {
       "getGlicDisallowedByAdmin",
       base::BindRepeating(&GlicHandler::HandleGetGlicDisallowedByAdmin,
                           base::Unretained(this)));
-
   web_ui()->RegisterMessageCallback(
       "getActorLoginPermissions",
       base::BindRepeating(&GlicHandler::HandleGetActorLoginPermissions,
@@ -109,6 +115,10 @@ void GlicHandler::RegisterMessages() {
       "setGlicSelectionShortcut",
       base::BindRepeating(&GlicHandler::HandleSetGlicSelectionShortcut,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getWebActuationToggleVisibility",
+      base::BindRepeating(&GlicHandler::HandleGetWebActuationToggleVisibility,
+                          base::Unretained(this)));
 }
 
 void GlicHandler::OnJavascriptAllowed() {
@@ -123,6 +133,17 @@ void GlicHandler::OnJavascriptAllowed() {
 
     web_actuation_subscription_ = service->AddActOnWebCapabilityChangedCallback(
         base::BindRepeating(&GlicHandler::OnWebActuationCapabilityChanged,
+                            base::Unretained(this)));
+
+    pref_change_registrar_.Init(profile->GetPrefs());
+    pref_change_registrar_.Add(
+        glic::prefs::kGlicUserEnabledActuationOnWeb,
+        base::BindRepeating(&GlicHandler::OnWebActuationPrefChanged,
+                            base::Unretained(this)));
+
+    pref_change_registrar_.Add(
+        ::subscription_eligibility::prefs::kAiSubscriptionTier,
+        base::BindRepeating(&GlicHandler::OnWebActuationPrefChanged,
                             base::Unretained(this)));
   }
 
@@ -142,6 +163,7 @@ void GlicHandler::OnJavascriptDisallowed() {
   glic_enabling_subscription_ = {};
   web_actuation_subscription_ = {};
   observation_.Reset();
+  pref_change_registrar_.RemoveAll();
 }
 
 void GlicHandler::OnPermissionsChanged() {
@@ -270,9 +292,81 @@ void GlicHandler::FireOnGlicDisallowedByAdminChanged() {
                     base::Value(disallowed));
 }
 
+void GlicHandler::OnWebActuationPrefChanged() {
+  FireWebActuationToggleVisibilityChanged();
+}
+
 void GlicHandler::OnWebActuationCapabilityChanged(bool can_act_on_web) {
   FireWebUIListener("glic-web-actuation-capability-changed",
                     base::Value(can_act_on_web));
+}
+
+void GlicHandler::HandleGetWebActuationToggleVisibility(
+    const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      callback_id,
+      base::Value(ShouldShowWebActuationToggle(Profile::FromWebUI(web_ui()))));
+}
+
+void GlicHandler::FireWebActuationToggleVisibilityChanged() {
+  bool is_visible =
+      GlicHandler::ShouldShowWebActuationToggle(Profile::FromWebUI(web_ui()));
+  FireWebUIListener("glic-web-actuation-toggle-visibility-changed",
+                    base::Value(is_visible));
+}
+
+bool GlicHandler::ShouldShowWebActuationToggle(Profile* profile) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicAlwaysShowWebActuationToggle)) {
+    return true;
+  }
+  if (!base::FeatureList::IsEnabled(features::kGlicWebActuationSetting)) {
+    return false;
+  }
+
+  // If the account is ineligible, hide the toggle.
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (!glic_service) {
+    return false;
+  }
+  if (glic_service->actor_policy_checker().CannotActOnWebReason() ==
+      glic::GlicActorPolicyChecker::CannotActReason::
+          kAccountCapabilityIneligible) {
+    return false;
+  }
+
+  // NOTE: kGlicWebActuationSettingsToggle controls toggle visibility based
+  // solely on subscription eligibility. If this feature is disabled, the
+  // toggle remains visible only if the user has previously accepted the
+  // consent card.
+
+  const base::flat_set<int32_t>& allowed_tiers =
+      glic::GlicActorPolicyChecker::GetActorEligibleTiers();
+  // If no tiers are allowed, the toggle should never be shown.
+  if (allowed_tiers.empty()) {
+    return false;
+  }
+  // If the toggle feature is on, enforce toggle visibility based on
+  // subscription eligibility.
+  if (base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
+    auto* subscription_service = subscription_eligibility::
+        SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+    CHECK(subscription_service);
+    return allowed_tiers.contains(
+        subscription_service->GetAiSubscriptionTier());
+  }
+  // Show the toggle if the user has explicitly modified the preference before
+  // (via accepting the consent card).
+  const auto* pref = profile->GetPrefs()->FindPreference(
+      glic::prefs::kGlicUserEnabledActuationOnWeb);
+  if (pref && !pref->IsDefaultValue()) {
+    return true;
+  }
+  return false;
 }
 
 void GlicHandler::HandleGetActorLoginPermissions(const base::ListValue& args) {

@@ -33,6 +33,7 @@ export interface GlicBrowserProxy {
   revokeActorLoginPermission(signonRealm: string, username: string): void;
   getGlicSelectionShortcut(): Promise<string>;
   setGlicSelectionShortcut(shortcut: string): Promise<void>;
+  getWebActuationToggleVisibility(): Promise<boolean>;
 }
 
 export class GlicBrowserProxyImpl implements GlicBrowserProxy {
@@ -78,6 +79,10 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
 
   setGlicSelectionShortcut(shortcut: string) {
     return sendWithPromise<void>('setGlicSelectionShortcut', shortcut);
+  }
+
+  getWebActuationToggleVisibility() {
+    return sendWithPromise<boolean>('getWebActuationToggleVisibility');
   }
 
   static getInstance(): GlicBrowserProxy {
