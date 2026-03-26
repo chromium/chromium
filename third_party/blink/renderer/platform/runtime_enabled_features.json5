@@ -4550,6 +4550,11 @@
       status: "stable",
     },
     {
+      // Shipping in M148, so should be removed around M150.
+      name: "RecheckParentDuringNodeVectorInsertion",
+      status: "stable",
+    },
+    {
       name: "RecordSameDocumentPresentationTimeOnce",
       status: "stable",
     },
