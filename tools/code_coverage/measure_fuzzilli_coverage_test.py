@@ -48,15 +48,21 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
                                 check=True,
                                 cwd=TEST_FUZZILLI_DIR)
 
-    expected_run_command = [
+    expected_run_command_prefix = [
         os.path.join(TEST_FUZZILLI_DIR,
                      '.build/release/FuzzilliCli'), '--profile=chromiumMojo',
-        '--storagePath=/tmp/fuzzilli_storage', '--overwrite', '--engine=hybrid',
-        os.path.join(TEST_BUILD_OUT_DIR, 'js_in_process_fuzzer')
+        '--storagePath=/tmp/fuzzilli_storage', '--overwrite', '--engine=hybrid'
     ]
-    mock_popen.assert_called_with(expected_run_command,
-                                  cwd=TEST_FUZZILLI_DIR,
-                                  start_new_session=True)
+
+    self.assertTrue(mock_popen.called)
+    actual_run_command = mock_popen.call_args[0][0]
+    self.assertEqual(actual_run_command[:-1], expected_run_command_prefix)
+    self.assertTrue(actual_run_command[-1].endswith('.sh'))
+
+    self.assertEqual(mock_popen.call_args[1], {
+        'cwd': TEST_FUZZILLI_DIR,
+        'start_new_session': True
+    })
 
     mock_process.wait.assert_called_with(timeout=TEST_SECONDS)
     mock_pg_handler.SetProcessGroup.assert_called_with(mock_process)
