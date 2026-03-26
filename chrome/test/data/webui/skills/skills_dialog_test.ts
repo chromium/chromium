@@ -13,7 +13,7 @@ import {DialogHandlerRemote} from 'chrome://skills/skills.mojom-webui.js';
 import {MAX_NAME_CHAR_COUNT, MAX_PROMPT_CHAR_COUNT, WindowProxyImpl} from 'chrome://skills/skills_dialog_app.js';
 import type {SkillsDialogAppElement, WindowProxy} from 'chrome://skills/skills_dialog_app.js';
 import {SkillsDialogBrowserProxy} from 'chrome://skills/skills_dialog_browser_proxy.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import { assertEquals, assertFalse, assertTrue, assertNull } from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -48,6 +48,7 @@ suite('SkillsDialogAppPage', function() {
     loadTimeData.overrideValues({
       MAX_PROMPT_CHAR_COUNT: 20000,
       MAX_NAME_CHAR_COUNT: 100,
+      isRefinementEnabled: true,
     });
     dialogHandler = TestMock.fromClass(DialogHandlerRemote);
     SkillsDialogBrowserProxy.setInstance(
@@ -488,6 +489,15 @@ suite('SkillsDialogAppPage', function() {
 
     assertTrue(skillsDialogApp.$.iconUndo.disabled);
     assertTrue(skillsDialogApp.$.iconRedo.disabled);
+  });
+
+  test('RefinementDisabled', async function () {
+    loadTimeData.overrideValues({ isRefinementEnabled: false });
+    await setupDialogInitialState(createSkill());
+
+    assertNull(skillsDialogApp.shadowRoot.querySelector('#iconRefine'));
+    assertNull(skillsDialogApp.shadowRoot.querySelector('#iconUndo'));
+    assertNull(skillsDialogApp.shadowRoot.querySelector('#iconRedo'));
   });
 
   test('RefineUsesOriginalPromptForSubsequentRefines', async function() {

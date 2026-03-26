@@ -16,28 +16,28 @@ import './error_page.js';
 import './icons.html.js';
 import './skills_emoji_picker.js';
 
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import { ColorChangeUpdater } from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type { CrButtonElement } from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type { CrDialogElement } from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type { CrIconElement } from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import type { CrIconButtonElement } from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type { CrInputElement } from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import { assert } from 'chrome://resources/js/assert.js';
+import { loadTimeData } from 'chrome://resources/js/load_time_data.js';
+import { CrLitElement } from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type { PropertyValues } from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Skill} from './skill.mojom-webui.js';
-import {SkillsDialogType, SkillSource} from './skill.mojom-webui.js';
-import {getCss} from './skills_dialog.css.js';
-import {getHtml} from './skills_dialog_app.html.js';
-import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
+import type { Skill } from './skill.mojom-webui.js';
+import { SkillsDialogType, SkillSource } from './skill.mojom-webui.js';
+import { getCss } from './skills_dialog.css.js';
+import { getHtml } from './skills_dialog_app.html.js';
+import { SkillsDialogBrowserProxy } from './skills_dialog_browser_proxy.js';
 
 const DEFAULT_EMOJI: string = '⚡';
 export const MAX_NAME_CHAR_COUNT =
-    loadTimeData.getInteger('MAX_NAME_CHAR_COUNT');
+  loadTimeData.getInteger('MAX_NAME_CHAR_COUNT');
 export const MAX_PROMPT_CHAR_COUNT =
-    loadTimeData.getInteger('MAX_PROMPT_CHAR_COUNT');
+  loadTimeData.getInteger('MAX_PROMPT_CHAR_COUNT');
 
 // The amount of pixels the user can be from the very bottom of the skills
 // dialog before the gradient is removed.
@@ -45,7 +45,7 @@ export const BOTTOM_SCROLL_OFFSET_PX = 5;
 
 const REFINE_SKILL_TIMEOUT_MS = 5000;
 
-let windowProxyInstance: WindowProxy|null = null;
+let windowProxyInstance: WindowProxy | null = null;
 
 export enum PromptError {
   NONE = 0,
@@ -109,19 +109,19 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      skill_: {type: Object},
-      dialogTitle_: {type: String},
-      canUndoRefine_: {type: Boolean},
-      canRedoRefine_: {type: Boolean},
-      shouldShowErrorPage_: {type: Boolean},
-      signedInEmail_: {type: String},
-      promptError_: {type: Number},
-      isRefineLoading_: {type: Boolean},
-      isAutoGenerationLoading_: {type: Boolean},
-      hasSaveError_: {type: Boolean},
-      hasNameCharLimitError_: {type: Boolean},
-      isAddDialog_: {type: Boolean},
-      showEmojiPicker_: {type: Boolean},
+      skill_: { type: Object },
+      dialogTitle_: { type: String },
+      canUndoRefine_: { type: Boolean },
+      canRedoRefine_: { type: Boolean },
+      shouldShowErrorPage_: { type: Boolean },
+      signedInEmail_: { type: String },
+      promptError_: { type: Number },
+      isRefineLoading_: { type: Boolean },
+      isAutoGenerationLoading_: { type: Boolean },
+      hasSaveError_: { type: Boolean },
+      hasNameCharLimitError_: { type: Boolean },
+      isAddDialog_: { type: Boolean },
+      showEmojiPicker_: { type: Boolean },
     };
   }
 
@@ -136,8 +136,8 @@ export class SkillsDialogAppElement extends CrLitElement {
     source: SkillSource.kUserCreated,
     description: '',
     imageUrl: '',
-    creationTime: {internalValue: 0n},
-    lastUpdateTime: {internalValue: 0n},
+    creationTime: { internalValue: 0n },
+    lastUpdateTime: { internalValue: 0n },
   };
 
   protected accessor dialogTitle_: string = '';
@@ -147,7 +147,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor canUndoRefine_: boolean = false;
   protected accessor canRedoRefine_: boolean = false;
   protected accessor shouldShowErrorPage_: boolean =
-      !loadTimeData.getBoolean('isGlicEnabled');
+    !loadTimeData.getBoolean('isGlicEnabled');
   protected accessor signedInEmail_: string = '';
   protected accessor promptError_: PromptError = PromptError.NONE;
   protected accessor isRefineLoading_: boolean = false;
@@ -157,12 +157,16 @@ export class SkillsDialogAppElement extends CrLitElement {
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
 
-  private textareaResizeObserver_: ResizeObserver|null = null;
-  private dialogResizeObserver_: ResizeObserver|null = null;
+  private textareaResizeObserver_: ResizeObserver | null = null;
+  private dialogResizeObserver_: ResizeObserver | null = null;
 
   protected get isSaveButtonDisabled() {
     return !this.skill_.name || !this.skill_.prompt ||
-        this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
+      this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
+  }
+
+  protected get isRefinementEnabled_() {
+    return loadTimeData.getBoolean('isRefinementEnabled');
   }
 
   protected hasPromptError_(): boolean {
@@ -174,30 +178,30 @@ export class SkillsDialogAppElement extends CrLitElement {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
     SkillsDialogBrowserProxy.getInstance().handler.getInitialState().then(
-        ({initialDialogState}) => {
-          if (initialDialogState) {
-            this.skill_ = initialDialogState.skill;
-            this.skill_.source =
-                initialDialogState.skill.source || SkillSource.kUserCreated;
-            switch (initialDialogState.dialogType) {
-              case SkillsDialogType.kAdd:
-                this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
-                this.autoPopulateNameAndIcon_();
-                this.isAddDialog_ = true;
-                break;
-              case SkillsDialogType.kEdit:
-                this.dialogTitle_ = loadTimeData.getString('editSkillHeader');
-                this.isAddDialog_ = false;
-                break;
-              default:
-                break;
-            }
+      ({ initialDialogState }) => {
+        if (initialDialogState) {
+          this.skill_ = initialDialogState.skill;
+          this.skill_.source =
+            initialDialogState.skill.source || SkillSource.kUserCreated;
+          switch (initialDialogState.dialogType) {
+            case SkillsDialogType.kAdd:
+              this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
+              this.autoPopulateNameAndIcon_();
+              this.isAddDialog_ = true;
+              break;
+            case SkillsDialogType.kEdit:
+              this.dialogTitle_ = loadTimeData.getString('editSkillHeader');
+              this.isAddDialog_ = false;
+              break;
+            default:
+              break;
           }
-        });
+        }
+      });
     SkillsDialogBrowserProxy.getInstance().handler.getSignedInEmail().then(
-        ({email}) => {
-          this.signedInEmail_ = email;
-        });
+      ({ email }) => {
+        this.signedInEmail_ = email;
+      });
     if (window.ResizeObserver) {
       this.textareaResizeObserver_ = new ResizeObserver(() => {
         this.checkTextareaOverflow_();
@@ -240,10 +244,10 @@ export class SkillsDialogAppElement extends CrLitElement {
 
     if (changedProperties.has('skill_')) {
       this.promptError_ = this.skill_.prompt.length >= MAX_PROMPT_CHAR_COUNT ?
-          PromptError.CHAR_LIMIT :
-          PromptError.NONE;
+        PromptError.CHAR_LIMIT :
+        PromptError.NONE;
       this.hasNameCharLimitError_ =
-          this.skill_.name.length >= MAX_NAME_CHAR_COUNT;
+        this.skill_.name.length >= MAX_NAME_CHAR_COUNT;
 
       // Only check overflow if the textarea is currently in the DOM
       if (!this.isRefineLoading_) {
@@ -286,15 +290,15 @@ export class SkillsDialogAppElement extends CrLitElement {
     // Add a small offset so the user doesn't have to scroll to the absolute
     // bottom
     const isScrolledToBottom =
-        textarea.scrollTop + textarea.clientHeight + BOTTOM_SCROLL_OFFSET_PX >=
-        textarea.scrollHeight;
+      textarea.scrollTop + textarea.clientHeight + BOTTOM_SCROLL_OFFSET_PX >=
+      textarea.scrollHeight;
     textarea.classList.toggle(
-        'has-overflow', hasScrollbar && !isScrolledToBottom);
+      'has-overflow', hasScrollbar && !isScrolledToBottom);
   }
 
   private get instructionsTextarea_(): HTMLTextAreaElement {
     const el =
-        this.shadowRoot.querySelector<HTMLTextAreaElement>('#instructionsText');
+      this.shadowRoot.querySelector<HTMLTextAreaElement>('#instructionsText');
     assert(el);
     return el;
   }
@@ -303,8 +307,8 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.showEmojiPicker_ = !this.showEmojiPicker_;
   }
 
-  protected onEmojiSelected_(event: CustomEvent<{emoji: string}>) {
-    this.skill_ = {...this.skill_, icon: event.detail.emoji};
+  protected onEmojiSelected_(event: CustomEvent<{ emoji: string }>) {
+    this.skill_ = { ...this.skill_, icon: event.detail.emoji };
     this.showEmojiPicker_ = false;
     this.$.emojiTrigger.focus();
   }
@@ -336,24 +340,24 @@ export class SkillsDialogAppElement extends CrLitElement {
     const rawValue = input.value;
 
     if (!rawValue) {
-      this.skill_ = {...this.skill_, icon: DEFAULT_EMOJI};
+      this.skill_ = { ...this.skill_, icon: DEFAULT_EMOJI };
       input.value = DEFAULT_EMOJI;
       return;
     }
 
     // Sanitize input: Take ONLY the last grapheme cluster
-    const segmenter = new Intl.Segmenter('en', {granularity: 'grapheme'});
+    const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
     const segments = [...segmenter.segment(rawValue)];
     const lastEmoji = segments[segments.length - 1]?.segment || DEFAULT_EMOJI;
 
-    this.skill_ = {...this.skill_, icon: lastEmoji};
+    this.skill_ = { ...this.skill_, icon: lastEmoji };
     input.value = lastEmoji;
     input.blur();
   }
 
   protected isRefineDisabled_(): boolean {
     return !this.skill_.prompt || this.skill_.prompt.length === 0 ||
-        this.isRefineLoading_;
+      this.isRefineLoading_;
   }
 
   protected isUndoDisabled_(): boolean {
@@ -364,8 +368,8 @@ export class SkillsDialogAppElement extends CrLitElement {
     return !this.canRedoRefine_ || this.isRefineLoading_;
   }
 
-  protected onNameValueChanged_(e: CustomEvent<{value: string}>) {
-    this.skill_ = {...this.skill_, name: e.detail.value};
+  protected onNameValueChanged_(e: CustomEvent<{ value: string }>) {
+    this.skill_ = { ...this.skill_, name: e.detail.value };
   }
 
   protected onInstructionsInput_(e: Event) {
@@ -377,13 +381,13 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.originalPrompt_ = '';
     this.refinedPrompt_ = '';
 
-    this.skill_ = {...this.skill_, prompt: newValue};
+    this.skill_ = { ...this.skill_, prompt: newValue };
   }
 
   protected onUndoClick_() {
     // Undo is only enabled after a successful refinement, at which point
     // originalPrompt_ is guaranteed to be populated.
-    this.skill_ = {...this.skill_, prompt: this.originalPrompt_};
+    this.skill_ = { ...this.skill_, prompt: this.originalPrompt_ };
 
     this.canUndoRefine_ = false;
     this.canRedoRefine_ = true;
@@ -394,7 +398,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   protected onRedoClick_() {
-    this.skill_ = {...this.skill_, prompt: this.refinedPrompt_};
+    this.skill_ = { ...this.skill_, prompt: this.refinedPrompt_ };
 
     this.canUndoRefine_ = true;
     this.canRedoRefine_ = false;
@@ -420,32 +424,32 @@ export class SkillsDialogAppElement extends CrLitElement {
 
     // Race the request against the timeout
     return this.requestRefinedSkillWithTimeout_(skillToRefine)
-        .then(({refinedSkill}) => {
-          // If the server returned null, do not overwrite the current state.
-          if (refinedSkill && this.promptError_ !== PromptError.REFINE) {
-            // Only update if we have a valid result.
-            this.skill_ = {
-              ...this.skill_,
-              // If the refined prompt is missing or empty, keep the original
-              // prompt
-              prompt: refinedSkill.prompt || this.skill_.prompt,
-            };
-            this.refinedPrompt_ = refinedSkill.prompt;
-            this.canUndoRefine_ = true;
-            this.canRedoRefine_ = false;
-          }
-        })
-        .catch(() => {
-          this.promptError_ = PromptError.REFINE;
-        })
-        .finally(() => {
-          this.isRefineLoading_ = false;
-          this.updateComplete.then(() => {
-            this.attachTextareaResizeObserver_();
-            this.checkTextareaOverflow_();
-            this.instructionsTextarea_.focus();
-          });
+      .then(({ refinedSkill }) => {
+        // If the server returned null, do not overwrite the current state.
+        if (refinedSkill && this.promptError_ !== PromptError.REFINE) {
+          // Only update if we have a valid result.
+          this.skill_ = {
+            ...this.skill_,
+            // If the refined prompt is missing or empty, keep the original
+            // prompt
+            prompt: refinedSkill.prompt || this.skill_.prompt,
+          };
+          this.refinedPrompt_ = refinedSkill.prompt;
+          this.canUndoRefine_ = true;
+          this.canRedoRefine_ = false;
+        }
+      })
+      .catch(() => {
+        this.promptError_ = PromptError.REFINE;
+      })
+      .finally(() => {
+        this.isRefineLoading_ = false;
+        this.updateComplete.then(() => {
+          this.attachTextareaResizeObserver_();
+          this.checkTextareaOverflow_();
+          this.instructionsTextarea_.focus();
         });
+      });
   }
 
   /** Submits skill and closes the dialog. */
@@ -467,9 +471,9 @@ export class SkillsDialogAppElement extends CrLitElement {
     };
 
     SkillsDialogBrowserProxy.getInstance().handler.submitSkill(skill).then(
-        ({success}) => {
-          this.hasSaveError_ = !success;
-        });
+      ({ success }) => {
+        this.hasSaveError_ = !success;
+      });
   }
 
   protected onCancelClick_(e: Event) {
@@ -498,45 +502,45 @@ export class SkillsDialogAppElement extends CrLitElement {
 
     this.isAutoGenerationLoading_ = true;
     return this.requestGenerateNameAndEmojiWithTimeout_(this.skill_)
-        .then(({refinedSkill}) => {
-          if (refinedSkill) {
-            const newName =
-                (!this.skill_.name || this.skill_.name.trim() === '') ?
-                refinedSkill.name :
-                this.skill_.name;
-            const newIcon =
-                ((this.skill_.icon === DEFAULT_EMOJI || !this.skill_.icon) &&
-                 refinedSkill.icon) ?
-                refinedSkill.icon :
-                this.skill_.icon;
-            if (newName !== this.skill_.name || newIcon !== this.skill_.icon) {
-              this.skill_ = {
-                ...this.skill_,
-                name: newName || '',
-                icon: newIcon || DEFAULT_EMOJI,
-              };
-            }
+      .then(({ refinedSkill }) => {
+        if (refinedSkill) {
+          const newName =
+            (!this.skill_.name || this.skill_.name.trim() === '') ?
+              refinedSkill.name :
+              this.skill_.name;
+          const newIcon =
+            ((this.skill_.icon === DEFAULT_EMOJI || !this.skill_.icon) &&
+              refinedSkill.icon) ?
+              refinedSkill.icon :
+              this.skill_.icon;
+          if (newName !== this.skill_.name || newIcon !== this.skill_.icon) {
+            this.skill_ = {
+              ...this.skill_,
+              name: newName || '',
+              icon: newIcon || DEFAULT_EMOJI,
+            };
           }
+        }
+      })
+      .catch(
+        () => {
+          // Silently fail for auto-population; do not show error UI to
+          // user as this is a background enhancement.
         })
-        .catch(
-            () => {
-                // Silently fail for auto-population; do not show error UI to
-                // user as this is a background enhancement.
-            })
-        .finally(() => {
-          this.isAutoGenerationLoading_ = false;
-        });
+      .finally(() => {
+        this.isAutoGenerationLoading_ = false;
+      });
   }
 
   private requestRefinedSkillWithTimeout_(skillToRefine: Skill) {
     const refineRequest =
-        SkillsDialogBrowserProxy.getInstance().handler.refineSkill(
-            skillToRefine);
+      SkillsDialogBrowserProxy.getInstance().handler.refineSkill(
+        skillToRefine);
 
     const timeout = new Promise<never>((_, reject) => {
       WindowProxyImpl.getInstance().setTimeout(
-          () => reject(new Error('Refine skill timed out')),
-          REFINE_SKILL_TIMEOUT_MS);
+        () => reject(new Error('Refine skill timed out')),
+        REFINE_SKILL_TIMEOUT_MS);
     });
 
     return Promise.race([refineRequest, timeout]);
@@ -544,13 +548,13 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   private requestGenerateNameAndEmojiWithTimeout_(skillToRefine: Skill) {
     const generateRequest =
-        SkillsDialogBrowserProxy.getInstance().handler.generateNameAndEmoji(
-            skillToRefine);
+      SkillsDialogBrowserProxy.getInstance().handler.generateNameAndEmoji(
+        skillToRefine);
 
     const timeout = new Promise<never>((_, reject) => {
       WindowProxyImpl.getInstance().setTimeout(
-          () => reject(new Error('Generate name and emoji timed out')),
-          REFINE_SKILL_TIMEOUT_MS);
+        () => reject(new Error('Generate name and emoji timed out')),
+        REFINE_SKILL_TIMEOUT_MS);
     });
 
     return Promise.race([generateRequest, timeout]);

@@ -131,7 +131,9 @@ cr-input:focus-within {
 textarea {
   display: block;
   width: 100%;
+  /* LINT.IfChange(textarea_height) */
   height: 175px;
+  /* LINT.ThenChange(textarea_without_refinement_height) */
   box-sizing: border-box;
   resize: none;
   font-family: inherit;
@@ -144,6 +146,15 @@ textarea {
   background-color: transparent;
   padding: 10px 10px 0 10px;
   flex-grow: 1;
+}
+
+/* Increase height to account for missing refinement buttons to keep dialog
+ * height consistent. */
+#textareaWrapper:not([refinement-enabled]) textarea,
+#textareaWrapper:not([refinement-enabled]) #instructionsLoader {
+  /* LINT.IfChange(textarea_without_refinement_height) */
+  height: 215px;
+  /* LINT.ThenChange(textarea_height, textarea_animation_height) */
 }
 
 textarea.has-overflow {
@@ -165,7 +176,9 @@ textarea::placeholder {
 #instructionsLoader {
   display: block;
   width: 100%;
+  /* LINT.IfChange(textarea_animation_height) */
   height: 175px;
+  /* LINT.ThenChange(textarea_without_refinement_height) */
   box-sizing: border-box;
 }
 

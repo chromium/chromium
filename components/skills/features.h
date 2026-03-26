@@ -12,6 +12,7 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kSkillsEnabled);
 BASE_DECLARE_FEATURE(kSkillsMetricsProviderEnabled);
+BASE_DECLARE_FEATURE(kSkillsRefinementEnabled);
 
 }  // namespace features
 

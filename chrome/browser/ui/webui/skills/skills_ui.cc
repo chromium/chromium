@@ -40,6 +40,9 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
                      glic::GlicEnabling::IsReadyForProfile(profile));
   source->AddInteger("MAX_NAME_CHAR_COUNT", kMaxNameCharCount);
   source->AddInteger("MAX_PROMPT_CHAR_COUNT", kMaxPromptCharCount);
+  source->AddBoolean(
+      "isRefinementEnabled",
+      base::FeatureList::IsEnabled(features::kSkillsRefinementEnabled));
 
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
