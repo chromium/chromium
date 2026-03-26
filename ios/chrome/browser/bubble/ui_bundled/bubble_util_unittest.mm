@@ -528,6 +528,33 @@ TEST_F(BubbleUtilTest, FractionalAnchorPoint) {
       fractional_anchor_point, bubble_alignment_offset_, bubble_size,
       arrow_direction, bubble_alignment, container_size_.width,
       false /* isRTL */);
+  EXPECT_GE(bubble_frame.origin.x, 0);
+  EXPECT_GE(bubble_frame.origin.y, 0);
+  EXPECT_LE(bubble_frame.origin.x + bubble_frame.size.width,
+            container_size_.width);
+  EXPECT_LE(bubble_frame.origin.y + bubble_frame.size.height,
+            container_size_.height);
+}
+
+// Tests that for fractional anchor points for BubbleAlignmentBottomOrTrailing,
+// using BubbleMaxSize and BubbleFrame together gives a frame that still fits in
+// the container.
+TEST_F(BubbleUtilTest, FractionalAnchorPointBottomOrTrailing) {
+  CGPoint fractional_anchor_point = {297.5, 375.5};
+
+  BubbleArrowDirection arrow_direction = BubbleArrowDirectionDown;
+  BubbleAlignment bubble_alignment = BubbleAlignmentBottomOrTrailing;
+
+  CGSize bubble_size = bubble_util::BubbleMaxSize(
+      fractional_anchor_point, bubble_alignment_offset_, arrow_direction,
+      bubble_alignment, container_size_);
+
+  CGRect bubble_frame = bubble_util::BubbleFrame(
+      fractional_anchor_point, bubble_alignment_offset_, bubble_size,
+      arrow_direction, bubble_alignment, container_size_.width,
+      false /* isRTL */);
+  EXPECT_GE(bubble_frame.origin.x, 0);
+  EXPECT_GE(bubble_frame.origin.y, 0);
   EXPECT_LE(bubble_frame.origin.x + bubble_frame.size.width,
             container_size_.width);
   EXPECT_LE(bubble_frame.origin.y + bubble_frame.size.height,

@@ -71,8 +71,8 @@ CGFloat LeadingDistance(CGPoint anchor_point,
   } else {
     leading_distance = anchor_point.x - leading_offset;
   }
-  // Floor the leading distance.
-  return floor(leading_distance);
+  // Ceil the leading distance because the max width was floored.
+  return ceil(leading_distance);
 }
 
 // Calculate the y-coordinate of the bubble's origin based on `anchor_point`,
@@ -108,8 +108,8 @@ CGFloat OriginY(CGPoint anchor_point,
       }
       break;
   }
-  // Round down the origin Y.
-  return floor(origin_y);
+  // Ceil the originY because the max height was floored.
+  return ceil(origin_y);
 }
 
 // Calculate the maximum width of the bubble such that it stays within its
@@ -169,8 +169,8 @@ CGFloat BubbleMaxWidth(CGFloat anchor_point_x,
       }
       break;
   }
-  // Round up the width.
-  return ceil(MIN(max_width, kBubbleMaxWidth));
+  // Floor the width to be conservative.
+  return floor(MIN(max_width, kBubbleMaxWidth));
 }
 
 // Calculate the maximum height of the bubble such that it stays within its
@@ -221,8 +221,8 @@ CGFloat BubbleMaxHeight(CGFloat anchor_point_y,
       }
       break;
   }
-  // Round up the height.
-  return ceil(max_height);
+  // Floor the height to be conservative.
+  return floor(max_height);
 }
 
 }  // namespace
