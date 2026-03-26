@@ -105,8 +105,8 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
           track_collection, style,
           ResolveFlowToleranceForGridLanes(style, grid_lanes_available_size_));
 
-      PlaceGridLanesItems(*grid_items, *layout_data, running_positions,
-                          sizing_constraint);
+      PlaceGridLanesItems(*grid_items, layout_subtree, *layout_data,
+                          running_positions, sizing_constraint);
       // `stacking_axis_gap` represents the space between each of the items
       // in the row. We need to subtract this as it is always added to
       // `running_positions` whenever an item is placed, but the very last
@@ -163,8 +163,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
         track_collection, Style(),
         ResolveFlowToleranceForGridLanes(Style(), grid_lanes_available_size_));
 
-    PlaceGridLanesItems(*grid_items, *layout_data, running_positions,
-                        SizingConstraint::kLayout);
+    PlaceGridLanesItems(*grid_items, layout_subtree, *layout_data,
+                        running_positions, SizingConstraint::kLayout);
   }
 
   // TODO(layout-dev): This isn't great but matches legacy. Ideally this
@@ -321,6 +321,7 @@ LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
 
 void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     GridItems& grid_items,
+    const GridLayoutSubtree* layout_subtree,
     const GridLayoutData& layout_data,
     GridLanesRunningPositions& running_positions,
     std::optional<SizingConstraint> sizing_constraint) {
@@ -353,8 +354,9 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   // layout results are only added to the container during this final placement
   // pass, ensuring all alignment and baseline information is available before
   // items are positioned.
-  RunGridLanesPlacementPhase(grid_items, layout_data, sizing_constraint,
-                             stacking_axis_gap, PlacementPhase::kFinalPlacement,
+  RunGridLanesPlacementPhase(grid_items, layout_subtree, layout_data,
+                             sizing_constraint, stacking_axis_gap,
+                             PlacementPhase::kFinalPlacement,
                              baseline_accumulator, running_positions);
 
   // Propagate the baselines to the container.
@@ -413,6 +415,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
 
 void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     GridItems& grid_items,
+    const GridLayoutSubtree* layout_subtree,
     const GridLayoutData& layout_data,
     std::optional<SizingConstraint> sizing_constraint,
     LayoutUnit stacking_axis_gap,
@@ -434,7 +437,17 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
   const wtf_size_t grid_axis_start_offset =
       Node().CachedPlacementData().StartOffset(grid_axis_direction);
 
+  auto* next_subgrid_subtree =
+      layout_subtree ? layout_subtree->FirstChild() : nullptr;
+
   for (auto& grid_lanes_item : grid_items) {
+    GridLayoutSubtree* child_layout_subtree = nullptr;
+    if (grid_lanes_item.IsSubgrid()) {
+      DCHECK(next_subgrid_subtree);
+      child_layout_subtree = next_subgrid_subtree;
+      next_subgrid_subtree = next_subgrid_subtree->NextSibling();
+    }
+
     // Get the starting offset of where we want the item placed in the stacking
     // axis.
     LayoutUnit start_offset_in_stacking_axis =
@@ -469,7 +482,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
             ? CreateConstraintSpaceForLayout(
                   SubgriddedItemData(grid_lanes_item, &layout_data,
                                      container_writing_mode),
-                  /*opt_layout_subtree=*/nullptr, &containing_grid_area,
+                  child_layout_subtree, &containing_grid_area,
                   /*unavailable_block_size=*/LayoutUnit(),
                   /*min_block_size_should_encompass_intrinsic_size=*/false,
                   /*opt_child_block_offset=*/std::nullopt,
@@ -1390,8 +1403,14 @@ void GridLanesLayoutAlgorithm::InitializeTrackSizes(
     }
   }
 
+  // Pass `nullopt` so that subgrids initialize both axes. A subgrid nested
+  // in grid-lanes only subgrids in the grid axis; its other axis is standalone
+  // and also needs track initialization.
+  //
+  // TODO(almaher): We will eventually need to handle this in a different
+  // way once we support grid lanes subgrids.
   InitializeTrackSizesForEachSubgrid(sizing_subtree, *this,
-                                     grid_axis_direction);
+                                     /*opt_track_direction=*/std::nullopt);
 }
 
 void GridLanesLayoutAlgorithm::InitializeTrackSizes(
@@ -1434,8 +1453,18 @@ void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
                                           first_set_geometry.gutter_size);
   }
 
+  // Complete both axes for subgrids. A subgrid nested in grid-lanes only
+  // subgrids in the grid axis; its other (standalone) axis also needs track
+  // sizing completion. Always complete columns before rows, matching the grid
+  // convention since row sizing can depend on resolved column sizes.
+  //
+  // TODO(almaher): We will eventually need to handle this in a different
+  // way once we support grid lanes subgrids.
   CompleteTrackSizingAlgorithmForEachSubgrid(
-      sizing_subtree, *this, grid_axis_direction, sizing_constraint,
+      sizing_subtree, *this, kForColumns, sizing_constraint,
+      /*opt_needs_additional_pass=*/nullptr);
+  CompleteTrackSizingAlgorithmForEachSubgrid(
+      sizing_subtree, *this, kForRows, sizing_constraint,
       /*opt_needs_additional_pass=*/nullptr);
 }
 
@@ -1510,14 +1539,23 @@ void GridLanesLayoutAlgorithm::ComputeBaselineAlignment(
     baseline_accumulator = &grid_baseline_accumulator.value();
   }
 
+  // TODO(almaher): What does it mean for `layout_subtree` to be nullptr for the
+  // kCalculateBaselines pass? Will this impact the baseline calculations? Do
+  // we need to skip subgrids in this pass anyways?
   RunGridLanesPlacementPhase(sizing_subtree.GetGridItems(),
+                             /*layout_subtree=*/nullptr,
                              sizing_subtree.LayoutData(),
                              SizingConstraint::kLayout, stacking_axis_gap,
                              PlacementPhase::kCalculateBaselines,
                              baseline_accumulator, running_positions);
 
+  // Pass `nullopt` so that subgrids handle baseline alignment for both axes,
+  // since a subgrid nested in grid-lanes may have a standalone axis.
+  //
+  // TODO(almaher): We will eventually need to handle this in a different
+  // way once we support grid lanes subgrids.
   ComputeBaselineAlignmentForEachSubgrid(sizing_subtree, *this, layout_tree,
-                                         grid_axis_direction,
+                                         /*opt_track_direction=*/std::nullopt,
                                          SizingConstraint::kLayout);
 }
 
