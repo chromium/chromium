@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
 
   edit_model()->SetUserText(u"bar");
-  edit_model()->StartAutocomplete(false, false);
+  edit_model()->StartAutocomplete(false);
   popup_view()->UpdatePopupAppearance();
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 1);
   EXPECT_EQ(observer.selected_children_changed_count(), 1);
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       matches);
   popup_view()->UpdatePopupAppearance();
   edit_model()->SetUserText(u"bar");
-  edit_model()->StartAutocomplete(false, false);
+  edit_model()->StartAutocomplete(false);
   popup_view()->UpdatePopupAppearance();
 
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleResultName) {
       matches);
   popup_view()->UpdatePopupAppearance();
   edit_model()->SetUserText(u"bar");
-  edit_model()->StartAutocomplete(false, false);
+  edit_model()->StartAutocomplete(false);
   popup_view()->UpdatePopupAppearance();
 
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   location_bar()->GetOmniboxController()->client()->GetPrefs()->SetBoolean(
       omnibox::kKeywordSpaceTriggeringEnabled, true);
   omnibox_view()->SetUserText(u"@bookmarks");
-  edit_model()->StartAutocomplete(false, false);
+  edit_model()->StartAutocomplete(false);
   popup_view()->UpdatePopupAppearance();
 
   EXPECT_FALSE(edit_model()->is_keyword_selected());
@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 
   // Check accessibility when popup is open.
   ax_node_data_omnibox = ui::AXNodeData();
-  edit_model()->StartAutocomplete(false, false);
+  edit_model()->StartAutocomplete(false);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
   EXPECT_TRUE(controller()->IsPopupOpen());
@@ -936,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
 
   // Check accessibility when popup is open.
   ax_node_data_omnibox = ui::AXNodeData();
-  edit_model()->StartAutocomplete(false, false);
+  edit_model()->StartAutocomplete(false);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
   EXPECT_TRUE(controller()->IsPopupOpen());
@@ -1138,4 +1138,3 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   histogram_tester.ExpectTotalCount(
       "TopChromeUI.OmniboxPopup.RequestToFirstContentfulPaint", 1);
 }
-

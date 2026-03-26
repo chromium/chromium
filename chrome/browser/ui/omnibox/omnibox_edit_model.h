@@ -199,10 +199,10 @@ class OmniboxEditModel {
   // that state has changed.
   void SetInputInProgress(bool in_progress);
 
-  // Calls SetInputInProgress, via SetInputInProgressNoNotify and
-  // NotifyObserversInputInProgress, calling the latter after
-  // StartAutocomplete, so that the result is only updated once.
-  void UpdateInput(bool has_selected_text, bool prevent_inline_autocomplete);
+  // Calls `SetInputInProgress()`, via `SetInputInProgressNoNotify()` and
+  // `NotifyObserversInputInProgress()`, calling the latter after
+  // `StartAutocomplete()`, so that the result is only updated once.
+  void UpdateInput(bool prevent_inline_autocomplete);
 
   // Resets the permanent display texts (display_text_ and url_for_editing_)
   // to those provided by the controller. Returns true if the display texts
@@ -233,10 +233,9 @@ class OmniboxEditModel {
   // no user input in progress).
   void Revert();
 
-  // Directs the popup to start autocomplete.  Makes use of the |view_| text and
-  // selection, so make sure to set those before calling StartAutocomplete().
-  void StartAutocomplete(bool has_selected_text,
-                         bool prevent_inline_autocomplete);
+  // Directs the popup to start autocomplete. Makes use of the `view_`
+  // selection, so make sure to set that before calling `StartAutocomplete()`.
+  void StartAutocomplete(bool prevent_inline_autocomplete);
 
   // Determines whether the user can "paste and go", given the specified text.
   bool CanPasteAndGo(const std::u16string& text) const;

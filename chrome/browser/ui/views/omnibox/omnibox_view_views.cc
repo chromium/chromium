@@ -1040,9 +1040,7 @@ bool OmniboxViewViews::IsSelectAll() const {
 
 void OmniboxViewViews::UpdatePopup() {
   // Prevent inline autocomplete when the caret isn't at the end of the text.
-  const gfx::Range sel = GetSelectedRange();
-  controller()->edit_model()->UpdateInput(!sel.is_empty(),
-                                          !GetSelectionAtEnd());
+  controller()->edit_model()->UpdateInput(!GetSelectionAtEnd());
 }
 
 void OmniboxViewViews::ApplyCaretVisibility() {

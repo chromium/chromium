@@ -544,8 +544,7 @@ gfx::Image OmniboxEditModel::GetAgentspaceIcon(bool dark_mode) const {
 #endif
 }
 
-void OmniboxEditModel::UpdateInput(bool has_selected_text,
-                                   bool prevent_inline_autocomplete) {
+void OmniboxEditModel::UpdateInput(bool prevent_inline_autocomplete) {
   bool changed_to_user_input_in_progress = SetInputInProgressNoNotify(true);
   if (!has_focus()) {
     if (changed_to_user_input_in_progress) {
@@ -570,7 +569,7 @@ void OmniboxEditModel::UpdateInput(bool has_selected_text,
     StartZeroSuggestRequest(/*user_clobbered_permanent_text=*/true);
   } else {
     // Otherwise run the normal prefix (as-you-type) autocomplete.
-    StartAutocomplete(has_selected_text, prevent_inline_autocomplete);
+    StartAutocomplete(prevent_inline_autocomplete);
   }
 
   if (changed_to_user_input_in_progress) {
@@ -615,8 +614,7 @@ void OmniboxEditModel::Revert() {
   controller_->client()->OnRevert();
 }
 
-void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
-                                         bool prevent_inline_autocomplete) {
+void OmniboxEditModel::StartAutocomplete(bool prevent_inline_autocomplete) {
   const std::u16string input_text = MaybePrependKeyword(user_text_);
 
   // This method currently only works when there's a view, but ideally the
@@ -650,10 +648,9 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
       controller_->client()->IsUsingFakeHttpsForHttpsUpgradeTesting());
   input_.set_current_url(controller_->client()->GetURL());
   input_.set_current_title(controller_->client()->GetTitle());
-  input_.set_prevent_inline_autocomplete(
-      prevent_inline_autocomplete || just_deleted_text_ ||
-      (has_selected_text && inline_autocompletion_.empty()) ||
-      paste_state_ != PasteState::kNone);
+  input_.set_prevent_inline_autocomplete(prevent_inline_autocomplete ||
+                                         just_deleted_text_ ||
+                                         paste_state_ != PasteState::kNone);
   input_.set_prefer_keyword(is_keyword_selected());
   input_.set_allow_exact_keyword_match(is_keyword_selected() ||
                                        allow_exact_keyword_match_);
@@ -942,7 +939,7 @@ void OmniboxEditModel::AcceptKeyword(
     selection.state = OmniboxPopupSelection::KEYWORD_MODE;
     SetPopupSelection(selection);
   } else {
-    StartAutocomplete(false, true);
+    StartAutocomplete(true);
   }
 
   // When user text is empty (the user hasn't typed anything beyond the
@@ -1699,7 +1696,7 @@ std::u16string OmniboxEditModel::MaybeStripKeyword(
 
 std::u16string OmniboxEditModel::MaybePrependKeyword(
     const std::u16string& text) const {
-  return is_keyword_selected() ? (keyword_ + u' ' + text) : text;
+  return is_keyword_selected() ? keyword_ + u' ' + text : text;
 }
 
 void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
