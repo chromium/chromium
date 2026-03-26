@@ -58,6 +58,14 @@ class ParsedField:
 
 
 @dataclasses.dataclass
+class _ParsedClass:
+  java_class: java_types.JavaClass
+  start_idx: int
+  end_idx: int
+  type_resolver: java_types.TypeResolver
+
+
+@dataclasses.dataclass
 class ParsedFile:
   filename: str
   type_resolver: java_types.TypeResolver
@@ -82,7 +90,7 @@ class _ParsedProxyNatives:
 # Match single line comments, multiline comments, character literals, and
 # double-quoted strings.
 _COMMENT_REMOVER_REGEX = re.compile(
-    r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
+    r'//.*?$|/\*.*?\*/[ \t]*|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
     re.DOTALL | re.MULTILINE)
 
 
@@ -126,38 +134,90 @@ def _parse_package(contents):
 
 
 _CLASSES_REGEX = re.compile(
-    r'^(.*?)(?:\b(?:public|protected|private)?\b)\s*'
-    r'(?:\b(?:static|abstract|final|sealed)\s+)*'
-    r'\b(?:class|interface|enum)\s+(\w+?)\b[^"]*?$',
-    flags=re.MULTILINE)
+    r'^((?:(?!\b(?:class|interface|enum)\b)'
+    r'(?:[^{}"]|"[^"]*"))*?)\b'
+    r'(?:class|interface|enum)\b\s+\b([\w.]+)'
+    r'\s*[^{]*?\{', re.MULTILINE)
+_INDENT_REGEX = re.compile(r'\s*')
+_SAME_LINE_CLOSING_BRACE_REGEX = re.compile(r'\s*\}')
+
+
+def _find_class_end(contents, decl_start_idx, class_name, open_brace_idx):
+  # Find the indent of the class line
+  line_start_idx = contents.rfind('\n', 0, decl_start_idx) + 1
+  indent = _INDENT_REGEX.match(contents, line_start_idx).group(0)
+
+  # Check for empty class {}
+  if m := _SAME_LINE_CLOSING_BRACE_REGEX.match(contents, open_brace_idx):
+    return m.end()
+
+  # Find closing brace.
+  close_brace_str = f'\n{indent}}}'
+  end_idx = contents.find(close_brace_str, open_brace_idx)
+  if end_idx != -1:
+    return end_idx + len(close_brace_str)
+
+  raise ParseError(f'Could not find end of class {class_name}. '
+                   'Ensure indentation of ending brace is correct.')
+
+
+def _find_owning_class(parsed_classes, index):
+  ret = None
+  for c in parsed_classes:
+    if c.start_idx <= index <= c.end_idx:
+      ret = c
+  if not ret:
+    raise ParseError(f'Could not determine enclosing class for index {index}.')
+  return ret
 
 
 # Does not handle doubly-nested classes.
-def _parse_java_classes(contents, package_prefix, package_prefix_filter):
+def _parse_java_classes(contents,
+                        package_prefix,
+                        package_prefix_filter,
+                        is_javap=False):
   package = _parse_package(contents).replace('.', '/')
-  outer_class = None
-  null_marked = False
-  # Use a set to avoid duplicates, which can happen due to method-scoped
-  # classes (which JNI Zero would ideally ignore, but that's harder).
-  nested_classes = set()
+  parsed_classes = []
   for m in _CLASSES_REGEX.finditer(contents):
     preamble, class_name = m.groups()
     # Ignore annotations like @Foo("contains the words class Bar")
     if preamble.count('"') % 2 != 0:
       continue
-    if outer_class is None:
-      outer_class = java_types.JavaClass(f'{package}/{class_name}')
+
+    if not parsed_classes:
+      java_class = java_types.JavaClass(f'{package}/{class_name}')
       null_marked = contents.find('@NullMarked', 0, m.start(2)) != -1
       if package_prefix and common.should_prefix_package(
-          outer_class.package_with_dots, package_prefix_filter):
-        outer_class = outer_class.make_prefixed(package_prefix)
+          java_class.package_with_dots, package_prefix_filter):
+        java_class = java_class.make_prefixed(package_prefix)
+      end_idx = len(contents)
+      type_resolver = java_types.TypeResolver(
+          java_class,
+          null_marked=null_marked,
+          package_prefix=package_prefix,
+          package_prefix_filter=package_prefix_filter)
+      if not is_javap:
+        for c in _parse_imports(contents, m.end()):
+          type_resolver.add_import(c)
     else:
-      nested_classes.add(outer_class.make_nested(class_name))
+      outer_class = parsed_classes[0]
+      java_class = outer_class.java_class.make_nested(class_name)
+      end_idx = _find_class_end(contents, m.end(1), class_name, m.end(0))
+      type_resolver = outer_class.type_resolver.add_child(java_class=java_class)
 
-  if outer_class is None:
+    class_keyword_start = m.end(1)
+    parsed_classes.append(
+        _ParsedClass(java_class=java_class,
+                     start_idx=class_keyword_start,
+                     end_idx=end_idx,
+                     type_resolver=type_resolver))
+
+  if not parsed_classes:
     raise ParseError('No classes found.')
 
-  return outer_class, sorted(nested_classes), null_marked
+  parsed_classes[0].type_resolver.nested_classes = sorted(
+      set(parsed_classes[0].type_resolver.nested_classes))
+  return parsed_classes
 
 # Complicated example:
 # @JniType("std::optional<void(*)(const std::vector<bool>&)>") Callback<Boolean> funcType,
@@ -209,8 +269,9 @@ def _parse_type(type_resolver, value):
       # std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
       converted_type += '<jni_zero::ScopedJavaLocalRef<jobject>>'
     else:
-      raise ParseError('Found non-templatized @JniType("std::vector") on '
-                       'non-array, non-List type: ' + value)
+      raise Error('Found non-templatized @JniType("std::vector") on '
+                  f'non-array, non-Collection type: {java_class} '
+                  f'(when parsing {value}')
 
   if primitive_name and array_dimensions == 0:
     nullable = False
@@ -344,10 +405,13 @@ _CALLED_BY_NATIVE_REGEX = re.compile(
     r'[{;]')
 
 
-def _parse_called_by_natives(type_resolver, contents, *,
+def _parse_called_by_natives(parsed_classes, contents, *,
                              allow_private_called_by_natives):
   ret = []
   for match in _CALLED_BY_NATIVE_REGEX.finditer(contents):
+    parsed_class = _find_owning_class(parsed_classes, match.start())
+    type_resolver = parsed_class.type_resolver
+
     return_type_grp = match.group('return_type')
     name = match.group('name')
     if return_type_grp:
@@ -363,17 +427,13 @@ def _parse_called_by_natives(type_resolver, contents, *,
 
     params = _parse_param_list(type_resolver, match.group('params'))
     signature = java_types.JavaSignature.from_params(return_type, params)
-    inner_class_name = match.group('annotation_value')
-    java_class = type_resolver.java_class
-    if inner_class_name:
-      java_class = java_class.make_nested(inner_class_name)
 
     modifiers = match.group('modifiers')
     if not allow_private_called_by_natives and 'private' in modifiers:
       raise ParseError(f'@CalledByNative methods must not be private. '
                        f'Found:\n{match.group(0)}\n')
     ret.append(
-        ParsedCalledByNative(java_class=java_class,
+        ParsedCalledByNative(java_class=type_resolver.java_class,
                              name=name,
                              signature=signature,
                              static='static' in modifiers,
@@ -391,13 +451,41 @@ def _parse_called_by_natives(type_resolver, contents, *,
   return ret
 
 
+_FIELD_REGEX = re.compile(r'^(?:@\w+\s+)*'
+                          r'\s*(?P<modifiers>' + _MODIFIER_KEYWORDS + r')'
+                          r'(?P<type>[\w.<>\[\]]+)\s+'
+                          r'(?P<name>\w+)'
+                          r'(?:\s*=\s*(?P<value>[^;]+))?;',
+                          flags=re.MULTILINE)
+
+
+def _parse_fields(contents, type_resolver):
+  ret = []
+  for match in _FIELD_REGEX.finditer(contents):
+    modifiers = match.group('modifiers')
+    const_value = match.group('value')
+    if const_value:
+      # Strip long / double / float suffix letters.
+      const_value = const_value.rstrip('dflDFL')
+
+    ret.append(
+        ParsedField(java_class=type_resolver.java_class,
+                    name=match.group('name'),
+                    java_type=_parse_type(type_resolver, match.group('type')),
+                    static='static' in modifiers,
+                    final='final' in modifiers,
+                    const_value=const_value))
+  ret.sort()
+  return ret
+
+
 _IMPORT_REGEX = re.compile(r'^import\s+([^\s*]+);', flags=re.MULTILINE)
 _IMPORT_CLASS_NAME_REGEX = re.compile(r'^(.*?)\.([A-Z].*)')
 
 
-def _parse_imports(contents):
+def _parse_imports(contents, endpos):
   # Regex skips static imports as well as wildcard imports.
-  names = _IMPORT_REGEX.findall(contents)
+  names = _IMPORT_REGEX.findall(contents, endpos=endpos)
   for name in names:
     m = _IMPORT_CLASS_NAME_REGEX.match(name)
     if m:
@@ -427,24 +515,16 @@ def _do_parse(filename, *, package_prefix, package_prefix_filter,
   contents = _remove_comments(contents)
   contents = _remove_generics(contents)
 
-  outer_class, nested_classes, null_marked = _parse_java_classes(
-      contents, package_prefix, package_prefix_filter)
+  parsed_classes = _parse_java_classes(contents, package_prefix,
+                                       package_prefix_filter)
 
+  outer_class = parsed_classes[0].java_class
   expected_name = os.path.splitext(os.path.basename(filename))[0]
   if outer_class.name != expected_name:
     raise ParseError(
         f'Found class "{outer_class.name}" but expected "{expected_name}".')
 
-  type_resolver = java_types.TypeResolver(
-      outer_class,
-      null_marked=null_marked,
-      package_prefix=package_prefix,
-      package_prefix_filter=package_prefix_filter)
-  for java_class in _parse_imports(contents):
-    type_resolver.add_import(java_class)
-  for java_class in nested_classes:
-    type_resolver.add_nested_class(java_class)
-
+  type_resolver = parsed_classes[0].type_resolver
   parsed_proxy_natives = _parse_proxy_natives(type_resolver, contents)
   jni_namespace = _parse_jni_namespace(contents)
 
@@ -453,7 +533,7 @@ def _do_parse(filename, *, package_prefix, package_prefix_filter,
   else:
     non_proxy_methods = []
   called_by_natives = _parse_called_by_natives(
-      type_resolver,
+      parsed_classes,
       contents,
       allow_private_called_by_natives=allow_private_called_by_natives)
 
@@ -514,20 +594,7 @@ def parse_javap(filename, contents):
   java_class = java_types.JavaClass(match.group(1).replace('.', '/'))
   type_resolver = java_types.TypeResolver(java_class)
 
-  fields = []
-  for match in _JAVAP_FIELD_REGEX.finditer(contents):
-    modifiers, name, value, descriptor = match.groups()
-    # Strip long / double / float suffix letters.
-    if value:
-      value = value.rstrip('LlDdFf')
-    fields.append(
-        ParsedField(java_class=java_class,
-                    name=name,
-                    java_type=java_types.JavaType.from_descriptor(descriptor),
-                    static='static' in modifiers,
-                    final='final' in modifiers,
-                    const_value=value))
-  fields.sort()
+  fields = _parse_fields(contents, type_resolver)
 
   called_by_natives = []
   for match in _JAVAP_METHOD_REGEX.finditer(contents):

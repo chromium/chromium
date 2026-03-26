@@ -13,6 +13,7 @@ import javax.annotation.processing.Generated;
 @Generated("JNI Zero")
 @SuppressWarnings("rawtypes")
 public interface SampleForAnnotationProcessor {
+  public interface MultiLine {}
   public interface Natives {
     public org.jni_zero.SampleForAnnotationProcessor bar(org.jni_zero.SampleForAnnotationProcessor sample);
     public void foo();

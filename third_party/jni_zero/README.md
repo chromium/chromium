@@ -176,8 +176,6 @@ all usage has been migrated.
 1. Annotate some methods with `@CalledByNative`, the generator will now generate
    stubs in `${OriginalClassName}_jni.h` header to call into those java methods
    from cpp.
-   * Inner class methods must provide the inner class name explicitly
-     (ex. `@CalledByNative("InnerClassName")`)
 
 2. In C++ code, `#include` the header `${OriginalClassName}_jni.h`. (The path
    will depend on the location of the `generate_jni` build rule that lists your

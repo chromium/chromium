@@ -54,6 +54,20 @@ using ::org::jni_zero::JSampleForAnnotationProcessor;
 #define _JNI_ZERO_JSampleForAnnotationProcessor_DEFINED
 #endif
 
+#ifndef _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_MultiLine_DEFINED
+namespace org::jni_zero {
+class _JSampleForAnnotationProcessor_MultiLine : public _jobject {};
+using JSampleForAnnotationProcessor_MultiLine = _JSampleForAnnotationProcessor_MultiLine*;
+}
+#define _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_MultiLine_DEFINED
+#endif
+
+// Alias type into the global namespace.
+#ifndef _JNI_ZERO_JSampleForAnnotationProcessor_MultiLine_DEFINED
+using ::org::jni_zero::JSampleForAnnotationProcessor_MultiLine;
+#define _JNI_ZERO_JSampleForAnnotationProcessor_MultiLine_DEFINED
+#endif
+
 #ifndef _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_TestStruct_DEFINED
 namespace org::jni_zero {
 class _JSampleForAnnotationProcessor_TestStruct : public _jobject {};
