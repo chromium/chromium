@@ -861,8 +861,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           containing_block_fragment->IsHiddenForPaint(),
           LogicalRect(container_offset, content_size),
           std::nullopt,
-          fragmentainer_descendant.containing_block.RelativeOffset(),
-          fragmentainer_descendant.containing_block.Offset()};
+          fragmentainer_descendant.containing_block.RelativeOffset()};
 
       return containing_blocks_map_
           .insert(containing_block, containing_block_info)
@@ -1138,22 +1137,13 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     // root so that it is relative to the fragmentation context root, instead.
     container_offset += containing_block_offset;
 
-    // If an OOF has an inline containing block, the OOF offset that is written
-    // back to legacy is relative to the containing block of the inline rather
-    // than the inline itself. |containing_block_offset| will be used when
-    // calculating this OOF offset. However, there may be some relative offset
-    // between the containing block and the inline container that should be
-    // included in the final OOF offset that is written back to legacy. Adjust
-    // for that relative offset here.
     containing_blocks_map_.insert(
         block_info.key.Get(),
-        ContainingBlockInfo{
-            inline_writing_direction,
-            /* is_scroll_container */ false,
-            block_info.value->is_hidden_for_paint,
-            LogicalRect(container_offset, inline_cb_size), std::nullopt,
-            total_relative_offset,
-            containing_block_offset - block_info.value->relative_offset});
+        ContainingBlockInfo{inline_writing_direction,
+                            /* is_scroll_container */ false,
+                            block_info.value->is_hidden_for_paint,
+                            LogicalRect(container_offset, inline_cb_size),
+                            std::nullopt, total_relative_offset});
   }
 }
 

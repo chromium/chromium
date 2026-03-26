@@ -155,9 +155,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // The relative positioned offset to be applied after fragmentation is
     // completed.
     LogicalOffset relative_offset;
-    // The offset of the container to its border box, including the block
-    // contribution from previous fragmentainers.
-    LogicalOffset offset_to_border_box;
   };
 
   // This stores the information needed to update a multicol child inside an
