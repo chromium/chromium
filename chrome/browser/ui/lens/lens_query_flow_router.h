@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
-#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "content/public/browser/web_contents.h"
@@ -28,8 +27,7 @@ using SearchUrlType =
 // A router for queries that Lens should perform.
 class LensQueryFlowRouter
     : public contextual_search::ContextualSearchContextController::
-          ContextUploadStatusObserver,
-      public contextual_tasks::QueryContextualizer::Delegate {
+          ContextUploadStatusObserver {
  public:
   explicit LensQueryFlowRouter(LensSearchController* lens_search_controller);
   ~LensQueryFlowRouter() override;
@@ -205,28 +203,9 @@ class LensQueryFlowRouter
     return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   }
 
-  // contextual_tasks::QueryContextualizer::Delegate:
-  GURL GetTabUrl(int32_t id) override;
-  SessionID GetTabSessionId(int32_t id) override;
-  void GetPageContext(
-      int32_t id,
-      base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
-          callback) override;
-  void UploadTabContextWithData(
-      int32_t id,
-      std::optional<int64_t> context_id,
-      std::unique_ptr<lens::ContextualInputData> data,
-      base::OnceCallback<void(bool)> callback) override;
-  void OnPageContextIneligible() override;
-  void OnTabProcessedForQueryContextualization(int32_t id) override;
-
   // Sends the provided request info to the contextual tasks panel to create a
   // search URL which is then loaded into the contextual tasks panel.
   void SendInteractionToContextualTasks(
-      std::unique_ptr<CreateSearchUrlRequestInfo> request_info);
-
-  // Creates the search URL and opens the contextual tasks panel.
-  void CreateSearchUrlAndOpenPanel(
       std::unique_ptr<CreateSearchUrlRequestInfo> request_info);
 
   // Opens the contextual tasks panel to a provided URL.
@@ -276,9 +255,6 @@ class LensQueryFlowRouter
   // Returns whether the current active tab is context eligible.
   bool IsActiveTabContextEligible() const;
 
-  // Returns the task ID for the current session.
-  std::optional<base::Uuid> GetTaskId();
-
   // Stores a pending search request to be sent to contextual tasks after the
   // tab context is ready.
   std::unique_ptr<CreateSearchUrlRequestInfo> pending_search_url_request_;
@@ -307,8 +283,6 @@ class LensQueryFlowRouter
   // Closure of UploadContextualInputData to be called by
   // MaybeResumeQueryFlow().
   base::OnceClosure pending_upload_request_;
-
-  std::unique_ptr<contextual_tasks::QueryContextualizer> query_contextualizer_;
 
   base::ScopedObservation<contextual_search::ContextualSearchContextController,
                           contextual_search::ContextualSearchContextController::
