@@ -238,11 +238,19 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
         std::move(load_finished_callback_));
   }
 
-  if (provider_->registrar_unsafe().AppMatches(
-          GenerateAppIdFromManifest(*manifest),
-          WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp())) {
+  webapps::AppId app_id = GenerateAppIdFromManifest(*manifest);
+
+  if (provider_->registrar_unsafe().AppMatches(app_id,
+                                               WebAppFilter::IsIsolatedApp())) {
     return;
   }
+
+  if (provider_->registrar_unsafe().AppMatches(
+          app_id, WebAppFilter::IsIsolatedSubApp())) {
+    TriggerManifestSilentUpdate(web_contents, app_id);
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
     if (!manifest->migrate_from.empty()) {
       provider_->scheduler().ScheduleWebAppInstallFromMigrateFromField(
@@ -279,8 +287,12 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
     }
   }
 
-  webapps::AppId app_id = GenerateAppIdFromManifest(*manifest);
+  TriggerManifestSilentUpdate(web_contents, app_id);
+}
 
+void ManifestUpdateManager::TriggerManifestSilentUpdate(
+    content::WebContents& web_contents,
+    const webapps::AppId& app_id) {
   std::optional<base::Time> previous_time_for_silent_icon_update =
       base::OptionalFromPtr(
           base::FindOrNull(update_check_for_silent_updates_, app_id));

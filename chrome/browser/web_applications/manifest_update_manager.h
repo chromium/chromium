@@ -179,6 +179,9 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       ManifestUpdateCheckResult check_result,
       std::unique_ptr<WebAppInstallInfo> install_info);
 
+  void TriggerManifestSilentUpdate(content::WebContents& web_contents,
+                                   const webapps::AppId& app_id);
+
   bool MaybeConsumeUpdateCheck(const GURL& origin,
                                const webapps::AppId& app_id,
                                base::Time check_time);
