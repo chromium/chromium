@@ -21,12 +21,14 @@ import android.view.ViewGroup.MarginLayoutParams;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,6 +43,7 @@ public class BottomSheetUnitTest {
     private static final int APP_HEADER_HEIGHT = 42;
     private static final int SHEET_CONTAINER_HEIGHT = 200;
     private static final int SHEET_PEEK_HEIGHT = 60;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ViewGroup mSheetContainer;
     @Mock private View mSheetBackground;
@@ -55,7 +58,6 @@ public class BottomSheetUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mActivity = buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mBottomSheet =

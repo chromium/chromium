@@ -29,7 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
@@ -64,6 +65,8 @@ public class AccessibilitySettingsPageZoomTest {
                     new ParameterSet().value(false).name("useSlider_false"),
                     new ParameterSet().value(true).name("useSlider_true"));
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private final boolean mUseSlider;
     private AccessibilitySettings mAccessibilitySettings;
     private PageZoomPreference mPageZoomPref;
@@ -87,7 +90,6 @@ public class AccessibilitySettingsPageZoomTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapBridgeMock);
 
         when(mDelegate.getBrowserContextHandle()).thenReturn(mContextHandleMock);

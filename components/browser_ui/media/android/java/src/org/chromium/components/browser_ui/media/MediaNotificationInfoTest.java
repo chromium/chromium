@@ -8,11 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,11 +24,7 @@ import org.chromium.services.media_session.MediaMetadata;
 @Config(manifest = Config.NONE)
 public class MediaNotificationInfoTest {
     @Mock private MediaNotificationListener mListener;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
     public void testEmptyBuilderDoesNotBuild() {

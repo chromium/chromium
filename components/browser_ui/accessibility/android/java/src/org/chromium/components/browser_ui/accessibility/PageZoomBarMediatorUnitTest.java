@@ -17,10 +17,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -65,6 +67,7 @@ public class PageZoomBarMediatorUnitTest {
     private static final String BAR_VALUE_FAILURE_NO_JNI =
             "Failure in bar value method. Expected 1 JNI call but none occurred.";
     private static final String RESET_ZOOM_FAILURE = "Failure to reset to the default zoom level.";
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
     @Mock private ContentFeatureMap.Natives mContentFeatureListMapMock;
@@ -78,7 +81,6 @@ public class PageZoomBarMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapMock);
         ContentFeatureMapJni.setInstanceForTesting(mContentFeatureListMapMock);

@@ -19,12 +19,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -45,6 +47,7 @@ import java.util.function.Supplier;
 @Config(manifest = Config.NONE)
 public class BottomSheetControllerImplUnitTest {
     private static final int APP_HEADER_HEIGHT = 42;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ScrimManager mScrimManager;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -66,7 +69,6 @@ public class BottomSheetControllerImplUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         Activity activity = buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindow = activity.getWindow();

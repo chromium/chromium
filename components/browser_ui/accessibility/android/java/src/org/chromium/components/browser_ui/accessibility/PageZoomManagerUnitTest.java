@@ -15,10 +15,12 @@ import static org.mockito.hamcrest.MockitoHamcrest.doubleThat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -44,6 +46,7 @@ public class PageZoomManagerUnitTest {
             "Failure in decrease zoom method. Expected 1 JNI call but none occurred.";
     private static final String INCREASE_ZOOM_FAILURE_NO_JNI =
             "Failure in increase zoom method. Expected 1 JNI call but none occurred.";
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
     @Mock private ContentFeatureMap.Natives mContentFeatureListMapMock;
@@ -56,7 +59,6 @@ public class PageZoomManagerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapMock);
         ContentFeatureMapJni.setInstanceForTesting(mContentFeatureListMapMock);
 

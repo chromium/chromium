@@ -29,10 +29,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -64,6 +66,7 @@ public class ShareImageFileUtilsTest {
     private static final String TEST_GIF_IMAGE_FILE_EXTENSION = ".gif";
     private static final String TEST_JPG_IMAGE_FILE_EXTENSION = ".jpg";
     private static final String TEST_PNG_IMAGE_FILE_EXTENSION = ".png";
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static class GenerateUriCallback extends CallbackHelper implements Callback<Uri> {
         private Uri mImageUri;
@@ -122,7 +125,6 @@ public class ShareImageFileUtilsTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
         FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
         ClipboardImpl clipboard = (ClipboardImpl) Clipboard.getInstance();
         clipboard.setImageFileProvider(new ClipboardImageFileProvider());

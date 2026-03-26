@@ -19,10 +19,12 @@ import android.view.WindowInsets;
 import android.view.WindowMetrics;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -43,6 +45,7 @@ public class DimensionCompatUnitTest {
 
     private static final int TEST_STATUS_BAR_HEIGHT = 30;
     private static WindowInsets sTestSysBarInsets;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Resources mResources;
 
     @Implements(WindowMetrics.class)
@@ -55,7 +58,6 @@ public class DimensionCompatUnitTest {
 
     @Before
     public void beforeTest() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(Activity.class);
         if (VERSION.SDK_INT >= VERSION_CODES.R) {
             sTestSysBarInsets =

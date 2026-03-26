@@ -15,11 +15,13 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -50,6 +52,7 @@ public class SiteDataCleanerUnitTest {
     public static final WebsiteGroup GROUP =
             new WebsiteGroup(
                     GOOGLE_COM, new ArrayList<>(Arrays.asList(ORIGIN_1, ORIGIN_2, ORIGIN_3)));
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebsitePreferenceBridge.Natives mBridgeMock;
 
@@ -61,7 +64,6 @@ public class SiteDataCleanerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         WebsitePreferenceBridgeJni.setInstanceForTesting(mBridgeMock);
         doReturn(mContextHandle).when(mSiteSettingsDelegate).getBrowserContextHandle();
     }

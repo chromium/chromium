@@ -20,11 +20,13 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -43,6 +45,7 @@ public class ViewHighlighterTest {
             new ViewHighlighter.HighlightParams(ViewHighlighter.HighlightShape.RECTANGLE);
     private static final int DEFAULT_VIEW_WIDTH = 100;
     private static final int DEFAULT_VIEW_HEIGHT = 100;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Before
     public void setUp() {
@@ -50,7 +53,6 @@ public class ViewHighlighterTest {
                 new ContextThemeWrapper(
                         InstrumentationRegistry.getTargetContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        MockitoAnnotations.initMocks(this);
     }
 
     @Test

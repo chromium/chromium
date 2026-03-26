@@ -13,10 +13,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -49,6 +51,7 @@ public class PageZoomMenuItemMediatorUnitTest {
             "Failure to disable decrease button when zoom reached minimum.";
     private static final String INCREASE_DISABLED_FAILURE =
             "Failure to disable increase button when zoom reached maximum.";
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
     @Mock private ContentFeatureMap.Natives mContentFeatureListMapMock;
@@ -62,7 +65,6 @@ public class PageZoomMenuItemMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapMock);
         ContentFeatureMapJni.setInstanceForTesting(mContentFeatureListMapMock);

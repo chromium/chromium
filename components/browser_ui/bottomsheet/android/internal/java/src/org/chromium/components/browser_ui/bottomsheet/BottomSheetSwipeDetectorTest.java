@@ -11,9 +11,11 @@ import static org.junit.Assert.assertTrue;
 import android.view.MotionEvent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
@@ -32,6 +34,8 @@ public final class BottomSheetSwipeDetectorTest {
 
     /** An arbitrary screen height. */
     private static final float SCREEN_HEIGHT = 1000;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     /** An instance of the mock swipable sheet. */
     private MockSwipeableBottomSheet mSwipeableBottomSheet;
@@ -108,7 +112,6 @@ public final class BottomSheetSwipeDetectorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mSwipeableBottomSheet = new MockSwipeableBottomSheet(MIN_SHEET_OFFSET, SCREEN_HEIGHT);
         mSwipeDetector = new BottomSheetSwipeDetector(null, mSwipeableBottomSheet);
