@@ -328,6 +328,7 @@ void ToastService::RegisterToasts(
                   },
                   base::Unretained(browser_window_interface)))
           .AddCloseButton()
+          .AddGlobalScoped()
           .Build());
 
   toast_registry_->RegisterToast(
