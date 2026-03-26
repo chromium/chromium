@@ -258,6 +258,7 @@ std::unique_ptr<View> WebView::DetachCrashedOverlayViewImpl() {
   }
   std::unique_ptr<View> old_view =
       RemoveChildViewT(crashed_overlay_view_.view());
+  crashed_overlay_view_.SetView(nullptr);
   return_crashed_overlay_to_owner_.Reset();
   // Show the hosted web contents view iff the crashed
   // overlay is NOT showing, to ensure hit testing is

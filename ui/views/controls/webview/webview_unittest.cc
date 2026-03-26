@@ -465,6 +465,24 @@ TEST_F(WebViewUnitTest, TakeCrashedOverlayViewReturnOwnership) {
   EXPECT_EQ(crashed_overlay_view, owner_after_new_webcontents.get());
 }
 
+// Tests that DetachCrashedOverlayView() correctly clears the tracker.
+TEST_F(WebViewUnitTest, DetachCrashedOverlayViewClearsViewTracker) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+
+  View* contents_view = top_level_widget()->GetContentsView();
+  auto* web_view = contents_view->AddChildView(
+      std::make_unique<WebView>(web_contents->GetBrowserContext()));
+  web_view->SetWebContents(web_contents.get());
+
+  web_view->TakeCrashedOverlayView(std::make_unique<View>());
+  std::unique_ptr<View> detached_view = web_view->DetachCrashedOverlayView();
+
+  // If the tracker is not cleared, this will attempt to detach it again and
+  // DCHECK when attempting to remove the view again from the view tree.
+  web_view->TakeCrashedOverlayView(std::make_unique<View>());
+}
+
 // Tests to make sure we can default construct the WebView class and set the
 // BrowserContext after construction.
 TEST_F(WebViewUnitTest, DefaultConstructability) {
