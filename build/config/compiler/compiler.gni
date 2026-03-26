@@ -70,6 +70,42 @@ if (is_mac && use_lld) {
   }
 }
 
+default_symbol_level = 0
+
+if (is_chromeos_device) {
+  # Use lower symbol level in Simple Chrome build for faster link time.
+  # For Simple Chrome, this should take precedence over is_official_build,
+  # turned on by --internal.
+  if ((target_cpu == "x64" || target_cpu == "x86") && !is_debug) {
+    # For release x86/x64 build, specify symbol_level=0 for faster link time.
+    # x86/x64 shows backtraces with symbol_level=0 (arm requires
+    # symbol_level=1).
+    default_symbol_level = 0
+  } else {
+    default_symbol_level = 1
+  }
+} else if (is_official_build) {
+  # We want the best debug info we can get for in-the-wild crashes.
+  default_symbol_level = 2
+} else if (is_android) {
+  # Prefer faster & smaller build times by default. gdb/lldb do not work well
+  # on Android, and many devs touch only Java, so this is a good default.
+  # symbol_level = 0 is even faster, but crashes then have incomplete stacks
+  # (missing frames and source lines).
+  default_symbol_level = 1
+} else if (using_sanitizer) {
+  # Sanitizers need line table info for stack traces. They don't need type
+  # info or variable info, so we can leave that out to speed up the build.
+  # Sanitizers also require symbols for filename suppressions to work.
+  default_symbol_level = 1
+} else if ((!is_linux && !is_chromeos && !is_fuchsia && current_os != "aix") ||
+           is_debug) {
+  # Linux builds slower by having symbols as part of the target binary,
+  # whereas Mac and Windows have them separate, so in Release Linux, default
+  # them off.
+  default_symbol_level = 2
+}
+
 declare_args() {
   # Default to warnings as errors for default workflow, where we catch
   # warnings with known toolchains. Allow overriding this e.g. for Chromium
@@ -90,8 +126,7 @@ declare_args() {
   # internal linkage (static functions or those in anonymous namespaces) may not
   # appear when using this level.
   #   0 means no symbols.
-  #   -1 means auto-set according to debug/release and platform.
-  symbol_level = -1
+  symbol_level = default_symbol_level
 
   # Android-only: Strip the debug info of libraries within lib.unstripped to
   # reduce size. As long as symbol_level > 0, this will still allow stacks to be
@@ -324,45 +359,8 @@ if (target_os == "ios") {
 }
 compiler_logs += [ "clang_need_input_root_absolute_path_for_objc=$clang_need_input_root_absolute_path_for_objc" ]
 
-# If it wasn't manually set, set to an appropriate default.
-assert(symbol_level >= -1 && symbol_level <= 2, "Invalid symbol_level")
-if (symbol_level == -1) {
-  if (is_chromeos_device) {
-    # Use lower symbol level in Simple Chrome build for faster link time.
-    # For Simple Chrome, this should take precedence over is_official_build,
-    # turned on by --internal.
-    if ((target_cpu == "x64" || target_cpu == "x86") && !is_debug) {
-      # For release x86/x64 build, specify symbol_level=0 for faster link time.
-      # x86/x64 shows backtraces with symbol_level=0 (arm requires
-      # symbol_level=1).
-      symbol_level = 0
-    } else {
-      symbol_level = 1
-    }
-  } else if (is_official_build) {
-    # We want the best debug info we can get for in-the-wild crashes.
-    symbol_level = 2
-  } else if (is_android) {
-    # Prefer faster & smaller build times by default. gdb/lldb do not work well
-    # on Android, and many devs touch only Java, so this is a good default.
-    # symbol_level = 0 is even faster, but crashes then have incomplete stacks
-    # (missing frames and source lines).
-    symbol_level = 1
-  } else if (using_sanitizer) {
-    # Sanitizers need line table info for stack traces. They don't need type
-    # info or variable info, so we can leave that out to speed up the build.
-    # Sanitizers also require symbols for filename suppressions to work.
-    symbol_level = 1
-  } else if ((!is_linux && !is_chromeos && !is_fuchsia &&
-              current_os != "aix") || is_debug) {
-    # Linux builds slower by having symbols as part of the target binary,
-    # whereas Mac and Windows have them separate, so in Release Linux, default
-    # them off.
-    symbol_level = 2
-  } else {
-    symbol_level = 0
-  }
-}
+# Validate that the symbol_level is within the supported range.
+assert(symbol_level >= 0 && symbol_level <= 2, "Invalid symbol_level")
 
 # Non-component debug builds with symbol_level = 2 are an undesirable (very slow
 # build times, almost two-minute link times) combination. This is only checked
