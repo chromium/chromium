@@ -99,7 +99,7 @@
     inset-inline-end: 28px;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled]) #optionsButtonContainer {
+  :host([is-lens-overlay-contextual-searchbox-visible]) #optionsButtonContainer {
     inset-block-start: 40px;
   }
 
@@ -116,12 +116,12 @@
     inset-inline-end: 84px;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateButtonContainer {
+  :host([is-lens-overlay-contextual-searchbox-visible]) #translateButtonContainer {
     inset-inline-end: 84px;
     inset-block-start: 40px;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled][side-panel-opened]) #translateButtonContainer {
+  :host([is-lens-overlay-contextual-searchbox-visible][side-panel-opened]) #translateButtonContainer {
     inset-inline-end: 24px;
   }
 
@@ -159,14 +159,14 @@
     --cr-icon-image: url("icon_clear.svg");
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled]) #closeButton {
+  :host([is-lens-overlay-contextual-searchbox-visible]) #closeButton {
     background-color: var(--color-selection-element);
     height: 48px;
     width: 48px;
     --cr-icon-button-fill-color: var(--color-primary);
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled][enable-csb-motion-tweaks]) #closeButton {
+  :host([is-lens-overlay-contextual-searchbox-visible][enable-csb-motion-tweaks]) #closeButton {
      /* Set opacity to 0 so it can animate in with the searchbox. */
      transition: none;
      opacity: 0;
@@ -192,7 +192,7 @@
     }
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled][enable-close-button-tweaks]) #closeButton {
+  :host([is-lens-overlay-contextual-searchbox-visible][enable-close-button-tweaks]) #closeButton {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: white;
@@ -201,7 +201,7 @@
     width: 36px;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled][enable-close-button-tweaks])
+  :host([is-lens-overlay-contextual-searchbox-visible][enable-close-button-tweaks])
     #optionsButtonContainer {
     inset-block-start: 58px;
     inset-inline-end: 26px;
@@ -216,7 +216,7 @@
     z-index: 7;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled]) #moreOptions {
+  :host([is-lens-overlay-contextual-searchbox-visible]) #moreOptions {
     display: none;
   }
 
@@ -341,12 +341,12 @@
     z-index: 6;  /* Keep aligned with cursor and context menu. */
   }
 
-  :host(:not([is-lens-overlay-contextual-searchbox-enabled])) #privacyNotice {
+  :host(:not([is-lens-overlay-contextual-searchbox-visible])) #privacyNotice {
     inset-block-start: 34px;
     inset-inline-end: 124px;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-enabled][enable-csb-motion-tweaks]) #privacyNotice {
+  :host([is-lens-overlay-contextual-searchbox-visible][enable-csb-motion-tweaks]) #privacyNotice {
     /* Set opacity to 0 so it can animate in with the searchbox. */
     transition: none;
     opacity: 0;
