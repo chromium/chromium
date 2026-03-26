@@ -47,12 +47,14 @@ Vp8Decoder::~Vp8Decoder() {
 Vp8Decoder::ParseResult Vp8Decoder::ReadNextFrame(
     Vp8FrameHeader& vp8_frame_header) {
   IvfFrameHeader ivf_frame_header{};
-  const uint8_t* ivf_frame_data;
-  if (!ivf_parser_->ParseNextFrame(&ivf_frame_header, &ivf_frame_data))
+  base::span<const uint8_t> ivf_frame_data =
+      ivf_parser_->ParseNextFrame(&ivf_frame_header);
+  if (ivf_frame_data.empty()) {
     return kEOStream;
+  }
 
-  const bool result = vp8_parser_->ParseFrame(
-      ivf_frame_data, ivf_frame_header.frame_size, &vp8_frame_header);
+  const bool result =
+      vp8_parser_->ParseFrame(ivf_frame_data, &vp8_frame_header);
   return result ? kOk : kError;
 }
 

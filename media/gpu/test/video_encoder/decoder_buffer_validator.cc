@@ -199,9 +199,7 @@ bool H264Validator::Validate(const DecoderBuffer* buffer,
   }
 
   CHECK(buffer);
-  const DecoderBuffer& decoder_buffer = *buffer;
-  auto decoder_buffer_span = base::span(decoder_buffer);
-  parser_.SetStream(decoder_buffer_span.data(), decoder_buffer_span.size());
+  parser_.SetStream(*buffer);
 
   if (num_temporal_layers_ > 1) {
     if (!metadata.h264) {
@@ -502,15 +500,12 @@ bool VP8Validator::Validate(const DecoderBuffer* buffer,
   }
 
   CHECK(buffer);
-  const DecoderBuffer& decoder_buffer = *buffer;
-  auto decoder_buffer_span = base::span(decoder_buffer);
 
   // TODO(hiroh): We could be getting more frames in the buffer, but there is
   // no simple way to detect this. We'd need to parse the frames and go through
   // partition numbers/sizes. For now assume one frame per buffer.
   Vp8FrameHeader header;
-  if (!parser_.ParseFrame(decoder_buffer_span.data(),
-                          decoder_buffer_span.size(), &header)) {
+  if (!parser_.ParseFrame(*buffer, &header)) {
     LOG(ERROR) << "Failed parsing";
     return false;
   }
@@ -671,13 +666,11 @@ bool VP9Validator::Validate(const DecoderBuffer* buffer,
   }
 
   CHECK(buffer);
-  const DecoderBuffer& decoder_buffer = *buffer;
-  auto decoder_buffer_span = base::span(decoder_buffer);
 
   // See Annex B "Superframes" in VP9 spec.
   constexpr uint8_t kSuperFrameMarkerMask = 0b11100000;
   constexpr uint8_t kSuperFrameMarker = 0b11000000;
-  if ((decoder_buffer_span.back() & kSuperFrameMarkerMask) ==
+  if ((base::span(*buffer).back() & kSuperFrameMarkerMask) ==
       kSuperFrameMarker) {
     LOG(ERROR) << "Support for super-frames not yet implemented.";
     return false;
@@ -698,8 +691,7 @@ bool VP9Validator::Validate(const DecoderBuffer* buffer,
   auto& parser = *parsers_[parser_index];
   Vp9FrameHeader header;
   gfx::Size allocate_size;
-  parser.SetStream(decoder_buffer_span.data(), decoder_buffer_span.size(),
-                   nullptr);
+  parser.SetStream(*buffer, nullptr);
   if (parser.ParseNextFrame(&header, &allocate_size, nullptr) ==
       Vp9Parser::kInvalidStream) {
     LOG(ERROR) << "Failed parsing";
@@ -725,11 +717,11 @@ bool VP9Validator::Validate(const DecoderBuffer* buffer,
   }
 
   if (s_mode_) {
-    return ValidateSmodeStream(decoder_buffer, metadata, header);
+    return ValidateSmodeStream(*buffer, metadata, header);
   } else if (svc_encoding) {
-    return ValidateSVCStream(decoder_buffer, metadata, header);
+    return ValidateSVCStream(*buffer, metadata, header);
   }
-  return ValidateVanillaStream(decoder_buffer, metadata, header);
+  return ValidateVanillaStream(*buffer, metadata, header);
 }
 
 bool VP9Validator::ValidateVanillaStream(
@@ -1174,8 +1166,7 @@ bool AV1Validator::Validate(const DecoderBuffer* buffer,
   }
 
   CHECK(buffer);
-  const DecoderBuffer& decoder_buffer = *buffer;
-  auto decoder_buffer_span = base::span(decoder_buffer);
+  auto decoder_buffer_span = base::span(*buffer);
   libgav1::ObuParser av1_parser(decoder_buffer_span.data(),
                                 decoder_buffer_span.size(), 0, &buffer_pool_,
                                 &decoder_state_);
@@ -1229,8 +1220,7 @@ bool AV1Validator::Validate(const DecoderBuffer* buffer,
   }
 
   if (metadata.svc_generic) {
-    ValidateTemporalSVCStream(decoder_buffer, metadata,
-                              av1_parser.frame_header());
+    ValidateTemporalSVCStream(*buffer, metadata, av1_parser.frame_header());
   }
 
   decoder_state_.UpdateReferenceFrames(

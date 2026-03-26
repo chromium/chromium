@@ -36,9 +36,7 @@ class Vp8ResolutionMonitor : public ResolutionMonitor {
 
     media::Vp8Parser parser;
     media::Vp8FrameHeader frame_header;
-    auto buffer_span = base::span(buffer);
-    if (!parser.ParseFrame(buffer_span.data(), buffer_span.size(),
-                           &frame_header)) {
+    if (!parser.ParseFrame(buffer, &frame_header)) {
       DLOG(ERROR) << "Failed to parse vp8 stream";
       current_resolution_ = std::nullopt;
     } else {
@@ -68,10 +66,7 @@ class Vp9ResolutionMonitor : public ResolutionMonitor {
       frame_sizes = buffer.side_data()->spatial_layers;
     }
 
-    auto buffer_span = base::span(buffer);
-    parser_.SetStream(buffer_span.data(),
-                      base::checked_cast<off_t>(buffer_span.size()),
-                      frame_sizes,
+    parser_.SetStream(buffer, frame_sizes,
                       /*stream_config=*/nullptr);
 
     gfx::Size frame_size;

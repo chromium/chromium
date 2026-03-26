@@ -118,8 +118,9 @@ std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
   Vp8Parser vp8_parser;
   auto result = std::make_unique<Vp8FrameHeader>();
   if (vp8_parser.ParseFrame(
-          encoded_data.subspan(kWebPFileAndVp8ChunkHeaderSizeInBytes).data(),
-          base::strict_cast<size_t>(vp8_frame_size), result.get())) {
+          encoded_data.subspan(kWebPFileAndVp8ChunkHeaderSizeInBytes,
+                               base::strict_cast<size_t>(vp8_frame_size)),
+          result.get())) {
     return result;
   }
   return nullptr;

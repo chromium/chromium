@@ -303,8 +303,7 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
     LOG(ERROR) << "Failed to read file: " << vp9_webm_data_file_path;
     return nullptr;
   }
-  auto vp9_webm_data = UNSAFE_TODO(base::span<const uint8_t>(
-      vp9_webm_data_mmap_file.data(), vp9_webm_data_mmap_file.length()));
+  base::span<const uint8_t> vp9_webm_data = vp9_webm_data_mmap_file.bytes();
 
   InitializeMediaLibrary();
 
@@ -330,8 +329,7 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
   std::optional<size_t> vp9_stream_index =
       std::distance(format_context.begin(), iter);
   auto vp9_data_mmap_file = CreateMemoryMappedFile(vp9_webm_data.size());
-  uint8_t* const vp9_data = vp9_data_mmap_file->data();
-  size_t vp9_data_size = 0;
+  base::span<uint8_t> vp9_data = vp9_data_mmap_file->mutable_bytes();
   auto packet = ScopedAVPacket::Allocate();
   size_t num_packets = 0;
   Vp9Parser vp9_parser;
@@ -341,18 +339,27 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
          num_packets < num_read_frames) {
     if (base::checked_cast<size_t>(packet->stream_index) ==
         (*vp9_stream_index)) {
-      LOG_ASSERT(vp9_data_size + packet->size <= vp9_data_mmap_file->length())
+      // SAFETY: `av_read_frame` returns 0 if okay, and < 0 on error/end of
+      // file. On error the packet will be blank, however we checked that
+      // `av_read_frame` is >= 0 in the while loop above. On Success which is
+      // our case here `packet->buf` will be initialized, this has the side
+      // effect of also initializing the `packet->data` and `packet->size`
+      // fields that we create this span from.
+      // See:
+      //  * `av_read_frame`:
+      //  https://ffmpeg.org/doxygen/6.1/group__lavf__decoding.html#ga4fdb3084415a82e3810de6ee60e46a61
+      // * `AVPacket`: https://ffmpeg.org/doxygen/6.1/structAVPacket.html
+      base::span<const uint8_t> packet_span = UNSAFE_BUFFERS(
+          base::span(packet->data, base::checked_cast<size_t>(packet->size)));
+      LOG_ASSERT(packet_span.size() <= vp9_data.size())
           << "The vp9 data size must be less than webm file size";
-      UNSAFE_TODO(
-          std::memcpy(vp9_data + vp9_data_size, packet->data, packet->size));
-      vp9_data_chunks[num_packets] = UNSAFE_TODO(base::span<const uint8_t>(
-          vp9_data + vp9_data_size, base::checked_cast<size_t>(packet->size)));
-      vp9_data_size += packet->size;
+      base::span<uint8_t> vp9_chunk = vp9_data.take_first(packet_span.size());
+      vp9_chunk.copy_from(packet_span);
+      vp9_data_chunks[num_packets] = vp9_chunk;
 
       Vp9FrameHeader header;
       gfx::Size allocate_size;
-      vp9_parser.SetStream(packet->data, packet->size,
-                           /*stream_config=*/nullptr);
+      vp9_parser.SetStream(packet_span, /*stream_config=*/nullptr);
       if (vp9_parser.ParseNextFrame(&header, &allocate_size, nullptr) ==
           Vp9Parser::kInvalidStream) {
         LOG(ERROR) << "Failed parsing vp9 data";

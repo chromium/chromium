@@ -228,13 +228,14 @@ Vp9Parser::Result Vp9Decoder::ReadNextFrame(Vp9FrameHeader& vp9_frame_header,
         vp9_parser_->ParseNextFrame(&vp9_frame_header, &size, &null_config);
     if (res == Vp9Parser::kEOStream) {
       IvfFrameHeader ivf_frame_header{};
-      const uint8_t* ivf_frame_data;
+      base::span<const uint8_t> ivf_frame_data =
+          ivf_parser_->ParseNextFrame(&ivf_frame_header);
 
-      if (!ivf_parser_->ParseNextFrame(&ivf_frame_header, &ivf_frame_data))
+      if (ivf_frame_data.empty()) {
         return Vp9Parser::kEOStream;
+      }
 
-      vp9_parser_->SetStream(ivf_frame_data, ivf_frame_header.frame_size,
-                             /*stream_config=*/nullptr);
+      vp9_parser_->SetStream(ivf_frame_data, /*stream_config=*/nullptr);
       continue;
     }
 
@@ -367,8 +368,7 @@ void Vp9Decoder::CopyFrameData(const Vp9FrameHeader& frame_hdr,
 
   scoped_refptr<MmappedBuffer> buffer = queue->GetBuffer(0);
 
-  buffer->mmapped_planes()[0].CopyIn(frame_hdr.data.data(),
-                                     frame_hdr.data.size());
+  buffer->mmapped_planes()[0].CopyIn(frame_hdr.data);
 }
 
 VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,

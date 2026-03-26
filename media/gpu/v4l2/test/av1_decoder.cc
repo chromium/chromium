@@ -60,10 +60,12 @@ const gfx::Size GetResolutionFromBitstream(
     LOG(FATAL) << "Couldn't initialize IVF parser.";
 
   IvfFrameHeader ivf_frame_header{};
-  const uint8_t* ivf_frame_data = nullptr;
+  base::span<const uint8_t> ivf_frame_data =
+      ivf_parser.ParseNextFrame(&ivf_frame_header);
 
-  if (!ivf_parser.ParseNextFrame(&ivf_frame_header, &ivf_frame_data))
+  if (ivf_frame_data.empty()) {
     LOG(FATAL) << "Failed to parse the first frame with IVF parser.";
+  }
 
   VLOG(2) << "Ivf file header: " << ivf_file_header.width << " x "
           << ivf_file_header.height;
@@ -74,7 +76,7 @@ const gfx::Size GetResolutionFromBitstream(
                                   libgav1::ReleaseInternalFrameBuffer,
                                   &buffer_list);
   libgav1::DecoderState decoder_state;
-  libgav1::ObuParser av1_parser(ivf_frame_data, ivf_frame_header.frame_size, 0,
+  libgav1::ObuParser av1_parser(ivf_frame_data.data(), ivf_frame_data.size(), 0,
                                 &buffer_pool, &decoder_state);
   libgav1::RefCountedBufferPtr first_frame;
 
@@ -595,8 +597,10 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
 Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
     libgav1::RefCountedBufferPtr& current_frame) {
   if (!obu_parser_ || !obu_parser_->HasData()) {
-    if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_, &ivf_frame_data_))
+    ivf_frame_data_ = ivf_parser_->ParseNextFrame(&ivf_frame_header_);
+    if (ivf_frame_data_.empty()) {
       return ParsingResult::kEOStream;
+    }
 
     // The ObuParser has run out of data or did not exist in the first place. It
     // has no "replace the current buffer with a new buffer of a different size"
@@ -604,8 +608,8 @@ Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
     // (std::nothrow) is required for the base class Allocable of
     // libgav1::ObuParser
     obu_parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
-        ivf_frame_data_, ivf_frame_header_.frame_size, /*operating_point=*/0,
-        buffer_pool_.get(), state_.get()));
+        ivf_frame_data_.data(), ivf_frame_data_.size(),
+        /*operating_point=*/0, buffer_pool_.get(), state_.get()));
     if (current_sequence_header_)
       obu_parser_->set_sequence_header(*current_sequence_header_);
   }
@@ -628,8 +632,7 @@ void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
 
   scoped_refptr<MmappedBuffer> buffer = queue->GetBuffer(0);
 
-  buffer->mmapped_planes()[0].CopyIn(ivf_frame_data_,
-                                     ivf_frame_header_.frame_size);
+  buffer->mmapped_planes()[0].CopyIn(ivf_frame_data_);
 }
 
 // 5.9.2. Uncompressed header syntax
@@ -1055,8 +1058,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
 
   std::vector<struct v4l2_ctrl_av1_tile_group_entry> tile_group_entry_vectors;
 
-  FillTileGroupParams(&tile_group_entry_vectors,
-                      base::span(ivf_frame_data_, ivf_frame_header_.frame_size),
+  FillTileGroupParams(&tile_group_entry_vectors, ivf_frame_data_,
                       current_frame_header.tile_info,
                       obu_parser_->tile_buffers());
 

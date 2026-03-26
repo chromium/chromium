@@ -15,27 +15,21 @@
 
 namespace media {
 
-IvfParser::IvfParser() : ptr_(nullptr), end_(nullptr) {}
+IvfParser::IvfParser() = default;
 
 bool IvfParser::Initialize(const uint8_t* stream,
                            size_t size,
                            IvfFileHeader* file_header) {
   DCHECK(stream);
   DCHECK(file_header);
-  ptr_ = stream;
-  end_ = UNSAFE_TODO(stream + size);
-  CHECK_GE(end_, ptr_);
+  stream_ = UNSAFE_TODO(base::span(stream, size));
 
   if (size < sizeof(IvfFileHeader)) {
     DLOG(ERROR) << "EOF before file header";
     return false;
   }
 
-  auto input =
-      // TODO(crbug.com/40284755): Initialize() should receive a span, not a
-      // pointer. IvfParser should hold a span, not a pointer.
-      UNSAFE_TODO(base::span(ptr_.get(), end_.get()));
-  auto [in_header, in_rem] = input.split_at<sizeof(IvfFileHeader)>();
+  auto [in_header, in_rem] = stream_.split_at<sizeof(IvfFileHeader)>();
 
   // The stream is little-endian encoded, so we can just copy it into place.
   base::byte_span_from_ref(*file_header).copy_from(in_header);
@@ -52,43 +46,33 @@ bool IvfParser::Initialize(const uint8_t* stream,
     return false;
   }
 
-  // TODO(crbug.com/40284755): IvfParser should hold a span, not a pointer.
-  ptr_ = in_rem.data();
+  stream_ = in_rem;
 
   return true;
 }
 
-bool IvfParser::ParseNextFrame(IvfFrameHeader* frame_header,
-                               const uint8_t** payload) {
-  DCHECK(ptr_);
-  DCHECK(payload);
-  CHECK_GE(end_, ptr_);
+base::span<const uint8_t> IvfParser::ParseNextFrame(
+    IvfFrameHeader* frame_header) {
+  DCHECK(stream_.data());
 
-  if (base::checked_cast<size_t>(end_ - ptr_) < sizeof(IvfFrameHeader)) {
-    DLOG_IF(ERROR, ptr_ != end_) << "Incomplete frame header";
-    return false;
+  if (stream_.size() < sizeof(IvfFrameHeader)) {
+    DLOG_IF(ERROR, stream_.size() > 0) << "Incomplete frame header";
+    return {};
   }
 
-  auto input =
-      // TODO(crbug.com/40284755): IvfParser should hold a span, not a pointer.
-      UNSAFE_TODO(base::span(ptr_.get(), end_.get()));
-  auto [in_header, in_rem] = input.split_at<sizeof(IvfFrameHeader)>();
+  auto [in_header, in_rem] = stream_.split_at<sizeof(IvfFrameHeader)>();
 
   // The stream is little-endian encoded, so we can just copy it into place.
   base::byte_span_from_ref(*frame_header).copy_from(in_header);
 
-  // TODO(crbug.com/40284755): IvfParser should hold a span, not a pointer.
-  ptr_ = in_rem.data();
+  stream_ = in_rem;
 
-  if (base::checked_cast<uint32_t>(end_ - ptr_) < frame_header->frame_size) {
+  if (stream_.size() < frame_header->frame_size) {
     DLOG(ERROR) << "Not enough frame data";
-    return false;
+    return {};
   }
 
-  *payload = ptr_;
-  UNSAFE_TODO(ptr_ += frame_header->frame_size);
-
-  return true;
+  return stream_.take_first(frame_header->frame_size);
 }
 
 }  // namespace media

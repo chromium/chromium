@@ -486,22 +486,19 @@ Vp9Parser::Vp9Parser() {
 
 Vp9Parser::~Vp9Parser() = default;
 
-void Vp9Parser::SetStream(const uint8_t* stream,
-                          off_t stream_size,
+void Vp9Parser::SetStream(base::span<const uint8_t> stream,
                           const std::vector<uint32_t>& spatial_layer_frame_size,
                           std::unique_ptr<DecryptConfig> stream_config) {
-  DCHECK(stream);
-  stream_ =
-      UNSAFE_TODO(base::span(stream, base::checked_cast<size_t>(stream_size)));
+  DCHECK(stream.data());
+  stream_ = stream;
   frames_.clear();
   spatial_layer_frame_size_ = spatial_layer_frame_size;
   stream_decrypt_config_ = std::move(stream_config);
 }
 
-void Vp9Parser::SetStream(const uint8_t* stream,
-                          off_t stream_size,
+void Vp9Parser::SetStream(base::span<const uint8_t> stream,
                           std::unique_ptr<DecryptConfig> stream_config) {
-  SetStream(stream, stream_size, {}, std::move(stream_config));
+  SetStream(stream, {}, std::move(stream_config));
 }
 
 void Vp9Parser::Reset() {

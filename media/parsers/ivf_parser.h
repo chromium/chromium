@@ -8,7 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 
 namespace media {
 
@@ -55,24 +56,22 @@ class IvfParser {
 
   // Initializes the parser for IVF |stream| with size |size| and parses the
   // file header. Returns true on success.
+  // TODO(crbug.com/40284755): stream+size should be a span.
   bool Initialize(const uint8_t* stream,
                   size_t size,
                   IvfFileHeader* file_header);
 
-  // Parses the next frame. Returns true if the next frame is parsed without
-  // error. |frame_header| will be filled with the frame header and |payload|
-  // will point to frame payload (inside the |stream| buffer given to
-  // Initialize.)
-  bool ParseNextFrame(IvfFrameHeader* frame_header, const uint8_t** payload);
+  // Parses the next frame. If there is an error, returns empty span.
+  // Otherwise, the returned span is the next frame.
+  // |frame_header| will be filled with the frame header.
+  // On success, it is guaranteed the span will be of size
+  // |frame_header->frame_size|.
+  base::span<const uint8_t> ParseNextFrame(IvfFrameHeader* frame_header);
 
  private:
   bool ParseFileHeader(IvfFileHeader* file_header);
 
-  // Current reading position of input stream.
-  raw_ptr<const uint8_t, AllowPtrArithmetic> ptr_;
-
-  // The end position of input stream.
-  raw_ptr<const uint8_t, AllowPtrArithmetic> end_;
+  base::raw_span<const uint8_t> stream_;
 };
 
 }  // namespace media

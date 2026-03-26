@@ -359,13 +359,11 @@ class MEDIA_EXPORT Vp9Parser {
   // filled if the parsed stream is VP9 SVC. It stands for frame sizes of
   // spatial layers. SVC frame might have multiple frames without superframe
   // index. The info helps Vp9Parser detecting the beginning of each frame.
-  void SetStream(const uint8_t* stream,
-                 off_t stream_size,
+  void SetStream(base::span<const uint8_t> stream,
                  const std::vector<uint32_t>& spatial_layer_frame_size,
                  std::unique_ptr<DecryptConfig> stream_config);
 
-  void SetStream(const uint8_t* stream,
-                 off_t stream_size,
+  void SetStream(base::span<const uint8_t> stream,
                  std::unique_ptr<DecryptConfig> stream_config);
 
   // Parse the next frame in the current stream buffer, filling |fhdr| with

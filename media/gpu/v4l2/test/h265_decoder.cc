@@ -652,8 +652,7 @@ bool H265Decoder::ProcessCurrentSlice() {
 
   scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
   OUTPUT_buffer->mmapped_planes()[0].CopyInSlice(
-      &slice_data[0], slice_data.size(),
-      curr_slice_hdr_->first_slice_segment_in_pic_flag);
+      slice_data, curr_slice_hdr_->first_slice_segment_in_pic_flag);
   OUTPUT_buffer->set_frame_number(global_pic_count_);
 
   return true;

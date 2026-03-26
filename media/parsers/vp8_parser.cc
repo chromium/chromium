@@ -65,11 +65,10 @@ Vp8Parser::Vp8Parser() : stream_(nullptr), bytes_left_(0) {
 
 Vp8Parser::~Vp8Parser() = default;
 
-bool Vp8Parser::ParseFrame(const uint8_t* ptr,
-                           size_t frame_size,
+bool Vp8Parser::ParseFrame(base::span<const uint8_t> frame,
                            Vp8FrameHeader* fhdr) {
-  stream_ = ptr;
-  bytes_left_ = frame_size;
+  stream_ = frame.data();
+  bytes_left_ = frame.size();
 
   *fhdr = Vp8FrameHeader();
   fhdr->data = stream_;
@@ -86,8 +85,8 @@ bool Vp8Parser::ParseFrame(const uint8_t* ptr,
   if (!ParsePartitions(fhdr))
     return false;
 
-  DVLOG(4) << "Frame parsed, start: " << static_cast<const void*>(ptr)
-           << ", size: " << frame_size
+  DVLOG(4) << "Frame parsed, start: " << static_cast<const void*>(frame.data())
+           << ", size: " << frame.size()
            << ", offsets: to first_part=" << fhdr->first_part_offset
            << ", to macroblock data (in bits)=" << fhdr->macroblock_bit_offset;
 

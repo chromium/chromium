@@ -208,20 +208,36 @@ VideoDecoder::BitDepth VideoDecoder::ConvertToYUV(
     CHECK_EQ(planes.size(), 1u)
         << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
 
-    const uint8_t* src = static_cast<uint8_t*>(planes[0].start_addr);
-    const uint8_t* src_uv =
-        UNSAFE_TODO(src + src_size.width() * src_size.height());
+    // In standard single-planar NV12, both the luma (Y) and interleaved chroma
+    // (UV) planes are packed sequentially into one contiguous memory buffer.
+    // Due to 4:2:0 subsampling, the UV data is subsampled by a factor of 2
+    // horizontally and vertically. Because U and V are interleaved, the UV
+    // plane maintains the exact same stride (bytes per line) as the Y plane,
+    // but requires only half the number of rows.
+    //
+    // Corresponding sizes:
+    // - Y Plane Size:  src_size.width() * src_size.height()
+    // - UV Plane Size: src_size.width() * (src_size.height() / 2)
+    //
+    // See:
+    // https://www.kernel.org/doc/html/v4.10/media/uapi/v4l/pixfmt-nv12.html
+    const size_t kYPlaneSize = src_size.width() * src_size.height();
+    const size_t kUVPlaneSize =
+        src_size.width() * ((src_size.height() + 1) / 2);
+    base::span<const uint8_t> src_y = planes[0].buffer.first(kYPlaneSize);
+    base::span<const uint8_t> src_uv =
+        planes[0].buffer.subspan(kYPlaneSize, kUVPlaneSize);
 
-    libyuv::NV12ToI420(src, src_size.width(), src_uv, src_size.width(),
-                       &dest_y[0], dest_full_stride, &dest_u[0],
-                       dest_half_stride, &dest_v[0], dest_half_stride,
-                       dest_size.width(), dest_size.height());
+    libyuv::NV12ToI420(src_y.data(), src_size.width(), src_uv.data(),
+                       src_size.width(), &dest_y[0], dest_full_stride,
+                       &dest_u[0], dest_half_stride, &dest_v[0],
+                       dest_half_stride, dest_size.width(), dest_size.height());
     return BitDepth::Depth8;
   } else if (fourcc == V4L2_PIX_FMT_MM21) {
     CHECK_EQ(planes.size(), 2u)
         << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
-    const uint8_t* src_y = static_cast<uint8_t*>(planes[0].start_addr);
-    const uint8_t* src_uv = static_cast<uint8_t*>(planes[1].start_addr);
+    const uint8_t* src_y = planes[0].buffer.data();
+    const uint8_t* src_uv = planes[1].buffer.data();
 
     libyuv::MM21ToI420(src_y, src_size.width(), src_uv, src_size.width(),
                        &dest_y[0], dest_full_stride, &dest_u[0],
@@ -232,8 +248,8 @@ VideoDecoder::BitDepth VideoDecoder::ConvertToYUV(
     CHECK_EQ(planes.size(), 2u)
         << "MT2T should have exactly 2 planes but CAPTURE queue does not.";
 
-    const uint8_t* src_y = static_cast<uint8_t*>(planes[0].start_addr);
-    const uint8_t* src_uv = static_cast<uint8_t*>(planes[1].start_addr);
+    const uint8_t* src_y = planes[0].buffer.data();
+    const uint8_t* src_uv = planes[1].buffer.data();
 
     dest_y.resize(dest_size.GetArea() * 2);
     dest_u.resize(half_dest_size.GetArea() * 2);

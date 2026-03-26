@@ -86,13 +86,11 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
   ASSERT_EQ(ivf_file_header.fourcc, 0x30395056u);  // VP90
 
   constexpr size_t kNumBuffers = 3;
-  std::vector<base::span<const uint8_t>> buffers(3);
-  for (size_t i = 0; i < kNumBuffers; i++) {
+  std::array<base::span<const uint8_t>, kNumBuffers> buffers;
+  for (auto& span_buffer : buffers) {
     IvfFrameHeader ivf_frame_header;
-    const uint8_t* ivf_payload;
-    ASSERT_TRUE(ivf_parser.ParseNextFrame(&ivf_frame_header, &ivf_payload));
-    buffers[i] =
-        UNSAFE_TODO(base::span(ivf_payload, ivf_frame_header.frame_size));
+    span_buffer = ivf_parser.ParseNextFrame(&ivf_frame_header);
+    ASSERT_FALSE(span_buffer.empty());
   }
 
   std::vector<uint32_t> frame_sizes;
@@ -111,8 +109,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
 
     AppendVP9SuperFrameIndex(decoder_buffer);
     Vp9Parser vp9_parser;
-    auto decoder_buffer_span = base::span(*decoder_buffer);
-    vp9_parser.SetStream(decoder_buffer_span.data(), decoder_buffer_span.size(),
+    vp9_parser.SetStream(*decoder_buffer,
                          /*stream_config=*/nullptr);
 
     // Parse the merged buffer with the created superframe index.

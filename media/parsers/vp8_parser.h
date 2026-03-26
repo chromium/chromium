@@ -13,6 +13,7 @@
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/parsers/vp8_bool_decoder.h"
@@ -189,7 +190,7 @@ class MEDIA_EXPORT Vp8Parser {
   // filling the parsed data in |fhdr|. Return true on success.
   // Size has to be exactly the size of the frame and coming from the caller,
   // who needs to acquire it from elsewhere (normally from a container).
-  bool ParseFrame(const uint8_t* ptr, size_t size, Vp8FrameHeader* fhdr);
+  bool ParseFrame(base::span<const uint8_t> frame, Vp8FrameHeader* fhdr);
 
  private:
   bool ParseFrameTag(Vp8FrameHeader* fhdr);
@@ -212,6 +213,7 @@ class MEDIA_EXPORT Vp8Parser {
   Vp8LoopFilterHeader curr_loopfilter_hdr_;
   Vp8EntropyHeader curr_entropy_hdr_;
 
+  // TODO(crbug.com/40284755): Should be a raw_span.
   raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> stream_;
   size_t bytes_left_;
   Vp8BoolDecoder bd_;

@@ -88,8 +88,7 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
 
   Vp9Parser::Result ParseNextFrame(struct Vp9FrameHeader* frame_hdr);
   void CheckSubsampleValues(
-      const uint8_t* superframe,
-      size_t framesize,
+      base::span<const uint8_t> superframe,
       std::unique_ptr<DecryptConfig> config,
       std::vector<std::unique_ptr<DecryptConfig>>& expected_split);
 
@@ -115,12 +114,13 @@ Vp9Parser::Result Vp9ParserTest::ParseNextFrame(Vp9FrameHeader* fhdr) {
         vp9_parser_->ParseNextFrame(fhdr, &allocate_size, &null_config);
     if (res == Vp9Parser::kEOStream) {
       IvfFrameHeader ivf_frame_header;
-      const uint8_t* ivf_payload;
-
-      if (!ivf_parser_.ParseNextFrame(&ivf_frame_header, &ivf_payload))
+      base::span<const uint8_t> ivf_payload =
+          ivf_parser_.ParseNextFrame(&ivf_frame_header);
+      if (ivf_payload.empty()) {
         return Vp9Parser::kEOStream;
+      }
 
-      vp9_parser_->SetStream(ivf_payload, ivf_frame_header.frame_size, nullptr);
+      vp9_parser_->SetStream(ivf_payload, nullptr);
       continue;
     }
 
@@ -129,11 +129,10 @@ Vp9Parser::Result Vp9ParserTest::ParseNextFrame(Vp9FrameHeader* fhdr) {
 }
 
 void Vp9ParserTest::CheckSubsampleValues(
-    const uint8_t* superframe,
-    size_t framesize,
+    base::span<const uint8_t> superframe,
     std::unique_ptr<DecryptConfig> config,
     std::vector<std::unique_ptr<DecryptConfig>>& expected_split) {
-  vp9_parser_->SetStream(superframe, framesize, std::move(config));
+  vp9_parser_->SetStream(superframe, std::move(config));
   for (auto& expected : expected_split) {
     std::unique_ptr<DecryptConfig> actual =
         vp9_parser_->NextFrameDecryptContextForTesting();
@@ -191,7 +190,7 @@ TEST_F(Vp9ParserTest, AlignedFrameSubsampleParsing) {
       kKeyID, kIVIncrementOne, {SubsampleEntry(16, 16)}, std::nullopt));
 
   CheckSubsampleValues(
-      kSuperframe, sizeof(kSuperframe),
+      kSuperframe,
       DecryptConfig::CreateCencConfig(
           kKeyID, kInitialIV, {SubsampleEntry(16, 16), SubsampleEntry(16, 16)}),
       expected);
@@ -231,7 +230,7 @@ TEST_F(Vp9ParserTest, UnalignedFrameSubsampleParsing) {
   expected.push_back(DecryptConfig::CreateCbcsConfig(
       kKeyID, kInitialIV, {SubsampleEntry(16, 16)}, std::nullopt));
 
-  CheckSubsampleValues(kSuperframe, sizeof(kSuperframe),
+  CheckSubsampleValues(kSuperframe,
                        DecryptConfig::CreateCencConfig(
                            kKeyID, kInitialIV, {SubsampleEntry(48, 16)}),
                        expected);
@@ -274,7 +273,7 @@ TEST_F(Vp9ParserTest, ClearSectionRollsOverSubsampleParsing) {
       kKeyID, kIVIncrementOne, {SubsampleEntry(16, 16)}, std::nullopt));
 
   CheckSubsampleValues(
-      kSuperframe, sizeof(kSuperframe),
+      kSuperframe,
       DecryptConfig::CreateCencConfig(
           kKeyID, kInitialIV, {SubsampleEntry(16, 16), SubsampleEntry(32, 16)}),
       expected);
@@ -318,7 +317,7 @@ TEST_F(Vp9ParserTest, FirstFrame2xSubsampleParsing) {
   expected.push_back(DecryptConfig::CreateCbcsConfig(
       kKeyID, kIVIncrementTwo, {SubsampleEntry(16, 16)}, std::nullopt));
 
-  CheckSubsampleValues(kSuperframe, sizeof(kSuperframe),
+  CheckSubsampleValues(kSuperframe,
                        DecryptConfig::CreateCencConfig(
                            kKeyID, kInitialIV,
                            {SubsampleEntry(16, 16), SubsampleEntry(16, 16),
@@ -366,7 +365,7 @@ TEST_F(Vp9ParserTest, UnalignedBigFrameSubsampleParsing) {
       kKeyID, kIVIncrementTwo, {SubsampleEntry(16, 16)}, std::nullopt));
 
   CheckSubsampleValues(
-      kSuperframe, sizeof(kSuperframe),
+      kSuperframe,
       DecryptConfig::CreateCencConfig(kKeyID, kInitialIV,
                                       {
                                           SubsampleEntry(16, 16),
@@ -403,9 +402,9 @@ TEST_F(Vp9ParserTest, UnalignedInvalidSubsampleParsing) {
       // marker again.
       superframe_marker_byte};
 
-  vp9_parser_->SetStream(kSuperframe, sizeof(kSuperframe),
-                         DecryptConfig::CreateCencConfig(
-                             kKeyID, kInitialIV, {SubsampleEntry(16, 32)}));
+  vp9_parser_->SetStream(
+      kSuperframe, DecryptConfig::CreateCencConfig(kKeyID, kInitialIV,
+                                                   {SubsampleEntry(16, 32)}));
 
   ASSERT_EQ(vp9_parser_->NextFrameDecryptContextForTesting().get(), nullptr);
 }
@@ -434,9 +433,9 @@ TEST_F(Vp9ParserTest, CipherBytesCoverSuperframeMarkerSubsampleParsing) {
       // marker again.
       superframe_marker_byte};
 
-  vp9_parser_->SetStream(kSuperframe, sizeof(kSuperframe),
-                         DecryptConfig::CreateCencConfig(
-                             kKeyID, kInitialIV, {SubsampleEntry(0, 48)}));
+  vp9_parser_->SetStream(
+      kSuperframe, DecryptConfig::CreateCencConfig(kKeyID, kInitialIV,
+                                                   {SubsampleEntry(0, 48)}));
 
   std::unique_ptr<DecryptConfig> actual =
       vp9_parser_->NextFrameDecryptContextForTesting();
@@ -469,9 +468,9 @@ TEST_F(Vp9ParserTest, ClearBytesCoverSuperframeMarkerSubsampleParsing) {
       // marker again.
       superframe_marker_byte};
 
-  vp9_parser_->SetStream(kSuperframe, sizeof(kSuperframe),
-                         DecryptConfig::CreateCencConfig(
-                             kKeyID, kInitialIV, {SubsampleEntry(48, 0)}));
+  vp9_parser_->SetStream(
+      kSuperframe, DecryptConfig::CreateCencConfig(kKeyID, kInitialIV,
+                                                   {SubsampleEntry(48, 0)}));
 
   std::unique_ptr<DecryptConfig> actual =
       vp9_parser_->NextFrameDecryptContextForTesting();
@@ -505,12 +504,11 @@ TEST_F(Vp9ParserTest, SecondClearSubsampleSuperframeMarkerSubsampleParsing) {
       superframe_marker_byte};
 
   vp9_parser_->SetStream(
-      kSuperframe, sizeof(kSuperframe),
-      DecryptConfig::CreateCencConfig(kKeyID, kInitialIV,
-                                      {
-                                          SubsampleEntry(16, 16),
-                                          SubsampleEntry(16, 0),
-                                      }));
+      kSuperframe, DecryptConfig::CreateCencConfig(kKeyID, kInitialIV,
+                                                   {
+                                                       SubsampleEntry(16, 16),
+                                                       SubsampleEntry(16, 0),
+                                                   }));
 
   std::unique_ptr<DecryptConfig> actual =
       vp9_parser_->NextFrameDecryptContextForTesting();

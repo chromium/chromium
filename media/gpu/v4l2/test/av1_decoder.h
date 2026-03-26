@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/raw_span.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/parsers/ivf_parser.h"
@@ -109,7 +110,7 @@ class Av1Decoder : public VideoDecoder {
   const std::unique_ptr<IvfParser> ivf_parser_;
 
   IvfFrameHeader ivf_frame_header_{};
-  const uint8_t* ivf_frame_data_ = nullptr;
+  base::raw_span<const uint8_t> ivf_frame_data_;
 
   // AV1-specific data.
   std::unique_ptr<libgav1::ObuParser> obu_parser_;

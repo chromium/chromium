@@ -71,8 +71,10 @@ VP8Decoder::DecodeResult VP8Decoder::Decode() {
 
   if (!curr_frame_hdr_) {
     curr_frame_hdr_ = std::make_unique<Vp8FrameHeader>();
-    if (!parser_.ParseFrame(curr_frame_start_, frame_size_,
-                            curr_frame_hdr_.get())) {
+    // TODO(crbug.com/40284755): Change curr_frame_start_ to raw_span.
+    if (!parser_.ParseFrame(
+            UNSAFE_TODO(base::span(curr_frame_start_.get(), frame_size_)),
+            curr_frame_hdr_.get())) {
       DVLOG(1) << "Error during decode";
       state_ = kError;
       return kDecodeError;

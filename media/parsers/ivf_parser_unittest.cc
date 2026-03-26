@@ -37,21 +37,20 @@ TEST(IvfParserTest, StreamFileParsing) {
 
   IvfFrameHeader frame_header;
   size_t num_parsed_frames = 0;
-  const uint8_t* payload = nullptr;
-  while (parser.ParseNextFrame(&frame_header, &payload)) {
+  for (auto bytes = parser.ParseNextFrame(&frame_header); !bytes.empty();
+       bytes = parser.ParseNextFrame(&frame_header)) {
     ++num_parsed_frames;
-    EXPECT_TRUE(payload != nullptr);
 
     // Only check the first frame.
     if (num_parsed_frames == 1u) {
-      EXPECT_EQ(14788u, frame_header.frame_size);
+      EXPECT_EQ(14788u, bytes.size());
       // Copy `frame_header.timestamp` into a temporary value. `EXPECT_EQ`
       // internally reads the value through a pointer, which is misaligned
       // because `IvfFrameHeader` is packed. Copy into a temporary value first.
       EXPECT_EQ(0u, uint64_t{frame_header.timestamp});
       EXPECT_EQ(
           static_cast<ptrdiff_t>(sizeof(file_header) + sizeof(frame_header)),
-          payload - stream.data());
+          bytes.data() - stream.data());
     }
   }
 

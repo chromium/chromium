@@ -135,25 +135,26 @@ MmappedBuffer::MmappedBuffer(const base::PlatformFile ioctl_fd,
                              const struct v4l2_buffer& v4l2_buffer)
     : num_planes_(v4l2_buffer.length), buffer_id_(0) {
   for (uint32_t i = 0; i < num_planes_; ++i) {
-    void* start_addr =
-        mmap(nullptr, UNSAFE_TODO(v4l2_buffer.m.planes[i]).length,
-             PROT_READ | PROT_WRITE, MAP_SHARED, ioctl_fd,
-             UNSAFE_TODO(v4l2_buffer.m.planes[i]).m.mem_offset);
+    size_t plane_length = UNSAFE_TODO(v4l2_buffer.m.planes[i]).length;
+    size_t plane_mem_offset = UNSAFE_TODO(v4l2_buffer.m.planes[i]).m.mem_offset;
+    void* start_addr = mmap(nullptr, plane_length, PROT_READ | PROT_WRITE,
+                            MAP_SHARED, ioctl_fd, plane_mem_offset);
 
     LOG_IF(FATAL, start_addr == MAP_FAILED)
-        << "Failed to mmap buffer of length("
-        << UNSAFE_TODO(v4l2_buffer.m.planes[i]).length << ") and offset("
-        << std::hex << UNSAFE_TODO(v4l2_buffer.m.planes[i]).m.mem_offset
-        << ").";
+        << "Failed to mmap buffer of length(" << plane_length << ") and offset("
+        << std::hex << plane_mem_offset << ").";
 
-    mmapped_planes_.emplace_back(start_addr,
-                                 UNSAFE_TODO(v4l2_buffer.m.planes[i]).length);
+    // SAFETY: On success, mmap() returns a pointer to the mapped area of size
+    // `v4l2_buffer.m.planes[i].length` in bytes.
+    // See: https://man7.org/linux/man-pages/man2/mmap.2.html
+    mmapped_planes_.emplace_back(UNSAFE_BUFFERS(
+        base::span(static_cast<uint8_t*>(start_addr), plane_length)));
   }
 }
 
 MmappedBuffer::~MmappedBuffer() {
-  for (const auto& [start_addr, length, bytes_used] : mmapped_planes_) {
-    munmap(start_addr, length);
+  for (const auto& [buffer, _] : mmapped_planes_) {
+    munmap(buffer.data(), buffer.size());
   }
 }
 
@@ -484,9 +485,9 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
 
   for (uint32_t i = 0; i < queue->num_planes(); ++i) {
     UNSAFE_TODO(v4l2_buffer.m.planes[i]).length =
-        UNSAFE_TODO(buffer->mmapped_planes()[i]).length;
+        buffer->mmapped_planes()[i].buffer.size();
     UNSAFE_TODO(v4l2_buffer.m.planes[i]).bytesused =
-        UNSAFE_TODO(buffer->mmapped_planes()[i]).bytes_used;
+        buffer->mmapped_planes()[i].bytes_used;
     UNSAFE_TODO(v4l2_buffer.m.planes[i]).data_offset = 0;
   }
 

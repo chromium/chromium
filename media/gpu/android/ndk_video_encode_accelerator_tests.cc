@@ -450,7 +450,7 @@ class NdkVideoEncoderAcceleratorTest
     switch (codec_) {
       case VideoCodec::kH264: {
         H264Parser parser;
-        parser.SetStream(data.data(), data.size());
+        parser.SetStream(data);
 
         int num_parsed_nalus = 0;
         while (true) {
@@ -487,7 +487,7 @@ class NdkVideoEncoderAcceleratorTest
       }
       case VideoCodec::kVP9: {
         Vp9Parser parser;
-        parser.SetStream(data.data(), data.size(), nullptr);
+        parser.SetStream(data, nullptr);
 
         int num_parsed_frames = 0;
         while (true) {

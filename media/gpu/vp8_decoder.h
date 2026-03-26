@@ -111,6 +111,7 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
   int32_t last_decoded_stream_id_ = kInvalidId;
   size_t size_change_failure_counter_ = 0;
 
+  // TODO(crbug.com/40284755): Should be a raw_span.
   raw_ptr<const uint8_t> curr_frame_start_;
   size_t frame_size_ = 0;
 

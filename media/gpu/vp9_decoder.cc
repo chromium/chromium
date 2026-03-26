@@ -138,8 +138,7 @@ void VP9Decoder::SetStream(int32_t id,
     secure_handle_ = 0;
   }
 
-  parser_.SetStream(base::span(*decoder_buffer_).data(),
-                    decoder_buffer_->size(), frame_sizes,
+  parser_.SetStream(*decoder_buffer_, frame_sizes,
                     decrypt_config ? decrypt_config->Clone() : nullptr);
 }
 

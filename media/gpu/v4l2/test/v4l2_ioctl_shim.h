@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 #define MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 
-
 #include <linux/videodev2.h>
 #include <string.h>
 
@@ -14,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -33,34 +32,28 @@ class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
 
   class MmappedPlane {
    public:
-    raw_ptr<void> start_addr;
-    const size_t length;
+    const base::raw_span<uint8_t> buffer;
     size_t bytes_used = 0;
 
-    MmappedPlane(void* start, size_t len) : start_addr(start), length(len) {}
+    explicit MmappedPlane(base::span<uint8_t> buffer) : buffer(buffer) {}
 
     // Appends the current slice data to the mmapped buffer. Resets |bytes_used|
     // to 0 for the first slice. This function is used for HEVC because multiple
     // slices per frame are supported.
-    void CopyInSlice(const uint8_t* frame_data,
-                     size_t frame_size,
-                     bool is_first_slice) {
+    void CopyInSlice(base::span<const uint8_t> frame, bool is_first_slice) {
       if (is_first_slice) {
         bytes_used = 0;
       }
 
-      LOG_ASSERT((bytes_used + frame_size) < length)
+      LOG_ASSERT((bytes_used + frame.size()) <= buffer.size())
           << "Not enough memory allocated to copy into.";
 
-      UNSAFE_TODO(memcpy(static_cast<uint8_t*>(start_addr) + bytes_used,
-                         frame_data, frame_size));
-      bytes_used += frame_size;
+      buffer.subspan(bytes_used).copy_prefix_from(frame);
+      bytes_used += frame.size();
     }
 
     // Overwrites the mmapped buffer with the current frame data.
-    void CopyIn(const uint8_t* frame_data, size_t frame_size) {
-      CopyInSlice(frame_data, frame_size, true);
-    }
+    void CopyIn(base::span<const uint8_t> frame) { CopyInSlice(frame, true); }
   };
 
   using MmappedPlanes = std::vector<MmappedPlane>;

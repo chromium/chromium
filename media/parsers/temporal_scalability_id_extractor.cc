@@ -135,7 +135,7 @@ bool TemporalScalabilityIdExtractor::ParseVP9(base::span<const uint8_t> chunk,
                                               BitstreamMetadata& md) {
   Vp9FrameHeader header;
   gfx::Size coded_size;
-  vp9_->SetStream(chunk.data(), chunk.size(), nullptr);
+  vp9_->SetStream(chunk, nullptr);
 
   if (vp9_->ParseNextFrame(&header, &coded_size, nullptr) != Vp9Parser::kOk) {
     return false;
