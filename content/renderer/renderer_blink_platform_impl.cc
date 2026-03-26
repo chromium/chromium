@@ -784,12 +784,20 @@ RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
   constexpr bool support_locking = false;
   constexpr bool lose_context_when_out_of_memory = false;
 
+  gpu::SchedulingPriority stream_priority =
+      (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+       features::kInitialWebUIHighStreamPriority.Get() &&
+       base::CommandLine::ForCurrentProcess()->HasSwitch(
+           switches::kTopChromeWebUI))
+          ? kGpuStreamPriorityUI
+          : kGpuStreamPriorityDefault;
+
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       viz::ContextProviderCommandBuffer::CreateForRaster(
-          std::move(gpu_channel_host), kGpuStreamIdDefault,
-          kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
-          support_locking, gpu::SharedMemoryLimits(),
-          ToVizContextType(context_type), lose_context_when_out_of_memory));
+          std::move(gpu_channel_host), kGpuStreamIdDefault, stream_priority,
+          GURL(document_url), automatic_flushes, support_locking,
+          gpu::SharedMemoryLimits(), ToVizContextType(context_type),
+          lose_context_when_out_of_memory));
 }
 
 //------------------------------------------------------------------------------
