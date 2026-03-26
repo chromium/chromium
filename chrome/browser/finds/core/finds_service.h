@@ -57,14 +57,26 @@ class FindsService : public KeyedService, public base::SupportsUserData {
   void RemoveObserver(Observer* observer);
 
   struct Result {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(Status)
     enum class Status {
-      kSuccess,
-      kHistoryServiceUnavailable,
-      kOptimizationGuideUnavailable,
-      kEmptyHistory,
-      kModelExecutionFailed,
-      kResponseParsingFailed,
+      kSuccess = 0,
+      kHistoryServiceUnavailable = 1,
+      kOptimizationGuideUnavailable = 2,
+      kEmptyHistory = 3,
+      kModelExecutionFailed = 4,
+      kResponseParsingFailed = 5,
+      kModelExecutionOnCooldown = 6,
+      kCancelled = 7,
+      kNoThemesFound = 8,
+      kNoNonCooldownThemesFound = 9,
+      kNoSuggestionsForTheme = 10,
+      kFailedToScheduleNotification = 11,
+
+      kMaxValue = kFailedToScheduleNotification,
     };
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:FindsResult)
     Status status;
     std::string message;
   };

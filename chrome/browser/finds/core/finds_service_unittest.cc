@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
@@ -71,6 +72,7 @@ class FindsServiceTest : public testing::Test {
   std::unique_ptr<notifications::test::MockNotificationScheduleService>
       notification_schedule_service_;
   std::unique_ptr<FindsService> service_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(FindsServiceTest, VerifyNotificationCooldownPref) {
@@ -102,6 +104,9 @@ TEST_F(FindsServiceTest, HistoryServiceUnavailable) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result", FindsService::Result::Status::kHistoryServiceUnavailable,
+      1);
 }
 
 TEST_F(FindsServiceTest, OptimizationGuideUnavailable) {
@@ -117,6 +122,9 @@ TEST_F(FindsServiceTest, OptimizationGuideUnavailable) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result",
+      FindsService::Result::Status::kOptimizationGuideUnavailable, 1);
 }
 
 TEST_F(FindsServiceTest, EmptyHistory) {
@@ -136,6 +144,8 @@ TEST_F(FindsServiceTest, EmptyHistory) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result", FindsService::Result::Status::kEmptyHistory, 1);
 }
 
 TEST_F(FindsServiceTest, ModelExecutionFailed) {
@@ -176,6 +186,8 @@ TEST_F(FindsServiceTest, ModelExecutionFailed) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result", FindsService::Result::Status::kModelExecutionFailed, 1);
 }
 
 TEST_F(FindsServiceTest, ParsingFailed) {
@@ -214,6 +226,8 @@ TEST_F(FindsServiceTest, ParsingFailed) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result", FindsService::Result::Status::kResponseParsingFailed, 1);
 }
 
 TEST_F(FindsServiceTest, Success) {
@@ -261,6 +275,8 @@ TEST_F(FindsServiceTest, Success) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result", FindsService::Result::Status::kSuccess, 1);
 }
 
 TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {
@@ -274,6 +290,8 @@ TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {
   // Check that the history service is not called as the model is on cooldown.
   EXPECT_CALL(*history_service_, QueryHistory(_, _, _, _)).Times(0);
 
+  base::HistogramTester histogram_tester_local;
+
   // Run through the constructor workflow to ensure it does not work.
   auto service = std::make_unique<FindsService>(
       opt_guide_service_.get(), history_service_.get(), &prefs_,
@@ -281,6 +299,9 @@ TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {
 
   // Run the posted task.
   task_environment_.RunUntilIdle();
+  histogram_tester_local.ExpectUniqueSample(
+      "Finds.Result", FindsService::Result::Status::kModelExecutionOnCooldown,
+      1);
 }
 
 TEST_F(FindsServiceTest, ExecutionCooldownPassed) {
@@ -326,6 +347,8 @@ TEST_F(FindsServiceTest, ExecutionCooldownPassed) {
             std::move(callback).Run(std::move(result), nullptr);
           });
 
+  base::HistogramTester histogram_tester_local;
+
   // Run through the constructor workflow to ensure it works.
   auto service = std::make_unique<FindsService>(
       opt_guide_service_.get(), history_service_.get(), &prefs_,
@@ -333,6 +356,8 @@ TEST_F(FindsServiceTest, ExecutionCooldownPassed) {
 
   // Run the posted task.
   task_environment_.RunUntilIdle();
+  histogram_tester_local.ExpectUniqueSample(
+      "Finds.Result", FindsService::Result::Status::kSuccess, 1);
 }
 
 TEST_F(FindsServiceTest, EmptyNotificationService) {
@@ -377,11 +402,16 @@ TEST_F(FindsServiceTest, EmptyNotificationService) {
   bool callback_called = false;
   service->ExecuteModelAndScheduleNotification(
       base::BindLambdaForTesting([&](FindsService::Result result) {
-        EXPECT_EQ(FindsService::Result::Status::kSuccess, result.status);
+        EXPECT_EQ(FindsService::Result::Status::kFailedToScheduleNotification,
+                  result.status);
         EXPECT_EQ("Could not schedule notification.", result.message);
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("Finds.Result"),
+      testing::ElementsAre(base::Bucket(
+          FindsService::Result::Status::kFailedToScheduleNotification, 1)));
 }
 
 TEST_F(FindsServiceTest, NoThemesFound) {
@@ -419,7 +449,7 @@ TEST_F(FindsServiceTest, NoThemesFound) {
   bool callback_called = false;
   service_->ExecuteModelAndScheduleNotification(
       base::BindLambdaForTesting([&](FindsService::Result result) {
-        EXPECT_EQ(FindsService::Result::Status::kSuccess, result.status);
+        EXPECT_EQ(FindsService::Result::Status::kNoThemesFound, result.status);
         EXPECT_EQ("No themes found.", result.message);
         callback_called = true;
       }));
@@ -464,11 +494,15 @@ TEST_F(FindsServiceTest, NoSuggestionsForTheme) {
   bool callback_called = false;
   service_->ExecuteModelAndScheduleNotification(
       base::BindLambdaForTesting([&](FindsService::Result result) {
-        EXPECT_EQ(FindsService::Result::Status::kSuccess, result.status);
+        EXPECT_EQ(FindsService::Result::Status::kNoSuggestionsForTheme,
+                  result.status);
         EXPECT_EQ("No suggestions available for this theme.", result.message);
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+  EXPECT_THAT(histogram_tester_.GetAllSamples("Finds.Result"),
+              testing::ElementsAre(base::Bucket(
+                  FindsService::Result::Status::kNoSuggestionsForTheme, 1)));
 }
 
 TEST_F(FindsServiceTest, ReturnsHighestScore) {
@@ -672,7 +706,8 @@ TEST_F(FindsServiceTest, NoNotificationIfAllOnCooldown) {
   bool callback_called = false;
   service_->ExecuteModelAndScheduleNotification(
       base::BindLambdaForTesting([&](FindsService::Result result) {
-        EXPECT_EQ(FindsService::Result::Status::kSuccess, result.status);
+        EXPECT_EQ(FindsService::Result::Status::kNoNonCooldownThemesFound,
+                  result.status);
         EXPECT_EQ("No themes found that passed cooldown criteria.",
                   result.message);
         callback_called = true;

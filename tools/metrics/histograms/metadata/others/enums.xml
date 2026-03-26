@@ -52,6 +52,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/device/usb/usb_device_handle_usbfs.cc:DetachKernelDriverOutcome) -->
 
+<!-- LINT.IfChange(FindsResult) -->
+
+<enum name="FindsResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="HistoryServiceUnavailable"/>
+  <int value="2" label="OptimizationGuideUnavailable"/>
+  <int value="3" label="EmptyHistory"/>
+  <int value="4" label="ModelExecutionFailed"/>
+  <int value="5" label="ResponseParsingFailed"/>
+  <int value="6" label="ModelExecutionOnCooldown"/>
+  <int value="7" label="Cancelled"/>
+  <int value="8" label="NoThemesFound"/>
+  <int value="9" label="NoNonCooldownThemesFound"/>
+  <int value="10" label="NoSuggestionsForTheme"/>
+  <int value="11" label="FailedToScheduleNotification"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/finds/core/finds_service.h:Status) -->
+
 <enum name="FreedesktopSecretKeyProviderInitStatus">
   <summary>
     High-level error categories for FreedesktopSecretKeyProvider.

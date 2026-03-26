@@ -4385,6 +4385,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Finds.Result" enum="FindsResult" expires_after="2026-06-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <summary>
+    Records the status of attempting to execute the Finds model and schedule a
+    notification. Recorded when the FindsService attempts to fetch suggestions
+    based on themes derived from the user's history. It tracks successes and
+    various failure reasons like service unavailability, empty history, or
+    cooldown restrictions.
+  </summary>
+</histogram>
+
 <histogram name="FirstPartySets.Database.InitStatus"
     enum="FirstPartySetsDatabaseInitStatus" expires_after="2026-08-30">
   <owner>shuuran@google.com</owner>

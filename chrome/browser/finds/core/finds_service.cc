@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -181,6 +182,15 @@ notifications::NotificationData GetNotificationData(
   return data;
 }
 
+void RecordFindsResultAndRunCallback(
+    base::OnceCallback<void(FindsService::Result)> callback,
+    FindsService::Result result) {
+  base::UmaHistogramEnumeration("Finds.Result", result.status);
+  if (callback) {
+    std::move(callback).Run(std::move(result));
+  }
+}
+
 }  // namespace
 
 // static
@@ -229,14 +239,23 @@ void FindsService::MarkThemeNotInterested(PrefService* pref_service,
 
 void FindsService::ExecuteModelAndScheduleNotification(
     base::OnceCallback<void(Result)> callback) {
+  if (!IsModelExecutionCooldownPassed(pref_service_)) {
+    RecordFindsResultAndRunCallback(std::move(callback),
+                                    {Result::Status::kModelExecutionOnCooldown,
+                                     "Error: Model execution is on cooldown."});
+    return;
+  }
+
   if (!history_service_) {
-    std::move(callback).Run({Result::Status::kHistoryServiceUnavailable,
-                             "Error: HistoryService not available."});
+    RecordFindsResultAndRunCallback(std::move(callback),
+                                    {Result::Status::kHistoryServiceUnavailable,
+                                     "Error: HistoryService not available."});
     return;
   }
 
   if (!opt_guide_service_) {
-    std::move(callback).Run(
+    RecordFindsResultAndRunCallback(
+        std::move(callback),
         {Result::Status::kOptimizationGuideUnavailable,
          "Error: OptimizationGuideKeyedService not available."});
     return;
@@ -269,24 +288,25 @@ bool FindsService::ScheduleNotificationForInternalsPage() {
 }
 
 void FindsService::CheckModelCooldownCriteriaAndMaybeExecute() {
-  if (IsModelExecutionCooldownPassed(pref_service_)) {
-    ExecuteModelAndScheduleNotification(base::DoNothing());
-  }
+  ExecuteModelAndScheduleNotification(base::DoNothing());
 }
 
 void FindsService::OnHistoryQueryComplete(
     base::OnceCallback<void(Result)> callback,
     history::QueryResults results) {
   if (!opt_guide_service_) {
-    std::move(callback).Run(
+    RecordFindsResultAndRunCallback(
+        std::move(callback),
         {Result::Status::kOptimizationGuideUnavailable,
          "Error: OptimizationGuideKeyedService not available."});
     return;
   }
 
   if (results.empty()) {
-    std::move(callback).Run({Result::Status::kEmptyHistory,
-                             "Error: No history available to suggest themes."});
+    RecordFindsResultAndRunCallback(
+        std::move(callback),
+        {Result::Status::kEmptyHistory,
+         "Error: No history available to suggest themes."});
     return;
   }
 
@@ -313,7 +333,8 @@ void FindsService::OnModelExecutionComplete(
     std::string error_message =
         base::StringPrintf("Model execution failed. Error code: %d",
                            static_cast<int>(result.response.error().error()));
-    std::move(callback).Run(
+    RecordFindsResultAndRunCallback(
+        std::move(callback),
         {Result::Status::kModelExecutionFailed, error_message});
     return;
   }
@@ -321,40 +342,50 @@ void FindsService::OnModelExecutionComplete(
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::FindsSuggestionResponse>(
       result.response.value());
-  if (response) {
-    // TODO(crbug.com/494668777): Add failure case for no themes found.
-    if (response->suggestions().empty()) {
-      std::move(callback).Run({Result::Status::kSuccess, "No themes found."});
-      return;
-    }
-
-    const SuggestionTheme* best_theme =
-        GetHighestScoredThemeIfPossible(pref_service_, response->suggestions());
-    // TODO(crbug.com/494668777): Add case for no non-cooldown themes found.
-    if (!best_theme) {
-      std::move(callback).Run(
-          {Result::Status::kSuccess,
-           "No themes found that passed cooldown criteria."});
-      return;
-    }
-
-    if (best_theme->suggestions().empty()) {
-      std::move(callback).Run({Result::Status::kSuccess,
-                               "No suggestions available for this theme."});
-      return;
-    }
-
-    bool schedule_success = ScheduleNotificationWithModelResult(*best_theme);
-    std::move(callback).Run(
-        {Result::Status::kSuccess,
-         schedule_success
-             ? FindsSuggestionResponseToHumanReadableString(*response)
-             : "Could not schedule notification."});
-  } else {
-    std::move(callback).Run(
+  if (!response) {
+    RecordFindsResultAndRunCallback(
+        std::move(callback),
         {Result::Status::kResponseParsingFailed,
          "Model execution successful, but failed to parse response."});
+    return;
   }
+
+  if (response->suggestions().empty()) {
+    RecordFindsResultAndRunCallback(
+        std::move(callback),
+        {Result::Status::kNoThemesFound, "No themes found."});
+    return;
+  }
+
+  const SuggestionTheme* best_theme =
+      GetHighestScoredThemeIfPossible(pref_service_, response->suggestions());
+  if (!best_theme) {
+    RecordFindsResultAndRunCallback(
+        std::move(callback),
+        {Result::Status::kNoNonCooldownThemesFound,
+         "No themes found that passed cooldown criteria."});
+    return;
+  }
+
+  if (best_theme->suggestions().empty()) {
+    RecordFindsResultAndRunCallback(
+        std::move(callback), {Result::Status::kNoSuggestionsForTheme,
+                              "No suggestions available for this theme."});
+    return;
+  }
+
+  bool schedule_success = ScheduleNotificationWithModelResult(*best_theme);
+  if (!schedule_success) {
+    RecordFindsResultAndRunCallback(
+        std::move(callback), {Result::Status::kFailedToScheduleNotification,
+                              "Could not schedule notification."});
+    return;
+  }
+
+  RecordFindsResultAndRunCallback(
+      std::move(callback),
+      {Result::Status::kSuccess,
+       FindsSuggestionResponseToHumanReadableString(*response)});
 }
 
 bool FindsService::ScheduleNotificationWithModelResult(
