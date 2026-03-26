@@ -2053,9 +2053,54 @@ TEST_F(SaveCardBubbleControllerImplTest,
   EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
 }
 
+TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableWindowTitle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableWalletBranding,
+       features::kAutofillEnableWalletBrandingV2},
+      /*disabled_features=*/{});
+
+  ShowUploadBubble();
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_IN_GOOGLE_WALLET_PROMPT_TITLE),
+            controller()->GetWindowTitle());
+}
+
+TEST_F(SaveCardBubbleControllerImplTest,
+       ReturnsApplicableWindowTitle_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
+
+  ShowUploadBubble();
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY),
+            controller()->GetWindowTitle());
+}
+
 TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableExplanatoryMessage) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableWalletBranding};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableWalletBranding,
+       features::kAutofillEnableWalletBrandingV2},
+      /*disabled_features=*/{});
+
+  ShowUploadBubble();
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_V2_EXPLANATION),
+            controller()->GetExplanatoryMessage());
+}
+
+TEST_F(SaveCardBubbleControllerImplTest,
+       ReturnsApplicableExplanatoryMessage_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
+
   ShowUploadBubble();
   EXPECT_EQ(
       l10n_util::GetStringUTF16(
@@ -2064,9 +2109,13 @@ TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableExplanatoryMessage) {
 }
 
 TEST_F(SaveCardBubbleControllerImplTest,
-       ReturnsApplicableExplanatoryMessage_FlagOff) {
+       ReturnsApplicableExplanatoryMessage_WalletBrandingDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding,
+                             features::kAutofillEnableWalletBrandingV2});
+
   ShowUploadBubble();
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY),
