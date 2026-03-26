@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -2496,8 +2497,22 @@ void GlicPageHandler::CreateWebClient(
 
 void GlicPageHandler::PrepareForClient(
     base::OnceCallback<void(mojom::PrepareForClientResult)> callback) {
+  TRACE_EVENT_INSTANT("browser", "GlicPageHandler::PrepareForClient - Request",
+                      perfetto::Flow::FromPointer(this));
+
+  auto wrapped_callback = base::BindOnce(
+      [](GlicPageHandler* origin_this,
+         base::OnceCallback<void(mojom::PrepareForClientResult)> callback,
+         mojom::PrepareForClientResult result) {
+        TRACE_EVENT_INSTANT(
+            "browser", "GlicPageHandler::PrepareForClient - Response",
+            perfetto::TerminatingFlow::FromPointer(origin_this));
+        std::move(callback).Run(std::move(result));
+      },
+      base::Unretained(this), std::move(callback));
+
   GetGlicService()->GetAuthController().CheckAuthBeforeLoad(
-      std::move(callback));
+      std::move(wrapped_callback));
 }
 
 void GlicPageHandler::WebviewCommitted(const GURL& url) {

@@ -8,8 +8,10 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/fre_util.h"
@@ -93,10 +95,24 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
   ~GlicPreloadHandler() override = default;
 
   void PrepareForClient(
-      glic::mojom::GlicPreloadHandler::PrepareForClientCallback callback)
-      override {
+      mojom::GlicPreloadHandler::PrepareForClientCallback callback) override {
+    TRACE_EVENT_INSTANT("browser",
+                        "GlicPreloadHandler::PrepareForClient - Request",
+                        perfetto::Flow::FromPointer(this));
+
+    auto wrapped_callback = base::BindOnce(
+        [](GlicPreloadHandler* origin_this,
+           mojom::GlicPreloadHandler::PrepareForClientCallback callback,
+           mojom::PrepareForClientResult result) {
+          TRACE_EVENT_INSTANT(
+              "browser", "GlicPreloadHandler::PrepareForClient - Response",
+              perfetto::TerminatingFlow::FromPointer(origin_this));
+          std::move(callback).Run(std::move(result));
+        },
+        base::Unretained(this), std::move(callback));
+
     GetGlicService()->GetAuthController().CheckAuthBeforeLoad(
-        std::move(callback));
+        std::move(wrapped_callback));
   }
 
  private:
