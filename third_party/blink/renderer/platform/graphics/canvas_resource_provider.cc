@@ -905,7 +905,7 @@ Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
       return nullptr;
     }
 
-    FlushCanvas(reason);
+    FlushCanvas2D(reason);
 
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
@@ -923,7 +923,7 @@ Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   // backing SharedImage). Hence, we must make sure that the SI is updated to
   // reflect the ops made in the current write access (if any) and give up any
   // such write access.
-  FlushCanvas(reason);
+  FlushCanvas2D(reason);
   EndWriteAccess();
 
   return resource_;
