@@ -83,8 +83,8 @@ void AimEligibilityRefreshNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
 
-  // Ignore navigations that aren't in the primary main frame.
-  if (!registry.GetNavigationHandle().IsInPrimaryMainFrame()) {
+  // Ignore navigations that aren't in the outermost main frame.
+  if (!registry.GetNavigationHandle().IsInOutermostMainFrame()) {
     return;
   }
 
