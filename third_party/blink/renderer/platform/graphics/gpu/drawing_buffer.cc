@@ -2003,51 +2003,52 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   }
 #else
-  bool use_as_overlay = false;
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    bool use_as_overlay = false;
 
-  // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
-  // this allows WebGL-rendered canvases to be composited by the OS rather
-  // than Chrome.  IOSurfaces are only compatible with the
-  // GL_TEXTURE_RECTANGLE_ARB binding target. So to avoid the knowledge of
-  // GL_TEXTURE_RECTANGLE_ARB type textures being introduced into more areas
-  // of the code, we use the code path of non-WebGLImageChromium for
-  // OffscreenCanvas. See detailed discussion in crbug.com/649668.
-  // TODO(crbug.com/488937356): Eliminate this workaround post-rollout of the
-  // killswitch; the workaround should no longer be necessary
-  // post-SharedImage.
-  if (SharedGpuContext::IsGpuCompositingEnabled() &&
-      (!is_offscreen_canvas_ ||
-       base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas))) {
-    use_as_overlay = UseOverlaysForWebGL() || can_use_low_latency_;
-  }
-  if (use_as_overlay) {
-#if !BUILDFLAG(IS_ANDROID)
-    // Android's SharedImage backing for ChromiumImage does not support BGRX.
-
-    // TODO(b/286417069): BGRX has issues when Vulkan is used for raster and
-    // composite. Using BGRX is technically possible but will require a lot
-    // of work given the current state of the codebase. There are projects in
-    // flight that will make using BGRX a lot easier, but until then, simply
-    // use RGBX when Vulkan is enabled.
-    const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
-    const bool allow_bgrx =
-        gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
-        gpu::kGpuFeatureStatusEnabled;
-
-    // For ChromeOS explicitly specify BGRX instead of RGBX since some older
-    // Intel GPUs (i8xx) don't support RGBX overlays.
-    if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
-        allow_bgrx &&
-        IsScanoutSupportedForCanvasWithFormat(
-            viz::SinglePlaneFormat::kBGRX_8888, caps)) {
-      color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
+    // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
+    // this allows WebGL-rendered canvases to be composited by the OS rather
+    // than Chrome.  IOSurfaces are only compatible with the
+    // GL_TEXTURE_RECTANGLE_ARB binding target. So to avoid the knowledge of
+    // GL_TEXTURE_RECTANGLE_ARB type textures being introduced into more areas
+    // of the code, we use the code path of non-WebGLImageChromium for
+    // OffscreenCanvas. See detailed discussion in crbug.com/649668.
+    // TODO(crbug.com/488937356): Eliminate this workaround post-rollout of the
+    // killswitch; the workaround should no longer be necessary
+    // post-SharedImage.
+    if (!is_offscreen_canvas_ ||
+        base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas)) {
+      use_as_overlay = UseOverlaysForWebGL() || can_use_low_latency_;
     }
+    if (use_as_overlay) {
+#if !BUILDFLAG(IS_ANDROID)
+      // Android's SharedImage backing for ChromiumImage does not support BGRX.
+
+      // TODO(b/286417069): BGRX has issues when Vulkan is used for raster and
+      // composite. Using BGRX is technically possible but will require a lot
+      // of work given the current state of the codebase. There are projects in
+      // flight that will make using BGRX a lot easier, but until then, simply
+      // use RGBX when Vulkan is enabled.
+      const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
+      const bool allow_bgrx =
+          gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
+          gpu::kGpuFeatureStatusEnabled;
+
+      // For ChromeOS explicitly specify BGRX instead of RGBX since some older
+      // Intel GPUs (i8xx) don't support RGBX overlays.
+      if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
+          allow_bgrx &&
+          IsScanoutSupportedForCanvasWithFormat(
+              viz::SinglePlaneFormat::kBGRX_8888, caps)) {
+        color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
+      }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    if (IsScanoutSupportedForCanvasWithFormat(color_buffer_format_, caps)) {
-      usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      if (can_use_low_latency_) {
-        usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+      if (IsScanoutSupportedForCanvasWithFormat(color_buffer_format_, caps)) {
+        usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+        if (can_use_low_latency_) {
+          usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+        }
       }
     }
   }
