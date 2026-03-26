@@ -16,8 +16,8 @@ struct CONTENT_EXPORT EnumTraits<content::mojom::ChildFrameOwnerElementType,
                                  blink::FrameOwnerElementType> {
   static content::mojom::ChildFrameOwnerElementType ToMojom(
       blink::FrameOwnerElementType input);
-  static bool FromMojom(content::mojom::ChildFrameOwnerElementType input,
-                        blink::FrameOwnerElementType* output);
+  static blink::FrameOwnerElementType FromMojom(
+      content::mojom::ChildFrameOwnerElementType input);
 };
 
 }  // namespace mojo

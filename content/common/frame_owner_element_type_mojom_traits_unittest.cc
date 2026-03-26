@@ -34,18 +34,13 @@ TEST_F(FrameOwnerElementTypeTest, SerializeAndDeserialize) {
   }
 }
 
-TEST_F(FrameOwnerElementTypeTest, RejectInvalid) {
+TEST_F(FrameOwnerElementTypeDeathTest, RejectInvalid) {
   // Create an intentionally garbage value.
   const auto mojo_type =
       static_cast<content::mojom::ChildFrameOwnerElementType>(1234);
-  blink::FrameOwnerElementType output;
-  // TODO(crbug.com/40246400): Ideally, we would not use EnumTraits
-  // directly.
-  bool valid =
-      mojo::EnumTraits<content::mojom::ChildFrameOwnerElementType,
-                       blink::FrameOwnerElementType>::FromMojom(mojo_type,
-                                                                &output);
-  EXPECT_FALSE(valid);
+  EXPECT_NOTREACHED_DEATH(
+      (mojo::EnumTraits<content::mojom::ChildFrameOwnerElementType,
+                        blink::FrameOwnerElementType>::FromMojom(mojo_type)));
 }
 
 TEST_F(FrameOwnerElementTypeDeathTest, SerializeInvalid) {

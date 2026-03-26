@@ -22,9 +22,8 @@ struct EnumTraits<content::mojom::PointerActionType,
                   content::SyntheticPointerActionParams::PointerActionType> {
   static content::mojom::PointerActionType ToMojom(
       content::SyntheticPointerActionParams::PointerActionType input);
-  static bool FromMojom(
-      content::mojom::PointerActionType input,
-      content::SyntheticPointerActionParams::PointerActionType* output);
+  static content::SyntheticPointerActionParams::PointerActionType FromMojom(
+      content::mojom::PointerActionType input);
 };
 
 template <>
@@ -32,8 +31,8 @@ struct EnumTraits<content::mojom::SyntheticButton,
                   content::SyntheticPointerActionParams::Button> {
   static content::mojom::SyntheticButton ToMojom(
       content::SyntheticPointerActionParams::Button input);
-  static bool FromMojom(content::mojom::SyntheticButton input,
-                        content::SyntheticPointerActionParams::Button* output);
+  static content::SyntheticPointerActionParams::Button FromMojom(
+      content::mojom::SyntheticButton input);
 };
 
 template <>

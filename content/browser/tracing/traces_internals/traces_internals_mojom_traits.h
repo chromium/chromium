@@ -18,22 +18,19 @@ using TracingScenarioState = traces_internals::mojom::TracingScenarioState;
 template <>
 struct EnumTraits<ReportUploadState, content::ReportUploadState> {
   static ReportUploadState ToMojom(content::ReportUploadState input);
-  static bool FromMojom(ReportUploadState input,
-                        content::ReportUploadState* output);
+  static content::ReportUploadState FromMojom(ReportUploadState input);
 };
 
 template <>
 struct EnumTraits<SkipUploadReason, content::SkipUploadReason> {
   static SkipUploadReason ToMojom(content::SkipUploadReason input);
-  static bool FromMojom(SkipUploadReason input,
-                        content::SkipUploadReason* output);
+  static content::SkipUploadReason FromMojom(SkipUploadReason input);
 };
 
 template <>
 struct EnumTraits<TracingScenarioState, content::TracingScenario::State> {
   static TracingScenarioState ToMojom(content::TracingScenario::State input);
-  static bool FromMojom(TracingScenarioState input,
-                        content::TracingScenario::State* output);
+  static content::TracingScenario::State FromMojom(TracingScenarioState input);
 };
 
 }  // namespace mojo

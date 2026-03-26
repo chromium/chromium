@@ -4,6 +4,8 @@
 
 #include "content/common/frame_owner_element_type_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -30,25 +32,21 @@ content::mojom::ChildFrameOwnerElementType EnumTraits<
 }
 
 // static
-bool EnumTraits<content::mojom::ChildFrameOwnerElementType,
-                blink::FrameOwnerElementType>::
-    FromMojom(content::mojom::ChildFrameOwnerElementType input,
-              blink::FrameOwnerElementType* output) {
+blink::FrameOwnerElementType
+EnumTraits<content::mojom::ChildFrameOwnerElementType,
+           blink::FrameOwnerElementType>::
+    FromMojom(content::mojom::ChildFrameOwnerElementType input) {
   switch (input) {
     case content::mojom::ChildFrameOwnerElementType::kIframe:
-      *output = blink::FrameOwnerElementType::kIframe;
-      return true;
+      return blink::FrameOwnerElementType::kIframe;
     case content::mojom::ChildFrameOwnerElementType::kObject:
-      *output = blink::FrameOwnerElementType::kObject;
-      return true;
+      return blink::FrameOwnerElementType::kObject;
     case content::mojom::ChildFrameOwnerElementType::kEmbed:
-      *output = blink::FrameOwnerElementType::kEmbed;
-      return true;
+      return blink::FrameOwnerElementType::kEmbed;
     case content::mojom::ChildFrameOwnerElementType::kFrame:
-      *output = blink::FrameOwnerElementType::kFrame;
-      return true;
+      return blink::FrameOwnerElementType::kFrame;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

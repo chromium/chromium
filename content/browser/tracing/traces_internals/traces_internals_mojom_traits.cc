@@ -4,6 +4,8 @@
 
 #include "content/browser/tracing/traces_internals/traces_internals_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 ReportUploadState
@@ -22,22 +24,18 @@ EnumTraits<ReportUploadState, content::ReportUploadState>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<ReportUploadState, content::ReportUploadState>::FromMojom(
-    ReportUploadState input,
-    content::ReportUploadState* output) {
+content::ReportUploadState
+EnumTraits<ReportUploadState, content::ReportUploadState>::FromMojom(
+    ReportUploadState input) {
   switch (input) {
     case ReportUploadState::kNotUploaded:
-      *output = content::ReportUploadState::kNotUploaded;
-      return true;
+      return content::ReportUploadState::kNotUploaded;
     case ReportUploadState::kPending:
-      *output = content::ReportUploadState::kPending;
-      return true;
+      return content::ReportUploadState::kPending;
     case ReportUploadState::kPending_UserRequested:
-      *output = content::ReportUploadState::kPending_UserRequested;
-      return true;
+      return content::ReportUploadState::kPending_UserRequested;
     case ReportUploadState::kUploaded:
-      *output = content::ReportUploadState::kUploaded;
-      return true;
+      return content::ReportUploadState::kUploaded;
   }
 }
 
@@ -61,30 +59,24 @@ EnumTraits<SkipUploadReason, content::SkipUploadReason>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<SkipUploadReason, content::SkipUploadReason>::FromMojom(
-    SkipUploadReason input,
-    content::SkipUploadReason* output) {
+content::SkipUploadReason
+EnumTraits<SkipUploadReason, content::SkipUploadReason>::FromMojom(
+    SkipUploadReason input) {
   switch (input) {
     case SkipUploadReason::kNoSkip:
-      *output = content::SkipUploadReason::kNoSkip;
-      return true;
+      return content::SkipUploadReason::kNoSkip;
     case SkipUploadReason::kSizeLimitExceeded:
-      *output = content::SkipUploadReason::kSizeLimitExceeded;
-      return true;
+      return content::SkipUploadReason::kSizeLimitExceeded;
     case SkipUploadReason::kNotAnonymized:
-      *output = content::SkipUploadReason::kNotAnonymized;
-      return true;
+      return content::SkipUploadReason::kNotAnonymized;
     case SkipUploadReason::kScenarioQuotaExceeded:
-      *output = content::SkipUploadReason::kScenarioQuotaExceeded;
-      return true;
+      return content::SkipUploadReason::kScenarioQuotaExceeded;
     case SkipUploadReason::kUploadTimedOut:
-      *output = content::SkipUploadReason::kUploadTimedOut;
-      return true;
+      return content::SkipUploadReason::kUploadTimedOut;
     case SkipUploadReason::kLocalScenario:
-      *output = content::SkipUploadReason::kLocalScenario;
-      return true;
+      return content::SkipUploadReason::kLocalScenario;
   }
-  return false;
+  NOTREACHED();
 }
 
 TracingScenarioState
@@ -111,36 +103,28 @@ EnumTraits<TracingScenarioState, content::TracingScenario::State>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<TracingScenarioState, content::TracingScenario::State>::
-    FromMojom(TracingScenarioState input,
-              content::TracingScenario::State* output) {
+content::TracingScenario::State
+EnumTraits<TracingScenarioState, content::TracingScenario::State>::FromMojom(
+    TracingScenarioState input) {
   switch (input) {
     case TracingScenarioState::kDisabled:
-      *output = content::TracingScenario::State::kDisabled;
-      return true;
+      return content::TracingScenario::State::kDisabled;
     case TracingScenarioState::kEnabled:
-      *output = content::TracingScenario::State::kEnabled;
-      return true;
+      return content::TracingScenario::State::kEnabled;
     case TracingScenarioState::kSetup:
-      *output = content::TracingScenario::State::kSetup;
-      return true;
+      return content::TracingScenario::State::kSetup;
     case TracingScenarioState::kStarting:
-      *output = content::TracingScenario::State::kStarting;
-      return true;
+      return content::TracingScenario::State::kStarting;
     case TracingScenarioState::kRecording:
-      *output = content::TracingScenario::State::kRecording;
-      return true;
+      return content::TracingScenario::State::kRecording;
     case TracingScenarioState::kStopping:
-      *output = content::TracingScenario::State::kStopping;
-      return true;
+      return content::TracingScenario::State::kStopping;
     case TracingScenarioState::kFinalizing:
-      *output = content::TracingScenario::State::kFinalizing;
-      return true;
+      return content::TracingScenario::State::kFinalizing;
     case TracingScenarioState::kCloning:
-      *output = content::TracingScenario::State::kCloning;
-      return true;
+      return content::TracingScenario::State::kCloning;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo
