@@ -109,11 +109,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       // real pref which could be either value.
       fakePref_: {
         type: Object,
-        value: {
+        value: () => ({
           key: 'glic.fake_pref',
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: 0,
-        },
+        }),
       },
 
       closedCaptionsToggleEnabled_: {
