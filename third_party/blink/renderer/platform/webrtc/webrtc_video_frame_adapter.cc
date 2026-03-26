@@ -170,10 +170,11 @@ WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
 void WebRtcVideoFrameAdapter::SharedResources::RequestRasterContextProvider() {
   // Recreate the context provider.
   if (Thread::MainThread()->IsCurrentThread()) {
-    // Single threaded, maybe test. No need to post cross threads.
-    SetRasterContextProvider(
-        blink::Platform::Current()->SharedCompositorWorkerContextProvider(
-            nullptr));
+    // The preemptive request issued when the track is created will happen
+    // on the main thread.
+    blink::Platform::Current()->SharedMediaContextProvider(base::BindOnce(
+        &WebRtcVideoFrameAdapter::SharedResources::SetRasterContextProvider,
+        this));
   } else {
     // Post a task to the main thread to fetch the raster context provider, and
     // then asynchronously report back with the value.
