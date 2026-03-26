@@ -34,6 +34,12 @@ BASE_FEATURE(kWebUsbBlocklist,
              "WebUSBBlocklist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, WebUSB control transfers are blocked if they target a
+// protected interface class, even if the recipient is not set to interface
+// or endpoint. This protects devices which ignore this field.
+BASE_FEATURE(kWebUsbProtectedClassControlTransferBlock,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, accessing the navigator.hid attribute does not prevent the
 // frame from entering the back forward cache.
 BASE_FEATURE(kWebHidAttributeAllowsBackForwardCache,

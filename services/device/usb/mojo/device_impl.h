@@ -51,6 +51,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
 
   // Checks interface permissions for control transfers.
   bool HasControlTransferPermission(
+      mojom::UsbControlTransferType type,
       mojom::UsbControlTransferRecipient recipient,
       uint16_t index);
 
