@@ -31,6 +31,10 @@ function $(id) {
  * @param {HTMLElement} element The container element of the article.
  */
 function postProcessElement(element) {
+  // Remove surviving extraneous elements first so they don't interfere with
+  // downstream classifiers and processing.
+  removeExtraneousElementsFrom(element);
+
   // Wrap tables to make them scrollable.
   wrapTables(element);
 
