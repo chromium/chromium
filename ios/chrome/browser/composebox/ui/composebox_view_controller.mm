@@ -81,6 +81,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
   // The trailing input plate constraint to the close button.
   NSLayoutConstraint* _constraintToCloseButton;
+  // The leading input plate constraint.
+  NSLayoutConstraint* _constraintToLeadingEdge;
 
   // The views respon sible for the fade effect on scroll.
   UIView* _progressiveBlurEffect;
@@ -425,6 +427,10 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       _constraintToCloseButton = [_inputViewController.view.trailingAnchor
           constraintEqualToAnchor:_closeButton.leadingAnchor
                          constant:-kInputPlateTrailingPadding];
+      _constraintToLeadingEdge = [_inputViewController.view.leadingAnchor
+          constraintEqualToAnchor:safeAreaGuide.leadingAnchor
+                         constant:kInputPlateMargin];
+
       auto constraintToMargin = [_inputViewController.view.trailingAnchor
           constraintEqualToAnchor:_closeButton.trailingAnchor
                          constant:0];
@@ -436,6 +442,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         _constraintToCloseButton,
+        _constraintToLeadingEdge,
         constraintToMargin,
         [_closeButton.topAnchor
             constraintEqualToAnchor:_inputViewController.view.topAnchor
@@ -444,9 +451,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor],
         [_omniboxPopupContainer.trailingAnchor
             constraintEqualToAnchor:safeAreaGuide.trailingAnchor],
-        [_inputViewController.view.leadingAnchor
-            constraintEqualToAnchor:safeAreaGuide.leadingAnchor
-                           constant:kInputPlateMargin],
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kInputPlateTopPadding],
@@ -600,8 +604,23 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   _blurEffectView.hidden = darkStyle || _theme.incognito;
 }
 
-- (void)expandInputPlateForDismissal {
+- (void)expandInputPlateForDismissalToFrame:(CGRect)targetFrame {
   _constraintToCloseButton.active = NO;
+
+  if (!CGRectIsEmpty(targetFrame)) {
+    _constraintToLeadingEdge.active = NO;
+    CGRect convertedFrame = [self.view convertRect:targetFrame fromView:nil];
+    NSLayoutConstraint* leadingConstraint =
+        [_inputViewController.view.leadingAnchor
+            constraintEqualToAnchor:self.view.leadingAnchor
+                           constant:convertedFrame.origin.x];
+    NSLayoutConstraint* widthConstraint = [_inputViewController.view.widthAnchor
+        constraintEqualToConstant:convertedFrame.size.width];
+    [NSLayoutConstraint
+        activateConstraints:@[ leadingConstraint, widthConstraint ]];
+    [_constraintsForCurrentPosition
+        addObjectsFromArray:@[ leadingConstraint, widthConstraint ]];
+  }
 }
 
 - (void)setExpectsClipboardSuggestion:(BOOL)expectsClipboardSuggestion {

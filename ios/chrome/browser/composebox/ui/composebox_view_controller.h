@@ -52,7 +52,7 @@
     (ComposeboxInputPlateViewController*)inputViewController;
 
 // Requests the input plate to expand beyond to full width when dismissing.
-- (void)expandInputPlateForDismissal;
+- (void)expandInputPlateForDismissalToFrame:(CGRect)targetFrame;
 
 // Whether the system anticipates a clipboard suggestion causing the incognito
 // view to remain hidden.

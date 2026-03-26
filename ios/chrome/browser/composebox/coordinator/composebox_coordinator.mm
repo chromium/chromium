@@ -409,8 +409,8 @@
   _modeHolder.mode = mode;
 }
 
-- (void)expandInputPlateForDismissal {
-  [_viewController expandInputPlateForDismissal];
+- (void)expandInputPlateForDismissalToFrame:(CGRect)targetFrame {
+  [_viewController expandInputPlateForDismissalToFrame:targetFrame];
 }
 
 - (BOOL)inputPlateIsCompact {

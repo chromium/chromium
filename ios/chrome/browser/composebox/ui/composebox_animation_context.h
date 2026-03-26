@@ -29,7 +29,7 @@
 - (void)setComposeboxMode:(ComposeboxMode)mode;
 
 // Requests the input plate to expand beyond to full width when dismissing.
-- (void)expandInputPlateForDismissal;
+- (void)expandInputPlateForDismissalToFrame:(CGRect)targetFrame;
 
 // Whether the composebox is compact.
 - (BOOL)inputPlateIsCompact;

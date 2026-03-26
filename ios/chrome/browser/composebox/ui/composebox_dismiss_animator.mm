@@ -59,7 +59,9 @@
   [entrypointCopy layoutIfNeeded];
   entrypointCopy.alpha = 0;
 
-  [_contextProvider expandInputPlateForDismissal];
+  CGRect targetFrame = [entrypointCopy convertRect:entrypointCopy.bounds
+                                            toView:nil];
+  [_contextProvider expandInputPlateForDismissalToFrame:targetFrame];
   [UIView
       animateKeyframesWithDuration:[self transitionDuration:transitionContext]
       delay:0
