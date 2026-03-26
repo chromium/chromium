@@ -16,6 +16,8 @@ class DownloadInternalsUIConfig
  public:
   DownloadInternalsUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUIDownloadInternalsHost) {}
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebUI for chrome://download-internals.
