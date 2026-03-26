@@ -231,11 +231,10 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
     const H264Picture::Vector& ref_pic_listb0,
     const H264Picture::Vector& ref_pic_listb1,
     scoped_refptr<H264Picture> pic) {
-  struct v4l2_ext_control ctrl;
+  struct v4l2_ext_control ctrl = {};
   std::vector<struct v4l2_ext_control> ctrls;
 
-  struct v4l2_ctrl_h264_sps v4l2_sps;
-  UNSAFE_TODO(memset(&v4l2_sps, 0, sizeof(v4l2_sps)));
+  struct v4l2_ctrl_h264_sps v4l2_sps = {};
   v4l2_sps.constraint_set_flags =
       (sps->constraint_set0_flag ? V4L2_H264_SPS_CONSTRAINT_SET0_FLAG : 0) |
       (sps->constraint_set1_flag ? V4L2_H264_SPS_CONSTRAINT_SET1_FLAG : 0) |
@@ -284,14 +283,13 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   SET_V4L2_SPS_FLAG_IF(direct_8x8_inference_flag,
                        V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE);
 #undef SET_V4L2_SPS_FLAG_IF
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_H264_SPS;
   ctrl.size = sizeof(v4l2_sps);
   ctrl.ptr = &v4l2_sps;
   ctrls.push_back(ctrl);
 
-  struct v4l2_ctrl_h264_pps v4l2_pps;
-  UNSAFE_TODO(memset(&v4l2_pps, 0, sizeof(v4l2_pps)));
+  struct v4l2_ctrl_h264_pps v4l2_pps = {};
 #define PPS_TO_V4L2PPS(a) v4l2_pps.a = pps->a
   PPS_TO_V4L2PPS(pic_parameter_set_id);
   PPS_TO_V4L2PPS(seq_parameter_set_id);
@@ -324,14 +322,13 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   SET_V4L2_PPS_FLAG_IF(pic_scaling_matrix_present_flag,
                        V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT);
 #undef SET_V4L2_PPS_FLAG_IF
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_H264_PPS;
   ctrl.size = sizeof(v4l2_pps);
   ctrl.ptr = &v4l2_pps;
   ctrls.push_back(ctrl);
 
-  struct v4l2_ctrl_h264_scaling_matrix v4l2_scaling_matrix;
-  UNSAFE_TODO(memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix)));
+  struct v4l2_ctrl_h264_scaling_matrix v4l2_scaling_matrix = {};
 
   static_assert(
       std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4)>() <=
@@ -394,7 +391,7 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
     }
   }
 
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_H264_SCALING_MATRIX;
   ctrl.size = sizeof(v4l2_scaling_matrix);
   ctrl.ptr = &v4l2_scaling_matrix;
@@ -403,8 +400,7 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H264PictureToV4L2DecodeSurface(pic.get());
 
-  struct v4l2_ext_controls ext_ctrls;
-  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
+  struct v4l2_ext_controls ext_ctrls = {};
   ext_ctrls.count = ctrls.size();
   ext_ctrls.controls = &ctrls[0];
   dec_surface->PrepareSetCtrls(&ext_ctrls);
@@ -575,8 +571,7 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitSlice(
                ? Status::kOk
                : Status::kFail;
   }
-  auto data_copy = base::HeapArray<uint8_t>::Uninit(data_copy_size);
-  UNSAFE_TODO(memset(data_copy.data(), 0, data_copy_size));
+  auto data_copy = base::HeapArray<uint8_t>::WithSize(data_copy_size);
   data_copy[2] = 0x01;
   UNSAFE_TODO(memcpy(data_copy.data() + 3, data, size));
   return surface_handler_->SubmitSlice(dec_surface.get(), data_copy.data(),
@@ -610,22 +605,20 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitDecode(
   priv_->v4l2_decode_param.top_field_order_cnt = pic->top_field_order_cnt;
   priv_->v4l2_decode_param.bottom_field_order_cnt = pic->bottom_field_order_cnt;
 
-  struct v4l2_ext_control ctrl;
+  struct v4l2_ext_control ctrl = {};
   std::vector<struct v4l2_ext_control> ctrls;
 
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = V4L2_CID_STATELESS_H264_DECODE_PARAMS;
   ctrl.size = sizeof(priv_->v4l2_decode_param);
   ctrl.ptr = &priv_->v4l2_decode_param;
   ctrls.push_back(ctrl);
 
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_H264_DECODE_MODE;
   ctrl.value = V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED;
   ctrls.push_back(ctrl);
 
-  struct v4l2_ext_controls ext_ctrls;
-  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
+  struct v4l2_ext_controls ext_ctrls = {};
   ext_ctrls.count = ctrls.size();
   ext_ctrls.controls = &ctrls[0];
   dec_surface->PrepareSetCtrls(&ext_ctrls);
@@ -650,8 +643,7 @@ bool V4L2VideoDecoderDelegateH264::OutputPicture(
 }
 
 void V4L2VideoDecoderDelegateH264::Reset() {
-  UNSAFE_TODO(
-      memset(&priv_->v4l2_decode_param, 0, sizeof(priv_->v4l2_decode_param)));
+  priv_->v4l2_decode_param = {};
   encrypted_slice_header_offset_ = 0;
   last_parsed_encrypted_slice_header_.clear();
   encrypted_slice_header_parsing_failed_ = false;

@@ -56,8 +56,7 @@ int HandledIoctl(int fd, int request, void* arg) {
 }
 
 std::string GetDriverName(const media::IoctlAsCallback& ioctl_cb) {
-  struct v4l2_capability caps;
-  UNSAFE_TODO(memset(&caps, 0, sizeof(caps)));
+  struct v4l2_capability caps = {};
   if (ioctl_cb.Run(VIDIOC_QUERYCAP, &caps) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP" << ", caps check failed: 0x"
               << std::hex << caps.capabilities;
@@ -396,15 +395,14 @@ std::vector<SVCScalabilityMode> GetSupportedScalabilityModesForV4L2Codec(
 
   if (base::FeatureList::IsEnabled(kV4L2H264TemporalLayerHWEncoding) &&
       media_profile >= H264PROFILE_MIN && media_profile <= H264PROFILE_MAX) {
-    struct v4l2_queryctrl query_ctrl;
-    UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
+    struct v4l2_queryctrl query_ctrl = {};
     query_ctrl.id = V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING;
     if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
       DPLOG(WARNING) << "h.264 hierarchical coding not supported.";
       return {};
     }
 
-    UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
+    query_ctrl = {};
     query_ctrl.id = V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_TYPE;
     if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
       DPLOG(WARNING) << "h.264 hierarchical coding type not supported.";
@@ -429,7 +427,7 @@ std::vector<SVCScalabilityMode> GetSupportedScalabilityModesForV4L2Codec(
       return {};
     }
 
-    UNSAFE_TODO(memset(&query_ctrl, 0, sizeof(query_ctrl)));
+    query_ctrl = {};
     query_ctrl.id = V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_LAYER;
     if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
       DPLOG(WARNING) << "Unable to determine the number of layers supported.";
@@ -523,8 +521,7 @@ void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
   constexpr gfx::Size kDefaultMinCodedSize(16, 16);
   *min_resolution = kDefaultMinCodedSize;
 
-  v4l2_frmsizeenum frame_size;
-  UNSAFE_TODO(memset(&frame_size, 0, sizeof(frame_size)));
+  v4l2_frmsizeenum frame_size = {};
   frame_size.pixel_format = pixelformat;
   if (ioctl_cb.Run(VIDIOC_ENUM_FRAMESIZES, &frame_size) == kIoctlOk) {
     if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE ||

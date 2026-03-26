@@ -26,8 +26,7 @@ std::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device) {
   std::vector<uint32_t> processor_input_formats =
       V4L2ImageProcessorBackend::GetSupportedInputFormats();
 
-  struct v4l2_fmtdesc fmtdesc;
-  UNSAFE_TODO(memset(&fmtdesc, 0, sizeof(fmtdesc)));
+  struct v4l2_fmtdesc fmtdesc = {};
   fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   while (vda_device->Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0) {
     if (std::ranges::contains(processor_input_formats, fmtdesc.pixelformat)) {

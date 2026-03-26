@@ -152,8 +152,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
     const Vp9ReferenceFrameVector& ref_frames) {
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
   DCHECK(frame_hdr);
-  struct v4l2_ctrl_vp9_frame v4l2_frame_params;
-  UNSAFE_TODO(memset(&v4l2_frame_params, 0, sizeof(v4l2_frame_params)));
+  struct v4l2_ctrl_vp9_frame v4l2_frame_params = {};
 
 #define SET_FLAG_IF(cond, flag) \
   v4l2_frame_params.flags |= ((frame_hdr->cond) ? (flag) : 0)

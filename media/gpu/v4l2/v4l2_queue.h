@@ -47,7 +47,7 @@ typedef struct SecureBufferData SecureBufferData;
 struct V4L2ExtCtrl {
   V4L2ExtCtrl(uint32_t id);
   V4L2ExtCtrl(uint32_t id, int32_t val);
-  struct v4l2_ext_control ctrl;
+  struct v4l2_ext_control ctrl = {};
 };
 
 // A unique reference to a buffer for clients to prepare and submit.

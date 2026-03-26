@@ -88,24 +88,20 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
 
   // Record for input buffers.
   struct I420BufferRecord {
-    I420BufferRecord();
-    ~I420BufferRecord();
-    void* address[kMaxI420Plane];  // mmap() address.
-    size_t length[kMaxI420Plane];  // mmap() length.
+    void* address[kMaxI420Plane] = {};  // mmap() address.
+    size_t length[kMaxI420Plane] = {};  // mmap() length.
 
     // Set true during QBUF and DQBUF. |address| will be accessed by hardware.
-    bool at_device;
+    bool at_device = false;
   };
 
   // Record for output buffers.
   struct JpegBufferRecord {
-    JpegBufferRecord();
-    ~JpegBufferRecord();
-    void* address[kMaxJpegPlane];  // mmap() address.
-    size_t length[kMaxJpegPlane];  // mmap() length.
+    void* address[kMaxJpegPlane] = {};  // mmap() address.
+    size_t length[kMaxJpegPlane] = {};  // mmap() length.
 
     // Set true during QBUF and DQBUF. |address| will be accessed by hardware.
-    bool at_device;
+    bool at_device = false;
   };
 
   // Job record. Jobs are processed in a FIFO order. This is separated from

@@ -127,8 +127,7 @@ scoped_refptr<VP8Picture> V4L2VideoDecoderDelegateVP8::CreateVP8Picture() {
 bool V4L2VideoDecoderDelegateVP8::SubmitDecode(
     scoped_refptr<VP8Picture> pic,
     const Vp8ReferenceFrameVector& reference_frames) {
-  struct v4l2_ctrl_vp8_frame v4l2_frame_hdr;
-  UNSAFE_TODO(memset(&v4l2_frame_hdr, 0, sizeof(v4l2_frame_hdr)));
+  struct v4l2_ctrl_vp8_frame v4l2_frame_hdr = {};
 
   const auto& frame_hdr = pic->frame_hdr;
 #define FHDR_TO_V4L2_FHDR(a) v4l2_frame_hdr.a = frame_hdr->a
@@ -215,14 +214,12 @@ bool V4L2VideoDecoderDelegateVP8::SubmitDecode(
     ref_surfaces.push_back(alt_frame_surface);
   }
 
-  struct v4l2_ext_control ctrl;
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  struct v4l2_ext_control ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_VP8_FRAME;
   ctrl.size = sizeof(v4l2_frame_hdr);
   ctrl.ptr = &v4l2_frame_hdr;
 
-  struct v4l2_ext_controls ext_ctrls;
-  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
+  struct v4l2_ext_controls ext_ctrls = {};
   ext_ctrls.count = 1;
   ext_ctrls.controls = &ctrl;
   dec_surface->PrepareSetCtrls(&ext_ctrls);

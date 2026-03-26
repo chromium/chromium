@@ -42,8 +42,7 @@ struct v4l2_format BuildV4L2Format(const enum v4l2_buf_type type,
                                    uint32_t fourcc,
                                    const gfx::Size& size,
                                    size_t buffer_size) {
-  struct v4l2_format format;
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  struct v4l2_format format = {};
   format.type = type;
   format.fmt.pix_mp.pixelformat = fourcc;
   format.fmt.pix_mp.width = size.width();
@@ -130,8 +129,7 @@ std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(
 
   std::vector<base::ScopedFD> dmabuf_fds;
   for (size_t i = 0; i < num_planes; ++i) {
-    struct v4l2_exportbuffer expbuf;
-    UNSAFE_TODO(memset(&expbuf, 0, sizeof(expbuf)));
+    struct v4l2_exportbuffer expbuf = {};
     expbuf.type = buf_type;
     expbuf.index = index;
     expbuf.plane = i;
@@ -150,7 +148,6 @@ std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(
 }  // namespace
 
 V4L2ExtCtrl::V4L2ExtCtrl(uint32_t id) {
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
   ctrl.id = id;
 }
 
@@ -199,11 +196,11 @@ class V4L2Buffer {
   std::vector<void*> plane_mappings_;
 
   // V4L2 data as queried by QUERYBUF.
-  struct v4l2_buffer v4l2_buffer_;
+  struct v4l2_buffer v4l2_buffer_ = {};
   // WARNING: do not change this to a vector or something smaller than
   // VIDEO_MAX_PLANES (the maximum number of planes V4L2 supports). The
   // element overhead is small and may avoid memory corruption bugs.
-  struct v4l2_plane v4l2_planes_[VIDEO_MAX_PLANES];
+  struct v4l2_plane v4l2_planes_[VIDEO_MAX_PLANES] = {};
 
   struct v4l2_format format_;
   scoped_refptr<FrameResource> frame_;
@@ -238,8 +235,6 @@ V4L2Buffer::V4L2Buffer(const IoctlAsCallback& ioctl_cb,
   DCHECK(V4L2_TYPE_IS_MULTIPLANAR(type));
   DCHECK_LE(format.fmt.pix_mp.num_planes, std::size(v4l2_planes_));
 
-  UNSAFE_TODO(memset(&v4l2_buffer_, 0, sizeof(v4l2_buffer_)));
-  UNSAFE_TODO(memset(v4l2_planes_, 0, sizeof(v4l2_planes_)));
   v4l2_buffer_.m.planes = v4l2_planes_;
   // Just in case we got more planes than we want.
   v4l2_buffer_.length =
@@ -1129,8 +1124,7 @@ std::optional<struct v4l2_format> V4L2Queue::TryFormat(uint32_t fourcc,
 
 std::pair<std::optional<struct v4l2_format>, int> V4L2Queue::GetFormat() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  struct v4l2_format format;
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  struct v4l2_format format = {};
   format.type = type_;
   if (ioctl_cb_.Run(VIDIOC_G_FMT, &format) != 0) {
     VPQLOGF(2) << "Failed to get format";
@@ -1444,13 +1438,11 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
     return std::make_pair(true, nullptr);
   }
 
-  struct v4l2_buffer v4l2_buffer;
-  UNSAFE_TODO(memset(&v4l2_buffer, 0, sizeof(v4l2_buffer)));
+  struct v4l2_buffer v4l2_buffer = {};
   // WARNING: do not change this to a vector or something smaller than
   // VIDEO_MAX_PLANES (the maximum number of planes V4L2 supports). The
   // element overhead is small and may avoid memory corruption bugs.
-  struct v4l2_plane planes[VIDEO_MAX_PLANES];
-  UNSAFE_TODO(memset(planes, 0, sizeof(planes)));
+  struct v4l2_plane planes[VIDEO_MAX_PLANES] = {};
   v4l2_buffer.type = type_;
   v4l2_buffer.memory = memory_;
   v4l2_buffer.m.planes = planes;
@@ -1624,9 +1616,7 @@ bool V4L2Queue::SendCommand(__u32 command) {
   // TODO(mcasas): Restrict this to V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, after
   // deprecating V4L2StatefulVideoDecoderBackend.
 
-  struct v4l2_decoder_cmd cmd;
-  UNSAFE_TODO(
-      memset(&cmd, 0, sizeof(cmd)));  // Must use memset() due to unions.
+  struct v4l2_decoder_cmd cmd = {};
   cmd.cmd = command;
   const bool success = ioctl_cb_.Run(VIDIOC_DECODER_CMD, &cmd) == kIoctlOk;
   PLOG_IF(ERROR, !success) << "Failed to issue command " << command

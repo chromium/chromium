@@ -283,15 +283,13 @@ EncoderStatus V4L2VideoEncodeAccelerator::Initialize(
   }
 
   // Ask if V4L2_ENC_CMD_STOP (Flush) is supported.
-  struct v4l2_encoder_cmd cmd;
-  UNSAFE_TODO(memset(&cmd, 0, sizeof(cmd)));
+  struct v4l2_encoder_cmd cmd = {};
   cmd.cmd = V4L2_ENC_CMD_STOP;
   is_flush_supported_ = (device_->Ioctl(VIDIOC_TRY_ENCODER_CMD, &cmd) == 0);
   if (!is_flush_supported_)
     VLOGF(2) << "V4L2_ENC_CMD_STOP is not supported.";
 
-  struct v4l2_capability caps;
-  UNSAFE_TODO(memset(&caps, 0, sizeof(caps)));
+  struct v4l2_capability caps = {};
   const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
   if (device_->Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
     MEDIA_LOG(ERROR, media_log.get())
@@ -1282,8 +1280,7 @@ void V4L2VideoEncodeAccelerator::Enqueue() {
             FROM_HERE, base::BindOnce(std::move(flush_callback_), true));
         return;
       }
-      struct v4l2_encoder_cmd cmd;
-      UNSAFE_TODO(memset(&cmd, 0, sizeof(cmd)));
+      struct v4l2_encoder_cmd cmd = {};
       cmd.cmd = V4L2_ENC_CMD_STOP;
       if (device_->Ioctl(VIDIOC_ENCODER_CMD, &cmd) != 0) {
         SetErrorState(
@@ -1491,8 +1488,7 @@ void V4L2VideoEncodeAccelerator::PumpBitstreamBuffers() {
       child_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(flush_callback_), true));
       // Start the encoder again.
-      struct v4l2_encoder_cmd cmd;
-      UNSAFE_TODO(memset(&cmd, 0, sizeof(cmd)));
+      struct v4l2_encoder_cmd cmd = {};
       cmd.cmd = V4L2_ENC_CMD_START;
       if (device_->Ioctl(VIDIOC_ENCODER_CMD, &cmd) != 0) {
         SetErrorState(
@@ -1854,8 +1850,7 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   }
 
   if (current_framerate_ != framerate) {
-    struct v4l2_streamparm parms;
-    UNSAFE_TODO(memset(&parms, 0, sizeof(parms)));
+    struct v4l2_streamparm parms = {};
     parms.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     // Note that we are provided "frames per second" but V4L2 expects "time per
     // frame"; hence we provide the reciprocal of the framerate here.
@@ -1966,8 +1961,7 @@ bool V4L2VideoEncodeAccelerator::ApplyCrop() {
   visible_rect.width = encoder_input_visible_rect_.width();
   visible_rect.height = encoder_input_visible_rect_.height();
 
-  struct v4l2_selection selection_arg;
-  UNSAFE_TODO(memset(&selection_arg, 0, sizeof(selection_arg)));
+  struct v4l2_selection selection_arg = {};
   selection_arg.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
   selection_arg.target = V4L2_SEL_TGT_CROP;
   selection_arg.r = visible_rect;
@@ -1979,8 +1973,7 @@ bool V4L2VideoEncodeAccelerator::ApplyCrop() {
     visible_rect = selection_arg.r;
   } else {
     DVLOGF(3) << "Fallback to VIDIOC_S/G_CROP";
-    struct v4l2_crop crop;
-    UNSAFE_TODO(memset(&crop, 0, sizeof(crop)));
+    struct v4l2_crop crop = {};
     crop.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     crop.c = visible_rect;
     if (device_->Ioctl(VIDIOC_S_CROP, &crop) != 0) {

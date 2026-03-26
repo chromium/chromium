@@ -25,8 +25,7 @@ v4l2_format V4L2FormatVideoOutput(uint32_t width,
                                   uint32_t field,
                                   uint32_t bytesperline,
                                   uint32_t sizeimage) {
-  v4l2_format format;
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  v4l2_format format = {};
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
   struct v4l2_pix_format* pix = &format.fmt.pix;
   pix->width = width;
@@ -47,8 +46,7 @@ v4l2_format V4L2FormatVideoOutputMplane(uint32_t width,
                                         uint32_t field,
                                         std::vector<uint32_t> bytesperlines,
                                         std::vector<uint32_t> sizeimages) {
-  v4l2_format format;
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  v4l2_format format = {};
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   struct v4l2_pix_format_mplane* pix_mp = &format.fmt.pix_mp;
   if (bytesperlines.size() != sizeimages.size() ||

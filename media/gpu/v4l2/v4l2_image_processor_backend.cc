@@ -292,8 +292,7 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
   }
 
   // Try to set input format.
-  struct v4l2_format format;
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  struct v4l2_format format = {};
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   format.fmt.pix_mp.width = input_config.size.width();
   format.fmt.pix_mp.height = input_config.size.height();
@@ -322,7 +321,7 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
   }
 
   // Try to set output format.
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  format = {};
   format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   v4l2_pix_format_mplane& out_pix_mp = format.fmt.pix_mp;
   out_pix_mp.width = output_config.size.width();
@@ -448,8 +447,7 @@ bool V4L2ImageProcessorBackend::TryOutputFormat(uint32_t input_pixelformat,
   }
 
   // Set input format.
-  struct v4l2_format format;
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  struct v4l2_format format = {};
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   format.fmt.pix_mp.width = input_size.width();
   format.fmt.pix_mp.height = input_size.height();
@@ -462,7 +460,7 @@ bool V4L2ImageProcessorBackend::TryOutputFormat(uint32_t input_pixelformat,
   }
 
   // Try output format.
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  format = {};
   format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   format.fmt.pix_mp.width = output_size->width();
   format.fmt.pix_mp.height = output_size->height();
@@ -599,8 +597,7 @@ void V4L2ImageProcessorBackend::Reset() {
 bool V4L2ImageProcessorBackend::ReconfigureV4L2Format(const gfx::Size& size,
                                                       enum v4l2_buf_type type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  struct v4l2_format format;
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  struct v4l2_format format = {};
   format.type = type;
   if (device_->Ioctl(VIDIOC_G_FMT, &format) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_G_FMT";

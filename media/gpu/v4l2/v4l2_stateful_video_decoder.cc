@@ -94,9 +94,7 @@ void WaitOnceForEvents(int device_fd,
       VLOGF(2) << "Resolution change event";
 
       // Dequeue the event otherwise it'll be stuck in the driver forever.
-      struct v4l2_event event;
-      UNSAFE_TODO(memset(&event, 0,
-                         sizeof(event)));  // Must do: v4l2_event has a union.
+      struct v4l2_event event = {};
       if (HandledIoctl(device_fd, VIDIOC_DQEVENT, &event) != kIoctlOk) {
         PLOG(ERROR) << "Failed dequeing an event";
         return;

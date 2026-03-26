@@ -207,11 +207,10 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
     return Status::kOk;
   }
 
-  struct v4l2_ext_control ctrl;
+  struct v4l2_ext_control ctrl = {};
   std::vector<struct v4l2_ext_control> ctrls;
 
-  struct v4l2_ctrl_hevc_sps v4l2_sps;
-  UNSAFE_TODO(memset(&v4l2_sps, 0, sizeof(v4l2_sps)));
+  struct v4l2_ctrl_hevc_sps v4l2_sps = {};
 
   int highest_tid = sps->sps_max_sub_layers_minus1;
 
@@ -264,14 +263,13 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
   SET_V4L2_SPS_FLAG_IF(strong_intra_smoothing_enabled_flag,
                        V4L2_HEVC_SPS_FLAG_STRONG_INTRA_SMOOTHING_ENABLED);
 #undef SET_V4L2_SPS_FLAG_IF
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_HEVC_SPS;
   ctrl.size = sizeof(v4l2_sps);
   ctrl.ptr = &v4l2_sps;
   ctrls.push_back(ctrl);
 
-  struct v4l2_ctrl_hevc_pps v4l2_pps;
-  UNSAFE_TODO(memset(&v4l2_pps, 0, sizeof(v4l2_pps)));
+  struct v4l2_ctrl_hevc_pps v4l2_pps = {};
   // In the order of |struct v4l2_ctrl_hevc_pps|
 #define PPS_TO_V4L2PPS(a) v4l2_pps.a = pps->a
   v4l2_pps.pic_parameter_set_id = pps->pps_pic_parameter_set_id;
@@ -363,14 +361,13 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                        V4L2_HEVC_PPS_FLAG_UNIFORM_SPACING);
 #undef SET_V4L2_PPS_FLAG_IF
 
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_HEVC_PPS;
   ctrl.size = sizeof(v4l2_pps);
   ctrl.ptr = &v4l2_pps;
   ctrls.push_back(ctrl);
 
-  struct v4l2_ctrl_hevc_scaling_matrix v4l2_scaling_matrix;
-  UNSAFE_TODO(memset(&v4l2_scaling_matrix, 0, sizeof(v4l2_scaling_matrix)));
+  struct v4l2_ctrl_hevc_scaling_matrix v4l2_scaling_matrix = {};
   struct H265ScalingListData checker;
 
   // TODO(jkardatzke): Optimize storage of the 32x32 since only indices 0 and 3
@@ -454,7 +451,7 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
         scaling_list.scaling_list_dc_coef_32x32[3];
   }
 
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_HEVC_SCALING_MATRIX;
   ctrl.size = sizeof(v4l2_scaling_matrix);
   ctrl.ptr = &v4l2_scaling_matrix;
@@ -493,14 +490,13 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                     ref_pic_set_st_curr_after, ref_pic_set_st_curr_before);
   dec_surface->SetReferenceSurfaces(ref_surfaces);
 
-  UNSAFE_TODO(memset(&ctrl, 0, sizeof(ctrl)));
+  ctrl = {};
   ctrl.id = V4L2_CID_STATELESS_HEVC_DECODE_PARAMS;
   ctrl.size = sizeof(v4l2_decode_param);
   ctrl.ptr = &v4l2_decode_param;
   ctrls.push_back(ctrl);
 
-  struct v4l2_ext_controls ext_ctrls;
-  UNSAFE_TODO(memset(&ext_ctrls, 0, sizeof(ext_ctrls)));
+  struct v4l2_ext_controls ext_ctrls = {};
   ext_ctrls.count = ctrls.size();
   ext_ctrls.controls = ctrls.data();
   dec_surface->PrepareSetCtrls(&ext_ctrls);
@@ -543,8 +539,7 @@ H265Decoder::H265Accelerator::Status V4L2VideoDecoderDelegateH265::SubmitSlice(
                ? Status::kOk
                : Status::kFail;
   }
-  auto data_copy = base::HeapArray<uint8_t>::Uninit(data_copy_size);
-  UNSAFE_TODO(memset(data_copy.data(), 0, data_copy_size));
+  auto data_copy = base::HeapArray<uint8_t>::WithSize(data_copy_size);
   data_copy[2] = 0x01;
   UNSAFE_TODO(memcpy(data_copy.data() + 3, data, size));
   return surface_handler_->SubmitSlice(dec_surface.get(), data_copy.data(),
