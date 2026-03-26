@@ -55,6 +55,14 @@ BroadcastChannel* BroadcastChannel::Create(ExecutionContext* execution_context,
   if (window && window->IsCrossSiteSubframe())
     UseCounter::Count(window, WebFeature::kThirdPartyBroadcastChannel);
 
+  if (auto* worker_global_scope =
+          DynamicTo<WorkerGlobalScope>(execution_context)) {
+    if (worker_global_scope->Url().ProtocolIsData()) {
+      UseCounter::Count(worker_global_scope,
+                        WebFeature::kDataUrlWorkerBroadcastChannel);
+    }
+  }
+
   return MakeGarbageCollected<BroadcastChannel>(execution_context, name);
 }
 

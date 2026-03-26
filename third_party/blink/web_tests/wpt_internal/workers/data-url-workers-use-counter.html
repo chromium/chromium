@@ -7,6 +7,7 @@
 
 const kDataUrlDedicatedWorker = 5568;
 const kDataUrlSharedWorker = 5569;
+const kDataUrlWorkerBroadcastChannel = 5856;
 
 test(() => {
   internals.clearUseCounter(document, kDataUrlDedicatedWorker);
@@ -31,6 +32,13 @@ test(() => {
   new SharedWorker('data:application/javascript,close();', {type: 'module'});
   assert_true(internals.isUseCounted(document, kDataUrlSharedWorker));
 }, "kDataUrlSharedWorker UseCounter should be triggered when a module shared worker is created from a data: URL.");
+
+promise_test(async () => {
+  internals.clearUseCounter(document, kDataUrlWorkerBroadcastChannel);
+  const worker = new Worker('data:application/javascript,new BroadcastChannel("test"); postMessage("done");');
+  await new Promise(resolve => worker.onmessage = resolve);
+  assert_true(internals.isUseCounted(document, kDataUrlWorkerBroadcastChannel));
+}, "kDataUrlWorkerBroadcastChannel UseCounter should be triggered when a BroadcastChannel is created in a data: URL worker.");
 
 </script>
 </body>
