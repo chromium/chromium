@@ -4,7 +4,24 @@
 
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 
+#import <algorithm>
+
 #import "base/check.h"
+
+namespace {
+// Updates the fractional `progress` of the fullscreen UI layer by interpreting
+// a `scroll` distance. Evaluates the `scroll` as a percentage of the total
+// compressible space (`delta`) and clamps the result between 0.0 (fullscreen)
+// and 1.0 (not fullscreen) to prevent overscroll distortion.
+void UpdateProgress(CGFloat& progress, CGFloat scroll, CGFloat delta) {
+  if (delta == 0) {
+    return;
+  }
+
+  CGFloat incremental_progress = scroll / delta;
+  progress = std::clamp<CGFloat>(progress - incremental_progress, 0, 1);
+}
+}  // namespace
 
 FullscreenBrowserAgent::FullscreenBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {}
@@ -19,6 +36,28 @@ void FullscreenBrowserAgent::AddObserver(
 void FullscreenBrowserAgent::RemoveObserver(
     FullscreenBrowserAgentObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
+  CGFloat pre_scroll_top_progress = top_progress_;
+  CGFloat pre_scroll_bottom_progress = bottom_progress_;
+
+  CGFloat top_delta = max_insets_.top - min_insets_.top;
+  UpdateProgress(top_progress_, amount, top_delta);
+  CGFloat bottom_delta = max_insets_.bottom - min_insets_.bottom;
+  UpdateProgress(bottom_progress_, amount, bottom_delta);
+
+  if (pre_scroll_top_progress == top_progress_ &&
+      pre_scroll_bottom_progress == bottom_progress_) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.WillUpdateState(this);
+  }
+  for (auto& observer : observers_) {
+    observer.DidUpdateState(this);
+  }
 }
 
 void FullscreenBrowserAgent::ForceExitFullscreenWithoutAnimation(PassKey) {

@@ -41,6 +41,15 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   UIEdgeInsets min_insets() const { return min_insets_; }
   UIEdgeInsets max_insets() const { return max_insets_; }
 
+  // Accessors for the progress in entering or exiting fullscreen.
+  // 1.0 indicates browser UI is fully visible, 0.0 indicates browser UI is
+  // fully hidden (in fullscreen mode).
+  CGFloat top_progress() const { return top_progress_; }
+  CGFloat bottom_progress() const { return bottom_progress_; }
+
+  // Incrementally changes the fullscreen progress based on a drag or scroll.
+  void IncrementalScroll(CGFloat amount, PassKey);
+
   // Instantly exits fullscreen, notifying observers of the update.
   // Generally used to reset the UI from system events like backgrounding.
   void ForceExitFullscreenWithoutAnimation(PassKey);
@@ -59,6 +68,12 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // The min and max insets.
   UIEdgeInsets min_insets_ = UIEdgeInsetsZero;
   UIEdgeInsets max_insets_ = UIEdgeInsetsZero;
+
+  // The progress in entering or exiting fullscreen. 1.0 indicates browser UI is
+  // fully visible, 0.0 indicates browser UI is fully hidden (in fullscreen
+  // mode).
+  CGFloat top_progress_ = 1.0;
+  CGFloat bottom_progress_ = 1.0;
 
   // True if the agent is currently broadcasting WillUpdateObscuredInsetRange.
   // Used to ensure AddObscuredInsetRange() is only called at the correct time.

@@ -53,6 +53,7 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebViewProxyTabHelperObserverBridge> _webViewProxyObserver;
+  CGFloat _lastContentOffset;
 }
 
 #pragma mark - Public
@@ -169,41 +170,53 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
 
 - (void)webViewScrollViewDidScroll:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+  // Ignore programmatic scrolls (e.g. from inset updates). Only process scroll
+  // events that are actively driven by the user's touch or residual momentum.
+  if (!webViewScrollViewProxy.isDragging &&
+      !webViewScrollViewProxy.isDecelerating) {
+    return;
+  }
+
+  CGFloat currentContentOffset = webViewScrollViewProxy.contentOffset.y;
+  CGFloat delta = currentContentOffset - _lastContentOffset;
+  _lastContentOffset = currentContentOffset;
+
+  _browserAgent->IncrementalScroll(
+      delta, FullscreenMediatorPassKeyProvider::passkey());
 }
 
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+  _lastContentOffset = webViewScrollViewProxy.contentOffset.y;
 }
 
 - (void)webViewScrollViewWillEndDragging:
             (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
                             withVelocity:(CGPoint)velocity
                      targetContentOffset:(inout CGPoint*)targetContentOffset {
-  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+  // TODO(crbug.com/491845727): Implement snapping animations.
 }
 
 - (void)webViewScrollViewDidEndDragging:
             (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
                          willDecelerate:(BOOL)decelerate {
-  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+  // TODO(crbug.com/491845727): Implement snapping animations.
 }
 
 - (void)webViewScrollViewDidEndDecelerating:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+  // TODO(crbug.com/491845727): Implement snapping animations.
 }
 
 - (void)webViewScrollViewWillBeginZooming:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+  // TODO(crbug.com/491845727): Implement zoom lock logic.
 }
 
 - (void)webViewScrollViewDidEndZooming:
             (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
                                atScale:(CGFloat)scale {
-  // TODO(crbug.com/491845727): Implement scroll tracking logic.
+  // TODO(crbug.com/491845727): Implement zoom lock logic.
 }
 
 #pragma mark - System Notifications
