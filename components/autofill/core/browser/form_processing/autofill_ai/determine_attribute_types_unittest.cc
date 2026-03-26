@@ -410,7 +410,7 @@ TEST_F(DetermineAttributeTypesTest, AtMostOneAttributePerFieldPerEntity) {
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
       {// AutofillType::MakeAutofillType() truncates this to NAME_FULL because
-       // both NAME_FULL and PASSPORT_ISSUING_COUNTRY are belong to `kPassport`.
+       // both NAME_FULL and PASSPORT_ISSUING_COUNTRY belong to `kPassport`.
        {NAME_FULL, PASSPORT_ISSUING_COUNTRY},
        // AutofillType::MakeAutofillType() keeps both because they belong to
        // destinct EntityTypes.

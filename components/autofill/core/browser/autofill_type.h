@@ -113,10 +113,10 @@ class AutofillType {
 
   // GetAutofillAiTypes() is the union of GetAutofillAiType() over all
   // EntityTypes. That is, it includes all FieldTypes supported by Autofill AI,
-  // including the dynamically assigned types (name types).
+  // including the dynamically assigned types (e.g., name types).
   //
   // GetStaticAutofillAiTypes() is like GetAutofillAiTypes() except that it
-  // excludes the dynamically assigned types (name types).
+  // excludes the dynamically assigned types (e.g., name types).
   FieldTypeSet GetAutofillAiTypes() const;
   FieldTypeSet GetStaticAutofillAiTypes() const;
 

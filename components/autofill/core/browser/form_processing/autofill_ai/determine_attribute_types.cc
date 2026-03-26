@@ -33,40 +33,43 @@ bool IsRelevant(const AutofillField& field) {
   return field.is_focusable() || field.IsSelectElement();
 }
 
-// The set of all FieldTypes that have **more** than one associated
-// AttributeType.
-static constexpr FieldTypeSet kNonInjectiveFieldTypes =
-    FieldTypesOfGroup(FieldTypeGroup::kName);
+// The set of all FieldTypes understood but not owned by Autofill AI.
+static constexpr FieldTypeSet kDynamicFieldTypes = [] {
+  FieldTypeSet field_types;
+  for (AttributeType at : DenseSet<AttributeType>::all()) {
+    for (FieldType ft : at.field_subtypes()) {
+      field_types.insert(ft);
+    }
+  }
+  field_types.erase_all(FieldTypesOfGroup(FieldTypeGroup::kAutofillAi));
+  return field_types;
+}();
 
 // Some plausibility checks.
-static_assert(kNonInjectiveFieldTypes.contains_all({NAME_FULL, NAME_FIRST,
-                                                    NAME_LAST, NAME_MIDDLE}));
-static_assert(!kNonInjectiveFieldTypes.contains_any(
+static_assert(kDynamicFieldTypes.contains_all({NAME_FULL, NAME_FIRST, NAME_LAST,
+                                               NAME_MIDDLE}));
+static_assert(!kDynamicFieldTypes.contains_any(
     {ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, CREDIT_CARD_NUMBER}));
-static_assert(!kNonInjectiveFieldTypes.contains_any(
+static_assert(!kDynamicFieldTypes.contains_any(
     {DRIVERS_LICENSE_EXPIRATION_DATE, PASSPORT_NUMBER, VEHICLE_MODEL}));
 
 // AttributeType::field_type() must be mostly injective.
-// distinct AttributeTypes other than those having field_type() in
-// `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
-consteval bool IsMostlyInjective() {
-  FieldTypeSet field_types;
-
-  for (AttributeType at : DenseSet<AttributeType>::all()) {
-    if (std::optional<FieldType> field_type = at.field_type()) {
-      auto [_, inserted] = field_types.insert(*field_type);
-      if (!inserted && !kNonInjectiveFieldTypes.contains(*field_type)) {
-        return false;
+// That is, distinct AttributeTypes other than those having field_type() in
+// `kDynamicFieldTypes` must be mapped to distinct FieldTypes.
+static_assert(
+    [] {
+      FieldTypeSet field_types;
+      for (AttributeType at : DenseSet<AttributeType>::all()) {
+        if (std::optional<FieldType> field_type = at.field_type()) {
+          const bool inserted = field_types.insert(*field_type).second;
+          if (!inserted && !kDynamicFieldTypes.contains(*field_type)) {
+            return false;
+          }
+        }
       }
-    }
-  }
-
-  return true;
-}
-
-// AttributeType::field_type() must be mostly injective.
-static_assert(IsMostlyInjective(),
-              "AttributeType::field_type() is not mostly injective.");
+      return true;
+    }(),
+    "AttributeType::field_type() is not mostly injective.");
 
 // A FieldType's static AttributeType is the unique AttributeType whose
 // AttributeType::field_type() is the field's FieldType.
@@ -77,12 +80,12 @@ std::optional<AttributeType> GetStaticAttributeType(FieldType ft) {
   };
 
   // This lookup table is the inverse of AttributeType::field_type(), except
-  // for the `kNonInjectiveFieldTypes`.
+  // for the `kDynamicFieldTypes`.
   static auto kTable = []() {
     std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
     for (AttributeType at : DenseSet<AttributeType>::all()) {
       if (std::optional<FieldType> field_type = at.field_type()) {
-        if (!kNonInjectiveFieldTypes.contains(*field_type)) {
+        if (!kDynamicFieldTypes.contains(*field_type)) {
           arr[*field_type] = at;
         }
       }
@@ -94,7 +97,7 @@ std::optional<AttributeType> GetStaticAttributeType(FieldType ft) {
 
 // A field is assignable a dynamic AttributeType iff it is a name field.
 bool IsAssignableDynamicAttributeType(const FieldTypeSet& fts) {
-  return kNonInjectiveFieldTypes.contains_any(fts);
+  return kDynamicFieldTypes.contains_any(fts);
 }
 
 std::optional<AttributeType> GetAttributeType(EntityType entity,
