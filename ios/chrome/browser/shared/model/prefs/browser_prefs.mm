@@ -1195,4 +1195,9 @@ void MigrateObsoleteUserDefault() {
   [defaults removeObjectForKey:@"SpecialTabUseCount"];
   [defaults removeObjectForKey:@"OmniboxUseCount"];
   [defaults removeObjectForKey:@"BookmarkUseCount"];
+
+  // Added 03/2026
+  [defaults removeObjectForKey:@"fre_timestamp_migration_done"];
+  [defaults removeObjectForKey:@"promo_interest_event_migration_done"];
+  [defaults removeObjectForKey:@"promo_impressions_migration_done"];
 }

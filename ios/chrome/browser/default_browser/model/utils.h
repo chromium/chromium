@@ -348,24 +348,6 @@ base::Time GetGenericDefaultBrowserPromoTimestamp();
 // before. Otherwise, returns unix epoch.
 base::Time GetTailoredDefaultBrowserPromoTimestamp();
 
-// Log to UserDefaults FRE timestamp migration is done.
-void LogFRETimestampMigrationDone();
-
-// Returns whether FRE timestamp migrating is done.
-BOOL FRETimestampMigrationDone();
-
-// Log to UserDefaults promo interest event migration is done.
-void LogPromoInterestEventMigrationDone();
-
-// Returns whether promo interest event migratin is done.
-BOOL IsPromoInterestEventMigrationDone();
-
-// Log to UserDefaults promo impressions migration is done.
-void LogPromoImpressionsMigrationDone();
-
-// Returns whether promo impressions migratin is done.
-BOOL IsPromoImpressionsMigrationDone();
-
 // Records the last action the user took when a Default Browser Promo was
 // presented.
 void RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction action);

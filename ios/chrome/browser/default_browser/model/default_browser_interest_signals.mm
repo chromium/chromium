@@ -13,7 +13,7 @@
 namespace default_browser {
 
 void NotifyStartWithWidget(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kMadeForIOSPromoConditionsMet);
     tracker->NotifyEvent(
@@ -27,7 +27,7 @@ void NotifyStartWithWidget(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyStartWithURL(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
@@ -38,7 +38,7 @@ void NotifyStartWithURL(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyCredentialExtensionUsed(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kMadeForIOSPromoConditionsMet);
   }
@@ -49,7 +49,7 @@ void NotifyCredentialExtensionUsed(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyAutofillSuggestionsShown(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kMadeForIOSPromoConditionsMet);
   }
@@ -61,7 +61,7 @@ void NotifyAutofillSuggestionsShown(feature_engagement::Tracker* tracker) {
 
 void NotifyPasswordAutofillSuggestionUsed(
     feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kStaySafePromoConditionsMet);
   }
@@ -72,7 +72,7 @@ void NotifyPasswordAutofillSuggestionUsed(
 }
 
 void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kStaySafePromoConditionsMet);
   }
@@ -83,7 +83,7 @@ void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
@@ -93,7 +93,7 @@ void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyBookmarkAddOrEdit(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
@@ -103,7 +103,7 @@ void NotifyBookmarkAddOrEdit(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyBookmarkManagerOpened(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
@@ -113,7 +113,7 @@ void NotifyBookmarkManagerOpened(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyBookmarkManagerClosed(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
@@ -123,7 +123,7 @@ void NotifyBookmarkManagerClosed(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyURLFromBookmarkOpened(feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
@@ -140,7 +140,7 @@ void NotifyOmniboxURLCopyPaste(feature_engagement::Tracker* tracker) {
 void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
                                           feature_engagement::Tracker* tracker,
                                           SceneState* scene_state) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
@@ -162,7 +162,7 @@ void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
 
 void NotifyOmniboxTextCopyPasteAndNavigate(
     feature_engagement::Tracker* tracker) {
-  if (IsPromoInterestEventMigrationDone() && tracker) {
+  if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
@@ -176,10 +176,6 @@ void NotifyDefaultBrowserFREPromoShown(feature_engagement::Tracker* tracker) {
   // TODO(crbug.com/315329355): Remove once non-modal promos are migrated to
   // FET.
   LogUserInteractionWithFirstRunPromo();
-
-  // No need to do migration for this client because it will be already
-  // recording to FET.
-  LogFRETimestampMigrationDone();
 
   if (!tracker) {
     return;

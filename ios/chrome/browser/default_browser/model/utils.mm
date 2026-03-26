@@ -327,11 +327,6 @@ constexpr base::TimeDelta kBlueDotPromoDuration = base::Days(15);
 constexpr base::TimeDelta kBlueDotPromoReoccurrancePeriod = base::Days(360);
 
 // Migration to FET keys.
-NSString* const kFRETimestampMigrationDone = @"fre_timestamp_migration_done";
-NSString* const kPromoInterestEventMigrationDone =
-    @"promo_interest_event_migration_done";
-NSString* const kPromoImpressionsMigrationDone =
-    @"promo_impressions_migration_done";
 NSString* const kNonModalPromoMigrationDone = @"kNonModalPromoMigrationDone";
 
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
@@ -725,42 +720,6 @@ base::Time GetTailoredDefaultBrowserPromoTimestamp() {
   }
 
   return base::Time::UnixEpoch();
-}
-
-void LogFRETimestampMigrationDone() {
-  NSDictionary<NSString*, NSObject*>* update =
-      @{kFRETimestampMigrationDone : @YES};
-  UpdateStorageWithDictionary(update);
-}
-
-BOOL FRETimestampMigrationDone() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kFRETimestampMigrationDone);
-  return number.boolValue;
-}
-
-void LogPromoInterestEventMigrationDone() {
-  NSDictionary<NSString*, NSObject*>* update =
-      @{kPromoInterestEventMigrationDone : @YES};
-  UpdateStorageWithDictionary(update);
-}
-
-BOOL IsPromoInterestEventMigrationDone() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kPromoInterestEventMigrationDone);
-  return number.boolValue;
-}
-
-void LogPromoImpressionsMigrationDone() {
-  NSDictionary<NSString*, NSObject*>* update =
-      @{kPromoImpressionsMigrationDone : @YES};
-  UpdateStorageWithDictionary(update);
-}
-
-BOOL IsPromoImpressionsMigrationDone() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kPromoImpressionsMigrationDone);
-  return number.boolValue;
 }
 
 void LogNonModalPromoMigrationDone() {

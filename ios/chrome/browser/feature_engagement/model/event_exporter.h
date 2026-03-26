@@ -16,14 +16,6 @@ class EventExporter : public feature_engagement::TrackerEventExporter {
 
   // feature_engagement::TrackerEventExporter implementation
   void ExportEvents(ExportEventsCallback callback) override;
-
- private:
-  void AddFREPromoEvent(std::vector<EventData>& events);
-  void AddPromoInterestEvents(std::vector<EventData>& events,
-                              DefaultPromoType promo,
-                              const std::string& event_name);
-  void AddGenericPromoImpressions(std::vector<EventData>& events);
-  void AddTailoredPromoImpressions(std::vector<EventData>& events);
 };
 
 #endif  // IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_EVENT_EXPORTER_H_

@@ -30,41 +30,6 @@ EventExporter::~EventExporter() = default;
 void EventExporter::ExportEvents(ExportEventsCallback callback) {
   std::vector<EventData> events_to_migrate;
 
-  // Migrate the FRE promo event.
-  // TODO(crbug.com/382733018): Clean up the default browser promos eligibility
-  // tracking migration code.
-  if (!FRETimestampMigrationDone()) {
-    AddFREPromoEvent(events_to_migrate);
-    LogFRETimestampMigrationDone();
-  }
-
-  // Migrate promo interest signals
-  // TODO(crbug.com/382733018): Clean up the default browser promos eligibility
-  // tracking migration code.
-  if (!IsPromoInterestEventMigrationDone()) {
-    AddPromoInterestEvents(
-        events_to_migrate, DefaultPromoTypeGeneral,
-        feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
-    AddPromoInterestEvents(
-        events_to_migrate, DefaultPromoTypeAllTabs,
-        feature_engagement::events::kAllTabsPromoConditionsMet);
-    AddPromoInterestEvents(
-        events_to_migrate, DefaultPromoTypeMadeForIOS,
-        feature_engagement::events::kMadeForIOSPromoConditionsMet);
-    AddPromoInterestEvents(
-        events_to_migrate, DefaultPromoTypeStaySafe,
-        feature_engagement::events::kStaySafePromoConditionsMet);
-    LogPromoInterestEventMigrationDone();
-  }
-
-  // TODO(crbug.com/382733018): Clean up the default browser promos eligibility
-  // tracking migration code.
-  if (!IsPromoImpressionsMigrationDone()) {
-    AddGenericPromoImpressions(events_to_migrate);
-    AddTailoredPromoImpressions(events_to_migrate);
-    LogPromoImpressionsMigrationDone();
-  }
-
   // Migrate the default browser's non-modal promo events.
   // TODO(crbug.com/391166425): Clean up the non-modal promo migration code.
   if (!IsNonModalPromoMigrationDone()) {
@@ -98,46 +63,4 @@ void EventExporter::ExportEvents(ExportEventsCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(events_to_migrate)));
-}
-
-void EventExporter::AddFREPromoEvent(std::vector<EventData>& events) {
-  const base::Time time = GetDefaultBrowserFREPromoTimestampIfLast();
-  if (time != base::Time::UnixEpoch()) {
-    events.emplace_back(feature_engagement::events::kIOSDefaultBrowserFREShown,
-                        DaysSinceTime(time));
-  }
-}
-
-void EventExporter::AddPromoInterestEvents(std::vector<EventData>& events,
-                                           DefaultPromoType promo,
-                                           const std::string& event_name) {
-  for (base::Time time : LoadTimestampsForPromoType(promo)) {
-    events.emplace_back(event_name, DaysSinceTime(time));
-  }
-}
-
-void EventExporter::AddGenericPromoImpressions(std::vector<EventData>& events) {
-  const base::Time time = GetGenericDefaultBrowserPromoTimestamp();
-  if (time != base::Time::UnixEpoch()) {
-    events.emplace_back(
-        feature_engagement::events::kGenericDefaultBrowserPromoTrigger,
-        DaysSinceTime(time));
-  }
-}
-void EventExporter::AddTailoredPromoImpressions(
-    std::vector<EventData>& events) {
-  const base::Time time = GetTailoredDefaultBrowserPromoTimestamp();
-  if (time != base::Time::UnixEpoch()) {
-    // For tailored promos trigger the group config and all the individual
-    // tailored promos.
-    events.emplace_back(
-        feature_engagement::events::kTailoredDefaultBrowserPromosGroupTrigger,
-        DaysSinceTime(time));
-    events.emplace_back(feature_engagement::events::kAllTabsPromoTrigger,
-                        DaysSinceTime(time));
-    events.emplace_back(feature_engagement::events::kMadeForIOSPromoTrigger,
-                        DaysSinceTime(time));
-    events.emplace_back(feature_engagement::events::kStaySafePromoTrigger,
-                        DaysSinceTime(time));
-  }
 }
