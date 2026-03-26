@@ -654,10 +654,10 @@ static bool NeedsPaintOffsetTranslation(
     // to avoid unnecessary full layer paint/raster invalidation when paint
     // offset in ancestor transform node changes which should not affect the
     // descendants of the composited layer.
-    // TODO(crbug.com/455884493): Enable paint offset translation for all
-    // composited objects.
     if (RuntimeEnabledFeatures::PaintOffsetTranslationForCompositedEnabled()) {
-      return true;
+      // For now a LayoutInline applies paint properties only if it has a
+      // self-painting layer. See https://crbug.com/495746269.
+      return !box_model.IsLayoutInline() || box_model.HasSelfPaintingLayer();
     }
     if (box_model.IsLayoutBlock() || object.IsLayoutReplaced() ||
         // Inline elements with backdrop-filter are also included to fix paint
