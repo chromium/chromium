@@ -29,6 +29,9 @@ class InvokeWithAutoSubmitPasskeyProvider {
   // friend void SomeClass::SomeFunctionThatNeedsAutoSubmit();
   friend class ::RenderViewContextMenu;
   friend class extensions::PdfViewerPrivateGlicSummarizeFunction;
+  friend class GlicInternalsPageHandler;
+  friend class GlicInstanceCoordinatorBrowserTest;
+  friend class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest;
 };
 
 using InvokeWithAutoSubmitPasskey =
