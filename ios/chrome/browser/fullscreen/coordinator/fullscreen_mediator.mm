@@ -27,6 +27,13 @@ class FullscreenMediatorPassKeyProvider {
   }
 };
 
+namespace {
+// Helper function to return a passkey used to mutate the browser agent state.
+inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
+  return FullscreenMediatorPassKeyProvider::passkey();
+}
+}  // namespace
+
 @interface FullscreenMediator () <CRWWebStateObserver,
                                   CRWWebViewScrollViewProxyObserver,
                                   WebStateListObserving,
@@ -137,6 +144,12 @@ class FullscreenMediatorPassKeyProvider {
 
 #pragma mark - CRWWebStateObserver
 
+- (void)webStateWasShown:(web::WebState*)webState {
+  // TODO(crbug.com/496229929): Call InvalidateInsetRange() from the correct
+  // event(s).
+  _browserAgent->InvalidateInsetRange(PassKey());
+}
+
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(self.webState, webState);
   self.webState = nullptr;
@@ -201,13 +214,11 @@ class FullscreenMediatorPassKeyProvider {
 }
 
 - (void)applicationDidEnterBackground {
-  _browserAgent->ForceExitFullscreenWithoutAnimation(
-      FullscreenMediatorPassKeyProvider::passkey());
+  _browserAgent->ForceExitFullscreenWithoutAnimation(PassKey());
 }
 
 - (void)applicationWillEnterForeground {
-  _browserAgent->ForceExitFullscreenWithoutAnimation(
-      FullscreenMediatorPassKeyProvider::passkey());
+  _browserAgent->ForceExitFullscreenWithoutAnimation(PassKey());
 }
 
 @end

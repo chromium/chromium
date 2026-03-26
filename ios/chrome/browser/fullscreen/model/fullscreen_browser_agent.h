@@ -18,7 +18,9 @@ class FullscreenMediatorPassKeyProvider;
 // A class that holds the fullscreen state for a browser.
 class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
  public:
-  using MediatorPassKey = base::PassKey<FullscreenMediatorPassKeyProvider>;
+  // PassKey allows access to methods that mutate the state / progress.
+  using PassKey = base::PassKey<FullscreenBrowserAgentTest,
+                                FullscreenMediatorPassKeyProvider>;
 
   ~FullscreenBrowserAgent() override;
 
@@ -41,17 +43,16 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // Instantly exits fullscreen, notifying observers of the update.
   // Generally used to reset the UI from system events like backgrounding.
-  void ForceExitFullscreenWithoutAnimation(MediatorPassKey);
-
- private:
-  friend class BrowserUserData<FullscreenBrowserAgent>;
-  friend class FullscreenBrowserAgentTest;
-
-  explicit FullscreenBrowserAgent(Browser* browser);
+  void ForceExitFullscreenWithoutAnimation(PassKey);
 
   // Invalidates the current inset ranges and recalculates them by notifying
   // observers.
-  void InvalidateInsetRange();
+  void InvalidateInsetRange(PassKey);
+
+ private:
+  friend class BrowserUserData<FullscreenBrowserAgent>;
+
+  explicit FullscreenBrowserAgent(Browser* browser);
 
   base::ObserverList<FullscreenBrowserAgentObserver, true> observers_;
 

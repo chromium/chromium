@@ -21,12 +21,11 @@ void FullscreenBrowserAgent::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void FullscreenBrowserAgent::ForceExitFullscreenWithoutAnimation(
-    MediatorPassKey) {
+void FullscreenBrowserAgent::ForceExitFullscreenWithoutAnimation(PassKey) {
   // TODO(crbug.com/490126971): Force exit without animation.
 }
 
-void FullscreenBrowserAgent::InvalidateInsetRange() {
+void FullscreenBrowserAgent::InvalidateInsetRange(PassKey) {
   min_insets_ = UIEdgeInsetsZero;
   max_insets_ = UIEdgeInsetsZero;
 

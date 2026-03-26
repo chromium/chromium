@@ -59,8 +59,12 @@ class FullscreenBrowserAgentTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
 
+  base::PassKey<FullscreenBrowserAgentTest> PassKey() {
+    return base::PassKey<FullscreenBrowserAgentTest>();
+  }
+
   void InvalidateInsetRange(FullscreenBrowserAgent* agent) {
-    agent->InvalidateInsetRange();
+    agent->InvalidateInsetRange(PassKey());
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -29,6 +29,7 @@
 @protocol BWGCommands;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
+class FullscreenBrowserAgent;
 class FullscreenController;
 @protocol HelpCommands;
 @protocol IncognitoReauthCommands;
@@ -56,6 +57,7 @@ typedef struct {
   ToolbarCoordinator* toolbarCoordinator;
   SideSwipeCoordinator* sideSwipeCoordinator;
   BookmarksCoordinator* bookmarksCoordinator;
+  raw_ptr<FullscreenBrowserAgent> fullscreenBrowserAgent;
   raw_ptr<FullscreenController> fullscreenController;
   id<BrowserCoordinatorCommands> browserCoordinatorHandler;
   id<TextZoomCommands> textZoomHandler;

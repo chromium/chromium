@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/default_browser/promo/non_modal/coordinator/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
@@ -169,6 +171,7 @@ const CGFloat kTopDynamicIslandInset = 24;
 
 // Note other delegates defined in the Delegates category header.
 @interface BrowserViewController () <CardSwipeViewDelegate,
+                                     FullscreenBrowserAgentObserving,
                                      FullscreenUIElement,
                                      LogoAnimationControllerOwnerOwner,
                                      MainContentUI,
@@ -225,6 +228,10 @@ const CGFloat kTopDynamicIslandInset = 24;
 
   // The updater that adjusts the toolbar's layout for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
+
+  // Bridge to observe the FullscreenBrowserAgent.
+  std::unique_ptr<FullscreenBrowserAgentObserverBridge>
+      _fullscreenBrowserAgentObserverBridge;
 
   // The service used to load url parameters in current or new tab.
   raw_ptr<UrlLoadingBrowserAgent> _urlLoadingBrowserAgent;
@@ -392,6 +399,12 @@ const CGFloat kTopDynamicIslandInset = 24;
     self.inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;
     _footerFullscreenProgress = 1.0;
+
+    if (IsFullscreenRefactoringEnabled()) {
+      _fullscreenBrowserAgentObserverBridge =
+          std::make_unique<FullscreenBrowserAgentObserverBridge>(
+              self, dependencies.fullscreenBrowserAgent);
+    }
 
     // When starting the browser with an open tab, it is necessary to reset the
     // clipsToBounds property of the WKWebView so the page can bleed behind the
@@ -1849,6 +1862,21 @@ const CGFloat kTopDynamicIslandInset = 24;
     [weakSelf updateBrowserViewportForFullscreenProgress:
                   [weakAnimator progressForAnimatingPosition:finalPosition]];
   }];
+}
+
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
+  CHECK(IsFullscreenRefactoringEnabled());
+
+  CGFloat primaryToolbarHeight = [self primaryToolbarHeightWithInset];
+  agent->AddObscuredInsetRange(UIRectEdgeTop, [self collapsedTopToolbarHeight],
+                               primaryToolbarHeight + self.topToolbarInset);
+
+  CGFloat secondaryToolbarHeight = [self secondaryToolbarHeightWithInset];
+  agent->AddObscuredInsetRange(UIRectEdgeBottom,
+                               [self collapsedBottomToolbarHeight],
+                               secondaryToolbarHeight);
 }
 
 #pragma mark - FullscreenUIElement helpers
