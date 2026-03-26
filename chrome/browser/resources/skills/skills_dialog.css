@@ -107,20 +107,15 @@ cr-input:focus-within {
   border-color: var(--cr-fallback-color-neutral-outline);
 }
 
-/* * Explicitly reset the background on hover when loading.
- * Prevents the interactive hover state (grey background) from appearing
- * while the refinement is in progress and the field is effectively disabled.
- */
-#textareaWrapper[loading]:hover {
-  background-color: var(--color-sys-surface);
-}
-
 #textareaWrapper:focus-within {
   border-color: var(--cr-focus-outline-color);
   box-shadow: 0 0 0 1px var(--cr-focus-outline-color);
 }
 
-#textareaWrapper:hover:not(:focus-within) {
+/* Only add the background hover color when user is not focused and we are not
+ * loading refinement.
+ */
+#textareaWrapper:not([loading]):hover:not(:focus-within) {
   background-color: var(--color-sys-surface-variant);
 }
 
