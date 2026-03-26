@@ -1750,10 +1750,13 @@ class ComputedStyle final : public ComputedStyleBase {
   static bool IsInterleavingRoot(const ComputedStyle*);
 
   // Display utility functions.
-  bool IsDisplayReplacedType() const {
-    return IsDisplayReplacedType(Display());
+  bool IsAtomicInlineDisplayType() const {
+    return IsAtomicInlineDisplayType(Display());
   }
   bool IsDisplayInlineType() const { return IsDisplayInlineType(Display()); }
+  bool IsNonAtomicInlineDisplayType() const {
+    return IsNonAtomicInlineDisplayType(Display());
+  }
   bool IsDisplayBlockContainer() const {
     return IsDisplayBlockContainer(Display());
   }
@@ -2724,7 +2727,7 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kInlineLayoutCustom;
   }
 
-  static bool IsDisplayReplacedType(EDisplay display) {
+  static bool IsAtomicInlineDisplayType(EDisplay display) {
     return display == EDisplay::kInlineBlock ||
            display == EDisplay::kInlineFlex ||
            display == EDisplay::kInlineFlowRootListItem ||
@@ -2735,10 +2738,14 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kWebkitInlineBox;
   }
 
-  static bool IsDisplayInlineType(EDisplay display) {
+  static bool IsNonAtomicInlineDisplayType(EDisplay display) {
     return display == EDisplay::kInline ||
-           display == EDisplay::kInlineListItem || display == EDisplay::kRuby ||
-           IsDisplayReplacedType(display);
+           display == EDisplay::kInlineListItem || display == EDisplay::kRuby;
+  }
+
+  static bool IsDisplayInlineType(EDisplay display) {
+    return IsNonAtomicInlineDisplayType(display) ||
+           IsAtomicInlineDisplayType(display);
   }
 
   static bool IsDisplayTableType(EDisplay display) {
@@ -3256,8 +3263,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   bool IsDisplayInlineType() const {
     return ComputedStyle::IsDisplayInlineType(Display());
   }
-  bool IsDisplayReplacedType() const {
-    return ComputedStyle::IsDisplayReplacedType(Display());
+  bool IsNonAtomicInlineDisplayType() const {
+    return ComputedStyle::IsNonAtomicInlineDisplayType(Display());
+  }
+  bool IsAtomicInlineDisplayType() const {
+    return ComputedStyle::IsAtomicInlineDisplayType(Display());
   }
   bool IsDisplayMathType() const {
     return ComputedStyle::IsDisplayMathBox(Display());

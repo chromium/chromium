@@ -149,7 +149,7 @@ static bool IsPotentialClusterRoot(const LayoutObject* layout_object) {
   if (!layout_object->IsLayoutBlock())
     return false;
   if (layout_object->IsInline() &&
-      !layout_object->StyleRef().IsDisplayReplacedType())
+      !layout_object->StyleRef().IsAtomicInlineDisplayType())
     return false;
   if (layout_object->IsListItem()) {
     return (layout_object->IsFloating() ||
@@ -169,7 +169,7 @@ static bool IsIndependentDescendant(const LayoutBlock* layout_object) {
          layout_object->IsFlexibleBox() ||
          (containing_block && containing_block->IsHorizontalWritingMode() !=
                                   layout_object->IsHorizontalWritingMode()) ||
-         layout_object->StyleRef().IsDisplayReplacedType() ||
+         layout_object->StyleRef().IsAtomicInlineDisplayType() ||
          layout_object->IsTextArea() ||
          layout_object->StyleRef().UsedUserModify() != EUserModify::kReadOnly;
 }

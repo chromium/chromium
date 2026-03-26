@@ -511,8 +511,7 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
 }
 
 void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
-  if (state_ == EContentVisibility::kAuto &&
-      !state_change_task_pending_) {
+  if (state_ == EContentVisibility::kAuto && !state_change_task_pending_) {
     document_->GetExecutionContext()
         ->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(
@@ -1070,7 +1069,7 @@ const char* DisplayLockContext::ShouldForceUnlock() const {
   if ((style->IsDisplayTableType() &&
        style->Display() != EDisplay::kTableCell) ||
       style->Display() == EDisplay::kRubyText ||
-      (style->IsDisplayInlineType() && !style->IsDisplayReplacedType())) {
+      style->IsNonAtomicInlineDisplayType()) {
     return rejection_names::kContainmentNotSatisfied;
   }
   return nullptr;

@@ -95,7 +95,7 @@ HTMLFormElement* InputTypeView::FormForSubmission() const {
 LayoutObject* InputTypeView::CreateLayoutObject(
     const ComputedStyle& style) const {
   // Avoid LayoutInline, which can be split to multiple lines.
-  if (style.IsDisplayInlineType() && !style.IsDisplayReplacedType()) {
+  if (style.IsNonAtomicInlineDisplayType()) {
     return MakeGarbageCollected<LayoutBlockFlow>(&GetElement());
   }
   return LayoutObject::CreateObject(&GetElement(), style);
