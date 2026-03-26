@@ -11,11 +11,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -449,6 +451,41 @@ DesktopSessionFactoryLinux::CreateDesktopSession(
 
   desktop_sessions_[display_name] = desktop_session->GetWeakPtr();
   return desktop_session;
+}
+
+void DesktopSessionFactoryLinux::TerminateAllSessions(Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (desktop_sessions_.empty()) {
+    std::move(callback).Run(base::ok());
+    return;
+  }
+
+  std::vector<std::string> display_names;
+  for (const auto& [display_name, session] : desktop_sessions_) {
+    display_names.push_back(display_name);
+  }
+
+  auto barrier = base::BarrierCallback<base::expected<void, Loggable>>(
+      display_names.size(),
+      base::BindOnce(
+          [](Callback callback,
+             std::vector<base::expected<void, Loggable>> results) {
+            for (auto& result : results) {
+              if (!result.has_value()) {
+                std::move(callback).Run(
+                    base::unexpected(std::move(result).error()));
+                return;
+              }
+            }
+            std::move(callback).Run(base::ok());
+          },
+          std::move(callback)));
+
+  for (const auto& display_name : display_names) {
+    remote_display_session_manager_.TerminateRemoteDisplay(display_name,
+                                                           barrier);
+  }
 }
 
 void DesktopSessionFactoryLinux::OnStartResult(

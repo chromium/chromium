@@ -12,12 +12,15 @@
 override_dh_builddeb:
 	dh_builddeb -- -Zxz
 
-# Do not auto-enable the multi-process chrome-remote-desktop service. The
-# service will be restarted during upgarde; for the multi-process host, the
-# graphical session is managed by an external service, so the user will not lose
-# unsaved work.
+# Do not auto-enable the multi-process chrome-remote-desktop service. Do not
+# restart the service on upgrade either, since it would send SIGTERM to the
+# daemon process, which will terminate all CRD-managed sessions and the user may
+# lose unsaved work. The postinst script kills all CRD processes with SIGKILL,
+# which allows the daemon process to be relaunched without terminating existing
+# sessions.
+# TODO: crbug.com/496325766 - Improve the upgrade experience.
 # The single-process chrome-remote-desktop@ service is templated, so Debhelper
 # will not try to auto-enable/start/disable/stop it, and we don't need to
 # override its behavior.
 override_dh_installsystemd:
-	dh_installsystemd --no-enable --name=chrome-remote-desktop
+	dh_installsystemd --no-enable --no-stop-on-upgrade --name=chrome-remote-desktop

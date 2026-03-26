@@ -57,6 +57,9 @@ class DesktopSessionFactoryLinux final
       DaemonProcess* daemon_process,
       const mojom::DesktopSessionOptions& options);
 
+  // Terminates all active desktop sessions.
+  void TerminateAllSessions(Callback callback);
+
  private:
   class DesktopSessionLinux;
 

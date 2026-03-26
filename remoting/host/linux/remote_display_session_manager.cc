@@ -139,14 +139,16 @@ void RemoteDisplaySessionManager::TerminateRemoteDisplay(
           base::BindOnce(
               [](const std::string& display_name, Callback callback,
                  std::vector<base::expected<void, Loggable>> results) {
-                for (const auto& result : results) {
+                for (auto& result : results) {
                   if (!result.has_value()) {
-                    auto loggable = result.error();
+                    auto loggable = std::move(result).error();
                     loggable.AddContext(
                         FROM_HERE,
                         std::string(
                             "Failed to terminate a session for display") +
                             display_name);
+                    std::move(callback).Run(
+                        base::unexpected(std::move(loggable)));
                     return;
                   }
                 }

@@ -4,8 +4,10 @@
 
 #include "remoting/host/daemon_process.h"
 
+#include <signal.h>
 #include <stdint.h>
 
+#include <cstdlib>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -13,6 +15,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -23,6 +26,7 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -50,6 +54,7 @@
 #include "remoting/host/linux/passwd_utils.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
+#include "remoting/host/posix/signal_handler.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/worker_process_launcher.h"
 
@@ -93,6 +98,8 @@ class DaemonProcessLinux : public DaemonProcess {
   void OnStartDesktopSessionFactoryResult(
       base::expected<void, Loggable> result);
 
+  void HandleSigTerm(int signal_number);
+
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
       base::ProcessId peer_pid);
@@ -111,6 +118,8 @@ class DaemonProcessLinux : public DaemonProcess {
   mojo::AssociatedRemote<mojom::DesktopSessionConnectionEvents>
       desktop_session_connection_events_;
   mojo::AssociatedRemote<mojom::RemotingHostControl> remoting_host_control_;
+
+  base::WeakPtrFactory<DaemonProcessLinux> weak_ptr_factory_{this};
 };
 
 DaemonProcessLinux::DaemonProcessLinux(
@@ -122,7 +131,14 @@ DaemonProcessLinux::DaemonProcessLinux(
                     std::move(stopped_callback)),
       ipc_support_(io_task_runner->task_runner(),
                    mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST),
-      desktop_session_factory_(io_task_runner) {}
+      desktop_session_factory_(io_task_runner) {
+  io_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&RegisterSignalHandler), SIGTERM,
+                     base::BindPostTaskToCurrentDefault(
+                         base::BindRepeating(&DaemonProcessLinux::HandleSigTerm,
+                                             weak_ptr_factory_.GetWeakPtr()))));
+}
 
 DaemonProcessLinux::~DaemonProcessLinux() = default;
 
@@ -274,6 +290,26 @@ void DaemonProcessLinux::OnStartDesktopSessionFactoryResult(
     LOG(ERROR) << result.error();
     Stop(kInitializationFailed);
   }
+}
+
+void DaemonProcessLinux::HandleSigTerm(int signal_number) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  DCHECK_EQ(signal_number, SIGTERM);
+
+  // systemd sends SIGTERM when the service stops, so we clean up all desktop
+  // sessions here. While destroying a DesktopSession also terminates it, we
+  // must wait for all sessions to fully terminate before exiting, which the
+  // destructor alone does not handle.
+  HOST_LOG << "SIGTERM received. Terminating all desktop sessions.";
+  desktop_session_factory_.TerminateAllSessions(
+      base::BindOnce([](base::expected<void, Loggable> result) {
+        if (!result.has_value()) {
+          LOG(ERROR) << result.error();
+        } else {
+          HOST_LOG << "All desktop sessions have been terminated.";
+        }
+        exit(kSuccessExitCode);
+      }));
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(

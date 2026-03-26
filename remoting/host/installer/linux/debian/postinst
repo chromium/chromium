@@ -29,8 +29,11 @@ kill_processes() {
   # won't kill it. SIGKILL is used because the wrapper script will restart the
   # host immediately (so any cleanup that might otherwise happen is not useful),
   # and this ensures that hosts restart even if they are deadlocked.
-  # TODO: yuweih - see if it's possible to restart the service script process
-  # without resetting the session.
+  # For the multi-process host, this kills the daemon process and all its
+  # children with SIGKILL, then the systemd service will relaunch the daemon
+  # process, which will recover GDM remote displays created by the previous
+  # incarnation.
+  # TODO: crbug.com/496325766 - Improve the upgrade experience.
   echo "Killing Chrome Remote Desktop processes so that they can be reloaded (sessions will be unaffected)..."
   pkill -KILL -f "^$INSTALL_DIR" || true
 }
