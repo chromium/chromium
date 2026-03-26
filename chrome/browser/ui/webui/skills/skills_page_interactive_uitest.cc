@@ -43,7 +43,7 @@
 
 namespace {
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
-constexpr char kScreenshotBaselineCL[] = "7664574";
+constexpr char kScreenshotBaselineCL[] = "7695055";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSkillsPageElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSkillsDialogElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementEvent);
@@ -352,6 +352,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest,
   skill->set_description("Look for some socks");
   skill->set_icon("🧦");
   skill->set_prompt("Look for some socks");
+  skill->set_image_url("https://example.com/image.png");
 
   skills::proto::Skill* skill2 = skills_list.add_skills();
   skill2->set_id("345");

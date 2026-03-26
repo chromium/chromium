@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import './icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -37,6 +38,7 @@ export interface SkillCardElement {
     moreButton: CrButtonElement,
     saveButton: CrButtonElement,
     editButton: CrButtonElement,
+    illustrationImage: HTMLImageElement,
   };
 }
 
