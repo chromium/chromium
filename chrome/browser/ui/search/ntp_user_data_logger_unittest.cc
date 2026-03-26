@@ -106,14 +106,16 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordNumberOfTiles) {
   logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.NumberOfTiles"),
               ElementsAre(Bucket(ntp_tiles::kMaxNumTiles, 1)));
 
   logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.NumberOfTiles"),
               ElementsAre(Bucket(ntp_tiles::kMaxNumTiles, 1)));
 }
@@ -180,7 +182,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordImpressions) {
                               /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("NewTabPage.SuggestionsImpression"),
@@ -263,7 +266,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordRepeatedImpressions) {
                               /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("NewTabPage.SuggestionsImpression"),
@@ -308,7 +312,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordImpressionsForBinsBeyondMax) {
                               /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
 
   std::vector<base::Bucket> expectedImpressions =
       FillImpressions(ntp_tiles::kMaxNumTiles, 1);
@@ -494,7 +499,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordMostVisitedLoadTime) {
   logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.MostVisited"),
@@ -511,7 +517,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordMostVisitedLoadTime) {
   logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime",
                                          delta_tiles_loaded, 1);
 }
@@ -531,7 +538,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordImpressionsAge) {
   logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
 }
 
 TEST_F(NTPUserDataLoggerTest,
@@ -547,7 +555,8 @@ TEST_F(NTPUserDataLoggerTest,
   logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/false,
                               /*using_custom_links=*/true,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.Customized"),
               IsEmpty());
@@ -566,7 +575,8 @@ TEST_F(NTPUserDataLoggerTest,
   logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.CustomizedShortcuts"),
               IsEmpty());
@@ -584,7 +594,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordCustomizationActionFromNTPOther) {
   logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
 
   // Attempt to log an event that is only supported when the default search
   // provider is Google.
@@ -607,7 +618,8 @@ TEST_F(NTPUserDataLoggerTest, LogCustomizedShortcutSettings_Hidden) {
                               /*using_most_visited=*/false,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/false);
+                              /*is_visible=*/false,
+                              /*is_expanded=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.CustomizedShortcuts",
       CustomizedShortcutSettings::CUSTOMIZED_SHORTCUT_SETTINGS_HIDDEN, 1);
@@ -620,7 +632,8 @@ TEST_F(NTPUserDataLoggerTest, LogCustomizedShortcutSettings_Enterprise) {
                               /*using_most_visited=*/false,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/true,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.CustomizedShortcuts",
       CustomizedShortcutSettings::
@@ -636,7 +649,8 @@ TEST_F(NTPUserDataLoggerTest,
                               /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/true,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.CustomizedShortcuts",
       CustomizedShortcutSettings::
@@ -652,7 +666,8 @@ TEST_F(NTPUserDataLoggerTest,
                               /*using_most_visited=*/false,
                               /*using_custom_links=*/true,
                               /*using_enterprise_shortcuts=*/true,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.CustomizedShortcuts",
       CustomizedShortcutSettings::
@@ -667,7 +682,8 @@ TEST_F(NTPUserDataLoggerTest, LogCustomizedShortcutSettings_MostVisited) {
                               /*using_most_visited=*/true,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.CustomizedShortcuts",
       CustomizedShortcutSettings::CUSTOMIZED_SHORTCUT_SETTINGS_MOST_VISITED, 1);
@@ -680,7 +696,8 @@ TEST_F(NTPUserDataLoggerTest, LogCustomizedShortcutSettings_CustomLinks) {
                               /*using_most_visited=*/false,
                               /*using_custom_links=*/true,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.CustomizedShortcuts",
       CustomizedShortcutSettings::CUSTOMIZED_SHORTCUT_SETTINGS_CUSTOM_LINKS, 1);
@@ -694,8 +711,33 @@ TEST_F(NTPUserDataLoggerTest,
                               /*using_most_visited=*/false,
                               /*using_custom_links=*/false,
                               /*using_enterprise_shortcuts=*/false,
-                              /*is_visible=*/true);
+                              /*is_visible=*/true,
+                              /*is_expanded=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.CustomizedShortcuts",
       CustomizedShortcutSettings::CUSTOMIZED_SHORTCUT_SETTINGS_HIDDEN, 1);
+}
+
+TEST_F(NTPUserDataLoggerTest, ShouldRecordIsExpandedOnLoad) {
+  base::HistogramTester histogram_tester;
+  TestNTPUserDataLogger logger(GURL("chrome://newtab/"));
+
+  logger.LogMostVisitedLoaded(base::Milliseconds(0),
+                              /*using_most_visited=*/true,
+                              /*using_custom_links=*/false,
+                              /*using_enterprise_shortcuts=*/false,
+                              /*is_visible=*/true,
+                              /*is_expanded=*/true);
+  histogram_tester.ExpectUniqueSample("NewTabPage.MostVisited.IsExpandedOnLoad",
+                                      true, 1);
+
+  TestNTPUserDataLogger logger2(GURL("chrome://newtab/"));
+  logger2.LogMostVisitedLoaded(base::Milliseconds(0),
+                               /*using_most_visited=*/true,
+                               /*using_custom_links=*/false,
+                               /*using_enterprise_shortcuts=*/false,
+                               /*is_visible=*/true,
+                               /*is_expanded=*/false);
+  histogram_tester.ExpectBucketCount("NewTabPage.MostVisited.IsExpandedOnLoad",
+                                     false, 1);
 }

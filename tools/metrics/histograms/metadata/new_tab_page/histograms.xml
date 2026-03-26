@@ -2128,6 +2128,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NewTabPage.MostVisited.IsExpandedOnLoad" enum="Boolean"
+    expires_after="2027-03-17">
+  <owner>adamyao@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs whether the Most Visited tiles were in the expanded state (showing more
+    than the default number of tiles) when the NTP was loaded. Logged when Most
+    Visited tiles are rendered (e.g., on NTP load and refresh). True (1) is
+    logged when the Most Visited tiles are expanded, showing more than the
+    default number of tiles. False (0) is logged when they are not expanded,
+    showing the default number of tiles.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.MostVisited.NumberOfCustomTilesOnFirstNtp"
     units="units" expires_after="2026-08-02">
   <owner>fredmello@chromium.org</owner>
@@ -2155,6 +2169,17 @@ chromium-metrics-reviews@google.com.
     <variant name="LaxUpToRef"/>
     <variant name="Strict"/>
   </token>
+</histogram>
+
+<histogram name="NewTabPage.MostVisited.ShowActionsToggleClicked"
+    enum="MostVisitedShowActions" expires_after="2027-03-17">
+  <owner>adamyao@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs clicks on the &quot;Show more&quot; and &quot;Show less&quot; buttons
+    in the Most Visited component. Logged when the show more or show less action
+    chip is clicked.
+  </summary>
 </histogram>
 
 <histogram name="NewTabPage.MostVisitedMigratedDefaultAppType"

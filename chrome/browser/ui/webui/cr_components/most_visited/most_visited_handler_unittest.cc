@@ -167,6 +167,9 @@ TEST_P(MostVisitedAutoRemovalTest, SetMostVisitedExpandedState) {
   handler_->SetMostVisitedExpandedState(true);
   EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
       ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
+  histogram_tester_.ExpectUniqueSample(
+      "NewTabPage.MostVisited.ShowActionsToggleClicked",
+      MostVisitedShowActions::kShowMore, 1);
 }
 
 TEST_P(MostVisitedAutoRemovalTest, OnMostVisitedTileNavigation) {
@@ -231,6 +234,8 @@ TEST_P(MostVisitedAutoRemovalTest, OnMostVisitedTilesRendered) {
   EXPECT_EQ(
       profile_.GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsStalenessCount),
       1);
+  histogram_tester_.ExpectBucketCount("NewTabPage.MostVisited.IsExpandedOnLoad",
+                                      false, 1);
 }
 
 TEST_P(MostVisitedAutoRemovalTest, DoNotRemoveStaleShortcutsIfFeatureDisabled) {

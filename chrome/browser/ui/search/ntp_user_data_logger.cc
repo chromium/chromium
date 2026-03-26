@@ -416,9 +416,10 @@ void NTPUserDataLogger::LogMostVisitedLoaded(base::TimeDelta time,
                                              bool using_most_visited,
                                              bool using_custom_links,
                                              bool using_enterprise_shortcuts,
-                                             bool is_visible) {
+                                             bool is_visible,
+                                             std::optional<bool> is_expanded) {
   EmitNtpStatistics(time, using_most_visited, using_custom_links,
-                    using_enterprise_shortcuts, is_visible);
+                    using_enterprise_shortcuts, is_visible, is_expanded);
 }
 
 void NTPUserDataLogger::LogMostVisitedImpression(
@@ -452,7 +453,8 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
                                           bool using_most_visited,
                                           bool using_custom_links,
                                           bool using_enterprise_shortcuts,
-                                          bool is_visible) {
+                                          bool is_visible,
+                                          std::optional<bool> is_expanded) {
   // We only send statistics once per page.
   if (has_emitted_) {
     return;
@@ -485,6 +487,11 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
     UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.WebUINTP", load_time);
   } else if (ntp_url_ == GURL(chrome::kChromeUINewTabPageThirdPartyURL)) {
     UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.WebUI3PNTP", load_time);
+  }
+
+  if (is_expanded.has_value()) {
+    base::UmaHistogramBoolean("NewTabPage.MostVisited.IsExpandedOnLoad",
+                              is_expanded.value());
   }
 
   // Split between Startup and non-startup.

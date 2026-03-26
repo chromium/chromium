@@ -29,6 +29,14 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+// LINT.IfChange(MostVisitedShowActions)
+enum class MostVisitedShowActions {
+  kShowMore = 0,
+  kShowLess = 1,
+  kMaxValue = kShowLess,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MostVisitedShowActions)
+
 // Handles bidirectional communication between MV tiles and the browser.
 class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
                            public ntp_tiles::MostVisitedSites::Observer,

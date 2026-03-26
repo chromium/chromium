@@ -51,7 +51,8 @@ class NTPUserDataLogger {
                             bool using_most_visited,
                             bool using_custom_links,
                             bool using_enterprise_shortcuts,
-                            bool is_visible);
+                            bool is_visible,
+                            std::optional<bool> is_expanded);
 
   // Logs an impression on one of the NTP tiles by given details.
   void LogMostVisitedImpression(const ntp_tiles::NTPTileImpression& impression);
@@ -74,7 +75,8 @@ class NTPUserDataLogger {
                          bool using_most_visited,
                          bool using_custom_links,
                          bool using_enterprise_shortcuts,
-                         bool is_visible);
+                         bool is_visible,
+                         std::optional<bool> is_expanded);
 
   void EmitNtpTraceEvent(const char* event_name, base::TimeDelta duration);
 

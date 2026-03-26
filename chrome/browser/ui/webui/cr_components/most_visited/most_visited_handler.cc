@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
@@ -228,13 +229,15 @@ void MostVisitedHandler::OnMostVisitedTilesRendered(
   }
   // This call flushes all most visited impression logs to UMA histograms.
   // Therefore, it must come last.
+  bool is_expanded =
+      profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles);
   logger_.LogMostVisitedLoaded(
       base::Time::FromMillisecondsSinceUnixEpoch(time) -
           ntp_navigation_start_time_,
       most_visited_sites_->IsTopSitesEnabled(),
       most_visited_sites_->IsCustomLinksEnabled(),
       most_visited_sites_->IsEnterpriseShortcutsEnabled(),
-      most_visited_sites_->IsShortcutsVisible());
+      most_visited_sites_->IsShortcutsVisible(), is_expanded);
 }
 
 void MostVisitedHandler::OnMostVisitedTileNavigation(
@@ -282,6 +285,10 @@ void MostVisitedHandler::SetMostVisitedExpandedState(bool is_expanded) {
   DisableShortcutsAutoRemoval(profile_);
   profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles,
                                    is_expanded);
+  base::UmaHistogramEnumeration(
+      "NewTabPage.MostVisited.ShowActionsToggleClicked",
+      is_expanded ? MostVisitedShowActions::kShowMore
+                  : MostVisitedShowActions::kShowLess);
 }
 
 void MostVisitedHandler::PrerenderMostVisitedTile(
