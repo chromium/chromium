@@ -323,14 +323,16 @@ bool SearchPrefetchService::MaybePrefetchURL(
     const GURL& url,
     content::WebContents* web_contents) {
   return MaybePrefetchURL(url, /*navigation_prefetch=*/false, web_contents,
-                          chrome_preloading_predictor::kDefaultSearchEngine);
+                          chrome_preloading_predictor::kDefaultSearchEngine,
+                          /*should_ignore_saver_modes=*/false);
 }
 
 bool SearchPrefetchService::MaybePrefetchURL(
     const GURL& url,
     bool navigation_prefetch,
     content::WebContents* web_contents,
-    content::PreloadingPredictor predictor) {
+    content::PreloadingPredictor predictor,
+    bool should_ignore_saver_modes) {
   if (!SearchPrefetchServicePrefetchingIsEnabled())
     return false;
 
@@ -379,7 +381,8 @@ bool SearchPrefetchService::MaybePrefetchURL(
     return false;
   }
 
-  auto eligibility = prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs());
+  auto eligibility = prefetch::IsSomePreloadingEnabled(
+      *profile_->GetPrefs(), should_ignore_saver_modes);
   if (eligibility != content::PreloadingEligibility::kEligible) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
     SetEligibility(attempt, eligibility);
@@ -882,10 +885,30 @@ bool SearchPrefetchService::OnNavigationLikely(
       predictor, 100, std::move(same_url_matcher),
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
+  // We ignore saver modes for on-press navigation prefetching because the
+  // navigation is highly likely to happen soon. The network request will be
+  // sent anyway, so prefetching does not waste resources. Conversely, for
+  // up-or-down arrow key predictions, the confidence is lower, so we strictly
+  // enforce saver mode restrictions.
+  bool should_ignore_saver_modes = [&] {
+    if (!base::FeatureList::IsEnabled(
+            kSearchPrefetchIgnoreSaverModesForNavigation)) {
+      return false;
+    }
+    switch (navigation_predictor) {
+      case NavigationPredictor::kMouseDown:
+      case NavigationPredictor::kTouchDown:
+        return true;
+      case NavigationPredictor::kUpOrDownArrowButton:
+        return false;
+    }
+  }();
+
   base::TimeTicks prefetch_started_time_stamp = base::TimeTicks::Now();
   bool was_prefetch_started =
       MaybePrefetchURL(preload_url,
-                       /*navigation_prefetch=*/true, web_contents, predictor);
+                       /*navigation_prefetch=*/true, web_contents, predictor,
+                       should_ignore_saver_modes);
   if (was_prefetch_started) {
     UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.StartTimeV2.NavigationPrefetch",
                         (base::TimeTicks::Now() - prefetch_started_time_stamp));

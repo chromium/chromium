@@ -229,7 +229,8 @@ class SearchPrefetchService : public KeyedService,
   bool MaybePrefetchURL(const GURL& url,
                         bool navigation_prefetch,
                         content::WebContents* web_contents,
-                        content::PreloadingPredictor predictor);
+                        content::PreloadingPredictor predictor,
+                        bool should_ignore_saver_modes);
 
   // Adds |this| as an observer of |template_url_service| if not added already.
   void ObserveTemplateURLService(TemplateURLService* template_url_service);

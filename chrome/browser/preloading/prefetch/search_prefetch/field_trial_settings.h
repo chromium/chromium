@@ -48,6 +48,12 @@ void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_site);
 
 BASE_DECLARE_FEATURE(kSearchNavigationPrefetch);
 
+// If enabled, search prefetch can ignore battery and data saver modes for
+// on-press navigation prefetches. This is because the navigation is highly
+// likely to happen soon, so prefetching doesn't waste resources
+// (crbug.com/495481378).
+BASE_DECLARE_FEATURE(kSearchPrefetchIgnoreSaverModesForNavigation);
+
 // Feature params for the "pf" query param for suggest prefetch and navigation
 // prefetch respectively. This param allows the search server to treat the
 // requests differently based on the source.

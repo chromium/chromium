@@ -141,6 +141,9 @@ TEST_F(PreloadingPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
   battery::OverrideIsBatterySaverEnabledForTesting(true);
   EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
             content::PreloadingEligibility::kBatterySaverEnabled);
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(
+                prefs, /*should_ignore_saver_modes=*/true),
+            content::PreloadingEligibility::kEligible);
 }
 
 class PreloadingPrefsWithDataSaverTest : public PreloadingPrefsPreloadingTest {
@@ -163,4 +166,7 @@ TEST_F(PreloadingPrefsWithDataSaverTest, IsSomePreloadingEnabled) {
   data_saver::OverrideIsDataSaverEnabledForTesting(true);
   EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
             content::PreloadingEligibility::kDataSaverEnabled);
+  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(
+                prefs, /*should_ignore_saver_modes=*/true),
+            content::PreloadingEligibility::kEligible);
 }

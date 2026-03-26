@@ -58,7 +58,8 @@ void SetPreloadPagesState(PrefService* prefs, PreloadPagesState state);
 // Returns PreloadingEligibility:kEligible if preloading is not entirely
 // disabled. Returns the first blocking reason encountered otherwise.
 content::PreloadingEligibility IsSomePreloadingEnabled(
-    const PrefService& prefs);
+    const PrefService& prefs,
+    bool should_ignore_saver_modes = false);
 
 void RegisterPredictionOptionsProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);

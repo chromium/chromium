@@ -58,16 +58,19 @@ void SetPreloadPagesState(PrefService* prefs, PreloadPagesState state) {
 }
 
 content::PreloadingEligibility IsSomePreloadingEnabled(
-    const PrefService& prefs) {
+    const PrefService& prefs,
+    bool should_ignore_saver_modes) {
   // Arrange the results roughly in order of decreasing transience.
   if (GetPreloadPagesState(prefs) == PreloadPagesState::kNoPreloading) {
     return content::PreloadingEligibility::kPreloadingDisabled;
   }
-  if (data_saver::IsDataSaverEnabled()) {
-    return content::PreloadingEligibility::kDataSaverEnabled;
-  }
-  if (battery::IsBatterySaverEnabled()) {
-    return content::PreloadingEligibility::kBatterySaverEnabled;
+  if (!should_ignore_saver_modes) {
+    if (data_saver::IsDataSaverEnabled()) {
+      return content::PreloadingEligibility::kDataSaverEnabled;
+    }
+    if (battery::IsBatterySaverEnabled()) {
+      return content::PreloadingEligibility::kBatterySaverEnabled;
+    }
   }
 
   return content::PreloadingEligibility::kEligible;
