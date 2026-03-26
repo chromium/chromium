@@ -252,7 +252,6 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
   if (profiles.size() < 2) {
     return;
   }
-  autofill_metrics::LogNumberOfProfilesConsideredForDedupe(profiles.size());
 
   // `profiles` contains pointers to the PDM's state. Modifying them directly
   // won't update them in the database and calling `PDM:UpdateProfile()`
@@ -261,6 +260,11 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
   for (const AutofillProfile* profile : profiles) {
     deduplicated_profiles.push_back(*profile);
   }
+
+  autofill_metrics::LogNumberOfProfilesConsideredForDedupe(profiles.size());
+  autofill_metrics::LogNumberOfProfilesConsideredForDedupePerCountryCode(
+      deduplicated_profiles);
+
   DeduplicateProfiles(
       AutofillProfileComparator(address_data_manager_->app_locale()),
       std::move(deduplicated_profiles), *address_data_manager_);
