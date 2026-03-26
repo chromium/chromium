@@ -4,7 +4,6 @@
 
 #include "google_apis/gcm/engine/connection_event_tracker.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "net/base/network_change_notifier.h"
 
