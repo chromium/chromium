@@ -8,6 +8,8 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
@@ -28,6 +30,8 @@ class AccessibilityAnnotatorDatabaseTest : public testing::Test {
   }
 
   base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kAccessibilityAnnotatorDatabaseStorage};
   std::unique_ptr<AccessibilityAnnotatorDatabase> db_;
 };
 
@@ -91,6 +95,14 @@ TEST_F(AccessibilityAnnotatorDatabaseTest,
   ASSERT_TRUE(connection.Open(GetDbPath()));
   ASSERT_TRUE(connection.Execute("PRAGMA user_version=1000000"));
   connection.Close();
+
+  EXPECT_FALSE(db_->Init(GetDbPath()));
+}
+
+// Tests that initialization fails if the feature flag is disabled.
+TEST_F(AccessibilityAnnotatorDatabaseTest, InitializeWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kAccessibilityAnnotatorDatabaseStorage);
 
   EXPECT_FALSE(db_->Init(GetDbPath()));
 }

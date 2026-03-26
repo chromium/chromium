@@ -43,6 +43,8 @@ BASE_DECLARE_FEATURE(kAccessibilityAnnotatorLiveTabContext);
 BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorOnePServiceUrl);
 
+BASE_DECLARE_FEATURE(kAccessibilityAnnotatorDatabaseStorage);
+
 }  // namespace accessibility_annotator
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATOR_FEATURES_H_

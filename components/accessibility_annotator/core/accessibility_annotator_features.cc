@@ -97,4 +97,11 @@ BASE_FEATURE_PARAM(std::string,
                    "one_p_service_url",
                    "");
 
+// TODO(crbug.com/484049558): Remove this feature once the SQLite database
+// storage is ready with the initial schema as default storage.
+// Enables the accessibility annotator database storage. This will allow the
+// accessibility annotator backend to create the SQLite database.
+BASE_FEATURE(kAccessibilityAnnotatorDatabaseStorage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace accessibility_annotator

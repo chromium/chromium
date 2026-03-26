@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -23,6 +24,10 @@ AccessibilityAnnotatorDatabase::AccessibilityAnnotatorDatabase() = default;
 AccessibilityAnnotatorDatabase::~AccessibilityAnnotatorDatabase() = default;
 
 bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path) {
+  if (!base::FeatureList::IsEnabled(kAccessibilityAnnotatorDatabaseStorage)) {
+    return false;
+  }
+
   // Use a write-ahead log rather than a rollback journal to reduce the average
   // cost of writes, especially beneficial if writes are frequent.
   // TODO(crbug.com/484049558): Finalize the decision on WAL mode based on

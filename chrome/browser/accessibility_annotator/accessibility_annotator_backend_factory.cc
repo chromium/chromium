@@ -19,7 +19,7 @@
 #include "components/sync/model/data_type_store_service.h"
 
 constexpr base::FilePath::CharType kAccessibilityAnnotatorDatabaseFileName[] =
-    FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase");
+    FILE_PATH_LITERAL("AccessibilityAnnotatorDB");
 
 // static
 accessibility_annotator::AccessibilityAnnotatorBackend*
