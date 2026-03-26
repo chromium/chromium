@@ -18,6 +18,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -79,6 +80,8 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/strike_database/strike_database.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -145,6 +148,40 @@ base::flat_set<EntityTypeName> GetSaveEntitiesTypesNames(
     entity_types.insert(entity.type().name());
   }
   return entity_types;
+}
+
+// Upon accepting a Wallet private pass save or migrate prompt with the provided
+// `ui_context`, logs the corresponding consent to ConsentAuditor.
+consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
+    const AutofillClient::EntityImportUIContext& ui_context,
+    AutofillClient& client) {
+  if (!base::FeatureList::IsEnabled(
+          wallet::features::kWalletApiPrivatePassesConsent)) {
+    // The save API expects a session ID in every case, since this is the target
+    // state of the API. When kWalletApiPrivatePassesConsent is disabled, it is
+    // dropped before calling Wallet. Return a dummy session ID to proceed with
+    // the save.
+    return consent_auditor::ConsentAuditor::GenerateSessionId();
+  }
+  consent_auditor::ConsentAuditor* consent_auditor = client.GetConsentAuditor();
+  // As a profile keyed service, the `consent_auditor` exists.
+  CHECK(consent_auditor);
+  // Since saves to Wallet are only offered to signed-in users, a `gaia_id` is
+  // available.
+  GaiaId gaia_id = client.GetIdentityManager()
+                       ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                       .gaia;
+  CHECK(!gaia_id.empty());
+  consent_auditor::ConsentAuditor::SessionId session_id =
+      consent_auditor->GenerateSessionId();
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
+  consent.mutable_description_grd_ids()->Assign(
+      ui_context.ui_string_ids.begin(), ui_context.ui_string_ids.end());
+  // To accept an import, the user needs to click a confirmation button.
+  CHECK(ui_context.clicked_button_string_id.has_value());
+  consent.set_confirmation_grd_id(ui_context.clicked_button_string_id.value());
+  consent_auditor->RecordWalletPrivatePassConsent(gaia_id, session_id, consent);
+  return session_id;
 }
 
 }  // namespace
@@ -409,16 +446,17 @@ void AutofillAiManager::HandlePromptResult(
           client_->GetWalletPassAccessManager()) {
     switch (prompt_type) {
       case AutofillClient::AutofillAiImportPromptType::kSave:
-      case AutofillClient::AutofillAiImportPromptType::kMigrate:
-        // TODO(crbug.com/489354073): Log consent using `ui_context` and replace
-        // the parameter with the correct session ID.
-        wallet_manager->SaveWalletEntityInstance(
-            entity, consent_auditor::ConsentAuditor::GenerateSessionId(),
-            std::move(callback));
+      case AutofillClient::AutofillAiImportPromptType::kMigrate: {
+        consent_auditor::ConsentAuditor::SessionId session_id =
+            RecordWalletPrivatePassConsent(ui_context, *client_);
+        wallet_manager->SaveWalletEntityInstance(entity, session_id,
+                                                 std::move(callback));
         break;
-      case AutofillClient::AutofillAiImportPromptType::kUpdate:
+      }
+      case AutofillClient::AutofillAiImportPromptType::kUpdate: {
         wallet_manager->UpdateWalletEntityInstance(entity, std::move(callback));
         break;
+      }
     }
   }
 }

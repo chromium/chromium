@@ -67,6 +67,7 @@
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
@@ -181,6 +182,14 @@ class TestAutofillClientTemplate : public T {
 
   AutofillAiManager* GetAutofillAiManager() override {
     return mock_autofill_ai_delegate_.get();
+  }
+
+  consent_auditor::ConsentAuditor* GetConsentAuditor() override {
+    if (!consent_auditor_) {
+      consent_auditor_ =
+          std::make_unique<consent_auditor::FakeConsentAuditor>();
+    }
+    return consent_auditor_.get();
   }
 
   SingleFieldFillRouter& GetSingleFieldFillRouter() override {
@@ -749,6 +758,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<WalletPassAccessManager> wallet_pass_access_manager_;
+  std::unique_ptr<consent_auditor::FakeConsentAuditor> consent_auditor_;
 
   GeoIpCountryCode variation_config_country_code_;
 

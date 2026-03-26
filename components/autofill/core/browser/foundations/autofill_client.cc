@@ -156,6 +156,10 @@ AutofillAiModelExecutor* AutofillClient::GetAutofillAiModelExecutor() {
   return nullptr;
 }
 
+consent_auditor::ConsentAuditor* AutofillClient::GetConsentAuditor() {
+  return nullptr;
+}
+
 optimization_guide::RemoteModelExecutor*
 AutofillClient::GetRemoteModelExecutor() {
   return nullptr;

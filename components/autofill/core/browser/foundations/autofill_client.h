@@ -31,6 +31,10 @@ class GoogleGroupsManager;
 class GURL;
 class PrefService;
 
+namespace consent_auditor {
+class ConsentAuditor;
+}
+
 namespace device_reauth {
 class DeviceAuthenticator;
 }
@@ -409,6 +413,9 @@ class AutofillClient {
   // Returns the per-profile `AutofillAiModelExecutor`. Returns `nullptr` if the
   // `kAutofillAiServerModel` is not enabled or the profile is OTR.
   virtual AutofillAiModelExecutor* GetAutofillAiModelExecutor();
+
+  // Returns the per-profile ConsentAuditor.
+  virtual consent_auditor::ConsentAuditor* GetConsentAuditor();
 
   // Returns the per-profile `RemoteModelExecutor`.
   virtual optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor();

@@ -146,6 +146,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   AutofillAiManager* GetAutofillAiManager() final;
   AutofillAiModelCache* GetAutofillAiModelCache() final;
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() final;
+  consent_auditor::ConsentAuditor* GetConsentAuditor() final;
   optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() final;
   IdentityCredentialDelegate* GetIdentityCredentialDelegate() final;
   PrefService* GetPrefs() final;

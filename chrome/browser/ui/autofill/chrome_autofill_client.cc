@@ -43,6 +43,7 @@
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/autofill/wallet_pass_access_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -597,6 +598,12 @@ AutofillAiModelExecutor* ChromeAutofillClient::GetAutofillAiModelExecutor() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return AutofillAiModelExecutorFactory::GetForProfile(profile);
+}
+
+consent_auditor::ConsentAuditor* ChromeAutofillClient::GetConsentAuditor() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return ConsentAuditorFactory::GetForProfile(profile);
 }
 
 optimization_guide::RemoteModelExecutor*

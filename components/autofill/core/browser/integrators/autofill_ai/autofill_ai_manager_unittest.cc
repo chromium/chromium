@@ -11,6 +11,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -41,7 +42,11 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -547,6 +552,11 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
   MockWalletPassAccessManager& wallet_manager() {
     return static_cast<MockWalletPassAccessManager&>(
         *autofill_client().GetWalletPassAccessManager());
+  }
+
+  consent_auditor::FakeConsentAuditor& consent_auditor() {
+    return static_cast<consent_auditor::FakeConsentAuditor&>(
+        *autofill_client().GetConsentAuditor());
   }
 
  private:
@@ -1285,6 +1295,78 @@ TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWallet) {
   ASSERT_TRUE(entity_to_save.has_value());
   EXPECT_THAT(GetEntityInstances(),
               ElementsAre(MaskEntityInstance(*entity_to_save)));
+}
+
+// Tests that consent is logged when saving a private pass to Wallet.
+TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWalletConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillAiWalletPrivatePasses,
+       wallet::features::kWalletApiPrivatePassesConsent},
+      {});
+
+  // Capture the details of the consent that are logged.
+  GaiaId gaia_id;
+  consent_auditor::ConsentAuditor::SessionId session_id_consent_auditor;
+  consent_auditor::ConsentAuditor::SessionId session_id_api_call;
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
+
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_client(),
+                ShowEntityImportBubble(
+                    HasRecordType(EntityInstance::RecordType::kServerWallet),
+                    Eq(std::nullopt), false, _))
+        .WillOnce(RunOnceCallback<3>(kAcceptBubble, kAcceptUIContext));
+    EXPECT_CALL(consent_auditor(), RecordWalletPrivatePassConsent)
+        .WillOnce(DoAll(SaveArg<0>(&gaia_id),
+                        SaveArg<1>(&session_id_consent_auditor),
+                        SaveArg<2>(&consent)));
+    EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
+        .WillOnce(DoAll(SaveArg<1>(&session_id_api_call),
+                        WithArgs<0, 2>(ReplyWithMaskedEntity())));
+    EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
+  }
+
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  // Expect that the consent details are populated correctly and that the same
+  // session ID passed to the ConsentAuditor is passed to the Upsert call.
+  EXPECT_EQ(gaia_id, autofill_client()
+                         .GetIdentityManager()
+                         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                         .gaia);
+  EXPECT_EQ(session_id_consent_auditor, session_id_api_call);
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent expected_consent;
+  expected_consent.mutable_description_grd_ids()->Assign(
+      kAcceptUIContext.ui_string_ids.begin(),
+      kAcceptUIContext.ui_string_ids.end());
+  expected_consent.set_confirmation_grd_id(
+      *kAcceptUIContext.clicked_button_string_id);
+  EXPECT_THAT(consent, base::test::EqualsProto(expected_consent));
+}
+
+// Tests that when consent logging is disabled, saving still works.
+TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWalletConsentDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillAiWalletPrivatePasses},
+      {wallet::features::kWalletApiPrivatePassesConsent});
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_client(),
+                ShowEntityImportBubble(
+                    HasRecordType(EntityInstance::RecordType::kServerWallet),
+                    Eq(std::nullopt), false, _))
+        .WillOnce(RunOnceCallback<3>(kAcceptBubble, kAcceptUIContext));
+    EXPECT_CALL(consent_auditor(), RecordWalletPrivatePassConsent).Times(0);
+    EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
+        .WillOnce(WithArgs<0, 2>(ReplyWithMaskedEntity()));
+    EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
+  }
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 }
 
 // Tests that if saving a passport to the Wallet fails, it is saved locally
