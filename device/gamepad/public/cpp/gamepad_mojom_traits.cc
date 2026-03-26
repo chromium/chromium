@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/notreached.h"
 
 namespace mojo {
 
@@ -82,23 +83,20 @@ EnumTraits<device::mojom::GamepadHapticActuatorType,
 }
 
 // static
-bool EnumTraits<device::mojom::GamepadHapticActuatorType,
-                device::GamepadHapticActuatorType>::
-    FromMojom(device::mojom::GamepadHapticActuatorType input,
-              device::GamepadHapticActuatorType* output) {
+device::GamepadHapticActuatorType
+EnumTraits<device::mojom::GamepadHapticActuatorType,
+           device::GamepadHapticActuatorType>::
+    FromMojom(device::mojom::GamepadHapticActuatorType input) {
   switch (input) {
     case device::mojom::GamepadHapticActuatorType::
         GamepadHapticActuatorTypeVibration:
-      *output = device::GamepadHapticActuatorType::kVibration;
-      return true;
+      return device::GamepadHapticActuatorType::kVibration;
     case device::mojom::GamepadHapticActuatorType::
         GamepadHapticActuatorTypeDualRumble:
-      *output = device::GamepadHapticActuatorType::kDualRumble;
-      return true;
+      return device::GamepadHapticActuatorType::kDualRumble;
     case device::mojom::GamepadHapticActuatorType::
         GamepadHapticActuatorTypeTriggerRumble:
-      *output = device::GamepadHapticActuatorType::kTriggerRumble;
-      return true;
+      return device::GamepadHapticActuatorType::kTriggerRumble;
   }
 
   NOTREACHED();
@@ -190,19 +188,16 @@ EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::ToMojom(
 }
 
 // static
-bool EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::
-    FromMojom(device::mojom::GamepadMapping input,
-              device::GamepadMapping* output) {
+device::GamepadMapping
+EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::FromMojom(
+    device::mojom::GamepadMapping input) {
   switch (input) {
     case device::mojom::GamepadMapping::GamepadMappingNone:
-      *output = device::GamepadMapping::kNone;
-      return true;
+      return device::GamepadMapping::kNone;
     case device::mojom::GamepadMapping::GamepadMappingStandard:
-      *output = device::GamepadMapping::kStandard;
-      return true;
+      return device::GamepadMapping::kStandard;
     case device::mojom::GamepadMapping::GamepadMappingXRStandard:
-      *output = device::GamepadMapping::kXrStandard;
-      return true;
+      return device::GamepadMapping::kXrStandard;
   }
 
   NOTREACHED();
@@ -225,19 +220,16 @@ EnumTraits<device::mojom::GamepadHand, device::GamepadHand>::ToMojom(
 }
 
 // static
-bool EnumTraits<device::mojom::GamepadHand, device::GamepadHand>::FromMojom(
-    device::mojom::GamepadHand input,
-    device::GamepadHand* output) {
+device::GamepadHand
+EnumTraits<device::mojom::GamepadHand, device::GamepadHand>::FromMojom(
+    device::mojom::GamepadHand input) {
   switch (input) {
     case device::mojom::GamepadHand::GamepadHandNone:
-      *output = device::GamepadHand::kNone;
-      return true;
+      return device::GamepadHand::kNone;
     case device::mojom::GamepadHand::GamepadHandLeft:
-      *output = device::GamepadHand::kLeft;
-      return true;
+      return device::GamepadHand::kLeft;
     case device::mojom::GamepadHand::GamepadHandRight:
-      *output = device::GamepadHand::kRight;
-      return true;
+      return device::GamepadHand::kRight;
   }
 
   NOTREACHED();

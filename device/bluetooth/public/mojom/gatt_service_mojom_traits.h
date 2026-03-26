@@ -16,8 +16,8 @@ struct EnumTraits<bluetooth::mojom::GattServiceErrorCode,
                   device::BluetoothGattService::GattErrorCode> {
   static bluetooth::mojom::GattServiceErrorCode ToMojom(
       device::BluetoothGattService::GattErrorCode input);
-  static bool FromMojom(bluetooth::mojom::GattServiceErrorCode input,
-                        device::BluetoothGattService::GattErrorCode* output);
+  static device::BluetoothGattService::GattErrorCode FromMojom(
+      bluetooth::mojom::GattServiceErrorCode input);
 };
 
 }  // namespace mojo

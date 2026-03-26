@@ -30,35 +30,27 @@ EnumTraits<bluetooth::mojom::GattServiceErrorCode,
   }
 }
 
-bool EnumTraits<bluetooth::mojom::GattServiceErrorCode,
-                device::BluetoothGattService::GattErrorCode>::
-    FromMojom(bluetooth::mojom::GattServiceErrorCode input,
-              device::BluetoothGattService::GattErrorCode* output) {
+device::BluetoothGattService::GattErrorCode
+EnumTraits<bluetooth::mojom::GattServiceErrorCode,
+           device::BluetoothGattService::GattErrorCode>::
+    FromMojom(bluetooth::mojom::GattServiceErrorCode input) {
   switch (input) {
     case bluetooth::mojom::GattServiceErrorCode::kUnknown:
-      *output = device::BluetoothGattService::GattErrorCode::kUnknown;
-      return true;
+      return device::BluetoothGattService::GattErrorCode::kUnknown;
     case bluetooth::mojom::GattServiceErrorCode::kFailed:
-      *output = device::BluetoothGattService::GattErrorCode::kFailed;
-      return true;
+      return device::BluetoothGattService::GattErrorCode::kFailed;
     case bluetooth::mojom::GattServiceErrorCode::kInProgress:
-      *output = device::BluetoothGattService::GattErrorCode::kInProgress;
-      return true;
+      return device::BluetoothGattService::GattErrorCode::kInProgress;
     case bluetooth::mojom::GattServiceErrorCode::kInvalidLength:
-      *output = device::BluetoothGattService::GattErrorCode::kInvalidLength;
-      return true;
+      return device::BluetoothGattService::GattErrorCode::kInvalidLength;
     case bluetooth::mojom::GattServiceErrorCode::kNotPermitted:
-      *output = device::BluetoothGattService::GattErrorCode::kNotPermitted;
-      return true;
+      return device::BluetoothGattService::GattErrorCode::kNotPermitted;
     case bluetooth::mojom::GattServiceErrorCode::kNotAuthorized:
-      *output = device::BluetoothGattService::GattErrorCode::kNotAuthorized;
-      return true;
+      return device::BluetoothGattService::GattErrorCode::kNotAuthorized;
     case bluetooth::mojom::GattServiceErrorCode::kNotPaired:
-      *output = device::BluetoothGattService::GattErrorCode::kNotPaired;
-      return true;
+      return device::BluetoothGattService::GattErrorCode::kNotPaired;
     case bluetooth::mojom::GattServiceErrorCode::kNotSupported:
-      *output = device::BluetoothGattService::GattErrorCode::kNotSupported;
-      return true;
+      return device::BluetoothGattService::GattErrorCode::kNotSupported;
   }
 }
 

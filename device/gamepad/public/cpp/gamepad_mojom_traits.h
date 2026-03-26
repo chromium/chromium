@@ -58,8 +58,8 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
                device::GamepadHapticActuatorType> {
   static device::mojom::GamepadHapticActuatorType ToMojom(
       device::GamepadHapticActuatorType input);
-  static bool FromMojom(device::mojom::GamepadHapticActuatorType input,
-                        device::GamepadHapticActuatorType* output);
+  static device::GamepadHapticActuatorType FromMojom(
+      device::mojom::GamepadHapticActuatorType input);
 };
 
 template <>
@@ -114,8 +114,7 @@ template <>
 struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
     EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping> {
   static device::mojom::GamepadMapping ToMojom(device::GamepadMapping input);
-  static bool FromMojom(device::mojom::GamepadMapping input,
-                        device::GamepadMapping* output);
+  static device::GamepadMapping FromMojom(device::mojom::GamepadMapping input);
 };
 
 template <>
@@ -147,8 +146,7 @@ template <>
 struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
     EnumTraits<device::mojom::GamepadHand, device::GamepadHand> {
   static device::mojom::GamepadHand ToMojom(device::GamepadHand input);
-  static bool FromMojom(device::mojom::GamepadHand input,
-                        device::GamepadHand* output);
+  static device::GamepadHand FromMojom(device::mojom::GamepadHand input);
 };
 
 template <>
