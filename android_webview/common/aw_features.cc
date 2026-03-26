@@ -313,4 +313,8 @@ BASE_FEATURE(kWebViewFasterGetDefaultUserAgent,
 // of saved state for WebView.
 BASE_FEATURE(kWebViewSaveStateIncludeHeaders,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebViewSkipFaviconJavaCopyUntilNeeded,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

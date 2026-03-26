@@ -265,6 +265,9 @@ public class NavigationHistoryTest extends AwParameterizedTest {
     @Test
     @SmallTest
     public void testFavicon() throws Throwable {
+        // fake onReceivedIcon overridden so that the favicon is
+        // sent when page is loaded
+        mAwContents.setOnReceivedIconOverridden(true);
         mWebServer.setResponseBase64(
                 "/" + CommonResources.FAVICON_FILENAME,
                 CommonResources.FAVICON_DATA_BASE64,

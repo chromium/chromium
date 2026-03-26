@@ -1364,6 +1364,11 @@ public final class ProductionSupportedFlagList {
                 "AsyncBeforeUnload",
                 "If enabled, runs beforeunload handlers asynchronously when the user"
                         + " hasn't interacted with the frame."),
+        Flag.baseFeature(
+                "WebViewSkipFaviconJavaCopyUntilNeeded",
+                "Skips copying the favicon to Java if not needed by onReceivedIcon"
+                        + "being overriden."),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

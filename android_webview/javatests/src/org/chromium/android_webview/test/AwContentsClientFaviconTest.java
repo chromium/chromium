@@ -83,6 +83,7 @@ public class AwContentsClientFaviconTest extends AwParameterizedTest {
     @SmallTest
     public void testReceiveBasicFavicon() throws Throwable {
         int callCount = mContentsClient.getFaviconHelper().getCallCount();
+        mAwContents.setOnReceivedIconOverridden(true);
 
         final String faviconUrl =
                 mWebServer.setResponseBase64(
@@ -117,6 +118,7 @@ public class AwContentsClientFaviconTest extends AwParameterizedTest {
     @SmallTest
     public void testDoNotMakeRequestForFaviconAfter404() throws Throwable {
         mWebServer.setResponseWithNotFoundStatus(FAVICON1_URL);
+        mAwContents.setOnReceivedIconOverridden(true);
         final String pageUrl =
                 mWebServer.setResponse(
                         FAVICON1_PAGE_URL,

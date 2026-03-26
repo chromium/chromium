@@ -8143,6 +8143,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Memory.FaviconJavaAllocatedMemory" units="KB"
+    expires_after="2026-05-17">
+  <owner>isaacmadgwick@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the memory usage by mFavicon in AwContents in the java side. This is
+    to determine how much memory is being used by favicons in Java.
+
+    This histogram is logged everytime onReceivedIcon is called.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Memory.FunctorReclaim.OtherPrivateDirty"
     units="MB" expires_after="2024-11-03">
   <owner>lizeb@chromium.org</owner>
