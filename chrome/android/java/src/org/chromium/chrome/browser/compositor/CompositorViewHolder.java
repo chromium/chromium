@@ -1283,6 +1283,11 @@ public class CompositorViewHolder extends FrameLayout
 
         SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
         MarginLayoutParams layoutParams = (MarginLayoutParams) mView.getLayoutParams();
+        // Layout parameters can be null if the view is not yet attached to the view hierarchy
+        // or fully initialized (e.g. during tab reparenting).
+        // TODO(b/496307238): verify if need to explicitly trigger repositionTabViewForSideUi again
+        // after layout params are set.
+        if (layoutParams == null) return;
         layoutParams.setMarginStart(sideUiSpecs.mStartContainerWidth);
         layoutParams.setMarginEnd(sideUiSpecs.mEndContainerWidth);
         mView.setLayoutParams(layoutParams);
