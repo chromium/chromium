@@ -62,13 +62,8 @@ UILabel* CreateLabel(NSString* text) {
     ChromeButton* button =
         [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
     button.enabled = NO;
-    UIButtonConfiguration* buttonConfiguration = button.configuration;
-    buttonConfiguration.showsActivityIndicator = YES;
-    buttonConfiguration.activityIndicatorColorTransformer =
-        ^UIColor*(UIColor* _) {
-          return UIColor.whiteColor;
-        };
-    button.configuration = buttonConfiguration;
+    button.primaryButtonImage = PrimaryButtonImageSpinner;
+
     [stackView addArrangedSubview:button];
   }
 
@@ -80,14 +75,33 @@ UILabel* CreateLabel(NSString* text) {
                                   : ChromeButtonStylePrimary];
     button.enabled = NO;
     button.tunedDownStyle = YES;
-    UIButtonConfiguration* buttonConfiguration = button.configuration;
-    buttonConfiguration.image =
-        DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol, 17);
-    buttonConfiguration.imageColorTransformer = ^UIColor*(UIColor* _) {
-      return [UIColor colorNamed:destructive ? kRed600Color : kBlue700Color];
-    };
-    button.configuration = buttonConfiguration;
+    button.primaryButtonImage = PrimaryButtonImageCheckmark;
+
     [stackView addArrangedSubview:button];
+  }
+
+  [stackView addArrangedSubview:CreateLabel(@"Primary Button Image Variants")];
+  {
+    ChromeButton* spinnerButton =
+        [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+    [spinnerButton setTitle:@"Spinner" forState:UIControlStateNormal];
+    spinnerButton.primaryButtonImage = PrimaryButtonImageSpinner;
+    [stackView addArrangedSubview:spinnerButton];
+
+    ChromeButton* checkmarkButton =
+        [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+    [checkmarkButton setTitle:@"Checkmark" forState:UIControlStateNormal];
+    checkmarkButton.primaryButtonImage = PrimaryButtonImageCheckmark;
+    [stackView addArrangedSubview:checkmarkButton];
+
+    ChromeButton* customButton =
+        [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+    [customButton setTitle:@"Custom" forState:UIControlStateNormal];
+    UIButtonConfiguration* config = customButton.configuration;
+    config.image = DefaultSymbolWithPointSize(kPhotoSymbol, 17);
+    customButton.configuration = config;
+    customButton.primaryButtonImage = PrimaryButtonImageCustom;
+    [stackView addArrangedSubview:customButton];
   }
 
   [stackView addArrangedSubview:CreateLabel(@"Primary Destructive Buttons")];

@@ -17,6 +17,9 @@ const UIControlState UIControlStateTunedDown = 1 << 16;
 // Alpha value for the disabled action button.
 const CGFloat kDisabledButtonAlpha = 0.5;
 
+// The padding between the custom image and the title.
+const CGFloat kCustomImagePadding = 4.0;
+
 // Returns whether `button` should have its background tinted or not.
 bool ShouldUseTintColor(UIButton* button) {
   if (@available(iOS 26, *)) {
@@ -122,6 +125,19 @@ UIImage* CheckmarkImage() {
                  withConfiguration:symbol_configuration];
 }
 
+// Configures the image color for the given button configuration.
+void ConfigureImageColor(UIButtonConfiguration* button_configuration,
+                         UIColor* color) {
+  if (@available(iOS 26, *)) {
+    button_configuration.image = [button_configuration.image
+        imageWithTintColor:color
+             renderingMode:UIImageRenderingModeAlwaysOriginal];
+  } else {
+    button_configuration.imageColorTransformer = ^UIColor*(UIColor* _) {
+      return color;
+    };
+  }
+}
 }  // namespace
 
 @implementation ChromeButton {
@@ -210,22 +226,30 @@ UIImage* CheckmarkImage() {
 }
 
 - (void)setPrimaryButtonImage:(PrimaryButtonImage)primaryButtonImage {
+  _primaryButtonImage = primaryButtonImage;
   UIButtonConfiguration* button_configuration = self.configuration;
-  button_configuration.image = nil;
+
+  if (primaryButtonImage != PrimaryButtonImageCustom) {
+    button_configuration.image = nil;
+  }
+  button_configuration.imageColorTransformer = nil;
   button_configuration.showsActivityIndicator = NO;
+  button_configuration.imagePadding = kCustomImagePadding;
+  UIColor* color = [UIColor colorNamed:kSolidButtonTextColor];
+
   switch (primaryButtonImage) {
     case PrimaryButtonImageNone:
       break;
-    case PrimaryButtonImageSpinner:
+    case PrimaryButtonImageSpinner: {
       button_configuration.showsActivityIndicator = YES;
       button_configuration.activityIndicatorColorTransformer =
           ^UIColor*(UIColor* _) {
-            return UIColor.whiteColor;
+            return color;
           };
       break;
+    }
     case PrimaryButtonImageCheckmark: {
       button_configuration.image = CheckmarkImage();
-      UIColor* color = UIColor.whiteColor;
       if (self.state & UIControlStateTunedDown) {
         if (self.style == ChromeButtonStylePrimary) {
           color = [UIColor colorNamed:kBlue700Color];
@@ -233,23 +257,16 @@ UIImage* CheckmarkImage() {
           color = [UIColor colorNamed:kRed600Color];
         }
       }
-      button_configuration.imageColorTransformer = ^UIColor*(UIColor* _) {
-        return color;
-      };
+      ConfigureImageColor(button_configuration, color);
+      break;
+    }
+    case PrimaryButtonImageCustom: {
+      ConfigureImageColor(button_configuration, color);
       break;
     }
   }
-  self.configuration = button_configuration;
-}
 
-- (PrimaryButtonImage)primaryButtonImage {
-  if (self.configuration.showsActivityIndicator) {
-    return PrimaryButtonImageSpinner;
-  }
-  if (self.configuration.image) {
-    return PrimaryButtonImageCheckmark;
-  }
-  return PrimaryButtonImageNone;
+  self.configuration = button_configuration;
 }
 
 - (UIControlState)state {
