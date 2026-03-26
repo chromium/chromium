@@ -239,6 +239,10 @@ BASE_DECLARE_FEATURE(kExtendedReportingRemovePrefDependency);
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);
 
+// Reduces the extension telemetry service's enterprise telemetry reporting
+// interval to 30 seconds.
+BASE_DECLARE_FEATURE(kExtensionTelemetryEnterpriseShortReportingInterval);
+
 // Enables the search hijacking signal in extension telemetry.
 BASE_DECLARE_FEATURE(kExtensionTelemetrySearchHijackingSignal);
 // The default interval between heuristic checks.

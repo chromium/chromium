@@ -484,6 +484,29 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignalForEnterprise) {
                 .InMillisecondsSinceUnixEpoch());
 }
 
+TEST_F(ExtensionTelemetryServiceTest, CheckEnterpriseReportingInterval) {
+  // Enable enterprise telemetry.
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
+
+  // Default interval should be 300 seconds.
+  {
+    telemetry_service_ = CreateTelemetryService(&profile_);
+    EXPECT_EQ(telemetry_service_->GetEnterpriseTimerDelayForTesting(),
+              base::Seconds(300));
+  }
+
+  // Short interval flag enabled should reduce interval to 30 seconds.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        kExtensionTelemetryEnterpriseShortReportingInterval);
+    telemetry_service_ = CreateTelemetryService(&profile_);
+    EXPECT_EQ(telemetry_service_->GetEnterpriseTimerDelayForTesting(),
+              base::Seconds(30));
+  }
+}
+
 TEST_F(ExtensionTelemetryServiceTest, ProcessesDOMAccessSignalForEnterprise) {
   // Enable enterprise telemetry.
   SetEnterpriseReportingConfig(

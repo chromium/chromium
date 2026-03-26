@@ -7667,6 +7667,8 @@ from previous Chrome versions.
   <int value="-2116440101" label="EnablePenetratingImageSelection:enabled"/>
   <int value="-2116226068" label="ReaderModeDistillInApp:disabled"/>
   <int value="-2116063296" label="DesktopPartialTranslate:disabled"/>
+  <int value="-2115449643"
+      label="ExtensionTelemetryEnterpriseShortReportingInterval:disabled"/>
   <int value="-2115078255" label="MobilePromoOnDesktopForcePromoType:disabled"/>
   <int value="-2115072824"
       label="EnableLogControllerForDiagnosticsApp:disabled"/>
@@ -8993,6 +8995,8 @@ from previous Chrome versions.
       label="HighlightManagedPrefDisclaimerAndroid:enabled"/>
   <int value="-1679624666" label="NtpRealbox:enabled"/>
   <int value="-1678325491" label="AvifGainmapHdrImages:disabled"/>
+  <int value="-1678205374"
+      label="ExtensionTelemetryEnterpriseShortReportingInterval:enabled"/>
   <int value="-1677715989" label="UnifiedConsent:disabled"/>
   <int value="-1677531841" label="AccessibilityExtraLargeCursor:disabled"/>
   <int value="-1677516670" label="PageInfoAboutThisSiteEn:enabled"/>

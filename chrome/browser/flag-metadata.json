@@ -4448,6 +4448,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "extension-telemetry-enterprise-short-reporting-interval",
+    "owners": [ "anunoy@chromium.org" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "extensions-collapse-main-menu",
     "owners": [ "dfried@chromium.org" ],
     "expiry_milestone": 145

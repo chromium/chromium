@@ -635,9 +635,14 @@ void ExtensionTelemetryService::SetEnabledForEnterprise(bool enable) {
       SetUpOffstoreFileDataCollection();
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+      base::TimeDelta interval =
+          base::FeatureList::IsEnabled(
+              kExtensionTelemetryEnterpriseShortReportingInterval)
+              ? base::Seconds(30)
+              : kExtensionTelemetryEnterpriseReportingIntervalSeconds;
       enterprise_timer_.Start(
-          FROM_HERE, kExtensionTelemetryEnterpriseReportingIntervalSeconds,
-          this, &ExtensionTelemetryService::CreateAndSendEnterpriseReport);
+          FROM_HERE, interval, this,
+          &ExtensionTelemetryService::CreateAndSendEnterpriseReport);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     } else {
       // Cancel any pending enterprise telemetry reports.
