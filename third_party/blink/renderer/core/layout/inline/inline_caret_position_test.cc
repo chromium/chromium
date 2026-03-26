@@ -29,12 +29,15 @@ class InlineCaretPositionTest : public RenderingTest {
     InsertStyleElement(
         "body { font: 10px/10px Ahem;  }"
         "bdo { display:block; }");
-    const char* pattern =
+    String width_str = String::Number(width);
+    StringView style_view =
+        style ? StringView(style) : StringView("word-break: break-all");
+    SetBodyInnerHTML(
         dir == TextDirection::kLtr
-            ? "<div id='%s' style='width: %u0px; %s'>%s</div>"
-            : "<bdo dir=rtl id='%s' style='width: %u0px; %s'>%s</bdo>";
-    SetBodyInnerHTML(UNSAFE_TODO(String::Format(
-        pattern, id, width, style ? style : "word-break: break-all", html)));
+            ? StrCat({"<div id='", id, "' style='width: ", width_str, "0px; ",
+                      style_view, "'>", html, "</div>"})
+            : StrCat({"<bdo dir=rtl id='", id, "' style='width: ", width_str,
+                      "0px; ", style_view, "'>", html, "</bdo>"}));
     container_ = GetElementById(id);
     DCHECK(container_);
     context_ = To<LayoutBlockFlow>(container_->GetLayoutObject());

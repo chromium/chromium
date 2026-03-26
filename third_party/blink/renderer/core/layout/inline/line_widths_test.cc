@@ -175,7 +175,7 @@ INSTANTIATE_TEST_SUITE_P(LineWidthsTest,
 TEST_P(LineWidthsDataTest, Data) {
   const auto& data = GetParam();
   LoadAhem();
-  SetBodyInnerHTML(UNSAFE_TODO(String::Format(R"HTML(
+  SetBodyInnerHTML(StrCat({R"HTML(
     <!DOCTYPE html>
     <style>
     #target {
@@ -194,9 +194,8 @@ TEST_P(LineWidthsDataTest, Data) {
       height: 10px;
     }
     </style>
-    %s
-  )HTML",
-                                              data.html)));
+    )HTML",
+                           data.html, "\n"}));
   const InlineNode target = GetInlineNodeByElementId("target");
   const std::optional<LineWidths> line_widths = ComputeLineWidths(target);
   std::vector<int> actual_widths;

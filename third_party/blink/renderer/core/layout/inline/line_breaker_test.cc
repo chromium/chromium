@@ -1287,20 +1287,18 @@ INSTANTIATE_TEST_SUITE_P(LineBreakerTest,
 
 TEST_P(CanBreakInsideTest, Data) {
   const auto& data = GetParam();
-  SetBodyInnerHTML(
-      UNSAFE_TODO(String::Format(R"HTML(
+  SetBodyInnerHTML(StrCat({
+      R"HTML(
     <!DOCTYPE html>
     <style>
     #target {
       font-size: 10px;
       width: 800px;
-      %s
-    }
-    %s
+      )HTML",
+      data.target_css, "\n    }\n    ", data.style, R"HTML(
     </style>
-    <div id="target">%s</div>
-  )HTML",
-                                 data.target_css, data.style, data.html)));
+    <div id="target">)HTML",
+      data.html, "</div>\n"}));
   InlineNode target = GetInlineNodeByElementId("target");
   std::array<LineInfo, 1> line_info_list;
   const LayoutUnit available_width = LayoutUnit(800);
