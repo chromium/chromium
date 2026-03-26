@@ -62,10 +62,10 @@ class ToolbarUIServiceConnectionManager {
   bool is_bound() { return service_remote_.is_bound(); }
   bool is_connected() { return service_remote_.is_connected(); }
 
-  MockReloadButtonPage& mock_observer() { return mock_observer_; }
+  MockToolbarUIObserver& mock_observer() { return mock_observer_; }
 
  private:
-  testing::StrictMock<MockReloadButtonPage> mock_observer_;
+  testing::StrictMock<MockToolbarUIObserver> mock_observer_;
   mojo::Remote<toolbar_ui_api::mojom::ToolbarUIService> service_remote_;
 };
 
