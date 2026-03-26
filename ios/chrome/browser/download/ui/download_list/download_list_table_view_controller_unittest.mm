@@ -121,7 +121,10 @@ using ::testing::Return;
 @interface DownloadListTableViewController (Testing)
 - (void)updateUI;
 - (void)performPeriodicUpdate;
+- (void)updateSearchResultsForSearchController:
+    (UISearchController*)searchController;
 @property(nonatomic, readonly) DownloadListTableViewHeader* filterHeaderView;
+@property(nonatomic, readonly) UISearchController* searchController;
 @end
 
 namespace {
@@ -414,6 +417,43 @@ TEST_F(DownloadListTableViewControllerTest,
 TEST_F(DownloadListTableViewControllerTest, TestNavigationItemConfiguration) {
   // Verify that the navigation item has a right bar button item (done button).
   EXPECT_TRUE(controller_.navigationItem.rightBarButtonItem);
+}
+
+/// Tests that search controller is configured correctly after viewDidLoad.
+TEST_F(DownloadListTableViewControllerTest, TestSearchControllerConfiguration) {
+  // Verify search controller is created and set on navigationItem.
+  EXPECT_TRUE(controller_.searchController);
+  EXPECT_EQ(controller_.navigationItem.searchController,
+            controller_.searchController);
+
+  // Verify search controller properties.
+  EXPECT_FALSE(
+      controller_.searchController.obscuresBackgroundDuringPresentation);
+  EXPECT_EQ(controller_.searchController.searchResultsUpdater, (id)controller_);
+}
+
+/// Tests that filterRecordsWithKeyword is called when search text changes.
+TEST_F(DownloadListTableViewControllerTest,
+       TestSearchControllerCallsMutatorOnUpdate) {
+  // Track the last keyword passed to filterRecordsWithKeyword.
+  __block NSString* lastKeyword = nil;
+  id mockMutator = OCMProtocolMock(@protocol(DownloadListMutator));
+  OCMExpect([mockMutator filterRecordsWithKeyword:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        __weak NSString* keyword;
+        [invocation getArgument:&keyword atIndex:2];
+        lastKeyword = keyword;
+      });
+  OCMStub([mockMutator loadDownloadRecords]);
+  controller_.mutator = mockMutator;
+
+  // Simulate search text change via UISearchResultsUpdating.
+  [controller_
+      updateSearchResultsForSearchController:controller_.searchController];
+
+  // filterRecordsWithKeyword should have been called with the current
+  // (empty) search bar text.
+  [(OCMockObject*)mockMutator verify];
 }
 
 /// Tests presentationControllerDidDismiss calls download list handler.

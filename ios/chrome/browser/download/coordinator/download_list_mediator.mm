@@ -482,9 +482,9 @@ using CategorizationResult =
     return YES;
   }
 
-  // Search in original URL.
-  std::u16string originalUrl = base::UTF8ToUTF16(record.original_url);
-  if (query_search.Search(originalUrl, /*match_index=*/nullptr,
+  // Search in originating host.
+  std::u16string originatingHost = base::UTF8ToUTF16(record.originating_host);
+  if (query_search.Search(originatingHost, /*match_index=*/nullptr,
                           /*match_length=*/nullptr)) {
     return YES;
   }

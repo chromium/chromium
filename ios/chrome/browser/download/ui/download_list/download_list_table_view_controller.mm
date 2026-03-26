@@ -78,11 +78,14 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
     DownloadListSnapshot;
 
 @interface DownloadListTableViewController () <
-    TableViewIllustratedEmptyViewDelegate>
+    TableViewIllustratedEmptyViewDelegate,
+    UISearchResultsUpdating>
 // Filter header view for download list.
 @property(nonatomic, strong) DownloadListTableViewHeader* filterHeaderView;
 // Counter to track number of updates for throttling logic.
 @property(nonatomic, assign) NSInteger updateCounter;
+// Search controller for filtering downloads by keyword.
+@property(nonatomic, strong) UISearchController* searchController;
 @end
 
 @implementation DownloadListTableViewController {
@@ -116,6 +119,9 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   // Setup filter header view.
   [self setupFilterHeaderView];
 
+  // Setup search controller.
+  [self setupSearchController];
+
   [self configureDiffableDataSource];
 
   // Load download records.
@@ -127,6 +133,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 #pragma mark - Private
 
+// Sets up the filter header view for the download list.
 - (void)setupFilterHeaderView {
   self.filterHeaderView = [[DownloadListTableViewHeader alloc]
       initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width,
@@ -134,6 +141,17 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   self.filterHeaderView.mutator = self.mutator;
 }
 
+// Sets up the search controller for filtering downloads by keyword.
+- (void)setupSearchController {
+  self.searchController =
+      [[UISearchController alloc] init];
+  self.searchController.searchResultsUpdater = self;
+  self.searchController.obscuresBackgroundDuringPresentation = NO;
+  self.navigationItem.searchController = self.searchController;
+  self.navigationItem.hidesSearchBarWhenScrolling = YES;
+}
+
+// Updates the frame of the table header view to fit its content.
 - (void)updateTableHeaderViewFrame {
   if (!self.filterHeaderView) {
     return;
@@ -215,6 +233,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   _updateTimer.Stop();
 }
 
+// Resumes periodic updates by restarting the timer if not already running.
 - (void)resumePeriodicUpdates {
   if (!_updateTimer.IsRunning()) {
     [self startPeriodicUpdates];
@@ -443,6 +462,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
                                                actionProvider:actionProvider];
 }
 
+// Creates a context menu with available actions for the given download item.
 - (UIMenu*)createMenuForDownloadItem:(DownloadListItem*)item {
   NSMutableArray<UIMenuElement*>* actions = [[NSMutableArray alloc] init];
   __weak __typeof(self) weakSelf = self;
@@ -586,6 +606,15 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
     (UIPresentationController*)presentationController {
   [self.downloadListHandler hideDownloadList];
 }
+
+#pragma mark - UISearchResultsUpdating
+
+- (void)updateSearchResultsForSearchController:
+    (UISearchController*)searchController {
+  NSString* searchText = searchController.searchBar.text;
+  [self.mutator filterRecordsWithKeyword:searchText];
+}
+
 #pragma mark - TableViewIllustratedEmptyViewDelegate
 
 // Invoked when a link in `view`'s subtitle is tapped.

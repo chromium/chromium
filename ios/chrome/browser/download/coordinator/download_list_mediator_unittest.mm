@@ -92,6 +92,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     DownloadRecord pdf_record;
     pdf_record.download_id = "1";
     pdf_record.original_url = "https://testsite.org/document.pdf";
+    pdf_record.originating_host = "testsite.org";
     pdf_record.mime_type = kAdobePortableDocumentFormatMimeType;
     pdf_record.file_name = "document.pdf";
     pdf_record.file_path = base::FilePath("document.pdf");
@@ -100,6 +101,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     DownloadRecord image_record;
     image_record.download_id = "2";
     image_record.original_url = "https://testsite.org/image.jpg";
+    image_record.originating_host = "testsite.org";
     image_record.mime_type = kJPEGImageMimeType;
     image_record.file_name = "image.jpg";
     image_record.file_path = base::FilePath("image.jpg");
@@ -108,6 +110,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     DownloadRecord video_record;
     video_record.download_id = "3";
     video_record.original_url = "https://testsite.org/video.mp4";
+    video_record.originating_host = "testsite.org";
     video_record.mime_type = kMP4VideoMimeType;
     video_record.file_name = "video.mp4";
     video_record.file_path = base::FilePath("video.mp4");
@@ -116,6 +119,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     DownloadRecord audio_record;
     audio_record.download_id = "4";
     audio_record.original_url = "https://testsite.org/audio.mp3";
+    audio_record.originating_host = "testsite.org";
     audio_record.mime_type = kMP3AudioMimeType;
     audio_record.file_name = "audio.mp3";
     audio_record.file_path = base::FilePath("audio.mp3");
@@ -124,6 +128,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     DownloadRecord text_record;
     text_record.download_id = "5";
     text_record.original_url = "https://testsite.org/document.txt";
+    text_record.originating_host = "testsite.org";
     text_record.mime_type = kTextMimeType;
     text_record.file_name = "document.txt";
     text_record.file_path = base::FilePath("document.txt");
@@ -131,7 +136,8 @@ class MockDownloadRecordService : public DownloadRecordService {
 
     DownloadRecord zip_record;
     zip_record.download_id = "6";
-    zip_record.original_url = "https://testsite.org/archive.zip";
+    zip_record.original_url = "https://anothersite.com/archive.zip";
+    zip_record.originating_host = "anothersite.com";
     zip_record.mime_type = kZipArchiveMimeType;
     zip_record.file_name = "archive.zip";
     zip_record.file_path = base::FilePath("archive.zip");
@@ -142,6 +148,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     incognito_pdf_record.download_id = "7";
     incognito_pdf_record.original_url =
         "https://testsite.org/incognito_document.pdf";
+    incognito_pdf_record.originating_host = "testsite.org";
     incognito_pdf_record.mime_type = kAdobePortableDocumentFormatMimeType;
     incognito_pdf_record.file_name = "incognito_document.pdf";
     incognito_pdf_record.file_path = base::FilePath("incognito_document.pdf");
@@ -152,6 +159,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     incognito_image_record.download_id = "8";
     incognito_image_record.original_url =
         "https://testsite.org/incognito_image.jpg";
+    incognito_image_record.originating_host = "testsite.org";
     incognito_image_record.mime_type = kJPEGImageMimeType;
     incognito_image_record.file_name = "incognito_image.jpg";
     incognito_image_record.file_path = base::FilePath("incognito_image.jpg");
@@ -504,6 +512,50 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
   [mock_consumer_ verify];
 
   EXPECT_EQ(capturedItems.count, 6U);
+}
+
+// Tests search by originating host.
+TEST_F(DownloadListMediatorTest, TestSearchRecordsWithOriginatingHost) {
+  __block NSArray<DownloadListItem*>* capturedItems = nil;
+
+  // Search for "anothersite" - should match only the zip record (ID=6) whose
+  // originating_host is "anothersite.com".
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
+
+  [mediator_ filterRecordsWithKeyword:@"anothersite"];
+  [mock_consumer_ verify];
+
+  EXPECT_EQ(capturedItems.count, 1U);
+  EXPECT_TRUE([capturedItems[0].downloadID isEqualToString:@"6"]);
+}
+
+// Tests that URL path segments do not cause false positives in search.
+TEST_F(DownloadListMediatorTest, TestSearchDoesNotMatchUrlPathSegments) {
+  __block NSArray<DownloadListItem*>* capturedItems = nil;
+
+  // Records have original_url containing path segments like "/image/" -
+  // searching "image" should only match via file_name or originating_host,
+  // not the URL path. This verifies the fix where searching "g" incorrectly
+  // matched items because their URL contained "/image/" in the path.
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
+
+  // Search for "image" - should only match file_name="image.jpg" (ID=2),
+  // not any record whose URL path happens to contain "/image/".
+  [mediator_ filterRecordsWithKeyword:@"image"];
+  [mock_consumer_ verify];
+
+  EXPECT_EQ(capturedItems.count, 1U);
+  EXPECT_TRUE([capturedItems[0].downloadID isEqualToString:@"2"]);
 }
 
 // Tests combined filtering and search functionality.
