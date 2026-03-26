@@ -73,7 +73,8 @@ const CGFloat kSheetDetentAnimationDuration = 0.3;
 #pragma mark - ComposeboxURLLoader
 
 // Prepares the load for a given query text by appending it to the base URL.
-- (void)prepareLoadForQueryText:(NSString*)queryText {
+- (void)prepareLoadForQueryText:(NSString*)queryText
+             clientToAimMessage:(const lens::ClientToAimMessage&)message {
   if (!_webState || queryText.length == 0) {
     return;
   }

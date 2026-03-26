@@ -1194,6 +1194,35 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 #pragma mark - Private
 
+// Sends a Cobrowse text followup.
+- (void)sendAIMFollowup:(NSString*)text {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!_contextualSearchSession) {
+    return;
+  }
+
+  std::unique_ptr<contextual_search::ContextualSearchContextController::
+                      CreateClientToAimRequestInfo>
+      request_info = std::make_unique<
+          contextual_search::ContextualSearchContextController::
+              CreateClientToAimRequestInfo>();
+  request_info->query_text = base::SysNSStringToUTF8(text);
+  request_info->query_start_time = base::Time::Now();
+  request_info->file_tokens =
+      _contextualSearchSession->GetSubmittedContextTokens();
+
+  if (_inputStateModel) {
+    request_info->active_tool = _inputStateModel->GetInputState().active_tool;
+    request_info->active_model = _inputStateModel->GetInputState().active_model;
+  }
+
+  lens::ClientToAimMessage message =
+      _contextualSearchSession->CreateClientToAimRequest(
+          std::move(request_info));
+
+  [self.URLLoader prepareLoadForQueryText:text clientToAimMessage:message];
+}
+
 // Updates the tool mode when in image generation mode.
 - (void)updateImageGenerationToolMode {
   if (_modeHolder.mode != ComposeboxMode::kImageGeneration) {
@@ -2130,7 +2159,13 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     [_sceneHandler hideAssistant];
   }
 
-  [self.URLLoader prepareLoadForQueryText:[NSString cr_fromString16:text]];
+  BOOL isAimFollowup = IsAimCobrowseEnabled() &&
+                       (_entrypoint == ComposeboxEntrypoint::kCobrowse);
+
+  if (isAimFollowup) {
+    [self sendAIMFollowup:[NSString cr_fromString16:text]];
+    return;
+  }
 
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:

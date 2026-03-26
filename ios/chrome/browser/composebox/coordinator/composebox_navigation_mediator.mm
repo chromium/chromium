@@ -78,7 +78,8 @@
 
 #pragma mark - ComposeboxURLLoader
 
-- (void)prepareLoadForQueryText:(NSString*)queryText {
+- (void)prepareLoadForQueryText:(NSString*)queryText
+             clientToAimMessage:(const lens::ClientToAimMessage&)message {
   // NO-OP
 }
 
