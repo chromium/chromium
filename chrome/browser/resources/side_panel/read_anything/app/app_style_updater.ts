@@ -48,6 +48,7 @@ const TOOLBAR_FOCUS_OUTLINE = 'var(--color-read-anything-toolbar-focus-outline';
 const ON_AUDIO_PLAYER_FOCUS_OUTLINE =
     'var(--color-read-anything-on-audio-player-focus-outline';
 const AUDIO_CONTROLS_ICON = 'var(--color-read-anything-audio-controls-icon';
+const FULL_PAGE_SCROLLBAR = 'var(--color-read-anything-full-page-scrollbar';
 // Line focus styles.
 // Determined by experimentation to balance visibility without risking
 // obstructing any text.
@@ -236,6 +237,9 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--audio-controls-icon-color',
         this.getAudioControlsIconColor_(colorSuffix));
+    this.setStyle_(
+        '--color-read-anything-full-page-scrollbar',
+        this.getFullPageScrollbarColor_(colorSuffix));
     const lineFocusBg = this.app_.style.getPropertyValue('--line-focus-bg');
     if (lineFocusBg !== LINE_FOCUS_BG_WINDOW) {
       this.setStyle_('--line-focus-bg', this.getLineFocusColor_(colorSuffix));
@@ -372,5 +376,11 @@ export class AppStyleUpdater {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
         AUDIO_CONTROLS_ICON :
         `${AUDIO_CONTROLS_ICON}${colorSuffix})`;
+  }
+
+  private getFullPageScrollbarColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        FULL_PAGE_SCROLLBAR :
+        `${FULL_PAGE_SCROLLBAR}${colorSuffix})`;
   }
 }

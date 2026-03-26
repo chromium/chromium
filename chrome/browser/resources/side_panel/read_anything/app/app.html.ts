@@ -63,7 +63,9 @@ export function getHtml(this: AppElement) {
     <div id="lineFocus"></div>
     <div id="containerScroller" class="sp-scroller"
         @scroll="${this.onContainerScroll_}"
-        @scrollend="${this.onContainerScrollend_}">
+        @scrollend="${this.onContainerScrollend_}"
+        @mousemove="${this.onScrollerMousemove_}"
+        @mouseleave="${this.onScrollerMouseleave_}">
       <div id="container"
         class=
           "user-select-disabled-when-speech-active-${this.isSpeechActive_}">
@@ -78,6 +80,8 @@ export function getHtml(this: AppElement) {
   </div>
   <div id="empty-state-container"
       class="sp-scroller"
+      @mousemove="${this.onScrollerMousemove_}"
+      @mouseleave="${this.onScrollerMouseleave_}"
       ?hidden="${this.computeHasContent()}">
     <sp-empty-state image-path="${this.contentState_.imagePath}"
         dark-image-path="${this.contentState_.darkImagePath}"

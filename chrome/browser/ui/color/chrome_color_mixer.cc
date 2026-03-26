@@ -1154,6 +1154,20 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::PickGoogleColor(gfx::kGoogleBlue300,
                           kColorReadAnythingBackgroundLowContrastDark,
                           color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorReadAnythingFullPageScrollbarBlue] = {
+      SkColorSetARGB(0x66, 0x00, 0x00, 0x00)};
+  mixer[kColorReadAnythingFullPageScrollbarDark] = {
+      SkColorSetARGB(0x80, 0xFF, 0xFF, 0xFF)};
+  mixer[kColorReadAnythingFullPageScrollbarLight] = {
+      SkColorSetARGB(0x66, 0x00, 0x00, 0x00)};
+  mixer[kColorReadAnythingFullPageScrollbarYellow] = {
+      SkColorSetARGB(0x66, 0x00, 0x00, 0x00)};
+  mixer[kColorReadAnythingFullPageScrollbarHighContrast] = {
+      SkColorSetRGB(0xC7, 0xC7, 0xC7)};
+  mixer[kColorReadAnythingFullPageScrollbarLowContrastLight] = {
+      SkColorSetRGB(0x47, 0x47, 0x47)};
+  mixer[kColorReadAnythingFullPageScrollbarLowContrastDark] = {
+      SkColorSetRGB(0xC7, 0xC7, 0xC7)};
 
   // Apply high contrast recipes if necessary.
   if (!ShouldApplyHighContrastColors(key)) {

@@ -1057,5 +1057,90 @@ suite('AppContent', () => {
               () => !app.$.containerScroller.classList.contains('fade'));
           assertFalse(app.$.containerScroller.classList.contains('fade'));
         });
+
+    test('applies immersive classes correctly to appFlexParent', async () => {
+      const flexParent = app.shadowRoot.querySelector('#appFlexParent');
+      assertTrue(!!flexParent);
+
+      assertTrue(flexParent.classList.contains('immersive'));
+      assertFalse(flexParent.classList.contains('full-page'));
+
+      app.isImmersiveMode = () => true;
+      app.requestUpdate();
+      await microtasksFinished();
+
+      assertTrue(flexParent.classList.contains('immersive'));
+      assertTrue(flexParent.classList.contains('full-page'));
+    });
+
+    suite('Immersive Scrollbar Hover', () => {
+      let scroller: HTMLElement;
+      setup(() => {
+        scroller = app.$.containerScroller;
+        assertTrue(!!scroller);
+        chrome.readingMode.onPresentationStateReceived(
+            chrome.readingMode.inImmersiveOverlayPresentationState);
+      });
+
+      test('mousemove toggles hover class', () => {
+        assertTrue(!!scroller);
+        scroller.getBoundingClientRect = () => {
+          return {
+            left: 0,
+            right: 100,
+            top: 0,
+            bottom: 100,
+            width: 100,
+            height: 100,
+            x: 0,
+            y: 0,
+            toJSON: () => {},
+          };
+        };
+        scroller.style.setProperty('--immersive-scrollbar-width', '14px');
+
+        // Mouse over center (x=50), shouldn't trigger hover (needs to be >= 86)
+        scroller.dispatchEvent(new MouseEvent('mousemove', {clientX: 50}));
+        assertFalse(scroller.classList.contains('scrollbar-hovered'));
+
+        // Mouse over right edge (x=90), should trigger hover
+        scroller.dispatchEvent(new MouseEvent('mousemove', {clientX: 90}));
+        assertTrue(scroller.classList.contains('scrollbar-hovered'));
+
+        // Mouse moves back to center, should remove hover
+        scroller.dispatchEvent(new MouseEvent('mousemove', {clientX: 80}));
+        assertFalse(scroller.classList.contains('scrollbar-hovered'));
+      });
+
+      test('mouseleave removes hover class', () => {
+        scroller.classList.add('scrollbar-hovered');
+        scroller.dispatchEvent(new MouseEvent('mouseleave'));
+
+        assertFalse(scroller.classList.contains('scrollbar-hovered'));
+      });
+
+      test('mousemove does nothing if not in full page immersive mode', () => {
+        chrome.readingMode.onPresentationStateReceived(
+            chrome.readingMode.inSidePanelPresentationState);
+        scroller.getBoundingClientRect = () => {
+          return {
+            left: 0,
+            right: 100,
+            top: 0,
+            bottom: 100,
+            width: 100,
+            height: 100,
+            x: 0,
+            y: 0,
+            toJSON: () => {},
+          };
+        };
+        scroller.style.setProperty('--immersive-scrollbar-width', '14px');
+
+        // Even if we hover the right edge, the class shouldn't be added
+        scroller.dispatchEvent(new MouseEvent('mousemove', {clientX: 90}));
+        assertFalse(scroller.classList.contains('scrollbar-hovered'));
+      });
+    });
   });
 });

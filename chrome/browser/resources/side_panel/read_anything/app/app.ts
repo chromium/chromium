@@ -12,6 +12,7 @@ import '../read_aloud/language_toast.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {isRTL} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ContentController, ContentType} from '../content/content_controller.js';
@@ -195,6 +196,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       });
       this.lineFocusController_.addListener(this);
     }
+
     this.contentController_.addListener(this);
     this.speechController_.addListener(this);
     this.voiceLanguageController_.addListener(this);
@@ -774,8 +776,48 @@ export class AppElement extends AppElementBase implements SpeechListener,
     }
   }
 
+  protected onScrollerMousemove_(e: MouseEvent) {
+    if (!this.isImmersiveMode()) {
+      return;
+    }
+
+    const target = e.currentTarget as HTMLElement;
+    const scrollbarWidthStr = window.getComputedStyle(target).getPropertyValue(
+        '--immersive-scrollbar-width');
+    const scrollbarWidth = parseInt(scrollbarWidthStr, 10) || 14;
+    const rect = target.getBoundingClientRect();
+    let isOverScrollbarHitbox = false;
+
+    if (isRTL()) {
+      isOverScrollbarHitbox = e.clientX <= rect.left + scrollbarWidth;
+    } else {
+      isOverScrollbarHitbox = e.clientX >= rect.right - scrollbarWidth;
+    }
+
+    if (isOverScrollbarHitbox) {
+      target.classList.add('scrollbar-hovered');
+    } else {
+      target.classList.remove('scrollbar-hovered');
+    }
+  }
+
+  protected onScrollerMouseleave_(e: MouseEvent) {
+    if (!this.isImmersiveMode()) {
+      return;
+    }
+
+    const target = e.currentTarget as HTMLElement;
+    target.classList.remove('scrollbar-hovered');
+  }
+
   protected getImmersiveClass_(): string {
-    return this.isImmersiveEnabled_ ? 'immersive' : '';
+    if (!this.isImmersiveEnabled_) {
+      return '';
+    }
+
+    const immersiveClass = 'immersive';
+    return this.isImmersiveMode() ? `${immersiveClass} full-page` :
+                                    immersiveClass;
   }
 }
 

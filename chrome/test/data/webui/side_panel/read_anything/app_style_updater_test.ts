@@ -954,4 +954,79 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedBlueLinkVisited, computeStyle('--visited-link-color'));
     assertEquals(expectedBlueLineFocus, computeStyle('--line-focus-bg'));
   });
+
+  test('scrollbar color changes with theme', () => {
+    const expectedLightFullPageScrollbar = 'rgb(1, 1, 1)';
+    const expectedDarkFullPageScrollbar = 'rgb(2, 2, 2)';
+    const expectedYellowFullPageScrollbar = 'rgb(3, 3, 3)';
+    const expectedBlueFullPageScrollbar = 'rgb(4, 4, 4)';
+    const expectedHighContrastFullPageScrollbar = 'rgb(5, 5, 5)';
+    const expectedLowContrastLightFullPageScrollbar = 'rgb(6, 6, 6)';
+    const expectedLowContrastDarkFullPageScrollbar = 'rgb(7, 7, 7)';
+    updateStyles({
+      '--color-read-anything-full-page-scrollbar-light':
+          expectedLightFullPageScrollbar,
+      '--color-read-anything-full-page-scrollbar-dark':
+          expectedDarkFullPageScrollbar,
+      '--color-read-anything-full-page-scrollbar-yellow':
+          expectedYellowFullPageScrollbar,
+      '--color-read-anything-full-page-scrollbar-blue':
+          expectedBlueFullPageScrollbar,
+      '--color-read-anything-full-page-scrollbar-high-contrast':
+          expectedHighContrastFullPageScrollbar,
+      '--color-read-anything-full-page-scrollbar-low-contrast-light':
+          expectedLowContrastLightFullPageScrollbar,
+      '--color-read-anything-full-page-scrollbar-low-contrast-dark':
+          expectedLowContrastDarkFullPageScrollbar,
+    });
+
+    // Light theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLightFullPageScrollbar,
+        computeStyle('--color-read-anything-full-page-scrollbar'));
+
+    // Dark theme
+    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedDarkFullPageScrollbar,
+        computeStyle('--color-read-anything-full-page-scrollbar'));
+
+    // Yellow theme
+    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedYellowFullPageScrollbar,
+        computeStyle('--color-read-anything-full-page-scrollbar'));
+
+    // Blue theme
+    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedBlueFullPageScrollbar,
+        computeStyle('--color-read-anything-full-page-scrollbar'));
+
+    // High contrast theme
+    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedHighContrastFullPageScrollbar,
+        computeStyle('--color-read-anything-full-page-scrollbar'));
+
+    // LowContrast light theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastLightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLowContrastLightFullPageScrollbar,
+        computeStyle('--color-read-anything-full-page-scrollbar'));
+
+    // LowContrast dark theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLowContrastDarkFullPageScrollbar,
+        computeStyle('--color-read-anything-full-page-scrollbar'));
+  });
 });

@@ -721,6 +721,13 @@
   E_CPONLY(kColorReadAnythingAudioControlsIconHighContrast) \
   E_CPONLY(kColorReadAnythingAudioControlsIconLowContrastLight) \
   E_CPONLY(kColorReadAnythingAudioControlsIconLowContrastDark) \
+  E_CPONLY(kColorReadAnythingFullPageScrollbarBlue) \
+  E_CPONLY(kColorReadAnythingFullPageScrollbarDark) \
+  E_CPONLY(kColorReadAnythingFullPageScrollbarLight) \
+  E_CPONLY(kColorReadAnythingFullPageScrollbarYellow) \
+  E_CPONLY(kColorReadAnythingFullPageScrollbarHighContrast) \
+  E_CPONLY(kColorReadAnythingFullPageScrollbarLowContrastLight) \
+  E_CPONLY(kColorReadAnythingFullPageScrollbarLowContrastDark) \
   /* Realbox colors. */ \
   E_CPONLY(kColorSearchboxAnswerIconBackground) \
   E_CPONLY(kColorSearchboxAnswerIconForeground) \
