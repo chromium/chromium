@@ -9741,6 +9741,7 @@ test("unit_tests") {
       "../browser/extensions/api/passwords_private/passwords_private_utils_unittest.cc",
       "../browser/extensions/api/protocol_handlers/protocol_handlers_manager_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_util_unittest.cc",
+      "../browser/extensions/api/settings_private/prefs_util_unittest.cc",
       "../browser/extensions/api/settings_private/settings_private_event_router_unittest.cc",
       "../browser/extensions/api/socket/socket_api_unittest.cc",
       "../browser/extensions/api/socket/tcp_socket_unittest.cc",
