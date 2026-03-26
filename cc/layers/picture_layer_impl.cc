@@ -986,9 +986,10 @@ void PictureLayerImpl::GetContentsResourceId(
     viz::ResourceId* resource_id,
     gfx::Size* resource_size,
     gfx::SizeF* resource_uv_size) const {
+  *resource_id = viz::kInvalidResourceId;
+
   // We need contents resource for backdrop filter masks only.
   if (!is_backdrop_filter_mask()) {
-    *resource_id = viz::kInvalidResourceId;
     return;
   }
 
@@ -1000,7 +1001,6 @@ void PictureLayerImpl::GetContentsResourceId(
 
   // Mask resource not ready yet.
   if (!iter || !*iter) {
-    *resource_id = viz::kInvalidResourceId;
     return;
   }
 
@@ -1012,7 +1012,6 @@ void PictureLayerImpl::GetContentsResourceId(
   const TileDrawInfo& draw_info = iter->draw_info();
   if (!draw_info.IsReadyToDraw() ||
       draw_info.mode() != TileDrawInfo::RESOURCE_MODE) {
-    *resource_id = viz::kInvalidResourceId;
     return;
   }
 
