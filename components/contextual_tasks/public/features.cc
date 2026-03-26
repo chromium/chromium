@@ -84,14 +84,6 @@ BASE_FEATURE(kContextualTasksComposeboxJumpFix,
 // Enables the use of a rounded clip-path for the composebox.
 BASE_FEATURE(kContextualTasksRoundedClipPath, base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kContextualTasksInsertWebContentsAt,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kContextualTasksInsertWebContentsAt,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 const base::FeatureParam<bool> kContextualTasksLockAndUnlockInputCapability(
     &kContextualTasks,
     "ContextualTasksLockAndUnlockInputCapability",

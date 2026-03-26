@@ -32,6 +32,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -71,10 +72,6 @@
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/483442073): Remove TabStripModel and WebUi once we finished
-// migrating other functions off TabStripModel and find alternatives to access
-// BrowserWindowInterface in Android.
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
 
@@ -444,6 +441,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       content::WebContents::Create(
           content::WebContents::CreateParams(profile_));
   content::WebContents* new_contents_ptr = new_contents.get();
+  CreateSessionServiceTabHelper(new_contents_ptr);
 
   // Copy navigation entries from the current tab to the new tab to support back
   // button navigation. See crbug.com/467042329 for detail.
@@ -479,43 +477,21 @@ void ContextualTasksUiService::OnThreadLinkClicked(
         AssociateWebContentsToTask(new_contents_ptr, task_id);
       }
 
-      bool use_insert_web_contents_at = base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksInsertWebContentsAt);
-      if (use_insert_web_contents_at) {
-        OMNIBOX_LOG("nav_trace")
-            << "ContextualTasks navigation trace: OnThreadLinkClicked "
-               "using InsertWebContentsAt";
-        // Insert the WebContents after the current active.
-        int active_tab_index = tab_list->GetActiveIndex();
-        tabs::TabInterface* active_tab = tab_list->GetActiveTab();
-        tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
-            active_tab_index + 1, std::move(new_contents),
-            /*should_pin=*/false,
-            /*group=*/active_tab ? active_tab->GetGroup() : std::nullopt);
-        if (active_tab) {
-          tab_list->SetOpenerForTab(new_tab->GetHandle(),
-                                    active_tab->GetHandle());
-        }
-        tab_list->ActivateTab(new_tab->GetHandle());
-      } else {
-#if !BUILDFLAG(IS_ANDROID)
-        OMNIBOX_LOG("nav_trace")
-            << "ContextualTasks navigation trace: OnThreadLinkClicked "
-               "using AddTab";
-        // TODO(crbug.com/483442073): Remove TabStripModel once we address the
-        // loss of ui::PAGE_TRANSITION_LINK upon migrating from
-        // TabStripModel::AddTab() to TabListInterface::InsertWebContentsAt().
-        TabStripModel* tab_strip_model = browser->GetTabStripModel();
-        // Creates the Tab so session ID is created for the WebContents.
-        auto tab_to_insert = std::make_unique<tabs::TabModel>(
-            std::move(new_contents), tab_strip_model);
-        // Insert the WebContents after the current active.
-        int active_tab_index = tab_strip_model->active_index();
-        tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
-                                ui::PAGE_TRANSITION_LINK,
-                                AddTabTypes::ADD_ACTIVE);
-#endif
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: OnThreadLinkClicked "
+             "using InsertWebContentsAt";
+      // Insert the WebContents after the current active.
+      int active_tab_index = tab_list->GetActiveIndex();
+      tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+      tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
+          active_tab_index + 1, std::move(new_contents),
+          /*should_pin=*/false,
+          /*group=*/active_tab ? active_tab->GetGroup() : std::nullopt);
+      if (active_tab) {
+        tab_list->SetOpenerForTab(new_tab->GetHandle(),
+                                  active_tab->GetHandle());
       }
+      tab_list->ActivateTab(new_tab->GetHandle());
     } else {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: OnThreadLinkClicked "
@@ -628,34 +604,25 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
         content::WebContents::Create(
             content::WebContents::CreateParams(profile_));
     content::WebContents* new_contents_ptr = new_contents.get();
+    CreateSessionServiceTabHelper(new_contents_ptr);
 
     new_contents->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(url));
 
     AssociateWebContentsToTask(new_contents_ptr, task_id);
 
-#if BUILDFLAG(IS_ANDROID)
     TabListInterface* tab_list = TabListInterface::From(browser.get());
     // Insert the WebContents after the current active.
     int active_tab_index = tab_list->GetActiveIndex();
     tabs::TabInterface* active_tab = tab_list->GetActiveTab();
     tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
         active_tab_index + 1, std::move(new_contents),
-        /*should_pin=*/false, /*group=*/active_tab->GetGroup());
-    tab_list->SetOpenerForTab(new_tab->GetHandle(), active_tab->GetHandle());
+        /*should_pin=*/false,
+        /*group=*/active_tab ? active_tab->GetGroup() : std::nullopt);
+    if (active_tab) {
+      tab_list->SetOpenerForTab(new_tab->GetHandle(), active_tab->GetHandle());
+    }
     tab_list->ActivateTab(new_tab->GetHandle());
-#else
-    // TODO(crbug.com/483442073): Remove TabStripModel once we address the loss
-    // of ui::PAGE_TRANSITION_LINK upon migrating from TabStripModel::AddTab()
-    // to TabListInterface::InsertWebContentsAt().
-    TabStripModel* tab_strip_model = browser->GetTabStripModel();
-    auto tab_to_insert = std::make_unique<tabs::TabModel>(
-        std::move(new_contents), tab_strip_model);
-    // Insert the WebContents after the current active.
-    int active_tab_index = tab_strip_model->active_index();
-    tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
-                            ui::PAGE_TRANSITION_LINK, AddTabTypes::ADD_ACTIVE);
-#endif
     return;
   }
 

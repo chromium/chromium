@@ -54,10 +54,6 @@ BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
 // Enables the use of Stratus dark mode colors.
 BASE_DECLARE_FEATURE(kContextualTasksUseStratusDarkModeColors);
 
-// Enables use of TabListInterface::InsertWebContentsAt in
-// ContextualTasksUiService.
-BASE_DECLARE_FEATURE(kContextualTasksInsertWebContentsAt);
-
 // If enabled, animates the caret.
 BASE_DECLARE_FEATURE(kContextualTasksAnimatedCaret);
 
