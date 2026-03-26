@@ -12,7 +12,10 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -128,6 +131,39 @@ std::string GetWalletManagementURL(const EntityInstance& entity) {
   return base::StringPrintf(
       kWalletPrivatePassPageURL,
       base::EscapeQueryParamValue(entity.guid().value(), /*use_plus=*/false));
+}
+
+consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
+    const std::vector<int>& ui_string_ids,
+    int clicked_button_string_id,
+    AutofillClient& client) {
+  if (!base::FeatureList::IsEnabled(
+          wallet::features::kWalletApiPrivatePassesConsent)) {
+    // The save API expects a session ID in every case, since this is the target
+    // state of the API. When kWalletApiPrivatePassesConsent is disabled, it is
+    // dropped before calling Wallet. Return a dummy session ID to proceed with
+    // the save.
+    return consent_auditor::ConsentAuditor::GenerateSessionId();
+  }
+  consent_auditor::ConsentAuditor* consent_auditor = client.GetConsentAuditor();
+  // As a profile keyed service, the `consent_auditor` exists.
+  CHECK(consent_auditor);
+  // Since saves to Wallet are only offered to signed-in users, a `gaia_id` is
+  // available.
+  signin::IdentityManager* identity_manager = client.GetIdentityManager();
+  CHECK(identity_manager);
+  GaiaId gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  CHECK(!gaia_id.empty());
+  consent_auditor::ConsentAuditor::SessionId session_id =
+      consent_auditor->GenerateSessionId();
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
+  consent.mutable_description_grd_ids()->Assign(ui_string_ids.begin(),
+                                                ui_string_ids.end());
+  consent.set_confirmation_grd_id(clicked_button_string_id);
+  consent_auditor->RecordWalletPrivatePassConsent(gaia_id, session_id, consent);
+  return session_id;
 }
 
 }  // namespace autofill

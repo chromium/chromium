@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
@@ -1195,10 +1196,12 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
 
   if (autofill::WalletPassAccessManager* pass_manager =
           autofill_client()->GetWalletPassAccessManager()) {
-    // TODO(crbug.com/489354073): Log consent using `ui_context` and replace the
-    // parameter with the correct session ID.
+    consent_auditor::ConsentAuditor::SessionId session_id =
+        RecordWalletPrivatePassConsent(ui_context.ui_string_ids,
+                                       ui_context.clicked_button_string_id,
+                                       *autofill_client());
     pass_manager->SaveWalletEntityInstance(
-        entity_instance, consent_auditor::ConsentAuditor::GenerateSessionId(),
+        entity_instance, session_id,
         base::BindOnce(&AutofillPrivateAddOrUpdateEntityInstanceFunction::
                            OnSavePrivatePassToWalletFinished,
                        base::RetainedRef(this), entity_instance));

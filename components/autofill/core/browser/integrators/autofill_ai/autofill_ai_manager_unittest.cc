@@ -1305,8 +1305,7 @@ TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWalletConsent) {
        wallet::features::kWalletApiPrivatePassesConsent},
       {});
 
-  // Capture the details of the consent that are logged.
-  GaiaId gaia_id;
+  // Capture details of the consent that are logged.
   consent_auditor::ConsentAuditor::SessionId session_id_consent_auditor;
   consent_auditor::ConsentAuditor::SessionId session_id_api_call;
   sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
@@ -1319,8 +1318,7 @@ TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWalletConsent) {
                     Eq(std::nullopt), false, _))
         .WillOnce(RunOnceCallback<3>(kAcceptBubble, kAcceptUIContext));
     EXPECT_CALL(consent_auditor(), RecordWalletPrivatePassConsent)
-        .WillOnce(DoAll(SaveArg<0>(&gaia_id),
-                        SaveArg<1>(&session_id_consent_auditor),
+        .WillOnce(DoAll(SaveArg<1>(&session_id_consent_auditor),
                         SaveArg<2>(&consent)));
     EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
         .WillOnce(DoAll(SaveArg<1>(&session_id_api_call),
@@ -1333,10 +1331,6 @@ TEST_F(AutofillAiManagerImportFormTest, PassportSaveToWalletConsent) {
 
   // Expect that the consent details are populated correctly and that the same
   // session ID passed to the ConsentAuditor is passed to the Upsert call.
-  EXPECT_EQ(gaia_id, autofill_client()
-                         .GetIdentityManager()
-                         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                         .gaia);
   EXPECT_EQ(session_id_consent_auditor, session_id_api_call);
   sync_pb::UserConsentTypes::WalletPrivatePassConsent expected_consent;
   expected_consent.mutable_description_grd_ids()->Assign(

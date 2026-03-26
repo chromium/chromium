@@ -6,9 +6,11 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_WALLET_UTILS_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/consent_auditor/consent_auditor.h"
 
 namespace autofill {
 
@@ -36,6 +38,17 @@ void HandleWalletUpsertResponse(
 
 // Returns the URL of a Wallet `entity`'s management page on wallet.google.com.
 std::string GetWalletManagementURL(const EntityInstance& entity);
+
+// Logs a `sync_pb::UserConsentTypes::WalletPrivatePassConsent` with
+// `ui_string_ids` and `clicked_button_string_id` as its consent details to the
+// `client`'s ConsentAuditor.
+// This is required when saving a new Wallet private pass, either through
+// settings or on import.
+// Returns the session ID identifying the consent logged.
+consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
+    const std::vector<int>& ui_string_ids,
+    int clicked_button_string_id,
+    AutofillClient& client);
 
 }  // namespace autofill
 

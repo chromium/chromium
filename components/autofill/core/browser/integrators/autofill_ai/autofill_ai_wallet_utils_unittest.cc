@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,8 +26,10 @@ namespace {
 using test::GetNationalIdCardEntityInstance;
 using test::GetPassportEntityInstance;
 using test::MaskEntityInstance;
+using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::NiceMock;
+using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
 
 using enum EntityInstance::RecordType;
@@ -247,6 +251,39 @@ TEST_F(AutofillAiWalletUtilsTest, GetWalletManagementURL_PrivatePasses) {
               "ppid=123-456%3A789&utm_source=chrome&utm_medium=settings&"
               "utm_campaign=enhanced_autofill");
   }
+}
+
+TEST_F(AutofillAiWalletUtilsTest, RecordWalletPrivatePassConsent) {
+  base::test::ScopedFeatureList feature_list(
+      wallet::features::kWalletApiPrivatePassesConsent);
+  autofill_client().SetUpPrefsAndIdentityForAutofillAi();
+
+  // Capture the details of the consent that are logged.
+  GaiaId gaia_id;
+  consent_auditor::ConsentAuditor::SessionId session_id;
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
+  EXPECT_CALL(static_cast<consent_auditor::FakeConsentAuditor&>(
+                  *autofill_client().GetConsentAuditor()),
+              RecordWalletPrivatePassConsent)
+      .WillOnce(DoAll(SaveArg<0>(&gaia_id), SaveArg<1>(&session_id),
+                      SaveArg<2>(&consent)));
+
+  consent_auditor::ConsentAuditor::SessionId returned_session_id =
+      RecordWalletPrivatePassConsent(/*ui_string_ids=*/{1, 2},
+                                     /*clicked_button_string_id=*/3,
+                                     autofill_client());
+  // Expect that the consent details are populated correctly and that the same
+  // session ID passed to the ConsentAuditor is returned;
+  EXPECT_EQ(gaia_id, autofill_client()
+                         .GetIdentityManager()
+                         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                         .gaia);
+  EXPECT_EQ(session_id, returned_session_id);
+  sync_pb::UserConsentTypes::WalletPrivatePassConsent expected_consent;
+  expected_consent.mutable_description_grd_ids()->Add(1);
+  expected_consent.mutable_description_grd_ids()->Add(2);
+  expected_consent.set_confirmation_grd_id(3);
+  EXPECT_THAT(consent, base::test::EqualsProto(expected_consent));
 }
 
 }  // namespace
