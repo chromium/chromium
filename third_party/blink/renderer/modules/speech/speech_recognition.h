@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_availability_status.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_observable_array_speech_recognition_phrase.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_quality.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -93,6 +94,10 @@ class MODULES_EXPORT SpeechRecognition final
   }
   bool processLocally() const { return process_locally_; }
   void setProcessLocally(bool process_locally);
+  V8SpeechRecognitionQuality quality() const { return quality_; }
+  void setQuality(const V8SpeechRecognitionQuality& quality) {
+    quality_ = quality;
+  }
 
   // Callable by the user. Methods may be called after the execution context is
   // destroyed.
@@ -182,6 +187,8 @@ class MODULES_EXPORT SpeechRecognition final
   bool interim_results_ = false;
   uint32_t max_alternatives_ = 1;
   bool process_locally_ = false;
+  V8SpeechRecognitionQuality quality_{
+      V8SpeechRecognitionQuality::Enum::kCommand};
 
   Member<SpeechRecognitionController> controller_;
   bool phrases_update_scheduled_ = false;

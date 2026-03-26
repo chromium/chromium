@@ -74,6 +74,7 @@ class MODULES_EXPORT SpeechRecognitionController final
       uint32_t max_alternatives,
       bool on_device,
       bool allow_cloud_fallback,
+      media::mojom::blink::SpeechRecognitionQuality quality,
       mojo::PendingReceiver<
           media::mojom::blink::SpeechRecognitionAudioForwarder>
           audio_forwarder = mojo::NullReceiver(),
@@ -85,9 +86,11 @@ class MODULES_EXPORT SpeechRecognitionController final
 
   void AvailableOnDevice(
       const Vector<String>& languages,
+      media::mojom::blink::SpeechRecognitionQuality quality,
       base::OnceCallback<void(media::mojom::blink::AvailabilityStatus)>
           callback);
   void Install(const Vector<String>& languages,
+               media::mojom::blink::SpeechRecognitionQuality quality,
                base::OnceCallback<void(bool)> callback);
 
   static SpeechRecognitionController* From(LocalDOMWindow&);

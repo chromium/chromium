@@ -41,6 +41,8 @@ struct CONTENT_EXPORT SpeechRecognitionSessionConfig {
   bool on_device_available = false;  // Whether on-device speech recognition is
                                      // installed and available.
   bool allow_cloud_fallback = false;
+  media::mojom::SpeechRecognitionQuality quality =
+      media::mojom::SpeechRecognitionQuality::kCommand;
   std::string auth_token;
   std::string auth_scope;
   scoped_refptr<SpeechRecognitionSessionPreamble> preamble;

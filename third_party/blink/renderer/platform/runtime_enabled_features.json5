@@ -3960,6 +3960,10 @@
       status: "stable",
     },
     {
+      name: "OnDeviceWebSpeechQuality",
+      status: "experimental",
+    },
+    {
       // The OpaqueRange interface provides a live AbstractRange subtype
       // for encapsulated content within <textarea> and <input> elements.
       // crbug.com/421421332

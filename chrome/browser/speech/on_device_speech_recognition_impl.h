@@ -51,9 +51,11 @@ class OnDeviceSpeechRecognitionImpl
   // speech::mojom::OnDeviceSpeechRecognition methods:
   void Available(
       const std::vector<std::string>& languages,
+      media::mojom::SpeechRecognitionQuality quality,
       OnDeviceSpeechRecognitionImpl::AvailableCallback callback) override;
   void Install(
       const std::vector<std::string>& languages,
+      media::mojom::SpeechRecognitionQuality quality,
       OnDeviceSpeechRecognitionImpl::InstallCallback callback) override;
 
 #if !BUILDFLAG(IS_ANDROID)

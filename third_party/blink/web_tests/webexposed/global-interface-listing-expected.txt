@@ -10168,6 +10168,7 @@ interface SpeechRecognition : EventTarget
     getter onstart
     getter phrases
     getter processLocally
+    getter quality
     method abort
     method constructor
     method start
@@ -10190,6 +10191,7 @@ interface SpeechRecognition : EventTarget
     setter onstart
     setter phrases
     setter processLocally
+    setter quality
 interface SpeechRecognitionErrorEvent : Event
     attribute @@toStringTag
     getter error
@@ -13392,6 +13394,7 @@ interface webkitSpeechRecognition : EventTarget
     getter onstart
     getter phrases
     getter processLocally
+    getter quality
     method abort
     method constructor
     method start
@@ -13414,6 +13417,7 @@ interface webkitSpeechRecognition : EventTarget
     setter onstart
     setter phrases
     setter processLocally
+    setter quality
 interface webkitSpeechRecognitionError : Event
     attribute @@toStringTag
     getter error

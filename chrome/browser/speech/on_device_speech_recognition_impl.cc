@@ -69,6 +69,7 @@ void OnDeviceSpeechRecognitionImpl::Bind(
 
 void OnDeviceSpeechRecognitionImpl::Available(
     const std::vector<std::string>& languages,
+    media::mojom::SpeechRecognitionQuality quality,
     OnDeviceSpeechRecognitionImpl::AvailableCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
@@ -79,6 +80,12 @@ void OnDeviceSpeechRecognitionImpl::Available(
   }
 
   if (languages.empty()) {
+    std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
+    return;
+  }
+
+  if (quality == media::mojom::SpeechRecognitionQuality::kConversation &&
+      !base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
     std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
     return;
   }
@@ -112,11 +119,18 @@ void OnDeviceSpeechRecognitionImpl::Available(
 
 void OnDeviceSpeechRecognitionImpl::Install(
     const std::vector<std::string>& languages,
+    media::mojom::SpeechRecognitionQuality quality,
     OnDeviceSpeechRecognitionImpl::InstallCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(false);
 #else
   if (!CanRenderFrameHostUseOnDeviceSpeechRecognition()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (quality == media::mojom::SpeechRecognitionQuality::kConversation &&
+      !base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
     std::move(callback).Run(false);
     return;
   }

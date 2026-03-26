@@ -103,7 +103,7 @@ void OnDeviceSpeechRecognitionImplBrowserTest::Install() {
   // Install on-device speech recognition and simulate the installation of the
   // SODA library and language pack.
   on_device_speech_recognition()->Install(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), true));
 
@@ -122,9 +122,10 @@ void OnDeviceSpeechRecognitionImplBrowserTest::WaitUntilAvailable(
     const std::string& language) {
   ASSERT_TRUE(base::test::RunUntil([&]() {
     on_device_speech_recognition()->Available(
-        {language}, base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                                       OnDeviceWebSpeechAvailableCallback,
-                                   base::Unretained(this)));
+        {language}, media::mojom::SpeechRecognitionQuality::kCommand,
+        base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
+                           OnDeviceWebSpeechAvailableCallback,
+                       base::Unretained(this)));
     return availability_status_ == media::mojom::AvailabilityStatus::kAvailable;
   }));
 }
@@ -155,13 +156,13 @@ OnDeviceSpeechRecognitionImplBrowserTest::on_device_speech_recognition() {
 
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest, Available) {
   on_device_speech_recognition()->Available(
-      {kInvalidLanguageCode},
+      {kInvalidLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kUnavailable));
   on_device_speech_recognition()->Available(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
@@ -173,14 +174,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest, Install) {
 
   // Verify that installing an invalid language code returns false.
   on_device_speech_recognition()->Install(
-      {kInvalidLanguageCode},
+      {kInvalidLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), false));
 
   // Verify that on-device speech recognition is downloadable before it is
   // installed.
   on_device_speech_recognition()->Available(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
@@ -196,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest, Install) {
   // origin even if it's already installed.
   NavigateToUrl("bar.com");
   on_device_speech_recognition()->Available(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
@@ -212,14 +213,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest, Install) {
   // recognition mask for both origins.
   ClearSiteContentSettings();
   on_device_speech_recognition()->Available(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
@@ -233,19 +234,21 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
       {kEnglishLanguageCode, kInvalidLanguageCode},
+      media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kUnavailable));
   on_device_speech_recognition()->Available(
       {kEnglishLanguageCode, kFrenchLanguageCode},
+      media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
 
   on_device_speech_recognition()->Install(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), true));
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
@@ -255,13 +258,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
 
   on_device_speech_recognition()->Available(
       {kEnglishLanguageCode, kFrenchLanguageCode},
+      media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
 
   on_device_speech_recognition()->Install(
-      {kFrenchLanguageCode},
+      {kFrenchLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), true));
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
@@ -270,6 +274,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
 
   on_device_speech_recognition()->Available(
       {kEnglishLanguageCode, kFrenchLanguageCode},
+      media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
@@ -282,13 +287,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
       {kEnglishAlternateLocaleCode},
+      media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
 
   on_device_speech_recognition()->Install(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), true));
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
@@ -298,6 +304,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
 
   on_device_speech_recognition()->Available(
       {kEnglishAlternateLocaleCode},
+      media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
@@ -309,13 +316,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
                        EmptyParameters) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
-      {}, base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                             OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
-                         base::Unretained(this),
-                         media::mojom::AvailabilityStatus::kUnavailable));
+      {}, media::mojom::SpeechRecognitionQuality::kCommand,
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
+                     base::Unretained(this),
+                     media::mojom::AvailabilityStatus::kUnavailable));
 
   on_device_speech_recognition()->Install(
-      {},
+      {}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), false));
 }
@@ -329,14 +337,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL("file:///empty.html")));
 
   on_device_speech_recognition()->Available(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
 
   on_device_speech_recognition()->Install(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), true));
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
@@ -346,6 +354,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
 
   on_device_speech_recognition()->Available(
       {kEnglishAlternateLocaleCode},
+      media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
@@ -364,13 +373,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplGeminiNanoBrowserTest,
                        AvailableAndInstall) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
   on_device_speech_recognition()->Install(
-      {kEnglishLanguageCode},
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), true));
 }
@@ -379,13 +388,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplGeminiNanoBrowserTest,
                        AvailableAndInstallUnsupportedLanguage) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
-      {kFrenchLanguageCode},
+      {kFrenchLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kUnavailable));
   on_device_speech_recognition()->Install(
-      {kFrenchLanguageCode},
+      {kFrenchLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), false));
 }
@@ -394,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplGeminiNanoBrowserTest,
                        AvailableUnsupportedLanguage) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Available(
-      {kFrenchLanguageCode},
+      {kFrenchLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
@@ -405,9 +414,51 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplGeminiNanoBrowserTest,
                        InstallUnsupportedLanguage) {
   NavigateToUrl("foo.com");
   on_device_speech_recognition()->Install(
-      {kFrenchLanguageCode},
+      {kFrenchLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
                      base::Unretained(this), false));
 }
+
+class OnDeviceSpeechRecognitionImplQualityBrowserTest
+    : public OnDeviceSpeechRecognitionImplBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  OnDeviceSpeechRecognitionImplQualityBrowserTest()
+      : OnDeviceSpeechRecognitionImplBrowserTest(GetFeatures()) {}
+
+  std::vector<base::test::FeatureRef> GetFeatures() {
+    return GetParam()
+               ? std::vector<
+                     base::test::FeatureRef>{media::kOnDeviceWebSpeech,
+                                             media::
+                                                 kOnDeviceWebSpeechGeminiNano}
+               : std::vector<base::test::FeatureRef>{media::kOnDeviceWebSpeech};
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OnDeviceSpeechRecognitionImplQualityBrowserTest,
+                       AvailableAndInstall) {
+  NavigateToUrl("foo.com");
+  bool gemini_enabled = GetParam();
+  media::mojom::AvailabilityStatus expected_availability =
+      gemini_enabled ? media::mojom::AvailabilityStatus::kDownloadable
+                     : media::mojom::AvailabilityStatus::kUnavailable;
+
+  on_device_speech_recognition()->Available(
+      {kEnglishLanguageCode},
+      media::mojom::SpeechRecognitionQuality::kConversation,
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
+                     base::Unretained(this), expected_availability));
+  on_device_speech_recognition()->Install(
+      {kEnglishLanguageCode},
+      media::mojom::SpeechRecognitionQuality::kConversation,
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
+                     base::Unretained(this), gemini_enabled));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OnDeviceSpeechRecognitionImplQualityBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace speech

@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_observable_array_speech_recognition_phrase.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_quality.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -90,6 +91,19 @@ blink::V8AvailabilityStatus AvailabilityStatusToV8(
       return blink::V8AvailabilityStatus(
           blink::V8AvailabilityStatus::Enum::kAvailable);
   }
+}
+
+media::mojom::blink::SpeechRecognitionQuality SpeechRecognitionQualityToMojom(
+    blink::V8SpeechRecognitionQuality quality) {
+  switch (quality.AsEnum()) {
+    case blink::V8SpeechRecognitionQuality::Enum::kCommand:
+      return media::mojom::blink::SpeechRecognitionQuality::kCommand;
+    case blink::V8SpeechRecognitionQuality::Enum::kDictation:
+      return media::mojom::blink::SpeechRecognitionQuality::kDictation;
+    case blink::V8SpeechRecognitionQuality::Enum::kConversation:
+      return media::mojom::blink::SpeechRecognitionQuality::kConversation;
+  }
+  NOTREACHED();
 }
 }  // namespace
 
@@ -209,8 +223,12 @@ ScriptPromise<V8AvailabilityStatus> SpeechRecognition::available(
   }
 
   if (options->processLocally()) {
+    V8SpeechRecognitionQuality quality =
+        options->hasQuality() ? options->quality()
+                              : V8SpeechRecognitionQuality(
+                                    V8SpeechRecognitionQuality::Enum::kCommand);
     controller->AvailableOnDevice(
-        options->langs(),
+        options->langs(), SpeechRecognitionQualityToMojom(quality),
         BindOnce(
             [](ScriptPromiseResolver<V8AvailabilityStatus>* resolver,
                media::mojom::blink::AvailabilityStatus status) {
@@ -271,11 +289,16 @@ ScriptPromise<IDLBoolean> SpeechRecognition::install(
     return result;
   }
 
+  V8SpeechRecognitionQuality quality =
+      options->hasQuality() ? options->quality()
+                            : V8SpeechRecognitionQuality(
+                                  V8SpeechRecognitionQuality::Enum::kCommand);
   controller->AvailableOnDevice(
-      options->langs(),
+      options->langs(), SpeechRecognitionQualityToMojom(quality),
       BindOnce(
           [](ScriptPromiseResolver<IDLBoolean>* resolver,
-             ScriptState* script_state, const Vector<String>& languages,
+             ScriptState* script_state,
+             const blink::SpeechRecognitionOptions* options,
              media::mojom::blink::AvailabilityStatus status) {
             LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
             auto* controller = SpeechRecognitionController::From(window);
@@ -290,14 +313,20 @@ ScriptPromise<IDLBoolean> SpeechRecognition::install(
                   "\"downloadable\".");
               return;
             }
+            V8SpeechRecognitionQuality callback_quality =
+                options->hasQuality()
+                    ? options->quality()
+                    : V8SpeechRecognitionQuality(
+                          V8SpeechRecognitionQuality::Enum::kCommand);
             controller->Install(
-                languages,
+                options->langs(),
+                SpeechRecognitionQualityToMojom(callback_quality),
                 BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
                             bool success) { resolver->Resolve(success); },
                          WrapPersistent(resolver)));
           },
           WrapPersistent(resolver), WrapPersistent(script_state),
-          options->langs()));
+          WrapPersistent(options)));
 
   return result;
 }
@@ -506,7 +535,7 @@ void SpeechRecognition::CheckAvailabilityAndStart(
 
   if (process_locally_ && lang_) {
     controller_->AvailableOnDevice(
-        Vector<String>{lang_},
+        Vector<String>{lang_}, SpeechRecognitionQualityToMojom(quality_),
         BindOnce(
             [](SpeechRecognition* speech_recognition,
                media::mojom::blink::AvailabilityStatus status) {
@@ -584,6 +613,7 @@ void SpeechRecognition::StartController(
       phrases_.Get(), lang_, continuous_, interim_results_, max_alternatives_,
       /*on_device=*/true,  // On-device speech recognition is always preferred.
       /*allow_cloud_fallback=*/!process_locally_,
+      SpeechRecognitionQualityToMojom(quality_),
       std::move(audio_forwarder_receiver), std::move(audio_parameters));
   controller_->Start(std::move(params));
 }

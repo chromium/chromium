@@ -19,6 +19,12 @@ enum AvailabilityStatus {
   kAvailable,
 };
 
+enum SpeechRecognitionQuality {
+  kCommand,
+  kDictation,
+  kConversation,
+};
+
 // Created by the renderer and sent to the browser to start a speech recognition
 // session.
 struct StartSpeechRecognitionRequestParams {
@@ -64,6 +70,9 @@ struct StartSpeechRecognitionRequestParams {
 
   // The sample rate of the forwarded audio.
   int32 sample_rate;
+
+  // Quality of the speech recognition to use.
+  SpeechRecognitionQuality quality = kCommand;
 };
 
 // API for the renderer process to manage speech recognition in the browser
@@ -76,18 +85,19 @@ interface SpeechRecognizer {
 
 // API for the renderer process to manage on-device speech recognition in the
 // browser process. The remote lives in the renderer process and the receiver
-// lives in
-// the browser process.
+// lives in the browser process.
 interface OnDeviceSpeechRecognition {
   // Returns the availability status for whether on-device speech recognition
-  // is available for an array of languages. Takes in BCP 47 language tags (e.g.
-  // "en-US").
-  Available(array<string> languages) => (AvailabilityStatus status);
+  // is available for an array of languages as the quality specified. Takes
+  // in BCP 47 language tags (e.g. "en-US").
+  Available(array<string> languages, SpeechRecognitionQuality quality)
+      => (AvailabilityStatus status);
 
   // Returns whether on-device speech recognition installation was successfully
-  // completed for an array of languages. Takes in BCP 47 language tags (e.g.
-  // "en-US").
-  Install(array<string> languages) => (bool success);
+  // completed for an array of languages as the quality specified. Takes in BCP
+  // 47 language tags (e.g. "en-US").
+  Install(array<string> languages, SpeechRecognitionQuality quality)
+      => (bool success);
 };
 
 // API for the renderer process to stop or abort an existing speech recognition

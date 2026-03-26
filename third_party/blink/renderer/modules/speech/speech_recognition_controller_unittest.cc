@@ -45,7 +45,8 @@ class SpeechRecognitionControllerTest : public PageTestBase {
         receiver_.InitWithNewPipeAndPassRemote(), *grammars, phrases_.Get(),
         "en-US",
         /*continuous=*/true, /*interim_results=*/true, /*max_alternatives=*/5,
-        /*on_device=*/true, /*allow_cloud_fallback=*/true);
+        /*on_device=*/true, /*allow_cloud_fallback=*/true,
+        media::mojom::blink::SpeechRecognitionQuality::kCommand);
   }
 
   void SetSpeechRecognitionPhrases() {
