@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "components/search_engines/template_url_id.h"
-#include "components/search_engines/template_url_service_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class Profile;
@@ -23,14 +21,14 @@ namespace search_engines {
 enum class ChoiceMadeLocation;
 }
 
-class KeywordEditorController : public TemplateURLServiceObserver {
+class KeywordEditorController {
  public:
   explicit KeywordEditorController(Profile* profile);
 
   KeywordEditorController(const KeywordEditorController&) = delete;
   KeywordEditorController& operator=(const KeywordEditorController&) = delete;
 
-  ~KeywordEditorController() override;
+  ~KeywordEditorController();
 
   // Invoked when the user successfully fills out the add keyword dialog.
   // Propagates the change to the TemplateURLService and updates the table
@@ -100,8 +98,7 @@ class KeywordEditorController : public TemplateURLServiceObserver {
 
   TemplateURLTableModel* table_model() { return table_model_.get(); }
 
-  // TemplateURLServiceObserver notification.
-  void OnTemplateURLServiceChanged() override;
+  void UpdateIdToTemplateURLMapping();
 
  private:
   raw_ptr<TemplateURLService> url_model_;
@@ -111,9 +108,6 @@ class KeywordEditorController : public TemplateURLServiceObserver {
 
   // Model for the TableView.
   std::unique_ptr<TemplateURLTableModel> table_model_;
-
-  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
-      scoped_url_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_KEYWORD_EDITOR_CONTROLLER_H_

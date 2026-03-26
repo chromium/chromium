@@ -24,8 +24,6 @@ KeywordEditorController::KeywordEditorController(Profile* profile)
       AimEligibilityServiceFactory::GetForProfile(profile));
   table_model_ = std::make_unique<TemplateURLTableModel>(
       url_model_, internal::GetDisabledStarterPackIds(ai_mode_enabled));
-  scoped_url_service_observation_.Observe(url_model_.get());
-  OnTemplateURLServiceChanged();
 }
 
 KeywordEditorController::~KeywordEditorController() = default;
@@ -167,7 +165,7 @@ TemplateURL* KeywordEditorController::GetTemplateURLForIndex(int index) {
   return table_model_->GetTemplateURL(index);
 }
 
-void KeywordEditorController::OnTemplateURLServiceChanged() {
+void KeywordEditorController::UpdateIdToTemplateURLMapping() {
   TemplateURLService::TemplateURLVector urls = url_model_->GetTemplateURLs();
   id_to_turl_.clear();
   id_to_turl_.reserve(urls.size());

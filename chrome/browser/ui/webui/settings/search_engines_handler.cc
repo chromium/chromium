@@ -24,20 +24,19 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_id.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/ui_utils.h"
 #include "content/public/browser/web_ui.h"
@@ -100,15 +99,9 @@ std::u16string GetDisplayName(std::u16string url_short_name, bool is_default) {
 namespace settings {
 
 SearchEnginesHandler::SearchEnginesHandler(Profile* profile)
-    : profile_(profile), list_controller_(profile) {
-  pref_change_registrar_.Init(profile_->GetPrefs());
-}
+    : profile_(profile), list_controller_(profile) {}
 
-SearchEnginesHandler::~SearchEnginesHandler() {
-  // TODO(tommycli): Refactor KeywordEditorController to be compatible with
-  // ScopedObserver so this is no longer necessary.
-  list_controller_.table_model()->SetObserver(nullptr);
-}
+SearchEnginesHandler::~SearchEnginesHandler() = default;
 
 void SearchEnginesHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -165,12 +158,15 @@ void SearchEnginesHandler::RegisterMessages() {
 }
 
 void SearchEnginesHandler::OnJavascriptAllowed() {
-  list_controller_.table_model()->SetObserver(this);
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  CHECK(template_url_service);
+  scoped_url_service_observation_.Observe(template_url_service);
+  list_controller_.UpdateIdToTemplateURLMapping();
 }
 
 void SearchEnginesHandler::OnJavascriptDisallowed() {
-  list_controller_.table_model()->SetObserver(nullptr);
-  pref_change_registrar_.RemoveAll();
+  scoped_url_service_observation_.Reset();
 }
 
 base::DictValue SearchEnginesHandler::GetCategorizedTemplateUrls() {
@@ -263,24 +259,14 @@ base::DictValue SearchEnginesHandler::GetSearchEnginesList() {
   return search_engines_info;
 }
 
-void SearchEnginesHandler::OnModelChanged() {
+void SearchEnginesHandler::OnTemplateURLServiceChanged() {
   AllowJavascript();
+
+  list_controller_.UpdateIdToTemplateURLMapping();
 
   // TODO(crbug.com/490315684): Fire `GetCategorizedTemplateUrls()` when
   // `SearchSettingsUpdate` is enabled instead.
   FireWebUIListener("search-engines-changed", GetSearchEnginesList());
-}
-
-void SearchEnginesHandler::OnItemsChanged(size_t start, size_t length) {
-  OnModelChanged();
-}
-
-void SearchEnginesHandler::OnItemsAdded(size_t start, size_t length) {
-  OnModelChanged();
-}
-
-void SearchEnginesHandler::OnItemsRemoved(size_t start, size_t length) {
-  OnModelChanged();
 }
 
 base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
@@ -311,8 +297,8 @@ base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
   if (icon_url.is_valid()) {
     dict.Set("iconURL", icon_url.spec());
   } else if (template_url->CreatedByEnterpriseSearchAggregatorPolicy()) {
-    // The icon used for search aggregator is bundled with Chrome and should be
-    // used as a fallback if the icon_url is not set.
+    // The icon used for search aggregator is bundled with Chrome and should
+    // be used as a fallback if the icon_url is not set.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     dict.Set("iconPath",
              base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
@@ -526,8 +512,8 @@ void SearchEnginesHandler::HandleSearchEngineEditCompleted(
   const std::string& keyword = args[1].GetString();
   const std::string& query_url = args[2].GetString();
 
-  // Recheck validity. It's possible to get here with invalid input if e.g. the
-  // user calls the right JS functions directly from the web inspector.
+  // Recheck validity. It's possible to get here with invalid input if e.g.
+  // the user calls the right JS functions directly from the web inspector.
   if (CheckFieldValidity(kSearchEngineField, search_engine) &&
       CheckFieldValidity(kKeywordField, keyword) &&
       CheckFieldValidity(kQueryUrlField, query_url)) {

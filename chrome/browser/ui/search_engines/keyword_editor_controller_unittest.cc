@@ -23,10 +23,10 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/models/table_model_observer.h"
 
 using base::ASCIIToUTF16;
 
@@ -39,7 +39,7 @@ static const std::u16string kManaged(u"managed");
 // Base class for keyword editor tests. Creates a profile containing an
 // empty TemplateURLService.
 class KeywordEditorControllerTest : public testing::Test,
-                                    public ui::TableModelObserver {
+                                    public TemplateURLServiceObserver {
  public:
   KeywordEditorControllerTest()
       : util_(&profile_),
@@ -59,18 +59,10 @@ class KeywordEditorControllerTest : public testing::Test,
     }
 
     controller_ = std::make_unique<KeywordEditorController>(&profile_);
-    controller_->table_model()->SetObserver(this);
+    scoped_url_service_observation_.Observe(util_.model());
   }
 
   void TearDown() override { controller_.reset(); }
-
-  void OnModelChanged() override { model_changed_count_++; }
-
-  void OnItemsChanged(size_t start, size_t length) override {}
-
-  void OnItemsAdded(size_t start, size_t length) override {}
-
-  void OnItemsRemoved(size_t start, size_t length) override {}
 
   void VerifyChanged() {
     ASSERT_EQ(1, model_changed_count_);
@@ -94,6 +86,14 @@ class KeywordEditorControllerTest : public testing::Test,
                                                  &profile_);
   }
 
+  // TemplateURLServiceObserver implementation. The controller would usually be
+  // notified by the search engines handler. For the sake of testing, simulate
+  // this linking.
+  void OnTemplateURLServiceChanged() override {
+    model_changed_count_++;
+    controller()->UpdateIdToTemplateURLMapping();
+  }
+
   TemplateURLTableModel* table_model() { return controller_->table_model(); }
   KeywordEditorController* controller() { return controller_.get(); }
   const TemplateURLServiceFactoryTestUtil* util() const { return &util_; }
@@ -105,6 +105,8 @@ class KeywordEditorControllerTest : public testing::Test,
   std::unique_ptr<KeywordEditorController> controller_;
   TemplateURLServiceFactoryTestUtil util_;
   bool simulate_load_failure_;
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      scoped_url_service_observation_{this};
 
   int model_changed_count_;
 };
@@ -460,7 +462,7 @@ TEST_F(KeywordEditorControllerTest, MutateTemplateURLService) {
   data.SetKeyword(u"a");
   TemplateURL* turl = util()->model()->Add(std::make_unique<TemplateURL>(data));
 
-  // Table model should have updated.
+  // TemplateURLService should have updated.
   VerifyChanged();
 
   // And should contain the newly added TemplateURL.
@@ -537,7 +539,7 @@ TEST_F(KeywordEditorControllerTest, EnginesSortedByName) {
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
     engines.push_back(
         util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
-    // Table model should have updated.
+    // TemplateURLService should have updated.
     VerifyChanged();
   }
 
@@ -597,7 +599,7 @@ TEST_F(KeywordEditorControllerTest, EnginesSortedByNameWithManagedSiteSearch) {
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
     engines.push_back(
         util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
-    // Table model should have updated.
+    // TemplateURLService should have updated.
     VerifyChanged();
   }
 
@@ -680,7 +682,7 @@ TEST_F(KeywordEditorControllerTest, FeaturedEnterpriseSiteSearch) {
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
     engines.push_back(
         util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
-    // Table model should have updated.
+    // TemplateURLService should have updated.
     VerifyChanged();
   }
 
@@ -771,7 +773,7 @@ TEST_F(KeywordEditorControllerTest,
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
     engines.push_back(
         util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
-    // Table model should have updated.
+    // TemplateURLService should have updated.
     VerifyChanged();
   }
 
@@ -822,7 +824,7 @@ TEST_F(KeywordEditorControllerTest, EnterpriseSearchAggregator) {
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
     engines.push_back(
         util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
-    // Table model should have updated.
+    // TemplateURLService should have updated.
     VerifyChanged();
   }
 
@@ -889,7 +891,7 @@ TEST_F(KeywordEditorControllerTest,
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
     engines.push_back(
         util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
-    // Table model should have updated.
+    // TemplateURLService should have updated.
     VerifyChanged();
   }
 
@@ -947,7 +949,7 @@ TEST_F(KeywordEditorControllerTest, EnterpriseSiteSearchAndSearchAggregator) {
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
     engines.push_back(
         util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
-    // Table model should have updated.
+    // TemplateURLService should have updated.
     VerifyChanged();
   }
 
