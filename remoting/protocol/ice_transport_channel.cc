@@ -254,8 +254,7 @@ void IceTransportChannel::NotifyRouteChanged() {
     LOG(FATAL) << "Failed to convert peer IP address.";
   }
 
-  const webrtc::Candidate& local_candidate =
-      channel_->best_connection()->local_candidate();
+  const webrtc::Candidate& local_candidate = connection->local_candidate();
   if (!webrtc::SocketAddressToIPEndPoint(local_candidate.address(),
                                          &route.local_address)) {
     LOG(FATAL) << "Failed to convert local IP address.";
