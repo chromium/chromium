@@ -265,6 +265,16 @@ WebApp::WebApp(const webapps::AppId& app_id,
       parent_app_id_(parent_app_id) {
   CHECK(manifest_id.is_valid());
   CHECK(start_url.is_valid());
+
+  // Fix invalid scope values.
+  if (!scope_.is_valid() || !url::IsSameOriginWith(scope_, start_url_) ||
+      !base::StartsWith(start_url_.spec(), scope_.spec(),
+                        base::CompareCase::SENSITIVE)) {
+    DLOG(ERROR) << "Invalid scope " << scope_.possibly_invalid_spec()
+                << " for start_url " << start_url_;
+    scope_ = start_url_.GetWithoutFilename();
+  }
+
   CHECK(scope.is_valid());
   CHECK(url::IsSameOriginWith(manifest_id_, start_url_))
       << manifest_id_.spec() << " vs " << start_url_.spec();
