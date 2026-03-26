@@ -3925,10 +3925,13 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
 PhysicalOffset LayoutObject::OffsetFromOverscrollContainer(
     const LayoutObject* container,
     MapCoordinatesFlags mode) const {
-  if (container->InternalOverscrollArea() != EInternalOverscrollArea::kAuto) {
-    // Container is not a shifting overscroll area container.
+  // If either container is not a shifting overscroll area container or we need
+  // to ignore scroll offsets, then we can early out.
+  if (container->InternalOverscrollArea() != EInternalOverscrollArea::kAuto ||
+      (mode & kIgnoreScrollOffset)) {
     return PhysicalOffset();
   }
+
   OverscrollAreaTracker* tracker =
       To<Element>(container->GetNode())->GetOverscrollAreaTracker();
   if (!tracker) {
