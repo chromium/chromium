@@ -1013,4 +1013,42 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
               ::testing::IsEmpty());
 }
 
+TEST_F(AdAuctionURLLoaderInterceptorTest, UnsolicitedFollowRedirect) {
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  std::string received_error;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { received_error = error; }));
+
+  // This should trigger ReportBadMessage in
+  // SubresourceProxyingURLLoader::FollowRedirect
+  remote_loader->FollowRedirect(/*removed_headers=*/{},
+                                /*modified_headers=*/{},
+                                /*modified_cors_exempt_headers=*/{},
+                                /*new_url=*/std::nullopt);
+  remote_loader.FlushForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(received_error, "Unexpected FollowRedirect");
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+}
+
 }  // namespace content
