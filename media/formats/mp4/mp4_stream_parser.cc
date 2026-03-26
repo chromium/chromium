@@ -23,6 +23,7 @@
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_client.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_util.h"
 #include "media/base/stream_parser.h"
@@ -34,6 +35,7 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
 #include "media/formats/mp4/es_descriptor.h"
+#include "media/formats/mp4/hdr_metadata_track.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mpeg/adts_constants.h"
 
@@ -127,6 +129,45 @@ base::HeapArray<uint8_t> PrependIADescriptors(
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 
+// Create a HdrMetadataTrack for attaching metadata to track samples. Returns
+// nullptr on failure.
+std::unique_ptr<HdrMetadataTrack> MakeMetadataTrack(
+    StreamParser::TrackId metadata_track_id,
+    const MetadataIT35SampleEntry& it35_sample_entry,
+    const TrackReference& track_references) {
+  if (!base::FeatureList::IsEnabled(kMP4TimedMetadataTrack)) {
+    return nullptr;
+  }
+
+  switch (it35_sample_entry.it35_prefix_type) {
+    case MetadataIT35SampleEntry::IT35PrefixType::kUnknown:
+      return nullptr;
+    case MetadataIT35SampleEntry::IT35PrefixType::kSmpteSt2094App5:
+      break;
+  }
+
+  // Extract the list of tracks that this metadata is to refer to for
+  // rendering. Skip metadata tracks that do not refer to any tracks.
+  std::vector<StreamParser::TrackId> render_track_ids;
+  for (const auto& track_reference_type : track_references.types) {
+    if (track_reference_type.reference_type == FOURCC_RNDR) {
+      for (uint32_t ref_track_id : track_reference_type.track_ids) {
+        render_track_ids.push_back(
+            static_cast<StreamParser::TrackId>(ref_track_id));
+      }
+    }
+  }
+
+  // Don't bother creating a metadata track that doesn't indicate the track
+  // it references.
+  if (render_track_ids.empty()) {
+    return nullptr;
+  }
+
+  return std::make_unique<HdrMetadataTrack>(
+      metadata_track_id, it35_sample_entry.it35_prefix_type, render_track_ids);
+}
+
 }  // namespace
 
 MP4StreamParser::MP4StreamParser(
@@ -185,6 +226,9 @@ void MP4StreamParser::Reset() {
   runs_.reset();
   moof_head_ = 0;
   mdat_tail_ = 0;
+  for (auto& [track_id, metadata_track] : metadata_tracks_) {
+    metadata_track->Reset();
+  }
 }
 
 void MP4StreamParser::Flush() {
@@ -284,8 +328,10 @@ StreamParser::ParseStatus MP4StreamParser::Parse(
     }
   } while (result && !err);
 
-  if (!err)
-    err = !SendAndFlushSamples(&buffers);
+  if (!err) {
+    err = !SendAndFlushSamples(&buffers,
+                               /*all_samples_in_segment_received=*/false);
+  }
 
   if (err) {
     DLOG(ERROR) << "Error while parsing MP4";
@@ -836,30 +882,24 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           MediaTrack::Language(track->media.header.language()));
       continue;
     } else if (track->media.handler.type == kMetadata) {
-      // If the metadata sample index does not refer to one of the sample
-      // entries that we understand, gracefully ignore it.
-      if (desc_idx >= samp_descr.metadata_t35_entries.size()) {
-        continue;
+      const StreamParser::TrackId metadata_track_id = track->header.track_id;
+      if (metadata_tracks_.find(metadata_track_id) != metadata_tracks_.end()) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "Metadata track with track_id=" << metadata_track_id
+            << " already present.";
+        return false;
       }
 
-      // Extract the list of tracks that this metadata is to refer to for
-      // rendering. Skip metadata tracks that do not refer to any tracks.
-      std::vector<StreamParser::TrackId> render_track_ids;
-      for (const auto& track_reference_type : track->references.types) {
-        if (track_reference_type.reference_type == FOURCC_RNDR) {
-          for (uint32_t ref_track_id : track_reference_type.track_ids) {
-            render_track_ids.push_back(
-                static_cast<StreamParser::TrackId>(ref_track_id));
-          }
-        }
+      std::unique_ptr<HdrMetadataTrack> metadata_track;
+      if (desc_idx < samp_descr.metadata_t35_entries.size()) {
+        metadata_track = MakeMetadataTrack(
+            track->header.track_id, samp_descr.metadata_t35_entries[desc_idx],
+            track->references);
       }
-      if (render_track_ids.empty()) {
-        continue;
+      if (metadata_track) {
+        metadata_tracks_[metadata_track_id] = std::move(metadata_track);
+        ++detected_metadata_track_count;
       }
-
-      // TODO(https://crbug.com/490319976): Save metadata track information, to
-      // allow attaching metadata to referenced video DecodeBuffers.
-      detected_metadata_track_count++;
       continue;
     }
   }
@@ -967,8 +1007,10 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   if (!runs_->IsRunValid()) {
     // Flush any buffers we've gotten in this chunk so that buffers don't
     // cross |new_segment_cb_| calls
-    if (!SendAndFlushSamples(buffers))
+    if (!SendAndFlushSamples(buffers,
+                             /*all_samples_in_segment_received=*/true)) {
       return ParseResult::kError;
+    }
 
     // Remain in kEmittingSamples state, discarding data, until the end of
     // the current 'mdat' box has been appended to the queue.
@@ -1237,7 +1279,13 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   return ParseResult::kOk;
 }
 
-bool MP4StreamParser::SendAndFlushSamples(BufferQueueMap* buffers) {
+bool MP4StreamParser::SendAndFlushSamples(
+    BufferQueueMap* buffers,
+    bool all_samples_in_segment_received) {
+  for (auto& [track_id, metadata_track] : metadata_tracks_) {
+    metadata_track->AttachMetadataOrHoldBuffers(
+        buffers, all_samples_in_segment_received);
+  }
   if (buffers->empty())
     return true;
   bool success = new_buffers_cb_.Run(*buffers);

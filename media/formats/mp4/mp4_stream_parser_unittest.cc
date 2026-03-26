@@ -37,6 +37,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/switches.h"
 
 using ::testing::InSequence;
 using ::testing::StrictMock;
@@ -1082,7 +1083,8 @@ TEST_F(MP4StreamParserTest, MultiTrackFile) {
 
 TEST_F(MP4StreamParserTest, TimedMetadataTrackDetected) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMP4TimedMetadataTrack);
+  feature_list.InitWithFeatures({kMP4TimedMetadataTrack, features::kHdrAgtm},
+                                {});
 
   auto params = GetDefaultInitParametersExpectations();
   params.detected_video_track_count = 1;

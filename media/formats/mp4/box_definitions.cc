@@ -18,6 +18,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "media/base/agtm.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_types.h"
@@ -27,6 +28,7 @@
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/media_buildflags.h"
+#include "ui/gfx/hdr_metadata.h"
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include <optional>
@@ -604,14 +606,9 @@ bool MetadataIT35SampleEntry::Parse(BoxReader* reader) {
   std::vector<uint8_t> it35_prefix;
   RCHECK(reader->ReadVec(&it35_prefix, remaining_size));
 
-  // See SMPTE ST 2094-50 CD2, Clause 7.3, Metadata carriage.
-  constexpr std::array<uint8_t, 5> kSmpteStApp5Prefix = {0xb5, 0x00, 0x90, 0x00,
-                                                         0x01};
-  if (std::equal(it35_prefix.begin(), it35_prefix.end(),
-                 kSmpteStApp5Prefix.begin(), kSmpteStApp5Prefix.end())) {
+  if (gfx::HdrMetadataAgtm::IsEnabled() && MatchesAgtmT35(it35_prefix)) {
     it35_prefix_type = IT35PrefixType::kSmpteSt2094App5;
   }
-
   return true;
 }
 

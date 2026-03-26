@@ -247,7 +247,7 @@ class IntervalMap {
   // After calling this function, we'll need to call RemoveDuplicates()
   // to clean up any duplicates that we made.
   typename MapType::iterator MakeEntry(KeyType k) {
-    typename MapType::value_type tmp(k, 0);
+    typename MapType::value_type tmp(k, ValueType());
     std::pair<typename MapType::iterator, bool> insert_result;
     insert_result = map_.insert(tmp);
     if (insert_result.second) {
