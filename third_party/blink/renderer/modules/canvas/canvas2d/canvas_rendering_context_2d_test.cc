@@ -590,7 +590,7 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
             delegate) {
     ON_CALL(*this, Snapshot)
         .WillByDefault([this](ImageOrientation orientation) {
-          return UnacceleratedSnapshot(orientation);
+          return UnacceleratedSnapshotForCanvas2D(orientation);
         });
   }
   ~FakeCanvasResourceProvider() override = default;
