@@ -14,11 +14,13 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
+#include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/base_text_input_type.h"
+#include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -519,7 +521,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeTextParameterSchema(
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
   AddPattern(element, *schema);
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -535,7 +537,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeDateParameterSchema(
   schema->SetString("format", "date");
   // Note that the "minimum" and "maximum" fields must contains numbers;
   // they cannot be used for dates.
-  AddDescription(element, *schema,
+  AddDescription(controls_for_name, *schema,
                  "Dates MUST be provided in 'YYYY-MM-DD' format.");
   required = element.IsRequired();
   return schema;
@@ -583,7 +585,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeDatetimeLocalParameterSchema(
                       "T([01][0-9]|2[0-3]):[0-5][0-9]"     // Thh:mm
                       "$");
   }
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -599,7 +601,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeMonthParameterSchema(
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months
   schema->SetString("format", "^[0-9]{4}-(0[1-9]|1[0-2])$");
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -615,7 +617,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeWeekParameterSchema(
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks
   schema->SetString("format", "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$");
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -651,7 +653,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeTimeParameterSchema(
     // Allow HH:MM only
     schema->SetString("format", "^([01][0-9]|2[0-3]):[0-5][0-9]$");
   }
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -681,7 +683,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeNumberParameterSchema(
     }
   }
   AddPattern(element, *schema);
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -719,7 +721,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
     schema->SetArray("enum", std::move(enum_array));
   }
 
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
 
   required = element.IsRequired();
 
@@ -746,7 +748,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRangeParameterSchema(
   if (step_range.StepBase().Remainder(step).IsZero()) {
     schema->SetDouble("multipleOf", step.ToDouble());
   }
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -786,8 +788,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
   schema->SetObject("items", std::move(items_schema));
   schema->SetBoolean("uniqueItems", true);
 
-  // Add title/description from the first control for now.
-  AddDescriptionFromToolAttributeOnly(*controls_for_name.front(), *schema);
+  AddDescription(controls_for_name, *schema);
 
   return schema;
 }
@@ -803,8 +804,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
   schema->SetArray("oneOf",
                    ComputeOneOfArray(controls_for_name, enum_array, required));
   schema->SetArray("enum", std::move(enum_array));
-  // Add title/description from the first control for now.
-  AddDescriptionFromToolAttributeOnly(*controls_for_name.front(), *schema);
+  AddDescription(controls_for_name, *schema);
   return schema;
 }
 
@@ -842,7 +842,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeColorParameterSchema(
   // TODO: With the runtime feature ColorInputAcceptsCSSColors enabled, we may
   // support more color syntaxes.
   schema->SetString("format", "^#[0-9a-zA-Z]{6}$");
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -858,7 +858,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCustomElementParameterSchema(
   // Note that the above ParseJSON() call (and conversion to JSONObject)
   // is guaranteed to succeed by IsCustomElement().
   CHECK(schema);
-  AddDescription(element_internals, *schema);
+  AddDescription(controls_for_name, *schema);
   required = false;
   return schema;
 }
@@ -879,7 +879,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeFileParameterSchema(
   } else {
     schema->SetString("type", "string");
   }
-  AddDescription(element, *schema);
+  AddDescription(controls_for_name, *schema);
   required = element.IsRequired();
   return schema;
 }
@@ -1049,10 +1049,10 @@ void FormMCPSchema::FillFileData(const ControlVector& controls_for_name,
   file_input.SetFilesFromPaths(paths);
 }
 
-void FormMCPSchema::AddDescription(ListedElement& control,
+void FormMCPSchema::AddDescription(const ControlVector& controls,
                                    JSONObject& obj,
                                    String extra_context) {
-  String description = ComputeDescription(control);
+  String description = ComputeDescription(controls);
   if (!extra_context.empty()) {
     if (!description.empty()) {
       description = description + " (" + extra_context + ")";
@@ -1101,40 +1101,82 @@ void FormMCPSchema::AddPattern(HTMLFormControlElement& form_control,
   obj.SetString("pattern", raw_pattern);
 }
 
-void FormMCPSchema::AddDescriptionFromToolAttributeOnly(ListedElement& control,
-                                                        JSONObject& obj) {
-  if (String description = ToolParamDescriptionAttribute(control);
-      !description.empty()) {
-    obj.SetString("description", description);
+String FormMCPSchema::ComputeDescription(const ControlVector& controls) {
+  CHECK(!controls.empty());
+
+  // For parameters backed by a single control, the description is sourced
+  // from that element.
+  if (controls.size() == 1) {
+    ListedElement& control = *controls.front();
+    // Prefer 'toolparamdescription' when present.
+    if (String description = ToolParamDescriptionAttribute(control);
+        !description.empty()) {
+      return description;
+    }
+
+    // Absent a 'toolparamdescription' attribute, use concatenated label text.
+    if (String label_text = LabelText(control); !label_text.empty()) {
+      return label_text;
+    }
+
+    // Last resort: aria-description.
+    if (String description = control.ToHTMLElement().FastGetAttribute(
+            html_names::kAriaDescriptionAttr);
+        !description.empty()) {
+      return description;
+    }
+
+    return g_null_atom;
   }
+
+  // Otherwise, this is a parameter backed by more than one control,
+  // e.g. a radio group, or multiple checkboxes. This parameter is described
+  // by the `toolparamdescription` attribute on the nearest <fieldset> element
+  // in the common ancestor chain.
+  if (const HTMLFieldSetElement* common_ancestor_fieldset =
+          ComputeCommonAncestorFieldSet(controls)) {
+    if (String description =
+            ToolParamDescriptionAttribute(*common_ancestor_fieldset);
+        !description.empty()) {
+      return description;
+    }
+  }
+
+  // Fall back to the `toolparamdescription` of the first control in the group.
+  if (String description = ToolParamDescriptionAttribute(*controls.front());
+      !description.empty()) {
+    return description;
+  }
+
+  return g_empty_string;
+}
+
+const HTMLFieldSetElement* FormMCPSchema::ComputeCommonAncestorFieldSet(
+    const ControlVector& controls) {
+  CHECK_GT(controls.size(), 1u);
+
+  // First find the nearest common ancestor node (of any type).
+  const Node* common_ancestor = &controls.front()->ToHTMLElement();
+  for (wtf_size_t i = 1; i < controls.size(); ++i) {
+    common_ancestor = common_ancestor->CommonAncestor(
+        controls[i]->ToHTMLElement(), NodeTraversal::Parent);
+  }
+
+  // Then look for a <fieldset> in ancestor chain.
+  for (const Node* node = common_ancestor; node && node != form_;
+       node = NodeTraversal::Parent(*node)) {
+    if (auto* fieldset = DynamicTo<HTMLFieldSetElement>(node)) {
+      return fieldset;
+    }
+  }
+
+  return nullptr;
 }
 
 String FormMCPSchema::ToolParamDescriptionAttribute(
-    ListedElement& control) const {
+    const ListedElement& control) const {
   return control.ToHTMLElement().FastGetAttribute(
       html_names::kToolparamdescriptionAttr);
-}
-
-String FormMCPSchema::ComputeDescription(ListedElement& control) {
-  // Prefer 'toolparamdescription' when present.
-  if (String description = ToolParamDescriptionAttribute(control);
-      !description.empty()) {
-    return description;
-  }
-
-  // Absent a 'toolparamdescription' attribute, use concatenated label text.
-  if (String label_text = LabelText(control); !label_text.empty()) {
-    return label_text;
-  }
-
-  // Last resort: aria-description.
-  if (String description = control.ToHTMLElement().FastGetAttribute(
-          html_names::kAriaDescriptionAttr);
-      !description.empty()) {
-    return description;
-  }
-
-  return g_null_atom;
 }
 
 String FormMCPSchema::LabelText(ListedElement& control) {

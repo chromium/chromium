@@ -19,8 +19,9 @@
 
 namespace blink {
 
-class HTMLFormElement;
+class HTMLFieldSetElement;
 class HTMLFormControlElement;
+class HTMLFormElement;
 
 // Represents the JSON Schema for some <form> element.
 //
@@ -140,22 +141,13 @@ class CORE_EXPORT FormMCPSchema {
                              const JSONValue&);
   void FillFileData(const ControlVector& controls_for_name, const JSONValue&);
 
-  void AddDescription(ListedElement&, JSONObject&, String = String());
+  void AddDescription(const ControlVector&, JSONObject&, String = String());
   void AddPattern(HTMLFormControlElement&, JSONObject&);
 
-  // It's not clear yet where to host the description attribute for
-  // <input type=radio>, or other parameters that are associated with more than
-  // one element. For now, we use the attributes set on the first control within
-  // a group.
-  //
-  // Note that unlike AddDescription(), this does not try to find "fallback"
-  // values (from <label>, etc) when tool-* attributes are missing.
-  //
-  // See also: https://github.com/webmachinelearning/webmcp/issues/71
-  void AddDescriptionFromToolAttributeOnly(ListedElement&, JSONObject&);
-
-  String ToolParamDescriptionAttribute(ListedElement&) const;
-  String ComputeDescription(ListedElement&);
+  String ComputeDescription(const ControlVector&);
+  const HTMLFieldSetElement* ComputeCommonAncestorFieldSet(
+      const ControlVector&);
+  String ToolParamDescriptionAttribute(const ListedElement&) const;
   String LabelText(ListedElement&);
 
   void ProcessForm(HTMLFormElement&);
