@@ -18,6 +18,15 @@ namespace content {
 extern const net::NetworkTrafficAnnotationTag
     kNavigationalPrefetchTrafficAnnotation;
 
+// ------------------------------------------------------------------------
+// Utilities for constructing request headers.
+// Header modifications should be applied in the following order, and the
+// latter (if any) should override the former.
+// [1] `request().additional_headers()`
+// [2] Chromium's default headers
+// [3] WebContents overrides
+// [4] DevTools overrides
+
 // Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
 // Note that `request_url` and `prefetch_request.url` / `resource_request`
 // (that `request_headers` belongs)'s `url` can be different when called from
