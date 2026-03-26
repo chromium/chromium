@@ -338,13 +338,10 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     kCrossSite,
   };
 
-  explicit PrerenderBrowserTest()
-      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/true) {}
-  explicit PrerenderBrowserTest(bool force_disable_prerender2_fallback) {
-    prerender_helper_ = std::make_unique<test::PrerenderTestHelper>(
-        base::BindRepeating(&PrerenderBrowserTest::web_contents,
-                            base::Unretained(this)),
-        force_disable_prerender2_fallback);
+  PrerenderBrowserTest() {
+    prerender_helper_ =
+        std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
+            &PrerenderBrowserTest::web_contents, base::Unretained(this)));
 
     // Input suppression during paintholding interferes with the input event
     // dispatches to top frames.  Disabling kDropInputEventsWhilePaintHolding
@@ -1093,8 +1090,7 @@ class PrerenderBrowserTestFallbackEnabledDisabled
     : public PrerenderBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  PrerenderBrowserTestFallbackEnabledDisabled()
-      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
+  PrerenderBrowserTestFallbackEnabledDisabled() {
     if (GetParam()) {
       scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
           {
@@ -1150,8 +1146,7 @@ INSTANTIATE_TEST_SUITE_P(
 // - `PrerenderWhenInitiatorInBackground_Queue_Processing`: See the test.
 class PrerenderBrowserTestFallbackDisabled : public PrerenderBrowserTest {
  public:
-  PrerenderBrowserTestFallbackDisabled()
-      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
+  PrerenderBrowserTestFallbackDisabled() {
     // TODO(crbug.com/342089123): Add yet another feature flag to disable
     // prefetch ahead of prerender for SpeculationRules before removing
     // `kPrerender2FallbackPrefetchSpecRules`.
@@ -2643,8 +2638,7 @@ class PrerenderTargetAgnosticBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<std::tuple<std::string, bool>> {
  public:
-  PrerenderTargetAgnosticBrowserTest()
-      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
+  PrerenderTargetAgnosticBrowserTest() {
     if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
       scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
           {
@@ -8731,8 +8725,7 @@ class PrerenderLowMemoryBrowserTest
     : public PrerenderBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  PrerenderLowMemoryBrowserTest()
-      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
+  PrerenderLowMemoryBrowserTest() {
     // Set the value of memory threshold more than the physical memory.  The
     // test will expect that prerendering does not occur.
     std::string memory_threshold = base::NumberToString(
@@ -14984,8 +14977,7 @@ class PrerenderSpeculationRulesHoldbackBrowserTest
     : public PrerenderBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  PrerenderSpeculationRulesHoldbackBrowserTest()
-      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
+  PrerenderSpeculationRulesHoldbackBrowserTest() {
     if (GetParam()) {
       scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
           {

@@ -59,13 +59,12 @@ class PrerendererImplBrowserTestBase : public ContentBrowserTest {
   ~PrerendererImplBrowserTestBase() override = default;
 
   void SetUp() override {
-    prerender_helper_ = std::make_unique<test::PrerenderTestHelper>(
-        base::BindRepeating(
+    prerender_helper_ =
+        std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
             [](PrerendererImplBrowserTestBase* that) {
               return &that->web_contents();
             },
-            base::Unretained(this)),
-        /*force_disable_prerender2_fallback=*/false);
+            base::Unretained(this)));
 
     ContentBrowserTest::SetUp();
   }

@@ -116,7 +116,6 @@ class PrerenderHostCreationWaiter {
 class ScopedPrerenderFeatureList {
  public:
   ScopedPrerenderFeatureList();
-  explicit ScopedPrerenderFeatureList(bool force_disable_prerender2_fallback);
   ScopedPrerenderFeatureList(const ScopedPrerenderFeatureList&) = delete;
   ScopedPrerenderFeatureList& operator=(const ScopedPrerenderFeatureList&) =
       delete;
@@ -129,8 +128,6 @@ class ScopedPrerenderFeatureList {
 class PrerenderTestHelper {
  public:
   explicit PrerenderTestHelper(const WebContents::Getter& fn);
-  explicit PrerenderTestHelper(const WebContents::Getter& fn,
-                               bool force_disable_prerender2_fallback);
   ~PrerenderTestHelper();
   PrerenderTestHelper(const PrerenderTestHelper&) = delete;
   PrerenderTestHelper& operator=(const PrerenderTestHelper&) = delete;

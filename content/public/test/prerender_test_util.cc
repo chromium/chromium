@@ -476,39 +476,15 @@ PrerenderHostId PrerenderHostCreationWaiter::Wait() {
   return created_host_id_;
 }
 
-ScopedPrerenderFeatureList::ScopedPrerenderFeatureList()
-    : ScopedPrerenderFeatureList(/*force_disable_prerender2_fallback=*/true) {}
-
-ScopedPrerenderFeatureList::ScopedPrerenderFeatureList(
-    bool force_disable_prerender2_fallback) {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-
+ScopedPrerenderFeatureList::ScopedPrerenderFeatureList() {
   // Disable the memory requirement of Prerender2
   // so the test can run on any bot.
-  disabled_features.push_back(blink::features::kPrerender2MemoryControls);
-
-  // In addition, disable `kPrerender2FallbackPrefetchSpecRules` if the user
-  // of `PrerenderTestHelper` is not ready for it as it changes
-  // `PrerenderFinalStatus` to `PrerenderFailedDuringPrefetch`, so that we
-  // enable it in fieldtrial testing config and then fix them one by one.
-  if (force_disable_prerender2_fallback) {
-    disabled_features.push_back(features::kPrerender2FallbackPrefetchSpecRules);
-  }
-
-  feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  feature_list_.InitAndDisableFeature(
+      blink::features::kPrerender2MemoryControls);
 }
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
-    : feature_list_(ScopedPrerenderFeatureList(
-          /*force_disable_prerender2_fallback=*/true)),
-      get_web_contents_fn_(fn) {}
-
-PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn,
-                                         bool force_disable_prerender2_fallback)
-    : feature_list_(
-          ScopedPrerenderFeatureList(force_disable_prerender2_fallback)),
-      get_web_contents_fn_(fn) {}
+    : get_web_contents_fn_(fn) {}
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;
 
