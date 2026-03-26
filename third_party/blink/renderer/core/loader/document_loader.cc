@@ -3285,9 +3285,14 @@ void DocumentLoader::CreateParserPostCommit() {
 
   // Links with media values need more information (like viewport information).
   // This happens after the first chunk is parsed in HTMLDocumentParser.
-  DispatchLinkHeaderPreloads(nullptr /* viewport */,
-                             PreloadHelper::LoadLinksFromHeaderMode::
-                                 kDocumentAfterCommitWithoutViewport);
+  // Skip for MediaDocument: StopLoading() is called immediately after, which
+  // cancels and removes these preloads. Dispatching them serves no purpose.
+  // See https://crbug.com/482088906 for the discussion behind this change.
+  if (!frame_->GetDocument()->IsMediaDocument()) {
+    DispatchLinkHeaderPreloads(nullptr /* viewport */,
+                               PreloadHelper::LoadLinksFromHeaderMode::
+                                   kDocumentAfterCommitWithoutViewport);
+  }
 
   // Initializing origin trials might force window proxy initialization,
   // which later triggers CHECK when swapping in via WebFrame::Swap().
