@@ -456,6 +456,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   switch (position) {
     case ButtonStackButtonPositionPrimary:
       button = _primaryActionButton;
+      image = _configuration.primaryActionImage;
       break;
     case ButtonStackButtonPositionSecondary: {
       button = _secondaryActionButton;
@@ -573,6 +574,11 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageCheckmark;
     _primaryActionButton.imageView.accessibilityIdentifier =
         kButtonStackCheckmarkSymbolAccessibilityIdentifier;
+  } else if (self.configuration.primaryActionImage) {
+    UIButtonConfiguration* config = _primaryActionButton.configuration;
+    config.image = self.configuration.primaryActionImage;
+    _primaryActionButton.configuration = config;
+    _primaryActionButton.primaryButtonImage = PrimaryButtonImageCustom;
   } else {
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageNone;
   }

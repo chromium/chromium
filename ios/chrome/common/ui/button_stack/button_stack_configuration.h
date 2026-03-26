@@ -14,6 +14,8 @@
 
 // The properties for the primary action.
 @property(nonatomic, copy) NSString* primaryActionString;
+// Defaults to nil.
+@property(nonatomic, strong) UIImage* primaryActionImage;
 // Defaults to ChromeButtonStylePrimary.
 @property(nonatomic, assign) ChromeButtonStyle primaryButtonStyle;
 // Defaults to YES.
