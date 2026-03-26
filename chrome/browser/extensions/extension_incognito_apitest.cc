@@ -207,8 +207,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoSplitMode) {
 
 // Tests that the APIs in an incognito-disabled extension don't see incognito
 // events or callbacks.
-// TODO(https://crbug.com/390226690): Enable on Android when chrome.windows
-// is supported.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoDisabled) {
   ResultCatcher catcher;
   ExtensionTestMessageListener listener("createIncognitoTab",
