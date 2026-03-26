@@ -59,7 +59,7 @@ class EqualPowerPanner final : public Panner {
  private:
   void CalculateDesiredGain(double& desired_gain_l,
                             double& desired_gain_r,
-                            double azimuth,
+                            double& azimuth,
                             int number_of_input_channels);
 };
 

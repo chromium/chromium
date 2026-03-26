@@ -69,41 +69,10 @@ void EqualPowerPanner::Pan(double azimuth,
     return;
   }
 
-  // Clamp azimuth to allowed range of -180 -> +180.
-  azimuth = ClampTo(azimuth, -180.0, 180.0);
-
-  // Alias the azimuth ranges behind us to in front of us:
-  // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
-  if (azimuth < -90.0) {
-    azimuth = -180.0 - azimuth;
-  } else if (azimuth > 90.0) {
-    azimuth = 180.0 - azimuth;
-  }
-
-  double desired_pan_position;
   double desired_gain_l;
   double desired_gain_r;
-
-  if (number_of_input_channels == 1) {  // For mono source case.
-    // Pan smoothly from left to right with azimuth going from -90 -> +90
-    // degrees.
-    desired_pan_position = (azimuth + 90.0) / 180.0;
-  } else {               // For stereo source case.
-    if (azimuth <= 0) {  // from -90 -> 0
-      // sourceL -> destL and "equal-power pan" sourceR as in mono case
-      // by transforming the "azimuth" value from -90 -> 0 degrees into the
-      // range -90 -> +90.
-      desired_pan_position = (azimuth + 90.0) / 90.0;
-    } else {  // from 0 -> +90
-      // sourceR -> destR and "equal-power pan" sourceL as in mono case
-      // by transforming the "azimuth" value from 0 -> +90 degrees into the
-      // range -90 -> +90.
-      desired_pan_position = azimuth / 90.0;
-    }
-  }
-
-  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
-  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
+  CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth,
+                       number_of_input_channels);
 
   if (number_of_input_channels == 1) {  // For mono source case.
     for (size_t i = 0; i < frames_to_process; ++i) {
@@ -168,8 +137,8 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
       double desired_gain_l;
       double desired_gain_r;
       const float input_l = source_l[i];
-
-      CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[i],
+      double clamped_azimuth = azimuth[i];
+      CalculateDesiredGain(desired_gain_l, desired_gain_r, clamped_azimuth,
                            number_of_input_channels);
       destination_l[i] = static_cast<float>(input_l * desired_gain_l);
       destination_r[i] = static_cast<float>(input_l * desired_gain_r);
@@ -178,10 +147,11 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
     for (size_t i = 0; i < frames_to_process; ++i) {
       double desired_gain_l;
       double desired_gain_r;
+      double clamped_azimuth = azimuth[i];
 
-      CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[i],
+      CalculateDesiredGain(desired_gain_l, desired_gain_r, clamped_azimuth,
                            number_of_input_channels);
-      if (azimuth[i] <= 0) {  // from -90 -> 0
+      if (clamped_azimuth <= 0) {  // from -90 -> 0
         const float input_l = source_l[i];
         const float input_r = source_r[i];
         destination_l[i] =
@@ -200,7 +170,7 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
 
 void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
                                             double& desired_gain_r,
-                                            double azimuth,
+                                            double& azimuth,
                                             int number_of_input_channels) {
   // Clamp azimuth to allowed range of -180 -> +180.
   azimuth = ClampTo(azimuth, -180.0, 180.0);
