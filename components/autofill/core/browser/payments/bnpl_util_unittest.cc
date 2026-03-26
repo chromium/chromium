@@ -627,5 +627,31 @@ INSTANTIATE_TEST_SUITE_P(
                 kNotEligibleAmountExtractionErrorTimeout,
             IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE}));
 
+struct BnplSuggestionIconParams {
+  BnplIssuer::IssuerId issuer_id;
+  Suggestion::Icon expected_icon;
+};
+
+class BnplUtilGetSuggestionIconTest
+    : public testing::TestWithParam<BnplSuggestionIconParams> {};
+
+TEST_P(BnplUtilGetSuggestionIconTest, GetBnplSuggestionIcon) {
+  const BnplSuggestionIconParams& params = GetParam();
+  EXPECT_EQ(GetBnplSuggestionIcon(params.issuer_id), params.expected_icon);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BnplUtilGetSuggestionIconTest,
+    testing::Values(BnplSuggestionIconParams{BnplIssuer::IssuerId::kBnplAffirm,
+                                             Suggestion::Icon::kBnplAffirm},
+                    BnplSuggestionIconParams{
+                        BnplIssuer::IssuerId::kBnplAfterpay,
+                        Suggestion::Icon::kBnplAfterpay},
+                    BnplSuggestionIconParams{BnplIssuer::IssuerId::kBnplKlarna,
+                                             Suggestion::Icon::kBnplKlarna},
+                    BnplSuggestionIconParams{BnplIssuer::IssuerId::kBnplZip,
+                                             Suggestion::Icon::kBnplZip}));
+
 }  // namespace
 }  // namespace autofill::payments

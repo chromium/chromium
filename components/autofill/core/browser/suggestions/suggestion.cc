@@ -150,22 +150,14 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kNoIcon";
     case Suggestion::Icon::kBnplGeneric:
       return "kBnplGeneric";
-    case Suggestion::Icon::kBnplAffirmLinked:
-      return "kBnplAffirmLinked";
-    case Suggestion::Icon::kBnplAffirmUnlinked:
-      return "kBnplAffirmUnlinked";
-    case Suggestion::Icon::kBnplAfterpayLinked:
-      return "kBnplAfterpayLinked";
-    case Suggestion::Icon::kBnplAfterpayUnlinked:
-      return "kBnplAfterpayUnlinked";
-    case Suggestion::Icon::kBnplZipLinked:
-      return "kBnplZipLinked";
-    case Suggestion::Icon::kBnplZipUnlinked:
-      return "kBnplZipUnlinked";
-    case Suggestion::Icon::kBnplKlarnaLinked:
-      return "kBnplKlarnaLinked";
-    case Suggestion::Icon::kBnplKlarnaUnlinked:
-      return "kBnplKlarnaUnlinked";
+    case Suggestion::Icon::kBnplAffirm:
+      return "kBnplAffirm";
+    case Suggestion::Icon::kBnplAfterpay:
+      return "kBnplAfterpay";
+    case Suggestion::Icon::kBnplKlarna:
+      return "kBnplKlarna";
+    case Suggestion::Icon::kBnplZip:
+      return "kBnplZip";
     case Suggestion::Icon::kSaveAndFill:
       return "kSaveAndFill";
     case Suggestion::Icon::kAndroidMessages:

@@ -100,10 +100,8 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
     std::optional<AiAmountExtractionResult::Error> amount_extraction_error =
         std::nullopt);
 
-// Returns the appropriate suggestion icon based on the issuer and its link
-// status.
-Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id,
-                                       bool is_linked);
+// Returns the appropriate suggestion icon based on the issuer.
+Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id);
 
 // Returns the selection option text for a given BNPL issuer.
 std::u16string GetBnplIssuerSelectionOptionText(

@@ -2253,7 +2253,7 @@ TEST_F(
 
   EXPECT_EQ(disabled_bnpl_suggestion->main_text.value,
             linked_issuer.GetDisplayName());
-  EXPECT_EQ(disabled_bnpl_suggestion->icon, Suggestion::Icon::kBnplZipLinked);
+  EXPECT_EQ(disabled_bnpl_suggestion->icon, Suggestion::Icon::kBnplZip);
   EXPECT_THAT(
       disabled_bnpl_suggestion->labels,
       ElementsAre(std::vector<Suggestion::Text>{
@@ -2576,8 +2576,7 @@ TEST_P(PaymentsSuggestionGeneratorPnplTabTestForIssuer,
       << "Expected a BNPL suggestion to be generated.";
 
   EXPECT_EQ(bnpl_it->main_text.value, issuer.GetDisplayName());
-  EXPECT_EQ(bnpl_it->icon,
-            payments::GetBnplSuggestionIcon(IssuerId(), /*is_linked=*/true));
+  EXPECT_EQ(bnpl_it->icon, payments::GetBnplSuggestionIcon(IssuerId()));
   EXPECT_THAT(bnpl_it->labels,
               ElementsAre(std::vector<Suggestion::Text>{ExpectedLabelText()}));
   EXPECT_TRUE(std::holds_alternative<Suggestion::BnplIssuer>(bnpl_it->payload));

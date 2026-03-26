@@ -153,14 +153,10 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
           IDS_AUTOFILL_WORK_PROFILE_ICON_ACCESSIBILITY_LABEL);
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kBnplGeneric:
-    case Suggestion::Icon::kBnplAffirmLinked:
-    case Suggestion::Icon::kBnplAffirmUnlinked:
-    case Suggestion::Icon::kBnplAfterpayLinked:
-    case Suggestion::Icon::kBnplAfterpayUnlinked:
-    case Suggestion::Icon::kBnplZipLinked:
-    case Suggestion::Icon::kBnplZipUnlinked:
-    case Suggestion::Icon::kBnplKlarnaLinked:
-    case Suggestion::Icon::kBnplKlarnaUnlinked:
+    case Suggestion::Icon::kBnplAffirm:
+    case Suggestion::Icon::kBnplAfterpay:
+    case Suggestion::Icon::kBnplKlarna:
+    case Suggestion::Icon::kBnplZip:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
     case Suggestion::Icon::kDelete:
@@ -502,14 +498,10 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardVerve:
     case Suggestion::Icon::kCardVisa:
     case Suggestion::Icon::kBnplGeneric:
-    case Suggestion::Icon::kBnplAffirmLinked:
-    case Suggestion::Icon::kBnplAffirmUnlinked:
-    case Suggestion::Icon::kBnplAfterpayLinked:
-    case Suggestion::Icon::kBnplAfterpayUnlinked:
-    case Suggestion::Icon::kBnplZipLinked:
-    case Suggestion::Icon::kBnplZipUnlinked:
-    case Suggestion::Icon::kBnplKlarnaLinked:
-    case Suggestion::Icon::kBnplKlarnaUnlinked:
+    case Suggestion::Icon::kBnplAffirm:
+    case Suggestion::Icon::kBnplAfterpay:
+    case Suggestion::Icon::kBnplKlarna:
+    case Suggestion::Icon::kBnplZip:
     case Suggestion::Icon::kAndroidMessages: {
       // For other suggestion entries, get the icon from PNG files.
       int icon_id = GetIconResourceID(icon);

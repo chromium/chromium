@@ -366,9 +366,6 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
   bnpl_suggestions.reserve(issuer_contexts.size());
 
   for (payments::BnplIssuerContext& issuer_context : issuer_contexts) {
-    const bool is_linked =
-        issuer_context.issuer.payment_instrument().has_value();
-
     Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
     bnpl_suggestion.main_text =
         Suggestion::Text(issuer_context.issuer.GetDisplayName(),
@@ -388,8 +385,8 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
       bnpl_suggestion.acceptability =
           Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
     }
-    bnpl_suggestion.icon = payments::GetBnplSuggestionIcon(
-        issuer_context.issuer.issuer_id(), is_linked);
+    bnpl_suggestion.icon =
+        payments::GetBnplSuggestionIcon(issuer_context.issuer.issuer_id());
     bnpl_suggestion.payload =
         Suggestion::BnplIssuer(std::move(issuer_context.issuer));
     bnpl_suggestion.tab_index = kPayLaterSuggestionTabIndex;

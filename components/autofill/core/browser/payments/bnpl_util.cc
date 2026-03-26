@@ -195,21 +195,16 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
   return result;
 }
 
-Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id,
-                                       bool is_linked) {
+Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id) {
   switch (issuer_id) {
     case BnplIssuer::IssuerId::kBnplAffirm:
-      return is_linked ? Suggestion::Icon::kBnplAffirmLinked
-                       : Suggestion::Icon::kBnplAffirmUnlinked;
+      return Suggestion::Icon::kBnplAffirm;
     case BnplIssuer::IssuerId::kBnplAfterpay:
-      return is_linked ? Suggestion::Icon::kBnplAfterpayLinked
-                       : Suggestion::Icon::kBnplAfterpayUnlinked;
+      return Suggestion::Icon::kBnplAfterpay;
     case BnplIssuer::IssuerId::kBnplKlarna:
-      return is_linked ? Suggestion::Icon::kBnplKlarnaLinked
-                       : Suggestion::Icon::kBnplKlarnaUnlinked;
+      return Suggestion::Icon::kBnplKlarna;
     case BnplIssuer::IssuerId::kBnplZip:
-      return is_linked ? Suggestion::Icon::kBnplZipLinked
-                       : Suggestion::Icon::kBnplZipUnlinked;
+      return Suggestion::Icon::kBnplZip;
   }
 }
 
