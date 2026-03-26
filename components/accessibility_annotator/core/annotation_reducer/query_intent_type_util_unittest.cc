@@ -398,6 +398,51 @@ TEST(QueryIntentTypeUtilTest, CreateResultFromOrderEntityWithEmptyAttributes) {
            EntryMetadata(QueryIntentType::kOrderGrandTotal, u"", u"$100.00")}));
 }
 
+TEST(QueryIntentTypeUtilTest, CreateResultFromShipmentEntity) {
+  Shipment shipment;
+  shipment.tracking_number = "1Z9999999999999999";
+  shipment.associated_order_id = "ORD123";
+  shipment.delivery_address = "123 Main St";
+  shipment.carrier_name = "UPS";
+  shipment.carrier_domain = GURL("https://www.example.com");
+  shipment.estimated_delivery_date = Date{15, 6, 2026};
+
+  Entity entity;
+  entity.specifics = shipment;
+
+  EXPECT_THAT(
+      CreateResultFromEntity(QueryIntentType::kShipmentTrackingNumber, entity),
+      MatchesMemorySearchResult(
+          QueryIntentType::kShipmentTrackingNumber, u"1Z9999999999999999",
+          {EntryMetadata(QueryIntentType::kShipmentAssociatedOrderId, u"",
+                         u"ORD123"),
+           EntryMetadata(QueryIntentType::kShipmentCarrierDomain, u"",
+                         u"https://www.example.com/"),
+           EntryMetadata(QueryIntentType::kShipmentCarrierName, u"", u"UPS"),
+           EntryMetadata(QueryIntentType::kShipmentDeliveryAddress, u"",
+                         u"123 Main St"),
+           EntryMetadata(QueryIntentType::kShipmentEstimatedDeliveryDate, u"",
+                         u"2026-06-15")}));
+
+  EXPECT_THAT(
+      CreateResultFromEntity(QueryIntentType::kShipmentFull, entity),
+      MatchesMemorySearchResult(
+          QueryIntentType::kShipmentFull,
+          u"1Z9999999999999999, ORD123, 123 Main St, UPS, "
+          u"https://www.example.com/, 2026-06-15",
+          {EntryMetadata(QueryIntentType::kShipmentAssociatedOrderId, u"",
+                         u"ORD123"),
+           EntryMetadata(QueryIntentType::kShipmentCarrierDomain, u"",
+                         u"https://www.example.com/"),
+           EntryMetadata(QueryIntentType::kShipmentCarrierName, u"", u"UPS"),
+           EntryMetadata(QueryIntentType::kShipmentDeliveryAddress, u"",
+                         u"123 Main St"),
+           EntryMetadata(QueryIntentType::kShipmentEstimatedDeliveryDate, u"",
+                         u"2026-06-15"),
+           EntryMetadata(QueryIntentType::kShipmentTrackingNumber, u"",
+                         u"1Z9999999999999999")}));
+}
+
 TEST(QueryIntentTypeUtilTest, GetEntityTypesForQueryIntentType) {
   EXPECT_EQ(GetEntityTypesForQueryIntentType(QueryIntentType::kVehicleMake),
             EntityTypeEnumSet({EntityType::kVehicle}));
@@ -419,6 +464,10 @@ TEST(QueryIntentTypeUtilTest, GetEntityTypesForQueryIntentType) {
 
   EXPECT_EQ(GetEntityTypesForQueryIntentType(QueryIntentType::kOrderId),
             EntityTypeEnumSet({EntityType::kOrder}));
+
+  EXPECT_EQ(GetEntityTypesForQueryIntentType(
+                QueryIntentType::kShipmentTrackingNumber),
+            EntityTypeEnumSet({EntityType::kShipment}));
 
   EXPECT_EQ(GetEntityTypesForQueryIntentType(QueryIntentType::kNameFull),
             EntityTypeEnumSet(

@@ -87,6 +87,18 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kOrderGrandTotal);
     case accessibility_annotator::QueryIntentType::kUnknown:
     case accessibility_annotator::QueryIntentType::kIbanNickname:
+    case accessibility_annotator::QueryIntentType::
+        kFlightReservationArrivalDate:
+    // TODO(crbug.com/484094746): Map Shipment entities to Autofill once
+    // crrev.com/c/7573639 is submitted.
+    case accessibility_annotator::QueryIntentType::kShipmentFull:
+    case accessibility_annotator::QueryIntentType::kShipmentTrackingNumber:
+    case accessibility_annotator::QueryIntentType::kShipmentAssociatedOrderId:
+    case accessibility_annotator::QueryIntentType::kShipmentDeliveryAddress:
+    case accessibility_annotator::QueryIntentType::kShipmentCarrierName:
+    case accessibility_annotator::QueryIntentType::kShipmentCarrierDomain:
+    case accessibility_annotator::QueryIntentType::
+        kShipmentEstimatedDeliveryDate:
       return std::nullopt;
   }
 

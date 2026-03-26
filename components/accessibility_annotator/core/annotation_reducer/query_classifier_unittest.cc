@@ -136,6 +136,10 @@ TEST_F(QueryClassifierTest, EntityIntents) {
             QueryIntentType::kDriversLicenseFull);
   EXPECT_EQ(classifier_.Run(u"driving license").intent,
             QueryIntentType::kDriversLicenseFull);
+  EXPECT_EQ(classifier_.Run(u"my shipment").intent,
+            QueryIntentType::kShipmentFull);
+  EXPECT_EQ(classifier_.Run(u"where is my package").intent,
+            QueryIntentType::kShipmentFull);
 }
 
 // Tests that entity attribute queries are correctly classified.
@@ -177,6 +181,22 @@ TEST_F(QueryClassifierTest, EntityAttributeIntents) {
             QueryIntentType::kFlightReservationArrivalAirport);
   EXPECT_EQ(classifier_.Run(u"departure date").intent,
             QueryIntentType::kFlightReservationDepartureDate);
+  EXPECT_EQ(classifier_.Run(u"arrival date").intent,
+            QueryIntentType::kFlightReservationArrivalDate);
+
+  // Shipment attributes
+  EXPECT_EQ(classifier_.Run(u"tracking number").intent,
+            QueryIntentType::kShipmentTrackingNumber);
+  EXPECT_EQ(classifier_.Run(u"associated order id").intent,
+            QueryIntentType::kShipmentAssociatedOrderId);
+  EXPECT_EQ(classifier_.Run(u"shipping address").intent,
+            QueryIntentType::kShipmentDeliveryAddress);
+  EXPECT_EQ(classifier_.Run(u"carrier name").intent,
+            QueryIntentType::kShipmentCarrierName);
+  EXPECT_EQ(classifier_.Run(u"carrier website").intent,
+            QueryIntentType::kShipmentCarrierDomain);
+  EXPECT_EQ(classifier_.Run(u"estimated delivery date").intent,
+            QueryIntentType::kShipmentEstimatedDeliveryDate);
 
   // National ID attributes
   EXPECT_EQ(classifier_.Run(u"national id number").intent,

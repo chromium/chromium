@@ -38,8 +38,8 @@ constexpr std::optional<EntityType> FromAccessibilityAnnotator(
       case Src::kOrder:
         return Tgt::kOrder;
       case Src::kShipment:
-        // TODO(b/484094746): Map to `EntityTypeName::kShipment` once Autofill
-        // supports it.
+        // TODO(crbug.com/484094746): Map to `EntityTypeName::kShipment` once
+        // crrev.com/c/7573639 is submitted.
         return std::nullopt;
       case Src::kDriversLicense:
         return Tgt::kDriversLicense;
@@ -202,8 +202,8 @@ std::optional<EntityInstance> FromAccessibilityAnnotator(
           },
 
           [](const aa::Shipment& src) {
-            // TODO(b/484094746): Map to `EntityTypeName::kShipment` once
-            // Autofill supports it.
+            // TODO(crbug.com/484094746): Map to `EntityTypeName::kShipment`
+            // once crrev.com/c/7573639 is submitted.
           },
 
           [&](const aa::Passport& src) {
@@ -325,6 +325,15 @@ aa::QueryIntentType AttributeTypeToEntryType(AttributeType type) {
 std::u16string GetEntryTypeNameForI18n(aa::QueryIntentType type) {
   switch (type) {
     case aa::QueryIntentType::kUnknown:
+    // TODO(crbug.com/484094746): Map Shipment entities to Autofill once
+    // crrev.com/c/7573639 is submitted.
+    case aa::QueryIntentType::kShipmentFull:
+    case aa::QueryIntentType::kShipmentTrackingNumber:
+    case aa::QueryIntentType::kShipmentAssociatedOrderId:
+    case aa::QueryIntentType::kShipmentDeliveryAddress:
+    case aa::QueryIntentType::kShipmentCarrierName:
+    case aa::QueryIntentType::kShipmentCarrierDomain:
+    case aa::QueryIntentType::kShipmentEstimatedDeliveryDate:
       return u"";
     // Field types:
     // TODO(crbug.com/481979475): Use internationalization for these strings.
@@ -386,6 +395,7 @@ std::u16string GetEntryTypeNameForI18n(aa::QueryIntentType type) {
     case aa::QueryIntentType::kFlightReservationDepartureAirport:
     case aa::QueryIntentType::kFlightReservationArrivalAirport:
     case aa::QueryIntentType::kFlightReservationDepartureDate:
+    case aa::QueryIntentType::kFlightReservationArrivalDate:
     case aa::QueryIntentType::kNationalIdCardName:
     case aa::QueryIntentType::kNationalIdCardCountry:
     case aa::QueryIntentType::kNationalIdCardNumber:

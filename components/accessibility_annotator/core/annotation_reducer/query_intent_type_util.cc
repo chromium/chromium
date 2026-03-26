@@ -155,6 +155,7 @@ bool IsFullQueryIntentType(QueryIntentType intent_type) {
     case QueryIntentType::kKnownTravelerNumberFull:
     case QueryIntentType::kDriversLicenseFull:
     case QueryIntentType::kOrderFull:
+    case QueryIntentType::kShipmentFull:
       return true;
     case QueryIntentType::kNameFull:
     case QueryIntentType::kAddressFull:
@@ -187,6 +188,13 @@ bool IsFullQueryIntentType(QueryIntentType intent_type) {
     case QueryIntentType::kFlightReservationDepartureAirport:
     case QueryIntentType::kFlightReservationArrivalAirport:
     case QueryIntentType::kFlightReservationDepartureDate:
+    case QueryIntentType::kFlightReservationArrivalDate:
+    case QueryIntentType::kShipmentTrackingNumber:
+    case QueryIntentType::kShipmentAssociatedOrderId:
+    case QueryIntentType::kShipmentDeliveryAddress:
+    case QueryIntentType::kShipmentCarrierName:
+    case QueryIntentType::kShipmentCarrierDomain:
+    case QueryIntentType::kShipmentEstimatedDeliveryDate:
     case QueryIntentType::kNationalIdCardName:
     case QueryIntentType::kNationalIdCardCountry:
     case QueryIntentType::kNationalIdCardNumber:
@@ -334,6 +342,9 @@ AttributeResult GetFlightReservationAttributeResult(
   AddAttributeValue(flight.departure_date,
                     QueryIntentType::kFlightReservationDepartureDate, map,
                     &flight_full);
+  AddAttributeValue(flight.arrival_date,
+                    QueryIntentType::kFlightReservationArrivalDate, map,
+                    &flight_full);
 
   if (!flight_full.empty()) {
     map[QueryIntentType::kFlightReservationFull] = std::move(flight_full);
@@ -425,6 +436,37 @@ AttributeResult GetOrderAttributeResult(const Order& order,
   return CreateAttributeResult(std::move(map), intent_type);
 }
 
+AttributeResult GetShipmentAttributeResult(const Shipment& shipment,
+                                           QueryIntentType intent_type) {
+  AttributeMap map;
+  std::vector<AttributeValue> shipment_full;
+
+  AddAttributeValue(shipment.tracking_number,
+                    QueryIntentType::kShipmentTrackingNumber, map,
+                    &shipment_full);
+  AddAttributeValue(shipment.associated_order_id,
+                    QueryIntentType::kShipmentAssociatedOrderId, map,
+                    &shipment_full);
+  AddAttributeValue(shipment.delivery_address,
+                    QueryIntentType::kShipmentDeliveryAddress, map,
+                    &shipment_full);
+  AddAttributeValue(shipment.carrier_name,
+                    QueryIntentType::kShipmentCarrierName, map, &shipment_full);
+  AddAttributeValue(shipment.carrier_domain,
+                    QueryIntentType::kShipmentCarrierDomain, map,
+                    &shipment_full);
+
+  AddAttributeValue(shipment.estimated_delivery_date,
+                    QueryIntentType::kShipmentEstimatedDeliveryDate, map,
+                    &shipment_full);
+
+  if (!shipment_full.empty()) {
+    map[QueryIntentType::kShipmentFull] = std::move(shipment_full);
+  }
+
+  return CreateAttributeResult(std::move(map), intent_type);
+}
+
 }  // namespace
 
 MemorySearchResult CreateResultFromEntity(QueryIntentType intent_type,
@@ -458,8 +500,8 @@ MemorySearchResult CreateResultFromEntity(QueryIntentType intent_type,
                 intent_type, GetOrderAttributeResult(order, intent_type));
           },
           [&](const Shipment& shipment) {
-            return MemorySearchResult(QueryIntentType::kUnknown,
-                                      std::u16string(), std::u16string());
+            return CreateMemorySearchResultFromAttributeResult(
+                intent_type, GetShipmentAttributeResult(shipment, intent_type));
           }},
       entity.specifics);
 }
@@ -491,7 +533,16 @@ EntityTypeEnumSet GetEntityTypesForQueryIntentType(
     case QueryIntentType::kFlightReservationDepartureAirport:
     case QueryIntentType::kFlightReservationArrivalAirport:
     case QueryIntentType::kFlightReservationDepartureDate:
+    case QueryIntentType::kFlightReservationArrivalDate:
       return {EntityType::kFlightReservation};
+    case QueryIntentType::kShipmentFull:
+    case QueryIntentType::kShipmentTrackingNumber:
+    case QueryIntentType::kShipmentAssociatedOrderId:
+    case QueryIntentType::kShipmentDeliveryAddress:
+    case QueryIntentType::kShipmentCarrierName:
+    case QueryIntentType::kShipmentCarrierDomain:
+    case QueryIntentType::kShipmentEstimatedDeliveryDate:
+      return {EntityType::kShipment};
     case QueryIntentType::kNationalIdCardFull:
     case QueryIntentType::kNationalIdCardName:
     case QueryIntentType::kNationalIdCardCountry:

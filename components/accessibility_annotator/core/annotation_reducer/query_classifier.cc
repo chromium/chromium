@@ -159,8 +159,24 @@ ClassifiedQuery KeywordQueryClassify(std::u16string_view query) {
             u"arrival airport", u"to airport");
   try_match(QueryIntentType::kFlightReservationDepartureDate, u"departure date",
             u"flight date");
+  try_match(QueryIntentType::kFlightReservationArrivalDate, u"arrival date");
   try_match(QueryIntentType::kFlightReservationFull, u"flight reservation",
             u"flight", u"reservation");
+
+  // Shipment
+  try_match(QueryIntentType::kShipmentTrackingNumber, u"tracking number");
+  try_match(QueryIntentType::kShipmentAssociatedOrderId, u"associated order id",
+            u"shipment order");
+  try_match(QueryIntentType::kShipmentDeliveryAddress, u"delivery address",
+            u"shipping address");
+  try_match(QueryIntentType::kShipmentCarrierName, u"carrier name",
+            u"shipping company", u"shipper name");
+  try_match(QueryIntentType::kShipmentCarrierDomain, u"carrier domain",
+            u"carrier website");
+  try_match(QueryIntentType::kShipmentEstimatedDeliveryDate,
+            u"estimated delivery date", u"delivery date");
+  try_match(QueryIntentType::kShipmentFull, u"shipment", u"package",
+            u"delivery");
 
   // Order
   try_match(QueryIntentType::kOrderId, u"order id", u"order number");
