@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "aim_thumbnail.proto";
 import "lens_overlay_lens_file.proto";
 
 // Wrapper around all different added input types.
@@ -21,4 +22,7 @@ message AddedInput {
 // added inputs from the client to the server.
 message AddedInputs {
   repeated AddedInput added_inputs = 1;
+
+  // The thumbnails.
+  repeated AimThumbnail turn_title_thumbnail = 2;
 }

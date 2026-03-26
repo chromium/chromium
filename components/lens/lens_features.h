@@ -196,6 +196,11 @@ BASE_DECLARE_FEATURE(kLensSendVitForSingleContextNextQueries);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSendRawFileMediaTypes);
 
+// Enables parsing and sending URLs from the Query Contextualizer in
+// composeboxes.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSendUrlsInComposeboxes);
+
 // Enables restricting annotated page content to same site frames for contextual
 // next queries.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -1122,6 +1127,10 @@ int GetLensOverlayNonBlockingPrivacyNoticeImpressionCap();
 // TODO(crbug.com/489495600): Also disable input limits for the file picker.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSendRawFileMediaTypesEnabled();
+
+// Enables sending URLs from the Query Contextualizer in composeboxes.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSendUrlsInComposeboxesEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

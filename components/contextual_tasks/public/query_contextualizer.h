@@ -102,6 +102,7 @@ class QueryContextualizer {
   // is complete.
   void Contextualize(
       const std::optional<base::Uuid>& task_id,
+      const std::string& query_text,
       const std::vector<TabId>& tabs_to_recontextualize,
       const std::vector<TabId>& tabs_to_force_contextualize,
       contextual_search::ContextualSearchSessionHandle* session_handle,
@@ -110,6 +111,7 @@ class QueryContextualizer {
  private:
   void OnContextRetrieved(
       const std::optional<base::Uuid>& task_id,
+      const std::string& query_text,
       const std::vector<TabId>& tabs_to_recontextualize,
       const std::vector<TabId>& tabs_to_force_contextualize,
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>

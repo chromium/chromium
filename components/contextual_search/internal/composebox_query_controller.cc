@@ -141,6 +141,17 @@ ComposeboxQueryController::CreateClientToAimRequestInfo::
 
 namespace {
 
+// Returns true if the file_info represents an unresolved URL upload.
+bool IsUnresolvedUrlUpload(const contextual_search::FileInfo& file_info) {
+  return file_info.input_data &&
+         file_info.input_data->primary_content_type ==
+             lens::MimeType::kUnknown &&
+         !file_info.input_data->viewport_screenshot.has_value() &&
+         !file_info.input_data->viewport_screenshot_bytes.has_value() &&
+         !file_info.input_data->context_input.has_value() &&
+         file_info.input_data->page_url.has_value();
+}
+
 // The maximum number of times to retry fetching cluster info.
 constexpr int kMaxClusterInfoRetries = 3;
 
@@ -354,9 +365,13 @@ ComposeboxQueryController::ComposeboxQueryController(
 ComposeboxQueryController::~ComposeboxQueryController() = default;
 
 // static
-std::optional<std::string> ComposeboxQueryController::MimeTypeToString(
-    lens::MimeType mime_type) {
-  switch (mime_type) {
+std::optional<std::string>
+ComposeboxQueryController::MimeTypeStringFromFileInfo(
+    const contextual_search::FileInfo& file_info) {
+  if (IsUnresolvedUrlUpload(file_info)) {
+    return std::nullopt;
+  }
+  switch (file_info.mime_type) {
     case lens::MimeType::kPdf:
       return "application/pdf";
     case lens::MimeType::kHtml:
@@ -437,6 +452,10 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
       // Process modality chips.
       added_inputs.add_added_inputs()->CopyFrom(
           file_info->input_data->modality_chip_props->added_input());
+    } else if (IsUnresolvedUrlUpload(*file_info)) {
+      lens::AimThumbnail* thumbnail = added_inputs.add_turn_title_thumbnail();
+      thumbnail->set_title(file_info->input_data->page_url.value().spec());
+      thumbnail->mutable_icon()->set_type(lens::AimIconType::ICON_TYPE_LINK);
     } else if (file_info->request_id.has_value() &&
                file_info->mime_type != lens::MimeType::kImage) {
       // Process Lens file non-image uploads. Do not create added inputs for
@@ -446,7 +465,7 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
       lens_file->set_vsrid(
           lens::Base64EncodeRequestId(file_info->request_id.value()));
       lens_file->set_sticky_cluster_token(cluster_info_->search_session_id());
-      auto mime_type = MimeTypeToString(file_info->mime_type);
+      auto mime_type = MimeTypeStringFromFileInfo(*file_info);
       if (mime_type.has_value()) {
         lens_file->set_mime_type(mime_type.value());
       }
@@ -500,7 +519,8 @@ void ComposeboxQueryController::CreateSearchUrl(
     lens::AddedInputs added_inputs =
         CreateAddedInputs(search_url_request_info->file_tokens,
                           include_files_without_lens_usage_intent);
-    if (added_inputs.added_inputs_size() > 0) {
+    if (added_inputs.added_inputs_size() > 0 ||
+        added_inputs.turn_title_thumbnail_size() > 0) {
       std::string serialized_proto;
       CHECK(added_inputs.SerializeToString(&serialized_proto));
       std::string encoded_proto;
@@ -756,7 +776,8 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
     lens::AddedInputs added_inputs =
         CreateAddedInputs(create_client_to_aim_request_info->file_tokens,
                           /*include_files_without_lens_usage_intent=*/false);
-    if (added_inputs.added_inputs_size() > 0) {
+    if (added_inputs.added_inputs_size() > 0 ||
+        added_inputs.turn_title_thumbnail_size() > 0) {
       submit_query->mutable_payload()->mutable_added_inputs()->CopyFrom(
           added_inputs);
     }
@@ -931,11 +952,15 @@ void ComposeboxQueryController::StartFileUploadFlow(
     // request was not.
     current_file_info.request_id->set_is_implicit_upload(
         current_file_info.is_implicit_upload);
+  } else if (IsUnresolvedUrlUpload(current_file_info)) {
+    current_file_info.request_id = *request_id_generator_.GetNextRequestId(
+        base_update_mode,
+        lens::LensOverlayRequestId::MEDIA_TYPE_UNRESOLVED_URL);
   } else {
     // Unlike image uploads, PDF / page content uploads need to increment the
     // long context id instead of the image sequence id.
-    int64_t context_id = contextual_input_data->context_id.has_value()
-                             ? contextual_input_data->context_id.value()
+    int64_t context_id = current_file_info.input_data->context_id.has_value()
+                             ? current_file_info.input_data->context_id.value()
                              : RandInt64();
     request_id_generator_.SetContextId(context_id);
     request_id_generator_.SetHasChromeTabData(
@@ -1681,7 +1706,9 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
           base::BindOnce(
               &CreateContentextualDataUploadPayload,
               // Pass ownership of the contextual input data to the callback.
-              std::move(contextual_input_data->context_input.value()),
+              contextual_input_data->context_input.has_value()
+                  ? std::move(contextual_input_data->context_input.value())
+                  : std::vector<lens::ContextualInput>(),
               contextual_input_data->page_url,
               contextual_input_data->page_title),
           base::BindOnce(

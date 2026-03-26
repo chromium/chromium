@@ -45,6 +45,10 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
                std::unique_ptr<lens::ContextualInputData> contextual_input_data,
                std::optional<lens::ImageEncodingOptions> image_options),
               (override));
+  MOCK_METHOD(void,
+              StartUrlContextUploadFlow,
+              (const base::UnguessableToken& file_token, const GURL& url),
+              (override));
   MOCK_METHOD(
       void,
       CreateSearchUrl,

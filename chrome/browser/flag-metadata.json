@@ -6024,6 +6024,13 @@
     "expiry_milestone": 150
   },
   {
+    "name": "lens-enable-urls-in-composeboxes",
+    "owners": [
+      "hujasonx@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "lens-exact-matches-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 145

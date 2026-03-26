@@ -70,6 +70,7 @@ source_set("query_contextualizer") {
     "//components/lens:lens_url_utils",
     "//components/sessions:session_id",
     "//components/url_deduplication",
+    "//third_party/re2",
     "//ui/gfx",
     "//url",
   ]

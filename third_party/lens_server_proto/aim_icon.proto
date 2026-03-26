@@ -1,0 +1,27 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+message AimIcon {
+  AimIconType type = 1;
+}
+
+enum AimIconType {
+  ICON_TYPE_UNSPECIFIED = 0;
+  ICON_TYPE_ADD = 9;
+  ICON_TYPE_CHECK = 30;
+  ICON_TYPE_FORMAT_QUOTE_FILLED = 79;
+  ICON_TYPE_LINK = 83;
+  ICON_TYPE_IMAGE = 84;
+  ICON_TYPE_DRIVE_PDF = 101;
+
+  // Reserved values are icon types that have been defined on the server but
+  // have not yet been added to Chrome. Unreserve when adding a new icon type.
+  reserved 1 to 8, 10 to 29, 31 to 78, 80 to 82, 85 to 100, 102 to 156;
+}

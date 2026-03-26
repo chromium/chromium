@@ -9,6 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package lens;
 
 import "added_inputs.proto";
+import "aim_icon.proto";
 
 message ModalityChipProps {
   // Displayed text on the modality chip.
@@ -23,7 +24,7 @@ message ModalityChipProps {
     bytes thumbnail_bitmap = 13;
 
     // Icon identifier for the chip.
-    IconType icon_id = 16;
+    AimIconType icon_id = 16;
   }
 
   // True if this modality chip can be submitted without additional user input.
@@ -37,16 +38,4 @@ message ModalityChipProps {
   reserved 3, 5 to 9, 12;
 }
 
-// Next ID: 157
-enum IconType {
-  ICON_TYPE_UNSPECIFIED = 0;
-  ICON_TYPE_ADD = 9;
-  ICON_TYPE_CHECK = 30;
-  ICON_TYPE_FORMAT_QUOTE_FILLED = 79;
-  ICON_TYPE_IMAGE = 84;
-  ICON_TYPE_DRIVE_PDF = 101;
 
-  // Reserved values are icon types that have been defined on the server but
-  // have not yet been added to Chrome. Unreserve when adding a new icon type.
-  reserved 1 to 8, 10 to 29, 31 to 78, 80 to 83, 85 to 100, 102 to 156;
-}
