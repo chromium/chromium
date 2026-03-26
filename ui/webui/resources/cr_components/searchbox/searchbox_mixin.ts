@@ -82,6 +82,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (changedPrivateProperties.has('selectedMatch')) {
         this.inputAriaLive = this.computeInputAriaLive_();
       }
+      if (changedPrivateProperties.has('result') ||
+          changedPrivateProperties.has('selectedMatchIndex')) {
+        this.selectedMatch = this.computeSelectedMatch_();
+      }
     }
 
     getInputElement(): SearchboxInputElement {
@@ -427,7 +431,37 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       });
     }
 
-    protected computeInputAriaLive_(): string {
+    onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>) {
+      this.selectedMatchIndex = e.detail.value;
+    }
+
+    onMatchClick() {
+      this.clearAutocompleteMatches();
+    }
+
+    async onMatchFocusin(e: CustomEvent<number>) {
+      // Select the match that received focus.
+      await this.getDropdownElement().selectIndex(e.detail);
+      // Input selection (if any) likely drops due to focus change. Simply fill
+      // the input with the match and move the cursor to the end.
+      const input =
+        this.shadowRoot.querySelector<SearchboxInputElement>('#input');
+      assert(input);
+      input.setInput({
+        text: this.selectedMatch!.fillIntoEdit,
+        inline: '',
+        moveCursorToEnd: true,
+      });
+    }
+
+    private computeSelectedMatch_() {
+      if (!this.result || !this.result.matches) {
+        return null;
+      }
+      return this.result.matches[this.selectedMatchIndex] || null;
+    }
+
+    private computeInputAriaLive_(): string {
       return this.selectedMatch ? 'off' : 'polite';
     }
   }
@@ -455,11 +489,14 @@ export interface SearchboxMixinInterface {
   navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent): void;
   onAutocompleteResultChanged(result: AutocompleteResult|null): void;
   onInputFocusChanged(e: CustomEvent<{value: string}>): void;
+  onInputWrapperFocusout(e: FocusEvent): void;
+  onInputWrapperKeydown(e: KeyboardEvent): void;
+  onMatchClick(): void;
+  onMatchFocusin(e: CustomEvent<number>): void;
   onSearchboxInputTextUpdated(
       e: CustomEvent<{value: string, isComposing: boolean}>,
       forceAutocomplete: boolean): void;
-  onInputWrapperFocusout(e: FocusEvent): void;
-  onInputWrapperKeydown(e: KeyboardEvent): void;
+  onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   pageHandler(): PageHandlerInterface;
   queryAutocomplete(input: string, preventInlineAutocomplete?: boolean): void;
 }

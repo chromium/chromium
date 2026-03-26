@@ -15,14 +15,14 @@ export function getHtml(
     exportparts="dropdown-content"
     role="listbox" .result="${this.result}"
     selected-match-index="${this.selectedMatchIndex}"
-    @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
+    @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
     ?can-show-secondary-side="${this.canShowSecondarySide}"
     ?had-secondary-side="${this.hadSecondarySide}"
     @had-secondary-side-changed="${this.onHadSecondarySideChanged_}"
     ?has-secondary-side="${this.hasSecondarySide}"
     @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
-    @match-focusin="${this.onMatchFocusin_}"
-    @match-click="${this.onMatchClick_}"
+    @match-focusin="${this.onMatchFocusin}"
+    @match-click="${this.onMatchClick}"
     ?hidden="${!this.dropdownIsVisible}"
     ?show-thumbnail="${this.showThumbnail}">
 </cr-searchbox-dropdown>`;
