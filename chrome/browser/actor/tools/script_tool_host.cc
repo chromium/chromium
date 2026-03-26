@@ -4,7 +4,6 @@
 
 #include "chrome/browser/actor/tools/script_tool_host.h"
 
-#include "base/strings/strcat.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -105,7 +104,7 @@ void ScriptToolHost::Cancel() {
       break;
     case Lifecycle::kInvokeSent:
     case Lifecycle::kWaitingForNavigation:
-    case Lifecycle::kPendingResultFromNewDocument:
+    case Lifecycle::kPendingResultFromNewDocment:
       journal().Log(
           JournalURL(), task_id(), "ScriptToolHost::Cancel",
           JournalDetailsBuilder().Add("tab_handle", target_tab_).Build());
@@ -169,7 +168,7 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
 
 void ScriptToolHost::OnResultReceivedFromNewDocument(
     const std::string& result) {
-  CHECK_EQ(lifecycle_, Lifecycle::kPendingResultFromNewDocument);
+  CHECK_EQ(lifecycle_, Lifecycle::kPendingResultFromNewDocment);
   CHECK(pending_result_);
 
   lifecycle_ = Lifecycle::kDone;
@@ -202,7 +201,7 @@ void ScriptToolHost::RenderFrameHostChanged(
                         mojom::ActionResultCode::kFrameWentAway);
       }
       break;
-    case Lifecycle::kPendingResultFromNewDocument:
+    case Lifecycle::kPendingResultFromNewDocment:
       if (old_host && old_host == new_document_.AsRenderFrameHostIfValid()) {
         PostErrorResult(std::move(tool_done_callback_),
                         mojom::ActionResultCode::kFrameWentAway);
@@ -216,33 +215,23 @@ void ScriptToolHost::RenderFrameHostChanged(
   }
 }
 
-// TODO(crbug.com/496250244): Should we only listen to DidFinishNavigation as is
-// suggested by the documentation for PrimaryPageChanged?
 void ScriptToolHost::PrimaryPageChanged(content::Page& page) {
   if (lifecycle_ != Lifecycle::kWaitingForNavigation) {
     return;
   }
 
   auto& new_host = page.GetMainDocument();
-
-  // If it's an error page, let DidFinishNavigation handle this failure.
-  if (new_host.IsErrorDocument()) {
-    return;
-  }
-
   if (!new_host.GetLastCommittedOrigin().IsSameOriginWith(
           target_document_origin_)) {
     // If we end with a cross-origin navigation, assume execution
     // failure.
     PostErrorResult(std::move(tool_done_callback_),
-                    mojom::ActionResultCode::kScriptToolCrossOriginNavigation,
-                    base::StrCat({"Cross-origin navigation to: ",
-                                  new_host.GetLastCommittedURL().spec()}));
+                    mojom::ActionResultCode::kScriptToolCrossOriginNavigation);
     return;
   }
   // The new navigation has committed. Send a request to the renderer to
   // pull the result.
-  lifecycle_ = Lifecycle::kPendingResultFromNewDocument;
+  lifecycle_ = Lifecycle::kPendingResultFromNewDocment;
   new_document_ = new_host.GetWeakDocumentPtr();
   new_host.GetRemoteAssociatedInterfaces()->GetInterface(
       &new_document_render_frame_);
@@ -253,60 +242,6 @@ void ScriptToolHost::PrimaryPageChanged(content::Page& page) {
   // TODO(khushalsagar): We need to address the case where this navigation never
   // commits in which case PrimaryPageChanged won't be dispatched. See
   // crbug.com/478063859.
-}
-
-void ScriptToolHost::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (lifecycle_ != Lifecycle::kWaitingForNavigation &&
-      lifecycle_ != Lifecycle::kPendingResultFromNewDocument) {
-    return;
-  }
-
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  // If we have invoked a script tool on the target document but failed to
-  // receive a result, we are expecting to receive it after a successful
-  // navigation to a new document.  Return an error from the tool if that
-  // navigation failed to commit.
-  if (!navigation_handle->HasCommitted()) {
-    if (lifecycle_ == Lifecycle::kWaitingForNavigation) {
-      PostErrorResult(
-          std::move(tool_done_callback_),
-          mojom::ActionResultCode::kScriptToolNavigationDidNotCommit,
-          base::StrCat(
-              {"Navigation failed: ", navigation_handle->GetURL().spec()}));
-    }
-    return;
-  }
-
-  if (navigation_handle->IsErrorPage()) {
-    PostErrorResult(
-        std::move(tool_done_callback_),
-        mojom::ActionResultCode::kScriptToolNavigationCommittedErrorPage,
-        base::StrCat({"Navigation committed error page: ",
-                      navigation_handle->GetURL().spec()}));
-    return;
-  }
-}
-
-void ScriptToolHost::DidFailLoad(content::RenderFrameHost* render_frame_host,
-                                 const GURL& validated_url,
-                                 int error_code) {
-  // We care about loading when we are expecting a script tool result after
-  // navigation to a new document.
-  if (lifecycle_ != Lifecycle::kPendingResultFromNewDocument) {
-    return;
-  }
-
-  if (render_frame_host == new_document_.AsRenderFrameHostIfValid()) {
-    PostErrorResult(
-        std::move(tool_done_callback_),
-        mojom::ActionResultCode::kScriptToolNavigationFailedLoad,
-        base::StrCat({"Navigation failed load: ", validated_url.spec()}));
-  }
 }
 
 void ScriptToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
@@ -324,7 +259,7 @@ void ScriptToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
       terminate_with_error =
           (rfh == target_document_.AsRenderFrameHostIfValid());
       break;
-    case Lifecycle::kPendingResultFromNewDocument:
+    case Lifecycle::kPendingResultFromNewDocment:
       terminate_with_error = (rfh == new_document_.AsRenderFrameHostIfValid());
       break;
   }
@@ -337,12 +272,10 @@ void ScriptToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
 }
 
 void ScriptToolHost::PostErrorResult(ToolCallback tool_callback,
-                                     mojom::ActionResultCode code,
-                                     const std::string& message) {
+                                     mojom::ActionResultCode code) {
   lifecycle_ = Lifecycle::kDone;
   TearDown();
-  auto result =
-      MakeResult(code, /*requires_page_stabilization=*/false, message);
+  auto result = MakeResult(code);
   RecordMetrics(*result);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(tool_callback), std::move(result)));

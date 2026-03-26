@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -21,8 +20,6 @@
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_throttle.h"
-#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 
@@ -520,81 +517,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Histograms) {
   histogram_tester.ExpectBucketCount(
       "Actor.Tools.ScriptTool.ActionResultCode",
       mojom::ActionResultCode::kScriptToolInvalidName, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailed) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  // Insert a throttle to cancel the navigation.
-  content::TestNavigationThrottleInserter throttle_inserter(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](content::NavigationThrottleRegistry& registry) -> void {
-            auto throttle =
-                std::make_unique<content::TestNavigationThrottle>(registry);
-            throttle->SetResponse(
-                content::TestNavigationThrottle::WILL_START_REQUEST,
-                content::TestNavigationThrottle::SYNCHRONOUS,
-                content::NavigationThrottle::CANCEL);
-            registry.AddThrottle(std::move(throttle));
-          }));
-
-  const std::string declarative_input = R"JSON({"echo": "hello world"})JSON";
-  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
-                                      declarative_input);
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kScriptToolNavigationDidNotCommit);
-}
-
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationCommittedErrorPage) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  // Change form action to a non-existent path on the same server, which should
-  // result in an error page (404).
-  const GURL error_url = embedded_test_server()->GetURL("/non-existent");
-  ASSERT_TRUE(content::ExecJs(
-      web_contents(),
-      content::JsReplace("document.querySelector('form').action = $1",
-                         error_url)));
-
-  const std::string declarative_input = R"JSON({"echo": "hello world"})JSON";
-  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
-                                      declarative_input);
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-
-  ExpectErrorResult(
-      result, mojom::ActionResultCode::kScriptToolNavigationCommittedErrorPage);
-}
-
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailedLoad) {
-  const GURL url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  const GURL fail_url = embedded_test_server()->GetURL(
-      "/actor/declarative_script_tool_cross_document_fail.html");
-  ASSERT_TRUE(content::ExecJs(
-      web_contents(),
-      content::JsReplace("document.querySelector('form').action = $1",
-                         fail_url)));
-
-  const std::string declarative_input = R"JSON({"echo": "hello world"})JSON";
-  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
-                                      declarative_input);
-
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kScriptToolNavigationFailedLoad);
 }
 
 }  // namespace

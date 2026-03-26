@@ -48,7 +48,7 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
     kInitial,
     kInvokeSent,
     kWaitingForNavigation,
-    kPendingResultFromNewDocument,
+    kPendingResultFromNewDocment,
     kDone
   };
 
@@ -57,18 +57,12 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
                               content::RenderFrameHost* /*new_host*/) override;
   void RenderFrameDeleted(content::RenderFrameHost* rfh) override;
   void PrimaryPageChanged(content::Page& page) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DidFailLoad(content::RenderFrameHost* render_frame_host,
-                   const GURL& validated_url,
-                   int error_code) override;
 
   void TearDown();
   void OnToolInvokedInOldDocument(mojom::ActionResultPtr result);
   void OnResultReceivedFromNewDocument(const std::string& result);
   void PostErrorResult(ToolCallback tool_callback,
-                       mojom::ActionResultCode code,
-                       const std::string& message = "");
+                       mojom::ActionResultCode code);
   void RecordMetrics(const mojom::ActionResult& result);
 
   Lifecycle lifecycle_{Lifecycle::kInitial};

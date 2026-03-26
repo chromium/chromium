@@ -133,9 +133,6 @@ chromium-metrics-reviews@google.com.
   <int value="1204" label="ScriptToolCrossOriginNavigation"/>
   <int value="1205" label="ScriptToolMissingRequiredSubmitButton"/>
   <int value="1206" label="ScriptToolCancelled"/>
-  <int value="1207" label="ScriptToolNavigationDidNotCommit"/>
-  <int value="1208" label="ScriptToolNavigationCommittedErrorPage"/>
-  <int value="1209" label="ScriptToolNavigationFailedLoad"/>
   <int value="1300" label="ActorUiError"/>
 </enum>
 
