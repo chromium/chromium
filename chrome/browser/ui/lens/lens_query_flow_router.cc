@@ -7,7 +7,9 @@
 #include "base/rand_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -60,7 +63,14 @@ namespace lens {
 
 LensQueryFlowRouter::LensQueryFlowRouter(
     LensSearchController* lens_search_controller)
-    : lens_search_controller_(lens_search_controller) {}
+    : lens_search_controller_(lens_search_controller) {
+  auto* service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile());
+  if (service) {
+    query_contextualizer_ =
+        std::make_unique<contextual_tasks::QueryContextualizer>(service, this);
+  }
+}
 
 LensQueryFlowRouter::~LensQueryFlowRouter() {
   if (ShouldRouteToContextualTasks()) {
@@ -467,6 +477,47 @@ void LensQueryFlowRouter::OnContextUploadStatusChanged(
   }
 }
 
+GURL LensQueryFlowRouter::GetTabUrl(int32_t id) {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  return GURL();
+}
+
+SessionID LensQueryFlowRouter::GetTabSessionId(int32_t id) {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  return SessionID::InvalidValue();
+}
+
+void LensQueryFlowRouter::GetPageContext(
+    int32_t id,
+    base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
+        callback) {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  std::move(callback).Run(nullptr);
+}
+
+void LensQueryFlowRouter::UploadTabContextWithData(
+    int32_t id,
+    std::optional<int64_t> context_id,
+    std::unique_ptr<lens::ContextualInputData> data,
+    base::OnceCallback<void(bool)> callback) {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  std::move(callback).Run(false);
+}
+
+void LensQueryFlowRouter::OnPageContextIneligible() {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+}
+
+void LensQueryFlowRouter::OnTabProcessedForQueryContextualization(int32_t id) {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+}
+
 void LensQueryFlowRouter::SendInteractionToContextualTasks(
     std::unique_ptr<CreateSearchUrlRequestInfo> request_info) {
   // If there is no existing session handle, then the search URL request will
@@ -487,8 +538,27 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     return;
   }
 
+  if (query_contextualizer_) {
+    int32_t active_tab_id =
+        sessions::SessionTabHelper::IdForTab(web_contents()).id();
+    query_contextualizer_->Contextualize(
+        GetTaskId(), pending_search_url_request_->query_text, {active_tab_id},
+        {}, GetContextualSearchSessionHandle(),
+        base::BindOnce(&LensQueryFlowRouter::CreateSearchUrlAndOpenPanel,
+                       weak_factory_.GetWeakPtr(), std::move(request_info)));
+  } else {
+    CreateSearchUrlAndOpenPanel(std::move(request_info));
+  }
+}
+
+void LensQueryFlowRouter::CreateSearchUrlAndOpenPanel(
+    std::unique_ptr<CreateSearchUrlRequestInfo> request_info) {
+  auto* session_handle = GetContextualSearchSessionHandle();
+  if (!session_handle) {
+    return;
+  }
   auto lens_selection_type = request_info->lens_overlay_selection_type;
-  GetContextualSearchSessionHandle()->CreateSearchUrl(
+  session_handle->CreateSearchUrl(
       std::move(request_info),
       base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
                      weak_factory_.GetWeakPtr(), lens_selection_type));
@@ -568,12 +638,23 @@ void LensQueryFlowRouter::UploadContextualInputData(
     // Add the tab context file token to the request's file tokens. This could
     // not be added earlier because the token is not known until this point.
     pending_search_url_request_->file_tokens.push_back(token);
-    auto lens_selection_type =
-        pending_search_url_request_->lens_overlay_selection_type;
-    session_handle->CreateSearchUrl(
-        std::move(pending_search_url_request_),
-        base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
-                       weak_factory_.GetWeakPtr(), lens_selection_type));
+    if (query_contextualizer_) {
+      int32_t active_tab_id =
+          sessions::SessionTabHelper::IdForTab(web_contents()).id();
+      query_contextualizer_->Contextualize(
+          GetTaskId(), pending_search_url_request_->query_text, {active_tab_id},
+          {}, GetContextualSearchSessionHandle(),
+          base::BindOnce(&LensQueryFlowRouter::CreateSearchUrlAndOpenPanel,
+                         weak_factory_.GetWeakPtr(),
+                         std::move(pending_search_url_request_)));
+    } else {
+      auto lens_selection_type =
+          pending_search_url_request_->lens_overlay_selection_type;
+      session_handle->CreateSearchUrl(
+          std::move(pending_search_url_request_),
+          base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
+                         weak_factory_.GetWeakPtr(), lens_selection_type));
+    }
   }
 }
 
@@ -706,6 +787,12 @@ bool LensQueryFlowRouter::IsActiveTabContextEligible() const {
 
   return lens_search_contextualization_controller()
       ->GetCurrentPageContextEligibility();
+}
+
+std::optional<base::Uuid> LensQueryFlowRouter::GetTaskId() {
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents());
+  return helper ? helper->task_id() : std::nullopt;
 }
 
 }  // namespace lens
