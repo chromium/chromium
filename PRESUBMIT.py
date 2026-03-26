@@ -969,9 +969,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',
             r'services/network/web_transport\.cc',
 
-            # Needed to interface with library that can't use base or absl.
-            r'components/optimization_guide/content/browser/page_context_eligibility_api\.(cc|h)',
-
             # Not an error in third_party folders.
             _THIRD_PARTY_EXCEPT_BLINK,
         ],
