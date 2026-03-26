@@ -59,9 +59,11 @@ class CrossDevicePrefTracker : public KeyedService {
     kSyncNotConfigured = 2,
     // `LocalDeviceInfo` (Cache GUID) is not yet initialized.
     kLocalDeviceInfoMissing = 3,
-    // Both `LocalDeviceInfo` is missing and Sync is not configured for writes.
+    // `LocalDeviceInfo` is missing and Sync is not configured for writes.
     kSyncNotConfiguredAndLocalDeviceInfoMissing = 4,
-    kMaxValue = kSyncNotConfiguredAndLocalDeviceInfoMissing,
+    // Sync is configured but initial preferences have not been downloaded.
+    kWaitingForInitialSync = 5,
+    kMaxValue = kWaitingForInitialSync,
   };
   // Note: The UMA XML enum is named "CrossDevicePrefTrackerAvailabilityAtQuery"
   // for legacy reasons.

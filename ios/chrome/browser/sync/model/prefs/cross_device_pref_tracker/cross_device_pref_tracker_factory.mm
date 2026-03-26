@@ -10,6 +10,7 @@
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker_impl.h"
 #import "components/sync_preferences/features.h"
+#import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
@@ -56,7 +57,7 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(
 
   // The implementation in `components/sync_preferences` is platform-agnostic.
   return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
-      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      profile->GetSyncablePrefs(), GetApplicationContext()->GetLocalState(),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile), std::move(pref_provider));
 }

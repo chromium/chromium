@@ -176,6 +176,9 @@ chromium-metrics-reviews@google.com.
     DeviceInfoTracker available, but both LocalDeviceInfo is missing and Sync is
     not configured.
   </int>
+  <int value="5" label="Waiting for initial sync">
+    Sync is configured but initial preferences have not been downloaded.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:ServiceStatus) -->

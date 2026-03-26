@@ -25,6 +25,7 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_provider.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
+#include "components/sync_preferences/pref_service_syncable_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -39,13 +40,16 @@ class SyncService;
 
 namespace sync_preferences {
 
+class PrefServiceSyncable;
+
 // Concrete implementation of `CrossDevicePrefTracker`.
 class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
+                                   public PrefServiceSyncableObserver,
                                    public syncer::DeviceInfoTracker::Observer,
                                    public syncer::SyncServiceObserver {
  public:
   CrossDevicePrefTrackerImpl(
-      PrefService* profile_pref_service,
+      PrefServiceSyncable* profile_pref_service,
       PrefService* local_pref_service,
       syncer::DeviceInfoSyncService* device_info_sync_service,
       syncer::SyncService* sync_service,
@@ -56,7 +60,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   CrossDevicePrefTrackerImpl& operator=(const CrossDevicePrefTrackerImpl&) =
       delete;
 
-  // `CrossDevicePrefTracker` overrides
+  // `CrossDevicePrefTracker` overrides.
   void AddObserver(CrossDevicePrefTracker::Observer* observer) override;
   void RemoveObserver(CrossDevicePrefTracker::Observer* observer) override;
   ServiceStatus GetServiceStatus() const override;
@@ -67,13 +71,16 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
       std::string_view pref_name,
       const DeviceFilter& filter) const override;
 
-  // `KeyedService` overrides
+  // `PrefServiceSyncableObserver` overrides.
+  void OnIsSyncingChanged() override;
+
+  // `KeyedService` overrides.
   void Shutdown() override;
 
-  // `syncer::DeviceInfoTracker::Observer` overrides
+  // `syncer::DeviceInfoTracker::Observer` overrides.
   void OnDeviceInfoChange() override;
 
-  // `syncer::SyncServiceObserver` overrides
+  // `syncer::SyncServiceObserver` overrides.
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
@@ -186,7 +193,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
 
   // `PrefService` for profile-based preferences (including syncable prefs).
   // Must outlive this object until `Shutdown()`.
-  raw_ptr<PrefService> profile_pref_service_;
+  raw_ptr<PrefServiceSyncable> profile_pref_service_;
 
   // `PrefService` for local-state preferences.
   // Must outlive this object until `Shutdown()`.
@@ -231,6 +238,10 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Observation for changes in `SyncService` state.
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+
+  // Observation for changes in `PrefServiceSyncable` state.
+  base::ScopedObservation<PrefServiceSyncable, PrefServiceSyncableObserver>
+      syncable_pref_observation_{this};
 
   // List of observers notified of remote preference changes.
   base::ObserverList<CrossDevicePrefTracker::Observer, true> observers_;

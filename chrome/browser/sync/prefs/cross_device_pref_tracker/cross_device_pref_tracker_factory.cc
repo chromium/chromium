@@ -14,6 +14,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker_impl.h"
 #include "components/sync_preferences/features.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -68,7 +69,8 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   auto pref_provider = std::make_unique<ChromeCrossDevicePrefProvider>();
   return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
-      profile->GetPrefs(), g_browser_process->local_state(),
+      static_cast<sync_preferences::PrefServiceSyncable*>(profile->GetPrefs()),
+      g_browser_process->local_state(),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile), std::move(pref_provider));
 }

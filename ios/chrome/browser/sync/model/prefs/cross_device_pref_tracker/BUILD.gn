@@ -15,6 +15,7 @@ source_set("cross_device_pref_tracker_factory") {
   ]
   deps = [
     "//components/keyed_service/core",
+    "//components/sync_preferences",
     "//components/sync_preferences:features",
     "//components/sync_preferences/cross_device_pref_tracker",
     "//ios/chrome/browser/shared/model/application_context",
