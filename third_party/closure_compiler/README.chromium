@@ -1,6 +1,6 @@
 Name: Closure compiler
 Short Name: closure-compiler
-URL: http://github.com/google/closure-compiler
+URL: https://github.com/google/closure-compiler
 Version: 20210906.0.0
 Date: 2023-05-03
 Update Mechanism: Manual
