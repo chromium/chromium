@@ -129,7 +129,8 @@ class ProfileAttributesStorageIOS {
  protected:
   const raw_ref<PrefService> prefs_;
 
-  base::ObserverList<ProfileAttributesStorageObserverIOS, /*check_empty=*/true>
+  base::ReentrantObserverList<ProfileAttributesStorageObserverIOS,
+                              /*check_empty=*/true>
       observers_;
 };
 

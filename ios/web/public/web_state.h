@@ -555,9 +555,7 @@ class WebState : public base::SupportsUserData {
   // it is used by client (which requests state change during notifications,
   // changes that can require notifying observers again).
   using WebStateObserverList =
-      base::ObserverList<WebStateObserver,
-                         true,
-                         base::ObserverListReentrancyPolicy::kAllowReentrancy>;
+      base::ReentrantObserverList<WebStateObserver, true>;
 
   // Helper function that call WebStateRealized(this) for pre-registered
   // observers but not for any observers that are added while iterating.
