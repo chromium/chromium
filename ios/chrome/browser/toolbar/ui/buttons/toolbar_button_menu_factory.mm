@@ -125,13 +125,6 @@
   ProceduralBlock createNewTabBlock = ^{
     [weakSelf.delegate createNewTabFromView:nil];
   };
-  UIAction* newTabAction =
-      _incognito
-          ? [_actionFactory
-                actionToOpenNewIncognitoTabWithBlock:createNewTabBlock]
-          : [_actionFactory actionToOpenNewTabWithBlock:createNewTabBlock];
-  newTabAction.image =
-      DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize);
 
   // Context menu for when a tab group is open in the tab grid.
   if (isTabGroupVisible) {
@@ -140,6 +133,15 @@
           [weakSelf.delegate addNewTabInCurrentTabGroup];
         }];
 
+    UIAction* newTabAction =
+        _incognito
+            ? [_actionFactory
+                  actionToOpenNewIncognitoTabWithBlock:createNewTabBlock]
+            : [_actionFactory actionToOpenNewTabWithBlock:createNewTabBlock];
+    if (!_incognito) {
+      newTabAction.image =
+          DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize);
+    }
     return
         [UIMenu menuWithChildren:@[ newTabAction, newTabInCurrentGroupAction ]];
   }
@@ -152,6 +154,11 @@
         }];
     newTabGroupAction.title =
         l10n_util::GetNSString(IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP);
+
+    UIAction* newTabAction =
+        [_actionFactory actionToOpenNewTabWithBlock:createNewTabBlock];
+    newTabAction.image =
+        DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize);
 
     return [UIMenu menuWithChildren:@[ newTabGroupAction, newTabAction ]];
   }
