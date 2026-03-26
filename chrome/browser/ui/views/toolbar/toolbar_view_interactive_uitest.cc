@@ -612,20 +612,21 @@ class ToolbarViewVerticalTabsRTLTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/485291602): Re-enable this test.
-IN_PROC_BROWSER_TEST_P(ToolbarViewVerticalTabsRTLTest,
-                       DISABLED_ReloadButtonWorks) {
+IN_PROC_BROWSER_TEST_P(ToolbarViewVerticalTabsRTLTest, ReloadButtonWorks) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("/title1.html");
 
-  RunTestSequence(EnterVerticalTabsMode(),
-                  WaitForShow(kVerticalTabStripTopContainerElementId),
-                  InstrumentTab(kTabId), NavigateWebContents(kTabId, url),
-                  WaitForShow(kReloadButtonElementId),
-                  PressButton(kReloadButtonElementId),
-                  WaitForWebContentsNavigation(kTabId));
+  RunTestSequence(
+      EnterVerticalTabsMode(),
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, url),
+      WaitForShow(kReloadButtonElementId),
+      WaitForViewProperty(kReloadButtonElementId, ReloadButton, VisibleMode,
+                          ReloadControl::Mode::kReload),
+      PressButton(kReloadButtonElementId),
+      WaitForWebContentsNavigation(kTabId));
 }
 
 INSTANTIATE_TEST_SUITE_P(
