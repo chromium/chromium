@@ -15,6 +15,9 @@
 //   accessed from `//content/browser/smart_card/smart_card_service.cc`.
 
 // Reasons why the ephemeral permission might have expired.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SmartCardOneTimePermissionExpiryReason)
 enum SmartCardOneTimePermissionExpiryReason {
   // There's no window of the application left.
   kSmartCardPermissionExpiredLastWindowClosed = 0,
@@ -28,8 +31,9 @@ enum SmartCardOneTimePermissionExpiryReason {
   kSmartCardPermissionExpiredReaderRemoved,
   // Smart card was removed from the reader the grant referred to.
   kSmartCardPermissionExpiredCardRemoved,
-  kSmartCardPermissionExpiredMax = kSmartCardPermissionExpiredReaderRemoved
+  kMaxValue = kSmartCardPermissionExpiredCardRemoved
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/smart_card/enums.xml:SmartCardOneTimePermissionExpiryReason)
 
 void RecordSmartCardOneTimePermissionExpiryReason(
     SmartCardOneTimePermissionExpiryReason reason);

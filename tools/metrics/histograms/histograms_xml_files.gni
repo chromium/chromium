@@ -272,6 +272,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/skia/histograms.xml",
   "//tools/metrics/histograms/metadata/skills/enums.xml",
   "//tools/metrics/histograms/metadata/skills/histograms.xml",
+  "//tools/metrics/histograms/metadata/smart_card/enums.xml",
+  "//tools/metrics/histograms/metadata/smart_card/histograms.xml",
   "//tools/metrics/histograms/metadata/sql/enums.xml",
   "//tools/metrics/histograms/metadata/sql/histograms.xml",
   "//tools/metrics/histograms/metadata/stability/enums.xml",

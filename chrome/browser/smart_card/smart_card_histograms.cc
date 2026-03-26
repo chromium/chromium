@@ -4,10 +4,10 @@
 
 #include "chrome/browser/smart_card/smart_card_histograms.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 
 void RecordSmartCardOneTimePermissionExpiryReason(
     SmartCardOneTimePermissionExpiryReason reason) {
-  UMA_HISTOGRAM_ENUMERATION("SmartCard.OneTimePermissionExpiryReason", reason,
-                            kSmartCardPermissionExpiredMax);
+  base::UmaHistogramEnumeration("SmartCard.OneTimePermissionExpiryReason",
+                                reason);
 }

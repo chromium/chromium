@@ -1,0 +1,37 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(SmartCardConnectionClosedReason) -->
+
+<enum name="SmartCardConnectionClosedReason">
+  <int value="0" label="Disconnect"/>
+  <int value="1" label="PermissionRevoked"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/smart_card/smart_card_histograms.h:SmartCardConnectionClosedReason) -->
+
+<!-- LINT.IfChange(SmartCardOneTimePermissionExpiryReason) -->
+
+<enum name="SmartCardOneTimePermissionExpiryReason">
+  <int value="0" label="LastWindowClosed"/>
+  <int value="1" label="AllWindowsInTheBackgroundTimeout"/>
+  <int value="2" label="MaxLifetimeReached"/>
+  <int value="3" label="SystemSuspended"/>
+  <int value="4" label="ReaderRemoved"/>
+  <int value="5" label="CardRemoved"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/smart_card/smart_card_histograms.h:SmartCardOneTimePermissionExpiryReason) -->
+
+</enums>
+
+</histogram-configuration>
