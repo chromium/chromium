@@ -44,10 +44,14 @@ class SigninBridge : public KeyedService {
       const GURL& continue_url,
       const std::optional<CoreAccountId>& account_id);
 
-  // Opens the reauthenication flow.
+  // Opens the reauthentication flow.
   virtual void StartUpdateCredentialsFlow(TabAndroid* tab,
                                           const GURL& continue_url,
                                           const CoreAccountId& account_id);
-};
 
+  // Wait for cookies to be minted before redirecting the account.
+  virtual void WaitForCookiesAndRedirect(TabAndroid* tab,
+                                         const GURL& continue_url,
+                                         const CoreAccountId& account_id);
+};
 #endif  // CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_

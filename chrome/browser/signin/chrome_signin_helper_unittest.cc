@@ -69,8 +69,6 @@ const char kMirrorActionWithPromoAndContinueUrlSelectedEmail[] =
 const char kMirrorActionWithPromoAndContinueUrl[] =
     "action=DEFAULT,show_consistency_promo=true,continue_url=http://"
     "example.com";
-const char kMirrorActionWithContinueUrlAndSelectedEmail[] =
-    "action=DEFAULT,continue_url=http://example.com,email=test@gmail.com";
 const char kMirrorActionAddSessionWithContinueUrl[] =
     "action=ADDSESSION,continue_url=http://example.com,email=test@gmail.com";
 const char kMirrorActionDefault[] = "action=DEFAULT";
@@ -229,6 +227,13 @@ class MockSigninBridge : public SigninBridge {
 
   MOCK_METHOD(void,
               StartUpdateCredentialsFlow,
+              (TabAndroid * window,
+               const GURL& continue_url,
+               const CoreAccountId& account_id),
+              (override));
+
+  MOCK_METHOD(void,
+              WaitForCookiesAndRedirect,
               (TabAndroid * window,
                const GURL& continue_url,
                const CoreAccountId& account_id),
@@ -493,10 +498,6 @@ TEST_F(ChromeSigninHelperTest, AddSessionOpensBottomSheet) {
   tab_model.SetWebContentsList({web_contents.get()});
   tab_model.SetIsActiveModel(true);
 
-  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
-      window_android = ui::WindowAndroid::CreateForTesting();
-  window_android.get()->get()->AddChild(web_contents->GetNativeView());
-
   // Process the header.
   TestResponseAdapter response_adapter(signin::kChromeManageAccountsHeader,
                                        kMirrorActionAddSessionWithContinueUrl,
@@ -508,6 +509,43 @@ TEST_F(ChromeSigninHelperTest, AddSessionOpensBottomSheet) {
   EXPECT_CALL(
       *signin_bridge(),
       StartAddAccountFlow(_, "test@gmail.com", GURL("http://example.com")));
+
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  task_environment()->RunUntilIdle();
+}
+
+// Tests that receiving an ADDSESSION action within kChromeManageAccountsHeader
+// opens the wait for cookies bridge if account is already on device.
+TEST_F(ChromeSigninHelperTest, WaitForCookiesAndRedirectWhenAccountAvailable) {
+  InitializeIdentityTestEnvironment();
+  CoreAccountId account_id =
+      identity_test_env()
+          ->MakePrimaryAccountAvailable("test@gmail.com",
+                                        signin::ConsentLevel::kSignin)
+          .account_id;
+
+  std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+  base::ScopedClosureRunner remover(base::BindOnce(
+      TabModelList::RemoveTabModel, base::Unretained(&tab_model)));
+
+  // WebContents should be considered foremost for kChromeManageAccountsHeader
+  // to be processed.
+  tab_model.SetWebContentsList({web_contents.get()});
+  tab_model.SetIsActiveModel(true);
+
+  // Process the header.
+  TestResponseAdapter response_adapter(signin::kChromeManageAccountsHeader,
+                                       kMirrorActionAddSessionWithContinueUrl,
+                                       /*is_outermost_main_frame=*/true,
+                                       web_contents.get());
+
+  // Check that the sign-in bridge is called to wait for cookies with the
+  // correct continue URL and account id.
+  EXPECT_CALL(*signin_bridge(), WaitForCookiesAndRedirect(
+                                    _, GURL("http://example.com"), account_id));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);
@@ -536,10 +574,6 @@ TEST_F(ChromeSigninHelperTest,
   // to be processed.
   tab_model.SetWebContentsList({web_contents.get()});
   tab_model.SetIsActiveModel(true);
-
-  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
-      window_android = ui::WindowAndroid::CreateForTesting();
-  window_android.get()->get()->AddChild(web_contents->GetNativeView());
 
   // Process the header.
   TestResponseAdapter response_adapter(
@@ -661,10 +695,10 @@ TEST_F(ChromeSigninHelperTest, StartReauthFlowWhenInPersistentErrorState) {
   window_android.get()->get()->AddChild(web_contents->GetNativeView());
 
   // Process the header.
-  TestResponseAdapter response_adapter(
-      signin::kChromeManageAccountsHeader,
-      kMirrorActionWithContinueUrlAndSelectedEmail,
-      /*is_outermost_main_frame=*/true, web_contents.get());
+  TestResponseAdapter response_adapter(signin::kChromeManageAccountsHeader,
+                                       kMirrorActionAddSessionWithContinueUrl,
+                                       /*is_outermost_main_frame=*/true,
+                                       web_contents.get());
 
   // Check that the sign-in bridge is called to open the sign-in bottom sheet
   // with the correct continue URL.

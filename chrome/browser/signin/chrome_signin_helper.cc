@@ -381,13 +381,29 @@ void ProcessMirrorHeader(
     return;
   }
 
-  if (target_account_info &&
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          target_account_info->account_id) &&
+  if (service_type == signin::GAIA_SERVICE_TYPE_ADDSESSION &&
       base::FeatureList::IsEnabled(switches::kSupportWebSigninAddSession)) {
-    // The target account was found on the device, but it has a persistent auth
-    // error, trigger a reauth flow to resolve it
-    SigninBridgeFactory::GetForProfile(profile)->StartUpdateCredentialsFlow(
+    if (!target_account_info.has_value()) {
+      // Target account is not on the device.
+      SigninBridgeFactory::GetForProfile(profile)->StartAddAccountFlow(
+          TabAndroid::FromWebContents(web_contents),
+          manage_accounts_params.email, continue_url);
+      return;
+    }
+
+    // The target account was found on the device, check for a persistent auth
+    // error.
+    if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            target_account_info->account_id)) {
+      SigninBridgeFactory::GetForProfile(profile)->StartUpdateCredentialsFlow(
+          TabAndroid::FromWebContents(web_contents), continue_url,
+          target_account_info->account_id);
+      return;
+    }
+
+    // If the account is available on the device but is not in error state
+    // then we wait for cookies.
+    SigninBridgeFactory::GetForProfile(profile)->WaitForCookiesAndRedirect(
         TabAndroid::FromWebContents(web_contents), continue_url,
         target_account_info->account_id);
     return;
@@ -397,21 +413,6 @@ void ProcessMirrorHeader(
   if (!window) {
     return;
   }
-
-  if (service_type == signin::GAIA_SERVICE_TYPE_ADDSESSION &&
-      base::FeatureList::IsEnabled(switches::kSupportWebSigninAddSession)) {
-    if (target_account_info) {
-      // If account is already on device don't start the add account flow.
-      // TODO(crbug.com/456445865): Consider adding a reauth flow or a wait
-      // for cookies in this scenario.
-      return;
-    }
-    SigninBridgeFactory::GetForProfile(profile)->StartAddAccountFlow(
-        TabAndroid::FromWebContents(web_contents), manage_accounts_params.email,
-        continue_url);
-    return;
-  }
-
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       account_reconcilor->GetState());
   SigninBridgeFactory::GetForProfile(profile)->OpenAccountManagementScreen(

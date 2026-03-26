@@ -209,6 +209,18 @@ final class SigninBridge {
      * Redirects to the continueUrl in the given tab if refresh tokens and cookies are minted for
      * the account associated with the selectedAccountId.
      */
+    @CalledByNative
+    public static void waitForCookiesAndRedirect(
+            Tab tab,
+            @JniType("GURL") GURL continueUrl,
+            @JniType("std::optional<CoreAccountId>") CoreAccountId selectedAccountId) {
+        waitForCookiesAndRedirect(tab, selectedAccountId, continueUrl, tab.getUrl());
+    }
+
+    /**
+     * Redirects to the continueUrl in the given tab if refresh tokens and cookies are minted for
+     * the account associated with the selectedAccountId.
+     */
     private static void waitForCookiesAndRedirect(
             Tab tab, CoreAccountId selectedAccountId, GURL continueUrl, GURL initialTabURL) {
         new WebSigninBridge.Factory()
