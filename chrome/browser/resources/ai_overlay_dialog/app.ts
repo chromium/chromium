@@ -15,7 +15,7 @@ import type {AudioCapturer} from './audio_capturer.js';
 import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
 import {Conversation, State} from './conversation.js';
-import type {Persona} from './conversation.js';
+import type {ConversationConfig, Persona} from './conversation.js';
 import type {PageContext} from './page_context_manager.js';
 
 enum UiState {
@@ -38,6 +38,7 @@ interface ResourceBundle {
   persona: Persona;
   talkingBlob: Blob;
   listeningBlob: Blob;
+  instruction: string;
 }
 
 const DEFAULT_PERSONA: Persona = {
@@ -106,7 +107,7 @@ export class AppElement extends CrLitElement {
   // initialize so keep track of any page context that arrives before those are
   // setup so that it can be provided when these objects initialize.
   private initialPageContext?: PageContext;
-  private personaPromise: Promise<Persona>;
+  private configPromise: Promise<ConversationConfig>;
   private unregisterPageContextListeners: (() => void)|null;
 
   protected get uiState(): UiState {
@@ -148,8 +149,12 @@ export class AppElement extends CrLitElement {
       this.talkingBlobUrl = URL.createObjectURL(bundle.talkingBlob);
       this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
     });
-    this.personaPromise =
-        initializedPromise.then((bundle: ResourceBundle) => bundle.persona);
+    this.configPromise = initializedPromise.then((bundle: ResourceBundle) => {
+      return {
+        persona: bundle.persona,
+        system_instruction: bundle.instruction,
+      };
+    });
     initializedPromise.catch(e => console.error('Failed to fetch bundle: ', e));
 
     // Setup Mojo connection
@@ -268,13 +273,16 @@ export class AppElement extends CrLitElement {
 
     if (!this.conversation) {
       this.isConnecting = true;
-      let persona: Persona|undefined;
+      let config: ConversationConfig|undefined;
       try {
-        persona = await this.personaPromise;
+        config = await this.configPromise;
       } catch (e) {
-        persona = DEFAULT_PERSONA;
+        config = {
+          persona: DEFAULT_PERSONA,
+          system_instruction: '${persona}',
+        };
       }
-      this.conversation = this.createConversation(persona);
+      this.conversation = this.createConversation(config);
     }
 
     if (!this.conversation.connected) {
@@ -335,16 +343,22 @@ export class AppElement extends CrLitElement {
 
     const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 
-    const [personaResponse, talkingResponse, listeningResponse] =
-        await Promise.all([
-          fetch(base + 'persona.json'),
-          fetch(base + 'talking.webm'),
-          fetch(base + 'listening.webm'),
-        ]);
+    const [
+      personaResponse,
+      talkingResponse,
+      listeningResponse,
+      instructionResponse,
+    ] = await Promise.all([
+      fetch(base + 'persona.json'),
+      fetch(base + 'talking.webm'),
+      fetch(base + 'listening.webm'),
+      fetch(base + 'instruction.tmpl'),
+    ]);
 
     const personaConfig: PersonaConfig = await personaResponse.json();
     const talkingBlob = await talkingResponse.blob();
     const listeningBlob = await listeningResponse.blob();
+    const instruction = await instructionResponse.text();
 
     if (!Array.isArray(personaConfig.personas) ||
         personaConfig.personas[0] === undefined) {
@@ -356,13 +370,14 @@ export class AppElement extends CrLitElement {
       persona: personaConfig.personas[0],
       talkingBlob,
       listeningBlob,
+      instruction,
     };
   }
 
-  private createConversation(persona: Persona) {
+  private createConversation(config: ConversationConfig) {
     const apiKey = loadTimeData.getString('apiKey');
     const conversation = new Conversation(
-        apiKey, persona, {
+        apiKey, config, {
           sendToUI: (msg) => this.onMessageFromConversation(msg),
           onStateChange: (state, oldState) =>
               this.onConversationStateChanged(state, oldState),

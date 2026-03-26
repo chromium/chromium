@@ -55,6 +55,58 @@ Conversation is the source of truth for the conversation state which can be in o
 The UI in app.ts receives changes in the Conversation state but uses it's own,
 similar but distinct, state machine to update the UI.
 
+## System Instructions
+
+The personality and behavior of the model are defined by "System Instructions."
+These instructions use a bespoke templating syntax that allows you to inject
+dynamic information about the user's current web page and browser state.
+
+Processing works by applying each step to the whole document. The order is:
+conditionals, then numbering, then variable substitution.
+
+### Variable Substitution
+
+You can insert live information into your instructions using `${variable_name}`.
+
+**Example:**
+> The current page is "${title}" at ${url}.
+
+### Conditionals (If/Then/Else)
+
+You can include or exclude text based on whether a variable evaluates to a
+truthy value.
+
+*   **Full Format:** `?${variable}[Text if true]{else}[Text if false]{}?`
+*   **Short Format:** `?${variable}[Text if true]{}?` (Shows nothing if false)
+
+**Example:**
+> ?${isLoaded}[Currently on ${title}.]{else}[The page is still loading.]{}?
+
+Nesting conditionals is not supported.
+
+### Automatic Numbering
+
+When writing a list of instructions or tools, you can use `#{1}` to have the
+numbers generated automatically. Each time you use `#{1}` in your template, it
+will be replaced by the next number in sequence (1, 2, 3, etc.).
+
+If you need multiple independent lists, you can use a different group number
+(like `#{2}`).
+
+**Example:**
+> #{1}. Foo.
+> #{1}. Bar.
+>   #{2}. Reticulating
+>   #{2}. Splines
+> #{1}. Baz.
+
+*Renders as:*
+> 1. Foo.
+> 2. Bar.
+>   1. Reticulating
+>   2. Splines
+> 3. Use the page content.
+
 ## Dev
 
 Provide an API key by starting chrome with chrome:

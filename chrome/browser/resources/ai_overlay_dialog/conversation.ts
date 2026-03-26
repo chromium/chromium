@@ -19,6 +19,11 @@ export interface Persona {
   voice: string;
 }
 
+export interface ConversationConfig {
+  system_instruction: string;
+  persona: Persona;
+}
+
 /**
  * States for the conversation.
  */
@@ -43,7 +48,7 @@ export class Conversation implements ApiSessionDelegate {
   private readonly uiDelegate: UiDelegate;
   private readonly pageContextManager: PageContextManager =
       new PageContextManager(() => this.didUpdatePageContent());
-  private readonly persona: Persona;
+  private readonly config: ConversationConfig;
 
   private session: ApiSession|null = null;
   private state: State = State.STOPPED;
@@ -51,11 +56,11 @@ export class Conversation implements ApiSessionDelegate {
   private currentOutput: string = '';
 
   constructor(
-      apiKey: string, persona: Persona, uiDelegate: UiDelegate,
+      apiKey: string, config: ConversationConfig, uiDelegate: UiDelegate,
       router: PageCallbackRouter, initialPageContext?: PageContext) {
-    console.info(`Conversation with ${persona.name}`, persona);
+    console.info(`Conversation with ${config.persona.name}`, config.persona);
     this.apiKey = apiKey;
-    this.persona = persona;
+    this.config = config;
     this.uiDelegate = uiDelegate;
 
     if (initialPageContext) {
@@ -178,8 +183,10 @@ export class Conversation implements ApiSessionDelegate {
 
     const context = this.pageContextManager.pageContext;
     const systemInstruction = buildSystemInstruction(
-        this.persona.persona, context?.title ?? '', context?.url || '',
+        this.config, context?.title ?? '', context?.url || '',
         context?.content ?? undefined);
+
+    console.info('System Instruction', systemInstruction);
 
     this.session = new ApiSession(this.apiKey, systemInstruction, this);
     this.session.connect();
