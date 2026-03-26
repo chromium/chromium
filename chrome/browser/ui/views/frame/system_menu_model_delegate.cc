@@ -90,7 +90,8 @@ bool SystemMenuModelDelegate::GetAcceleratorForCommandId(
 
 bool SystemMenuModelDelegate::IsItemForCommandIdDynamic(int command_id) const {
   return std::set{IDC_RESTORE_TAB, IDC_GLIC_TOGGLE_PIN,
-                  IDC_TOGGLE_VERTICAL_TABS}
+                  IDC_TOGGLE_VERTICAL_TABS,
+                  IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER}
       .contains(command_id);
 }
 
@@ -124,6 +125,14 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
       string_id = controller->ShouldDisplayVerticalTabs()
                       ? IDS_SWITCH_TO_HORIZONTAL_TAB
                       : IDS_SWITCH_TO_VERTICAL_TAB;
+      break;
+    }
+    case IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER: {
+      auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+      CHECK(controller);
+      string_id = controller->IsExpandOnHoverEnabled()
+                      ? IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER
+                      : IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER;
       break;
     }
     case IDC_GLIC_TOGGLE_PIN:

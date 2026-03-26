@@ -234,6 +234,14 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      showVerticalTabsExpandOnHoverEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'showVerticalTabsExpandOnHoverEnabled');
+        },
+      },
+
       showTabStripComboButtonEnabled_: {
         type: Boolean,
         value() {
@@ -296,6 +304,7 @@ export class SettingsAppearancePageElement extends
   // </if>
 
   declare private showVerticalTabsEnabled_: boolean;
+  declare private showVerticalTabsExpandOnHoverEnabled_: boolean;
   declare private showTabStripComboButtonEnabled_: boolean;
   declare private showProjectsPanelEnabled_: boolean;
   declare private showEverythingMenuEnabled_: boolean;

@@ -272,6 +272,9 @@
   <message name="IDS_SETTINGS_TAB_STRIP_POSITION" desc="Title for the side panel section. Allows the user to toggle which side the tab strip is displayed on.">
     Tab position
   </message>
+  <message name="IDS_SETTINGS_VERTICAL_TABS_EXPAND_ON_HOVER" desc="Title for the side panel section. Allows the user to toggle whether or not the vertical tab strip expands on hover." translateable="false">
+    Auto expand tabs on hover
+  </message>
   <message name="IDS_SETTINGS_ALLOW_SPLIT_VIEW_DRAG_AND_DROP" desc="Label for the checkbox which enables or disables drag and drop for split view.">
     Allow split view drag-and-drop on left or right edge of window
   </message>

@@ -927,7 +927,7 @@ void VerticalTabStripRegionView::OnChildMoved() {
 }
 
 void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
-  if (!tabs::IsVerticalTabsExpandOnHoverFeatureEnabled()) {
+  if (!state_controller_->IsExpandOnHoverEnabled()) {
     return;
   }
   // If not collapsed, then we shouldn't be in or entering the expand on hover

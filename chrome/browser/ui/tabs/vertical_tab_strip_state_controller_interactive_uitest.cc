@@ -36,7 +36,10 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
   ~VerticalTabStripInteractiveUiTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */ {tabs::kVerticalTabs,
+                                tabs::kVerticalTabsExpandOnHover},
+        /* disabled_features */ {});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -55,8 +58,7 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/441382208): Unable to programmatically click "show tabs on
-// side" in Windows
+// Unable to programmatically click System Context Menu Items in Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_VerifyTabsToTheSideButton DISABLED_VerifyTabsToTheSideButton
 #else
@@ -80,8 +82,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
   EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));
 }
 
-// TODO(crbug.com/441382208): Unable to programmatically click "show tabs on
-// top" in Windows
+// Unable to programmatically click System Context Menu Items in Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_VerifyTabsToTheTopButton DISABLED_VerifyTabsToTheTopButton
 #else
@@ -108,6 +109,78 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       WaitForShow(kTabStripFrameGrabHandleElementId));
 
   EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_VERTICAL_TAB));
+}
+
+// Unable to programmatically click System Context Menu Items in Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_EnablingExpandOnHoverSystemContextMenu \
+  DISABLED_EnablingExpandOnHoverSystemContextMenu
+#else
+#define MAYBE_EnablingExpandOnHoverSystemContextMenu \
+  EnablingExpandOnHoverSystemContextMenu
+#endif
+// This test checks that we can enable the expand on hover behavior via the
+// system context menu.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
+                       MAYBE_EnablingExpandOnHoverSystemContextMenu) {
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+
+  EXPECT_TRUE(
+      SystemMenuContainsStringId(IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER));
+
+  RunScheduledLayouts();
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      EnsurePresent(kVerticalTabStripTopContainerElementId),
+      MoveMouseTo(kVerticalTabStripTopContainerElementId),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT),
+          WaitForShow(SystemMenuModelBuilder::
+                          kToggleVerticalTabsExpandOnHoverElementId),
+          SelectMenuItem(SystemMenuModelBuilder::
+                             kToggleVerticalTabsExpandOnHoverElementId)));
+
+  EXPECT_TRUE(
+      SystemMenuContainsStringId(IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER));
+}
+
+// Unable to programmatically click System Context Menu Items in Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DisablingExpandOnHoverSystemContextMenu \
+  DISABLED_DisablingExpandOnHoverSystemContextMenu
+#else
+#define MAYBE_DisablingExpandOnHoverSystemContextMenu \
+  DisablingExpandOnHoverSystemContextMenu
+#endif
+// This test checks that we can enable the expand on hover behavior via the
+// system context menu.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
+                       MAYBE_DisablingExpandOnHoverSystemContextMenu) {
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetExpandOnHoverEnabled(true);
+
+  EXPECT_TRUE(
+      SystemMenuContainsStringId(IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER));
+
+  RunScheduledLayouts();
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      EnsurePresent(kVerticalTabStripTopContainerElementId),
+      MoveMouseTo(kVerticalTabStripTopContainerElementId),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT),
+          WaitForShow(SystemMenuModelBuilder::
+                          kToggleVerticalTabsExpandOnHoverElementId),
+          SelectMenuItem(SystemMenuModelBuilder::
+                             kToggleVerticalTabsExpandOnHoverElementId)));
+
+  EXPECT_TRUE(
+      SystemMenuContainsStringId(IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER));
 }
 
 struct VerticalTabsBadgeTestParams {

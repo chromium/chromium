@@ -519,6 +519,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"showProjectsPanelButton", IDS_SETTINGS_SHOW_PROJECTS_PANEL_BUTTON},
       {"showEverythingMenuButton", IDS_SETTINGS_SHOW_EVERYTHING_MENU_BUTTON},
       {"tabStripPosition", IDS_SETTINGS_TAB_STRIP_POSITION},
+      {"showVerticalTabsExpandOnHover",
+       IDS_SETTINGS_VERTICAL_TABS_EXPAND_ON_HOVER},
       {"allowSplitViewDragAndDrop",
        IDS_SETTINGS_ALLOW_SPLIT_VIEW_DRAG_AND_DROP},
       {"showTabGroupsInBookmarksBar",
@@ -580,6 +582,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
   html_source->AddBoolean("showVerticalTabsEnabled",
                           tabs::IsVerticalTabsFeatureEnabled());
+  html_source->AddBoolean("showVerticalTabsExpandOnHoverEnabled",
+                          tabs::IsVerticalTabsExpandOnHoverFeatureEnabled());
   html_source->AddBoolean(
       "showTabStripComboButtonEnabled",
       tabs::IsVerticalTabsFeatureEnabled() ||

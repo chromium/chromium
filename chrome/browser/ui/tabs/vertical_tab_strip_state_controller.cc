@@ -167,6 +167,15 @@ void VerticalTabStripStateController::SetUncollapsedWidth(int width) {
   }
 }
 
+bool VerticalTabStripStateController::IsExpandOnHoverEnabled() const {
+  return IsVerticalTabsExpandOnHoverFeatureEnabled() &&
+         pref_service_->GetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled);
+}
+
+void VerticalTabStripStateController::SetExpandOnHoverEnabled(bool enabled) {
+  pref_service_->SetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled, enabled);
+}
+
 void VerticalTabStripStateController::SetState(
     const VerticalTabStripState& state) {
   if (state_.collapsed != state.collapsed ||

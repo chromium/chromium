@@ -53,6 +53,9 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemMenuModelBuilder,
                                       kToggleVerticalTabsElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    SystemMenuModelBuilder,
+    kToggleVerticalTabsExpandOnHoverElementId);
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
     ui::AcceleratorProvider* provider,
@@ -121,6 +124,20 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
       if (controller->ShouldDisplayVerticalTabs()) {
         model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                    IDS_SWITCH_TO_HORIZONTAL_TAB);
+
+        if (tabs::IsVerticalTabsExpandOnHoverFeatureEnabled()) {
+          model->AddItemWithStringId(
+              IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
+              controller->IsExpandOnHoverEnabled()
+                  ? IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER
+                  : IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER);
+          model->SetElementIdentifierAt(
+              model
+                  ->GetIndexOfCommandId(
+                      IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER)
+                  .value(),
+              kToggleVerticalTabsExpandOnHoverElementId);
+        }
       } else {
         model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                    IDS_SWITCH_TO_VERTICAL_TAB);

@@ -2215,6 +2215,15 @@ void ToggleVerticalTabs(Browser* browser) {
   controller->SetVerticalTabsEnabled(!controller->ShouldDisplayVerticalTabs());
 }
 
+void ToggleVerticalTabsExpandOnHover(Browser* browser) {
+  tabs::VerticalTabStripStateController* controller =
+      tabs::VerticalTabStripStateController::From(browser);
+  if (!controller) {
+    return;
+  }
+  controller->SetExpandOnHoverEnabled(!controller->IsExpandOnHoverEnabled());
+}
+
 bool CanCloseFind(BrowserWindowInterface* browser) {
   WebContents* current_tab = browser->GetTabStripModel()->GetActiveWebContents();
   if (!current_tab) {

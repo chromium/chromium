@@ -44,6 +44,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kProjectsPanelPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kEverythingMenuPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kVerticalTabsExpandOnHoverEnabled,
+                                false);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabledFirstTime, false);
   registry->RegisterBooleanPref(prefs::kVerticalTabsCollapsedState, false);
   registry->RegisterIntegerPref(prefs::kVerticalTabsUncollapsedWidth,

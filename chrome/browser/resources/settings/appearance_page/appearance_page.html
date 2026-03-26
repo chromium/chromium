@@ -183,6 +183,14 @@
           </div>
         </template>
 
+        <template is="dom-if" if="[[showVerticalTabsExpandOnHoverEnabled_]]">
+          <settings-toggle-button
+              id="showVerticalTabsExpandOnHover"
+              pref="{{prefs.vertical_tabs.expand_on_hover}}"
+              label="$i18n{showVerticalTabsExpandOnHover}">
+          </settings-toggle-button>
+        </template>
+
         <template is="dom-if" if="[[showTabStripComboButtonEnabled_]]">
           <settings-toggle-button id="showTabSearchButton" class="hr"
               pref="{{prefs.tab_search.pinned_to_tabstrip}}"

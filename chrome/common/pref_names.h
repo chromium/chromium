@@ -1510,6 +1510,10 @@ inline constexpr char kEverythingMenuPinnedToTabstrip[] =
 // Boolean determining whether vertical tabs are enabled.
 inline constexpr char kVerticalTabsEnabled[] = "vertical_tabs.enabled";
 
+// Boolean determining whether expand on hover for vertical tabs is enabled.
+inline constexpr char kVerticalTabsExpandOnHoverEnabled[] =
+    "vertical_tabs.expand_on_hover";
+
 // Records whether the user has enabled vertical tabs for the first time. Only
 // used for metrics reporting purposes.
 inline constexpr char kVerticalTabsEnabledFirstTime[] =

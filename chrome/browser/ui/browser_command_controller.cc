@@ -640,6 +640,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
                                /*category_tag=*/"vertical_tabs",
                                /*extra_diagnostics=*/"");
       break;
+    case IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER:
+      ToggleVerticalTabsExpandOnHover(browser_);
+      break;
     // Window management commands
     case IDC_NEW_WINDOW:
       NewWindow(browser_);
@@ -1543,6 +1546,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_VERTICAL_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_VERTICAL_TABS_SEND_FEEDBACK, true);
+  command_updater_.UpdateCommandEnabled(
+      IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER, true);
 #if BUILDFLAG(IS_CHROMEOS)
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_MULTITASK_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);

@@ -28,6 +28,8 @@ class SimpleMenuModel;
 class SystemMenuModelBuilder {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleVerticalTabsElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kToggleVerticalTabsExpandOnHoverElementId);
   SystemMenuModelBuilder(ui::AcceleratorProvider* provider, Browser* browser);
 
   SystemMenuModelBuilder(const SystemMenuModelBuilder&) = delete;

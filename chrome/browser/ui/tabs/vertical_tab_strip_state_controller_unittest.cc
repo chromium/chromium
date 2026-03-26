@@ -34,7 +34,10 @@ class VerticalTabStripStateControllerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+    feature_list_.InitWithFeatures(
+        /* enabled_features */ {tabs::kVerticalTabs,
+                                tabs::kVerticalTabsExpandOnHover},
+        /* disabled_features */ {});
     tabs::RegisterProfilePrefs(pref_service_.registry());
     SessionID test_session_id = SessionID::FromSerializedValue(kSessionIDValue);
 
@@ -173,6 +176,18 @@ TEST_F(VerticalTabStripStateControllerTest, UncollapsedWidth) {
   // Setting to same value should not trigger a notification.
   controller()->SetUncollapsedWidth(kUncollapsedWidth1);
   EXPECT_EQ(1, call_count);
+}
+
+TEST_F(VerticalTabStripStateControllerTest, ExpandOnHover) {
+  controller()->SetExpandOnHoverEnabled(true);
+  EXPECT_TRUE(controller()->IsExpandOnHoverEnabled());
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled));
+
+  controller()->SetExpandOnHoverEnabled(false);
+  EXPECT_FALSE(controller()->IsExpandOnHoverEnabled());
+  EXPECT_FALSE(
+      pref_service()->GetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled));
 }
 
 TEST_F(VerticalTabStripStateControllerTest, State) {

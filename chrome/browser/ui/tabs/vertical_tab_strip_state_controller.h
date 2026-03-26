@@ -74,6 +74,9 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   int GetUncollapsedWidth() const;
   void SetUncollapsedWidth(int width);
 
+  bool IsExpandOnHoverEnabled() const;
+  void SetExpandOnHoverEnabled(bool enabled);
+
   const VerticalTabStripState& GetState() const { return state_; }
   void SetState(const VerticalTabStripState& state);
 
