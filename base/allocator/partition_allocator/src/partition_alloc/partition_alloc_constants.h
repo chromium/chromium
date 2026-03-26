@@ -51,7 +51,10 @@ enum class AllocFlags {
   kFastPathOrReturnNull = 1 << 5,  // Internal.
   // An allocation override hook should tag the allocated memory for MTE.
   kMemoryShouldBeTaggedForMte = 1 << 6,  // Internal.
-  kMaxValue = kMemoryShouldBeTaggedForMte,
+  // Only used when MEMORY_TOOL_REPLACES_ALLOCATOR is defined, we will attempt
+  // to use an aligned allocation function.
+  kAlignedAllocForMemoryTool = 1 << 7,  // Internal.
+  kMaxValue = kAlignedAllocForMemoryTool,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(AllocFlags);
 
@@ -66,7 +69,10 @@ enum class FreeFlags {
   kSchedulerLoopQuarantine = 1 << 2,
   // Quarantine for a while to ensure no UaF from on-stack pointers.
   kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks = 1 << 3,
-  kMaxValue = kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks,
+  // Only used when MEMORY_TOOL_REPLACES_ALLOCATOR is defined, we will attempt
+  // to use an aligned free function.
+  kAlignedFreeForMemoryTool = 1 << 4,  // Internal.
+  kMaxValue = kAlignedFreeForMemoryTool,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
 }  // namespace internal

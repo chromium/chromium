@@ -91,6 +91,8 @@ class PartitionAllocFunctionsInternal {
 
   static void Free(void* object, void* context);
 
+  static void AlignedFree(void* object, void* context);
+
   static void FreeWithSize(void* object, size_t size, void* context);
 
   static void FreeWithAlignment(void* object, size_t alignment, void* context);
@@ -155,7 +157,7 @@ class PartitionAllocFunctionsInternal {
         &AlignedAllocUnchecked,    // aligned_malloc_unchecked_function
         &AlignedRealloc,           // aligned_realloc_function
         &AlignedReallocUnchecked,  // aligned_realloc_unchecked_function
-        &Free,                     // aligned_free_function
+        &AlignedFree,              // aligned_free_function
         nullptr,                   // next
     };
   }

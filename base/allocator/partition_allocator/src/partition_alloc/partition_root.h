@@ -76,6 +76,16 @@
 #include "partition_alloc/thread_cache.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
+// When a memory tool is replacing malloc to keep aligned behaviour working we
+// use window's aligned_malloc and aligned_free, but otherwise we need memalign.
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(PA_COMPILER_MSVC)
+#include <malloc.h>
+#else
+#include <stdlib.h>
+#endif  // PA_BUILDFLAG(PA_COMPILER_MSVC)
+#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
 namespace partition_alloc::internal {
 
 // We want this size to be big enough that we have time to start up other
@@ -566,6 +576,19 @@ class alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   template <FreeFlags flags = FreeFlags::kNone>
   PA_NOINLINE void FreeWithSize(void* object, size_t size) {
     FreeWithSizeInline<flags>(object, size);
+  }
+
+  template <FreeFlags flags = FreeFlags::kNone>
+  PA_NOINLINE void AlignedFree(void* object) {
+    // Normally kAlignedFree is a no-op call into Free, but with memory tools it
+    // will instead remap to the appropriate system aligned free call.
+    constexpr FreeFlags kMaybeAlignedFreeForMemoryTool =
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+        FreeFlags::kAlignedFreeForMemoryTool;
+#else
+        FreeFlags::kNone;
+#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    FreeInline<flags | kMaybeAlignedFreeForMemoryTool>(object);
   }
 
   template <FreeFlags flags = FreeFlags::kNone>
@@ -1242,9 +1265,21 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
   static_assert(AreValidFlags(flags));
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if constexpr (!ContainsFlags(flags, FreeFlags::kNoMemoryToolOverride)) {
+#if PA_BUILDFLAG(PA_COMPILER_MSVC)
+    if (ContainsFlags(flags, FreeFlags::kAlignedFreeForMemoryTool)) {
+      _aligned_free(object);
+    } else {
+      free(object);
+    }
+#else   // !PA_BUILDFLAG(PA_COMPILER_MSVC)
     free(object);
+#endif  // PA_BUILDFLAG(PA_COMPILER_MSVC)
     return true;
   }
+#else   // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  // If the memory tool is not replacing the allocator, then the
+  // kAlignedFreeForMemoryTool flag is unused and should not be passed.
+  static_assert(!ContainsFlags(flags, FreeFlags::kAlignedFreeForMemoryTool));
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
   if (!object) [[unlikely]] {
@@ -2140,14 +2175,47 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternal(size_t requested_size,
       // Early return if AllocWithMemoryToolProlog returns false
       return nullptr;
     }
-    constexpr bool zero_fill = ContainsFlags(flags, AllocFlags::kZeroFill);
-    void* result =
-        zero_fill ? calloc(1, requested_size) : malloc(requested_size);
+    void* result = nullptr;
+    // Taken from base::AlignedAlloc implementation.
+    if constexpr (ContainsFlags(flags,
+                                AllocFlags::kAlignedAllocForMemoryTool)) {
+#if PA_BUILDFLAG(PA_COMPILER_MSVC)
+      result = _aligned_malloc(requested_size, slot_span_alignment);
+#elif PA_BUILDFLAG(IS_ANDROID)
+      // Android technically supports posix_memalign(), but does not expose it
+      // in the current version of the library headers used by Chromium.
+      // Luckily, memalign() on Android returns pointers which can safely be
+      // used with free(), so we can use it instead.  Issue filed to document
+      // this: http://code.google.com/p/android/issues/detail?id=35391
+      result = memalign(slot_span_alignment, requested_size);
+#else
+      int ret = posix_memalign(&result, slot_span_alignment, requested_size);
+      if (ret != 0) {
+        result = nullptr;
+      }
+#endif  // PA_BUILDFLAG(PA_COMPILER_MSVC)
+      // Aligned alloc functions don't have the `calloc` behavior of zeroing
+      // the allocated memory, so we need to do it manually.
+      if constexpr (ContainsFlags(flags, AllocFlags::kZeroFill)) {
+        if (result) {
+          // SAFETY: `result` is non-null and `requested_size` is the size of
+          // the allocation, so this is a valid range to zero out.
+          PA_UNSAFE_BUFFERS(memset(result, 0, requested_size));
+        }
+      }
+    } else {
+      constexpr bool zero_fill = ContainsFlags(flags, AllocFlags::kZeroFill);
+      result = zero_fill ? calloc(1, requested_size) : malloc(requested_size);
+    }
     if constexpr (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
       PA_CHECK(result);
     }
     return result;
   }
+#else   // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  // If `MEMORY_TOOL_REPLACES_ALLOCATOR` is not defined,
+  // `kAlignedAllocForMemoryTool` should not be passed to `AllocInternal`.
+  static_assert(!ContainsFlags(flags, AllocFlags::kAlignedAllocForMemoryTool));
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
   constexpr bool no_hooks = ContainsFlags(flags, AllocFlags::kNoHooks);
@@ -2465,8 +2533,14 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   // don't pass anything less, because it'll mess up callee's calculations.
   size_t slot_span_alignment =
       std::max(alignment, internal::PartitionPageSize());
-  void* object =
-      AllocInternal<flags>(adjusted_size, slot_span_alignment, nullptr);
+  constexpr AllocFlags kMaybeAlignedAllocForMemoryTool =
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+      AllocFlags::kAlignedAllocForMemoryTool;
+#else
+      AllocFlags::kNone;
+#endif
+  void* object = AllocInternal<flags | kMaybeAlignedAllocForMemoryTool>(
+      adjusted_size, slot_span_alignment, nullptr);
 
   // |alignment| is a power of two, but the compiler doesn't necessarily know
   // that. A regular % operation is very slow, make sure to use the equivalent,

@@ -502,6 +502,29 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
 template <partition_alloc::AllocFlags base_alloc_flags,
           partition_alloc::FreeFlags base_free_flags>
 PA_ALWAYS_INLINE void
+PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::AlignedFree(
+    void* object,
+    void* context) {
+  constexpr partition_alloc::FreeFlags kMaybeAlignedFreeForMemoryTool =
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+      partition_alloc::FreeFlags::kAlignedFreeForMemoryTool;
+#else
+      partition_alloc::FreeFlags::kNone;
+#endif
+  // By default PartitionAlloc is always aligned, but with memory tools it may
+  // not be, so we have to pass the information down. So in production this is
+  // all inlined to just be the same as Free, and in memory tool replaces
+  // allocator builds, it will ensure we call the correct aligned free system
+  // function.
+  PartitionAllocFunctionsInternal<
+      base_alloc_flags,
+      base_free_flags | kMaybeAlignedFreeForMemoryTool>::Free(object, context);
+}
+
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+PA_ALWAYS_INLINE void
 PartitionAllocFunctionsInternal<base_alloc_flags,
                                 base_free_flags>::FreeWithSize(void* object,
                                                                size_t size,
