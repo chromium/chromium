@@ -170,8 +170,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DISABLED_DeclarativeToolCrossDo
   EXPECT_EQ(actual_json, expected_json);
 }
 
+// TODO(crbug.com/496357393): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
-                       DeclarativeToolCrossDocument_No_Autosubmit) {
+                       DISABLED_DeclarativeToolCrossDocument_No_Autosubmit) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/declarative_script_tool_pause.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
