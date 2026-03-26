@@ -1427,6 +1427,10 @@ inline constexpr char kGlassToolbarDescription[] =
 
 inline constexpr char kGlicActorName[] = "Glic actor";
 inline constexpr char kGlicActorDescription[] = "Enables the Glic actor.";
+inline constexpr char kGlicExperimentalTriggeringName[] =
+    "Glic experimental triggering";
+inline constexpr char kGlicExperimentalTriggeringDescription[] =
+    "Enables GLIC experimental triggering";
 inline constexpr char kGlicActorAutofillName[] = "Glic actor autofill";
 inline constexpr char kGlicActorAutofillDescription[] =
     "Enables autofill actions for the Glic actor. Specific fillable types may "

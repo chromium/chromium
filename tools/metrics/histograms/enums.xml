@@ -8567,6 +8567,7 @@ from previous Chrome versions.
   <int value="-1835844760" label="ArcVmBalloonPolicy:disabled"/>
   <int value="-1835608319" label="EnableHeuristicPalmDetectionFilter:disabled"/>
   <int value="-1835592983" label="WebAppEnableLaunchHandler:disabled"/>
+  <int value="-1835452732" label="GlicExperimentalTriggering:enabled"/>
   <int value="-1835389562" label="AndroidTipsNotifications:disabled"/>
   <int value="-1834967404" label="DesktopCaptureLacrosV2:enabled"/>
   <int value="-1834841895" label="CrostiniWebUIUpgrader:enabled"/>
@@ -18312,6 +18313,7 @@ from previous Chrome versions.
   <int value="1442854659"
       label="IncrementLocalSurfaceIdForMainframeSameDocNavigation:enabled"/>
   <int value="1443079902" label="SyncAIThread:disabled"/>
+  <int value="1443208630" label="GlicExperimentalTriggering:disabled"/>
   <int value="1443542260" label="WebAppManifestProtocolHandlerSupport:enabled"/>
   <int value="1443830588" label="VerticalSnap:disabled"/>
   <int value="1443836294"
