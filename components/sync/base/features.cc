@@ -110,14 +110,7 @@ bool IsReplaceSyncPromosWithSignInPromosEnabled() {
 }
 
 BASE_FEATURE(kSyncSupportAlwaysSyncingPriorityPreferences,
-#if BUILDFLAG(IS_CHROMEOS)
-             // TODO(crbug.com/418991364): Enable by default once prefs account
-             // storage is launched on ChromeOS.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncWalletFlightReservations,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
