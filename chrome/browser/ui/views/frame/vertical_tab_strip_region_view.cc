@@ -70,7 +70,6 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-constexpr int kRegionVerticalPadding = 5;
 constexpr int kResizeAreaWidth = 5;
 constexpr int kCollapsedResizeAreaWidth = 2;
 constexpr int kKeyboardResizeWidth = 50;
@@ -710,21 +709,9 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
   }
   top_button_separator_->SetProperty(views::kMarginsKey,
                                      gfx::Insets::VH(0, separator_padding));
-  if (state_controller->IsCollapsed()) {
-    // If the VT Strip is collapsed, then we need exactly |padding| on the top,
-    // left, and right. The top padding is applied inside of the top container
-    // class to avoid animation issues on non-Mac platforms.
-    top_button_container_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, padding, kRegionVerticalPadding, padding));
-  } else {
-    // If the VT Strip is not collapsed, then we want to align the heights of
-    // the TopContainer w/ the the height of the toolbar. Both of these
-    // components start at the top of the window. We keep no vertical padding so
-    // that the separator can lay adjacent to it.
-    top_button_container_->SetProperty(views::kMarginsKey,
-                                       gfx::Insets::VH(0, padding));
-  }
+
+  top_button_container_->SetProperty(views::kMarginsKey,
+                                     gfx::Insets::VH(0, padding));
 
   bottom_button_container_->SetProperty(
       views::kMarginsKey,
