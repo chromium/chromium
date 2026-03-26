@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
@@ -197,9 +196,9 @@ void FillPPS(FuzzedDataProvider& fdp, H264PPS& pps) {
   pps.num_slice_groups_minus1 = 0;
 
   pps.num_ref_idx_l0_default_active_minus1 =
-      ConsumeInRangeOrFull<int>(fdp, 0, 31);
+      fdp.ConsumeIntegralInRange<int>(0, 31);
   pps.num_ref_idx_l1_default_active_minus1 =
-      ConsumeInRangeOrFull<int>(fdp, 0, 31);
+      fdp.ConsumeIntegralInRange<int>(0, 31);
 
   pps.weighted_pred_flag = fdp.ConsumeBool();
   pps.weighted_bipred_idc = ConsumeInRangeOrFull<int>(fdp, 0, 2);
@@ -427,10 +426,10 @@ void BuildSliceHeader(FuzzedDataProvider& fdp,
     bool num_ref_idx_active_override_flag = fdp.ConsumeBool();
     builder.AppendBool(num_ref_idx_active_override_flag);
     if (num_ref_idx_active_override_flag) {
-      num_ref_idx_l0_active_minus1 = ConsumeInRangeOrFull<int>(fdp, 0, 15);
+      num_ref_idx_l0_active_minus1 = fdp.ConsumeIntegralInRange(0, 15);
       builder.AppendUE(num_ref_idx_l0_active_minus1);
       if (is_b) {
-        num_ref_idx_l1_active_minus1 = ConsumeInRangeOrFull<int>(fdp, 0, 15);
+        num_ref_idx_l1_active_minus1 = fdp.ConsumeIntegralInRange(0, 15);
         builder.AppendUE(num_ref_idx_l1_active_minus1);
       }
     }
@@ -530,8 +529,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < 1) {
     return 0;
   }
-
-  base::AtExitManager at_exit_manager;
 
   FuzzedDataProvider fdp(data, size);
   std::vector<uint8_t> final_bitstream;
