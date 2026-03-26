@@ -191,6 +191,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common",
+    "//third_party/fuzztest",
     "//third_party/leveldatabase",
   ]
 

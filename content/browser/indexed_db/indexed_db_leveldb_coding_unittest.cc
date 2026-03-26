@@ -19,6 +19,7 @@
 #include "base/test/insecure_random_generator.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
@@ -1221,5 +1222,16 @@ TEST(IndexedDBLevelDBCodingTest, CompareEncodedIDBKeysInvalidTypeByte) {
     EXPECT_FALSE(ok);
   }
 }
+
+namespace {
+
+// The Compare function should handle any input without crashing since bytes
+// could have been corrupted on disk.
+void CompareHandlesAnyInput(std::string a, std::string b, bool index_keys) {
+  Compare(a, b, index_keys);
+}
+}  // namespace
+
+FUZZ_TEST(IndexedDbLevelDbCodingFuzzTest, CompareHandlesAnyInput);
 
 }  // namespace content::indexed_db
