@@ -13,11 +13,6 @@ interface PageHandlerFactory {
 
 // Implemented by browser C++ code. Called by WebUI.
 interface PageHandler {
-  // Returns the API key for the AI backend. Used only for development/testing,
-  // without the key being specified on the command line this returns an empty
-  // string.
-  GetApiKey() => (string api_key);
-
   // Returns the JSON data for the mock audio files specified on the command
   // line. Returns null if no file was specified or the file couldn't be read.
   // This is used during development to provide precanned audio data that can

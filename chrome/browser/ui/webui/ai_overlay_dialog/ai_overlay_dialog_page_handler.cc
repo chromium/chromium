@@ -21,10 +21,6 @@ AiOverlayDialogPageHandler::AiOverlayDialogPageHandler(
 
 AiOverlayDialogPageHandler::~AiOverlayDialogPageHandler() = default;
 
-void AiOverlayDialogPageHandler::GetApiKey(GetApiKeyCallback callback) {
-  std::move(callback).Run(features::kAiOverlayDialogApiKey.Get());
-}
-
 void AiOverlayDialogPageHandler::GetMockAudioData(
     GetMockAudioDataCallback callback) {
   std::string path_string = features::kAiOverlayDialogMockJsonPath.Get();

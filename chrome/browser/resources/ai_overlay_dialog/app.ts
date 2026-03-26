@@ -95,9 +95,6 @@ export class AppElement extends CrLitElement {
 
   private pageHandler: PageHandlerRemote;
   private pageCallbackRouter: PageCallbackRouter;
-  // If onContainerClick happens before the API key mojo returns, this will
-  // turn to true and invoke the state change after the key becomes available.
-  private queueStateChange: boolean = false;
   private conversation: Conversation|null = null;
   private blobCapturer: BlobAudioCapturer|null = null;
   private audioCapturer: AudioCapturer|null = null;
@@ -166,27 +163,21 @@ export class AppElement extends CrLitElement {
         this.pageHandler.$.bindNewPipeAndPassReceiver(),
         this.pageCallbackRouter.$.bindNewPipeAndPassRemote());
 
-    this.pageHandler.getApiKey().then(({apiKey}: {apiKey: string}) => {
-      this.conversation = new Conversation(
-          apiKey, {
-            sendToUI: (msg) => this.onMessageFromConversation(msg),
-            onStateChange: (state, oldState) =>
-                this.onConversationStateChanged(state, oldState),
-            onResponse: (audioData) => this.onAudioOutput(audioData),
-          },
-          this.pageCallbackRouter, this.initialPageContext);
+    const apiKey = loadTimeData.getString('apiKey');
+    this.conversation = new Conversation(
+        apiKey, {
+          sendToUI: (msg) => this.onMessageFromConversation(msg),
+          onStateChange: (state, oldState) =>
+              this.onConversationStateChanged(state, oldState),
+          onResponse: (audioData) => this.onAudioOutput(audioData),
+        },
+        this.pageCallbackRouter, this.initialPageContext);
 
-      // Now that the conversation is initialized, we can stop listening for the
-      // initial page context.
-      this.pageCallbackRouter.removeListener(didChangePageId);
-      this.pageCallbackRouter.removeListener(updateContextId);
-      this.initialPageContext = undefined;
-
-      if (this.queueStateChange) {
-        this.onContainerClick();
-        this.queueStateChange = false;
-      }
-    });
+    // Now that the conversation is initialized, we can stop listening for the
+    // initial page context.
+    this.pageCallbackRouter.removeListener(didChangePageId);
+    this.pageCallbackRouter.removeListener(updateContextId);
+    this.initialPageContext = undefined;
   }
 
   override disconnectedCallback() {
@@ -268,8 +259,6 @@ export class AppElement extends CrLitElement {
 
   protected onContainerClick() {
     if (!this.conversation) {
-      console.warn('Conversation (API key) not yet available');
-      this.queueStateChange = true;
       return;
     }
 

@@ -21,7 +21,6 @@ class AiOverlayDialogPageHandler
   ~AiOverlayDialogPageHandler() override;
 
   // overlay_dialog::mojom::PageHandler interface
-  void GetApiKey(GetApiKeyCallback callback) override;
   void GetMockAudioData(GetMockAudioDataCallback callback) override;
 
   void DidChangePage(const GURL& url,
