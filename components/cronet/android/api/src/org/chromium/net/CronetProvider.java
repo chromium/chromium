@@ -8,11 +8,11 @@ import android.content.Context;
 import android.net.http.HttpEngine;
 import android.os.Build;
 import android.os.ext.SdkExtensions;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.net.impl.CronetLogger;
 
 import java.lang.reflect.Constructor;

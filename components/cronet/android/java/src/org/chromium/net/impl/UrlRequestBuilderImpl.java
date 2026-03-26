@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 
+import org.chromium.base.Log;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.RequestFinishedInfo;

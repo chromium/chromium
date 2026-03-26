@@ -4,11 +4,11 @@
 
 package org.chromium.net.telemetry;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import org.chromium.base.Log;
 
 import java.util.ArrayList;
 import java.util.Locale;

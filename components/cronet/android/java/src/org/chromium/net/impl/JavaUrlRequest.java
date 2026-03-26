@@ -10,12 +10,12 @@ import android.net.Network;
 import android.net.TrafficStats;
 import android.os.Build;
 import android.os.Process;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.CronetException;

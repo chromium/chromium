@@ -6,11 +6,11 @@ package org.chromium.net.impl;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log; // TODO(crbug.com/40881732): use org.chromium.base.Log instead
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.telemetry.CronetLoggerImpl;
 

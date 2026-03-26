@@ -6,7 +6,8 @@ package org.chromium.net;
 
 import android.net.ConnectivityManager;
 import android.os.ParcelFileDescriptor;
-import android.util.Log;
+
+import org.chromium.base.Log;
 
 import java.io.IOException;
 
