@@ -48,6 +48,12 @@ void VerifyClientId(const std::string& client_id) {
   }
 }
 
+// Round a timestamp measured in seconds since epoch to one with a granularity
+// of an hour.
+int64_t RoundSecondsToHour(int64_t time_in_seconds) {
+  return 3600 * (time_in_seconds / 3600);
+}
+
 MATCHER(HaveClonedInstallInfo, "") {
   return (
       !arg.FindPreference(prefs::kClonedResetCount)->IsDefaultValue() &&
@@ -532,9 +538,8 @@ TEST_F(MetricsStateManagerTest, ResetBackup) {
     EXPECT_TRUE(stored_client_info_backup_);
     EXPECT_EQ(client_info_load_count_, 0);
 
-    // The installation date should not have been affected.
-    EXPECT_EQ(prefs_.GetInt64(prefs::kInstallDate),
-              client_info.installation_date);
+    // The installation date will be reset to Now().
+    EXPECT_GE(prefs_.GetInt64(prefs::kInstallDate), test_begin_time_);
 
     // The metrics-reporting-enabled date will be reset to Now().
     EXPECT_GE(prefs_.GetInt64(prefs::kMetricsReportingEnabledTimestamp),
@@ -560,6 +565,8 @@ TEST_F(MetricsStateManagerTest, CheckProvider) {
   std::unique_ptr<MetricsProvider> provider = state_manager->GetProvider();
   SystemProfileProto system_profile;
   provider->ProvideSystemProfileMetrics(&system_profile);
+  // The install date is rounded to the nearest hour for privacy reasons.
+  // This mirrors the implementation in metrics_state_manager.cc.
   EXPECT_EQ(system_profile.install_date(), kInstallDateExpected);
   EXPECT_EQ(system_profile.uma_enabled_date(), kEnabledDateExpected);
 
@@ -612,7 +619,6 @@ TEST_F(MetricsStateManagerTest, CheckClientIdWasUsedToAssignFieldTrial) {
 
 TEST_F(MetricsStateManagerTest, CheckProviderResetIds) {
   int64_t kInstallDate = 1373001211;
-  int64_t kInstallDateExpected = 1373000400;  // Computed from kInstallDate.
   int64_t kEnabledDate = 1373051956;
   int64_t kEnabledDateExpected = 1373050800;  // Computed from kEnabledDate.
 
@@ -639,7 +645,10 @@ TEST_F(MetricsStateManagerTest, CheckProviderResetIds) {
   std::unique_ptr<MetricsProvider> provider = state_manager->GetProvider();
   SystemProfileProto system_profile;
   provider->ProvideSystemProfileMetrics(&system_profile);
-  EXPECT_EQ(system_profile.install_date(), kInstallDateExpected);
+  // The install date is rounded to the nearest hour for privacy reasons.
+  // This mirrors the implementation in metrics_state_manager.cc.
+  EXPECT_EQ(system_profile.install_date(),
+            RoundSecondsToHour(test_begin_time_));
   EXPECT_EQ(system_profile.uma_enabled_date(), kEnabledDateExpected);
   auto cloned_install_info = system_profile.cloned_install_info();
   EXPECT_EQ(cloned_install_info.count(), 1);
@@ -683,7 +692,6 @@ TEST_F(MetricsStateManagerTest, CheckProviderResetIds) {
 TEST_F(MetricsStateManagerTest,
        CheckProviderResetIds_PreviousIdOnlyReportInResetSession) {
   int64_t kInstallDate = 1373001211;
-  int64_t kInstallDateExpected = 1373000400;  // Computed from kInstallDate.
   int64_t kEnabledDate = 1373051956;
   int64_t kEnabledDateExpected = 1373050800;  // Computed from kEnabledDate.
 
@@ -711,7 +719,10 @@ TEST_F(MetricsStateManagerTest,
     std::unique_ptr<MetricsProvider> provider = state_manager->GetProvider();
     SystemProfileProto system_profile;
     provider->ProvideSystemProfileMetrics(&system_profile);
-    EXPECT_EQ(system_profile.install_date(), kInstallDateExpected);
+    // The install date is rounded to the nearest hour for privacy reasons.
+    // This mirrors the implementation in metrics_state_manager.cc.
+    EXPECT_EQ(system_profile.install_date(),
+              RoundSecondsToHour(test_begin_time_));
     EXPECT_EQ(system_profile.uma_enabled_date(), kEnabledDateExpected);
     auto cloned_install_info = system_profile.cloned_install_info();
     // |cloned_from_client_id| should be uploaded in the reset session.
@@ -740,6 +751,10 @@ TEST_F(MetricsStateManagerTest,
     EXPECT_EQ(cloned_install_info.last_timestamp(),
               cloned_install_info.first_timestamp());
     EXPECT_NE(cloned_install_info.last_timestamp(), 0);
+    // The install date is rounded to the nearest hour for privacy reasons.
+    // This mirrors the implementation in metrics_state_manager.cc.
+    EXPECT_EQ(system_profile.install_date(),
+              RoundSecondsToHour(test_begin_time_));
   }
 }
 
