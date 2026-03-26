@@ -9,6 +9,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_view.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -119,6 +120,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   AppBarAssistantButtonState _assistantButtonState;
   // Cached avatar for the assistant button.
   UIImage* _assistantButtonAvatar;
+  // The background view.
+  AppBarView* _backgroundView;
 }
 
 - (void)updateForAngle:(CGFloat)angle {
@@ -133,10 +136,11 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.buttonsTitleAlpha = 1;
+  _backgroundView = [[AppBarView alloc] init];
+  _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view insertSubview:_backgroundView atIndex:0];
 
-  // TODO(crbug.com/483998773): Use a real design.
-  self.view.backgroundColor = [UIColor.purpleColor colorWithAlphaComponent:0.5];
+  self.buttonsTitleAlpha = 1;
 
   _assistantButton = [self createAssistantButton];
   _openNewTabButton = [self createOpenNewTabButton];
@@ -154,6 +158,12 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   [view addSubview:stackView];
 
   [NSLayoutConstraint activateConstraints:@[
+    [_backgroundView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
+    [_backgroundView.trailingAnchor
+        constraintEqualToAnchor:view.trailingAnchor],
+    [_backgroundView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+    [_backgroundView.topAnchor constraintEqualToAnchor:view.topAnchor
+                                              constant:-kAppBarCornerRadius],
     [stackView.leadingAnchor
         constraintEqualToAnchor:view.leadingAnchor
                        constant:kStackViewHorizontalMargin],
@@ -161,12 +171,11 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
     [stackView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor
                        constant:-kStackViewHorizontalMargin],
-    [stackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:view.bottomAnchor],
+    [stackView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
     [view.heightAnchor constraintEqualToConstant:kAppBarHeight],
   ]];
 
-  [self.layoutGuideCenter referenceView:view underName:kAppBarGuide];
+  [self.layoutGuideCenter referenceView:stackView underName:kAppBarGuide];
 }
 
 #pragma mark - Public

@@ -117,8 +117,9 @@
   ];
   _landscapeLeftConstraints = @[
     [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
-                                                  constant:kAppBarHeight],
+    [_appContentView.leadingAnchor
+        constraintEqualToAnchor:view.leadingAnchor
+                       constant:kAppBarHeight - kAppBarCornerRadius],
     [_appContentView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor],
     [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
@@ -126,8 +127,9 @@
   _landscapeRightConstraints = @[
     [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
     [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-    [_appContentView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
-                                                   constant:-kAppBarHeight],
+    [_appContentView.trailingAnchor
+        constraintEqualToAnchor:view.trailingAnchor
+                       constant:-(kAppBarHeight - kAppBarCornerRadius)],
     [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
   ];
 

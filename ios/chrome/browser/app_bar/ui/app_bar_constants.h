@@ -13,6 +13,9 @@ extern const CGFloat kAppBarHeight;
 // The height of the app bar when in fullscreen.
 extern const CGFloat kAppBarHeightFullscreen;
 
+// The corner radius for the app bar and app content view.
+extern const CGFloat kAppBarCornerRadius;
+
 // Accessibility identifier for the assistant button.
 extern NSString* const kAppBarAssistantButtonId;
 
