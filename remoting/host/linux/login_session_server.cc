@@ -114,7 +114,7 @@ void LoginSessionServer::IsRunningInCrdSession(
     std::move(callback).Run(false);
     return;
   }
-  std::move(callback).Run(delegate_->IsRunningInCrdSession(session_id));
+  delegate_->IsRunningInCrdSession(session_id, std::move(callback));
 }
 
 }  // namespace remoting

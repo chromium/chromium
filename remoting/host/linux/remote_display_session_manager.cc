@@ -410,8 +410,96 @@ void RemoteDisplaySessionManager::OnLoginSessionCreated(
                              std::move(session_info));
 }
 
-bool RemoteDisplaySessionManager::IsRunningInCrdSession(
-    const std::string& session_id) {
+void RemoteDisplaySessionManager::IsRunningInCrdSession(
+    const std::string& session_id,
+    LoginSessionServer::Delegate::IsRunningInCrdSessionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  IsRunningInCrdSessionInternal(session_id, std::move(callback),
+                                /*can_wait=*/true);
+}
+
+void RemoteDisplaySessionManager::IsRunningInCrdSessionInternal(
+    const std::string& session_id,
+    LoginSessionServer::Delegate::IsRunningInCrdSessionCallback callback,
+    bool can_wait) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (IsRunningInCrdSessionSynchronous(session_id)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  if (!can_wait) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // See if there is any active greeter session. If we see an unrecognized
+  // session while there is an active greeter session, then it is possible that
+  // the new session is transitioned from the greeter session during user login
+  // but we haven't observed it yet.
+  // TODO: yuweih - See if it is possible to "tag" a login session as
+  // CRD-managed so that we don't need this somewhat fragile logic, but this may
+  // require some new API from GDM.
+  bool has_greeter_session = false;
+  for (auto& [_, d_info] : remote_displays_) {
+    for (auto& [_, s] : d_info.sessions) {
+      if (s.session_info.has_value() &&
+          s.session_info->session_class == "greeter") {
+        has_greeter_session = true;
+        break;
+      }
+    }
+    if (has_greeter_session) {
+      break;
+    }
+  }
+
+  if (!has_greeter_session) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Query the session info to check if it's a remote user session.
+  login_session_manager_->GetSessionInfo(
+      session_id,
+      base::BindOnce(&RemoteDisplaySessionManager::
+                         OnIsRunningInCrdSessionGetSessionInfoResult,
+                     weak_ptr_factory_.GetWeakPtr(), session_id,
+                     std::move(callback)));
+}
+
+void RemoteDisplaySessionManager::OnIsRunningInCrdSessionGetSessionInfoResult(
+    const std::string& session_id,
+    LoginSessionServer::Delegate::IsRunningInCrdSessionCallback callback,
+    base::expected<LoginSessionManager::SessionInfo, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!result.has_value()) {
+    LOG(ERROR) << result.error();
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Not a remote user session, so it's definitely not managed by CRD.
+  if (!result->is_remote || result->session_class != "user") {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Try again in 500ms without waiting again.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &RemoteDisplaySessionManager::IsRunningInCrdSessionInternal,
+          weak_ptr_factory_.GetWeakPtr(), session_id, std::move(callback),
+          /*can_wait=*/false),
+      base::Milliseconds(500));
+}
+
+bool RemoteDisplaySessionManager::IsRunningInCrdSessionSynchronous(
+    const std::string& session_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& [_, d_info] : remote_displays_) {

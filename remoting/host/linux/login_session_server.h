@@ -21,9 +21,14 @@ class LoginSessionServer : public mojom::LoginSessionService {
    public:
     virtual ~Delegate() = default;
 
+    using IsRunningInCrdSessionCallback =
+        LoginSessionServer::IsRunningInCrdSessionCallback;
+
     // Returns whether the given `session_id` is a session that is managed by
     // Chrome Remote Desktop.
-    virtual bool IsRunningInCrdSession(const std::string& session_id) = 0;
+    virtual void IsRunningInCrdSession(
+        const std::string& session_id,
+        IsRunningInCrdSessionCallback callback) = 0;
   };
 
   explicit LoginSessionServer(Delegate* delegate);

@@ -179,12 +179,27 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   void OnLoginSessionCreated(mojom::LoginSessionInfoPtr session_info) override;
 
   // LoginSessionServer::Delegate:
-  bool IsRunningInCrdSession(const std::string& session_id) override;
+  void IsRunningInCrdSession(
+      const std::string& session_id,
+      LoginSessionServer::Delegate::IsRunningInCrdSessionCallback callback)
+      override;
 
   void OnSessionInfoReady(
       const std::string& display_name,
       const gvariant::ObjectPath& display_path,
       base::expected<LoginSessionManager::SessionInfo, Loggable> result);
+
+  void IsRunningInCrdSessionInternal(
+      const std::string& session_id,
+      LoginSessionServer::Delegate::IsRunningInCrdSessionCallback callback,
+      bool can_wait);
+
+  void OnIsRunningInCrdSessionGetSessionInfoResult(
+      const std::string& session_id,
+      LoginSessionServer::Delegate::IsRunningInCrdSessionCallback callback,
+      base::expected<LoginSessionManager::SessionInfo, Loggable> result);
+
+  bool IsRunningInCrdSessionSynchronous(const std::string& session_id) const;
 
   void FetchSystemdEnvironmentVariables(
       const std::string& display_name,
