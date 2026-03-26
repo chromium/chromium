@@ -1074,6 +1074,11 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
         SyntheticResponseEligibility::kNotEligibleByIntercepted);
     CHECK(url_loader_client_.is_bound());
     CHECK(receiver_.is_bound());
+    // Set fetch handler bypass option here to let the renderer know that the
+    // service worker should not handle any subresources.
+    MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
+        version, blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+                     kSyntheticResponse);
     std::move(handler.value())
         .Run(resource_request_, receiver_.Unbind(),
              url_loader_client_.Unbind());

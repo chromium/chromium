@@ -34,9 +34,11 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/test/cert_test_util.h"
@@ -53,6 +55,7 @@
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
@@ -62,6 +65,32 @@
 
 namespace content {
 namespace service_worker_main_resource_loader_unittest {
+
+class MockSearchPrefetchContentBrowserClient : public TestContentBrowserClient {
+ public:
+  URLLoaderRequestHandler
+  CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
+      FrameTreeNodeId frame_tree_node_id,
+      const network::ResourceRequest& resource_request) override {
+    if (handler_) {
+      return std::move(handler_);
+    }
+    return base::NullCallback();
+  }
+
+  bool IsServiceWorkerSyntheticResponseAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& url) override {
+    return true;
+  }
+
+  void set_handler(URLLoaderRequestHandler handler) {
+    handler_ = std::move(handler);
+  }
+
+ private:
+  URLLoaderRequestHandler handler_;
+};
 
 constexpr char kTestCacheName[] = "test cache name";
 constexpr char16_t kTestCacheNameU16[] = u"test cache name";
@@ -2078,6 +2107,37 @@ TEST_F(ServiceWorkerMainResourceLoaderTest,
         "FetchHandlerEndToFallbackNetwork",
         0);
   }
+}
+
+TEST_F(ServiceWorkerMainResourceLoaderTest, SearchPrefetchHitInSyntheticResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kServiceWorkerSyntheticResponse,
+      {{"bypass_subresource", "true"}});
+
+  MockSearchPrefetchContentBrowserClient mock_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&mock_browser_client);
+
+  bool handler_called = false;
+  mock_browser_client.set_handler(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& resource_request,
+          mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
+          mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+        handler_called = true;
+      }));
+
+  std::unique_ptr<network::ResourceRequest> request = CreateRequest();
+  request->is_outermost_main_frame = true;
+
+  StartRequest(std::move(request));
+
+  EXPECT_TRUE(handler_called);
+  EXPECT_EQ(version_->fetch_handler_bypass_option(),
+            blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+                kSyntheticResponse);
+
+  SetBrowserClientForTesting(old_browser_client);
 }
 
 }  // namespace service_worker_main_resource_loader_unittest
