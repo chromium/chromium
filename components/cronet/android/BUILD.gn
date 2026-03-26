@@ -974,6 +974,16 @@ android_apk("cronet_package_without_nativejava_apk") {
            ":package_shared_java",
          ] + cronet_package_without_nativejava_external_deps
 
+  if (use_jacoco_coverage) {
+    # Normally this would be done for us, see:
+    #   https://source.chromium.org/chromium/chromium/src/+/main:build/config/android/internal_rules.gni;l=3592-3601;drc=a250d23f8414193856f12bfe4a334329e0c26368
+    # However this only kicks in if sources are provided. We don't provide any
+    # in this target, and nothing we depend on bundles this dep (it was stripped
+    # from Cronet classes during repackaging), so we have to re-add this dep
+    # manually.
+    deps += [ "//third_party/jacoco:jacocoagent_java" ]
+  }
+
   # ProGuard is what checks for undefined references, so we need to enable it
   # for the checking to actually happen. Also, this nicely doubles as a basic
   # check for our ProGuard configs.
@@ -1027,6 +1037,16 @@ android_apk("cronet_package_with_nativejava_apk") {
            ":package_impl_native_java",
            ":package_shared_java",
          ] + cronet_package_with_nativejava_external_deps
+
+  if (use_jacoco_coverage) {
+    # Normally this would be done for us, see:
+    #   https://source.chromium.org/chromium/chromium/src/+/main:build/config/android/internal_rules.gni;l=3592-3601;drc=a250d23f8414193856f12bfe4a334329e0c26368
+    # However this only kicks in if sources are provided. We don't provide any
+    # in this target, and nothing we depend on bundles this dep (it was stripped
+    # from Cronet classes during repackaging), so we have to re-add this dep
+    # manually.
+    deps += [ "//third_party/jacoco:jacocoagent_java" ]
+  }
 
   # ProGuard is what checks for undefined references, so we need to enable it
   # for the checking to actually happen. Also, this nicely doubles as a basic
