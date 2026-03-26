@@ -1602,7 +1602,9 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
       }
 
       const ShapeResult* shape_result = item.TextShapeResult();
-      DCHECK(shape_result);
+      if (!shape_result) {
+        return std::nullopt;
+      }
       LayoutUnit width = shape_result->SnappedWidth().ClampNegativeToZero();
       if (current.text_offset != item.StartOffset()) {
         // When subpixel positioning is enabled, a ShapeResultView from the
