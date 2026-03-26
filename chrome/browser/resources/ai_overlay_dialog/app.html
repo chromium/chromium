@@ -1,35 +1,35 @@
 <div id="container">
   <!-- This is skeleton placeholder content only. -->
-  <div id="persona-container" @click="${this.onContainerClick_}">
+  <div id="persona-container" @click="${this.onContainerClick}">
     <!--
       TODO(bokan) settle on either "talking" or "speaking", "listening" or
       "idle"
     -->
-    ${this.useStateButton_
+    ${this.useStateButton
     ? html`
-      <button id="stateButton" class="${this.uiState_}">
+      <button id="stateButton" class="${this.uiState}">
       </button>`
     : html`
-      <video id="talking" .src="${this.talkingBlobUrl_}"
-          ?hidden="${this.uiState_ !== 'speaking'}"
+      <video id="talking" .src="${this.talkingBlobUrl}"
+          ?hidden="${this.uiState !== 'speaking'}"
           autoplay loop muted playsinline>
       </video>
-      <video id="listening" .src="${this.listeningBlobUrl_}"
-          ?hidden="${this.uiState_ !== 'idle'}"
+      <video id="listening" .src="${this.listeningBlobUrl}"
+          ?hidden="${this.uiState !== 'idle'}"
           autoplay loop muted playsinline>
       </video>
     `}
   </div>
-  <div id="transcription" ?hidden="${!this.transcription_}">
-    <span id="transcription-text">${this.transcription_}</span>
+  <div id="transcription" ?hidden="${!this.transcription}">
+    <span id="transcription-text">${this.transcription}</span>
   </div>
   <!--
     If there's no microphone present, show a button to inject a pre-canned audio
     message to make development easier.
   -->
-  ${this.mockButtons_.map((button, index) => html`
+  ${this.mockButtons.map((button, index) => html`
     <button class="inject-audio" type="button" data-index="${index}"
-        @click="${this.onInjectAudioClick_}">
+        @click="${this.onInjectAudioClick}">
       ${button.name}
     </button>
   `)}

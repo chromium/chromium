@@ -62,40 +62,40 @@ export class AppElement extends CrLitElement {
     return {
       // If a mock microphone is being used, this contains the list of buttons
       // to inject pre-canned messages.
-      mockButtons_: {
+      mockButtons: {
         type: Array,
       },
-      isSpeaking_: {
+      isSpeaking: {
         type: Boolean,
       },
-      isListening_: {
+      isListening: {
         type: Boolean,
       },
-      isConnecting_: {
+      isConnecting: {
         type: Boolean,
       },
-      transcription_: {
+      transcription: {
         type: String,
       },
-      talkingBlobUrl_: {
+      talkingBlobUrl: {
         type: String,
       },
-      listeningBlobUrl_: {
+      listeningBlobUrl: {
         type: String,
       },
     };
   }
 
-  protected accessor mockButtons_: MockAudioButton[] = [];
-  protected accessor isSpeaking_: boolean = false;
-  protected accessor isConnecting_: boolean = false;
-  protected accessor transcription_: string = '';
-  protected accessor talkingBlobUrl_: string = '';
-  protected accessor listeningBlobUrl_: string = '';
+  protected accessor mockButtons: MockAudioButton[] = [];
+  protected accessor isSpeaking: boolean = false;
+  protected accessor isConnecting: boolean = false;
+  protected accessor transcription: string = '';
+  protected accessor talkingBlobUrl: string = '';
+  protected accessor listeningBlobUrl: string = '';
 
   private pageHandler: PageHandlerRemote;
   private pageCallbackRouter: PageCallbackRouter;
-  // If onContainerClick_ happens before the API key mojo returns, this will
+  // If onContainerClick happens before the API key mojo returns, this will
   // turn to true and invoke the state change after the key becomes available.
   private queueStateChange: boolean = false;
   private conversation: Conversation|null = null;
@@ -107,8 +107,8 @@ export class AppElement extends CrLitElement {
   // setup so that it can be provided when these objects initialize.
   private initialPageContext?: PageContext;
 
-  protected get uiState_(): UiState {
-    if (this.isConnecting_) {
+  protected get uiState(): UiState {
+    if (this.isConnecting) {
       return UiState.CONNECTING;
     }
 
@@ -116,24 +116,24 @@ export class AppElement extends CrLitElement {
       return UiState.INERT;
     }
 
-    if (this.isSpeaking_) {
+    if (this.isSpeaking) {
       return UiState.SPEAKING;
     }
 
     return UiState.IDLE;
   }
 
-  protected get hasResourceBundle_(): boolean {
-    return !!this.talkingBlobUrl_ && !!this.listeningBlobUrl_;
+  protected get hasResourceBundle(): boolean {
+    return !!this.talkingBlobUrl && !!this.listeningBlobUrl;
   }
 
-  protected get useStateButton_(): boolean {
-    if (!this.hasResourceBundle_) {
+  protected get useStateButton(): boolean {
+    if (!this.hasResourceBundle) {
       return true;
     }
 
-    return this.uiState_ === UiState.CONNECTING ||
-        this.uiState_ === UiState.INERT;
+    return this.uiState === UiState.CONNECTING ||
+        this.uiState === UiState.INERT;
   }
 
   constructor() {
@@ -183,7 +183,7 @@ export class AppElement extends CrLitElement {
       this.initialPageContext = undefined;
 
       if (this.queueStateChange) {
-        this.onContainerClick_();
+        this.onContainerClick();
         this.queueStateChange = false;
       }
     });
@@ -191,11 +191,11 @@ export class AppElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    if (this.talkingBlobUrl_) {
-      URL.revokeObjectURL(this.talkingBlobUrl_);
+    if (this.talkingBlobUrl) {
+      URL.revokeObjectURL(this.talkingBlobUrl);
     }
-    if (this.listeningBlobUrl_) {
-      URL.revokeObjectURL(this.listeningBlobUrl_);
+    if (this.listeningBlobUrl) {
+      URL.revokeObjectURL(this.listeningBlobUrl);
     }
   }
 
@@ -210,13 +210,13 @@ export class AppElement extends CrLitElement {
     this.audioPlayer?.play(audioData);
   }
 
-  protected onInjectAudioClick_(e: Event) {
+  protected onInjectAudioClick(e: Event) {
     if (!this.blobCapturer) {
       return;
     }
 
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    const button = this.mockButtons_[index];
+    const button = this.mockButtons[index];
     if (!button) {
       return;
     }
@@ -233,11 +233,11 @@ export class AppElement extends CrLitElement {
   private createAudioPlayer(): AudioPlayer {
     return new AudioPlayer(/*onStart=*/
                            () => {
-                             this.isSpeaking_ = true;
+                             this.isSpeaking = true;
                            },
                            /*onDone=*/
                            () => {
-                             this.isSpeaking_ = false;
+                             this.isSpeaking = false;
                            });
   }
 
@@ -252,7 +252,7 @@ export class AppElement extends CrLitElement {
         const {jsonData} = await this.pageHandler.getMockAudioData();
         if (jsonData) {
           const config = JSON.parse(jsonData);
-          this.mockButtons_ = config.buttons || [];
+          this.mockButtons = config.buttons || [];
           this.blobCapturer = new BlobAudioCapturer();
           return this.blobCapturer;
         } else {
@@ -266,20 +266,20 @@ export class AppElement extends CrLitElement {
     return null;
   }
 
-  protected onContainerClick_() {
+  protected onContainerClick() {
     if (!this.conversation) {
       console.warn('Conversation (API key) not yet available');
       this.queueStateChange = true;
       return;
     }
 
-    if (this.isConnecting_) {
+    if (this.isConnecting) {
       return;
     }
 
     if (!this.conversation.connected) {
       console.info('Attempting to connect');
-      this.isConnecting_ = true;
+      this.isConnecting = true;
       this.conversation.start();
     } else {
       this.conversation.stop();
@@ -290,7 +290,7 @@ export class AppElement extends CrLitElement {
     console.info('onConversationStateChanged: ', state);
 
     if (oldState === State.STOPPED && state !== State.STOPPED) {
-      this.isConnecting_ = false;
+      this.isConnecting = false;
       this.audioPlayer = this.createAudioPlayer();
       this.audioCapturer = await this.createAudioCapturer();
       if (this.audioCapturer) {
@@ -300,8 +300,8 @@ export class AppElement extends CrLitElement {
     }
 
     if (state === State.STOPPED) {
-      this.isConnecting_ = false;
-      this.mockButtons_ = [];
+      this.isConnecting = false;
+      this.mockButtons = [];
       this.blobCapturer = null;
       this.audioCapturer?.stop();
       this.audioPlayer?.stop();
@@ -312,15 +312,15 @@ export class AppElement extends CrLitElement {
     }
   }
 
-  private transcriptionTimeout_: number = 0;
+  private transcriptionTimeout: number = 0;
 
   private onMessageFromConversation(msg: any) {
     if (msg.type === 'outputTranscription') {
-      this.transcription_ = msg.text;
+      this.transcription = msg.text;
 
-      clearTimeout(this.transcriptionTimeout_);
-      this.transcriptionTimeout_ = setTimeout(() => {
-        this.transcription_ = '';
+      clearTimeout(this.transcriptionTimeout);
+      this.transcriptionTimeout = setTimeout(() => {
+        this.transcription = '';
       }, 3000);
     }
   }
@@ -371,8 +371,8 @@ export class AppElement extends CrLitElement {
     }
     console.info('Resources initialized', bundle);
 
-    this.talkingBlobUrl_ = URL.createObjectURL(bundle.talkingBlob);
-    this.listeningBlobUrl_ = URL.createObjectURL(bundle.listeningBlob);
+    this.talkingBlobUrl = URL.createObjectURL(bundle.talkingBlob);
+    this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
   }
 }
 
