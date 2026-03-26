@@ -159,6 +159,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   static bool ShouldBypassFreUi(Profile* profile,
                                 mojom::InvocationSource invocation_source);
 
+  // Whether the tab web contents contextual menu item is enabled.
+  static bool IsContextualMenuItemEnabled(Profile* profile);
+
   // Whether the required feature flags for multi-instance - kGlicMultiInstance,
   // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled. When calling, be
   // sure that IsMultiInstanceEnabled() should not be used instead.
@@ -367,6 +370,11 @@ class GlicEnabling : public signin::IdentityManager::Observer {
 
   void UpdateEnabledStatus();
   void UpdateConsentStatus();
+
+  static bool IsTrustFirstOnboardingGatedFeatureEnabled(
+      Profile* profile,
+      const base::Feature& feature,
+      const base::FeatureParam<bool>& onboarding_param);
 
 #if BUILDFLAG(IS_CHROMEOS)
   static bool IsChromeOSProfileEligible(const Profile* profile);

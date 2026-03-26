@@ -246,9 +246,10 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Automatically opened for a PDF"/>
   <int value="13" label="IPH"/>
   <int value="14" label="Other"/>
+  <int value="15" label="Context menu"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint) -->
 
 <!-- LINT.IfChange(GlicEntryPointStatus) -->
 
@@ -530,6 +531,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="User clicked the summarize button in the PDF viewer"/>
   <int value="18" label="From navigation capture"/>
   <int value="19" label="Automatically opened for a PDF"/>
+  <int value="23" label="Context menu"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -722,6 +724,10 @@ chromium-metrics-reviews@google.com.
   <int value="78" label="Auto-opened for PDF, attached, audio mode."/>
   <int value="79" label="Auto-opened for PDF, detached, text mode."/>
   <int value="80" label="Auto-opened for PDF, detached, audio mode."/>
+  <int value="93" label="Context menu, attached, text mode."/>
+  <int value="94" label="Context menu, attached, audio mode."/>
+  <int value="95" label="Context menu, detached, text mode."/>
+  <int value="96" label="Context menu, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->

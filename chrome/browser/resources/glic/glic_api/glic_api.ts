@@ -2677,6 +2677,8 @@ export enum InvocationSource {
   NAVIGATION_CAPTURE = 18,
   // Automatically opened for a PDF.
   AUTO_OPENED_FOR_PDF = 19,
+  // From the context menu.
+  WEB_CONTENTS_CONTEXT_MENU = 23,
 }
 
 ///////////////////////////////////////////////

@@ -147,6 +147,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #endif
 
@@ -2082,6 +2083,11 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(141, "emshack@chromium.org",
                                "Shown in the link context menu to open the "
                                "link in a new split tab.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kGlicContextMenu,
+      user_education::Metadata(146, "basiaz@google.com",
+                               "Shown in the contextual menu.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       tabs::kVerticalTabsPreviewBadge,

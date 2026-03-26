@@ -368,6 +368,7 @@ chromium-metrics-reviews@google.com.
   <int value="158" label="IDC_CONTENT_CONTEXT_ARCHIVE_GLIC"/>
   <int value="159" label="IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI"/>
   <int value="160" label="IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS"/>
+  <int value="162" label="IDC_CONTENT_CONTEXT_GLIC"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->

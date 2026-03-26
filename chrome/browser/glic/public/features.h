@@ -20,6 +20,9 @@ BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
 
 BASE_DECLARE_FEATURE(kGlicInvoke);
 
+BASE_DECLARE_FEATURE(kGlicContextMenu);
+extern const base::FeatureParam<std::string> kGlicContextMenuArm;
+extern const base::FeatureParam<bool> kGlicContextMenuWithOnboarding;
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
