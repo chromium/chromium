@@ -432,7 +432,6 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
   std::unique_ptr<CommitState> result;
   if (has_updates)
     result = ActivateCommitState();
-  thread_unsafe_commit_state().num_layers = layer_id_map_.size();
   swap_promise_manager_.WillCommit();
   mutator_host()->RemoveStaleTimelines();
   mutator_host()->RemoveStaleTriggers();
@@ -1751,21 +1750,21 @@ void LayerTreeHost::RegisterLayer(Layer* layer) {
   DCHECK(IsMainThread());
   DCHECK(!LayerById(layer->id()));
   DCHECK(!in_paint_layer_contents_);
-  layer_id_map_[layer->id()] = layer;
+  thread_unsafe_commit_state().layer_id_map[layer->id()] = layer;
 }
 
 void LayerTreeHost::UnregisterLayer(Layer* layer) {
   DCHECK(IsMainThread());
   DCHECK(LayerById(layer->id()));
   DCHECK(!in_paint_layer_contents_);
-  pending_commit_state()->layers_that_should_push_properties.erase(layer);
-  layer_id_map_.erase(layer->id());
+  pending_commit_state()->layer_ids_that_should_push_properties.erase(
+      layer->id());
+  thread_unsafe_commit_state().layer_id_map.erase(layer->id());
 }
 
 Layer* LayerTreeHost::LayerById(int id) {
   DCHECK(IsMainThread());
-  auto iter = layer_id_map_.find(id);
-  return iter != layer_id_map_.end() ? iter->second : nullptr;
+  return thread_unsafe_commit_state().LayerById(id);
 }
 
 bool LayerTreeHost::PaintContent(const LayerList& update_layer_list) {
@@ -1799,7 +1798,8 @@ void LayerTreeHost::RemoveSurfaceRange(const viz::SurfaceRange& surface_range) {
 }
 
 void LayerTreeHost::AddLayerShouldPushProperties(Layer* layer) {
-  pending_commit_state()->layers_that_should_push_properties.insert(layer);
+  pending_commit_state()->layer_ids_that_should_push_properties.insert(
+      layer->id());
 }
 
 void LayerTreeHost::SetPageScaleFromImplSide(float page_scale) {

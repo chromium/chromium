@@ -33,11 +33,11 @@ FakeLayerTreeHost::FakeLayerTreeHost(FakeLayerTreeHostClient* client,
 }
 
 void FakeLayerTreeHost::ClearPendingLayerCommitStates() {
-  for (auto layer :
-       pending_commit_state()->layers_that_should_push_properties) {
-    layer->ClearChangedPushPropertiesForTesting();
+  for (auto layer_id :
+       pending_commit_state()->layer_ids_that_should_push_properties) {
+    LayerById(layer_id)->ClearChangedPushPropertiesForTesting();
   }
-  pending_commit_state()->layers_that_should_push_properties.clear();
+  pending_commit_state()->layer_ids_that_should_push_properties.clear();
 }
 
 std::unique_ptr<FakeLayerTreeHost> FakeLayerTreeHost::Create(

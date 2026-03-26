@@ -5055,17 +5055,19 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
 
   auto& host = GetLayerTreeHost();
   host.CompositeForTest(base::TimeTicks::Now(), true, base::OnceClosure());
-  ASSERT_FALSE(const_cast<const cc::LayerTreeHost&>(host)
-                   .pending_commit_state()
-                   ->layers_that_should_push_properties.contains(scroll_layer));
+  ASSERT_FALSE(
+      const_cast<const cc::LayerTreeHost&>(host)
+          .pending_commit_state()
+          ->layer_ids_that_should_push_properties.contains(scroll_layer->id()));
   ASSERT_FALSE(host.CommitRequested());
   ASSERT_FALSE(transform_tree.needs_update());
 
   ASSERT_TRUE(GetPaintArtifactCompositor().DirectlySetScrollOffset(
       scroll_element_id, gfx::PointF(-10, -20)));
-  EXPECT_TRUE(const_cast<const cc::LayerTreeHost&>(host)
-                  .pending_commit_state()
-                  ->layers_that_should_push_properties.contains(scroll_layer));
+  EXPECT_TRUE(
+      const_cast<const cc::LayerTreeHost&>(host)
+          .pending_commit_state()
+          ->layer_ids_that_should_push_properties.contains(scroll_layer->id()));
   EXPECT_TRUE(host.CommitRequested());
   EXPECT_EQ(gfx::PointF(-10, -20),
             scroll_tree.current_scroll_offset(scroll_element_id));

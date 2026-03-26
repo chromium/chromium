@@ -50,8 +50,11 @@ class SurfaceLayerTest : public testing::Test {
   void SynchronizeTrees() {
     std::unique_ptr<CommitState> commit_state =
         layer_tree_host_->ActivateCommitState();
-    TreeSynchronizer::PushLayerProperties(*commit_state,
-                                          host_impl_.pending_tree());
+    TreeSynchronizer::PushLayerProperties(
+        *commit_state,
+        const_cast<const FakeLayerTreeHost*>(layer_tree_host_.get())
+            ->thread_unsafe_commit_state(),
+        host_impl_.pending_tree());
     if (commit_state->needs_surface_ranges_sync) {
       host_impl_.pending_tree()->ClearSurfaceRanges();
       host_impl_.pending_tree()->SetSurfaceRanges(

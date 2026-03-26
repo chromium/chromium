@@ -91,7 +91,7 @@ void PushLayerList(OwnedLayerImplList& old_layers,
                    const ThreadUnsafeCommitState& unsafe_state,
                    LayerTreeImpl* tree_impl) {
   DCHECK(tree_impl->LayerListIsEmpty());
-  tree_impl->ReserveLayers(unsafe_state.num_layers);
+  tree_impl->ReserveLayers(unsafe_state.num_layers());
   for (const auto* layer : unsafe_state) {
     std::unique_ptr<LayerImpl> layer_impl(
         ReuseOrCreateLayerImpl(old_layers, layer, tree_impl));
@@ -104,7 +104,8 @@ void PushLayerList(OwnedLayerImplList& old_layers,
     // Every layer_impl should either have valid property tree indices already
     // or the corresponding layer should push them onto layer_impl.
     DCHECK(LayerHasValidPropertyTreeIndices(layer_impl.get()) ||
-           commit_state.layers_that_should_push_properties.contains(layer));
+           commit_state.layer_ids_that_should_push_properties.contains(
+               layer->id()));
 #endif
 
     tree_impl->AddLayer(std::move(layer_impl));
@@ -203,16 +204,14 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
 
 void TreeSynchronizer::PushLayerProperties(
     const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state,
     LayerTreeImpl* impl_tree) {
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Main",
                "layer_count",
-               commit_state.layers_that_should_push_properties.size());
-  auto source_layers_begin =
-      commit_state.layers_that_should_push_properties.begin();
-  auto source_layers_end =
-      commit_state.layers_that_should_push_properties.end();
-  for (auto it = source_layers_begin; it != source_layers_end; ++it) {
-    auto* source_layer = *it;
+               commit_state.layer_ids_that_should_push_properties.size());
+  for (int layer_id : commit_state.layer_ids_that_should_push_properties) {
+    Layer* source_layer = unsafe_state.LayerById(layer_id);
+    CHECK(source_layer);
     LayerImpl* target_layer = impl_tree->LayerById(source_layer->id());
     CHECK(target_layer);
     source_layer->PushPropertiesTo(target_layer, commit_state);

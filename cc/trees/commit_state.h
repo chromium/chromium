@@ -173,8 +173,7 @@ struct CC_EXPORT CommitState {
   // TODO(crbug.com/492147921): This shouldn't be tracked separately from
   // property_trees.
   PropertyTreesChangeState property_trees_change_state;
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
-  RAW_PTR_EXCLUSION base::flat_set<Layer*> layers_that_should_push_properties;
+  base::flat_set<int> layer_ids_that_should_push_properties;
 
   // Specific scrollers may request clobbering the active delta value on the
   // compositor when committing the current scroll offset to ensure the scroll
@@ -204,9 +203,16 @@ struct CC_EXPORT ThreadUnsafeCommitState {
   }
   LayerListConstIterator end() const { return LayerListConstIterator(nullptr); }
 
+  size_t num_layers() const { return layer_id_map.size(); }
+  Layer* LayerById(int id) const {
+    auto iter = layer_id_map.find(id);
+    return iter != layer_id_map.end() ? iter->second : nullptr;
+  }
+
   raw_ptr<MutatorHost> mutator_host;
   scoped_refptr<Layer> root_layer;
-  size_t num_layers = 0;
+  // Layer id to Layer map.
+  std::unordered_map<int, raw_ptr<Layer, CtnExperimental>> layer_id_map;
 };
 
 struct CC_EXPORT CommitTimestamps {

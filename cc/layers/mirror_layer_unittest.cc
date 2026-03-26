@@ -27,6 +27,8 @@ class MirrorLayerTest : public testing::Test {
   void SynchronizeTrees() {
     TreeSynchronizer::PushLayerProperties(
         *layer_tree_host_->GetPendingCommitState(),
+        const_cast<const FakeLayerTreeHost*>(layer_tree_host_.get())
+            ->thread_unsafe_commit_state(),
         host_impl_.pending_tree());
   }
 
@@ -109,7 +111,7 @@ TEST_F(MirrorLayerTest, MirrorCount) {
   EXPECT_TRUE(
       const_cast<const FakeLayerTreeHost*>(layer_tree_host_.get())
           ->pending_commit_state()
-          ->layers_that_should_push_properties.contains(mirrored.get()));
+          ->layer_ids_that_should_push_properties.contains(mirrored->id()));
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
 
   // Creating a second mirror layer should not trigger property trees rebuild.
@@ -120,7 +122,7 @@ TEST_F(MirrorLayerTest, MirrorCount) {
   EXPECT_TRUE(
       const_cast<const FakeLayerTreeHost*>(layer_tree_host_.get())
           ->pending_commit_state()
-          ->layers_that_should_push_properties.contains(mirrored.get()));
+          ->layer_ids_that_should_push_properties.contains(mirrored->id()));
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
 
   // Destroying one of the mirror layers should not trigger property trees
@@ -131,7 +133,7 @@ TEST_F(MirrorLayerTest, MirrorCount) {
   EXPECT_FALSE(layer_tree_host_->property_trees()->needs_rebuild());
   EXPECT_EQ(1u, const_cast<const FakeLayerTreeHost*>(layer_tree_host_.get())
                     ->pending_commit_state()
-                    ->layers_that_should_push_properties.size());
+                    ->layer_ids_that_should_push_properties.size());
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
 
   // Destroying the only remaining mirror layer should trigger property trees
@@ -143,7 +145,7 @@ TEST_F(MirrorLayerTest, MirrorCount) {
   EXPECT_TRUE(
       const_cast<const FakeLayerTreeHost*>(layer_tree_host_.get())
           ->pending_commit_state()
-          ->layers_that_should_push_properties.contains(mirrored.get()));
+          ->layer_ids_that_should_push_properties.contains(mirrored->id()));
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
 
   mirrored->SetLayerTreeHost(nullptr);
