@@ -26,6 +26,7 @@
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -406,9 +407,11 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
                                             gfx::Rect(out_size), out_size,
                                             base::TimeDelta());
     if (output_frame) {
-      auto finish_callback = base::BindOnce(
-          &WebRtcVideoFrameAdapter::SharedResources::OnAsyncReadbackCompleted,
-          this, frame, output_frame, std::move(callback));
+      auto finish_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&WebRtcVideoFrameAdapter::SharedResources::
+                             OnAsyncReadbackCompleted,
+                         this, frame, output_frame, std::move(callback)),
+          false);
       auto keepalive_callback =
           base::BindOnce([](scoped_refptr<media::VideoFrame> frame) {}, frame);
 
