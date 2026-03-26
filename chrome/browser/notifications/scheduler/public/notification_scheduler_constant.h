@@ -7,6 +7,8 @@
 
 namespace notifications {
 
+inline constexpr char kChromeFindsNotificationsThemeType[] =
+    "CHROME_FINDS_NOTIFICATIONS_THEME_TYPE";
 inline constexpr char kChromeFindsNotificationsUrl[] =
     "CHROME_FINDS_NOTIFICATIONS_URL";
 inline constexpr char kDefaultHelpfulButtonId[] =

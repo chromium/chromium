@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/notifications/scheduler/public/schedule_params.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -33,6 +35,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using SuggestionTheme =
     optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme;
@@ -116,20 +119,6 @@ void SetModelExecutionCooldownTimestamp(PrefService* pref_service) {
                          base::Time::Now().InMillisecondsSinceUnixEpoch());
 }
 
-void SetThemeCooldownTimestamp(PrefService* pref_service,
-                               SuggestionTheme::ThemeType theme) {
-  const std::string theme_pref_string = ThemeTypeEnumToString(theme);
-  if (theme_pref_string.empty()) {
-    // Do not set a pref if the theme type is unknown.
-    return;
-  }
-  // Store as a double since base::DictValue only supports storing doubles, but
-  // the value is essentially an int64_t timestamp.
-  ScopedDictPrefUpdate update(pref_service,
-                              prefs::kFindsNotInterestedThemesLastTimestamp);
-  update->Set(theme_pref_string, base::Time::Now().InSecondsFSinceUnixEpoch());
-}
-
 const SuggestionTheme* GetHighestScoredThemeIfPossible(
     PrefService* pref_service,
     const ::google::protobuf::RepeatedPtrField<SuggestionTheme>& suggestions) {
@@ -171,14 +160,31 @@ notifications::ScheduleParams GetCurrentScheduleParams() {
 }
 
 notifications::NotificationData GetNotificationData(
-    const SuggestionTheme::SuggestedContent& suggestion) {
+    const SuggestionTheme::SuggestedContent& suggestion,
+    SuggestionTheme::ThemeType theme_type) {
   notifications::NotificationData data;
   data.title = base::UTF8ToUTF16(suggestion.title());
   data.message = base::UTF8ToUTF16(suggestion.description());
   data.custom_data[notifications::kChromeFindsNotificationsUrl] =
       suggestion.target_url();
+  data.custom_data[notifications::kChromeFindsNotificationsThemeType] =
+      base::NumberToString(static_cast<int>(theme_type));
   data.buttons.clear();
-  // TODO(crbug.com/483104552): Add buttons and click behaviours when available.
+
+  notifications::NotificationData::Button open_chrome_button;
+  open_chrome_button.type = notifications::ActionButtonType::kHelpful;
+  open_chrome_button.id = notifications::kDefaultHelpfulButtonId;
+  open_chrome_button.text = l10n_util::GetStringUTF16(
+      IDS_CHROME_FINDS_NOTIFICATIONS_HELPFUL_BUTTON_TEXT);
+  data.buttons.emplace_back(std::move(open_chrome_button));
+
+  notifications::NotificationData::Button not_interested_button;
+  not_interested_button.type = notifications::ActionButtonType::kUnhelpful;
+  not_interested_button.id = notifications::kDefaultUnhelpfulButtonId;
+  not_interested_button.text = l10n_util::GetStringUTF16(
+      IDS_CHROME_FINDS_NOTIFICATIONS_UNHELPFUL_BUTTON_TEXT);
+  data.buttons.emplace_back(std::move(not_interested_button));
+
   return data;
 }
 
@@ -230,11 +236,6 @@ void FindsService::RemoveObserver(Observer* observer) {
 
 void FindsService::MarkNotificationShown(PrefService* pref_service) {
   SetModelExecutionCooldownTimestamp(pref_service);
-}
-
-void FindsService::MarkThemeNotInterested(PrefService* pref_service,
-                                          SuggestionTheme::ThemeType theme) {
-  SetThemeCooldownTimestamp(pref_service, theme);
 }
 
 void FindsService::ExecuteModelAndScheduleNotification(
@@ -397,7 +398,8 @@ bool FindsService::ScheduleNotificationWithModelResult(
   // Take the first suggestion in the list per theme.
   const auto& suggestion = theme.suggestions(0);
   notifications::ScheduleParams scheduler_params = GetCurrentScheduleParams();
-  notifications::NotificationData data = GetNotificationData(suggestion);
+  notifications::NotificationData data =
+      GetNotificationData(suggestion, theme.theme_type());
   notification_schedule_service_->Schedule(
       std::make_unique<notifications::NotificationParams>(
           notifications::SchedulerClientType::kChromeFinds, std::move(data),

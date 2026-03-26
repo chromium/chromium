@@ -68,6 +68,7 @@ source_set("lib") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/finds/core",
     "//chrome/browser/notifications/proto",
     "//chrome/browser/notifications/scheduler/public",
     "//components/keyed_service/core",
@@ -103,6 +104,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    "//chrome/browser/finds/core",
     "//chrome/browser/notifications/proto",
     "//chrome/browser/notifications/scheduler/internal:lib",
     "//chrome/browser/notifications/scheduler/public",
@@ -110,6 +112,7 @@ source_set("unit_tests") {
     "//chrome/browser/notifications/scheduler/test:test_support",
     "//chrome/common:constants",
     "//components/leveldb_proto:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//skia",
     "//testing/gmock",

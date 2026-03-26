@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -93,7 +95,8 @@ public class DisplayAgent {
     /**
      * Contains all data needed to build Android notification in the UI, specified by the client.
      */
-    private static class NotificationData {
+    @VisibleForTesting
+    static class NotificationData {
         public final String title;
         public final String message;
         public final HashMap<Integer /*@IconType*/, IconBundle> icons = new HashMap<>();
@@ -106,7 +109,8 @@ public class DisplayAgent {
     }
 
     @CalledByNative
-    private static void addButton(
+    @VisibleForTesting
+    static void addButton(
             NotificationData notificationData,
             @JniType("std::u16string") String text,
             @ActionButtonType int type,
@@ -129,7 +133,8 @@ public class DisplayAgent {
     }
 
     @CalledByNative
-    private static NotificationData buildNotificationData(
+    @VisibleForTesting
+    static NotificationData buildNotificationData(
             @JniType("std::u16string") String title, @JniType("std::u16string") String message) {
         return new NotificationData(title, message);
     }
@@ -138,7 +143,8 @@ public class DisplayAgent {
      * Contains data used used by the notification scheduling system internally to build the
      * notification.
      */
-    private static class SystemData {
+    @VisibleForTesting
+    static class SystemData {
         public final @SchedulerClientType int type;
         public final String guid;
 
@@ -149,7 +155,8 @@ public class DisplayAgent {
     }
 
     @CalledByNative
-    private static SystemData buildSystemData(
+    @VisibleForTesting
+    static SystemData buildSystemData(
             @SchedulerClientType int type, @JniType("std::string") String guid) {
         return new SystemData(type, guid);
     }
@@ -267,7 +274,8 @@ public class DisplayAgent {
     }
 
     @CalledByNative
-    private static void showNotification(NotificationData notificationData, SystemData systemData) {
+    @VisibleForTesting
+    static void showNotification(NotificationData notificationData, SystemData systemData) {
         AndroidNotificationData platformData = toAndroidNotificationData(systemData.type);
         // TODO(xingliu): Plumb platform specific data from native.
         // mode and provide correct notification id. Support buttons.
@@ -316,7 +324,8 @@ public class DisplayAgent {
                         context,
                         getRequestCode(
                                 NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
-                                systemData.guid),
+                                systemData.guid,
+                                /* index= */ 0),
                         contentIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT));
 
@@ -331,7 +340,8 @@ public class DisplayAgent {
                         context,
                         getRequestCode(
                                 NotificationIntentInterceptor.IntentType.DELETE_INTENT,
-                                systemData.guid),
+                                systemData.guid,
+                                /* index= */ 0),
                         dismissIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT));
 
@@ -354,7 +364,8 @@ public class DisplayAgent {
                             context,
                             getRequestCode(
                                     NotificationIntentInterceptor.IntentType.ACTION_INTENT,
-                                    systemData.guid),
+                                    systemData.guid,
+                                    /* index= */ i),
                             actionIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT),
                     NotificationUmaTracker.ActionType.UNKNOWN);
@@ -368,13 +379,21 @@ public class DisplayAgent {
     }
 
     /**
-     * Returns the request code for a specific intent. Android will not distinguish intents based on
-     * extra data. Different intent must have different request code.
+     * Returns a unique request code for a specific intent. In order to guarantee different Request
+     * Codes for buttons of the same IntentType (eg. helpful and unhelpful buttons), a unique index
+     * is used to generate a unique hash for each button.
+     *
+     * @param intentType The type of the intent.
+     * @param guid The unique ID of the notification.
+     * @param index An index used to differentiate intents of buttons sharing the same IntentType.
+     * @return A unique request code for the intent. Android will not distinguish intents based on
+     *     extra data. Different intents must have different request codes.
      */
     private static int getRequestCode(
-            @NotificationIntentInterceptor.IntentType int intentType, String guid) {
+            @NotificationIntentInterceptor.IntentType int intentType, String guid, int index) {
         int hash = guid.hashCode();
-        hash += 31 * hash + intentType;
+        hash = 31 * hash + intentType;
+        hash = 31 * hash + index;
         return hash;
     }
 

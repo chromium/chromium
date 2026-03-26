@@ -20082,6 +20082,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Delete original photo
       </message>
     </if>
+
+    <!-- Chrome finds Notifications -->
+    <message name="IDS_CHROME_FINDS_NOTIFICATIONS_HELPFUL_BUTTON_TEXT" desc="Text for the helpful button found on Chrome finds notifications.">
+      Open in Chrome
+    </message>
+    <message name="IDS_CHROME_FINDS_NOTIFICATIONS_UNHELPFUL_BUTTON_TEXT" desc="Text for the unhelpful button found on Chrome finds notifications.">
+      Not interested
+    </message>
   </messages>
 </release>
 </grit>

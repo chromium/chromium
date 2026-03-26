@@ -81,11 +81,8 @@ class FindsService : public KeyedService, public base::SupportsUserData {
     std::string message;
   };
 
+  // TODO(crbug.com/483107157): Migrate to finds_utils, call on notif showing.
   void MarkNotificationShown(PrefService* pref_service);
-  void MarkThemeNotInterested(
-      PrefService* pref_service,
-      optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme::
-          ThemeType theme);
   void ExecuteModelAndScheduleNotification(
       base::OnceCallback<void(Result)> callback);
 

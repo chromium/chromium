@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
+#include "chrome/browser/finds/core/finds_utils.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
@@ -86,7 +87,7 @@ TEST_F(FindsServiceTest, VerifyThemeNotInterestedCooldownPref) {
       SuggestionTheme::SHOPPING;
   EXPECT_TRUE(
       prefs_.GetDict(prefs::kFindsNotInterestedThemesLastTimestamp).empty());
-  service_->MarkThemeNotInterested(&prefs_, shopping_theme);
+  finds::MarkThemeAsNotInterested(&prefs_, shopping_theme);
   EXPECT_TRUE(prefs_.GetDict(prefs::kFindsNotInterestedThemesLastTimestamp)
                   .Find("Shopping"));
 }
@@ -624,7 +625,7 @@ TEST_F(FindsServiceTest, SkipsThemeOnCooldown) {
             std::move(callback).Run(std::move(result), nullptr);
           });
 
-  service_->MarkThemeNotInterested(&prefs_, SuggestionTheme::SHOPPING);
+  finds::MarkThemeAsNotInterested(&prefs_, SuggestionTheme::SHOPPING);
 
   std::unique_ptr<notifications::NotificationParams> scheduled_params;
   EXPECT_CALL(*notification_schedule_service_, Schedule(_))
@@ -697,9 +698,9 @@ TEST_F(FindsServiceTest, NoNotificationIfAllOnCooldown) {
             std::move(callback).Run(std::move(result), nullptr);
           });
 
-  service_->MarkThemeNotInterested(&prefs_, SuggestionTheme::SHOPPING);
-  service_->MarkThemeNotInterested(&prefs_, SuggestionTheme::ENTERTAINMENT);
-  service_->MarkThemeNotInterested(&prefs_, SuggestionTheme::TRAVEL);
+  finds::MarkThemeAsNotInterested(&prefs_, SuggestionTheme::SHOPPING);
+  finds::MarkThemeAsNotInterested(&prefs_, SuggestionTheme::ENTERTAINMENT);
+  finds::MarkThemeAsNotInterested(&prefs_, SuggestionTheme::TRAVEL);
 
   EXPECT_CALL(*notification_schedule_service_, Schedule(_)).Times(0);
 

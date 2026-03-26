@@ -7,6 +7,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace finds {
 
@@ -22,6 +24,20 @@ const char kThemeFoodAndDining[] = "FoodAndDining";
 const char kThemeEntertainment[] = "Entertainment";
 const char kThemeShopping[] = "Shopping";
 const char kThemeTravel[] = "Travel";
+
+void SetThemeCooldownTimestamp(PrefService* pref_service,
+                               SuggestionTheme::ThemeType theme) {
+  const std::string theme_pref_string = ThemeTypeEnumToString(theme);
+  if (theme_pref_string.empty()) {
+    // Do not set a pref if the theme type is unknown.
+    return;
+  }
+  // Store as a double since base::DictValue only supports storing doubles, but
+  // the value is essentially an int64_t timestamp.
+  ScopedDictPrefUpdate update(pref_service,
+                              prefs::kFindsNotInterestedThemesLastTimestamp);
+  update->Set(theme_pref_string, base::Time::Now().InSecondsFSinceUnixEpoch());
+}
 
 }  // namespace
 
@@ -42,6 +58,11 @@ std::string ThemeTypeEnumToString(SuggestionTheme::ThemeType theme_type) {
     default:
       return "";
   }
+}
+
+void MarkThemeAsNotInterested(PrefService* pref_service,
+                              SuggestionTheme::ThemeType theme_type) {
+  SetThemeCooldownTimestamp(pref_service, theme_type);
 }
 
 }  // namespace finds
