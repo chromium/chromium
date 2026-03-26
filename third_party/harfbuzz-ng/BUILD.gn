@@ -455,9 +455,6 @@ if (use_system_harfbuzz) {
       # Don't ship experimental extensions.
       "HB_NO_BORING_EXPANSION",
 
-      # Don't ship AVAR2 yet.
-      "HB_NO_AVAR2",
-
       # Don't ship VARC yet.
       "HB_NO_VAR_COMPOSITES",
 

@@ -2891,7 +2891,7 @@
     },
     {
       name: "FontFormatAvar2",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/41170551
