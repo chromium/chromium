@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "media/base/agtm.h"
 #include "media/base/data_source.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/demuxer.h"
@@ -468,8 +469,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
       buffer->WritableSideData().alpha_data =
           base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
     } else if (side_data_id == 4) {
-      buffer->WritableSideData().itu_t35_data =
-          base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+      if (auto agtm = GetAgtmFromT35(side_data.subspan(8u))) {
+        buffer->WritableSideData().hdr_metadata.SetSerializedAgtm(*agtm);
+      }
     }
   }
 

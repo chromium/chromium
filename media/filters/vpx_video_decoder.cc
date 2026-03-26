@@ -333,13 +333,9 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     return true;
   }
 
-  static constexpr size_t kItut35HeaderSize = 7;
-  if (buffer->side_data() &&
-      buffer->side_data()->itu_t35_data.size() >= kItut35HeaderSize) {
-    auto side_data = buffer->side_data()->itu_t35_data.as_span();
-    if (auto agtm = GetAgtmFromT35(side_data)) {
-      config_.writable_hdr_metadata().SetSerializedAgtm(*agtm);
-    }
+  if (buffer->side_data()) {
+    config_.writable_hdr_metadata().MergeMetadataFrom(
+        buffer->side_data()->hdr_metadata);
   }
 
   const vpx_image_t* vpx_image_alpha = nullptr;

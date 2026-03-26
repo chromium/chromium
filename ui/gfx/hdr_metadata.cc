@@ -198,6 +198,24 @@ void HDRMetadata::SetSerializedAgtm(base::span<const uint8_t> data) {
   }
 }
 
+void HDRMetadata::MergeMetadataFrom(const HDRMetadata& other) {
+  if (other.mdcv_) {
+    mdcv_ = other.mdcv_;
+  }
+  if (other.clli_) {
+    clli_ = other.clli_;
+  }
+  if (other.agtm_) {
+    agtm_ = other.agtm_;
+  }
+  if (other.ndwl_) {
+    ndwl_ = other.ndwl_;
+  }
+  if (other.extended_range) {
+    extended_range = other.extended_range;
+  }
+}
+
 // static
 float HDRMetadata::GetContentMaxLuminance(const HDRMetadata& metadata) {
   if (metadata.clli_.has_value() && metadata.clli_->fMaxCLL > 0.f) {

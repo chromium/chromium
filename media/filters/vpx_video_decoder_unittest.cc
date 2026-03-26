@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "media/base/agtm.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/test_data_util.h"
@@ -386,8 +387,9 @@ TEST_F(VpxVideoDecoderTest, AgtmMetadata) {
   auto side_data = UNSAFE_BUFFERS(
       base::span(packet->side_data[0].data, packet->side_data[0].size));
   ASSERT_EQ(base::U64FromBigEndian(side_data.first<8u>()), 4u);
-  buffer->WritableSideData().itu_t35_data =
-      base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+  auto agtm = GetAgtmFromT35(side_data.subspan(8u));
+  ASSERT_TRUE(agtm.has_value());
+  buffer->WritableSideData().hdr_metadata.SetSerializedAgtm(*agtm);
   DecoderStatus decode_status = Decode(buffer);
   av_packet_unref(packet.get());
   ASSERT_TRUE(decode_status.is_ok());

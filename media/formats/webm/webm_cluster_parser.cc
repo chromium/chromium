@@ -16,6 +16,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
+#include "media/base/agtm.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
@@ -498,8 +499,9 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
       buffer->WritableSideData().alpha_data =
           base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
     } else if (side_data_id == 4) {
-      buffer->WritableSideData().itu_t35_data =
-          base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+      if (auto agtm = GetAgtmFromT35(side_data.subspan(8u))) {
+        buffer->WritableSideData().hdr_metadata.SetSerializedAgtm(*agtm);
+      }
     }
   }
 
