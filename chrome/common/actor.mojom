@@ -558,6 +558,16 @@ enum ActionResultCode {
   // Tool was cancelled.
   kScriptToolCancelled = 1206,
 
+  // Tool resulted in a navigation that failed to commit.
+  kScriptToolNavigationDidNotCommit = 1207,
+
+  // Tool resulted in a navigation that committed an error page.
+  kScriptToolNavigationCommittedErrorPage = 1208,
+
+  // Tool resulted in a navigation that committed successfully but failed to
+  // load.
+  kScriptToolNavigationFailedLoad = 1209,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
