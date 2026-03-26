@@ -156,19 +156,13 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
     page_context = ExtractFormFieldsFromWebContents(&GetWebContents());
   }
 
+  const GURL url = GetWebContents().GetLastCommittedURL();
   handler->SendTabToDevice(
-      target_device_guid, GetWebContents().GetLastCommittedURL(),
-      base::UTF16ToUTF8(GetWebContents().GetTitle()), std::move(page_context),
+      target_device_guid, url, base::UTF16ToUTF8(GetWebContents().GetTitle()),
+      std::move(page_context),
       base::BindOnce(
-          [](base::WeakPtr<SendTabToSelfBubbleController> controller) {
-            if (controller) {
-              // Show confirmation message.
-              controller->SetShowConfirmationMessage(true);
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&SendTabToSelfBubbleController::OnSendFailed,
-                     weak_ptr_factory_.GetWeakPtr()));
+          &SendTabToSelfBubbleController::HandleSendTabToDeviceResult,
+          weak_ptr_factory_.GetWeakPtr(), url));
 }
 
 void SendTabToSelfBubbleController::OnManageDevicesClicked(
@@ -199,6 +193,19 @@ void SendTabToSelfBubbleController::OnBackButtonPressed() {
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           &GetWebContents());
   controller->ShowBubble(share::ShareAttempt(&GetWebContents()));
+}
+
+void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
+    const GURL& url,
+    SendTabToSelfResult result) {
+  switch (result) {
+    case SendTabToSelfResult::kSuccess:
+      SetShowConfirmationMessage(true);
+      break;
+    case SendTabToSelfResult::kFailure:
+      OnSendFailed(url);
+      break;
+  }
 }
 
 void SendTabToSelfBubbleController::OnSendFailed(const GURL& url) {

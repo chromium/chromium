@@ -32,11 +32,9 @@
 #include "chrome/android/chrome_jni_headers/SendTabToSelfAndroidBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/TargetDeviceInfo_jni.h"
 
-using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
-using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace jni_zero {

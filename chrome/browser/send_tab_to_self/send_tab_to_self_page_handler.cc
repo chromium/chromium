@@ -49,15 +49,13 @@ void SendTabToSelfPageHandler::SendTabToDevice(
     const GURL& url,
     const std::string& title,
     PageContext page_context,
-    base::OnceClosure on_entry_added,
-    base::OnceCallback<void(const GURL&)> on_send_failed) {
+    base::OnceCallback<void(SendTabToSelfResult)> result_callback) {
   PendingRequest request;
   request.target_device_guid = target_device_guid;
   request.url = url;
   request.title = title;
   request.page_context = std::move(page_context);
-  request.on_entry_added = std::move(on_entry_added);
-  request.on_send_failed = std::move(on_send_failed);
+  request.result_callback = std::move(result_callback);
 
   if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition)) {
     SendFinalizedRequest(std::move(request), std::nullopt);
@@ -186,8 +184,8 @@ void SendTabToSelfPageHandler::SendFinalizedRequest(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
   if (!model->IsReady()) {
-    if (request.on_send_failed) {
-      std::move(request.on_send_failed).Run(request.url);
+    if (request.result_callback) {
+      std::move(request.result_callback).Run(SendTabToSelfResult::kFailure);
     }
     return;
   }
@@ -195,8 +193,8 @@ void SendTabToSelfPageHandler::SendFinalizedRequest(
   model->AddEntry(request.url, request.title, request.target_device_guid,
                   std::move(request.page_context));
 
-  if (request.on_entry_added) {
-    std::move(request.on_entry_added).Run();
+  if (request.result_callback) {
+    std::move(request.result_callback).Run(SendTabToSelfResult::kSuccess);
   }
 }
 

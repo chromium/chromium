@@ -379,14 +379,39 @@ TEST_F(SendTabToSelfPageHandlerTest,
   // Simulate the model not being ready (e.g. Sync paused or disabled).
   model_.set_is_ready(false);
 
-  // Initiate the send to device action, providing an error callback.
-  TestFuture<const GURL&> future;
+  // Initiate the send to device action, providing a result callback.
+  TestFuture<SendTabToSelfResult> future;
   handler->SendTabToDevice(device_id, url, title, PageContext(),
-                           base::NullCallback(), future.GetCallback());
+                           future.GetCallback());
 
-  // Verify the error callback is invoked immediately with the target URL,
-  // bypassing the entire generation flow.
-  EXPECT_EQ(url, future.Get());
+  // Verify the callback is invoked immediately with kFailure, bypassing the
+  // entire generation flow.
+  EXPECT_EQ(SendTabToSelfResult::kFailure, future.Get());
+}
+
+TEST_F(SendTabToSelfPageHandlerTest, ShouldInvokeCallbackOnSuccess) {
+  const GURL url("https://www.example.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  SendTabToSelfPageHandler* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+
+  // Prepare the model to accept the entry.
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _));
+
+  // Initiate the send to device action, providing a result callback.
+  TestFuture<SendTabToSelfResult> future;
+  handler->SendTabToDevice(device_id, url, title, PageContext(),
+                           future.GetCallback());
+
+  // Fast-forward to skip selector generation (since it's not the focus of
+  // this test).
+  mock_receiver_.WaitForRequestSelector();
+  mock_receiver_.RespondToSelectorRequest("");
+
+  // Verify the callback is invoked with kSuccess.
+  EXPECT_EQ(SendTabToSelfResult::kSuccess, future.Get());
 }
 
 }  // namespace

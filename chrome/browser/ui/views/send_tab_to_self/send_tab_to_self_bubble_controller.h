@@ -37,6 +37,7 @@ struct AccountInfo;
 
 namespace send_tab_to_self {
 
+enum class SendTabToSelfResult;
 class SendTabToSelfBubbleView;
 struct TargetDeviceInfo;
 
@@ -112,6 +113,7 @@ class SendTabToSelfBubbleController
   Profile* GetProfile();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
 
+  void HandleSendTabToDeviceResult(const GURL& url, SendTabToSelfResult result);
   void OnSendFailed(const GURL& url);
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
