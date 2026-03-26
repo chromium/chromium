@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,24 +48,33 @@ public class EventForwarderDeviceTest {
 
     private static final long NATIVE_EVENT_FORWARDER_ID = 1;
 
+    private EventForwarder mEventForwarder;
+
     @Before
     public void setUp() {
         EventForwarderJni.setInstanceForTesting(mNativeMock);
+    }
+
+    @After
+    public void tearDown() {
+        if (mEventForwarder != null) {
+            mEventForwarder.destroy();
+            mEventForwarder = null;
+        }
     }
 
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testSendTrackpadScrollAsMouseWheelToNativeAtLeastU() {
-        EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+        mEventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
 
         final long downTime = SystemClock.uptimeMillis();
         long eventTime = downTime;
         MotionEvent startEvent =
                 getTrackpadScrollEvent(
                         MotionEvent.ACTION_DOWN, /* x= */ 13, /* y= */ 24, downTime, eventTime);
-        eventForwarder.onTouchEvent(startEvent);
+        mEventForwarder.onTouchEvent(startEvent);
 
         verifyNativeMouseWheelEventSent(startEvent, startEvent);
 
@@ -73,7 +83,7 @@ public class EventForwarderDeviceTest {
         MotionEvent moveEvent =
                 getTrackpadScrollEvent(
                         MotionEvent.ACTION_MOVE, /* x= */ 13, /* y= */ 26, downTime, eventTime);
-        eventForwarder.onTouchEvent(moveEvent);
+        mEventForwarder.onTouchEvent(moveEvent);
 
         verifyNativeMouseWheelEventSent(startEvent, moveEvent);
 
@@ -81,27 +91,25 @@ public class EventForwarderDeviceTest {
         MotionEvent upEvent =
                 getTrackpadScrollEvent(
                         MotionEvent.ACTION_UP, /* x= */ 13, /* y= */ 26, downTime, eventTime);
-        eventForwarder.onTouchEvent(upEvent);
+        mEventForwarder.onTouchEvent(upEvent);
 
         verifyNativeMouseWheelEventSent(moveEvent, upEvent);
 
         verifyNativeStartFlingEventNotSent();
-        eventForwarder.destroy();
     }
 
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testSendTrackpadStartFlingToNativeAtLeastU() {
-        EventForwarder eventForwarder =
-                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+        mEventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
 
         final long downTime = SystemClock.uptimeMillis();
         long eventTime = downTime;
         MotionEvent startEvent =
                 getTrackpadScrollEvent(
                         MotionEvent.ACTION_DOWN, /* x= */ 13, /* y= */ 24, downTime, eventTime);
-        eventForwarder.onTouchEvent(startEvent);
+        mEventForwarder.onTouchEvent(startEvent);
 
         verifyNativeMouseWheelEventSent(startEvent, startEvent);
 
@@ -110,7 +118,7 @@ public class EventForwarderDeviceTest {
         MotionEvent moveEvent =
                 getTrackpadScrollEvent(
                         MotionEvent.ACTION_MOVE, /* x= */ 15, /* y= */ 854, downTime, eventTime);
-        eventForwarder.onTouchEvent(moveEvent);
+        mEventForwarder.onTouchEvent(moveEvent);
 
         verifyNativeMouseWheelEventSent(startEvent, moveEvent);
 
@@ -118,10 +126,9 @@ public class EventForwarderDeviceTest {
         MotionEvent upEvent =
                 getTrackpadScrollEvent(
                         MotionEvent.ACTION_UP, /* x= */ 18, /* y= */ 854, downTime, eventTime);
-        eventForwarder.onTouchEvent(upEvent);
+        mEventForwarder.onTouchEvent(upEvent);
 
         verifyNativeStartFlingEventSent(upEvent);
-        eventForwarder.destroy();
     }
 
     private void verifyNativeMouseWheelEventSent(
@@ -135,7 +142,7 @@ public class EventForwarderDeviceTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat(),
-                        eq(-(trackpadScrollCurrentEvent.getX() - trackpadScrollLastEvent.getX())),
+                        eq(trackpadScrollCurrentEvent.getX() - trackpadScrollLastEvent.getX()),
                         eq(trackpadScrollCurrentEvent.getY() - trackpadScrollLastEvent.getY()));
     }
 

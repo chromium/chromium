@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -28,6 +29,7 @@ import android.view.MotionEvent.PointerCoords;
 import android.view.Surface;
 import android.view.View;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -502,6 +504,127 @@ public class EventForwarderTest {
         eventForwarder.onCapturedPointerEvent(scrollEvent, Surface.ROTATION_0);
         verify(mNativeMock, times(1))
                 .onGenericMotionEvent(anyLong(), any(MotionEvent.class), anyLong(), anyLong());
+        eventForwarder.destroy();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testTrackpadScrollDirection() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+
+        // Swipe RIGHT: X increases.
+        long downTime = 100;
+        long eventTime1 = 200;
+        MotionEvent downEvent =
+                spy(
+                        MotionEvent.obtain(
+                                downTime,
+                                eventTime1,
+                                MotionEvent.ACTION_DOWN,
+                                /* x= */ 10,
+                                /* y= */ 20,
+                                /* metaState= */ 0));
+        downEvent.setSource(InputDevice.SOURCE_MOUSE);
+        doReturn(MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE).when(downEvent).getClassification();
+        eventForwarder.onTouchEvent(downEvent);
+
+        long eventTime2 = 300;
+        MotionEvent moveEvent =
+                spy(
+                        MotionEvent.obtain(
+                                downTime,
+                                eventTime2,
+                                MotionEvent.ACTION_MOVE,
+                                /* x= */ 15, // DeltaX = +5
+                                /* y= */ 25, // DeltaY = +5
+                                /* metaState= */ 0));
+        moveEvent.setSource(InputDevice.SOURCE_MOUSE);
+        doReturn(MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE).when(moveEvent).getClassification();
+        eventForwarder.onTouchEvent(moveEvent);
+
+        // Verify onMouseWheelEvent is called with POSITIVE deltaX (5.0f) and POSITIVE deltaY
+        // (5.0f).
+        // Before the fix, it would have been -5.0f for deltaX.
+        verify(mNativeMock)
+                .onMouseWheelEvent(
+                        eq(NATIVE_EVENT_FORWARDER_ID),
+                        eq(moveEvent),
+                        eq(eventTime2 * 1_000_000L),
+                        eq(10.0f), // startX
+                        eq(20.0f), // startY
+                        eq(10.0f), // startRawX
+                        eq(20.0f), // startRawY
+                        eq(5.0f), // deltaX (NOT negated anymore)
+                        eq(5.0f)); // deltaY
+
+        eventForwarder.destroy();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testTrackpadFlingDirection() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+
+        long downTime = 100;
+        long eventTime1 = 200;
+        MotionEvent downEvent =
+                spy(
+                        MotionEvent.obtain(
+                                downTime,
+                                eventTime1,
+                                MotionEvent.ACTION_DOWN,
+                                /* x= */ 10,
+                                /* y= */ 20,
+                                /* metaState= */ 0));
+        downEvent.setSource(InputDevice.SOURCE_MOUSE);
+        doReturn(MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE).when(downEvent).getClassification();
+        eventForwarder.onTouchEvent(downEvent);
+
+        long eventTime2 = 300;
+        MotionEvent moveEvent =
+                spy(
+                        MotionEvent.obtain(
+                                downTime,
+                                eventTime2,
+                                MotionEvent.ACTION_MOVE,
+                                /* x= */ 20,
+                                /* y= */ 20,
+                                /* metaState= */ 0));
+        moveEvent.setSource(InputDevice.SOURCE_MOUSE);
+        doReturn(MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE).when(moveEvent).getClassification();
+        eventForwarder.onTouchEvent(moveEvent);
+
+        long eventTime3 = 400;
+        MotionEvent upEvent =
+                spy(
+                        MotionEvent.obtain(
+                                downTime,
+                                eventTime3,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 30,
+                                /* y= */ 20,
+                                /* metaState= */ 0));
+        upEvent.setSource(InputDevice.SOURCE_MOUSE);
+        doReturn(MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE).when(upEvent).getClassification();
+        eventForwarder.onTouchEvent(upEvent);
+
+        // Fling Right (+X) -> velocityX is positive.
+        // We verify that startFling is called with positive velocityX.
+        ArgumentCaptor<Float> velocityXCaptor = ArgumentCaptor.forClass(Float.class);
+        verify(mNativeMock)
+                .startFling(
+                        eq(NATIVE_EVENT_FORWARDER_ID),
+                        eq(eventTime3),
+                        velocityXCaptor.capture(),
+                        anyFloat(),
+                        eq(false),
+                        eq(false),
+                        eq(true));
+        Assert.assertTrue(
+                "VelocityX should be positive for swipe right", velocityXCaptor.getValue() > 0);
+
         eventForwarder.destroy();
     }
 
