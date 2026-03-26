@@ -9,7 +9,6 @@
     SecureContext,
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
 ] interface SpellCheckCustomDictionary {
-    attribute ObservableArray<DOMString> words;
     [CallWith=ScriptState] void addWords(sequence<DOMString> words);
     [CallWith=ScriptState] void removeWords(sequence<DOMString> words);
 };

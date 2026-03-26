@@ -10271,11 +10271,9 @@ interface SpeechSynthesisVoice
     method constructor
 interface SpellCheckCustomDictionary
     attribute @@toStringTag
-    getter words
     method addWords
     method constructor
     method removeWords
-    setter words
 interface StaticRange : AbstractRange
     attribute @@toStringTag
     method constructor

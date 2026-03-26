@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/spell_check_custom_dictionary/spell_check_custom_dictionary.h"
 
 #include "third_party/blink/public/web/web_text_check_client.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_string.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -31,37 +30,6 @@ WebTextCheckClient* GetTextCheckClient(ScriptState* script_state) {
 
 }  // namespace
 
-SpellCheckCustomDictionary::~SpellCheckCustomDictionary() = default;
-
-SpellCheckCustomDictionary::SpellCheckCustomDictionary()
-    : words_(MakeGarbageCollected<V8ObservableArrayString>(this,
-                                                           &OnWordsSet,
-                                                           &OnWordsDelete)) {}
-
-void SpellCheckCustomDictionary::OnWordsSet(GarbageCollectedMixin* tree_scope,
-                                            ScriptState* script_state,
-                                            V8ObservableArrayString& phrases,
-                                            uint32_t index,
-                                            String& phrase) {
-  if (auto* client = GetTextCheckClient(script_state)) {
-    std::vector<std::string> custom_words;
-    custom_words.push_back(phrase.Utf8());
-    client->SpellCheckCustomDictionaryChanged(custom_words, {""});
-  }
-}
-
-void SpellCheckCustomDictionary::OnWordsDelete(
-    GarbageCollectedMixin* tree_scope,
-    ScriptState* script_state,
-    V8ObservableArrayString& phrases,
-    uint32_t index) {
-  if (auto* client = GetTextCheckClient(script_state)) {
-    std::vector<std::string> custom_words;
-    custom_words.push_back(phrases[index].Utf8());
-    client->SpellCheckCustomDictionaryChanged({""}, custom_words);
-  }
-}
-
 void SpellCheckCustomDictionary::addWords(ScriptState* script_state,
                                           const Vector<String>& words) {
   if (auto* client = GetTextCheckClient(script_state)) {
@@ -85,7 +53,6 @@ void SpellCheckCustomDictionary::removeWords(ScriptState* script_state,
 }
 
 void SpellCheckCustomDictionary::Trace(Visitor* visitor) const {
-  visitor->Trace(words_);
   ScriptWrappable::Trace(visitor);
 }
 
