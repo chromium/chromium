@@ -7,11 +7,14 @@
 #include <algorithm>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/enterprise/common/proto/connectors.equal.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/common/proto/connectors.to_value.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "crypto/secure_hash.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +36,19 @@ std::string GetHeader(const net::test_server::HttpRequest& request,
 
   return request.all_headers.substr(content_type_header,
                                     end - content_type_header);
+}
+
+std::string GetHeaderValue(const net::test_server::HttpRequest& request,
+                           const std::string& header_name) {
+  std::string header = GetHeader(request, header_name);
+  if (header.empty()) {
+    return std::string();
+  }
+
+  // Remove the header name plus the ':' after it.
+  std::string value = header.substr(header_name.size() + 1);
+  base::TrimWhitespaceASCII(value, base::TRIM_ALL, &value);
+  return value;
 }
 
 // Extract the boundary value used in the request body from the Content-type
@@ -129,11 +145,93 @@ ContentAnalysisBrowserTestBase::ContentAnalysisBrowserTestBase(
     net::EmbeddedTestServer* embedded_test_server)
     : embedded_test_server_(embedded_test_server) {}
 
-ContentAnalysisBrowserTestBase::~ContentAnalysisBrowserTestBase() = default;
+ContentAnalysisBrowserTestBase::~ContentAnalysisBrowserTestBase() {
+  EXPECT_TRUE(expected_requests_.empty())
+      << "Expected request not received during the test: "
+      << ToValue(expected_requests_[0].first) << "\n"
+      << expected_requests_[0].second;
+}
 
 std::unique_ptr<net::test_server::HttpResponse>
 ContentAnalysisBrowserTestBase::HandleRequest(
     const net::test_server::HttpRequest& request) {
+  std::string protocol = GetHeaderValue(request, "X-Goog-Upload-Protocol");
+  std::string command = GetHeaderValue(request, "X-Goog-Upload-Command");
+  if (protocol == "resumable" || !command.empty()) {
+    // The command header can include multiple comma-separated values, so
+    // `find()` is used to parse it.
+    if (command.find("start") != std::string::npos) {
+      return HandleResumableMetadataRequest(request);
+    } else if (command.find("upload, finalize") != std::string::npos) {
+      return HandleResumableContentRequest(request);
+    } else {
+      EXPECT_TRUE(false) << "Unknown Resumable command: " << command;
+      return nullptr;
+    }
+  } else if (protocol == "multipart") {
+    return HandleMultipartRequest(request);
+  } else {
+    EXPECT_TRUE(false) << "Unknown protocol: " << protocol;
+    return nullptr;
+  }
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+ContentAnalysisBrowserTestBase::HandleResumableMetadataRequest(
+    const net::test_server::HttpRequest& request) {
+  // TODO(crbug.com/488379628): Add logic to validate headers.
+
+  // The ContentAnalysisRequest is expected to be encoded in base64 in the
+  // initial resumable request body.
+  std::string base64_metadata = request.content;
+  std::string metadata;
+  base::TrimWhitespaceASCII(base64_metadata, base::TRIM_ALL, &base64_metadata);
+  EXPECT_TRUE(base::Base64Decode(base64_metadata, &metadata));
+  ContentAnalysisRequest content_analysis_request;
+  EXPECT_TRUE(content_analysis_request.ParseFromString(metadata));
+
+  auto expected = std::find_if(
+      expected_requests_.begin(), expected_requests_.end(),
+      [&content_analysis_request, this](const auto& entry) {
+        return MatchesRequest(content_analysis_request, entry.first);
+      });
+
+  EXPECT_NE(expected, expected_requests_.end())
+      << "Unexpected Resumable Metadata request: "
+      << ToValue(content_analysis_request);
+
+  // Don't remove `expected` from `expected_requests_` here since we're still
+  // expecting the second request with the data to come before the end of the
+  // test.
+
+  return SendContentMetadataResponse();
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+ContentAnalysisBrowserTestBase::HandleResumableContentRequest(
+    const net::test_server::HttpRequest& request) {
+  // TODO(crbug.com/488379628): Add logic to validate headers.
+
+  auto expected =
+      std::find_if(expected_requests_.begin(), expected_requests_.end(),
+                   [&request](const auto& entry) {
+                     return request.content == entry.second;
+                   });
+
+  EXPECT_NE(expected, expected_requests_.end())
+      << "Unexpected Resumable Content request: " << request.content;
+
+  ContentAnalysisRequest content_analysis_request = expected->first;
+  expected_requests_.erase(expected);
+
+  return AllowResponse(content_analysis_request);
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+ContentAnalysisBrowserTestBase::HandleMultipartRequest(
+    const net::test_server::HttpRequest& request) {
+  // TODO(crbug.com/488379628): Add logic to validate headers.
+
   ContentAnalysisRequest content_analysis_request =
       GetMultipartMetadata(request);
   std::string body = GetMultipartBody(request);
@@ -144,15 +242,15 @@ ContentAnalysisBrowserTestBase::HandleRequest(
         return MatchesRequest(content_analysis_request, entry.first) &&
                body == entry.second;
       });
+
   EXPECT_NE(expected, expected_requests_.end())
-      << "Unexpected content analysis request: "
-      << ToValue(content_analysis_request);
+      << "Unexpected Multipart request: " << ToValue(content_analysis_request);
   expected_requests_.erase(expected);
 
   return AllowResponse(content_analysis_request);
 }
 
-void ContentAnalysisBrowserTestBase::ExpectScanningRequest(
+void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
     const ContentAnalysisData& data,
     const std::string& body) {
   ContentAnalysisRequest request;
@@ -162,15 +260,7 @@ void ContentAnalysisBrowserTestBase::ExpectScanningRequest(
   // The fields set above are the only ones expected from an authorization
   // request, so we can add it to `expected_requests_` immediately if it's not
   // already been done for a paste request.
-  if (!paste_auth_request_added_) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // This field is set in authorization requests only on CrOS.
-    request.mutable_client_metadata()->set_is_chrome_os_managed_guest_session(
-        false);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    expected_requests_.push_back({request, ""});
-    paste_auth_request_added_ = true;
-  }
+  AddAuthRequestIfNeeded(data, request);
 
   request.set_blocking(data.settings.block_until_verdict ==
                        BlockUntilVerdict::kBlock);
@@ -178,20 +268,36 @@ void ContentAnalysisBrowserTestBase::ExpectScanningRequest(
     request.add_tags(tag_and_settings.first);
   }
   request.set_user_action_requests_count(1);
-  request.set_reason(data.reason);
+  if (data.reason != ContentAnalysisRequest::UNKNOWN) {
+    request.set_reason(data.reason);
+  }
 
   auto* client_metadata = request.mutable_client_metadata();
   client_metadata->mutable_device()->set_dm_token(ExpectedDeviceToken());
   client_metadata->set_is_chrome_os_managed_guest_session(false);
 
   auto* request_data = request.mutable_request_data();
-  *request_data->mutable_copied_text_source() = data.clipboard_source;
+  if (data.reason == ContentAnalysisRequest::CLIPBOARD_PASTE) {
+    *request_data->mutable_copied_text_source() = data.clipboard_source;
+  }
   request_data->set_destination(data.url.spec());
   // TODO(crbug.com/488379628): Add logic for managed profiles.
   request_data->set_email("");
   request_data->set_source(data.clipboard_source.url());
   request_data->set_tab_url(data.url.spec());
   request_data->set_url(data.url.spec());
+  // TODO(crbug.com/488379628): Add logic for multiple files.
+  if (!data.paths.empty()) {
+    request_data->set_filename(data.paths[0].AsUTF8Unsafe());
+    request_data->set_file_size(body.size());
+    request_data->set_destination("");
+
+    auto hash = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+    hash->Update(base::as_byte_span(body));
+    std::vector<uint8_t> hash_value(hash->GetHashLength());
+    hash->Finish(hash_value);
+    request_data->set_digest(base::HexEncode(hash_value));
+  }
 
   // TODO(crbug.com/488379628): Add logic for comparing arbitrary referrer
   // chains with more fields set and more than one entry.
@@ -205,7 +311,7 @@ void ContentAnalysisBrowserTestBase::ExpectScanningRequest(
   referrer_chain->set_type(safe_browsing::ReferrerChainEntry::EVENT_URL);
   referrer_chain->set_url(data.url.spec());
 
-  expected_requests_.push_back({request, body});
+  expected_requests_.emplace_back(request, body);
 }
 
 bool ContentAnalysisBrowserTestBase::MatchesRequest(
@@ -253,6 +359,15 @@ bool ContentAnalysisBrowserTestBase::MatchesRequest(
     for (const auto& local_ip : received_request.local_ips()) {
       expected_request.add_local_ips(local_ip);
     }
+
+    // ContentAnalysisRequest::request_data::content_type
+    // TODO(crbug.com/488379628): Add an enterprise mime type function to call
+    // to set this earlier instead of just copying `received_request`'s mime
+    // type.
+    if (received_request.request_data().has_content_type()) {
+      expected_request.mutable_request_data()->set_content_type(
+          received_request.request_data().content_type());
+    }
   }
 
   return received_request == expected_request;
@@ -266,6 +381,37 @@ std::string ContentAnalysisBrowserTestBase::ExpectedDeviceToken() {
 #else
   return "browser_dm_token";
 #endif
+}
+
+void ContentAnalysisBrowserTestBase::AddAuthRequestIfNeeded(
+    const ContentAnalysisData& data,
+    ContentAnalysisRequest request) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // This field is set in authorization requests only on CrOS.
+  request.mutable_client_metadata()->set_is_chrome_os_managed_guest_session(
+      false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  if (!paste_auth_request_added_ &&
+      request.analysis_connector() == BULK_DATA_ENTRY) {
+    expected_requests_.emplace_back(request, "");
+    paste_auth_request_added_ = true;
+  }
+  if (!file_attach_auth_request_added_ &&
+      request.analysis_connector() == FILE_ATTACHED) {
+    expected_requests_.emplace_back(request, "");
+    file_attach_auth_request_added_ = true;
+  }
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+ContentAnalysisBrowserTestBase::SendContentMetadataResponse() {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->AddCustomHeader("X-Goog-Upload-Status", "active");
+  response->AddCustomHeader(
+      "X-Goog-Upload-Url",
+      embedded_test_server_->GetURL("/resumable_upload").spec());
+  return response;
 }
 
 }  // namespace enterprise_connectors::test

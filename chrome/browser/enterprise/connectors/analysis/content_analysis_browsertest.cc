@@ -4,8 +4,12 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
@@ -64,8 +68,8 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
     MixinBasedPlatformBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  void EnableScanning() {
-    constexpr char kBlockingScansForDlpAndMalware[] = R"({
+  void EnableScanning(AnalysisConnector connector) {
+    constexpr char kBlockingDlpScans[] = R"({
       "service_provider": "google",
       "enable": [
         {
@@ -76,9 +80,8 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
       "block_until_verdict": 1
     })";
 
-    test::SetAnalysisConnector(browser()->profile()->GetPrefs(),
-                               BULK_DATA_ENTRY, kBlockingScansForDlpAndMalware,
-                               true);
+    test::SetAnalysisConnector(browser()->profile()->GetPrefs(), connector,
+                               kBlockingDlpScans, true);
   }
 
   std::string text() { return "b" + std::string(100, 'a') + "b"; }
@@ -91,7 +94,7 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, PasteAllowed) {
-  EnableScanning();
+  EnableScanning(BULK_DATA_ENTRY);
 
   ContentAnalysisDelegate::Data data;
   data.text.emplace_back(text());
@@ -104,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, PasteAllowed) {
                                                      ->GetActiveWebContents()
                                                      ->GetLastCommittedURL(),
                                                  &data, BULK_DATA_ENTRY));
-  ExpectScanningRequest(data, text());
+  AddExpectedScanningRequest(data, text());
 
   base::RunLoop run_loop;
   ContentAnalysisDelegate::CreateForWebContents(
@@ -118,6 +121,41 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, PasteAllowed) {
             run_loop.Quit();
           }),
       DeepScanAccessPoint::PASTE);
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, FileAttachAllowed) {
+  EnableScanning(FILE_ATTACHED);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.txt");
+  ASSERT_TRUE(base::WriteFile(file_path, text()));
+
+  ContentAnalysisDelegate::Data data;
+  data.paths.emplace_back(file_path);
+
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(browser()->profile(),
+                                                 browser()
+                                                     ->tab_strip_model()
+                                                     ->GetActiveWebContents()
+                                                     ->GetLastCommittedURL(),
+                                                 &data, FILE_ATTACHED));
+  AddExpectedScanningRequest(data, text());
+
+  base::RunLoop run_loop;
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&run_loop](const ContentAnalysisDelegate::Data& data,
+                      ContentAnalysisDelegate::Result& result) {
+            ASSERT_TRUE(result.text_results.empty());
+            ASSERT_EQ(result.paths_results.size(), 1u);
+            ASSERT_TRUE(result.paths_results[0]);
+            run_loop.Quit();
+          }),
+      DeepScanAccessPoint::UPLOAD);
   run_loop.Run();
 }
 
