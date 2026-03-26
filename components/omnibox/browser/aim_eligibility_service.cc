@@ -207,28 +207,24 @@ bool GetResponseFromPrefs(const PrefService* prefs,
 }
 
 // Determines whether the specified tool mode is permitted based on the
-// allowed tools list within the `SearchboxConfig` rule set.
+// allowed tools list within the `SearchboxConfig`.
 bool IsToolAllowed(const omnibox::SearchboxConfig& config,
                    omnibox::ToolMode tool_mode) {
-  if (config.has_rule_set()) {
-    for (const auto& allowed_tool : config.rule_set().allowed_tools()) {
-      if (allowed_tool == tool_mode) {
-        return true;
-      }
+  for (const auto& tool_config : config.tool_configs()) {
+    if (tool_config.tool() == tool_mode) {
+      return true;
     }
   }
   return false;
 }
 
 // Determines whether the specified input type is permitted based on the
-// allowed input types list within the `SearchboxConfig` rule set.
+// allowed input types list within the `SearchboxConfig`.
 bool IsInputTypeAllowed(const omnibox::SearchboxConfig& config,
                         omnibox::InputType input_type) {
-  if (config.has_rule_set()) {
-    for (const auto& allowed_type : config.rule_set().allowed_input_types()) {
-      if (allowed_type == input_type) {
-        return true;
-      }
+  for (const auto& type_config : config.input_type_configs()) {
+    if (type_config.input_type() == input_type) {
+      return true;
     }
   }
   return false;
