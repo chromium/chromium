@@ -1028,13 +1028,16 @@ void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
     chrome_extra_part->PreCreateMainMessageLoop();
   }
 
-  updater::SchedulePeriodicTasks(
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableUpdaterScheduler)) {
+    updater::SchedulePeriodicTasks(
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-      base::BindRepeating(&ShowUpdaterPromotionInfoBar)
+        base::BindRepeating(&ShowUpdaterPromotionInfoBar)
 #else
-      base::DoNothing()
+        base::DoNothing()
 #endif
-  );
+    );
+  }
 }
 
 void ChromeBrowserMainParts::PostCreateMainMessageLoop() {

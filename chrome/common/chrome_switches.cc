@@ -221,6 +221,9 @@ const char kDisablePromptOnRepost[] = "disable-prompt-on-repost";
 // build that has it disabled by default.
 const char kDisableStackProfiler[] = "disable-stack-profiler";
 
+// Disable startup of the updater process.
+const char kDisableUpdaterScheduler[] = "disable-updater-scheduler";
+
 // Some tests seem to require the application to close when the last
 // browser window is closed. Thus, we need a switch to force this behavior
 // for ChromeOS Aura, disable "zero window mode".
