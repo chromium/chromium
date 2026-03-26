@@ -594,7 +594,7 @@ static String LimitLength(const String& string, unsigned max_length) {
     return string;
   if (new_length > 0 && U16_IS_LEAD(string[new_length - 1]))
     --new_length;
-  return string.Left(new_length);
+  return string.substr(0, new_length);
 }
 
 String TextFieldInputType::SanitizeValue(const String& proposed_value) const {

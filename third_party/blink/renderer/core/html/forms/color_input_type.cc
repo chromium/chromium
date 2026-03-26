@@ -312,7 +312,7 @@ Vector<mojom::blink::ColorSuggestionPtr> ColorInputType::Suggestions() const {
       if (!color.SetFromString(option->value()))
         continue;
       suggestions.push_back(mojom::blink::ColorSuggestion::New(
-          color.Rgb(), option->label().Left(kMaxSuggestionLabelLength)));
+          color.Rgb(), option->label().substr(0, kMaxSuggestionLabelLength)));
       if (suggestions.size() >= kMaxSuggestions)
         break;
     }

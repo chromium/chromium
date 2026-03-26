@@ -1189,8 +1189,8 @@ SourceLocation* GatherSecurityPolicyViolationEventData(
     ContentSecurityPolicyType header_type,
     ContentSecurityPolicyViolationType violation_type,
     SourceLocation* source_location,
-    const String& script_source,
-    const String& sample_prefix,
+    const StringView& script_source,
+    const StringView& sample_prefix,
     const std::optional<String> eval_hash) {
   if (effective_type == CSPDirectiveName::FrameAncestors) {
     // If this load was blocked via 'frame-ancestors', then the URL of
@@ -1304,13 +1304,13 @@ SourceLocation* GatherSecurityPolicyViolationEventData(
   // separately.
   StringBuilder sample;
   if (!sample_prefix.empty()) {
-    sample.Append(sample_prefix.StripWhiteSpace().Left(
-        ContentSecurityPolicy::kMaxSampleLength));
+    sample.Append(sample_prefix.StripWhiteSpace().substr(
+        0, ContentSecurityPolicy::kMaxSampleLength));
     sample.Append("|");
   }
   if (!script_source.empty()) {
-    sample.Append(script_source.StripWhiteSpace().Left(
-        ContentSecurityPolicy::kMaxSampleLength));
+    sample.Append(script_source.StripWhiteSpace().substr(
+        0, ContentSecurityPolicy::kMaxSampleLength));
   }
   if (!sample.empty())
     init->setSample(sample.ToString());

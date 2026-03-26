@@ -167,7 +167,7 @@ CSSRuleSourceData* InspectorCSSParserObserver::PopRuleData() {
 
 namespace {
 
-wtf_size_t FindColonIndex(const String& property_string) {
+wtf_size_t FindColonIndex(const StringView& property_string) {
   for (wtf_size_t index = 0;
        index != kNotFound && index < property_string.length(); index++) {
     if (property_string[index] == '\\') {
@@ -216,19 +216,23 @@ void InspectorCSSParserObserver::ObserveProperty(unsigned start_offset,
   }
 
   DCHECK_LT(start_offset, end_offset);
-  String property_string =
-      parsed_text_.Substring(start_offset, end_offset - start_offset)
+  StringView property_string =
+      parsed_text_
+          .subview(std::min(start_offset, parsed_text_.length()),
+                   end_offset - start_offset)
           .StripWhiteSpace();
   if (property_string.ends_with(';')) {
-    property_string = property_string.Left(property_string.length() - 1);
+    property_string.remove_suffix(1);
   }
   wtf_size_t colon_index = FindColonIndex(property_string);
   DCHECK_NE(colon_index, kNotFound);
 
-  String name = property_string.Left(colon_index).StripWhiteSpace();
+  String name =
+      property_string.subview(0, colon_index).StripWhiteSpace().ToString();
   String value =
-      property_string.substr(colon_index + 1, property_string.length())
-          .StripWhiteSpace();
+      property_string.subview(colon_index + 1, property_string.length())
+          .StripWhiteSpace()
+          .ToString();
   current_rule_data_stack_.back()->property_data.push_back(
       CSSPropertySourceData(name, value, is_important, false, is_parsed,
                             SourceRange(start_offset, end_offset)));

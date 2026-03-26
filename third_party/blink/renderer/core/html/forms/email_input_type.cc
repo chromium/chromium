@@ -146,11 +146,12 @@ static bool IsInvalidDomainCharacter(UChar ch) {
          ch != '.' && ch != '-';
 }
 
-static bool CheckValidDotUsage(const String& domain) {
+static bool CheckValidDotUsage(const StringView& domain) {
   if (domain.empty())
     return true;
-  if (domain[0] == '.' || domain[domain.length() - 1] == '.')
+  if (domain.starts_with('.') || domain.ends_with('.')) {
     return false;
+  }
   return !domain.contains("..");
 }
 
@@ -229,8 +230,8 @@ String EmailInputType::TypeMismatchText() const {
   // We check validity against an ASCII value because of difficulty to check
   // invalid characters. However we should show Unicode value.
   String unicode_address = ConvertEmailAddressToUnicode(invalid_address);
-  String local_part = invalid_address.Left(at_index);
-  String domain = invalid_address.substr(at_index + 1);
+  StringView local_part = invalid_address.subview(0, at_index);
+  StringView domain = invalid_address.subview(at_index + 1);
   if (local_part.empty())
     return GetLocale().QueryString(
         IDS_FORM_VALIDATION_TYPE_MISMATCH_EMAIL_EMPTY_LOCAL, at_sign,
@@ -244,14 +245,14 @@ String EmailInputType::TypeMismatchText() const {
     unsigned char_length = U_IS_LEAD(local_part[invalid_char_index]) ? 2 : 1;
     return GetLocale().QueryString(
         IDS_FORM_VALIDATION_TYPE_MISMATCH_EMAIL_INVALID_LOCAL, at_sign,
-        local_part.substr(invalid_char_index, char_length));
+        local_part.substr(invalid_char_index, char_length).ToString());
   }
   invalid_char_index = domain.Find(IsInvalidDomainCharacter);
   if (invalid_char_index != kNotFound) {
     unsigned char_length = U_IS_LEAD(domain[invalid_char_index]) ? 2 : 1;
     return GetLocale().QueryString(
         IDS_FORM_VALIDATION_TYPE_MISMATCH_EMAIL_INVALID_DOMAIN, at_sign,
-        domain.substr(invalid_char_index, char_length));
+        domain.substr(invalid_char_index, char_length).ToString());
   }
   if (!CheckValidDotUsage(domain)) {
     wtf_size_t at_index_in_unicode = unicode_address.find('@');

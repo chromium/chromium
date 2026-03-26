@@ -344,7 +344,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
           << result.InnerElement()
                  ->GetOuterHTMLString()
                  .StripWhiteSpace()
-                 .Left(80)
+                 .substr(0, 80)
                  .Ascii()
                  .data()
           << "\"" << std::endl

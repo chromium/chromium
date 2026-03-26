@@ -62,7 +62,7 @@ String ContentType::GetType() const {
   // "type" can have parameters after a semi-colon, strip them
   const wtf_size_t semicolon_index = type_.find(';');
   if (semicolon_index != kNotFound) {
-    return type_.Left(semicolon_index).StripWhiteSpace();
+    return type_.subview(0, semicolon_index).StripWhiteSpace().ToString();
   }
   return type_;
 }

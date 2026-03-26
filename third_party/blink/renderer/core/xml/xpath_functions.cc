@@ -526,7 +526,7 @@ Value FunSubstringBefore::Evaluate(EvaluationContext& context) const {
   if (i == kNotFound)
     return "";
 
-  return s1.Left(i);
+  return s1.substr(0, i);
 }
 
 Value FunSubstringAfter::Evaluate(EvaluationContext& context) const {

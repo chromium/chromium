@@ -479,7 +479,7 @@ bool Parser::ExpandQName(const String& q_name,
   if (colon != kNotFound) {
     if (!resolver_)
       return false;
-    String prefix = q_name.Left(colon);
+    String prefix = q_name.substr(0, colon);
     v8::TryCatch try_catch(resolver_->GetIsolate());
     try_catch.SetVerbose(true);  // Print exceptions to console.
     String uri;

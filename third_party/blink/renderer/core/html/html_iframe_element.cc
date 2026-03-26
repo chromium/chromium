@@ -74,7 +74,7 @@ String ConvertToReportValue(const AtomicString& value) {
     return String();
   }
   static constexpr size_t kMaxLengthToReport = 1024;
-  return value.GetString().Left(kMaxLengthToReport);
+  return value.GetString().substr(0, kMaxLengthToReport);
 }
 
 }  // namespace

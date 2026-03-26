@@ -279,7 +279,8 @@ AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
     const wtf_size_t last_hyphen = mapped_locale.rfind('-');
     if (last_hyphen == kNotFound || !last_hyphen)
       return mapped_locale;
-    mapped_locale = AtomicString(mapped_locale.GetString().Left(last_hyphen));
+    mapped_locale =
+        AtomicString(mapped_locale.GetString().substr(0, last_hyphen));
   }
 }
 

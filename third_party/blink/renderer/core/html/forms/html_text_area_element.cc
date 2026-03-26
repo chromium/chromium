@@ -492,7 +492,7 @@ String HTMLTextAreaElement::SanitizeUserInputValue(const String& proposed_value,
   }
   if (i > 0 && U16_IS_LEAD(proposed_value[i - 1]))
     --i;
-  return proposed_value.Left(i);
+  return proposed_value.substr(0, i);
 }
 
 void HTMLTextAreaElement::UpdateValue() {

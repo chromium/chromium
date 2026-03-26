@@ -136,7 +136,7 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   const String& image_string = url.GetString();
   const String& image_url =
       url.ProtocolIsData()
-          ? image_string.Left(ImageElementTiming::kInlineImageMaxChars)
+          ? image_string.substr(0, ImageElementTiming::kInlineImageMaxChars)
           : image_string;
   // Do not expose element attribution from shadow trees.
   Element* image_element =

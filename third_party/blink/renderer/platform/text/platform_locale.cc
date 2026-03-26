@@ -418,12 +418,12 @@ String Locale::ConvertFromLocalizedNumber(const String& localized) {
       builder.Append(static_cast<UChar>('0' + symbol_index));
     }
   }
-  String converted = builder.ToString();
+  String converted = builder.ReleaseString();
   // Ignore trailing '.', but will reject '.'-only string later.
-  if (converted.length() >= 2 && converted[converted.length() - 1] == '.') {
+  if (converted.length() >= 2 && converted.ends_with('.')) {
     // Leave it if there are two decimal separators since that's invalid.
     if (num_decimal_separators < 2)
-      converted = converted.Left(converted.length() - 1);
+      converted = converted.substr(0, converted.length() - 1);
   }
   return converted;
 }

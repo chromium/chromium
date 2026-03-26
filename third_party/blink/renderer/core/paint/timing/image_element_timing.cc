@@ -179,7 +179,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   // consistent with Resource Timing.
   const String& image_string = url.GetString();
   const String& image_url = url.ProtocolIsData()
-                                ? image_string.Left(kInlineImageMaxChars)
+                                ? image_string.substr(0, kInlineImageMaxChars)
                                 : image_string;
   if (!element_timings_) {
     element_timings_ =

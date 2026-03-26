@@ -173,7 +173,7 @@ void StringBuilder::Reserve16BitCapacity(unsigned new_capacity) {
 
 void StringBuilder::Resize(unsigned new_size) {
   DCHECK_LE(new_size, length_);
-  string_ = string_.Left(new_size);
+  string_ = string_.substr(0, new_size);
   length_ = new_size;
   if (HasBuffer()) {
     if (is_8bit_)

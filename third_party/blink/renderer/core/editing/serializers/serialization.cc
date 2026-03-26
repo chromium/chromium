@@ -463,7 +463,7 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(
   // markers.
 
   StringBuilder tagged_markup;
-  tagged_markup.Append(markup.Left(fragment_start));
+  tagged_markup.Append(markup.subview(0, fragment_start));
   MarkupFormatter::AppendComment(tagged_markup, kFragmentMarkerTag);
   tagged_markup.Append(
       markup.Substring(fragment_start, fragment_end - fragment_start));

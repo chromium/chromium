@@ -168,7 +168,7 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   } else {
     String matrix(Matrix().ToDecomposedString());
     if (matrix.ends_with('\n')) {
-      matrix = matrix.Left(matrix.length() - 1);
+      matrix = matrix.substr(0, matrix.length() - 1);
     }
     json->SetString("matrix", matrix.Replace("\n", ", "));
     json->SetString("origin", String(Origin().ToString()));
