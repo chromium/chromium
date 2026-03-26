@@ -725,22 +725,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.maybeRefreshUserStatus = undefined;
     }
 
-    if (!state.enableMultiTab) {
-      // MOJO_RUNTIME_FEATURE_GATED GetContextFromTab
-      this.getContextFromTab = undefined;
-      this.getPinnedTabs = undefined;
-      // MOJO_RUNTIME_FEATURE_GATED SubscribeToPinCandidates
-      this.getPinCandidates = undefined;
-      // MOJO_RUNTIME_FEATURE_GATED PinTabs
-      this.pinTabs = undefined;
-      // MOJO_RUNTIME_FEATURE_GATED SetMaximumNumberOfPinnedTabs
-      this.setMaximumNumberOfPinnedTabs = undefined;
-      // MOJO_RUNTIME_FEATURE_GATED UnpinTabs
-      this.unpinTabs = undefined;
-      // MOJO_RUNTIME_FEATURE_GATED UnpinAllTabs
-      this.unpinAllTabs = undefined;
-    }
-
     if (!state.enableGetContextActor) {
       // MOJO_RUNTIME_FEATURE_GATED GetContextForActorFromTab
       this.getContextForActorFromTab = undefined;

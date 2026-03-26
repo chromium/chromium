@@ -1046,7 +1046,6 @@ interface WebClientHandler {
   // `tab_context_result` is null if tab content could not be captured.
   // This may fail if the tab is navigated while collecting data, or closed
   // before data is collected.
-  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   GetContextFromTab(int32 tab_id, GetTabContextOptions options)
       => (GetContextResult result);
 
@@ -1061,24 +1060,20 @@ interface WebClientHandler {
   // effective limit is returned. The returned number may also differ from the
   // requested number if the current number of pinned tabs exceeds the requested
   // amount.
-  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   SetMaximumNumberOfPinnedTabs(uint32 requested_max)
       => (uint32 effective_max);
 
   // Pins the given tabs. Can fail if the tabs cannot be found, if the number of
   // pinned tabs exceeds the allowed limit or if the tabs are already pinned.
   // Returns true if all the given tabs were pinned.
-  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   PinTabs(array<int32> tab_ids, PinTabsOptions? options) => (bool pinned_all);
 
   // Unpins the given tabs. Can fail if the tabs cannot be found, or if some of
   // the given tabs aren't pinned.
-  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   UnpinTabs(array<int32> tab_ids, UnpinTabsOptions? options)
       => (bool unpinned_all);
 
   // Unpins all currently pinned tabs.
-  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   UnpinAllTabs(UnpinTabsOptions? options);
 
   // Initiates the creation of a skill by opening a modal dialog. It returns a
@@ -1101,7 +1096,6 @@ interface WebClientHandler {
   RecordSkillsWebClientEvent(SkillsWebClientEvent event);
 
   // Subscribes to receive updates on pin candidates.
-  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   SubscribeToPinCandidates(GetPinCandidatesOptions options,
                            pending_remote<PinCandidatesObserver> observer);
 
@@ -1791,11 +1785,9 @@ interface WebClient {
   NotifyClosedCaptioningSettingChanged(bool enabled);
 
   // Notify that the collection of shared tabs has changed.
-  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   NotifyPinnedTabsChanged(array<TabData> tab_data);
 
   // Notify that the TabData for a pinned tab has changed.
-  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   NotifyPinnedTabDataChanged(TabData tab_data);
 
   // Notify that a skill has been deleted.

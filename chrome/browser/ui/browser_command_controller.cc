@@ -349,14 +349,12 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
     auto* service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
     if (service) {
-      if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-        glic_active_instance_changed_subscription_ =
-            service->window_controller()
-                .AddActiveInstanceChangedCallbackAndNotifyImmediately(
-                    base::BindRepeating(
-                        &BrowserCommandController::GlicActiveInstanceChanged,
-                        base::Unretained(this)));
-      }
+      glic_active_instance_changed_subscription_ =
+          service->window_controller()
+              .AddActiveInstanceChangedCallbackAndNotifyImmediately(
+                  base::BindRepeating(
+                      &BrowserCommandController::GlicActiveInstanceChanged,
+                      base::Unretained(this)));
       glic_fre_state_change_subscription_ =
           service->fre_controller().AddWebUiStateChangedCallback(
               base::BindRepeating(

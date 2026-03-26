@@ -294,24 +294,17 @@ void GlicShareImageHandler::OnCopyPolicyCheckComplete(
   }
 
   auto* instance = service_->GetInstanceForTab(tab);
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    if (instance &&
-        instance->GetPanelState().kind == mojom::PanelStateKind::kDetached) {
-      CHECK(instance->IsShowing()) << ", should be showing if detached";
-      service_->CloseFloatingPanel();
-    }
-    // We always want to call ToggleUI for multi-instance to force a new
-    // instance to be created.
-    glic_panel_open_time_ = base::TimeTicks::Now();
-    // Note: if the FRE was showing, this will just cause it to be reshown.
-    service_->ToggleUI(browser, /*prevent_close=*/true,
-                       mojom::InvocationSource::kSharedImage);
-  } else if (!instance || !instance->IsShowing()) {
-    glic_panel_open_time_ = base::TimeTicks::Now();
-    // Note: if the FRE was showing, this will just cause it to be reshown.
-    service_->ToggleUI(browser, /*prevent_close=*/true,
-                       mojom::InvocationSource::kSharedImage);
+  if (instance &&
+      instance->GetPanelState().kind == mojom::PanelStateKind::kDetached) {
+    CHECK(instance->IsShowing()) << ", should be showing if detached";
+    service_->CloseFloatingPanel();
   }
+  // We always want to call ToggleUI for multi-instance to force a new
+  // instance to be created.
+  glic_panel_open_time_ = base::TimeTicks::Now();
+  // Note: if the FRE was showing, this will just cause it to be reshown.
+  service_->ToggleUI(browser, /*prevent_close=*/true,
+                     mojom::InvocationSource::kSharedImage);
 
   PerformPastePolicyCheckWhenReady();
 }

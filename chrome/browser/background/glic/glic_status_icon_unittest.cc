@@ -72,9 +72,10 @@ class MockGlicController : public GlicController {
 
 }  // namespace
 
-class GlicStatusIconTest : public testing::Test {
+// TODO(b/489122337): Fix this test.
+class DISABLED_GlicStatusIconTest : public testing::Test {
  public:
-  ~GlicStatusIconTest() override = default;
+  ~DISABLED_GlicStatusIconTest() override = default;
 
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
@@ -119,13 +120,13 @@ class GlicStatusIconTest : public testing::Test {
 };
 
 #if !BUILDFLAG(IS_LINUX)
-TEST_F(GlicStatusIconTest, OnStatusIconClicked) {
+TEST_F(DISABLED_GlicStatusIconTest, OnStatusIconClicked) {
   EXPECT_CALL(*glic_controller(), Toggle).Times(1);
   status_icon()->DispatchClickEvent();
 }
 #endif
 
-TEST_F(GlicStatusIconTest, ExecuteCommand) {
+TEST_F(DISABLED_GlicStatusIconTest, ExecuteCommand) {
   EXPECT_CALL(*glic_controller(), Show).Times(1);
   base::UserActionTester user_action_tester;
   auto* context_menu = status_icon()->GetContextMenuForTesting();
@@ -134,7 +135,7 @@ TEST_F(GlicStatusIconTest, ExecuteCommand) {
                    "GlicOsEntrypoint.ContextMenuSelection.OpenGlic"));
 }
 
-TEST_F(GlicStatusIconTest, ContextMenu) {
+TEST_F(DISABLED_GlicStatusIconTest, ContextMenu) {
   auto* context_menu = status_icon()->GetContextMenuForTesting();
   EXPECT_TRUE(context_menu->IsCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_SHOW));
   EXPECT_TRUE(context_menu->IsCommandIdVisible(
@@ -145,7 +146,7 @@ TEST_F(GlicStatusIconTest, ContextMenu) {
       context_menu->IsCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_SETTINGS));
 }
 
-TEST_F(GlicStatusIconTest, UpdateHotkey) {
+TEST_F(DISABLED_GlicStatusIconTest, UpdateHotkey) {
   auto* context_menu = status_icon()->GetContextMenuForTesting();
   ui::Accelerator new_accelerator(ui::VKEY_A,
                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);

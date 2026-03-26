@@ -156,8 +156,7 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   tabs::TabInterface* tab = const_cast<tabs::TabInterface*>(GetTabInterface());
   BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
   if (browser_window &&
-      ((base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
-        glic::GlicEnabling::IsProfileEligible(browser_window->GetProfile())) ||
+      (glic::GlicEnabling::IsProfileEligible(browser_window->GetProfile()) ||
        base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks))) {
     glic_tab_underline_view_ = AddChildView(
         views::Builder<glic::TabUnderlineView>(

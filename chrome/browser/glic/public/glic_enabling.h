@@ -175,9 +175,7 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // Whether the tab web contents contextual menu item is enabled.
   static bool IsContextualMenuItemEnabled(Profile* profile);
 
-  // Whether the required feature flags for multi-instance - kGlicMultiInstance,
-  // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled. When calling, be
-  // sure that IsMultiInstanceEnabled() should not be used instead.
+  // Deprecated, Multi-instance is always enabled.
   static bool IsMultiInstanceEnabledByFlags();
 
   // Returns true if Glic is enabled for the profile, the feature is enabled,

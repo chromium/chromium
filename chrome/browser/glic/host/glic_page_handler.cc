@@ -856,9 +856,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->can_attach = ComputeCanAttach();
     state->panel_is_active = active_state_calculator_.IsActive();
 
-    if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
-      OnPinningChanged(sharing_manager().GetPinnedTabs());
-    }
+    OnPinningChanged(sharing_manager().GetPinnedTabs());
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
     state->instance_is_active = host().instance_delegate().IsActive();
@@ -890,8 +888,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->enable_maybe_refresh_user_status =
         base::FeatureList::IsEnabled(features::kGlicUserStatusCheck) &&
         features::kGlicUserStatusRefreshApi.Get();
-    state->enable_multi_tab =
-        base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab);
     state->enable_get_context_actor = base::FeatureList::IsEnabled(
         glic::mojom::features::kGlicActorTabContext);
     state->enable_web_actuation_setting_feature =

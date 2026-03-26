@@ -693,22 +693,7 @@ bool GlicEnabling::IsTrustFirstOnboardingGatedFeatureEnabled(
 }
 
 bool GlicEnabling::IsMultiInstanceEnabledByFlags() {
-  const bool multi_instance_enabled =
-      base::FeatureList::IsEnabled(features::kGlicMultiInstance);
-  const bool multi_tab_enabled =
-      base::FeatureList::IsEnabled(mojom::features::kGlicMultiTab);
-  const bool tab_underlines_enabled =
-      base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines);
-
-  if (multi_instance_enabled &&
-      !(multi_tab_enabled && tab_underlines_enabled)) {
-    LOG(ERROR)
-        << "GlicMultiInstance is enabled without kGlicMultiTab and/or "
-           "kGlicMultitabUnderlines. All of these features must be enabled to "
-           "ensure proper behavior.";
-  }
-
-  return multi_instance_enabled && multi_tab_enabled && tab_underlines_enabled;
+  return true;
 }
 
 bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {

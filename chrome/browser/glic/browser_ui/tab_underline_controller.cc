@@ -450,9 +450,8 @@ std::string TabUnderlineController::UpdateReasonsToString() const {
 }
 
 bool TabUnderlineController::ShouldUseSignalsForGlicUnderlines() {
-  return base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
-         glic::GlicEnabling::IsProfileEligible(
-             browser_window_interface_->GetProfile());
+  return glic::GlicEnabling::IsProfileEligible(
+      browser_window_interface_->GetProfile());
 }
 
 bool TabUnderlineController::ShouldUseSignalsForContextualTasks() {

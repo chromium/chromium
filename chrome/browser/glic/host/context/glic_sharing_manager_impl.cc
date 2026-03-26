@@ -142,14 +142,12 @@ GlicSharingManagerImpl::AddTabPinningStatusEventCallback(
 bool GlicSharingManagerImpl::PinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicPinTrigger trigger) {
-  CHECK(base::FeatureList::IsEnabled(mojom::features::kGlicMultiTab));
   return pinned_tab_manager()->PinTabs(tab_handles, trigger);
 }
 
 bool GlicSharingManagerImpl::UnpinTabs(
     base::span<const tabs::TabHandle> tab_handles,
     GlicUnpinTrigger trigger) {
-  CHECK(base::FeatureList::IsEnabled(mojom::features::kGlicMultiTab));
   return pinned_tab_manager()->UnpinTabs(tab_handles, trigger);
 }
 
