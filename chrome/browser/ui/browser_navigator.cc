@@ -512,6 +512,7 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
 base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   TRACE_EVENT1("navigation", "chrome::Navigate", "disposition",
                params->disposition);
+  CHECK(params);
   Browser* source_browser =
       params->browser ? params->browser->GetBrowserForMigrationOnly() : nullptr;
   if (source_browser) {
@@ -956,6 +957,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 void Navigate(NavigateParams* params,
               base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
                   callback) {
+  CHECK(params);
   base::WeakPtr<content::NavigationHandle> handle = Navigate(params);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), handle));
