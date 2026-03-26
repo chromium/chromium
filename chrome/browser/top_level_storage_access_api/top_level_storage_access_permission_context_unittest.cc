@@ -86,8 +86,9 @@ class TopLevelStorageAccessPermissionContextTest
       TopLevelStorageAccessPermissionContext* permission_context,
       bool user_gesture,
       const GURL& requester_url,
-      const GURL& embedding_url) {
-    if (user_gesture) {
+      const GURL& embedding_url,
+      bool simulate_user_gesture = true) {
+    if (user_gesture && simulate_user_gesture) {
       content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
     }
     base::test::TestFuture<content::PermissionResult> future;
@@ -144,6 +145,22 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/false,
                                  GetRequesterURL(), GetTopLevelURL()),
+            PermissionStatus::DENIED);
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRequestOutcomeHistogram,
+                TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
+            1);
+}
+
+// The renderer cannot spoof a user_gesture.
+TEST_F(TopLevelStorageAccessPermissionContextTest,
+       PermissionDeniedWithoutUserGesture_RendererSpoof) {
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+
+  EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
+                                 GetRequesterURL(), GetTopLevelURL(),
+                                 /*simulate_user_gesture=*/false),
             PermissionStatus::DENIED);
 
   EXPECT_EQ(histogram_tester().GetBucketCount(
