@@ -20,8 +20,8 @@ import './secure_dns_v2.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
-import type {PrivacyPageBrowserProxy, SecureDnsSetting} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
-import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
+import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -267,8 +267,8 @@ export class SettingsSecurityPageV2Element extends
   private securitySettingsBundleStateOnOpen_: SecuritySettingsBundleSetting;
   private isRouteSecurity_: boolean = true;
   private eventTracker_: EventTracker = new EventTracker();
-  private browserProxy_: PrivacyPageBrowserProxy =
-      PrivacyPageBrowserProxyImpl.getInstance();
+  private browserProxy_: SecurityPageBrowserProxy =
+      SecurityPageBrowserProxyImpl.getInstance();
   private hatsBrowserProxy_: HatsBrowserProxy =
       HatsBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =

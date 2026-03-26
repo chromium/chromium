@@ -20,6 +20,7 @@ class SecureDnsConfig {
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SecureDnsManagementMode
   // Forced management description types. We will check for the override cases
   // in the order they are listed in the enum.
+  // LINT.IfChange(SecureDnsUiManagementMode)
   enum class ManagementMode {
     // Chrome did not override the secure DNS settings.
     kNoOverride,
@@ -28,12 +29,15 @@ class SecureDnsConfig {
     // Secure DNS was disabled due to detection of OS-level parental controls.
     kDisabledParentalControls,
   };
+  // LINT.ThenChange(//chrome/browser/resources/settings_shared/security_page/security_page_browser_proxy.ts:SecureDnsUiManagementMode)
 
   // String representations for net::SecureDnsMode.  Used for both configuration
   // storage and UI state.
+  // LINT.IfChange(SecureDnsMode)
   static constexpr char kModeOff[] = "off";
   static constexpr char kModeAutomatic[] = "automatic";
   static constexpr char kModeSecure[] = "secure";
+  // LINT.ThenChange(//chrome/browser/resources/settings_shared/security_page/security_page_browser_proxy.ts:SecureDnsMode)
 
   SecureDnsConfig(net::SecureDnsMode mode,
                   net::DnsOverHttpsConfig doh_config,

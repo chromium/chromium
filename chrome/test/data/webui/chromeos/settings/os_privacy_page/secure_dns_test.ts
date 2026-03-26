@@ -16,19 +16,19 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SecureDnsInputElement, SettingsSecureDnsElement} from 'chrome://os-settings/lazy_load.js';
 import {SecureDnsResolverType} from 'chrome://os-settings/lazy_load.js';
 import type { ResolverOption, LocalizedLinkElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://os-settings/os_settings.js';
+import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.js';
 
 import {clearBody} from '../utils.js';
 
 // clang-format on
 
 suite('SettingsSecureDnsInput', function() {
-  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testBrowserProxy: TestSecurityPageBrowserProxy;
   let testElement: SecureDnsInputElement;
 
   // Possible error messages
@@ -47,8 +47,8 @@ suite('SettingsSecureDnsInput', function() {
   });
 
   setup(function() {
-    testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    testBrowserProxy = new TestSecurityPageBrowserProxy();
+    SecurityPageBrowserProxyImpl.setInstance(testBrowserProxy);
 
     clearBody();
     testElement = document.createElement('secure-dns-input');
@@ -116,7 +116,7 @@ suite('SettingsSecureDnsInput', function() {
 });
 
 suite('SettingsSecureDns', () => {
-  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testBrowserProxy: TestSecurityPageBrowserProxy;
   let testElement: SettingsSecureDnsElement;
   let secureDnsToggle: SettingsToggleButtonElement;
 
@@ -156,9 +156,9 @@ suite('SettingsSecureDns', () => {
 
   setup(async () => {
     clearBody();
-    testBrowserProxy = new TestPrivacyPageBrowserProxy();
+    testBrowserProxy = new TestSecurityPageBrowserProxy();
     testBrowserProxy.setResolverList(resolverList);
-    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    SecurityPageBrowserProxyImpl.setInstance(testBrowserProxy);
     testElement = document.createElement('settings-secure-dns');
     testElement.prefs = {
       dns_over_https:

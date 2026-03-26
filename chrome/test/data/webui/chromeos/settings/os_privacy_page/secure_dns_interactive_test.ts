@@ -16,12 +16,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SecureDnsInputElement, SettingsSecureDnsElement} from 'chrome://os-settings/lazy_load.js';
 import {SecureDnsResolverType} from 'chrome://os-settings/lazy_load.js';
 import type { ResolverOption, SettingsToggleButtonElement, LocalizedLinkElement} from 'chrome://os-settings/os_settings.js';
-import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://os-settings/os_settings.js';
+import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.js';
 
 import {clearBody} from '../utils.js';
 
@@ -57,7 +57,7 @@ suite('SettingsSecureDnsInputInteractive', function() {
 });
 
 suite('SettingsSecureDnsInteractive', function() {
-  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testBrowserProxy: TestSecurityPageBrowserProxy;
   let testElement: SettingsSecureDnsElement;
 
   const resolverList: ResolverOption[] = [
@@ -104,9 +104,9 @@ suite('SettingsSecureDnsInteractive', function() {
 
   setup(async function() {
     assertTrue(document.hasFocus());
-    testBrowserProxy = new TestPrivacyPageBrowserProxy();
+    testBrowserProxy = new TestSecurityPageBrowserProxy();
     testBrowserProxy.setResolverList(resolverList);
-    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    SecurityPageBrowserProxyImpl.setInstance(testBrowserProxy);
 
     clearBody();
     testElement = document.createElement('settings-secure-dns');

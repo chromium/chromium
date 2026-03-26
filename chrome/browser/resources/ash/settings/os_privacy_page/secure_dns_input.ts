@@ -10,8 +10,8 @@
 import 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
-import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
-import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
+import {SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import type {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -56,8 +56,8 @@ export class SecureDnsInputElement extends PolymerElement {
   value: string;
   private readonly showError_: string;
   private errorText_: string;
-  private browserProxy_: PrivacyPageBrowserProxy =
-      PrivacyPageBrowserProxyImpl.getInstance();
+  private browserProxy_: SecurityPageBrowserProxy =
+      SecurityPageBrowserProxyImpl.getInstance();
 
   private onKeyPress_(e: KeyboardEvent): void {
     if (e.key === 'Enter' && !e.shiftKey) {

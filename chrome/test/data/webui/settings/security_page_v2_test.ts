@@ -8,7 +8,7 @@ import type {CrExpandButtonElement, SettingsSecureDnsV2Element, SettingsSecurity
 import {HttpsFirstModeSetting, JavascriptOptimizerSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, resetRouterForTesting, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, SecurityPageBrowserProxyImpl, Router, routes, resetRouterForTesting, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -16,7 +16,7 @@ import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/tes
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
-import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -48,8 +48,8 @@ suite('Main', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-    const browserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(browserProxy);
+    const browserProxy = new TestSecurityPageBrowserProxy();
+    SecurityPageBrowserProxyImpl.setInstance(browserProxy);
 
     page = document.createElement('settings-security-page-v2');
     page.prefs = settingsPrefs.prefs;
@@ -576,7 +576,8 @@ suite('SecurityKeysSubpageDisabled', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    PrivacyPageBrowserProxyImpl.setInstance(new TestPrivacyPageBrowserProxy());
+    SecurityPageBrowserProxyImpl.setInstance(
+        new TestSecurityPageBrowserProxy());
 
     page = document.createElement('settings-security-page-v2');
     page.prefs = settingsPrefs.prefs;
@@ -604,7 +605,8 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
   setup(async function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
-    PrivacyPageBrowserProxyImpl.setInstance(new TestPrivacyPageBrowserProxy());
+    SecurityPageBrowserProxyImpl.setInstance(
+        new TestSecurityPageBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsPrefs = document.createElement('settings-prefs');
     document.body.appendChild(settingsPrefs);
@@ -899,7 +901,6 @@ suite('SecurityPageV2HappinessTrackingSurveys_SecureDnsLegacy', function() {
   setup(async function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
-    PrivacyPageBrowserProxyImpl.setInstance(new TestPrivacyPageBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsPrefs = document.createElement('settings-prefs');
     document.body.appendChild(settingsPrefs);
@@ -956,11 +957,11 @@ suite('SecurityPageV2HappinessTrackingSurveys_SecureDnsLegacy', function() {
 suite('ManagedEnvironment', function() {
   let settingsPrefs: SettingsPrefsElement;
   let page: SettingsSecurityPageV2Element;
-  let browserProxy: TestPrivacyPageBrowserProxy;
+  let browserProxy: TestSecurityPageBrowserProxy;
 
   setup(async function() {
-    browserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSecurityPageBrowserProxy();
+    SecurityPageBrowserProxyImpl.setInstance(browserProxy);
 
     loadTimeData.overrideValues({
       enableBundledSecuritySettingsSecureDnsV2: true,
@@ -1160,7 +1161,6 @@ suite('SecureDnsBundling', function() {
 
   async function setUpPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    PrivacyPageBrowserProxyImpl.setInstance(new TestPrivacyPageBrowserProxy());
     settingsPrefs = document.createElement('settings-prefs');
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;

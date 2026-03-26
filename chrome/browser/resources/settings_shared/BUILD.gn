@@ -35,6 +35,7 @@ build_webui("build") {
     "prefs/prefs_mixin.ts",
     "prefs/prefs_types.ts",
     "privacy_page/privacy_page_browser_proxy.ts",
+    "security_page/security_page_browser_proxy.ts",
   ]
 
   ts_composite = true

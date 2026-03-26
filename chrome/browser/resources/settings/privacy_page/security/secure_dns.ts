@@ -23,8 +23,8 @@ import '../../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import type {PrivacyPageBrowserProxy, ResolverOption, SecureDnsSetting} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
-import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
+import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
@@ -126,8 +126,8 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   declare private resolverOptions_: ResolverOption[];
   declare private privacyPolicyString_: TrustedHTML;
   declare private secureDnsInputValue_: string;
-  private browserProxy_: PrivacyPageBrowserProxy =
-      PrivacyPageBrowserProxyImpl.getInstance();
+  private browserProxy_: SecurityPageBrowserProxy =
+      SecurityPageBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

@@ -25,8 +25,8 @@ import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import './secure_dns_input.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import type {PrivacyPageBrowserProxy, ResolverOption, SecureDnsSetting} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
-import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
+import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -204,8 +204,8 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
   declare private computedStateKey_: string;
 
   private lastSelected_: SecureDnsV2ResolverType|undefined;
-  private browserProxy_: PrivacyPageBrowserProxy =
-      PrivacyPageBrowserProxyImpl.getInstance();
+  private browserProxy_: SecurityPageBrowserProxy =
+      SecurityPageBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

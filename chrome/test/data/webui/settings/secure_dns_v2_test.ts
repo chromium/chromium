@@ -15,17 +15,17 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SecureDnsInputElement, SettingsSecureDnsV2Element, SecurityPageFeatureRowElement} from 'chrome://settings/lazy_load.js';
 import {SecureDnsV2ResolverType} from 'chrome://settings/lazy_load.js';
 import type {ResolverOption, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {PrivacyPageBrowserProxyImpl, loadTimeData, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
+import {loadTimeData, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.js';
 
 // clang-format on
 
 suite('SettingsSecureDnsV2Input', function() {
-  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testBrowserProxy: TestSecurityPageBrowserProxy;
   let testElement: SecureDnsInputElement;
 
   // Possible error messages
@@ -44,8 +44,8 @@ suite('SettingsSecureDnsV2Input', function() {
   });
 
   setup(function() {
-    testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    testBrowserProxy = new TestSecurityPageBrowserProxy();
+    SecurityPageBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('secure-dns-input');
     document.body.appendChild(testElement);
@@ -112,7 +112,7 @@ suite('SettingsSecureDnsV2Input', function() {
 });
 
 suite('SettingsSecureDnsV2', function() {
-  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testBrowserProxy: TestSecurityPageBrowserProxy;
   let testElement: SettingsSecureDnsV2Element;
   let secureDnsToggle: SecurityPageFeatureRowElement;
 
@@ -151,9 +151,9 @@ suite('SettingsSecureDnsV2', function() {
   });
 
   setup(async function() {
-    testBrowserProxy = new TestPrivacyPageBrowserProxy();
+    testBrowserProxy = new TestSecurityPageBrowserProxy();
     testBrowserProxy.setResolverList(resolverList);
-    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
+    SecurityPageBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-secure-dns-v2');
     testElement.prefs = {
