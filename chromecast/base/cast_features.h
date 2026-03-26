@@ -22,7 +22,6 @@ BASE_DECLARE_FEATURE(kEnableQuic);
 BASE_DECLARE_FEATURE(kTripleBuffer720);
 BASE_DECLARE_FEATURE(kSingleBuffer);
 BASE_DECLARE_FEATURE(kEnableGeneralAudienceBrowsing);
-BASE_DECLARE_FEATURE(kEnableSideGesturePassThrough);
 BASE_DECLARE_FEATURE(kEnableChromeAudioManagerAndroid);
 BASE_DECLARE_FEATURE(kEnableCastAudioOutputDevice);
 BASE_DECLARE_FEATURE(kEnableStarboardMimeChecks);
