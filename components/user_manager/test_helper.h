@@ -47,6 +47,10 @@ class TestHelper {
   static void RegisterPublicAccountUser(PrefService& local_state,
                                         std::string_view user_id);
 
+  // Records the `user_email` as the owner of this device.
+  static void RegisterOwner(PrefService& local_state,
+                            std::string_view user_email);
+
   // Returns the fake username hash for testing.
   // Valid AccountId must be used, otherwise CHECKed.
   static std::string GetFakeUsernameHash(const AccountId& account_id);

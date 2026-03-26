@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -113,7 +112,7 @@ void ExpectConfirmationDialogClosed() {
 
 }  // namespace
 
-class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
+class ResetTest : public OobeBaseTest {
  public:
   ResetTest() {
     fake_statistics_provider_.SetVpdStatus(
@@ -140,10 +139,6 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
     EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
     ExpectConfirmationDialogClosed();
   }
-
-  void SetUpLocalState() override {}
-
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 
  private:
   LoginManagerMixin::TestUserInfo test_user_{
@@ -191,9 +186,9 @@ class ResetFirstAfterBootTest : public ResetTest {
     command_line->AppendSwitch(switches::kFirstExecAfterBoot);
   }
 
-  void SetUpLocalState() override {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    ResetTest::SetUpLocalStatePrefService(local_state);
+    local_state->SetBoolean(ash::prefs::kFactoryResetRequested, true);
   }
 };
 
@@ -262,9 +257,9 @@ class ResetTestWithTpmFirmwareUpdate : public ResetTest {
 class ResetTestWithTpmFirmwareUpdateRequested
     : public ResetTestWithTpmFirmwareUpdate {
  public:
-  void SetUpLocalState() override {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    ResetTestWithTpmFirmwareUpdate::SetUpLocalStatePrefService(local_state);
+    local_state->SetBoolean(ash::prefs::kFactoryResetRequested, true);
   }
 };
 
@@ -596,11 +591,12 @@ IN_PROC_BROWSER_TEST_F(ResetTestWithTpmFirmwareUpdateRequested,
 class ResetTestWithTpmFirmwareUpdateCleanup
     : public ResetTestWithTpmFirmwareUpdate {
  public:
-  void SetUpLocalState() override {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
-    prefs->SetInteger(ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
-                      static_cast<int>(tpm_firmware_update::Mode::kCleanup));
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    ResetTestWithTpmFirmwareUpdate::SetUpLocalStatePrefService(local_state);
+    local_state->SetBoolean(ash::prefs::kFactoryResetRequested, true);
+    local_state->SetInteger(
+        ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
+        static_cast<int>(tpm_firmware_update::Mode::kCleanup));
   }
 };
 
@@ -633,10 +629,10 @@ IN_PROC_BROWSER_TEST_F(ResetTestWithTpmFirmwareUpdateCleanup,
 class ResetTestWithTpmFirmwareUpdatePreserve
     : public ResetTestWithTpmFirmwareUpdate {
  public:
-  void SetUpLocalState() override {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
-    prefs->SetInteger(
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    ResetTestWithTpmFirmwareUpdate::SetUpLocalStatePrefService(local_state);
+    local_state->SetBoolean(ash::prefs::kFactoryResetRequested, true);
+    local_state->SetInteger(
         ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
         static_cast<int>(tpm_firmware_update::Mode::kPreserveDeviceState));
   }
@@ -673,11 +669,12 @@ IN_PROC_BROWSER_TEST_F(ResetTestWithTpmFirmwareUpdatePreserve,
 class ResetTestWithTpmFirmwareUpdatePowerwash
     : public ResetTestWithTpmFirmwareUpdate {
  public:
-  void SetUpLocalState() override {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(ash::prefs::kFactoryResetRequested, true);
-    prefs->SetInteger(ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
-                      static_cast<int>(tpm_firmware_update::Mode::kPowerwash));
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    ResetTestWithTpmFirmwareUpdate::SetUpLocalStatePrefService(local_state);
+    local_state->SetBoolean(ash::prefs::kFactoryResetRequested, true);
+    local_state->SetInteger(
+        ash::prefs::kFactoryResetTPMFirmwareUpdateMode,
+        static_cast<int>(tpm_firmware_update::Mode::kPowerwash));
   }
 };
 

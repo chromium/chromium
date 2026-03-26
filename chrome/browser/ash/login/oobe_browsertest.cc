@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/feature_parameter_interface.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
@@ -134,16 +133,13 @@ IN_PROC_BROWSER_TEST_F(OobeTest, Accelerator) {
 // in the local state.
 class PendingUpdateScreenTest
     : public OobeBaseTest,
-      public LocalStateMixin::Delegate,
       public ::testing::WithParamInterface<std::string> {
  protected:
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() final {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetString(prefs::kOobeScreenPending, GetParam());
+  void SetUpLocalStatePrefService(PrefService* local_state) final {
+    OobeBaseTest::SetUpLocalStatePrefService(local_state);
+    local_state->SetString(prefs::kOobeScreenPending, GetParam());
   }
   base::AutoReset<bool> branded_build{&WizardContext::g_is_branded_build, true};
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_P(PendingUpdateScreenTest, UpdateScreenShown) {
@@ -161,15 +157,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          "oobe-update" /* actual value */));
 
 // Checks that invalid (not existing) pending screen is handled gracefully.
-class InvalidPendingScreenTest : public OobeBaseTest,
-                                 public LocalStateMixin::Delegate {
+class InvalidPendingScreenTest : public OobeBaseTest {
  protected:
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() final {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetString(prefs::kOobeScreenPending, "not_existing_screen");
+  void SetUpLocalStatePrefService(PrefService* local_state) final {
+    OobeBaseTest::SetUpLocalStatePrefService(local_state);
+    local_state->SetString(prefs::kOobeScreenPending, "not_existing_screen");
   }
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(InvalidPendingScreenTest, WelcomeScreenShown) {

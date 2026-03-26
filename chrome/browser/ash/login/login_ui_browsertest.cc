@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -59,21 +58,18 @@ namespace em = enterprise_management;
 
 namespace ash {
 
-class InterruptedAutoStartEnrollmentTest : public OobeBaseTest,
-                                           public LocalStateMixin::Delegate {
+class InterruptedAutoStartEnrollmentTest : public OobeBaseTest {
  public:
   InterruptedAutoStartEnrollmentTest() = default;
   ~InterruptedAutoStartEnrollmentTest() override = default;
 
-  void SetUpLocalState() override {
-    StartupUtils::MarkOobeCompleted();
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
-    prefs->SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, false);
-  }
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    OobeBaseTest::SetUpLocalStatePrefService(local_state);
 
- private:
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+    StartupUtils::MarkOobeCompleted(local_state);
+    local_state->SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
+    local_state->SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, false);
+  }
 };
 
 // Tests that the default first screen is the welcome screen after OOBE

@@ -66,29 +66,26 @@ inline constexpr char kDemoPhotoName[] = "photo.jpg";
 
 // inline constexpr base::TimeDelta kDemoIdleTimeout = base::Seconds(90);
 
-void SetDemoConfigPref(DemoSession::DemoModeConfig demo_config) {
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->SetInteger(prefs::kDemoModeConfig, static_cast<int>(demo_config));
+void SetDemoConfigPref(PrefService& local_state,
+                       DemoSession::DemoModeConfig demo_config) {
+  local_state.SetInteger(prefs::kDemoModeConfig, static_cast<int>(demo_config));
 }
 
-void CheckDemoMode() {
+void CheckDemoMode(PrefService& local_state) {
   EXPECT_TRUE(ash::demo_mode::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kOnline,
-            DemoSession::GetDemoConfig(
-                CHECK_DEREF(g_browser_process->local_state())));
+            DemoSession::GetDemoConfig(local_state));
 }
 
-void CheckNoDemoMode() {
+void CheckNoDemoMode(PrefService& local_state) {
   EXPECT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kNone,
-            DemoSession::GetDemoConfig(
-                CHECK_DEREF(g_browser_process->local_state())));
+            DemoSession::GetDemoConfig(local_state));
 
-  SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
+  SetDemoConfigPref(local_state, DemoSession::DemoModeConfig::kOnline);
   EXPECT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
   EXPECT_EQ(DemoSession::DemoModeConfig::kNone,
-            DemoSession::GetDemoConfig(
-                CHECK_DEREF(g_browser_process->local_state())));
+            DemoSession::GetDemoConfig(local_state));
 }
 
 }  // namespace
@@ -108,7 +105,8 @@ class DemoSessionDemoDeviceModeTest : public OobeBaseTest {
   // OobeBaseTest:
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
-    SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
+    SetDemoConfigPref(*g_browser_process->local_state(),
+                      DemoSession::DemoModeConfig::kOnline);
   }
 
  private:
@@ -117,7 +115,7 @@ class DemoSessionDemoDeviceModeTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionDemoDeviceModeTest, IsDemoMode) {
-  CheckDemoMode();
+  CheckDemoMode(*g_browser_process->local_state());
 }
 
 // Tests locking device to demo mode domain without policy::DEVICE_MODE_DEMO
@@ -140,7 +138,8 @@ class DemoSessionDemoEnrolledDeviceTest : public OobeBaseTest {
   // OobeBaseTest:
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
-    SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
+    SetDemoConfigPref(*g_browser_process->local_state(),
+                      DemoSession::DemoModeConfig::kOnline);
   }
 
  private:
@@ -149,7 +148,7 @@ class DemoSessionDemoEnrolledDeviceTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionDemoEnrolledDeviceTest, IsDemoMode) {
-  CheckDemoMode();
+  CheckDemoMode(*g_browser_process->local_state());
 }
 
 class DemoSessionNonDemoEnrolledDeviceTest : public OobeBaseTest {
@@ -169,7 +168,7 @@ class DemoSessionNonDemoEnrolledDeviceTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionNonDemoEnrolledDeviceTest, NotDemoMode) {
-  CheckNoDemoMode();
+  CheckNoDemoMode(*g_browser_process->local_state());
 }
 
 class DemoSessionConsumerDeviceTest : public OobeBaseTest {
@@ -188,7 +187,7 @@ class DemoSessionConsumerDeviceTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionConsumerDeviceTest, NotDemoMode) {
-  CheckNoDemoMode();
+  CheckNoDemoMode(*g_browser_process->local_state());
 }
 
 class DemoSessionUnownedDeviceTest : public OobeBaseTest {
@@ -207,7 +206,7 @@ class DemoSessionUnownedDeviceTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionUnownedDeviceTest, NotDemoMode) {
-  CheckNoDemoMode();
+  CheckNoDemoMode(*g_browser_process->local_state());
 }
 
 class DemoSessionActiveDirectoryDeviceTest : public OobeBaseTest {
@@ -228,7 +227,7 @@ class DemoSessionActiveDirectoryDeviceTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionActiveDirectoryDeviceTest, NotDemoMode) {
-  CheckNoDemoMode();
+  CheckNoDemoMode(*g_browser_process->local_state());
 }
 
 /* ============================ Demo Login Tests =============================*/
@@ -301,7 +300,6 @@ class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
 // Currently this fixture enables the Demo SWA by default - consider extracting
 // this feature enablement into a subclass if non-SWA tests are needed
 class DemoSessionLoginTest : public LoginManagerTest,
-                             public LocalStateMixin::Delegate,
                              public user_manager::UserManager::Observer,
                              public chromeos::FakePowerManagerClient::Observer {
  public:
@@ -353,9 +351,9 @@ class DemoSessionLoginTest : public LoginManagerTest,
   }
 
  protected:
-  // LocalStateMixin::Delegate
-  void SetUpLocalState() override {
-    SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    LoginManagerTest::SetUpLocalStatePrefService(local_state);
+    SetDemoConfigPref(*local_state, DemoSession::DemoModeConfig::kOnline);
   }
 
   void OpenBrowserAndInstallSystemAppForActiveProfile() {
@@ -377,7 +375,6 @@ class DemoSessionLoginTest : public LoginManagerTest,
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
   base::OnceClosure on_browser_added_callback_;
   static constexpr double kInitialBrightness = 20.0;
   base::FilePath growth_campaigns_mounted_path_;

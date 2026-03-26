@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/app_window_interactive_uitest_base.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -23,7 +22,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -171,16 +170,18 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
 };
 
 class ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest
-    : public ChromeNativeAppWindowViewsAuraAshBrowserTest,
-      public ash::LocalStateMixin::Delegate {
+    : public ChromeNativeAppWindowViewsAuraAshBrowserTest {
  public:
-  void SetUpLocalState() override {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    ChromeNativeAppWindowViewsAuraAshBrowserTest::SetUpLocalStatePrefService(
+        local_state);
+
     // Until ScopedTestPublicSessionLoginState is created, the setup runs in a
     // regular user session. Marking another user as the owner prevents the
     // current user from taking ownership and overriding the public session
     // mode.
-    user_manager::UserManager::Get()->RecordOwner(
-        AccountId::FromUserEmail("not_current_user@example.com"));
+    user_manager::TestHelper::RegisterOwner(*local_state,
+                                            "not_current_user@example.com");
   }
 
   void SetUpOnMainThread() override {
@@ -195,7 +196,6 @@ class ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest
   }
 
  private:
-  ash::LocalStateMixin local_state_mixin_{&mixin_host_, this};
   std::unique_ptr<ash::ScopedTestPublicSessionLoginState> login_state_;
 };
 

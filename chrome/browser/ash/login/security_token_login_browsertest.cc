@@ -247,8 +247,7 @@ class ChromeSessionObserver : public SessionObserver {
 
 // Tests the challenge-response based login (e.g., using a smart card) for an
 // existing user.
-class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
-                               public LocalStateMixin::Delegate {
+class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest {
  protected:
   SecurityTokenLoginTest() {
     auto cryptohome_client =
@@ -300,9 +299,21 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
     WaitForLoginScreenWidgetShown();
   }
 
-  // LocalStateMixin::Delegate:
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    MixinBasedInProcessBrowserTest::SetUpLocalStatePrefService(local_state);
 
-  void SetUpLocalState() override { RegisterChallengeResponseKey(); }
+    ChallengeResponseKey challenge_response_key;
+    challenge_response_key.set_public_key_spki_der(
+        TestCertificateProviderExtension::GetCertificateSpki());
+    challenge_response_key.set_extension_id(
+        TestCertificateProviderExtension::extension_id());
+
+    base::ListValue challenge_response_keys_list =
+        SerializeChallengeResponseKeysForKnownUser({challenge_response_key});
+    user_manager::KnownUser(local_state)
+        .SetChallengeResponseKeys(GetChallengeResponseAccountId(),
+                                  std::move(challenge_response_keys_list));
+  }
 
   AccountId GetChallengeResponseAccountId() const {
     return login_manager_mixin_.users()[0].account_id;
@@ -386,20 +397,6 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
   }
 
  private:
-  void RegisterChallengeResponseKey() {
-    ChallengeResponseKey challenge_response_key;
-    challenge_response_key.set_public_key_spki_der(
-        TestCertificateProviderExtension::GetCertificateSpki());
-    challenge_response_key.set_extension_id(
-        TestCertificateProviderExtension::extension_id());
-
-    base::ListValue challenge_response_keys_list =
-        SerializeChallengeResponseKeysForKnownUser({challenge_response_key});
-    user_manager::KnownUser(g_browser_process->local_state())
-        .SetChallengeResponseKeys(GetChallengeResponseAccountId(),
-                                  std::move(challenge_response_keys_list));
-  }
-
   // Bypass "signin_screen" feature only enabled for allowlisted extensions.
   extensions::SimpleFeature::ScopedThreadUnsafeAllowlistForTest
       feature_allowlist_{TestCertificateProviderExtension::extension_id()};
@@ -412,7 +409,6 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
                                          {},
                                          nullptr,
                                          &cryptohome_mixin_};
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 

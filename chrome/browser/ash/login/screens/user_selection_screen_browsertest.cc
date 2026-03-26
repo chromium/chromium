@@ -19,7 +19,6 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -150,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
                                        0);
 }
 
-class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
-                                             public LocalStateMixin::Delegate {
+class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest {
  public:
   UserSelectionScreenEnforceOnlineTest() : LoginManagerTest() {
     login_manager_mixin_.AppendManagedUsers(2);
@@ -162,12 +160,12 @@ class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
   UserSelectionScreenEnforceOnlineTest& operator=(
       const UserSelectionScreenEnforceOnlineTest&) = delete;
 
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() override {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    LoginManagerTest::SetUpLocalStatePrefService(local_state);
     const auto& users = login_manager_mixin_.users();
     const base::Time now = base::DefaultClock::GetInstance()->Now();
 
-    user_manager::KnownUser known_user(g_browser_process->local_state());
+    user_manager::KnownUser known_user(local_state);
     // User with expired offline login timeout.
     known_user.SetLastOnlineSignin(users[0].account_id,
                                    now - kLoginOnlineLongDelay);
@@ -182,7 +180,6 @@ class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
 
  protected:
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(UserSelectionScreenEnforceOnlineTest,
@@ -249,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenOldTokenHandlePathStaleTokenTest,
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
-class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
-                                            public LocalStateMixin::Delegate {
+class UserSelectionScreenBlockOfflineTest : public LoginManagerTest {
  public:
   UserSelectionScreenBlockOfflineTest() = default;
   ~UserSelectionScreenBlockOfflineTest() override = default;
@@ -259,11 +255,11 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
   UserSelectionScreenBlockOfflineTest& operator=(
       const UserSelectionScreenBlockOfflineTest&) = delete;
 
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() override {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    LoginManagerTest::SetUpLocalStatePrefService(local_state);
     const base::Time now = base::DefaultClock::GetInstance()->Now();
 
-    user_manager::KnownUser known_user(g_browser_process->local_state());
+    user_manager::KnownUser known_user(local_state);
     known_user.SetLastOnlineSignin(test_user_over_the_limit_.account_id,
                                    now - kLoginOnlineLongDelay);
     known_user.SetOfflineSigninLimit(test_user_over_the_limit_.account_id,
@@ -301,7 +297,6 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
       {test_user_over_the_limit_, test_user_under_the_limit_,
        test_user_limit_not_set_, test_child_user_}};
   OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 // Tests that offline login link is hidden on the network error screen when

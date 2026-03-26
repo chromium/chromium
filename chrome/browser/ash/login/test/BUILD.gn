@@ -39,8 +39,6 @@ static_library("test_support") {
     "guest_session_mixin.h",
     "js_checker.cc",
     "js_checker.h",
-    "local_state_mixin.cc",
-    "local_state_mixin.h",
     "logged_in_user_mixin.cc",
     "logged_in_user_mixin.h",
     "login_manager_mixin.cc",

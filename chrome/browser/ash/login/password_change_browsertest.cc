@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
@@ -626,7 +625,6 @@ IN_PROC_BROWSER_TEST_F(TokenAfterCrash, ValidToken) {
 
 class IgnoreOldTokenTest
     : public LoginManagerTest,
-      public LocalStateMixin::Delegate,
       public ::testing::WithParamInterface<bool> /* isManagedUser */ {
  public:
   IgnoreOldTokenTest() {
@@ -639,17 +637,14 @@ class IgnoreOldTokenTest
     UserDataAuthClient::InitializeFake();
   }
 
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() override {
+  void PreRunTestOnMainThread() override {
+    // Token is used in some set up done in PreRunTestOnMainThread(),
+    // so set it up earlier than the timing.
     token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
     token_handle_store_->StoreTokenHandle(account_id_, kTokenHandle);
     token_handle_store_->SetInvalidTokenForTesting(kTokenHandle);
 
-    if (content::IsPreTest()) {
-      // Keep `TokenHandleRotated` flag to disable logic of neglecting not
-      // rotated token.
-      return;
-    }
+    LoginManagerTest::PreRunTestOnMainThread();
   }
 
   void TearDownOnMainThread() override {
@@ -665,7 +660,6 @@ class IgnoreOldTokenTest
   AccountId account_id_;
 
   raw_ptr<TokenHandleStore> token_handle_store_;
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 // Verify case when a user got token invalidated on a pre-rotated version and

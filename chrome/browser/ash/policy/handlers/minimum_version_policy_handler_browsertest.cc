@@ -961,25 +961,24 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionKioskAutoLoginTest, AllowAutoLaunch) {
   EXPECT_FALSE(GetMinimumVersionPolicyHandler()->DeadlineReached());
 }
 
-class MinimumVersionTimerExpiredOnLogin
-    : public MinimumVersionPolicyTestBase,
-      public ash::LocalStateMixin::Delegate {
+class MinimumVersionTimerExpiredOnLogin : public MinimumVersionPolicyTestBase {
  public:
   MinimumVersionTimerExpiredOnLogin() = default;
   ~MinimumVersionTimerExpiredOnLogin() override = default;
 
-  // ash::LocalStateMixin::Delegate:
-  void SetUpLocalState() override {
+  // MinimumVersionPolicyTestBase:
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    MinimumVersionPolicyTestBase::SetUpLocalStatePrefService(local_state);
+
     // Set up local state to reflect that update required deadline has passed
     // when device is rebooted.
     const base::TimeDelta delta = base::Days(5);
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetTime(prefs::kUpdateRequiredTimerStartTime,
-                   base::Time::Now() - delta);
-    prefs->SetTimeDelta(prefs::kUpdateRequiredWarningPeriod, kShortWarning);
+    local_state->SetTime(prefs::kUpdateRequiredTimerStartTime,
+                         base::Time::Now() - delta);
+    local_state->SetTimeDelta(prefs::kUpdateRequiredWarningPeriod,
+                              kShortWarning);
   }
 
-  // MinimumVersionPolicyTestBase:
   void SetUpInProcessBrowserTestFixture() override {
     MinimumVersionPolicyTestBase::SetUpInProcessBrowserTestFixture();
     SetAndRefreshMinimumChromeVersionPolicy(
@@ -987,9 +986,6 @@ class MinimumVersionTimerExpiredOnLogin
             kNewVersion, kShortWarningInDays, kShortWarningInDays,
             false /* unmanaged_user_restricted */));
   }
-
- private:
-  ash::LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionTimerExpiredOnLogin, DeadlinePassed) {

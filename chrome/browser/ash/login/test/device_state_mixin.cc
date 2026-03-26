@@ -74,9 +74,7 @@ void WriteFile(const base::FilePath& path, const std::string& blob) {
 
 DeviceStateMixin::DeviceStateMixin(InProcessBrowserTestMixinHost* host,
                                    State initial_state)
-    : InProcessBrowserTestMixin(host),
-      state_(initial_state),
-      local_state_mixin_(host, this) {
+    : InProcessBrowserTestMixin(host), state_(initial_state) {
   DCHECK(!g_instance_created);
   g_instance_created = true;
 }
@@ -106,8 +104,9 @@ void DeviceStateMixin::SetUpInProcessBrowserTestFixture() {
   }
 }
 
-void DeviceStateMixin::SetUpLocalState() {
-  PrefService* local_state = g_browser_process->local_state();
+void DeviceStateMixin::SetUpLocalStatePrefService(PrefService* local_state) {
+  InProcessBrowserTestMixin::SetUpLocalStatePrefService(local_state);
+
   switch (state_) {
     case DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED:
     case DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED:

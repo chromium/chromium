@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace base {
 class Time;
@@ -34,7 +35,9 @@ class StartupUtils {
   static void MarkEulaAccepted();
 
   // Marks OOBE process as completed.
-  static void MarkOobeCompleted();
+  // If `local_state` is nullptr, it's taken from g_browser_process.
+  // TODO(crbug.com/393260347): Remove the g_browser_process dependency.
+  static void MarkOobeCompleted(PrefService* local_state = nullptr);
 
   // Stores the next pending OOBE screen in case it will need to be resumed.
   static void SaveOobePendingScreen(const std::string& screen);
@@ -65,7 +68,10 @@ class StartupUtils {
 
   static void DisableHIDDetectionScreenForTests();
 
-  static bool IsHIDDetectionScreenDisabledForTests();
+  // If `local_state` is nullptr, it's taken from g_browser_process.
+  // TODO(crbug.com/393260347): Remove the g_browser_process dependency.
+  static bool IsHIDDetectionScreenDisabledForTests(
+      PrefService* local_state = nullptr);
 
   // Returns initial locale from local settings.
   static std::string GetInitialLocale();

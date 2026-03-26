@@ -493,20 +493,19 @@ OobeScreenId PendingScreenToId(PendingScreen pending_screen) {
 
 class ManagedUserTosOnboardingResumeTest
     : public ManagedUserTosScreenTest,
-      public LocalStateMixin::Delegate,
       public ::testing::WithParamInterface<PendingScreen> {
  public:
-  ManagedUserTosOnboardingResumeTest() { pending_screen_param_ = GetParam(); }
+  ManagedUserTosOnboardingResumeTest() : pending_screen_param_(GetParam()) {}
 
-  void SetUpLocalState() override {
-    auto pending_screen_param = GetParam();
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    ManagedUserTosScreenTest::SetUpLocalStatePrefService(local_state);
     if (pending_screen_param_ == PendingScreen::kEmpty) {
       return;
     }
-    user_manager::KnownUser(g_browser_process->local_state())
+    user_manager::KnownUser(local_state)
         .SetPendingOnboardingScreen(
             managed_user_.account_id,
-            PendingScreenToId(pending_screen_param).name);
+            PendingScreenToId(pending_screen_param_).name);
   }
 
   void EnsurePendingScreenIsEmpty() {
@@ -516,10 +515,7 @@ class ManagedUserTosOnboardingResumeTest
   }
 
  protected:
-  PendingScreen pending_screen_param_;
-
- private:
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  const PendingScreen pending_screen_param_;
 };
 
 IN_PROC_BROWSER_TEST_P(ManagedUserTosOnboardingResumeTest, ResumeOnboarding) {

@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -283,19 +282,16 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, CrashRestore) {
   ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kTestChromeAppId));
 }
 
-class AutoLaunchedKioskPowerWashRequestedTest
-    : public OobeBaseTest,
-      public LocalStateMixin::Delegate {
+class AutoLaunchedKioskPowerWashRequestedTest : public OobeBaseTest {
  public:
   AutoLaunchedKioskPowerWashRequestedTest() = default;
   ~AutoLaunchedKioskPowerWashRequestedTest() override = default;
 
-  void SetUpLocalState() override {
-    g_browser_process->local_state()->SetBoolean(
-        ash::prefs::kFactoryResetRequested, true);
-  }
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    OobeBaseTest::SetUpLocalStatePrefService(local_state);
 
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+    local_state->SetBoolean(ash::prefs::kFactoryResetRequested, true);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskPowerWashRequestedTest, DoesNotLaunch) {

@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -44,10 +43,6 @@ using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
-PrefService& local_state() {
-  return CHECK_DEREF(g_browser_process->local_state());
-}
-
 // Allows waiting for the Chrome session to be terminated.
 // Starts checking for session termination as soon as the instance is created.
 class SessionTerminationWaiter {
@@ -68,16 +63,35 @@ class SessionTerminationWaiter {
 
 }  // namespace
 
-class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
-                              public LocalStateMixin::Delegate {
+class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest {
  public:
   KioskCrashRestoreTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()) {}
   KioskCrashRestoreTest(const KioskCrashRestoreTest&) = delete;
   KioskCrashRestoreTest& operator=(const KioskCrashRestoreTest&) = delete;
 
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() override { SetUpExistingKioskApp(); }
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    MixinBasedInProcessBrowserTest::SetUpLocalStatePrefService(local_state);
+
+    // Create policy data that contains the test app as an existing kiosk app.
+    KioskAppsMixin::AppendKioskAccount(&device_policy_.payload());
+    KioskAppsMixin::AppendWebKioskAccount(&device_policy_.payload());
+    device_policy_.Build();
+
+    // Prepare the policy data to store in device policy cache.
+    enterprise_management::PolicyData policy_data;
+    CHECK(device_policy_.payload().SerializeToString(
+        policy_data.mutable_policy_value()));
+    const std::string policy_data_string = policy_data.SerializeAsString();
+
+    // Store policy data and existing device local accounts in local state.
+    local_state->SetString(device_settings_cache::prefs::kDeviceSettingsCache,
+                           base::Base64Encode(policy_data_string));
+
+    base::ListValue accounts;
+    accounts.Append(GetTestAppUserId());
+    local_state->SetList("PublicAccounts", std::move(accounts));
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -114,34 +128,12 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
   virtual const std::string GetTestAppUserId() const = 0;
 
  private:
-  void SetUpExistingKioskApp() {
-    // Create policy data that contains the test app as an existing kiosk app.
-    KioskAppsMixin::AppendKioskAccount(&device_policy_.payload());
-    KioskAppsMixin::AppendWebKioskAccount(&device_policy_.payload());
-    device_policy_.Build();
-
-    // Prepare the policy data to store in device policy cache.
-    enterprise_management::PolicyData policy_data;
-    CHECK(device_policy_.payload().SerializeToString(
-        policy_data.mutable_policy_value()));
-    const std::string policy_data_string = policy_data.SerializeAsString();
-
-    // Store policy data and existing device local accounts in local state.
-    local_state().SetString(device_settings_cache::prefs::kDeviceSettingsCache,
-                            base::Base64Encode(policy_data_string));
-
-    base::ListValue accounts;
-    accounts.Append(GetTestAppUserId());
-    local_state().SetList("PublicAccounts", std::move(accounts));
-  }
-
   policy::DevicePolicyBuilder device_policy_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
 
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
                                                      embedded_test_server()};
   KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 class ChromeKioskCrashRestoreTest : public KioskCrashRestoreTest {

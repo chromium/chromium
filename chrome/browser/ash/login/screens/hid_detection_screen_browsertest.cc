@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
@@ -351,8 +350,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionOobeCompletedUnowned, ShowScreen) {
 }
 
 class HIDDetectionScreenDisabledAfterRestartTest
-    : public HIDDetectionScreenChromeboxTest,
-      public LocalStateMixin::Delegate {
+    : public HIDDetectionScreenChromeboxTest {
  public:
   HIDDetectionScreenDisabledAfterRestartTest() = default;
   // HIDDetectionScreenChromeboxTest:
@@ -364,16 +362,16 @@ class HIDDetectionScreenDisabledAfterRestartTest
           switches::kDisableHIDDetectionOnOOBEForTesting);
     }
   }
+
   // We need to check local state flag before welcome screen is shown.
-  void SetUpLocalState() override {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    HIDDetectionScreenChromeboxTest::SetUpLocalStatePrefService(local_state);
     if (content::IsPreTest()) {
       // Pref should be false by default.
-      EXPECT_FALSE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
+      EXPECT_FALSE(
+          StartupUtils::IsHIDDetectionScreenDisabledForTests(local_state));
     }
   }
-
- private:
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,

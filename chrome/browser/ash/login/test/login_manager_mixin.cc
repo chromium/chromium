@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -131,7 +130,6 @@ LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host,
                                      CryptohomeMixin* cryptohome_mixin)
     : InProcessBrowserTestMixin(host),
       initial_users_(initial_users),
-      local_state_mixin_(host, this),
       fake_gaia_mixin_(gaia_mixin),
       cryptohome_mixin_(cryptohome_mixin) {
   DCHECK(!g_instance_created);
@@ -161,26 +159,25 @@ bool LoginManagerMixin::SetUpUserDataDirectory() {
   return true;
 }
 
-void LoginManagerMixin::SetUpLocalState() {
+void LoginManagerMixin::SetUpLocalStatePrefService(PrefService* local_state) {
+  InProcessBrowserTestMixin::SetUpLocalStatePrefService(local_state);
+
   for (const auto& user : initial_users_) {
-    ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
-                                    "LoggedInUsers");
+    ScopedListPrefUpdate users_pref(local_state, "LoggedInUsers");
     std::string email_value(user.account_id.GetUserEmail());
     if (!users_pref.Get().contains(email_value)) {
       users_pref->Append(std::move(email_value));
     }
 
-    ScopedDictPrefUpdate user_type_update(g_browser_process->local_state(),
-                                          "UserType");
+    ScopedDictPrefUpdate user_type_update(local_state, "UserType");
     user_type_update->Set(user.account_id.GetAccountIdKey(),
                           static_cast<int>(user.user_type));
 
-    ScopedDictPrefUpdate user_token_update(g_browser_process->local_state(),
-                                           "OAuthTokenStatus");
+    ScopedDictPrefUpdate user_token_update(local_state, "OAuthTokenStatus");
     user_token_update->Set(user.account_id.GetUserEmail(),
                            static_cast<int>(user.auth_config.token_status));
 
-    user_manager::KnownUser known_user(g_browser_process->local_state());
+    user_manager::KnownUser known_user(local_state);
     known_user.UpdateId(user.account_id);
 
     if (user.user_type == user_manager::UserType::kChild) {
@@ -195,7 +192,7 @@ void LoginManagerMixin::SetUpLocalState() {
     }
   }
 
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(local_state);
 }
 
 void LoginManagerMixin::SetUpOnMainThread() {

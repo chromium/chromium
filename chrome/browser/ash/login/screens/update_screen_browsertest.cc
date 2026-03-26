@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -115,7 +114,6 @@ OobeUI* GetOobeUI() {
 }
 
 class UpdateScreenTest : public OobeBaseTest,
-                         public LocalStateMixin::Delegate,
                          public ::testing::WithParamInterface<RegionToCodeMap> {
  public:
   UpdateScreenTest() = default;
@@ -156,10 +154,10 @@ class UpdateScreenTest : public OobeBaseTest,
         ->is_branded_build = true;
   }
 
-  void SetUpLocalState() override {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    OobeBaseTest::SetUpLocalStatePrefService(local_state);
     RegionToCodeMap param = GetParam();
-    g_browser_process->local_state()->SetString(
-        ash::prefs::kSigninScreenTimezone, param.region);
+    local_state->SetString(ash::prefs::kSigninScreenTimezone, param.region);
   }
 
   void SetTickClockAndDefaultDelaysForTesting(
@@ -272,8 +270,6 @@ class UpdateScreenTest : public OobeBaseTest,
   }
 
   base::OnceClosure screen_result_callback_;
-
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateCheckDoneBeforeShow) {

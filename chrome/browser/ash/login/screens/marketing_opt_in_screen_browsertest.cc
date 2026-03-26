@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/marketing_backend_connector.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -97,8 +96,7 @@ const RegionToCodeMap kDoubleOptInCountries[]{
     {"Germany", "Europe/Berlin", "de", false, false, false}};
 
 // Base class for simple tests on the marketing opt-in screen.
-class MarketingOptInScreenTest : public OobeBaseTest,
-                                 public LocalStateMixin::Delegate {
+class MarketingOptInScreenTest : public OobeBaseTest {
  public:
   ~MarketingOptInScreenTest() override = default;
 
@@ -128,9 +126,10 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   void WaitForScreenExit();
 
   // US as default location for non-parameterized tests.
-  void SetUpLocalState() override {
-    g_browser_process->local_state()->SetString(
-        ash::prefs::kSigninScreenTimezone, "America/Los_Angeles");
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    OobeBaseTest::SetUpLocalStatePrefService(local_state);
+    local_state->SetString(ash::prefs::kSigninScreenTimezone,
+                           "America/Los_Angeles");
   }
 
   // Logs in as a normal user. Overridden by subclasses.
@@ -151,7 +150,6 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   MarketingOptInScreen::ScreenExitCallback original_callback_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
-  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 /**
@@ -472,12 +470,6 @@ class RegionAsParameterInterface
       ::testing::TestParamInfo<RegionToCodeMap> param_info) {
     return param_info.param.test_name;
   }
-
-  void SetUpLocalStateRegion() {
-    RegionToCodeMap param = GetParam();
-    g_browser_process->local_state()->SetString(
-        ash::prefs::kSigninScreenTimezone, param.region);
-  }
 };
 
 // Tests that all country codes are correct given the timezone.
@@ -487,7 +479,12 @@ class MarketingTestCountryCodes : public MarketingOptInScreenTestWithRequest,
   MarketingTestCountryCodes() = default;
   ~MarketingTestCountryCodes() = default;
 
-  void SetUpLocalState() override { SetUpLocalStateRegion(); }
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    MarketingOptInScreenTestWithRequest::SetUpLocalStatePrefService(
+        local_state);
+    RegionToCodeMap param = GetParam();
+    local_state->SetString(ash::prefs::kSigninScreenTimezone, param.region);
+  }
 };
 
 // Tests that the given timezone resolves to the correct location and

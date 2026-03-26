@@ -16,6 +16,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 
@@ -112,6 +113,12 @@ void TestHelper::RegisterPublicAccountUser(PrefService& local_state,
   ScopedListPrefUpdate update(&local_state,
                               prefs::kDeviceLocalAccountsWithSavedData);
   update->Append(user_id);
+}
+
+// static
+void TestHelper::RegisterOwner(PrefService& local_state,
+                               std::string_view user_email) {
+  UserManagerImpl::RecordOwner(local_state, user_email);
 }
 
 // static

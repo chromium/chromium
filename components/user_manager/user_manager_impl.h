@@ -263,6 +263,10 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
                      std::vector<AccountId>* users_vector,
                      std::set<AccountId>* users_set);
 
+  // Implementation of UserManager::RecordOwner.
+  static void RecordOwner(PrefService& local_state,
+                          std::string_view user_email);
+
  protected:
   friend class ash::UserManagerTest;
 

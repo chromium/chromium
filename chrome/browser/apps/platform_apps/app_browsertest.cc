@@ -45,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/user_manager/test_helper.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -74,7 +75,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/user_manager.h"
@@ -1339,17 +1339,18 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
   }
 }
 
-class RestartKioskDeviceTest : public PlatformAppBrowserTest,
-                               public ash::LocalStateMixin::Delegate {
+class RestartKioskDeviceTest : public PlatformAppBrowserTest {
  public:
   RestartKioskDeviceTest() { set_chromeos_user_ = false; }
 
-  void SetUpLocalState() override {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    PlatformAppBrowserTest::SetUpLocalStatePrefService(local_state);
+
     // Until EnterKioskSession is called, the setup and the test run in a
     // regular user session. Marking another user as the owner prevents the
     // current user from taking ownership and overriding the kiosk mode.
-    user_manager::UserManager::Get()->RecordOwner(
-        AccountId::FromUserEmail("not_current_user@example.com"));
+    user_manager::TestHelper::RegisterOwner(*local_state,
+                                            "not_current_user@example.com");
   }
 
   void SetUpOnMainThread() override {
@@ -1368,7 +1369,6 @@ class RestartKioskDeviceTest : public PlatformAppBrowserTest,
   }
 
  private:
-  ash::LocalStateMixin local_state_mixin_{&mixin_host_, this};
   ash::KioskAppLoggedInBrowserTestMixin login_mixin_{&mixin_host_,
                                                      "kiosk-app-account"};
 };

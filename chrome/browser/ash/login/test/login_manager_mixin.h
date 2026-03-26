@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/session_flags_manager.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -40,8 +39,7 @@ class StubAuthenticatorBuilder;
 // initializes user manager with a list of pre-registered users.
 // The mixin will mark the OOBE flow as complete during test setup, so it's not
 // suitable for OOBE tests.
-class LoginManagerMixin : public InProcessBrowserTestMixin,
-                          public LocalStateMixin::Delegate {
+class LoginManagerMixin : public InProcessBrowserTestMixin {
  public:
   // Represents test user.
   struct TestUserInfo {
@@ -143,9 +141,7 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   bool SetUpUserDataDirectory() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
-
-  // LocalStateMixin::Delegate:
-  void SetUpLocalState() override;
+  void SetUpLocalStatePrefService(PrefService* local_state) override;
 
   // Starts login attempt for a user, using the stub authenticator provided by
   // `authenticator_builder`.
@@ -226,7 +222,6 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // Whether we should wait for profile creation upon login.
   bool wait_for_profile_ = true;
 
-  LocalStateMixin local_state_mixin_;
   raw_ptr<FakeGaiaMixin> fake_gaia_mixin_;
   raw_ptr<CryptohomeMixin> cryptohome_mixin_;
 };
