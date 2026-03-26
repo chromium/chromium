@@ -1294,7 +1294,21 @@ void CanvasNon2DResourceProviderSharedImage::OnDestroyRecyclableCanvasResource(
   resource()->WaitSyncToken(sync_token);
 }
 
-void CanvasResourceProviderSharedImage::OnFlushForImage(
+void Canvas2DResourceProviderSharedImage::OnFlushForImage(
+    cc::PaintImage::ContentId content_id) {
+  if (Canvas().IsCachingImage(content_id)) {
+    FlushCanvas();
+  }
+  if (cached_snapshot_ &&
+      cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
+          content_id) {
+    // This handles the case where the cached snapshot is referenced by an
+    // ImageBitmap that is being transferred to a worker.
+    cached_snapshot_.reset();
+  }
+}
+
+void CanvasNon2DResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (Canvas().IsCachingImage(content_id)) {
     FlushCanvas();

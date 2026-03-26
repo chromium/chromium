@@ -421,7 +421,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsValid() const override;
 
   sk_sp<SkSurface> CreateSkSurface() const override;
-  void OnFlushForImage(cc::PaintImage::ContentId content_id);
+  virtual void OnFlushForImage(cc::PaintImage::ContentId content_id) = 0;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
 
   // Indicates that the compositing path is single buffered, meaning that
@@ -574,6 +574,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // CanvasResourceProvider:
   using CanvasResourceProviderSharedImage::ProduceCanvasResource;
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override;
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   void RasterRecord(cc::PaintRecord last_recording) override;
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
@@ -681,6 +682,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // CanvasResourceProvider:
   using CanvasResourceProviderSharedImage::ProduceCanvasResource;
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override;
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   void RasterRecord(cc::PaintRecord last_recording) override;
