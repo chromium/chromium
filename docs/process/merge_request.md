@@ -65,7 +65,7 @@ Before requesting a merge, first ensure your change is a good merge candidate:
     [below](#merge-criteria-phases)
 *   Verify merging the change to an older branch would be safe, e.g. unlikely to
     introduce new regressions, no major merge conflicts, automated test coverage
-    present, etc; consider adding a kill-switch & chat with your TL 
+    present, etc; consider adding a kill-switch & chat with your TL
     for input if you're not sure
 *   Confirm your change fixes the issue at hand, preferably by testing on and
     monitoring the canary channel for 24 hours post-release (see
@@ -177,8 +177,9 @@ options to land the merge:
 
 *   Gerrit UI, easiest for clean cherry-picks or those requiring only minor
     changes
-*   git, for more complex cherry-picks and / or when local verification may be
-    beneficial
+*   git cl cherry-pick, for more complex cherry-picks and / or when local
+    verification may be beneficial
+*   If neither of the above work, use git directly via the manual process
 
 Regardless of which method you choose, please ensure you land your cherry-pick
 ASAP so that it can be included in the next release built from the branch; if
@@ -210,7 +211,57 @@ approval) within 14 days of the original change by adding the Rubber Stamper bot
 the bot will vote *Bot-Commit+1* to bypass code review. If the CL is marked
 *Auto-Submit+1*, the bot will also submit the CL to the CQ on your behalf.
 
-### Using git
+### Using git cl
+
+Basic:
+
+```
+git cl cherry-pick --branch=refs/branch-heads/#### --bug=######### \
+  <commit hash>
+```
+
+Creating a chain of cherry-picked CLs:
+
+```
+git cl cherry-pick --branch=refs/branch-heads/7727 --bug=40186427 \
+  <first commit hash> \
+  <second commit hash> \
+  ...
+```
+
+On success, you'll see something like this:
+
+```
+Creating chain of 2 cherry pick(s)...
+Attempting cherry-pick of original commit dd649e9e2adbbc9edc41ae3e3158772bc18a411f ("Rewrite test for crbug.com/40095159 to work with navigation queueing") onto base refs/branch-heads/7727 tip...
+Created cherry pick of "Rewrite test for crbug.com/40095159 to work with navigation queueing": https://chromium-review.googlesource.com/#/c/7695354/
+Using base commit 9f80fa4f23359851564b0c1e260b570581d09720 from parent CL 7695354.
+Attempting cherry-pick of original commit 369b2d9004d1c2c65efa0829407f77bc7bc47450 ("Clean up code for the launched navigation queueing feature") onto base 9f80fa4f23359851564b0c1e260b570581d09720...
+Created cherry pick of "Clean up code for the launched navigation queueing feature": https://chromium-review.googlesource.com/#/c/7695217/
+```
+
+If you suspect a cherry-pick may have conflicts, use `--allow-conflicts` to
+generate a cherry-pick with conflict markers. Once the change is created, patch
+it in locally to fix the conflicts and verify it works:
+
+```
+git cl patch -f <CL / gerrit URL> -b <new branch name>
+gclient sync
+```
+
+If cherry-picking a chain of CLs breaks in the middle for some reason, you can
+resume where you left off using `--parent-change-num=<last CL created
+successfully>`. For example, suppose the previous cherry-pick chain only
+successfully created the first CL. After making any local fixes and uploading,
+you can resume with:
+
+```
+git cl cherry-pick --branch=refs/branch-heads/7727 \
+  --parent-change-num 7695354 \
+  369b2d9004d1c2c65efa0829407f77bc7bc47450
+```
+
+### Using git (manual)
 
 The commands below should set up your environment to be able to successfully
 upload a cherry-pick to a release branch, where *####* corresponds to the
