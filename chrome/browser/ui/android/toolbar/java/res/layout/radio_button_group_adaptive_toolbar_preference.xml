@@ -46,6 +46,15 @@ found in the LICENSE file.
           app:primaryText="@string/adaptive_toolbar_button_preference_share" />
 
       <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/adaptive_option_glic"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:paddingTop="10dp"
+          app:iconSrc="@drawable/ic_spark_24dp"
+          app:primaryText="@string/glic_button_entrypoint_label" />
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
           android:id="@+id/adaptive_option_voice_search"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"

@@ -38,6 +38,8 @@ public class AdaptiveToolbarStats {
         AdaptiveToolbarRadioButtonState.AUTO_WITH_PAGE_SUMMARY,
         AdaptiveToolbarRadioButtonState.OPEN_IN_BROWSER,
         AdaptiveToolbarRadioButtonState.AUTO_WITH_OPEN_IN_BROWSER,
+        AdaptiveToolbarRadioButtonState.GLIC,
+        AdaptiveToolbarRadioButtonState.AUTO_WITH_GLIC,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface AdaptiveToolbarRadioButtonState {
@@ -58,7 +60,9 @@ public class AdaptiveToolbarStats {
         int AUTO_WITH_PAGE_SUMMARY = 14;
         int OPEN_IN_BROWSER = 15;
         int AUTO_WITH_OPEN_IN_BROWSER = 16;
-        int NUM_ENTRIES = 17;
+        int GLIC = 17;
+        int AUTO_WITH_GLIC = 18;
+        int NUM_ENTRIES = 19;
     }
 
     /**
@@ -122,6 +126,8 @@ public class AdaptiveToolbarStats {
                 return AdaptiveToolbarRadioButtonState.PAGE_SUMMARY;
             case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
                 return AdaptiveToolbarRadioButtonState.OPEN_IN_BROWSER;
+            case AdaptiveToolbarButtonVariant.GLIC:
+                return AdaptiveToolbarRadioButtonState.GLIC;
             case AdaptiveToolbarButtonVariant.AUTO:
                 switch (uiState.autoButtonCaption) {
                     case AdaptiveToolbarButtonVariant.NEW_TAB:
@@ -140,6 +146,8 @@ public class AdaptiveToolbarStats {
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_PAGE_SUMMARY;
                     case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_OPEN_IN_BROWSER;
+                    case AdaptiveToolbarButtonVariant.GLIC:
+                        return AdaptiveToolbarRadioButtonState.AUTO_WITH_GLIC;
                 }
         }
         assert false : "Invalid radio button state";

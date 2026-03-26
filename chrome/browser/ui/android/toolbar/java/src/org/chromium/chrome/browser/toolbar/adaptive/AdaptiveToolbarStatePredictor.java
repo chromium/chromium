@@ -266,6 +266,8 @@ public class AdaptiveToolbarStatePredictor {
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarPageSummaryEnabled();
+            case AdaptiveToolbarButtonVariant.GLIC:
+                return AdaptiveToolbarFeatures.isGlicActionEnabled();
             default:
                 return true;
         }
