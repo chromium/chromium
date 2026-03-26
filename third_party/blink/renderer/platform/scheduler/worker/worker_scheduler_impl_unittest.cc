@@ -228,6 +228,9 @@ TEST_F(WorkerSchedulerImplTest, ThrottleWorkerScheduler) {
 
   EXPECT_FALSE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
 
+  scheduler_->OnLifecycleStateChanged(SchedulingLifecycleState::kHidden);
+  EXPECT_FALSE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
+
   scheduler_->OnLifecycleStateChanged(SchedulingLifecycleState::kThrottled);
   EXPECT_TRUE(worker_scheduler_->ThrottleableTaskQueue()->IsThrottled());
 
@@ -642,6 +645,17 @@ TEST_F(WorkerSchedulerImplTest, DeleteSoonAfterDispose) {
   EXPECT_EQ(counter, 1);
   RunUntilIdle();
   EXPECT_EQ(counter, 2);
+}
+
+// Regression test for crbug.com/493222148. This should not crash.
+TEST_F(WorkerSchedulerImplTest, LifecycleStateChangeAfterDispose) {
+  scheduler_->CreateBudgetPools();
+  // Simulate a worker invoking self.close() while a lifecycle change is
+  // pending.
+  worker_scheduler_->Dispose();
+  worker_scheduler_->OnLifecycleStateChanged(
+      SchedulingLifecycleState::kThrottled);
+  worker_scheduler_.reset();
 }
 
 }  // namespace worker_scheduler_unittest

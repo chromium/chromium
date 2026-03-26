@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_impl.h"
 
+#include <utility>
+
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
@@ -258,16 +260,29 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
 
 void WorkerSchedulerImpl::OnLifecycleStateChanged(
     SchedulingLifecycleState lifecycle_state) {
-  if (lifecycle_state_ == lifecycle_state)
+  if (lifecycle_state_ == lifecycle_state) {
     return;
-  lifecycle_state_ = lifecycle_state;
+  }
+  SchedulingLifecycleState previous_state =
+      std::exchange(lifecycle_state_, lifecycle_state);
   thread_scheduler_->OnLifecycleStateChanged(lifecycle_state);
 
+  // The worker can be closed while a lifecycle-changing task is pending.
+  // Ignore the lifecycle state change in that case. (See also
+  // crbug.com/493222148.)
+  if (is_disposed_) {
+    return;
+  }
+
+  // TODO(crbug.com/40545662): Worker throttling doesn't match main thread
+  // throttling for initial visibility change, intensive throttling, timer
+  // nesting level properties, and web scheduling queues. These need to be
+  // considered if this feature is ever revived.
   if (thread_scheduler_->cpu_time_budget_pool() ||
       thread_scheduler_->wake_up_budget_pool()) {
     if (lifecycle_state_ == SchedulingLifecycleState::kThrottled) {
       throttleable_task_queue_->IncreaseThrottleRefCount();
-    } else {
+    } else if (previous_state == SchedulingLifecycleState::kThrottled) {
       throttleable_task_queue_->DecreaseThrottleRefCount();
     }
   }

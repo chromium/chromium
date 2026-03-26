@@ -86,10 +86,12 @@ void NonMainThreadTaskQueue::RemoveFromBudgetPool(base::TimeTicks now,
 }
 
 void NonMainThreadTaskQueue::IncreaseThrottleRefCount() {
+  CHECK(throttler_);
   throttler_->IncreaseThrottleRefCount();
 }
 
 void NonMainThreadTaskQueue::DecreaseThrottleRefCount() {
+  CHECK(throttler_);
   throttler_->DecreaseThrottleRefCount();
 }
 
