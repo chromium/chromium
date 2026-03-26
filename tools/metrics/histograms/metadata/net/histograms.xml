@@ -6349,8 +6349,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.PacketWriteTime{IOMode}" units="units"
-    expires_after="2024-09-06">
+<histogram name="Net.QuicSession.PacketWriteTime{IOMode}" units="ms"
+    expires_after="2026-09-06">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -6358,8 +6358,8 @@ chromium-metrics-reviews@google.com.
     packet when it is sent. The suffix specifies if the write completed
     synchonously or asynchronously.
 
-    Warning: this histogram was expired from 2023-11-19 to 2024-03-06; data may
-    be missing. {IOMode}
+    Warning: this histogram was expired from 2023-11-19 to 2024-03-06 and from
+    2024-09-06 to 2026-03-26; data may be missing. {IOMode}
   </summary>
   <token key="IOMode">
     <variant name=""/>
