@@ -32,6 +32,9 @@
 namespace {
 
 // Possible user activity types, including invalid ones.
+// If a new activity type is added, `CompatibleModeForActivityType` in
+// user_activity_compatibility_util.mm needs to be updated too.
+// LINT.IfChange
 enum class UserActivityType {
   kInvalid,
   kHandoff,
@@ -60,6 +63,7 @@ enum class UserActivityType {
   kClearBrowsingData,
   kCredentialExchange,
 };
+// LINT.ThenChange(ios/chrome/browser/intents/model/user_activity_compatibility_util.mm)
 
 // Maps user activity type string to user activity items.
 struct UserActivityMapping {
