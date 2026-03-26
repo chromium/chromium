@@ -392,23 +392,27 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     const LayoutUnit intrinsic_inline_size =
         is_for_columns ? grid_axis_size : stacking_axis_size;
 
-    const LayoutUnit align_content_offset = AlignContentOffset(
+    LayoutUnit align_content_offset = AlignContentOffset(
         is_for_columns ? current_intrinsic_block_size : intrinsic_inline_size,
         is_for_columns ? ChildAvailableSize().block_size
                        : ChildAvailableSize().inline_size,
         baseline_accumulator->FirstBaseline().value_or(LayoutUnit()),
         content_alignment);
 
-    if (is_for_columns) {
-      if (ChildAvailableSize().block_size != kIndefiniteSize) {
-        container_builder_.MoveChildrenInDirection(align_content_offset,
-                                                   /*is_block_direction=*/true);
-      }
-    } else {
-      if (ChildAvailableSize().inline_size != kIndefiniteSize) {
-        container_builder_.MoveChildrenInDirection(
-            align_content_offset, /*is_block_direction=*/false);
-      }
+    // In fill-reverse, items are already positioned at the end of the stacking
+    // axis (via the per-item flip in `RunGridLanesPlacementPhase`). The content
+    // alignment offset computed above assumes items start at the beginning of
+    // the tracks, so we negate it to shift items in the correct direction.
+    if (style.IsReverseGridLanesFillDirection()) {
+      align_content_offset *= -1;
+    }
+
+    const bool is_definite_size =
+        is_for_columns ? ChildAvailableSize().block_size != kIndefiniteSize
+                       : ChildAvailableSize().inline_size != kIndefiniteSize;
+    if (is_definite_size) {
+      container_builder_.MoveChildrenInDirection(
+          align_content_offset, /*is_block_direction=*/is_for_columns);
     }
   }
 }
@@ -574,9 +578,6 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       // of the start. We compute the base offset from the container's end so
       // that alignment (which adds margins) works correctly without needing
       // to mirror or swap margins after the fact.
-      //
-      // TODO(celestepan): Account for alignment with fill-reverse:
-      // justify/align-content, justify/align-items, and justify/align-self.
       if (style.IsReverseGridLanesFillDirection()) {
         // `ChildAvailableSize()` returns the content-box size of the container
         // (i.e., the resolved size minus border, scrollbar, and padding). We
