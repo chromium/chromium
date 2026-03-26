@@ -30,13 +30,15 @@ CALayerTreeCoordinator::CALayerTreeCoordinator(
     bool allow_av_sample_buffer_display_layer,
     BufferPresentedCallback buffer_presented_callback,
     GLMakeCurrentCallback gl_make_current_callback,
-    id<MTLDevice> metal_device)
+    id<MTLDevice> metal_device,
+    bool no_post_task_for_callback)
     : allow_remote_layers_(ui::RemoteLayerAPISupported()),
       allow_av_sample_buffer_display_layer_(
           allow_av_sample_buffer_display_layer),
       buffer_presented_callback_(buffer_presented_callback),
       gl_make_current_callback_(gl_make_current_callback),
-      metal_device_(metal_device) {
+      metal_device_(metal_device),
+      no_post_task_for_callback_(no_post_task_for_callback) {
   if (allow_remote_layers_) {
     root_ca_layer_ = [[CALayer alloc] init];
 #if BUILDFLAG(IS_MAC)
@@ -220,12 +222,21 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
     params.scale_factor = scale_factor_;
     params.is_empty = false;
 
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(frame.completion_callback),
-                       gfx::SwapCompletionResult(
-                           gfx::SwapResult::SWAP_ACK,
-                           std::make_unique<gfx::CALayerParams>(params))));
+    // |frame.completion_callback| will reach this function:
+    // SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers().
+    if (no_post_task_for_callback_) {
+      std::move(frame.completion_callback)
+          .Run(gfx::SwapCompletionResult(
+              gfx::SwapResult::SWAP_ACK,
+              std::make_unique<gfx::CALayerParams>(params)));
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(frame.completion_callback),
+                         gfx::SwapCompletionResult(
+                             gfx::SwapResult::SWAP_ACK,
+                             std::make_unique<gfx::CALayerParams>(params))));
+    }
   }
 
   gfx::PresentationFeedback feedback(base::TimeTicks::Now(), base::Hertz(60),
@@ -233,22 +244,31 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   feedback.ca_layer_error_code = frame.ca_layer_error_code;
 
 #if BUILDFLAG(IS_MAC)
-    feedback.ready_timestamp = frame.ready_timestamp;
-    feedback.latch_timestamp = base::TimeTicks::Now();
-    feedback.interval = frame_interval;
-    feedback.timestamp = display_time;
+  feedback.ready_timestamp = frame.ready_timestamp;
+  feedback.latch_timestamp = base::TimeTicks::Now();
+  feedback.interval = frame_interval;
+  feedback.timestamp = display_time;
 
-    // `update_vsync_params_callback` is not available in
-    // SkiaOutputSurfaceImpl::BufferPresented(). Setting kVSync here will not
-    // update vsync params.
-    feedback.flags = gfx::PresentationFeedback::kHWCompletion |
-                     gfx::PresentationFeedback::kVSync;
+  // `update_vsync_params_callback` is not available in
+  // SkiaOutputSurfaceImpl::BufferPresented(). Setting kVSync here will not
+  // update vsync params.
+  feedback.flags = gfx::PresentationFeedback::kHWCompletion |
+                   gfx::PresentationFeedback::kVSync;
 #endif
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(buffer_presented_callback_,
-                     std::move(frame.presentation_callback), feedback));
+  // |frame.presentation_callback| will reach these functions:
+  // viz::SkiaRenderer::DidReceiveReleasedOverlays(),
+  // viz::Display::DidReceivePresentationFeedback(),
+  // viz::SkiaOutputSurfaceImpl::BufferPresented().
+  if (no_post_task_for_callback_) {
+    buffer_presented_callback_.Run(std::move(frame.presentation_callback),
+                                   feedback);
+  } else {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(buffer_presented_callback_,
+                       std::move(frame.presentation_callback), feedback));
+  }
 }
 
 void CALayerTreeCoordinator::SetMaxCALayerTrees(int max_ca_layer_trees) {

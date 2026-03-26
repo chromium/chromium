@@ -82,9 +82,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
       gl::GLSurface::SwapCompletionCallback completion_callback,
       gl::GLSurface::PresentationCallback presentation_callback);
 
-  void BufferPresented(gl::GLSurface::PresentationCallback callback,
-                       const gfx::PresentationFeedback& feedback);
-
   void CommitPresentedFrameToCA();
 
   std::unique_ptr<ui::CALayerTreeCoordinator> ca_layer_tree_coordinator_;

@@ -30,7 +30,8 @@ class MockCALayerTreeCoordinator : public ui::CALayerTreeCoordinator {
       : CALayerTreeCoordinator(false,
                                base::DoNothing(),
                                base::BindRepeating([] { return true; }),
-                               nil),
+                               nil,
+                               false),
         ca_renderer_layer_tree_(new ui::CARendererLayerTree(true, true)) {}
 
   ~MockCALayerTreeCoordinator() override = default;
