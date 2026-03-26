@@ -13,7 +13,7 @@ export function getHtml(this: ReloadButtonElement) {
     title="${this.tooltip}"
     aria-label="${this.accName_}"
     aria-haspopup="${this.state.canShowMenu}"
-    is-menu-open="${this.state.isContextMenuVisible}"
+    ?is-menu-open="${this.state.isContextMenuVisible}"
     @pointerdown="${this.onPointerdown_}"
     @pointerup="${this.onPointerup_}"
     @pointercancel="${this.pressHandler_.onPointercancel}"

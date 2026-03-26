@@ -14,7 +14,7 @@ export function getHtml(this: HomeButtonElement) {
     @pointercancel="${this.pressHandler_.onPointercancel}"
     @contextmenu="${this.pressHandler_.onContextmenu}"
     title="${this.tooltip_}" aria-label="${this.label_}"
-    is-menu-open="${this.state.isContextMenuVisible}">
+    ?is-menu-open="${this.state.isContextMenuVisible}">
 </cr-icon-button>
 <!--_html_template_end_-->`;
 }

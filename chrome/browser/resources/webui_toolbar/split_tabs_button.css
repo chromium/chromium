@@ -33,7 +33,7 @@
   z-index: 1; /* Renders above the button background */
 }
 
-cr-icon-button[is-split=true] {
+cr-icon-button[is-split] {
   --cr-icon-button-fill-color: var(--color-toolbar-action-item-engaged,
       var(--google-blue-600));
 }

@@ -24,6 +24,6 @@ cr-icon-button {
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
 }
 
-cr-icon-button[is-menu-open=true] {
+cr-icon-button[is-menu-open] {
   background-color: var(--cr-active-background-color);
 }

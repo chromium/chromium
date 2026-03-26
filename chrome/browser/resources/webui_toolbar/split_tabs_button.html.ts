@@ -12,8 +12,8 @@ export function getHtml(this: SplitTabsButtonElement) {
     @click="${this.onClick}" @contextmenu="${this.onContextmenu}"
     title="${this.getLabel()}" aria-label="${this.getLabel()}"
     aria-haspopup="${this.state.isCurrentTabSplit}"
-    is-menu-open="${this.state.isContextMenuVisible}"
-    is-split="${this.state.isCurrentTabSplit}">
+    ?is-menu-open="${this.state.isContextMenuVisible}"
+    ?is-split="${this.state.isCurrentTabSplit}">
 </cr-icon-button>
 <div class="status-indicator" ?hidden="${!this.state.isCurrentTabSplit}"></div>
 <!--_html_template_end_-->`;
