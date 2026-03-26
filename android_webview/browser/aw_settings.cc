@@ -785,6 +785,17 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->allow_mixed_content_upgrades =
       Java_AwSettings_getAllowMixedContentAutoupgradesLocked(env, obj);
 
+  web_prefs->ignore_duplicate_nav_enabled =
+      Java_AwSettings_getIgnoreDuplicateNavEnabledLocked(env, obj);
+  int ignore_duplicate_nav_threshold_ms =
+      Java_AwSettings_getIgnoreDuplicateNavThresholdLocked(env, obj);
+  // If the threshold is -1, which means it is the default value in WebView,
+  // then do not set the threshold in WebPreferences.
+  if (ignore_duplicate_nav_threshold_ms != -1) {
+    web_prefs->duplicate_nav_threshold =
+        base::Milliseconds(ignore_duplicate_nav_threshold_ms);
+  }
+
   if (AwDarkMode* aw_dark_mode = AwDarkMode::FromWebContents(web_contents())) {
     aw_dark_mode->PopulateWebPreferences(
         web_prefs, Java_AwSettings_getForceDarkModeLocked(env, obj),

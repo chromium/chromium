@@ -4262,4 +4262,26 @@ public class AwSettingsTest {
                 new AwSettingsTextScaleMetaTagTestHelper(
                         views.getContainer1(), views.getClient1()));
     }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testIgnoreDuplicateNavs() throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        final AwContents awContents = testContainerView.getAwContents();
+        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+
+        // Verify default values: feature disabled and threshold set to -1 (default).
+        Assert.assertFalse(settings.getIgnoreDuplicateNavEnabled());
+        Assert.assertEquals(-1, settings.getIgnoreDuplicateNavThreshold());
+
+        // Enable the feature and set a custom threshold.
+        settings.setIgnoreDuplicateNavEnabled(true);
+        int customThreshold = 1000;
+        settings.setIgnoreDuplicateNavThreshold(customThreshold);
+        Assert.assertTrue(settings.getIgnoreDuplicateNavEnabled());
+        Assert.assertEquals(customThreshold, settings.getIgnoreDuplicateNavThreshold());
+    }
 }

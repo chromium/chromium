@@ -475,4 +475,10 @@ public class Features {
     // Navigation.getWebResourceError
     public static final String NAVIGATION_GET_WEB_RESOURCE_ERROR =
             "NAVIGATION_GET_WEB_RESOURCE_ERROR";
+
+    // WebViewSettings.setIgnoreDuplicateNavEnabled
+    // WebViewSettings.getIgnoreDuplicateNavEnabled
+    // WebViewSettings.setIgnoreDuplicateNavThreshold
+    // WebViewSettings.getIgnoreDuplicateNavThreshold
+    public static final String IGNORE_DUPLICATE_NAV = "IGNORE_DUPLICATE_NAV";
 }

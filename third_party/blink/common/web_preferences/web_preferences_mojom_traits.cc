@@ -44,7 +44,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadNetworkQualityEstimatorWebHoldback(
           &out->network_quality_estimator_web_holdback) ||
       !data.ReadWebAppScope(&out->web_app_scope) ||
-      !data.ReadRootScrollbarThemeColor(&out->root_scrollbar_theme_color)
+      !data.ReadRootScrollbarThemeColor(&out->root_scrollbar_theme_color) ||
+      !data.ReadDuplicateNavThreshold(&out->duplicate_nav_threshold)
 #if BUILDFLAG(IS_ANDROID)
       || !data.ReadDefaultVideoPosterUrl(&out->default_video_poster_url)
 #endif
@@ -242,6 +243,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.require_transient_activation_and_user_confirmation_for_subapps_api();
   out->payment_request_enabled = data.payment_request_enabled();
   out->ai_ot_apis_enabled = data.ai_ot_apis_enabled();
+  out->ignore_duplicate_nav_enabled = data.ignore_duplicate_nav_enabled();
 
 #if BUILDFLAG(IS_MAC)
   out->should_disable_external_popups = data.should_disable_external_popups();

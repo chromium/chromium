@@ -740,6 +740,10 @@ chromium-metrics-reviews@google.com.
   <int value="181" label="WebSettingsCompat.setPrefetchTtlSeconds"/>
   <int value="182" label="BackForwardCacheSettings.getKeepForwardEntries"/>
   <int value="183" label="BackForwardCacheSettings.setKeepForwardEntries"/>
+  <int value="184" label="WebSettingsCompat.setIgnoreDuplicateNavEnabled"/>
+  <int value="185" label="WebSettingsCompat.getIgnoreDuplicateNavEnabled"/>
+  <int value="186" label="WebSettingsCompat.setIgnoreDuplicateNavThreshold"/>
+  <int value="187" label="WebSettingsCompat.getIgnoreDuplicateNavThreshold"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

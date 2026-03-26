@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/css/preferred_contrast.mojom";
@@ -517,6 +518,14 @@ struct WebPreferences {
   // Enables the origin trial Built-in AI APIs, for use within DevTools and
   // devtools extension panels.
   bool ai_ot_apis_enabled = false;
+
+  // Whether IgnoreDuplicateNavs is enabled. Controlled by WebView settings on
+  // WebView and by `kIgnoreDuplicateNavs` feature flag everywhere.
+  bool ignore_duplicate_nav_enabled = false;
+
+  // Threshold in ms for IgnoreDuplicateNavs. Controlled by WebView settings on
+  // WebView and by `kDuplicateNavThreshold` feature param everywhere.
+  mojo_base.mojom.TimeDelta duplicate_nav_threshold = default;
 
   [EnableIf=is_android]
   bool should_screenshot_on_mainframe_same_doc_navigation = true;

@@ -168,9 +168,6 @@ bool ContentClient::ShouldAllowDefaultSiteInstanceGroup() {
 bool ContentClient::ShouldIgnoreDuplicateNavs(
     const GURL& url,
     bool is_renderer_initiated) const {
-  if (!base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
-    return false;
-  }
   const std::string& origins_list_str =
       features::kIgnoreDuplicateNavsOrigins.Get();
 

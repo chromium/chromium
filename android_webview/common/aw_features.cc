@@ -45,11 +45,6 @@ BASE_FEATURE(kWebViewDeferStartupGmsCalls, base::FEATURE_DISABLED_BY_DEFAULT);
 // longer supported.
 BASE_FEATURE(kWebViewFileSystemAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable ignoring duplicate navigations in WebView. Note that this will only
-// take effect if both this feature flag and the content/public
-// kIgnoreDuplicateNavs flag is enabled.
-BASE_FEATURE(kWebViewIgnoreDuplicateNavs, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
              base::FEATURE_ENABLED_BY_DEFAULT);

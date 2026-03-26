@@ -3816,6 +3816,11 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
   prefs.dont_send_key_events_to_javascript =
       base::FeatureList::IsEnabled(features::kDontSendKeyEventsToJavascript);
 
+  prefs.ignore_duplicate_nav_enabled =
+      base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs);
+
+  prefs.duplicate_nav_threshold = features::kDuplicateNavThreshold.Get();
+
 // TODO(dtapuska): Enable barrel button selection drag support on Android.
 // crbug.com/758042
 #if BUILDFLAG(IS_WIN)

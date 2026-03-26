@@ -634,4 +634,42 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return mAwSettings.getBackForwardCacheSettingsKeepForwardEntries();
         }
     }
+
+    @Override
+    public void setIgnoreDuplicateNavEnabled(boolean ignoreDuplicateNavEnabled) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_IGNORE_DUPLICATE_NAV_ENABLED")) {
+            recordApiCall(ApiCall.SET_IGNORE_DUPLICATE_NAV_ENABLED);
+            mAwSettings.setIgnoreDuplicateNavEnabled(ignoreDuplicateNavEnabled);
+        }
+    }
+
+    @Override
+    public boolean getIgnoreDuplicateNavEnabled() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_IGNORE_DUPLICATE_NAV_ENABLED")) {
+            recordApiCall(ApiCall.GET_IGNORE_DUPLICATE_NAV_ENABLED);
+            return mAwSettings.getIgnoreDuplicateNavEnabled();
+        }
+    }
+
+    @Override
+    public void setIgnoreDuplicateNavThreshold(int thresholdMs) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SET_IGNORE_DUPLICATE_NAV_THRESHOLD")) {
+            recordApiCall(ApiCall.SET_IGNORE_DUPLICATE_NAV_THRESHOLD_MS);
+            mAwSettings.setIgnoreDuplicateNavThreshold(thresholdMs);
+        }
+    }
+
+    @Override
+    public int getIgnoreDuplicateNavThreshold() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.GET_IGNORE_DUPLICATE_NAV_THRESHOLD")) {
+            recordApiCall(ApiCall.GET_IGNORE_DUPLICATE_NAV_THRESHOLD_MS);
+            return mAwSettings.getIgnoreDuplicateNavThreshold();
+        }
+    }
 }

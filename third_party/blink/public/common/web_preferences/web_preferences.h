@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -460,6 +461,14 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Enables the origin trial Built-in AI APIs, for use within DevTools and
   // devtools extension panels.
   bool ai_ot_apis_enabled = false;
+
+  // Whether IgnoreDuplicateNav is enabled. Controlled by WebView settings on
+  // WebView and by `kIgnoreDuplicateNav` feature flag everywhere.
+  bool ignore_duplicate_nav_enabled = false;
+
+  // Threshold for IgnoreDuplicateNavs. Controlled by WebView settings on
+  // WebView and by `kDuplicateNavThreshold` feature param everywhere.
+  base::TimeDelta duplicate_nav_threshold;
 
 #if BUILDFLAG(IS_MAC)
   bool should_disable_external_popups = false;

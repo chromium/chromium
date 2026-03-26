@@ -230,9 +230,8 @@ class CONTENT_EXPORT ContentClient {
   // Returns whether duplicate navigations should be ignored.
   //
   // Currently, returns true (ignore) if:
-  // 1. The feature `kIgnoreDuplicateNavs` is enabled.
-  // 2. The specific initiator's skip param (browser or renderer) is disabled.
-  // 3. AND one of the following origin criteria is met:
+  // 1. The specific initiator's skip param (browser or renderer) is disabled.
+  // 2. AND one of the following origin criteria is met:
   //    - It is a browser-initiated navigation.
   //    - The origin list `kIgnoreDuplicateNavsOrigins` is empty (applies to all
   //      origins).
