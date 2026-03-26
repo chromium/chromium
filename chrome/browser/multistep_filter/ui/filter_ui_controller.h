@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_MULTISTEP_FILTER_UI_FILTER_UI_CONTROLLER_H_
 
 #include <optional>
+#include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
@@ -41,7 +43,10 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   virtual void ClearSuggestion();
 
   // Applies the current suggestion by navigating to the suggested URL.
-  void ApplySuggestion();
+  virtual void ApplySuggestion();
+
+  // Returns true if suggestions should be suppressed for the given URL.
+  virtual bool ShouldSuppressSuggestions(const GURL& url);
 
  protected:
   // Shows the UI for the given suggestion.
@@ -50,7 +55,12 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   // Navigates the current tab to the given URL. Virtual for testing.
   virtual void NavigateTo(const GURL& url);
 
+  // Returns the callback to be executed when the suggestion UI is dismissed.
+  base::OnceClosure GetOnDismissedCallback(const GURL& url);
+
  private:
+  void OnSuggestionDismissed(const GURL& url);
+
   ui::ScopedUnownedUserData<FilterUiController> scoped_unowned_user_data_;
 
   // The current suggestion that is displayed in the UI. Cached here so that
@@ -58,9 +68,15 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   // needing to pass them back from the UI layer.
   std::optional<UrlFilterSuggestion> current_url_filter_suggestion_;
 
-  // Must be the last member variable to ensure that it is destroyed first,
-  // invalidating all weak pointers before other members are destroyed.
-  base::WeakPtrFactory<FilterUiController> weak_factory_{this};
+  // Hosts for which the user has dismissed a suggestion in the current tab.
+  // TODO (crbug.com/495396112): Identify if dismissed hosts should be persisted
+  // or shared across tabs.
+  base::flat_set<std::string> dismissed_hosts_;
+
+  // Factory for dismissal callbacks. Must be the last member variable to
+  // ensure that it is destroyed first, invalidating all weak pointers before
+  // other members are destroyed.
+  base::WeakPtrFactory<FilterUiController> dismissal_weak_factory_{this};
 };
 
 }  // namespace multistep_filter

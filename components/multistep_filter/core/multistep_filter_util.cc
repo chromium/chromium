@@ -23,8 +23,12 @@ constexpr std::string_view kWildcardDomain = "*";
 }  // namespace
 
 std::string GetEtldPlusOne(const GURL& url) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
+  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  if (domain.empty()) {
+    return std::string(url.host());
+  }
+  return domain;
 }
 
 bool IsUrlAllowed(const GURL& url) {
@@ -42,12 +46,6 @@ bool IsUrlAllowed(const GURL& url) {
   }
 
   std::string domain_and_registry = GetEtldPlusOne(url);
-  if (domain_and_registry.empty()) {
-    // If the domain and registry is empty, use the host as a fallback. This
-    // handles IP addresses (e.g., 127.0.0.1) and intranet hosts (e.g.,
-    // localhost).
-    domain_and_registry = url.host();
-  }
 
   return std::ranges::any_of(domains, [&](std::string_view domain) {
     return base::EqualsCaseInsensitiveASCII(domain_and_registry, domain);
@@ -55,11 +53,7 @@ bool IsUrlAllowed(const GURL& url) {
 }
 
 bool IsSameDomainOrHost(const GURL& url, const GURL& other) {
-  std::string current_domain = GetEtldPlusOne(url);
-  std::string other_domain = GetEtldPlusOne(other);
-
-  return (!current_domain.empty() && current_domain == other_domain) ||
-         (current_domain.empty() && url.host() == other.host());
+  return GetEtldPlusOne(url) == GetEtldPlusOne(other);
 }
 
 }  // namespace multistep_filter

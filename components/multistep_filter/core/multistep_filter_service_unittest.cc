@@ -51,6 +51,7 @@ class MockFilterSuggestionGenerator : public FilterSuggestionGenerator {
 
 class MockMultistepFilterUiDelegate : public MultistepFilterUiDelegate {
  public:
+  MOCK_METHOD(bool, ShouldSuppressSuggestions, (const GURL& url), (override));
   MOCK_METHOD(void, ClearSuggestion, (), (override));
   MOCK_METHOD(void,
               OnSuggestionGenerated,
@@ -153,7 +154,25 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
   const GURL kUrl("http://example.com");
   MockMultistepFilterUiDelegate mock_delegate;
 
+  EXPECT_CALL(mock_delegate, ShouldSuppressSuggestions(kUrl))
+      .WillOnce(testing::Return(false));
   EXPECT_CALL(*mock_generator_, GenerateSuggestion(kUrl, _));
+
+  service_->GenerateFilterSuggestions(kUrl, mock_delegate.GetWeakPtr());
+}
+
+TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_Suppressed) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  CreateService();
+  const GURL kUrl("http://example.com");
+  MockMultistepFilterUiDelegate mock_delegate;
+
+  EXPECT_CALL(mock_delegate, ShouldSuppressSuggestions(kUrl))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
+  EXPECT_CALL(mock_delegate, OnSuggestionGenerated(testing::Eq(std::nullopt)));
 
   service_->GenerateFilterSuggestions(kUrl, mock_delegate.GetWeakPtr());
 }

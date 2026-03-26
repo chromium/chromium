@@ -46,6 +46,11 @@ void MultistepFilterService::GenerateFilterSuggestions(
     return;
   }
 
+  if (delegate->ShouldSuppressSuggestions(url)) {
+    delegate->OnSuggestionGenerated(std::nullopt);
+    return;
+  }
+
   // Generate filter suggestions for signed-in users only.
   if (IsUserSignedIn() && IsUrlAllowed(url)) {
     filter_suggestion_generator_->GenerateSuggestion(

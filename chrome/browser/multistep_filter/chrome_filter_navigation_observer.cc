@@ -47,6 +47,13 @@ class UiDelegateImpl : public MultistepFilterUiDelegate {
     }
   }
 
+  bool ShouldSuppressSuggestions(const GURL& url) override {
+    if (auto* controller = GetController()) {
+      return controller->ShouldSuppressSuggestions(url);
+    }
+    return false;
+  }
+
   base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }

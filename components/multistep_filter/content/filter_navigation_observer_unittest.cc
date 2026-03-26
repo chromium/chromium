@@ -56,6 +56,7 @@ class MockUiDelegate : public MultistepFilterUiDelegate {
               OnSuggestionGenerated,
               (std::optional<UrlFilterSuggestion> suggestion),
               (override));
+  MOCK_METHOD(bool, ShouldSuppressSuggestions, (const GURL& url), (override));
   base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }

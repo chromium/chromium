@@ -36,7 +36,7 @@ TEST_F(MultistepFilterUtilTest, IsUrlAllowed_Wildcard) {
       kMultistepFilter, {{"allowed_domains", "*"}});
 
   EXPECT_TRUE(IsUrlAllowed(GURL("https://example.com")));
-  EXPECT_TRUE(IsUrlAllowed(GURL("https://google.com")));
+  EXPECT_TRUE(IsUrlAllowed(GURL("https://test.org")));
 }
 
 TEST_F(MultistepFilterUtilTest, IsUrlAllowed_WildcardWithSpaces) {
@@ -45,7 +45,7 @@ TEST_F(MultistepFilterUtilTest, IsUrlAllowed_WildcardWithSpaces) {
       kMultistepFilter, {{"allowed_domains", "  *  "}});
 
   EXPECT_TRUE(IsUrlAllowed(GURL("https://example.com")));
-  EXPECT_TRUE(IsUrlAllowed(GURL("https://google.com")));
+  EXPECT_TRUE(IsUrlAllowed(GURL("https://test.org")));
 }
 
 TEST_F(MultistepFilterUtilTest, IsUrlAllowed_WildcardAndOtherDomains) {
@@ -54,7 +54,7 @@ TEST_F(MultistepFilterUtilTest, IsUrlAllowed_WildcardAndOtherDomains) {
       kMultistepFilter, {{"allowed_domains", "example.com, * , test.org"}});
 
   EXPECT_TRUE(IsUrlAllowed(GURL("https://example.com")));
-  EXPECT_TRUE(IsUrlAllowed(GURL("https://google.com")));
+  EXPECT_TRUE(IsUrlAllowed(GURL("https://anydomain.com")));
 }
 
 TEST_F(MultistepFilterUtilTest, IsUrlAllowed_SpecificDomain) {
@@ -103,6 +103,32 @@ TEST_F(MultistepFilterUtilTest, IsUrlAllowed_FallbackToHostForIP) {
   EXPECT_TRUE(IsUrlAllowed(GURL("http://127.0.0.1:8080/path")));
 
   EXPECT_FALSE(IsUrlAllowed(GURL("http://192.168.1.1")));
+}
+
+TEST_F(MultistepFilterUtilTest, GetEtldPlusOne) {
+  EXPECT_EQ(GetEtldPlusOne(GURL("https://www.example.com")), "example.com");
+  EXPECT_EQ(GetEtldPlusOne(GURL("https://sub.example.co.uk")), "example.co.uk");
+  EXPECT_EQ(GetEtldPlusOne(GURL("http://localhost:8080")), "localhost");
+  EXPECT_EQ(GetEtldPlusOne(GURL("http://127.0.0.1")), "127.0.0.1");
+  EXPECT_EQ(GetEtldPlusOne(GURL("http://[::1]")), "[::1]");
+  EXPECT_EQ(GetEtldPlusOne(GURL("http://myintranethost")), "myintranethost");
+  EXPECT_EQ(GetEtldPlusOne(GURL("")), "");
+}
+
+TEST_F(MultistepFilterUtilTest, IsSameDomainOrHost) {
+  EXPECT_TRUE(IsSameDomainOrHost(GURL("https://www.example.com"),
+                                 GURL("https://example.com/search")));
+  EXPECT_TRUE(IsSameDomainOrHost(GURL("https://a.example.com"),
+                                 GURL("https://b.example.com")));
+  EXPECT_TRUE(IsSameDomainOrHost(GURL("http://localhost:8080"),
+                                 GURL("http://localhost:9000")));
+  EXPECT_TRUE(
+      IsSameDomainOrHost(GURL("http://127.0.0.1"), GURL("http://127.0.0.1")));
+
+  EXPECT_FALSE(IsSameDomainOrHost(GURL("https://example.com"),
+                                  GURL("https://test.org")));
+  EXPECT_FALSE(IsSameDomainOrHost(GURL("https://example.com"),
+                                  GURL("http://127.0.0.1")));
 }
 
 }  // namespace multistep_filter

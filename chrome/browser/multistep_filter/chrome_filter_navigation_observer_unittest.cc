@@ -40,6 +40,7 @@ class MockFilterUiController : public FilterUiController {
               (std::optional<UrlFilterSuggestion> suggestion),
               (override));
   MOCK_METHOD(void, ClearSuggestion, (), (override));
+  MOCK_METHOD(bool, ShouldSuppressSuggestions, (const GURL& url), (override));
 };
 
 class MockMultistepFilterService : public MultistepFilterService {
@@ -206,6 +207,25 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateHandlesNullController) {
   // handled without crashing.
   captured_delegate->OnSuggestionGenerated(std::nullopt);
   captured_delegate->ClearSuggestion();
+}
+
+TEST_F(ChromeFilterNavigationObserverTest, DelegateShouldSuppressSuggestions) {
+  auto mock_controller = std::make_unique<MockFilterUiController>(*mock_tab_);
+
+  const GURL url("https://www.example.com");
+  base::WeakPtr<MultistepFilterUiDelegate> captured_delegate =
+      NavigateAndGetDelegate(url);
+
+  ASSERT_TRUE(captured_delegate);
+
+  const GURL test_url("https://test.com");
+  EXPECT_CALL(*mock_controller, ShouldSuppressSuggestions(test_url))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(captured_delegate->ShouldSuppressSuggestions(test_url));
+
+  EXPECT_CALL(*mock_controller, ShouldSuppressSuggestions(test_url))
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(captured_delegate->ShouldSuppressSuggestions(test_url));
 }
 
 TEST_F(ChromeFilterNavigationObserverTest, NavigationWithController) {

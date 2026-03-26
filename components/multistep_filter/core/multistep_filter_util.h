@@ -11,7 +11,8 @@ class GURL;
 
 namespace multistep_filter {
 
-// Returns the eTLD+1 for `url`.
+// Returns the eTLD+1 for `url`. If it doesn't exist,
+// returns the host.
 std::string GetEtldPlusOne(const GURL& url);
 
 // Returns true if `url` is allowed by the `kMultistepFilterAllowedDomains`
