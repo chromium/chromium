@@ -18,8 +18,8 @@ export function getHtml(this: ComposeboxElement) {
         animation-state="${this.animationState}"
         .entrypointName="${this.entrypointName}"
         .requiresVoice="${this.shouldShowVoiceSearchAnimation_()}"
-        .transcript="${this.transcript_}"
-        .receivedSpeech="${this.receivedSpeech_}"
+        .transcript="${this.transcript}"
+        .receivedSpeech="${this.receivedSpeech}"
         exportparts="composebox-background">
     </search-animated-glow>
   ` : ''}
@@ -42,12 +42,12 @@ export function getHtml(this: ComposeboxElement) {
       <cr-composebox-input id="composeboxInput"
           exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
           .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
-          .showDropdown="${this.showDropdown_}"
+          .showDropdown="${this.showDropdown}"
           .inputPlaceholder="${this.inputPlaceholder}"
           .input="${this.input}"
-          .smartComposeInlineHint="${this.smartComposeInlineHint_}"
+          .smartComposeInlineHint="${this.smartComposeInlineHint}"
           .isCollapsible="${this.isCollapsible}"
-          .submitEnabled="${this.submitEnabled_}"
+          .submitEnabled="${this.submitEnabled}"
           .entrypointName="${this.entrypointName}"
           .cancelButtonTitle="${this.computeCancelButtonTitle_()}"
           @input-input="${this.onInputInput_}"
@@ -64,7 +64,7 @@ export function getHtml(this: ComposeboxElement) {
           : ''}
           <div id="carouselContainer" part="carousel-container">
             <div class="carousel-container-inner">
-              ${this.showFileCarousel_ ? html`
+              ${this.showFileCarousel ? html`
                 <cr-composebox-file-carousel
                   part="cr-composebox-file-carousel"
                   exportparts="thumbnail, thumbnail-title"
@@ -74,7 +74,7 @@ export function getHtml(this: ComposeboxElement) {
                   ?enable-scrolling="${this.enableCarouselScrolling}"
                   @delete-file="${this.onDeleteFile_}">
                 </cr-composebox-file-carousel> ` : ''}
-                ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ ? html`
+                ${this.searchboxLayoutMode === 'Compact' && this.inToolMode ? html`
                 <div class="context-menu-container" id="toolChipsContainer"
                     part="tool-chips-container">
                     <cr-composebox-tool-chip
@@ -97,18 +97,18 @@ export function getHtml(this: ComposeboxElement) {
               part="dropdown"
               exportparts="match-text-container"
               role="listbox"
-              .result="${this.result_}"
-              .selectedMatchIndex="${this.selectedMatchIndex_}"
+              .result="${this.result}"
+              .selectedMatchIndex="${this.selectedMatchIndex}"
               .maxSuggestions="${this.maxSuggestions}"
               .toolMode="${this.inputState?.activeTool}"
               @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
               @match-focusin="${this.onMatchFocusin_}"
               @match-click="${this.onMatchClick_}"
-              ?hidden="${!this.showDropdown_ || !this.dropdownNeeded}"
+              ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
               .lastQueriedInput="${this.lastQueriedInput_}">
           </cr-composebox-dropdown>
           ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`
-            ${this.contextMenuEnabled_ ? getContextMenuHtml.bind(this)() : ''}
+            ${this.contextMenuEnabled ? getContextMenuHtml.bind(this)() : ''}
           `: ''}
           ${this.shouldShowVoiceSearchAtBottom_() ? html`
             <cr-icon-button id="voiceSearchButton" class="voice-icon" part="voice-icon"

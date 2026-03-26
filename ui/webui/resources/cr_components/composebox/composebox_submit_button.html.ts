@@ -19,7 +19,7 @@ export function getHtml(this: ComposeboxElement) {
       class="action-icon ${this.submitButtonIconClass_}"
       part="action-icon submit-icon" tabindex="0"
       title="${this.i18n('composeboxSubmitButtonTitle')}"
-      ?disabled="${!this.canSubmitFilesAndInput_}">
+      ?disabled="${!this.canSubmitFilesAndInput}">
   </cr-icon-button>
 </div>`;
   // clang-format on

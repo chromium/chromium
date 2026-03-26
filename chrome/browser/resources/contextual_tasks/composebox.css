@@ -78,7 +78,7 @@
  * extend to the top of the screen so that the user can see the full
  * composebox when it is expanded. */
 :host([is-composebox-focused])
-  #composeboxContainer:has(#composebox[show-dropdown_]) {
+  #composeboxContainer:has(#composebox[show-dropdown]) {
   background: linear-gradient(to top,
     rgba(var(--search-background-color-rgb), 1) var(--composebox-container-height),
     rgba(var(--search-background-color-rgb), 0.9) 75vh,
@@ -127,7 +127,7 @@
   z-index: 2;
 }
 
-:host([in-voice-search-mode_]) #composebox::after {
+:host([in-voice-search-mode]) #composebox::after {
   opacity: 0;
 }
 
@@ -204,21 +204,21 @@
   opacity: 0;
 }
 
-#composebox[show-file-carousel_][expanding_]::part(carousel-container) {
+#composebox[show-file-carousel][expanding_]::part(carousel-container) {
   opacity: 1;
   transition: var(--icon-entry-transition);
 }
 
-#composebox[show-file-carousel_]::part(carousel-container) {
+#composebox[show-file-carousel]::part(carousel-container) {
   /* Give room for the close button in the top right. */
   --context-carousel-inline-end-spacing: 56px;
 }
 
-#composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
+#composebox:not([expanding_])[show-file-carousel]::part(cr-composebox-file-carousel) {
   pointer-events: none;
 }
 
-#composebox[show-file-carousel_][expanding_]::part(input-container) {
+#composebox[show-file-carousel][expanding_]::part(input-container) {
   padding-top: var(--carousel-height, 60px);
 }
 
@@ -233,7 +233,6 @@
 #composebox::part(input),
 #composebox::part(smart-compose) {
   min-height: 48px;
-  padding-inline-start: var(--g-input-left-spacing);
 }
 
 #composebox::part(context-menu-and-tools) {
@@ -270,7 +269,7 @@
 }
 
 /* Only show when text is in there (when can submit). */
-#composebox[submit-enabled_]::part(cancel-icon) {
+#composebox[submit-enabled]::part(cancel-icon) {
   display: block;
 }
 
@@ -292,7 +291,7 @@
   border-radius: 50%;
 }
 
-#composebox[submit-enabled_]::part(lens-icon) {
+#composebox[submit-enabled]::part(lens-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
@@ -344,7 +343,7 @@
   top: auto;
 }
 
-#composebox[submit-enabled_]::part(submit) {
+#composebox[submit-enabled]::part(submit) {
   bottom: var(--composebox-icon-menu-bottom);
   display: block;
   inset-inline-end: var(--composebox-submit-container-inline-end);
@@ -376,18 +375,18 @@
 /* Hide the dropdown when the dropdown is not enabled, the dropdown is not showable,
  * or when the composebox is not focused. */
 :host(:not([is-composebox-focused])) #composeboxContainer #composebox::part(dropdown),
-#composeboxContainer:has(#composebox:not([show-dropdown_])) #composebox::part(dropdown) {
+#composeboxContainer:has(#composebox:not([show-dropdown])) #composebox::part(dropdown) {
   display: none;
 }
 
-#composebox[submit-enabled_]::part(voice-icon) {
+#composebox[submit-enabled]::part(voice-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
 }
 
 /* Lens is only shown in side panel, so adjust spacing. */
-:host([is-side-panel]) #composebox[submit-enabled_]::part(voice-icon) {
+:host([is-side-panel]) #composebox[submit-enabled]::part(voice-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-button-size)
       + 2 * var(--icon-menu-spacing)
@@ -414,12 +413,12 @@
 }
 
 /* When Deep Search is active lens buttion is hidden so we move the voice icon to the far right. */
-:host([is-side-panel][active-tool-mode_='1']) #composebox::part(voice-icon) {
+:host([is-side-panel][active-tool-mode='1']) #composebox::part(voice-icon) {
   inset-inline-end: 14px;
 }
 
 /* When Deep Search is active, lens button is hidden, and submit is enabled */
-:host([is-side-panel][active-tool-mode_='1']) #composebox[submit-enabled_]::part(voice-icon) {
+:host([is-side-panel][active-tool-mode='1']) #composebox[submit-enabled]::part(voice-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
@@ -596,11 +595,11 @@
   pointer-events: auto;
 }
 
-:host:has(#composebox:not([show-dropdown_])) #contextualTasksSuggestionsContainer {
+:host:has(#composebox:not([show-dropdown])) #contextualTasksSuggestionsContainer {
   display: none;
 }
 
 /* Needed for space between header and composebox. */
-:host([is-side-panel]) #composebox:not([show-dropdown_]) {
+:host([is-side-panel]) #composebox:not([show-dropdown]) {
   margin-top: 24px;
 }

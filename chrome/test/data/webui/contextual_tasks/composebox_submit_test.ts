@@ -529,10 +529,10 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     assertTrue(
         composebox.fileUploadsComplete, 'Files should be finished uploading');
     assertTrue(
-        composebox.submitEnabled_,
+        composebox.submitEnabled,
         'Submit should be enabled after first file upload finishes');
     assertTrue(
-        composebox.canSubmitFilesAndInput_,
+        composebox.canSubmitFilesAndInput,
         'Submit w/files should be enabled after first file upload finishes');
 
     await uploadFileAndVerify(
@@ -588,7 +588,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     // Should be able to submit now that 2nd file is uploaded:
     assertTrue(
-        composebox.canSubmitFilesAndInput_,
+        composebox.canSubmitFilesAndInput,
         'Submit should be enabled after second file upload finishes');
 
     await composebox.updateComplete;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
+import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -204,7 +204,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Initially, carousel is not shown.
-    assertFalse(testProxy.element.hasAttribute('show-file-carousel_'));
+    assertFalse(testProxy.element.hasAttribute('show-file-carousel'));
 
     // Set a thumbnail.
     const thumbnailUrl = 'data:image/png;base64,sometestdata';
@@ -218,7 +218,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert thumbnail is shown.
-    assertTrue(testProxy.element.hasAttribute('show-file-carousel_'));
+    assertTrue(testProxy.element.hasAttribute('show-file-carousel'));
     const fileCarousel = testProxy.element.$.carousel;
     await microtasksFinished();
 
@@ -246,7 +246,7 @@ suite('NewTabPageComposeboxTest', () => {
     // The carousel is removed from the DOM when there are no files, so
     // assert its absence.
     assertFalse(!!testProxy.element.shadowRoot.querySelector('#carousel'));
-    assertFalse(testProxy.element.hasAttribute('show-file-carousel_'));
+    assertFalse(testProxy.element.hasAttribute('show-file-carousel'));
   });
 
   test('setVisualSelectionThumbnail not deletable', async () => {
@@ -265,7 +265,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert thumbnail is shown.
-    assertTrue(testProxy.element.hasAttribute('show-file-carousel_'));
+    assertTrue(testProxy.element.hasAttribute('show-file-carousel'));
     const fileCarousel = testProxy.element.$.carousel;
     assertEquals(fileCarousel.files.length, 1);
     assertFalse(fileCarousel.files[0]!.isDeletable);
@@ -749,7 +749,7 @@ suite('NewTabPageComposeboxTest', () => {
         'Collapsible should be expanded initially due to focus event');
 
     // Initially, carousel is not shown.
-    assertFalse(testProxy.element.hasAttribute('show-file-carousel_'));
+    assertFalse(testProxy.element.hasAttribute('show-file-carousel'));
 
     // Set a thumbnail.
     const thumbnailUrl = 'data:image/png;base64,sometestdata';
@@ -763,7 +763,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert thumbnail is shown.
-    assertTrue(testProxy.element.hasAttribute('show-file-carousel_'));
+    assertTrue(testProxy.element.hasAttribute('show-file-carousel'));
     const fileCarousel = testProxy.element.$.carousel;
     await microtasksFinished();
 

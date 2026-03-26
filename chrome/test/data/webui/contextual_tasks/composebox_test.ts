@@ -728,7 +728,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
   test('Composebox upload disabled when uploading files', async () => {
     composebox.searchboxLayoutMode = '';
-    composebox.contextMenuEnabled_ = true;
+    composebox.contextMenuEnabled = true;
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -785,7 +785,7 @@ suite('ContextualTasksComposeboxTest', () => {
       'Composebox upload disabled when uploading files with contextMenu',
       async () => {
         composebox.searchboxLayoutMode = '';
-        composebox.contextMenuEnabled_ = true;
+        composebox.contextMenuEnabled = true;
         await composebox.updateComplete;
         await microtasksFinished();
 

@@ -356,7 +356,7 @@
   :host(
       [enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused]
     )
-    #composeboxContainer:has(#composebox[show-dropdown_]) {
+    #composeboxContainer:has(#composebox[show-dropdown]) {
     height: var(--composebox-container-height);
     background-color: var(--search-background-color);
     inset-block-start: auto;
@@ -365,7 +365,7 @@
   :host(
       [enable-lens-aim-suggestions][enable-lens-aim-suggestions-gradient-background][is-composebox-focused]
     )
-    #composeboxContainer:has(#composebox[show-dropdown_])::before {
+    #composeboxContainer:has(#composebox[show-dropdown])::before {
     /* The gradient should have more spread when the dropdown is showing. */
     background: linear-gradient(
       to top,
@@ -378,7 +378,7 @@
   }
 
   :host([enable-lens-aim-suggestions][is-composebox-focused])
-    #composeboxContainer:has(#composebox[show-dropdown_]) {
+    #composeboxContainer:has(#composebox[show-dropdown]) {
     background-color: var(--search-background-color);
     pointer-events: auto;
     inset-block-start: var(--aim-header-height);
@@ -422,12 +422,12 @@
     opacity: 0;
   }
 
-  #composebox[show-file-carousel_][expanding_]::part(carousel-container) {
+  #composebox[show-file-carousel][expanding]::part(carousel-container) {
     opacity: 1;
     transition: var(--icon-entry-transition);
   }
 
-  #composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
+  #composebox:not([expanding_])[show-file-carousel]::part(cr-composebox-file-carousel) {
     pointer-events: none;
   }
 
@@ -512,7 +512,7 @@
    or when the composebox is not focused. */
   :host(:not([enable-lens-aim-suggestions])) #composeboxContainer #composebox::part(dropdown),
   :host(:not([is-composebox-focused])) #composeboxContainer #composebox::part(dropdown),
-  #composeboxContainer:has(#composebox:not([show-dropdown_])) #composebox::part(dropdown) {
+  #composeboxContainer:has(#composebox:not([show-dropdown])) #composebox::part(dropdown) {
     display: none;
   }
 

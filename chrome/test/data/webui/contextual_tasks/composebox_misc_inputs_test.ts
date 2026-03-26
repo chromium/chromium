@@ -381,7 +381,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await microtasksFinished();
 
     assertTrue(
-        composebox.inVoiceSearchMode_,
+        composebox.inVoiceSearchMode,
         'Should be in voice search mode after clicking button');
     assertEquals(
         composebox.animationState, GlowAnimationState.LISTENING,
@@ -413,7 +413,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         'helloworld2', voiceSearchElement.transcript_,
         'Voice search transcript should be updated immediately on result');
     assertEquals(
-        'helloworld2', composebox.transcript_,
+        'helloworld2', composebox.transcript,
         'Transcript should be updated immediately on result');
 
     assertEquals(
@@ -443,10 +443,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         'Voice Search transcript should be cleared after submit');
 
     assertFalse(
-        composebox.inVoiceSearchMode_,
+        composebox.inVoiceSearchMode,
         'Should exit voice search mode after submit');
     assertEquals(
-        composebox.transcript_, '',
+        composebox.transcript, '',
         'Composebox transcript should be cleared after submit');
   });
 

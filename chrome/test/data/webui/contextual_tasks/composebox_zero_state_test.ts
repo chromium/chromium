@@ -413,9 +413,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         contextualComposebox.$.contextualTasksSuggestionsContainer;
     assertTrue(!!suggestionsContainer, 'Suggestions container should exist');
 
-    // Initial state: No matches yet, so show-dropdown_ should be false.
+    // Initial state: No matches yet, so show-dropdown should be false.
     assertFalse(
-        composebox.hasAttribute('show-dropdown_'),
+        composebox.hasAttribute('show-dropdown'),
         'Dropdown should not be shown initially');
     assertEquals(
         'none', getComputedStyle(suggestionsContainer).display,
@@ -432,10 +432,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualComposebox.updateComplete;
     await composebox.updateComplete;
 
-    // show-dropdown_ should be true now because we have ZPS matches and no
+    // show-dropdown should be true now because we have ZPS matches and no
     // input.
     assertTrue(
-        composebox.hasAttribute('show-dropdown_'),
+        composebox.hasAttribute('show-dropdown'),
         'Dropdown should be shown with ZPS matches after adding a file');
 
     // The suggestions container should be visible.
@@ -453,10 +453,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualComposebox.updateComplete;
     await composebox.updateComplete;
 
-    // show-dropdown_ should be false because we have a file and
+    // show-dropdown should be false because we have a file and
     // composeboxShowTypedSuggestWithContext is false.
     assertFalse(
-        composebox.hasAttribute('show-dropdown_'),
+        composebox.hasAttribute('show-dropdown'),
         'Dropdown should hide when typing with' +
             ' a file and showTypedSuggestWithContext is false');
 
@@ -893,7 +893,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         composebox.input, '',
         'Input should not change since arrow down does not select suggestion');
     assertEquals(
-        composebox.selectedMatchIndex_, -1,
+        composebox.selectedMatchIndex, -1,
         'No suggestion should be selected on arrow down in zero state full tab');
     const event2 = new KeyboardEvent('keydown', {
       key: 'ArrowUp',
@@ -909,7 +909,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         composebox.input, '',
         'Input should not change since arrow up does not select suggestion');
     assertEquals(
-        composebox.selectedMatchIndex_, -1,
+        composebox.selectedMatchIndex, -1,
         'No suggestion should be selected on arrow up in zero state full tab');
   });
 
@@ -936,7 +936,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         composebox.input, '',
         'Input should not change since arrow down does not select suggestion');
     assertEquals(
-        composebox.selectedMatchIndex_, -1,
+        composebox.selectedMatchIndex, -1,
         'No suggestion should be selected on arrow down in zero state full tab');
     const event2 = new KeyboardEvent('keydown', {
       key: 'ArrowUp',
@@ -952,7 +952,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         composebox.input, '',
         'Input should not change since arrow up does not select suggestion');
     assertEquals(
-        composebox.selectedMatchIndex_, -1,
+        composebox.selectedMatchIndex, -1,
         'No suggestion should be selected on arrow up in zero state full tab');
   });
 

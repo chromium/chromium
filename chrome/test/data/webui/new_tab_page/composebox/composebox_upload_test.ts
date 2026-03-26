@@ -496,7 +496,7 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
         await testProxy.searchboxHandler.whenCalled(
             testSupport.ADD_FILE_CONTEXT_FN);
         await microtasksFinished();
-        assertFalse(testProxy.element['uploadButtonDisabled_']);
+        assertFalse(testProxy.element['uploadButtonDisabled']);
 
         // Delete the file. `uploadButtonDisabled` should be false.
         const deletedId = testProxy.element.$.carousel.files[0]!.uuid;
@@ -504,7 +504,7 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
             'delete-file',
             {detail: {uuid: deletedId}, bubbles: true, composed: true}));
         await microtasksFinished();
-        assertFalse(testProxy.element['uploadButtonDisabled_']);
+        assertFalse(testProxy.element['uploadButtonDisabled']);
         testProxy.searchboxHandler.resetResolver(
             testSupport.ADD_FILE_CONTEXT_FN);
         testProxy.searchboxHandler.setPromiseResolveFor(
@@ -523,19 +523,19 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
         await testProxy.searchboxHandler.whenCalled(
             testSupport.ADD_FILE_CONTEXT_FN);
         await microtasksFinished();
-        assertFalse(testProxy.element['uploadButtonDisabled_']);
+        assertFalse(testProxy.element['uploadButtonDisabled']);
 
         // Enter create image mode.
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
             {...testInputState, activeTool: ToolMode.kImageGen});
         await testProxy.element.updateComplete;
-        assertFalse(testProxy.element['uploadButtonDisabled_']);
+        assertFalse(testProxy.element['uploadButtonDisabled']);
 
         // Exit create image mode. `uploadButtonDisabled` should be false.
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
             {...testInputState, activeTool: ToolMode.kUnspecified});
         await testProxy.element.updateComplete;
-        assertFalse(testProxy.element['uploadButtonDisabled_']);
+        assertFalse(testProxy.element['uploadButtonDisabled']);
       });
 });
 

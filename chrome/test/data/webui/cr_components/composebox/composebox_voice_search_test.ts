@@ -63,9 +63,9 @@ class MockSpeechRecognition {
 
 // Exposing private/protected vars as public in these components:
 type MockComposebox =
-    Omit<ComposeboxElement, 'transcript_'|'inVoiceSearchMode_'>&{
-      inVoiceSearchMode_: boolean,
-      transcript_: string,
+    Omit<ComposeboxElement, 'transcript'|'inVoiceSearchMode'>&{
+      inVoiceSearchMode: boolean,
+      transcript: string,
     };
 
 let mockSpeechRecognition: MockSpeechRecognition;
@@ -560,7 +560,7 @@ suite('ComposeboxVoiceSearch', () => {
   test('audio wave is rendered when listening', async () => {
     const mockComposeboxElement =
         composeboxElement as unknown as MockComposebox;
-    mockComposeboxElement.inVoiceSearchMode_ = true;
+    mockComposeboxElement.inVoiceSearchMode = true;
     await microtasksFinished();
 
     // SearchAnimatedGlow unconditionally exists
@@ -570,7 +570,7 @@ suite('ComposeboxVoiceSearch', () => {
     const audioWave: AudioWaveElement|null =
         searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
     assertTrue(!!audioWave);
-    mockComposeboxElement.transcript_ = 'foo';
+    mockComposeboxElement.transcript = 'foo';
     await composeboxElement.updateComplete;
     await searchAnimatedGlow!.updateComplete;
     await microtasksFinished();
@@ -581,7 +581,7 @@ suite('ComposeboxVoiceSearch', () => {
   test('audio wave is hidden when not listening', async () => {
     const mockComposeboxElement =
         composeboxElement as unknown as MockComposebox;
-    mockComposeboxElement.inVoiceSearchMode_ = false;
+    mockComposeboxElement.inVoiceSearchMode = false;
     await microtasksFinished();
 
     // SearchAnimatedGlow unconditionally exists
