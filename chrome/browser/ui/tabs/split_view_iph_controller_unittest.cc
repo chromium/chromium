@@ -11,10 +11,13 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
@@ -144,4 +147,41 @@ TEST_F(SplitViewIphControllerTest, SelectingDifferentTabs) {
   tab_strip_model()->SelectTabAt(1);
 
   EXPECT_EQ(iphController.get_tab_switch_count(), 4);
+}
+
+TEST_F(SplitViewIphControllerTest, NoPromoWhenSwitchingTabsWhenAlreadyPinned) {
+  SplitViewIphController iphController{browser_window_interface()};
+
+  // Set the pinning preference to true.
+  browser_window_interface()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kPinSplitTabButton, true);
+
+  AddTab(tab_strip_model(), GURL("test_tab_1"));
+  AddTab(tab_strip_model(), GURL("test_tab_2"));
+
+  EXPECT_CALL(*user_education(), MaybeShowFeaturePromo(testing::_)).Times(0);
+
+  tab_strip_model()->SelectTabAt(0);
+  tab_strip_model()->SelectTabAt(1);
+  tab_strip_model()->SelectTabAt(0);
+  tab_strip_model()->SelectTabAt(1);
+
+  EXPECT_GE(iphController.get_tab_switch_count(), 3);
+}
+
+TEST_F(SplitViewIphControllerTest, NoPromoWhenSplitCreatedWhenAlreadyPinned) {
+  SplitViewIphController iphController{browser_window_interface()};
+
+  // Set the pinning preference to true.
+  browser_window_interface()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kPinSplitTabButton, true);
+
+  AddTab(tab_strip_model(), GURL("test_url_1"));
+  AddTab(tab_strip_model(), GURL("test_url_2"));
+
+  EXPECT_CALL(*user_education(), MaybeShowFeaturePromo(testing::_)).Times(0);
+
+  tab_strip_model()->AddToNewSplit(
+      {0}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kTabContextMenu);
 }
