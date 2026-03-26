@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_thumbnail_observer.h"
 
 #include "chrome/browser/ui/tabs/tab_style.h"
 

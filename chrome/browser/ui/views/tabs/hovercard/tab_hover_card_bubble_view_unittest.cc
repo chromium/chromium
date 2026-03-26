@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 
 #include <ostream>
 #include <string>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/views/tabs/filename_elider.h"
+#include "chrome/browser/ui/views/tabs/hovercard/filename_elider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"

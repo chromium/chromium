@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_TEST_UTIL_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_TEST_UTIL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_TAB_HOVER_CARD_TEST_UTIL_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_TAB_HOVER_CARD_TEST_UTIL_H_
 
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/widget/widget.h"
@@ -63,4 +63,4 @@ class TabHoverCardTestUtil {
 
 }  // namespace test
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_TEST_UTIL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_TAB_HOVER_CARD_TEST_UTIL_H_

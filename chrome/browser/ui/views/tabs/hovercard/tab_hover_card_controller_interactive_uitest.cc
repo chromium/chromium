@@ -25,13 +25,13 @@
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/tabs/fade_footer_view.h"
-#include "chrome/browser/ui/views/tabs/fade_label_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/fade_footer_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/fade_label_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_test_util.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_test_util.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -152,9 +152,7 @@ class TabHoverCardInteractiveUiTest
     MemorySaverInteractiveTestMixin::TearDownOnMainThread();
   }
 
-  auto UnhoverTab() {
-    return Steps(MoveMouseTo(kNewTabButtonElementId));
-  }
+  auto UnhoverTab() { return Steps(MoveMouseTo(kNewTabButtonElementId)); }
 
   StepBuilder CheckHovercardIsOpen() {
     return WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId);

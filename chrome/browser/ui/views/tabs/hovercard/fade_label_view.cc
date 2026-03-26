@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/fade_label_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/fade_label_view.h"
 
 #include <string_view>
 
-#include "chrome/browser/ui/views/tabs/filename_elider.h"
+#include "chrome/browser/ui/views/tabs/hovercard/filename_elider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_FILENAME_ELIDER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_FILENAME_ELIDER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_FILENAME_ELIDER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_FILENAME_ELIDER_H_
 
 #include <stddef.h>
 
@@ -81,4 +81,4 @@ class FilenameElider {
   std::unique_ptr<gfx::RenderText> render_text_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_FILENAME_ELIDER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_FILENAME_ELIDER_H_

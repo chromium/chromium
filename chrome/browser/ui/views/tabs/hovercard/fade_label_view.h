@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_FADE_LABEL_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_FADE_LABEL_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_FADE_LABEL_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_FADE_LABEL_VIEW_H_
 
 #include <string_view>
 
-#include "chrome/browser/ui/views/tabs/fade_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/fade_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -83,4 +83,4 @@ class FadeLabelView : public FadeView<FadeLabel, FadeLabel, FadeLabelViewData> {
   void SetEnabledColor(ui::ColorId color);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_FADE_LABEL_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_FADE_LABEL_VIEW_H_

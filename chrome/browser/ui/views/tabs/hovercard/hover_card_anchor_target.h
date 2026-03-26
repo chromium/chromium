@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_HOVER_CARD_ANCHOR_TARGET_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_HOVER_CARD_ANCHOR_TARGET_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_HOVER_CARD_ANCHOR_TARGET_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_HOVER_CARD_ANCHOR_TARGET_H_
 
 #include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
-#include "chrome/browser/ui/views/tabs/fade_footer_view.h"
-#include "chrome/browser/ui/views/tabs/fade_label_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/fade_footer_view.h"
+#include "chrome/browser/ui/views/tabs/hovercard/fade_label_view.h"
 #include "ui/views/bubble/bubble_border.h"
 
 namespace tabs {
@@ -88,4 +88,4 @@ class HoverCardAnchorTarget {
   CardData hover_card_data_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_HOVER_CARD_ANCHOR_TARGET_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_HOVER_CARD_ANCHOR_TARGET_H_

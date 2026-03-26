@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_TAB_HOVER_CARD_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_TAB_HOVER_CARD_CONTROLLER_H_
 
 #include <memory>
 
@@ -79,7 +79,8 @@ class TabHoverCardController : public views::ViewObserver,
                            DisableMemoryUsageForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
                            ShowPreviewsForDiscardedTabWithThumbnail);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowPreviewsForCrashedTab);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
+                           ShowPreviewsForCrashedTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardPreviewsEnabledPrefTest, DefaultState);
   class EventSniffer;
 
@@ -217,4 +218,4 @@ class TabHoverCardController : public views::ViewObserver,
   base::WeakPtrFactory<TabHoverCardController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_HOVERCARD_TAB_HOVER_CARD_CONTROLLER_H_
