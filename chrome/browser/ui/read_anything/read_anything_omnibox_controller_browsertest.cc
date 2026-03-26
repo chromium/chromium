@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        PrimaryPageChanged_HidesOnNonHttp) {
   RegisterPageActionObserver();
-  ShowPageAction();
+  NavigateToDistillablePage();
   WaitForPageActionShowing(true);
 
   EXPECT_TRUE(NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        PrimaryPageChanged_HidesOnKnownPoorlyDistilledSites) {
   RegisterPageActionObserver();
-  ShowPageAction();
+  NavigateToDistillablePage();
   WaitForPageActionShowing(true);
 
   EXPECT_TRUE(NavigateToURL(browser(), GURL("https://www.youtube.com")));
@@ -279,13 +279,15 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        PrimaryPageChanged_UpdatesIgnoredCount) {
+  RegisterPageActionObserver();
   // When the page changes with no previous page, ignored count stays at 0.
   EXPECT_TRUE(NavigateToURL(browser(), GURL("https://www.example.com")));
   EXPECT_EQ(GetOmniboxIgnoredCount(), 0);
 
   // Show the omnibox chip on this page and dwell on it for long enough. The
   // ignored count is still 0.
-  ShowPageAction();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
   MockLongDwellTime();
   EXPECT_EQ(GetOmniboxIgnoredCount(), 0);
 
@@ -639,7 +641,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        Activate_LogsOmniboxEntrypointAfterOmniboxClicked) {
   base::HistogramTester histogram_tester;
   RegisterPageActionObserver();
-  ShowPageAction();
+  NavigateToDistillablePage();
   WaitForPageActionShowing(true);
 
   Activate(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
@@ -653,7 +655,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        Activate_LogsNotOmniboxEntrypointAfterOmniboxShown) {
   base::HistogramTester histogram_tester;
   RegisterPageActionObserver();
-  ShowPageAction();
+  NavigateToDistillablePage();
   WaitForPageActionShowing(true);
 
   Activate(SidePanelOpenTrigger::kReadAnythingContextMenu);
@@ -667,7 +669,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        Activate_DoesNotLogTogglePresentationAfterOmniboxShown) {
   base::HistogramTester histogram_tester;
   RegisterPageActionObserver();
-  ShowPageAction();
+  NavigateToDistillablePage();
   WaitForPageActionShowing(true);
 
   Activate(SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
@@ -679,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        Activate_HidesOmniboxImmediately) {
   RegisterPageActionObserver();
-  ShowPageAction();
+  NavigateToDistillablePage();
   WaitForPageActionShowing(true);
 
   Activate(SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
