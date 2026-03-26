@@ -1535,7 +1535,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/webview2',
-          'version': 'version:2@1.0.3856.49',
+          'version': 'version:2@1.0.3856.49.r1',
         },
       ],
   },

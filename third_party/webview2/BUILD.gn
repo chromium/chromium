@@ -2,20 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-config("webview2_config") {
+config("webview2_dll_config") {
   include_dirs = [ "include" ]
 }
 
 # This target copies the DLL to the root build directory. `WebView2Loader.dll`
-# needs to be bundled with the distribution of your binary using `WebView2`.
+# needs to be bundled with the distribution of the binary using `WebView2`.
 copy("webview2_loader_dll") {
   sources = [ "$target_cpu/WebView2Loader.dll" ]
   outputs = [ "$root_out_dir/WebView2Loader.dll" ]
 }
 
-source_set("webview2") {
+source_set("webview2_dll") {
   sources = [ "include/WebView2.h" ]
-  public_configs = [ ":webview2_config" ]
+  public_configs = [ ":webview2_dll_config" ]
   libs = [ rebase_path("$target_cpu/WebView2Loader.dll.lib", root_build_dir) ]
   data_deps = [ ":webview2_loader_dll" ]
+}
+
+config("webview2_static_config") {
+  include_dirs = [ "include" ]
+
+  # Some versions of the headers require this define to avoid `dllimport`
+  # attributes.
+  defines = [ "WEBVIEW2_USE_STATIC_LOADER" ]
+}
+
+# The static source set does not require `WebView2Loader.dll` to be bundled with
+# the distribution of the binary using `WebView2`.
+source_set("webview2_static") {
+  sources = [ "include/WebView2.h" ]
+
+  public_configs = [ ":webview2_static_config" ]
+
+  # Link against the static library instead of the import library.
+  libs = [ rebase_path("$target_cpu/WebView2LoaderStatic.lib", root_build_dir) ]
 }
