@@ -1,5 +1,4 @@
 file://pdf/OWNERS
-andyphan@chromium.org
 
 per-file pdf_extension_*test.*=dpapad@chromium.org
 per-file pdf_extension_*test.*=rbpotter@chromium.org
