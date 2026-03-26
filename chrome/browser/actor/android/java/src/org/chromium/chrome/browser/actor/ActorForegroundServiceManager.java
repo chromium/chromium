@@ -141,9 +141,9 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         if (mNotificationService == null || mKeyedService == null) return;
         mNotificationService.updateNotificationForTask(taskId, newState);
 
-        // Currently we only consider ongoing tasks as "active".
+        // Any task that is not completed is considered active for the foreground service.
         ActorTask task = mKeyedService.getTask(taskId);
-        if (task != null && !task.isCompleted() && task.isUnderActorControl()) {
+        if (task != null && !task.isCompleted()) {
             mActiveTaskIds.add(taskId);
         } else {
             mActiveTaskIds.remove(taskId);
@@ -158,10 +158,6 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         int activeTaskCount = mKeyedService.getActiveTasksCount();
         boolean hasActiveTasks = activeTaskCount > 0 && !mActiveTaskIds.isEmpty();
 
-        if (!canStartForeground()) {
-            return;
-        }
-
         if (!mIsServiceBound) {
             if (!hasActiveTasks) return;
             startAndBindService();
@@ -173,6 +169,11 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         }
 
         if (hasActiveTasks) {
+            // Check if we are allowed to start the foreground state. Updates are always allowed
+            // if the service is already in foreground.
+            if (!mStartForegroundCalled && !canStartForeground()) {
+                return;
+            }
             mHandler.removeCallbacks(mMaybeStopServiceRunnable);
             mStopServiceDelayed = false;
 

@@ -169,8 +169,8 @@ public class ActorForegroundServiceManagerTest {
 
         ShadowLooper.idleMainLooper();
 
-        // Verify service is not bounded.
-        assertFalse(
+        // Verify service is still bounded.
+        assertTrue(
                 "Service should remain bound for paused tasks in MVP.",
                 mManager.isServiceBoundForTesting());
 

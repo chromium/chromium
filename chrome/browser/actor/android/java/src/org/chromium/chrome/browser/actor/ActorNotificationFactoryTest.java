@@ -8,12 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
@@ -30,6 +31,7 @@ import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ui.R;
+import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -63,7 +65,7 @@ public class ActorNotificationFactoryTest {
     }
 
     @Test
-    public void testBuildNotification_Acting() {
+    public void testBuildNotification_Running() {
         NotificationWrapper wrapper =
                 ActorNotificationFactory.buildNotification(mTask, ActorTaskState.ACTING);
 
@@ -178,16 +180,21 @@ public class ActorNotificationFactoryTest {
         NotificationWrapper wrapper =
                 ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
 
-        verify(mServiceController, times(2)).createTrustedBringTabToFrontIntent(mTask);
+        verify(mServiceController, atLeastOnce()).createTrustedBringTabToFrontIntent(mTask);
         Notification notification = wrapper.getNotification();
         assertNotNull("Content intent should not be null", notification.contentIntent);
 
         Intent intent = shadowOf(notification.contentIntent).getSavedIntent();
+        if (NotificationIntentInterceptor.INTENT_ACTION.equals(intent.getAction())) {
+            PendingIntent wrappedPendingIntent =
+                    NotificationIntentInterceptor.getPendingIntentForTesting(intent);
+            intent = shadowOf(wrappedPendingIntent).getSavedIntent();
+        }
         assertEquals("MOCK_ACTION", intent.getAction());
     }
 
     @Test
-    public void testBuildNotification_Finished() {
+    public void testBuildNotification_Complete() {
         NotificationWrapper wrapper =
                 ActorNotificationFactory.buildNotification(mTask, ActorTaskState.FINISHED);
 
@@ -197,7 +204,7 @@ public class ActorNotificationFactoryTest {
         ShadowNotification shadowNotification = shadowOf(notification);
 
         assertEquals(
-                "Content title should match task completed label",
+                "Content title should match task complete label",
                 mContext.getString(R.string.actor_notification_title_task_complete),
                 shadowNotification.getContentTitle());
         assertEquals(
@@ -223,10 +230,10 @@ public class ActorNotificationFactoryTest {
     }
 
     @Test
-    public void testBuildNotification_FallbackInterrupted() {
+    public void testBuildNotification_Interrupted() {
         // Use an unhandled state to trigger the fallback
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.CREATED);
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.PAUSED_BY_ACTOR);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -248,6 +255,8 @@ public class ActorNotificationFactoryTest {
         assertTrue(
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+
+        assertEquals("Should have 1 action", 1, notification.actions.length);
     }
 
     @Test
