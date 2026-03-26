@@ -15,6 +15,7 @@
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
+#include "chrome/browser/password_manager/password_change/password_change_page_stability_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
@@ -107,16 +108,17 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
                      GetAIPageContentOptions());
-  form_waiter_ =
-      ChangePasswordFormWaiter::Builder(
-          web_contents_, client_,
-          base::BindOnce(&ChangePasswordFormFinder::OnFormFoundInitially,
-                         weak_ptr_factory_.GetWeakPtr()))
-          .SetTimeoutCallback(
-              base::BindOnce(&ChangePasswordFormFinder::OnFormNotFoundInitially,
-                             weak_ptr_factory_.GetWeakPtr()))
-          .IgnoreHiddenForms()
-          .Build();
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kAwaitPageStabilityForPasswordChange)) {
+    page_stability_waiter_ =
+        std::make_unique<PasswordChangePageStabilityWaiter>(
+            web_contents_,
+            base::BindOnce(&ChangePasswordFormFinder::OnPageStableInitially,
+                           weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnPageStableInitially();
+  }
 
   timeout_timer_.Start(FROM_HERE, kFormWaitingTimeout,
                        base::BindOnce(&ChangePasswordFormFinder::OnFormNotFound,
@@ -143,6 +145,20 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
 ChangePasswordFormFinder::~ChangePasswordFormFinder() {
   logs_uploader_->SetStepDuration(kOpenFormFlowStep,
                                   base::Time::Now() - creation_time_);
+}
+
+void ChangePasswordFormFinder::OnPageStableInitially() {
+  page_stability_waiter_.reset();
+  form_waiter_ =
+      ChangePasswordFormWaiter::Builder(
+          web_contents_, client_,
+          base::BindOnce(&ChangePasswordFormFinder::OnFormFoundInitially,
+                         weak_ptr_factory_.GetWeakPtr()))
+          .SetTimeoutCallback(
+              base::BindOnce(&ChangePasswordFormFinder::OnFormNotFoundInitially,
+                             weak_ptr_factory_.GetWeakPtr()))
+          .IgnoreHiddenForms()
+          .Build();
 }
 
 void ChangePasswordFormFinder::OnFormNotFoundInitially() {

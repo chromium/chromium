@@ -6,8 +6,15 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_ANNOTATED_PAGE_CONTENT_CAPTURER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/web_contents_observer.h"
+
+namespace content {
+class WebContents;
+}
+
+class PasswordChangePageStabilityWaiter;
 
 // Helper class which captures annotated page content. Waits for page loading to
 // finish if necessary.
@@ -36,6 +43,8 @@ class AnnotatedPageContentCapturer : public content::WebContentsObserver {
   // content::WebContentsObserver
   void DidStopLoading() override;
 
+  void OnPageStable();
+
 #if defined(UNIT_TEST)
   void ReplyWithContent(optimization_guide::AIPageContentResultOrError result) {
     std::move(callback_).Run(std::move(result));
@@ -53,6 +62,7 @@ class AnnotatedPageContentCapturer : public content::WebContentsObserver {
   blink::mojom::AIPageContentOptionsPtr options_;
   optimization_guide::OnAIPageContentDone callback_;
   GetAIPageContentFunction get_page_content_;
+  std::unique_ptr<PasswordChangePageStabilityWaiter> page_stability_waiter_;
 
   base::WeakPtrFactory<AnnotatedPageContentCapturer> weak_ptr_factory_{this};
 };

@@ -40,6 +40,9 @@ BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
 BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAwaitPageStabilityForPasswordChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAutofillReintroduceHybridPasskeyDropdownItem,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

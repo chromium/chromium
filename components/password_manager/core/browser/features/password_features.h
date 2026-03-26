@@ -59,6 +59,10 @@ BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 // across quarters.
 BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
 
+// Waits for the page to reach stability before triggering any password change
+// actions.
+BASE_DECLARE_FEATURE(kAwaitPageStabilityForPasswordChange);
+
 // Undoes the effect of WebAuthnUsePasskeyFromAnotherDeviceInContextMenu by
 // adding the hybrid item back into the dropdown. It also adds the entry point
 // to autofill dropdowns.

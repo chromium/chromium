@@ -7,11 +7,13 @@
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/pass_key.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +23,16 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 
 class AnnotatedPageContentCapturerTest
-    : public ChromeRenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness,
+      public ::testing::WithParamInterface<bool> {
  public:
+  AnnotatedPageContentCapturerTest() {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureStates(
+        {{password_manager::features::kAwaitPageStabilityForPasswordChange,
+          GetParam()}});
+  }
+
   using MockGetAIPageContentFunction = base::MockCallback<
       AnnotatedPageContentCapturer::GetAIPageContentFunction>;
 
@@ -36,9 +46,14 @@ class AnnotatedPageContentCapturerTest
 
  protected:
   MockGetAIPageContentFunction mock_get_page_content_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         AnnotatedPageContentCapturerTest,
+                         testing::Bool());
+
+TEST_P(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
   std::unique_ptr<AnnotatedPageContentCapturer> capturer =
@@ -49,11 +64,12 @@ TEST_F(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
                               sizeof(kEmptyPageContentData) - 1);
   EXPECT_CALL(mock_get_page_content_, Run)
       .WillOnce(RunOnceCallback<1>(std::move(result)));
-  capturer->DidStopLoading();
+  content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
+  capturer->OnPageStable();
   EXPECT_FALSE(completion_future.IsReady());
 }
 
-TEST_F(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
+TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
   std::unique_ptr<AnnotatedPageContentCapturer> capturer =
@@ -64,11 +80,12 @@ TEST_F(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
       ->set_common_ancestor_dom_node_id(3);
   EXPECT_CALL(mock_get_page_content_, Run)
       .WillOnce(RunOnceCallback<1>(std::move(page_content_result)));
-  capturer->DidStopLoading();
+  content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
+  capturer->OnPageStable();
   EXPECT_TRUE(completion_future.IsReady());
 }
 
-TEST_F(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
+TEST_P(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
   std::unique_ptr<AnnotatedPageContentCapturer> capturer =
@@ -85,13 +102,15 @@ TEST_F(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
         second_request_callback = std::move(callback);
       });
 
-  capturer->DidStopLoading();
+  content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
+
+  capturer->OnPageStable();
   ASSERT_TRUE(first_request_callback);
 
-  capturer->DidStopLoading();
+  capturer->OnPageStable();
   ASSERT_TRUE(second_request_callback);
 
-  // The second `DidStopLoading` should invalidate the
+  // The second `OnPageStable` should invalidate the
   // first callback from being executed.
   optimization_guide::AIPageContentResult first_page_content_result;
   first_page_content_result.proto.mutable_root_node()
