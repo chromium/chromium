@@ -68,3 +68,9 @@ replaced with '/' to allow specifying paths since slashes are used in
 You can provide both; feature params are also separated with '/'. E.g.
 
 `--enable-features=AiOverlayDialog:api_key/123/mock_audio_path/+hello.wav`
+
+Provide a path to the bundle of resources using:
+
+`--ttc-bundle-url=https://example.com/foo`
+
+Resources will be fetched from the given path at the specified URL.

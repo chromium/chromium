@@ -1,9 +1,25 @@
 <div id="container">
   <!-- This is skeleton placeholder content only. -->
-  <button id="state" class="${this.uiState_}"
-      @click="${this.onStateClick_}">
-    <!-- UI content for AI Overlay Dialog goes here -->
-  </button>
+  <div id="persona-container" @click="${this.onContainerClick_}">
+    <!--
+      TODO(bokan) settle on either "talking" or "speaking", "listening" or
+      "idle"
+    -->
+    ${this.useStateButton_
+    ? html`
+      <button id="stateButton" class="${this.uiState_}">
+      </button>`
+    : html`
+      <video id="talking" .src="${this.talkingBlobUrl_}"
+          ?hidden="${this.uiState_ !== 'speaking'}"
+          autoplay loop muted playsinline>
+      </video>
+      <video id="listening" .src="${this.listeningBlobUrl_}"
+          ?hidden="${this.uiState_ !== 'idle'}"
+          autoplay loop muted playsinline>
+      </video>
+    `}
+  </div>
   <div id="transcription" ?hidden="${!this.transcription_}">
     <span id="transcription-text">${this.transcription_}</span>
   </div>

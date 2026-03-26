@@ -195,6 +195,7 @@ extern const char kThisTabCaptureAutoReject[];
 extern const char kTestMemoryLogDelayInMinutes[];
 extern const char kTestName[];
 extern const char kTrustedDownloadSources[];
+extern const char kTtcBundleUrl[];
 extern const char kUnlimitedStorage[];
 extern const char kUnsafelyDisableDevToolsSelfXssWarnings[];
 extern const char kUserDataDir[];

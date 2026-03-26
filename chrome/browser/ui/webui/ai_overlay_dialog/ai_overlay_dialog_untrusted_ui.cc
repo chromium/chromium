@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -56,6 +59,24 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src 'self' wss://generativelanguage.googleapis.com;");
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  std::string ttc_bundle_url =
+      command_line->GetSwitchValueASCII(switches::kTtcBundleUrl);
+  if (!ttc_bundle_url.empty()) {
+    html_source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::MediaSrc,
+        base::StrCat({"media-src 'self' chrome-untrusted://resources data: "
+                      "blob: ",
+                      ttc_bundle_url, ";"}));
+    html_source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ConnectSrc,
+        base::StrCat({"connect-src 'self' ",
+                      "wss://generativelanguage.googleapis.com ",
+                      ttc_bundle_url, ";"}));
+  }
+
+  html_source->AddString("ttcBundleUrl", ttc_bundle_url);
 }
 
 AiOverlayDialogUntrustedUI::~AiOverlayDialogUntrustedUI() = default;

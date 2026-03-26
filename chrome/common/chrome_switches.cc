@@ -651,6 +651,9 @@ const char kTestName[] = "test-name";
 // policy is set.
 const char kTrustedDownloadSources[] = "trusted-download-sources";
 
+// Specifies the TalkToChrome bundle URL.
+const char kTtcBundleUrl[] = "ttc-bundle-url";
+
 // Overrides per-origin quota settings to unlimited storage for any
 // apps/origins.  This should be used only for testing purpose.
 const char kUnlimitedStorage[] = "unlimited-storage";

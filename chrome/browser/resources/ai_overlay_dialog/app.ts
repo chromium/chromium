@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
@@ -23,6 +26,23 @@ enum UiState {
 interface MockAudioButton {
   name: string;
   wavdata: string;
+}
+
+interface Persona {
+  id: string;
+  name: string;
+  persona: string;
+  voice: string;
+}
+
+interface PersonaConfig {
+  personas: Persona[];
+}
+
+interface ResourceBundle {
+  persona: Persona;
+  talkingBlob: Blob;
+  listeningBlob: Blob;
 }
 
 export class AppElement extends CrLitElement {
@@ -48,10 +68,19 @@ export class AppElement extends CrLitElement {
       isSpeaking_: {
         type: Boolean,
       },
+      isListening_: {
+        type: Boolean,
+      },
       isConnecting_: {
         type: Boolean,
       },
       transcription_: {
+        type: String,
+      },
+      talkingBlobUrl_: {
+        type: String,
+      },
+      listeningBlobUrl_: {
         type: String,
       },
     };
@@ -61,11 +90,13 @@ export class AppElement extends CrLitElement {
   protected accessor isSpeaking_: boolean = false;
   protected accessor isConnecting_: boolean = false;
   protected accessor transcription_: string = '';
+  protected accessor talkingBlobUrl_: string = '';
+  protected accessor listeningBlobUrl_: string = '';
 
   private pageHandler: PageHandlerRemote;
   private pageCallbackRouter: PageCallbackRouter;
-  // If onStateClick_ happens before the API key mojo returns, this will turn
-  // to true and invoke the state change after the key becomes available.
+  // If onContainerClick_ happens before the API key mojo returns, this will
+  // turn to true and invoke the state change after the key becomes available.
   private queueStateChange: boolean = false;
   private conversation: Conversation|null = null;
   private blobCapturer: BlobAudioCapturer|null = null;
@@ -92,8 +123,25 @@ export class AppElement extends CrLitElement {
     return UiState.IDLE;
   }
 
+  protected get hasResourceBundle_(): boolean {
+    return !!this.talkingBlobUrl_ && !!this.listeningBlobUrl_;
+  }
+
+  protected get useStateButton_(): boolean {
+    if (!this.hasResourceBundle_) {
+      return true;
+    }
+
+    return this.uiState_ === UiState.CONNECTING ||
+        this.uiState_ === UiState.INERT;
+  }
+
   constructor() {
     super();
+
+    const ttcBundleUrl = loadTimeData.getString('ttcBundleUrl');
+    this.initializeResourceBundle(ttcBundleUrl)
+        .then(this.onResourcesInitialized.bind(this));
 
     // Setup Mojo connection
     this.pageCallbackRouter = new PageCallbackRouter();
@@ -135,10 +183,20 @@ export class AppElement extends CrLitElement {
       this.initialPageContext = undefined;
 
       if (this.queueStateChange) {
-        this.onStateClick_();
+        this.onContainerClick_();
         this.queueStateChange = false;
       }
     });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.talkingBlobUrl_) {
+      URL.revokeObjectURL(this.talkingBlobUrl_);
+    }
+    if (this.listeningBlobUrl_) {
+      URL.revokeObjectURL(this.listeningBlobUrl_);
+    }
   }
 
   private onAudioInput(sampleRate: number, data: string) {
@@ -208,7 +266,7 @@ export class AppElement extends CrLitElement {
     return null;
   }
 
-  protected onStateClick_() {
+  protected onContainerClick_() {
     if (!this.conversation) {
       console.warn('Conversation (API key) not yet available');
       this.queueStateChange = true;
@@ -265,6 +323,56 @@ export class AppElement extends CrLitElement {
         this.transcription_ = '';
       }, 3000);
     }
+  }
+
+  private async initializeResourceBundle(baseUrl: string):
+      Promise<ResourceBundle|null> {
+    if (!baseUrl) {
+      console.warn('No resource bundle URL given');
+      return null;
+    }
+
+    console.info('Loading resource bundle: ', baseUrl);
+
+    const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+
+    try {
+      const [personaResponse, talkingResponse, listeningResponse] =
+          await Promise.all([
+            fetch(base + 'persona.json'),
+            fetch(base + 'talking.webm'),
+            fetch(base + 'listening.webm'),
+          ]);
+
+      const personaConfig: PersonaConfig = await personaResponse.json();
+      const talkingBlob = await talkingResponse.blob();
+      const listeningBlob = await listeningResponse.blob();
+
+      if (!Array.isArray(personaConfig.personas) ||
+          personaConfig.personas[0] === undefined) {
+        console.warn('Invalid persona config', personaConfig);
+        return null;
+      }
+
+      return {
+        persona: personaConfig.personas[0],
+        talkingBlob,
+        listeningBlob,
+      };
+    } catch (e) {
+      console.error('Failed to initialize resource bundle', e);
+      return null;
+    }
+  }
+
+  private onResourcesInitialized(bundle: ResourceBundle|null) {
+    if (!bundle) {
+      return;
+    }
+    console.info('Resources initialized', bundle);
+
+    this.talkingBlobUrl_ = URL.createObjectURL(bundle.talkingBlob);
+    this.listeningBlobUrl_ = URL.createObjectURL(bundle.listeningBlob);
   }
 }
 
