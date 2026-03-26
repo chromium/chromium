@@ -1474,7 +1474,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
     <ph name="BEGIN_DESCRIPTION3" />L'organisation peut accéder à distance à une session d'appareil afin de fournir un dépannage.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Activer l'accès<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Les applications, les services et les réseaux de l'organisation sont uniquement accessibles sur les appareils inscrits.<ph name="END_DESCRIPTION4" /></translation>
-<translation id="1979208610845113582">Vous pouvez désormais reprendre directement les fils du mode IA ici. Vous pouvez annuler l'épinglage en tout temps.</translation>
+<translation id="1979208610845113582">Vous pouvez désormais reprendre directement les fils du mode IA ici. Vous pouvez annuler cet épinglage en tout temps.</translation>
 <translation id="1979280758666859181">Vous passez à un canal ayant une ancienne version de <ph name="PRODUCT_NAME" />. Le changement de canal sera appliqué lorsque la version du canal correspondra à la version actuellement installée sur votre appareil.</translation>
 <translation id="1979582938184524893">Sélectionnez manuellement les renseignements personnels que vous souhaitez inclure</translation>
 <translation id="197989455406964291">KDC ne prend pas en charge ce type de chiffrement</translation>
@@ -1939,7 +1939,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2297705863329999812">Rechercher dans les imprimantes</translation>
 <translation id="2297822946037605517">Partager cette page</translation>
 <translation id="229871422646860597">Détacher de la barre d'outils</translation>
-<translation id="2298749511072894576">Vous pouvez désormais reprendre directement les clavardages Gemini ici. Vous pouvez annuler l'épinglage en tout temps.</translation>
+<translation id="2298749511072894576">Vous pouvez désormais reprendre directement les clavardages Gemini ici. Vous pouvez annuler cet épinglage en tout temps.</translation>
 <translation id="2299685119225839832">Vous pouvez obtenir un résumé de ce que les gens disent dans leurs avis</translation>
 <translation id="2299734369537008228">Curseur : de <ph name="MIN_LABEL" /> à <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Inclure tous les fichiers de journaux collectés par le service debugd dans une archive distincte.</translation>
@@ -2800,7 +2800,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2855243985454069333">Supprime l'historique de tous les appareils synchronisés</translation>
 <translation id="2855812646048059450">Se connecter avec <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Connectez-vous pour accéder à vos mots de passe, vos favoris et plus encore sur tous vos appareils</translation>
-<translation id="2857195263461649321">Reprenez là où vous vous étiez arrêté sur Gemini</translation>
+<translation id="2857195263461649321">Reprenez là où vous vous étiez arrêté avec Gemini</translation>
 <translation id="2859741939921354763">Importer des mots de passe dans <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Politiques d'entreprise</translation>
 <translation id="2860710618359053450">Déplacez la mâchoire vers la droite</translation>
@@ -6769,7 +6769,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="557506220935336383">Voir les autorisations d'extension pour d'autres sites</translation>
 <translation id="5575473780076478375">Extension en mode de navigation privée : <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Un problème avec la demande d'enregistrement du mode démo s'est produit.</translation>
-<translation id="5576472948015790634">Vous pouvez désormais gérer vos groupes d'onglets et vos clavardages Gemini au même endroit. Vous pouvez annuler l'épinglage en tout temps.</translation>
+<translation id="5576472948015790634">Vous pouvez désormais gérer vos groupes d'onglets et vos clavardages Gemini au même endroit. Vous pouvez annuler cet épinglage en tout temps.</translation>
 <translation id="557722062034137776">La réinitialisation de votre appareil n'a aucune incidence sur vos comptes Google ni sur leurs données synchronisées. Toutefois, tous les fichiers enregistrés localement sur votre appareil vont être supprimés.</translation>
 <translation id="5578059481725149024">Connexion automatique</translation>
 <translation id="5578387000057347457">Saisissez une requête personnalisée ou mettez du texte en surbrillance pour créer une image</translation>
@@ -9953,7 +9953,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7758884017823246335">Ajouter une recherche de site</translation>
 <translation id="7759443981285558794">Afficher les certificats importés de ChromeOS</translation>
 <translation id="7759606211476816416">Vos raccourcis de sites</translation>
-<translation id="7759748248923439385">Vous pouvez désormais gérer vos groupes d'onglets et vos fils du mode IA en un seul endroit. Vous pouvez annuler l'épinglage en tout temps.</translation>
+<translation id="7759748248923439385">Vous pouvez désormais gérer vos groupes d'onglets et vos fils du mode IA en un seul endroit. Vous pouvez annuler cet épinglage en tout temps.</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7760176388948986635">Autorisez les applis, les sites Web et les services ChromeOS et Android disposant d'une autorisation de localisation à utiliser la position de cet appareil. La précision de la localisation fournit une position plus précise pour les applis et les services Android. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par cet appareil afin de recueillir de façon participative des données sur la position des signaux sans fil. Ces données sont utilisées sans identifier les personnes concernées pour améliorer la précision de la localisation et les services basés sur l'emplacement. Elles le sont aussi pour améliorer, pour fournir et pour maintenir les services de Google en fonction des intérêts légitimes de Google et de tiers envers la satisfaction des besoins des utilisateurs.</translation>
 <translation id="7762024824096060040">Impossible d'utiliser ce compte</translation>

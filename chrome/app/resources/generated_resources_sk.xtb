@@ -2772,7 +2772,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2837436785711770027">{NUM_GROUPS,plural, =1{Odstrániť skupinu}few{Odstrániť skupiny}many{Delete groups}other{Odstrániť skupiny}}</translation>
 <translation id="2838379631617906747">Inštalácia</translation>
 <translation id="2838586216723890961">Zapnúť</translation>
-<translation id="2839032553903800133">Boli zablokované upozornenia</translation>
+<translation id="2839032553903800133">Upozornenia sú zablokované</translation>
 <translation id="2841013758207633010">Čas</translation>
 <translation id="2841837950101800123">Poskytovateľ</translation>
 <translation id="2842013086666334835">Prihláste sa do siete <ph name="NETWORK_ID" /></translation>

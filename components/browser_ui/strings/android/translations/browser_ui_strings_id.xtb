@@ -549,7 +549,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="6556866813142980365">Urungkan</translation>
 <translation id="6557290421156335491">Pintasan saya</translation>
 <translation id="656065428026159829">Lihat lebih banyak</translation>
-<translation id="6561560012278703671">Gunakan notifikasi yang lebih tenang (memblokir pop-up notifikasi agar tidak mengganggu Anda)</translation>
+<translation id="6561560012278703671">Gunakan notifikasi yang lebih senyap (memblokir pop-up notifikasi agar tidak mengganggu Anda)</translation>
 <translation id="6565144332292237355">Situs dapat menggunakan fitur ini untuk mencari dan terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="6593061639179217415">Situs desktop</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookie diizinkan untuk <ph name="RWS_MEMBERS_COUNT" /> situs di <ph name="RWS_OWNER" />}other{Cookie diizinkan untuk <ph name="RWS_MEMBERS_COUNT" /> situs di <ph name="RWS_OWNER" />}}</translation>
