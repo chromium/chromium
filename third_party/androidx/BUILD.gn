@@ -453,6 +453,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_compose_runtime_runtime_java",
       ":androidx_compose_ui_ui_text_java",
+      ":androidx_compose_ui_ui_util_java",
       ":androidx_core_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
