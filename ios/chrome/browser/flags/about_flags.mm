@@ -101,7 +101,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/download/ui/features.h"
-#import "ios/chrome/browser/enterprise/data_protection/features.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"

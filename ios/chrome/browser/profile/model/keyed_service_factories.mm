@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
@@ -233,6 +234,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   data_controls::IOSRulesServiceFactory::GetInstance();
   data_sharing::DataSharingServiceFactory::GetInstance();
   drive::DriveServiceFactory::GetInstance();
+  DataProtectionUrlLookupServiceFactory::GetInstance();
   enterprise::ProfileIdServiceFactoryIOS::GetInstance();
   enterprise_reporting::CloudProfileReportingServiceFactoryIOS::GetInstance();
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
