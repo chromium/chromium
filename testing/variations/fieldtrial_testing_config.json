@@ -21896,13 +21896,17 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_NewTabsAddToActiveGroup",
+                    "enable_features": [
+                        "NewTabAddsToActiveGroup"
+                    ]
+                },
+                {
+                    "name": "Enabled_TabGroupMenuChanges",
                     "enable_features": [
                         "BookmarkTabGroupConversion",
                         "CreateNewTabGroupAppMenuTopLevel",
-                        "NewTabAddsToActiveGroup",
                         "ShowTabGroupsMacSystemMenu",
-                        "TabGroupMenuImprovements",
                         "TabGroupMenuMoreEntryPoints"
                     ]
                 }
