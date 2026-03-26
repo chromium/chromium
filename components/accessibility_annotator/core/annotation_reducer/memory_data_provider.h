@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 
@@ -20,7 +21,9 @@ class MemoryDataProvider {
   virtual ~MemoryDataProvider() = default;
 
   // Retrieves all data entries for a given query intent type.
-  virtual std::vector<MemorySearchResult> RetrieveAll(QueryIntentType type) = 0;
+  virtual void RetrieveAll(
+      QueryIntentType type,
+      base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) = 0;
 };
 
 }  // namespace accessibility_annotator

@@ -29,9 +29,11 @@ using ::accessibility_annotator::QueryIntentType;
 
 class FakeMemoryDataProvider : public MemoryDataProvider {
  public:
-  std::vector<MemorySearchResult> RetrieveAll(QueryIntentType type) override {
+  void RetrieveAll(QueryIntentType type,
+                   base::OnceCallback<void(std::vector<MemorySearchResult>)>
+                       callback) override {
     last_type_ = type;
-    return results_;
+    std::move(callback).Run(results_);
   }
   void set_results(std::vector<MemorySearchResult> results) {
     results_ = std::move(results);

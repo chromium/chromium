@@ -20,12 +20,14 @@ SyncBridgeDataProvider::SyncBridgeDataProvider(
 
 SyncBridgeDataProvider::~SyncBridgeDataProvider() = default;
 
-std::vector<MemorySearchResult> SyncBridgeDataProvider::RetrieveAll(
-    QueryIntentType type) {
+void SyncBridgeDataProvider::RetrieveAll(
+    QueryIntentType type,
+    base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {
   AccessibilityAnnotationSyncBridge* bridge =
       backend_->accessibility_annotation_sync_bridge();
   if (!bridge) {
-    return {};
+    std::move(callback).Run({});
+    return;
   }
 
   EntityTypeEnumSet types = GetEntityTypesForQueryIntentType(type);
@@ -37,7 +39,7 @@ std::vector<MemorySearchResult> SyncBridgeDataProvider::RetrieveAll(
       results.push_back(CreateResultFromEntity(type, *entity));
     }
   }
-  return results;
+  std::move(callback).Run(std::move(results));
 }
 
 }  // namespace accessibility_annotator

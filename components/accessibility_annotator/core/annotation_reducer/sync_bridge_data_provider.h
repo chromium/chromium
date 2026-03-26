@@ -30,7 +30,9 @@ class SyncBridgeDataProvider : public MemoryDataProvider {
   ~SyncBridgeDataProvider() override;
 
   // Returns all memory search results of the given type from the sync backend.
-  std::vector<MemorySearchResult> RetrieveAll(QueryIntentType type) override;
+  void RetrieveAll(QueryIntentType type,
+                   base::OnceCallback<void(std::vector<MemorySearchResult>)>
+                       callback) override;
 
  private:
   raw_ref<AccessibilityAnnotatorBackend> backend_;

@@ -6,8 +6,10 @@
 
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -62,6 +64,14 @@ Matcher<MemorySearchResult> IsMemorySearchResult(
                Field(&MemorySearchResult::metadata_list, metadata_matcher));
 }
 
+std::vector<MemorySearchResult> RetrieveAllHelper(
+    AutofillDataProviderImpl& retriever,
+    accessibility_annotator::QueryIntentType type) {
+  base::test::TestFuture<std::vector<MemorySearchResult>> future;
+  retriever.RetrieveAll(type, future.GetCallback());
+  return future.Take();
+}
+
 class AutofillDataProviderImplTest : public testing::Test {
  public:
   AutofillDataProviderImplTest()
@@ -104,9 +114,10 @@ class AutofillDataProviderImplTest : public testing::Test {
 
 // Tests that RetrieveAll returns an empty list when no data is available
 TEST_F(AutofillDataProviderImplTest, RetrieveAll_Empty) {
-  EXPECT_THAT(retriever().RetrieveAll(
-                  accessibility_annotator::QueryIntentType::kAddressCity),
-              IsEmpty());
+  EXPECT_THAT(
+      RetrieveAllHelper(retriever(),
+                        accessibility_annotator::QueryIntentType::kAddressCity),
+      IsEmpty());
 }
 
 // Tests that RetrieveAll fetches and formats address-related data from
@@ -115,40 +126,44 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
   AutofillProfile profile = test::GetFullProfile();
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
 
-  EXPECT_THAT(retriever().RetrieveAll(
-                  accessibility_annotator::QueryIntentType::kAddressCity),
-              UnorderedElementsAre(IsMemorySearchResult(
-                  u"Elysium", u"City",
-                  UnorderedElementsAre(
-                      IsMetadata(QueryIntentType::kNameFull, u"John H. Doe"),
-                      IsMetadata(QueryIntentType::kAddressState, u"CA"),
-                      IsMetadata(QueryIntentType::kAddressZip, u"91111"),
-                      IsMetadata(QueryIntentType::kAddressCountry,
-                                 u"United States")))));
+  EXPECT_THAT(
+      RetrieveAllHelper(retriever(),
+                        accessibility_annotator::QueryIntentType::kAddressCity),
+      UnorderedElementsAre(IsMemorySearchResult(
+          u"Elysium", u"City",
+          UnorderedElementsAre(
+              IsMetadata(QueryIntentType::kNameFull, u"John H. Doe"),
+              IsMetadata(QueryIntentType::kAddressState, u"CA"),
+              IsMetadata(QueryIntentType::kAddressZip, u"91111"),
+              IsMetadata(QueryIntentType::kAddressCountry,
+                         u"United States")))));
 
-  EXPECT_THAT(retriever().RetrieveAll(
-                  accessibility_annotator::QueryIntentType::kAddressZip),
-              UnorderedElementsAre(IsMemorySearchResult(
-                  u"91111", u"Zip",
-                  UnorderedElementsAre(
-                      IsMetadata(QueryIntentType::kNameFull, u"John H. Doe"),
-                      IsMetadata(QueryIntentType::kAddressCity, u"Elysium"),
-                      IsMetadata(QueryIntentType::kAddressState, u"CA"),
-                      IsMetadata(QueryIntentType::kAddressCountry,
-                                 u"United States")))));
+  EXPECT_THAT(
+      RetrieveAllHelper(retriever(),
+                        accessibility_annotator::QueryIntentType::kAddressZip),
+      UnorderedElementsAre(IsMemorySearchResult(
+          u"91111", u"Zip",
+          UnorderedElementsAre(
+              IsMetadata(QueryIntentType::kNameFull, u"John H. Doe"),
+              IsMetadata(QueryIntentType::kAddressCity, u"Elysium"),
+              IsMetadata(QueryIntentType::kAddressState, u"CA"),
+              IsMetadata(QueryIntentType::kAddressCountry,
+                         u"United States")))));
 
-  EXPECT_THAT(retriever().RetrieveAll(
-                  accessibility_annotator::QueryIntentType::kAddressState),
-              UnorderedElementsAre(IsMemorySearchResult(
-                  u"CA", u"State",
-                  UnorderedElementsAre(
-                      IsMetadata(QueryIntentType::kNameFull, u"John H. Doe"),
-                      IsMetadata(QueryIntentType::kAddressCity, u"Elysium"),
-                      IsMetadata(QueryIntentType::kAddressZip, u"91111"),
-                      IsMetadata(QueryIntentType::kAddressCountry,
-                                 u"United States")))));
+  EXPECT_THAT(
+      RetrieveAllHelper(
+          retriever(), accessibility_annotator::QueryIntentType::kAddressState),
+      UnorderedElementsAre(IsMemorySearchResult(
+          u"CA", u"State",
+          UnorderedElementsAre(
+              IsMetadata(QueryIntentType::kNameFull, u"John H. Doe"),
+              IsMetadata(QueryIntentType::kAddressCity, u"Elysium"),
+              IsMetadata(QueryIntentType::kAddressZip, u"91111"),
+              IsMetadata(QueryIntentType::kAddressCountry,
+                         u"United States")))));
 
-  EXPECT_THAT(retriever().RetrieveAll(
+  EXPECT_THAT(RetrieveAllHelper(
+                  retriever(),
                   accessibility_annotator::QueryIntentType::kAddressCountry),
               UnorderedElementsAre(IsMemorySearchResult(
                   u"United States", u"Country",
@@ -158,19 +173,21 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
                       IsMetadata(QueryIntentType::kAddressState, u"CA"),
                       IsMetadata(QueryIntentType::kAddressZip, u"91111")))));
 
-  EXPECT_THAT(retriever().RetrieveAll(
-                  accessibility_annotator::QueryIntentType::kNameFull),
-              UnorderedElementsAre(IsMemorySearchResult(
-                  u"John H. Doe", u"Name",
-                  UnorderedElementsAre(
-                      IsMetadata(QueryIntentType::kAddressCity, u"Elysium"),
-                      IsMetadata(QueryIntentType::kAddressState, u"CA"),
-                      IsMetadata(QueryIntentType::kAddressZip, u"91111"),
-                      IsMetadata(QueryIntentType::kAddressCountry,
-                                 u"United States")))));
+  EXPECT_THAT(
+      RetrieveAllHelper(retriever(),
+                        accessibility_annotator::QueryIntentType::kNameFull),
+      UnorderedElementsAre(IsMemorySearchResult(
+          u"John H. Doe", u"Name",
+          UnorderedElementsAre(
+              IsMetadata(QueryIntentType::kAddressCity, u"Elysium"),
+              IsMetadata(QueryIntentType::kAddressState, u"CA"),
+              IsMetadata(QueryIntentType::kAddressZip, u"91111"),
+              IsMetadata(QueryIntentType::kAddressCountry,
+                         u"United States")))));
 
   EXPECT_THAT(
-      retriever().RetrieveAll(accessibility_annotator::QueryIntentType::kEmail),
+      RetrieveAllHelper(retriever(),
+                        accessibility_annotator::QueryIntentType::kEmail),
       UnorderedElementsAre(IsMemorySearchResult(
           u"johndoe@hades.com", u"Email",
           UnorderedElementsAre(
@@ -182,7 +199,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
                          u"United States")))));
 
   EXPECT_THAT(
-      retriever().RetrieveAll(accessibility_annotator::QueryIntentType::kPhone),
+      RetrieveAllHelper(retriever(),
+                        accessibility_annotator::QueryIntentType::kPhone),
       UnorderedElementsAre(IsMemorySearchResult(
           u"16502111111", u"Phone",
           UnorderedElementsAre(
@@ -194,19 +212,20 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
                          u"United States")))));
 
   // Requesting for address should return only the full address.
-  EXPECT_THAT(retriever().RetrieveAll(
-                  accessibility_annotator::QueryIntentType::kAddressFull),
-              UnorderedElementsAre(IsMemorySearchResult(
-                  u"Underworld, 666 Erebus St., Apt 8, Elysium, CA 91111, "
-                  u"United States",
-                  u"Address",
-                  UnorderedElementsAre(
-                      IsMetadata(QueryIntentType::kNameFull, u"John H. Doe"),
-                      IsMetadata(QueryIntentType::kAddressCity, u"Elysium"),
-                      IsMetadata(QueryIntentType::kAddressZip, u"91111"),
-                      IsMetadata(QueryIntentType::kAddressState, u"CA"),
-                      IsMetadata(QueryIntentType::kAddressCountry,
-                                 u"United States")))));
+  EXPECT_THAT(
+      RetrieveAllHelper(retriever(),
+                        accessibility_annotator::QueryIntentType::kAddressFull),
+      UnorderedElementsAre(IsMemorySearchResult(
+          u"Underworld, 666 Erebus St., Apt 8, Elysium, CA 91111, "
+          u"United States",
+          u"Address",
+          UnorderedElementsAre(
+              IsMetadata(QueryIntentType::kNameFull, u"John H. Doe"),
+              IsMetadata(QueryIntentType::kAddressCity, u"Elysium"),
+              IsMetadata(QueryIntentType::kAddressZip, u"91111"),
+              IsMetadata(QueryIntentType::kAddressState, u"CA"),
+              IsMetadata(QueryIntentType::kAddressCountry,
+                         u"United States")))));
 }
 
 // Tests that RetrieveAll correctly fetches and formats IBAN data.
@@ -216,8 +235,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_IbanData) {
   client().GetPersonalDataManager().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(iban));
 
-  std::vector<MemorySearchResult> results =
-      retriever().RetrieveAll(accessibility_annotator::QueryIntentType::kIban);
+  std::vector<MemorySearchResult> results = RetrieveAllHelper(
+      retriever(), accessibility_annotator::QueryIntentType::kIban);
   EXPECT_THAT(results, UnorderedElementsAre(IsMemorySearchResult(
                            iban.value(), u"IBAN",
                            UnorderedElementsAre(IsMetadata(
@@ -232,8 +251,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiEntityData) {
   WaitForDatabase();
 
   // Asking for Vehicle should return combined result and individual attributes.
-  std::vector<MemorySearchResult> results = retriever().RetrieveAll(
-      accessibility_annotator::QueryIntentType::kVehicle);
+  std::vector<MemorySearchResult> results = RetrieveAllHelper(
+      retriever(), accessibility_annotator::QueryIntentType::kVehicle);
   EXPECT_THAT(
       results,
       ElementsAre(
@@ -328,7 +347,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiEntityData) {
 
   // Asking specifically for Entity Attribute
   EXPECT_THAT(
-      retriever().RetrieveAll(
+      RetrieveAllHelper(
+          retriever(),
           accessibility_annotator::QueryIntentType::kVehiclePlateNumber),
       UnorderedElementsAre(IsMemorySearchResult(
           u"123456", u"License plate",
@@ -348,9 +368,10 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_EmptyProfile) {
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
 
-  EXPECT_THAT(retriever().RetrieveAll(
-                  accessibility_annotator::QueryIntentType::kAddressFull),
-              IsEmpty());
+  EXPECT_THAT(
+      RetrieveAllHelper(retriever(),
+                        accessibility_annotator::QueryIntentType::kAddressFull),
+      IsEmpty());
 }
 
 // Tests that RetrieveAll correctly formats address suggestions for
@@ -363,8 +384,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_PartialAddress) {
   // Missing State, Zip
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
 
-  std::vector<MemorySearchResult> results = retriever().RetrieveAll(
-      accessibility_annotator::QueryIntentType::kAddressFull);
+  std::vector<MemorySearchResult> results = RetrieveAllHelper(
+      retriever(), accessibility_annotator::QueryIntentType::kAddressFull);
 
   EXPECT_THAT(
       results,

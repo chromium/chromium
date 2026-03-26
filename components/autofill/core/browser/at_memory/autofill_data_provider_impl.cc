@@ -288,14 +288,16 @@ AutofillDataProviderImpl::AutofillDataProviderImpl(
 
 AutofillDataProviderImpl::~AutofillDataProviderImpl() = default;
 
-std::vector<MemorySearchResult> AutofillDataProviderImpl::RetrieveAll(
-    QueryIntentType intent_type) {
+void AutofillDataProviderImpl::RetrieveAll(
+    QueryIntentType intent_type,
+    base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {
   std::optional<AtMemoryDataType> at_memory_type =
       ToAtMemoryDataType(intent_type);
   if (!at_memory_type) {
-    return {};
+    std::move(callback).Run({});
+    return;
   }
-  return GetAutofillData(intent_type, *at_memory_type);
+  std::move(callback).Run(GetAutofillData(intent_type, *at_memory_type));
 }
 
 std::vector<MemorySearchResult> AutofillDataProviderImpl::GetAutofillData(

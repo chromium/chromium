@@ -29,8 +29,11 @@ class AutofillDataProviderImpl
   ~AutofillDataProviderImpl() override;
 
   // accessibility_annotator::MemoryDataProvider:
-  std::vector<accessibility_annotator::MemorySearchResult> RetrieveAll(
-      accessibility_annotator::QueryIntentType type) override;
+  void RetrieveAll(
+      accessibility_annotator::QueryIntentType type,
+      base::OnceCallback<void(
+          std::vector<accessibility_annotator::MemorySearchResult>)> callback)
+      override;
 
  private:
   // Retrieves all entities for a given Autofill data type.

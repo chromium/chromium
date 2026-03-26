@@ -10,6 +10,9 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/version_info/channel.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
@@ -110,11 +113,15 @@ class SyncBridgeDataProviderTest : public ::testing::Test {
 TEST_F(SyncBridgeDataProviderTest, RetrieveAll_SingleEntry) {
   AddSpecificsToBridge({CreateSpecifics("1", EntityType::kOrder)});
 
-  std::vector<MemorySearchResult> results =
-      provider()->RetrieveAll(QueryIntentType::kOrderId);
+  base::RunLoop run_loop;
+  base::MockCallback<base::OnceCallback<void(std::vector<MemorySearchResult>)>>
+      callback;
+  EXPECT_CALL(callback, Run(UnorderedElementsAre(MatchesMemorySearchResult(
+                            QueryIntentType::kOrderId, u"order_1"))))
+      .WillOnce([&]() { run_loop.Quit(); });
 
-  EXPECT_THAT(results, UnorderedElementsAre(MatchesMemorySearchResult(
-                           QueryIntentType::kOrderId, u"order_1")));
+  provider()->RetrieveAll(QueryIntentType::kOrderId, callback.Get());
+  run_loop.Run();
 }
 
 TEST_F(SyncBridgeDataProviderTest, RetrieveAll_MultipleEntriesAndFiltering) {
@@ -122,20 +129,26 @@ TEST_F(SyncBridgeDataProviderTest, RetrieveAll_MultipleEntriesAndFiltering) {
                         CreateSpecifics("2", EntityType::kFlightReservation),
                         CreateSpecifics("3", EntityType::kOrder)});
 
-  std::vector<MemorySearchResult> results =
-      provider()->RetrieveAll(QueryIntentType::kOrderId);
-
-  EXPECT_THAT(
-      results,
-      UnorderedElementsAre(
+  base::RunLoop run_loop;
+  base::MockCallback<base::OnceCallback<void(std::vector<MemorySearchResult>)>>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(UnorderedElementsAre(
           MatchesMemorySearchResult(QueryIntentType::kOrderId, u"order_1"),
-          MatchesMemorySearchResult(QueryIntentType::kOrderId, u"order_3")));
+          MatchesMemorySearchResult(QueryIntentType::kOrderId, u"order_3"))))
+      .WillOnce([&]() { run_loop.Quit(); });
+  provider()->RetrieveAll(QueryIntentType::kOrderId, callback.Get());
+  run_loop.Run();
 }
 
 TEST_F(SyncBridgeDataProviderTest, RetrieveAll_EmptyBackend) {
-  std::vector<MemorySearchResult> results =
-      provider()->RetrieveAll(QueryIntentType::kOrderId);
-  EXPECT_THAT(results, IsEmpty());
+  base::RunLoop run_loop;
+  base::MockCallback<base::OnceCallback<void(std::vector<MemorySearchResult>)>>
+      callback;
+  EXPECT_CALL(callback, Run(IsEmpty())).WillOnce([&]() { run_loop.Quit(); });
+  provider()->RetrieveAll(QueryIntentType::kOrderId, callback.Get());
+  run_loop.Run();
 }
 
 }  // namespace
