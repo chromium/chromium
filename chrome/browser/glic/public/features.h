@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
 
+#include <string>
+
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -31,6 +34,11 @@ extern const base::FeatureParam<std::string> kGlicContextMenuArm;
 extern const base::FeatureParam<bool> kGlicContextMenuWithOnboarding;
 
 BASE_DECLARE_FEATURE(kGlicFixTimeToFirstQueryKillSwitch);
+
+BASE_DECLARE_FEATURE(kGlicTieredRolloutV2);
+extern const base::FeatureParam<std::string> kGlicTieredRolloutV2EligibleTiers;
+const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers();
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

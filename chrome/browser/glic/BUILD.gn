@@ -100,6 +100,7 @@ source_set("glic") {
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/permissions/system",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/subscription_eligibility",
     "//chrome/browser/ui/browser_window",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/content_extraction/content/browser",

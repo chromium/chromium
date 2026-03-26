@@ -514,8 +514,20 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
 }
 
 bool GlicEnabling::IsEligibleForGlicTieredRollout(Profile* profile) {
-  return base::FeatureList::IsEnabled(features::kGlicTieredRollout) &&
-         profile->GetPrefs()->GetBoolean(prefs::kGlicRolloutEligibility);
+  if (base::FeatureList::IsEnabled(features::kGlicTieredRollout) &&
+      profile->GetPrefs()->GetBoolean(prefs::kGlicRolloutEligibility)) {
+    return true;
+  }
+
+  subscription_eligibility::SubscriptionEligibilityService*
+      subscription_eligibility_service = subscription_eligibility::
+          SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+  if (!subscription_eligibility_service) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(features::kGlicTieredRolloutV2) &&
+         features::GetGlicTieredRolloutV2EligibleTiers().contains(
+             subscription_eligibility_service->GetAiSubscriptionTier());
 }
 
 bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {
@@ -717,6 +729,14 @@ GlicEnabling::GlicEnabling(Profile* profile,
         profile_, base::BindRepeating(&GlicEnabling::UpdateEnabledStatus,
                                       base::Unretained(this)));
   }
+
+  subscription_eligibility::SubscriptionEligibilityService*
+      subscription_eligibility_service = subscription_eligibility::
+          SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+  if (subscription_eligibility_service) {
+    subscription_eligibility_service_observation_.Observe(
+        subscription_eligibility_service);
+  }
 }
 GlicEnabling::~GlicEnabling() = default;
 
@@ -771,6 +791,10 @@ void GlicEnabling::OnRefreshTokenRemovedForAccount(
 }
 
 void GlicEnabling::OnTieredRolloutStatusMaybeChanged() {
+  UpdateEnabledStatus();
+}
+
+void GlicEnabling::OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) {
   UpdateEnabledStatus();
 }
 

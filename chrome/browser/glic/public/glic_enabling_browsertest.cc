@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
@@ -551,6 +552,44 @@ IN_PROC_BROWSER_TEST_P(GlicEnablingMultiInstanceFlagPrecedenceBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          GlicEnablingMultiInstanceFlagPrecedenceBrowserTest,
                          testing::Bool());
+
+class GlicEnablingTieredRolloutV2Test : public GlicEnablingTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kGlic, {}},
+            {features::kGlicTieredRolloutV2,
+             {{"glic-tiered-rollout-v2-eligible-tiers", "1,2"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+            {chromeos::features::kFeatureManagementGlic, {}},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
+        {features::kGlicRollout});
+  }
+  ~GlicEnablingTieredRolloutV2Test() override = default;
+
+  void SetUserTier(int32_t tier) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, tier);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutV2Test, EnabledForProfileTest) {
+  // Should not be enabled as profile not eligible for tiered rollout.
+  EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  // Should be enabled as now eligible for tiered rollout.
+  SetUserTier(1);
+  EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  // Simulate user no longer eligible.
+  SetUserTier(0);
+  EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
+}
 
 }  // namespace
 }  // namespace glic
