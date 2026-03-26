@@ -202,6 +202,14 @@ class AutocompleteInput {
                                               bool trim_leading_whitespace,
                                               std::u16string* remaining_input);
 
+  // Null-terminated array of characters that are not valid within `contents`
+  // and `description` strings.
+  static const char16_t kInvalidChars[];
+
+  // Removes invalid characters from `text`.
+  static std::u16string SanitizeString(const std::u16string& text,
+                                       bool trim_whitespace = true);
+
   // User-provided text to be completed.
   const std::u16string& text() const { return text_; }
 
@@ -225,11 +233,9 @@ class AutocompleteInput {
   // The title of the current page, corresponding to the current URL, or empty
   // if this is not available.
   const std::u16string& current_title() const { return current_title_; }
-  // This is sometimes set as the description if returning a
-  // URL-what-you-typed match for the current URL.
-  void set_current_title(const std::u16string& title) {
-    current_title_ = title;
-  }
+  // This is sometimes set as the description if returning a URL-what-you-typed
+  // match for the current URL. Titles are sanitized at set time.
+  void set_current_title(const std::u16string& title);
 
   // The type of page that is currently behind displayed and how it is
   // displayed (e.g., with search term replacement or without).

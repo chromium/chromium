@@ -582,3 +582,18 @@ TEST(AutocompleteInputTest, ParseUrlLookalikeWithSearchQuery) {
   EXPECT_EQ(metrics::OmniboxInputType::QUERY, input_type);
   EXPECT_FALSE(canonicalized_url.is_valid());
 }
+
+TEST(AutocompleteInputTest, SanitizeString) {
+  AutocompleteInput input;
+
+  // Test that set_current_title sanitizes the string (trims all whitespace and
+  // removes invalid chars).
+  input.set_current_title(u"  title \r\n\t ");
+  EXPECT_EQ(u"title", input.current_title());
+
+  // Test explicit SanitizeString call.
+  EXPECT_EQ(u"foo", AutocompleteInput::SanitizeString(u"  foo  "));
+  EXPECT_EQ(u"  foo  ", AutocompleteInput::SanitizeString(
+                            u"  foo  ", /*trim_whitespace=*/false));
+  EXPECT_EQ(u"bar", AutocompleteInput::SanitizeString(u"bar\r\n\t"));
+}

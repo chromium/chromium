@@ -34,6 +34,13 @@
 #include "chromeos/constants/url_constants.h"  // nogncheck
 #endif                                         // BUILDFLAG(IS_CHROMEOS)
 
+// static
+const char16_t AutocompleteInput::kInvalidChars[] = {
+    '\n',   '\r', '\t',
+    0x2028,  // Line separator
+    0x2029,  // Paragraph separator
+    0};
+
 namespace {
 
 // Hardcode constant to avoid any dependencies on content/.
@@ -883,7 +890,7 @@ std::u16string AutocompleteInput::CleanUserInputKeyword(
 }
 
 // static
-std::u16string AutocompleteInput::AutocompleteInput::SplitKeywordFromInput(
+std::u16string AutocompleteInput::SplitKeywordFromInput(
     const std::u16string& input,
     bool trim_leading_whitespace,
     std::u16string* remaining_input) {
@@ -911,6 +918,20 @@ std::u16string AutocompleteInput::AutocompleteInput::SplitKeywordFromInput(
   return input.substr(0, first_white);
 }
 
+// static
+std::u16string AutocompleteInput::SanitizeString(const std::u16string& text,
+                                                 bool trim_whitespace) {
+  // NOTE: This logic is mirrored by `sanitizeString()` in
+  // omnibox_custom_bindings.js.
+  std::u16string result;
+  if (trim_whitespace) {
+    base::TrimWhitespace(text, base::TRIM_ALL, &result);
+  } else {
+    result = text;
+  }
+  base::RemoveChars(result, kInvalidChars, &result);
+  return result;
+}
 void AutocompleteInput::UpdateText(const std::u16string& text,
                                    size_t cursor_position,
                                    const url::Parsed& parts) {
@@ -920,6 +941,10 @@ void AutocompleteInput::UpdateText(const std::u16string& text,
   text_ = text;
   cursor_position_ = cursor_position;
   parts_ = parts;
+}
+
+void AutocompleteInput::set_current_title(const std::u16string& title) {
+  current_title_ = SanitizeString(title);
 }
 
 void AutocompleteInput::Clear() {

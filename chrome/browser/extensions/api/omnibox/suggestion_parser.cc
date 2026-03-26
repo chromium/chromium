@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/extensions/api/omnibox.h"
-#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
@@ -47,14 +47,10 @@ void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
           child.GetDict().FindString(data_decoder::mojom::XmlParser::kTextKey);
       DCHECK(text);
       std::u16string sanitized_text = base::UTF8ToUTF16(*text);
-      // Note: We unfortunately can't just use
-      // `AutocompleteMatch::SanitizeString()` directly here, because it
-      // unconditionally trims leading whitespace, which we need to preserve
-      // for any non-first styles.
-      // TODO(devlin): Add a toggle to AutocompleteMatch::SanitizeString() for
-      // that?
-      base::RemoveChars(sanitized_text, AutocompleteMatch::kInvalidChars,
-                        &sanitized_text);
+      // Keep leading whitespace, which we need to preserve for any non-first
+      // styles.
+      sanitized_text = AutocompleteInput::SanitizeString(
+          sanitized_text, /*trim_whitespace=*/false);
       if (result->description.empty()) {
         base::TrimWhitespace(sanitized_text, base::TRIM_LEADING,
                              &sanitized_text);

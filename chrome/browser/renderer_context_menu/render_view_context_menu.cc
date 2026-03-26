@@ -165,6 +165,7 @@
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -2461,7 +2462,7 @@ void RenderViewContextMenu::AppendSearchProvider() {
     return;
   }
 
-  base::ReplaceChars(params_.selection_text, AutocompleteMatch::kInvalidChars,
+  base::ReplaceChars(params_.selection_text, AutocompleteInput::kInvalidChars,
                      u" ", &params_.selection_text);
 
   AutocompleteMatch match;

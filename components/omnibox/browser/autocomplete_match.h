@@ -247,10 +247,6 @@ struct AutocompleteMatch {
   // The type of this match.
   typedef AutocompleteMatchType::Type Type;
 
-  // Null-terminated array of characters that are not valid within |contents|
-  // and |description| strings.
-  static const char16_t kInvalidChars[];
-
   // Document subtype, for AutocompleteMatchType::DOCUMENT.
   // Update kDocumentTypeStrings when updating DocumentType.
   enum class DocumentType {
@@ -412,6 +408,7 @@ struct AutocompleteMatch {
   // Removes invalid characters from |text|. Should be called on strings coming
   // from external sources (such as extensions) before assigning to |contents|
   // or |description|.
+  // TODO(b/383296714): Deprecated; use AutocompleteInput::SanitizeString.
   static std::u16string SanitizeString(const std::u16string& text);
 
   // Convenience function to check if `type` is featured Enterprise search.

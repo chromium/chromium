@@ -232,13 +232,6 @@ bool AutocompleteMatch::DocumentTypeFromInteger(int value,
 }
 
 // static
-const char16_t AutocompleteMatch::kInvalidChars[] = {
-    '\n',   '\r', '\t',
-    0x2028,  // Line separator
-    0x2029,  // Paragraph separator
-    0};
-
-// static
 const char16_t AutocompleteMatch::kEllipsis[] = u"... ";
 
 AutocompleteMatch::AutocompleteMatch()
@@ -867,12 +860,7 @@ void AutocompleteMatch::AddLastClassificationIfNecessary(
 
 // static
 std::u16string AutocompleteMatch::SanitizeString(const std::u16string& text) {
-  // NOTE: This logic is mirrored by |sanitizeString()| in
-  // omnibox_custom_bindings.js.
-  std::u16string result;
-  base::TrimWhitespace(text, base::TRIM_LEADING, &result);
-  base::RemoveChars(result, kInvalidChars, &result);
-  return result;
+  return AutocompleteInput::SanitizeString(text);
 }
 
 // static
