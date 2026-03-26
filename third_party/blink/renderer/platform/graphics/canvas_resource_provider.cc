@@ -895,9 +895,45 @@ base::ByteSize CanvasResourceProviderSharedImage::EstimatedSizeInBytes() const {
 }
 
 scoped_refptr<CanvasResource>
-CanvasResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
+Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   TRACE_EVENT0("blink",
-               "CanvasResourceProviderSharedImage::ProduceCanvasResource");
+               "Canvas2DResourceProviderSharedImage::ProduceCanvasResource");
+  if (is_software_) {
+    DCHECK(GetSkSurface());
+    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
+    if (!output_resource) {
+      return nullptr;
+    }
+
+    FlushCanvas(reason);
+
+    // Note that the resource *must* be a CanvasResourceSharedImage as this
+    // class creates CanvasResourceSharedImage instances exclusively.
+    static_cast<CanvasResourceSharedImage*>(output_resource.get())
+        ->UploadSoftwareRenderingResults(GetSkSurface());
+
+    return output_resource;
+  }
+
+  if (IsGpuContextLost()) {
+    return nullptr;
+  }
+
+  // We are about to give the caller read access to this resource (and its
+  // backing SharedImage). Hence, we must make sure that the SI is updated to
+  // reflect the ops made in the current write access (if any) and give up any
+  // such write access.
+  FlushCanvas(reason);
+  EndWriteAccess();
+
+  return resource_;
+}
+
+scoped_refptr<CanvasResource>
+CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource(
+    FlushReason reason) {
+  TRACE_EVENT0("blink",
+               "CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource");
   if (is_software_) {
     DCHECK(GetSkSurface());
     scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
