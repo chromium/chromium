@@ -1542,4 +1542,51 @@ IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionBrowserTest, HTTPFormActivation) {
   EXPECT_TRUE(activation_manager.was_activated());
 }
 
+// Verifies that a search form will not be blocked.
+IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionBrowserTest,
+                       SearchableFormActivation) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Trigger prerender with form submission, and the query parameters are the
+  // results of the form data. The case is constructed in a way to make the form
+  // identified as searchable.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/simple.html?hl=en&q=test");
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  prerender_helper().AddPrerendersAsync(
+      {prerender_url},
+      /*eagerness=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt,
+      /*target_hint=*/std::string(),
+      /*ruleset_tag=*/std::nullopt,
+      /*world_id=*/content::ISOLATED_WORLD_ID_GLOBAL,
+      /*form_submission=*/true);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url);
+
+  // The form submission script is constructed in a way to be identified as
+  // searchable by the heuristic logic in `blink::WebSearchableFormData`.
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetPrimaryMainFrame(),
+                              content::JsReplace(R"(
+    const form = document.createElement('form');
+    form.action = $1;
+    const htmlString = `
+        <input type="hidden" name="hl" value="en">
+        <input type="text" name="q" value="test">
+        <input type="submit" name="btnM" value="Mock Search">
+    `;
+    form.insertAdjacentHTML('beforeend', htmlString);
+    document.body.appendChild(form);
+    form.submit();
+    )",
+                                                 prerender_url)));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+}
+
 }  // namespace
