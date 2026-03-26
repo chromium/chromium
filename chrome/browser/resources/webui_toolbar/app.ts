@@ -21,6 +21,15 @@ import type {BrowserProxy, NavigationControlsState, NavigationControlsStateListe
 import {MetricsRecorder} from './metrics_recorder.js';
 import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
 
+const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
+  {selector: '#back', id: 'kToolbarBackButtonElementId'},
+  {selector: '#forward', id: 'kToolbarForwardButtonElementId'},
+  {selector: '#reload', id: 'kReloadButtonElementId'},
+  {selector: '#split-tabs', id: 'kToolbarSplitTabsToolbarButtonElementId'},
+  {selector: '#location-bar', id: 'kLocationBarElementId'},
+  {selector: '#home', id: 'kToolbarHomeButtonElementId'},
+];
+
 export class ToolbarAppElement extends CrLitElement {
   static get is() {
     return 'toolbar-app';
@@ -126,26 +135,11 @@ export class ToolbarAppElement extends CrLitElement {
             });
 
     this.metricsRecorder_.startObserving();
-    const reload = this.shadowRoot.querySelector<CrLitElement>('#reload');
-    if (reload) {
-      this.trackedElementManager_.startTracking(
-          reload, 'kReloadButtonElementId');
-    }
-    const home = this.shadowRoot.querySelector<CrLitElement>('#home');
-    if (home) {
-      this.trackedElementManager_.startTracking(home, 'kToolbarHomeButtonElementId');
-    }
-    const splitTabs =
-        this.shadowRoot.querySelector<CrLitElement>('#split-tabs');
-    if (splitTabs) {
-      this.trackedElementManager_.startTracking(
-          splitTabs, 'kToolbarSplitTabsToolbarButtonElementId');
-    }
-    const locationBar =
-        this.shadowRoot.querySelector<HTMLElement>('#location-bar');
-    if (locationBar) {
-      this.trackedElementManager_.startTracking(
-          locationBar, 'kLocationBarElementId');
+    for (const {selector, id} of TRACKED_ELEMENTS) {
+      const el = this.shadowRoot.querySelector<HTMLElement>(selector);
+      if (el) {
+        this.trackedElementManager_.startTracking(el, id);
+      }
     }
   }
 
@@ -160,19 +154,11 @@ export class ToolbarAppElement extends CrLitElement {
         this.navigationStateListenerHandle_);
 
     this.metricsRecorder_.stopObserving();
-    const reload = this.shadowRoot.querySelector<HTMLElement>('#reload');
-    if (reload) {
-      this.trackedElementManager_.stopTracking(reload);
-    }
-
-    const splitTabs = this.shadowRoot.querySelector<HTMLElement>('#split-tabs');
-    if (splitTabs) {
-      this.trackedElementManager_.stopTracking(splitTabs);
-    }
-
-    const home = this.shadowRoot.querySelector<HTMLElement>('#home');
-    if (home) {
-      this.trackedElementManager_.stopTracking(home);
+    for (const {selector} of TRACKED_ELEMENTS) {
+      const el = this.shadowRoot.querySelector<HTMLElement>(selector);
+      if (el) {
+        this.trackedElementManager_.stopTracking(el);
+      }
     }
   }
 

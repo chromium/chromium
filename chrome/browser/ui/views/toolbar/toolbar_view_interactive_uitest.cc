@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
@@ -41,6 +42,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -150,6 +152,10 @@ void AdvanceFocus(views::FocusManager* focus_manager, bool reverse) {
 int GetIDForFocusedViewElement(const views::View* view) {
   const std::string kReloadControlName =
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
+  const std::string kBackControlName =
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+  const std::string kForwardControlName =
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
 
   if (const views::WebView* web_view =
           views::AsViewClass<views::WebView>(view)) {
@@ -158,6 +164,10 @@ int GetIDForFocusedViewElement(const views::View* view) {
             .ExtractString();
     if (element_name == kReloadControlName) {
       return VIEW_ID_RELOAD_BUTTON;
+    } else if (element_name == kBackControlName) {
+      return VIEW_ID_BACK_BUTTON;
+    } else if (element_name == kForwardControlName) {
+      return VIEW_ID_FORWARD_BUTTON;
     } else {
       ADD_FAILURE() << "Unexpected focused element: " << element_name;
       return VIEW_ID_NONE;
@@ -175,10 +185,13 @@ class ToolbarViewTest : public InteractiveBrowserTest,
   ToolbarViewTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+          {features::kInitialWebUI, features::kWebUIReloadButton,
+           features::kWebUIBackForwardButton},
+          {});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {features::kInitialWebUI, features::kWebUIReloadButton});
+          {}, {features::kInitialWebUI, features::kWebUIReloadButton,
+               features::kWebUIBackForwardButton});
     }
   }
   ToolbarViewTest(const ToolbarViewTest&) = delete;
@@ -199,6 +212,25 @@ class ToolbarViewTest : public InteractiveBrowserTest,
       InitialWebUIManager* manager = InitialWebUIManager::From(browser);
       return !manager || !manager->RequestDeferShow(base::DoNothing());
     }));
+  }
+
+  auto ExpectBackForwardButtonEnabled(ui::ElementIdentifier id, bool enabled) {
+    if (features::IsWebUIBackForwardButtonEnabled()) {
+      return Steps(CheckResult(
+          [this, id]() {
+            return browser()->command_controller()->IsCommandEnabled(
+                id == kToolbarBackButtonElementId ? IDC_BACK : IDC_FORWARD);
+          },
+          enabled));
+    } else {
+      return Steps(CheckViewProperty(id, &views::View::GetEnabled, enabled));
+    }
+  }
+
+  auto MoveMouseToElement(ui::ElementIdentifier id) {
+    return MoveMouseTo(id, base::BindOnce([](ui::TrackedElement* el) {
+                         return el->GetScreenBounds().CenterPoint();
+                       }));
   }
 
   void RunToolbarCycleFocusTest(Browser* browser);
@@ -230,6 +262,19 @@ class ToolbarViewTest : public InteractiveBrowserTest,
 };
 
 void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
+  // Navigate to a few URLs so that the back and forward buttons are enabled
+  // and focusable.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url2));
+  // Navigate back once so forward is enabled too.
+  content::TestNavigationObserver back_nav_observer(
+      browser->tab_strip_model()->GetActiveWebContents());
+  browser->command_controller()->ExecuteCommand(IDC_BACK);
+  back_nav_observer.Wait();
+
   gfx::NativeWindow window = browser->window()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
 
@@ -262,6 +307,8 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
 
   // Press Tab to cycle through all of the controls in the toolbar until
   // we end up back where we started.
+  bool found_back = false;
+  bool found_forward = false;
   bool found_reload = false;
   bool found_location_bar = false;
   bool found_app_menu = false;
@@ -273,6 +320,12 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
     int id = GetIDForFocusedViewElement(view);
     ids.push_back(id);
 
+    if (id == VIEW_ID_BACK_BUTTON) {
+      found_back = true;
+    }
+    if (id == VIEW_ID_FORWARD_BUTTON) {
+      found_forward = true;
+    }
     if (id == VIEW_ID_RELOAD_BUTTON) {
       found_reload = true;
     }
@@ -288,6 +341,8 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
   } while (view != first_view || GetIDForFocusedViewElement(view) != first_id);
 
   // Make sure we found a few key items.
+  ASSERT_TRUE(found_back);
+  ASSERT_TRUE(found_forward);
   ASSERT_TRUE(found_reload);
   ASSERT_TRUE(found_app_menu);
   ASSERT_TRUE(found_location_bar);
@@ -336,54 +391,53 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, ToolbarCycleFocusWithBookmarkBar) {
   RunToolbarCycleFocusTest(second_browser);
 }
 
-// TODO(crbug.com/470038385): Include WebUI version back forward buttons in this
-// test.
-IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonUpdate) {
-  ToolbarButtonProvider* toolbar_button_provider =
-      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
-  ToolbarButton* back_button = toolbar_button_provider->GetBackButton();
-  EXPECT_FALSE(back_button->GetEnabled());
+IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackForwardButtonUpdate) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
 
-  // Navigate to title1.html. Back button should be enabled.
-  GURL url = chrome_test_utils::GetTestUrl(
-      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(back_button->GetEnabled());
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      ExpectBackForwardButtonEnabled(kToolbarBackButtonElementId, false),
+      ExpectBackForwardButtonEnabled(kToolbarForwardButtonElementId, false),
 
-  // Delete old navigations. Back button will be disabled.
-  auto& controller =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  controller.DeleteNavigationEntries(base::BindRepeating(
-      [&](content::NavigationEntry* entry) { return true; }));
-  EXPECT_FALSE(back_button->GetEnabled());
+      NavigateWebContents(kWebContentsId, url),
+      ExpectBackForwardButtonEnabled(kToolbarBackButtonElementId, true),
+      ExpectBackForwardButtonEnabled(kToolbarForwardButtonElementId, false),
+
+      Do([this]() {
+        auto& controller = browser()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetController();
+        controller.DeleteNavigationEntries(base::BindRepeating(
+            [&](content::NavigationEntry* entry) { return true; }));
+      }),
+
+      ExpectBackForwardButtonEnabled(kToolbarBackButtonElementId, false),
+      ExpectBackForwardButtonEnabled(kToolbarForwardButtonElementId, false));
 }
 
-// TODO(crbug.com/470038385): Include WebUI version back forward buttons in this
-// test.
 IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonHoverThenClick) {
-  ToolbarButtonProvider* toolbar_button_provider =
-      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
-  ToolbarButton* back_button = toolbar_button_provider->GetBackButton();
-  EXPECT_FALSE(back_button->GetEnabled());
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
 
-  // Navigate to title1.html. Back button should be enabled.
-  GURL url = chrome_test_utils::GetTestUrl(
-      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(back_button->GetEnabled());
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      ExpectBackForwardButtonEnabled(kToolbarBackButtonElementId, false),
 
-  // Mouse over and click on the back button. This should navigate back in
-  // session history.
-  content::TestNavigationObserver back_nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ui_test_utils::ClickOnView(back_button);
-  back_nav_observer.Wait();
+      NavigateWebContents(kWebContentsId, url1),
+      ExpectBackForwardButtonEnabled(kToolbarBackButtonElementId, true),
 
-  EXPECT_FALSE(back_button->GetEnabled());
+      // Click on the back button. This should navigate back in
+      // session history.
+      MoveMouseToElement(kToolbarBackButtonElementId), ClickMouse(),
+      WaitForWebContentsNavigation(kWebContentsId, GURL(url::kAboutBlankURL)),
+
+      ExpectBackForwardButtonEnabled(kToolbarBackButtonElementId, false));
 }
 
-// TODO(crbug.com/470038385): Include WebUI version back forward buttons in this
-// test.
 // TODO(crbug.com/40252318): The ui test utils do not seem to adequately
 // simulate mouse hovering on Mac.
 #if BUILDFLAG(IS_MAC)
@@ -392,42 +446,39 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonHoverThenClick) {
 #define MAYBE_BackButtonHoverMetricsLogged BackButtonHoverMetricsLogged
 #endif
 IN_PROC_BROWSER_TEST_P(ToolbarViewTest, MAYBE_BackButtonHoverMetricsLogged) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
   ASSERT_TRUE(embedded_test_server()->Start());
-  ToolbarButtonProvider* toolbar_button_provider =
-      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
-
-  // Set the initial mouse position to a known state. If the mouse happens to
-  // be over the back button at the start of the test, then the mouse movement
-  // done by the test wouldn't be seen as a mouse enter.
-  // The choice of using the reload button as the starting position is
-  // arbitrary.
-  ASSERT_TRUE(RunTestSequence(MoveMouseTo(
-      kReloadButtonElementId, base::BindOnce([](ui::TrackedElement* el) {
-        return el->GetScreenBounds().CenterPoint();
-      }))));
 
   const GURL first_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
   const GURL cross_site_url =
       embedded_test_server()->GetURL("b.test", "/title2.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_site_url));
-
-  ToolbarButton* back_button = toolbar_button_provider->GetBackButton();
-  EXPECT_TRUE(back_button->GetEnabled());
 
   base::HistogramTester histogram_tester;
 
-  content::TestNavigationObserver back_nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ui_test_utils::ClickOnView(back_button);
-  back_nav_observer.Wait();
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, first_url),
+      NavigateWebContents(kWebContentsId, cross_site_url),
 
-  // content/ internal tests cover the details of various navigation scenarios
-  // in relation to this histogram. It's enough for this test confirm that a
-  // sample was added, rather than its specific value.
-  histogram_tester.ExpectTotalCount(
-      "Preloading.PrerenderBackNavigationEligibility.BackButtonHover", 1);
+      // Set the initial mouse position to a known state. If the mouse happens
+      // to be over the back button at the start of the test, then the mouse
+      // movement done by the test wouldn't be seen as a mouse enter. The choice
+      // of using the reload button as the starting position is arbitrary.
+      MoveMouseToElement(kReloadButtonElementId),
+
+      ExpectBackForwardButtonEnabled(kToolbarBackButtonElementId, true),
+
+      // Mouse over and click on the back button. This should navigate back in
+      // session history and log a hover metric.
+      MoveMouseToElement(kToolbarBackButtonElementId), ClickMouse(),
+      WaitForWebContentsNavigation(kWebContentsId, first_url),
+
+      Check([&]() {
+        histogram_tester.ExpectTotalCount(
+            "Preloading.PrerenderBackNavigationEligibility.BackButtonHover", 1);
+        return true;
+      }));
 }
 
 IN_PROC_BROWSER_TEST_P(ToolbarViewTest,
@@ -464,9 +515,6 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest,
   EXPECT_EQ(nullptr, extensions_container);
 }
 
-// TODO(crbug.com/470038385): Include WebUI version back forward buttons in this
-// test.
-//
 // Verifies that the identifiers for the pop-up menus are properly
 // assigned so that the menu can be located by tests when it is shown.
 //
@@ -479,6 +527,10 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest,
 #define MAYBE_BackButtonMenu BackButtonMenu
 #endif
 IN_PROC_BROWSER_TEST_P(ToolbarViewTest, MAYBE_BackButtonMenu) {
+  // TODO(crbug.com/470038385): Support WebUI back button in this test.
+  if (features::IsWebUIBackForwardButtonEnabled()) {
+    return;
+  }
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1 = embedded_test_server()->GetURL("/title1.html");
