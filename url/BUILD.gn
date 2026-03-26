@@ -255,7 +255,7 @@ test("url_unittests") {
 
 test("url_perftests") {
   sources = [
-    "run_all_perftests.cc",
+    "scheme_host_port_perftest.cc",
     "url_parse_perftest.cc",
   ]
 
@@ -263,7 +263,9 @@ test("url_perftests") {
     ":url",
     "//base",
     "//base/test:test_support",
+    "//base/test:test_support_perf",
     "//testing/gtest",
+    "//third_party/google_benchmark",
   ]
 }
 
