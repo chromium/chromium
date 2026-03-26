@@ -519,6 +519,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "isRelatedWebsiteSetsUiEnabled",
       base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsUi));
+  html_source->AddBoolean(
+      "isPrivacySandboxAdPrivacyUxDeprecationEnabled",
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation));
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
