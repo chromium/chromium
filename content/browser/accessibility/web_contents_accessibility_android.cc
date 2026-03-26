@@ -1076,6 +1076,20 @@ void WebContentsAccessibilityAndroid::HandleTextSelectionChanged(
                                                                unique_id);
 }
 
+void WebContentsAccessibilityAndroid::HandleExtendedSelectionChanged(
+    int32_t unique_id,
+    int32_t focus_unique_id,
+    int32_t focus_offset) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_WebContentsAccessibilityImpl_handleExtendedSelectionChange(
+      env, obj, unique_id, focus_unique_id, focus_offset);
+}
+
 void WebContentsAccessibilityAndroid::HandleEditableTextChanged(
     int32_t unique_id,
     int32_t subType) {
@@ -1366,7 +1380,7 @@ int32_t WebContentsAccessibilityAndroid::GetEditableTextSelectionStart(
     int32_t unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (!node) {
-    return false;
+    return ui::kAXAndroidUndefinedSelectionIndex;
   }
 
   return node->GetSelectionStart();
@@ -1377,7 +1391,7 @@ int32_t WebContentsAccessibilityAndroid::GetEditableTextSelectionEnd(
     int32_t unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (!node) {
-    return false;
+    return ui::kAXAndroidUndefinedSelectionIndex;
   }
 
   return node->GetSelectionEnd();
@@ -1814,7 +1828,6 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoPaneTitle(
   }
 }
 
-
 void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     JNIEnv* env,
     const JavaRef<jobject>& info,
@@ -1977,8 +1990,14 @@ bool WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
               features::kAccessibilityExtendedSelection) ||
           node->IsTextField()) {
         std::u16string text = node->GetTextContentUTF16();
+        int selection_start = node->GetSelectionStart();
+        int selection_end = node->GetSelectionEnd();
+        if (selection_start == ui::kAXAndroidUndefinedSelectionIndex ||
+            selection_end == ui::kAXAndroidUndefinedSelectionIndex) {
+          return false;
+        }
         Java_WebContentsAccessibilityImpl_setAccessibilityEventSelectionAttrs(
-            env, obj, event, node->GetSelectionStart(), node->GetSelectionEnd(),
+            env, obj, event, selection_start, selection_end,
             node->GetEditableTextLength(),
             base::android::ConvertUTF16ToJavaString(env, text));
       }

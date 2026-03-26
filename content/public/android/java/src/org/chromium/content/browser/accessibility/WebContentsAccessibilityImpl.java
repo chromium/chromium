@@ -194,9 +194,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private int mLastAccessibilityFocusId = View.NO_ID;
     private @Nullable View mAutofillPopupView;
     private @Nullable CaptioningController mCaptioningController;
-    private boolean mIsCurrentlyExtendingSelection;
-    private int mSelectionStart;
-    private int mCursorIndex;
     private @Nullable String mSupportedHtmlElementTypes;
     private final AccessibilityNodeInfoBuilder mAccessibilityNodeInfoBuilder;
     private boolean mHasFinishedLatestAccessibilitySnapshot;
@@ -204,6 +201,32 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private boolean mDidSendAnyEvent;
     private int mPendingLoadCompleteId = View.NO_ID;
     private static boolean sSuppressLoadCompleteEventForTesting;
+
+    /**
+     * Tells if a movement at granularity action (ACTION_PREVIOUS/NEXT_AT_MOVEMENT_GRANULARITY) with
+     * ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN set to true has been running. The value is reset
+     * when accessibility focus is changed or another movement at granularity action is received
+     * with the argument set to false.
+     */
+    private boolean mIsCurrentlyExtendingSelection;
+
+    /** This value should match the one in android.view.accessibility.AccessibilityNodeInfo. */
+    private static final int UNDEFINED_SELECTION_INDEX = -1;
+
+    /**
+     * Start index of movement at granularity. It gets reset to UNDEFINED_SELECTION_INDEX on
+     * accessibility focus change and is initialized on the first movement at granularity action and
+     * on extended selection change.
+     */
+    private int mMovementAtGranularityIndex = UNDEFINED_SELECTION_INDEX;
+
+    /**
+     * Selection start index for movement at granularity actions when
+     * ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN is set to true. This value is set at the first such
+     * action and maintained in the next ones. The value is only used for updating selection on
+     * editable nodes.
+     */
+    private int mSelectionStartIndex;
 
     // Observer for WebContents, used to update state when |this| is shown/hidden.
     private @Nullable WebContentsObserver mWebContentsObserver;
@@ -1811,64 +1834,57 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return true;
     }
 
-    private void setGranularityAndUpdateSelection(int granularity) {
+    private void initializeGranularityAndSelection(int granularity, Boolean forward) {
         mSelectionGranularity = granularity;
+
+        // `mMovementAtGranularityIndex` is reset to UNDEFINED_SELECTION_INDEX when focus changes
+        // and should be initialized before performing the first movement at granularity action
+        // after that.
+        if (mMovementAtGranularityIndex != UNDEFINED_SELECTION_INDEX) {
+            return;
+        }
 
         if (WebContentsAccessibilityImplJni.get().isEditableText(mNativeObj, mAccessibilityFocusId)
                 && WebContentsAccessibilityImplJni.get()
                         .isFocused(mNativeObj, mAccessibilityFocusId)) {
-            // If selection/cursor are "unassigned" (e.g. first user swipe), then assign as needed
-            if (mSelectionStart == -1) {
-                mSelectionStart =
-                        WebContentsAccessibilityImplJni.get()
-                                .getEditableTextSelectionStart(mNativeObj, mAccessibilityFocusId);
-            }
-            if (mCursorIndex == -1) {
-                mCursorIndex =
-                        WebContentsAccessibilityImplJni.get()
-                                .getEditableTextSelectionEnd(mNativeObj, mAccessibilityFocusId);
-            }
-        } else {
-            // `mSelectionStart gets "unassigned" when focus changes and should be initialized for
-            // the first user swipe. For a non-editable node, put selection start on the beginning
-            // of the node. Note that `mCursorIndex` is already set to the end of the node text
-            // when accessibility focus is updated.
-            if (mSelectionStart == -1) {
-                mSelectionStart = 0;
+            // For focused editable nodes, if there is already a selection, use selection end as
+            // the start index for movement. If there isn't a selection, act similar to
+            // non-editable nodes.
+            mMovementAtGranularityIndex =
+                    WebContentsAccessibilityImplJni.get()
+                            .getEditableTextSelectionEnd(mNativeObj, mAccessibilityFocusId);
+            if (mMovementAtGranularityIndex != UNDEFINED_SELECTION_INDEX) {
+                return;
             }
         }
+
+        // For forward moves, use the beginning of the text as start index, and
+        // for backward moves use the end of the text as the start index.
+        mMovementAtGranularityIndex =
+                forward
+                        ? 0
+                        : WebContentsAccessibilityImplJni.get()
+                                .getTextLength(mNativeObj, mAccessibilityFocusId);
     }
 
     private boolean nextAtGranularity(int granularity, boolean extendSelection, int virtualViewId) {
         if (virtualViewId != mAccessibilityFocusId) return false;
-        setGranularityAndUpdateSelection(granularity);
+        initializeGranularityAndSelection(granularity, /* forward= */ true);
 
         // This calls finishGranularityMoveNext when it's done.
-        // If we are extending or starting a selection, pass the current cursor index, otherwise
-        // default to selection start, which will be the position at the end of the last move
-        if (extendSelection && mIsCurrentlyExtendingSelection) {
-            return WebContentsAccessibilityImplJni.get()
-                    .nextAtGranularity(
-                            mNativeObj,
-                            mSelectionGranularity,
-                            extendSelection,
-                            virtualViewId,
-                            mCursorIndex);
-        } else {
-            return WebContentsAccessibilityImplJni.get()
-                    .nextAtGranularity(
-                            mNativeObj,
-                            mSelectionGranularity,
-                            extendSelection,
-                            virtualViewId,
-                            mSelectionStart);
-        }
+        return WebContentsAccessibilityImplJni.get()
+                .nextAtGranularity(
+                        mNativeObj,
+                        mSelectionGranularity,
+                        extendSelection,
+                        virtualViewId,
+                        mMovementAtGranularityIndex);
     }
 
     private boolean previousAtGranularity(
             int granularity, boolean extendSelection, int virtualViewId) {
         if (virtualViewId != mAccessibilityFocusId) return false;
-        setGranularityAndUpdateSelection(granularity);
+        initializeGranularityAndSelection(granularity, /* forward= */ false);
 
         // This calls finishGranularityMovePrevious when it's done.
         return WebContentsAccessibilityImplJni.get()
@@ -1877,7 +1893,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         mSelectionGranularity,
                         extendSelection,
                         virtualViewId,
-                        mCursorIndex);
+                        mMovementAtGranularityIndex);
     }
 
     @CalledByNative
@@ -1899,23 +1915,23 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // User started selecting, set the selection start point (only set once per selection)
             if (!mIsCurrentlyExtendingSelection) {
                 mIsCurrentlyExtendingSelection = true;
-                mSelectionStart = itemStartIndex;
+                mSelectionStartIndex = itemStartIndex;
             }
 
-            selectionFromIndex = mSelectionStart;
+            selectionFromIndex = mSelectionStartIndex;
             selectionToIndex = itemEndIndex;
         } else {
             // User is no longer selecting, or wasn't originally, reset values
             mIsCurrentlyExtendingSelection = false;
-            mSelectionStart = itemEndIndex;
 
-            // Set selection to/from indices to new cursor position, itemEndIndex with forwards nav
+            // Set selection to/from indices to new cursor position.
+            // TODO(crbug.com/443078007): Try to improve code readability here.
             selectionFromIndex = itemEndIndex;
             selectionToIndex = itemEndIndex;
         }
 
-        // Moving forwards, cursor is now at end of granularity move (itemEndIndex)
-        mCursorIndex = itemEndIndex;
+        // Moving forwards, next move will be from the end of the granularity move.
+        mMovementAtGranularityIndex = itemEndIndex;
 
         // Call back to native code to update selection. This will result in updating
         // selection only if the selection is on a focused editable text. In such cases, a
@@ -1933,6 +1949,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         requestSendAccessibilityEvent(traverseEvent);
     }
 
+    // TODO(crbug.com/443078007): `finishGranularityMovePrevious` and `finishGranularityMoveNext`
+    // have a lot in common. Try to merge them into one function.
     @CalledByNative
     private void finishGranularityMovePrevious(
             String text, boolean extendSelection, int itemStartIndex, int itemEndIndex) {
@@ -1953,23 +1971,22 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // User started selecting, set the selection start point (only set once per selection)
             if (!mIsCurrentlyExtendingSelection) {
                 mIsCurrentlyExtendingSelection = true;
-                mSelectionStart = itemEndIndex;
+                mSelectionStartIndex = itemEndIndex;
             }
 
-            selectionFromIndex = mSelectionStart;
+            selectionFromIndex = mSelectionStartIndex;
             selectionToIndex = itemStartIndex;
         } else {
             // User is no longer selecting, or wasn't originally, reset values
             mIsCurrentlyExtendingSelection = false;
-            mSelectionStart = itemStartIndex;
 
             // Set selection to/from indices to new cursor position, itemStartIndex with back nav
             selectionFromIndex = itemStartIndex;
             selectionToIndex = itemStartIndex;
         }
 
-        // Moving backwards, cursor is now at the start of the granularity move (itemStartIndex)
-        mCursorIndex = itemStartIndex;
+        // Moving backwards, next move will be from the start of the granularity move.
+        mMovementAtGranularityIndex = itemStartIndex;
 
         // Call back to native code to update selection. This will result in updating
         // selection only if the selection is on a focused editable text. In such cases, a
@@ -2058,10 +2075,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mAccessibilityFocusId = newAccessibilityFocusId;
         mSelectionGranularity = NO_GRANULARITY_SELECTED;
         mIsCurrentlyExtendingSelection = false;
-        mSelectionStart = -1;
-        mCursorIndex =
-                WebContentsAccessibilityImplJni.get()
-                        .getTextLength(mNativeObj, mAccessibilityFocusId);
+        mMovementAtGranularityIndex = UNDEFINED_SELECTION_INDEX;
 
         if (WebContentsAccessibilityImplJni.get()
                 .isAutofillPopupNode(mNativeObj, mAccessibilityFocusId)) {
@@ -2368,6 +2382,19 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void handleTextSelectionChanged(int id) {
+        sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED);
+    }
+
+    @CalledByNative
+    protected void handleExtendedSelectionChange(int id, int focusNodeId, int focusOffset) {
+        // If extended selection is changed, use the offset of selection focus as the beginning
+        // offset for the next movement at granularity. If selection is cleared (`focusNodeId` is
+        // NO_ID), `mMovementAtGranularityIndex` is kept unchanged for next movements.
+        if (focusNodeId != View.NO_ID) {
+            moveAccessibilityFocusToId(focusNodeId);
+            mMovementAtGranularityIndex = focusOffset;
+        }
+
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED);
     }
 

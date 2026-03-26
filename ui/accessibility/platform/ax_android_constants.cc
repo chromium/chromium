@@ -49,4 +49,8 @@ const char16_t kSecurePasswordBullet = 0x2022;
 // Value should match static constant View.NO_ID in android.view.View.
 const int kAXAndroidInvalidViewId = -1;
 
+// Value should match static constant in UNDEFINED_SELECTION_INDEX in
+// android.view.accessibility.AccessibilityNodeInfo.
+const int kAXAndroidUndefinedSelectionIndex = -1;
+
 }  // namespace ui

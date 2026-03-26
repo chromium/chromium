@@ -53,6 +53,8 @@ COMPONENT_EXPORT(AX_PLATFORM) extern const char16_t kSecurePasswordBullet;
 // View constants.
 
 COMPONENT_EXPORT(AX_PLATFORM) extern const int kAXAndroidInvalidViewId;
+COMPONENT_EXPORT(AX_PLATFORM)
+extern const int kAXAndroidUndefinedSelectionIndex;
 
 }  // namespace ui
 

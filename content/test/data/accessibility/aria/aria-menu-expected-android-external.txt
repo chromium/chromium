@@ -39,4 +39,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++View text:"Control group" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++++++CheckBox text:"Option 1" checkable clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox"]
 ++++++TextView text:"Choice A" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="genericContainer"]
-++++++EditText text:"Input field" clickable editable textSelectionStart:0 textSelectionEnd:0 actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="textField"]
+++++++EditText text:"Input field" clickable editable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="textField"]

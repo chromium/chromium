@@ -7,7 +7,7 @@ WebView text:"Action verbs" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NE
 ++EditText clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="textField", clickableScore="300"]
 ++EditText clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="searchBox", clickableScore="300", roleDescription="search text field"]
 ++EditText clickable editable focusable multiLine textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="textField", clickableScore="300"]
-++EditText clickable editable focusable multiLine textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="textField", clickableScore="300"]
+++EditText clickable editable focusable multiLine actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="textField", clickableScore="300"]
 ++CheckBox checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", clickableScore="300"]
 ++CheckBox checkable clickable focusable checked actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", clickableScore="300"]
 ++RadioButton checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="radioButton", clickableScore="300"]

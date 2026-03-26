@@ -161,7 +161,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Methods to get information about a specific node.
   bool IsEditableText(JNIEnv* env, int32_t id);
   bool IsFocused(JNIEnv* env, int32_t id);
+  // Returns ui::kAXAndroidUndefinedSelectionIndex if no selection.
   int32_t GetEditableTextSelectionStart(JNIEnv* env, int32_t id);
+  // Returns ui::kAXAndroidUndefinedSelectionIndex if no selection.
   int32_t GetEditableTextSelectionEnd(JNIEnv* env, int32_t id);
   base::android::ScopedJavaLocalRef<jintArray> GetAbsolutePositionForNode(
       JNIEnv* env,
@@ -426,6 +428,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void AnnounceLiveRegionText(const std::u16string& text);
   void HandleActiveDescendantChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);
+  void HandleExtendedSelectionChanged(int32_t unique_id,
+                                      int32_t focus_unique_id,
+                                      int32_t focus_offset);
   void HandleEditableTextChanged(int32_t unique_id, int32_t subType);
   void HandleSliderChanged(int32_t unique_id);
   void SendDelayedWindowContentChangedEvent();

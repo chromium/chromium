@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
+#include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
@@ -305,7 +306,15 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
           static_cast<BrowserAccessibilityAndroid*>(
               GetFromAXNode(ax_tree()->root()));
       ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
-      wcax->HandleTextSelectionChanged(android_root_object->GetUniqueId());
+      if (selection.has_value()) {
+        wcax->HandleExtendedSelectionChanged(
+            android_root_object->GetUniqueId(),
+            selection->focus_object->GetUniqueId(), selection->focus_offset);
+      } else {
+        wcax->HandleExtendedSelectionChanged(
+            android_root_object->GetUniqueId(), ui::kAXAndroidInvalidViewId,
+            ui::kAXAndroidUndefinedSelectionIndex);
+      }
       return;
     }
   } else if (!selection.has_value()) {

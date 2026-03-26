@@ -232,7 +232,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   int GetTextChangeRemovedCount() const;
   std::u16string GetTextChangeBeforeText() const;
 
+  // Returns ui::kAXAndroidUndefinedSelectionIndex if no selection.
   int GetSelectionStart() const;
+  // Returns ui::kAXAndroidUndefinedSelectionIndex if no selection.
   int GetSelectionEnd() const;
   int GetEditableTextLength() const;
 

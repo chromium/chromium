@@ -1999,7 +1999,7 @@ int BrowserAccessibilityAndroid::GetSelectionStart() const {
   int32_t anchor_id = unignored_selection.anchor_object_id;
   BrowserAccessibility* anchor_object = manager()->GetFromID(anchor_id);
   if (!anchor_object) {
-    return 0;
+    return ui::kAXAndroidUndefinedSelectionIndex;
   }
 
   AXPosition position = anchor_object->CreateTextPositionAt(
@@ -2023,7 +2023,7 @@ int BrowserAccessibilityAndroid::GetSelectionEnd() const {
   int32_t focus_id = unignored_selection.focus_object_id;
   BrowserAccessibility* focus_object = manager()->GetFromID(focus_id);
   if (!focus_object) {
-    return 0;
+    return ui::kAXAndroidUndefinedSelectionIndex;
   }
 
   AXPosition position = focus_object->CreateTextPositionAt(
