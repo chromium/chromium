@@ -113,7 +113,10 @@ public class EducationalTipModuleMediator {
         }
         mModel.set(
                 EducationalTipModuleProperties.MODULE_BUTTON_ON_CLICK_LISTENER,
-                v -> assumeNonNull(mEducationalTipCardProvider).onCardClicked());
+                (v) -> {
+                    if (mEducationalTipCardProvider == null) return;
+                    mEducationalTipCardProvider.onCardClicked();
+                });
 
         mModuleDelegate.onDataReady(mModuleType, mModel);
     }
