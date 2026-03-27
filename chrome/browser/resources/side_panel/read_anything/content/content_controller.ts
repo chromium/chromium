@@ -257,6 +257,20 @@ export class ContentController {
       const contentContainer = document.createElement('div');
       contentContainer.innerHTML = this.getTrustedHtml(contentHtml);
 
+
+      // Strip single newlines from text nodes to prevent unexpected sentence
+      // breaks, as Readability preserves raw HTML newlines which are visually
+      // rendered as spaces. Consecutive newlines are preserved as they may
+      // denote intentional line breaks.
+      const walker =
+          document.createTreeWalker(contentContainer, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (node.nodeValue && !node.parentElement?.closest('pre')) {
+          node.nodeValue = node.nodeValue.replace(/(?<!\n)\n(?!\n)/g, ' ');
+        }
+      }
+
       // Replace tags that shouldn't be interactive or have special behavior
       // in reading mode. This is similar to what happens in `buildSubtree_`
       // for Screen2x.

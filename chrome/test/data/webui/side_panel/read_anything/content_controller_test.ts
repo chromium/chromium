@@ -314,6 +314,46 @@ suite('ContentController', () => {
       assertTrue(contentController.isEmpty());
     });
 
+    test(
+        'Readability replaces single newlines but keeps consecutive newlines',
+        async () => {
+          chrome.readingMode.activeDistillationMethod =
+              chrome.readingMode.distillationTypeReadability;
+          contentController.configureTrustedTypes();
+          readingMode.htmlContent =
+              'I see my present\npartner\n\nin the imperfect tense';
+
+          const root = contentController.updateContent();
+          await microtasksFinished();
+
+          assertTrue(!!root);
+          const contentDiv = (root as DocumentFragment).querySelector('div');
+          assertTrue(!!contentDiv);
+          assertEquals(
+              'I see my present partner\n\nin the imperfect tense',
+              contentDiv.textContent);
+        });
+
+    test(
+        'Readability does not replace single newlines inside pre tags',
+        async () => {
+          chrome.readingMode.activeDistillationMethod =
+              chrome.readingMode.distillationTypeReadability;
+          contentController.configureTrustedTypes();
+          readingMode.htmlContent =
+              '<pre>I see my present\npartner\n\nin the imperfect tense</pre>';
+
+          const root = contentController.updateContent();
+          await microtasksFinished();
+
+          assertTrue(!!root);
+          const contentDiv = (root as DocumentFragment).querySelector('div');
+          assertTrue(!!contentDiv);
+          assertEquals(
+              'I see my present\npartner\n\nin the imperfect tense',
+              contentDiv.textContent);
+        });
+
     test('logs new page with new tree', () => {
       readingMode.getHtmlTag = () => '';
       readingMode.getTextContent = () => 'okay like I know I ramble';
