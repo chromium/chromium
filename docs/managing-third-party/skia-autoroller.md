@@ -98,8 +98,7 @@ You need to make a CL to add this dependency to Chromium. This CL typically cont
   * Files to integrate with Chromium, e.g. BUILD.gn, DEPS
   * Tests to verify the dependency works as intended and to detect breakages
 
-Please follow the instructions here:
-[https://chromium.googlesource.com/chromium/src/+/main/docs/dependencies.md#adding-dependencies](docs/dependencies.md#adding-dependencies)
+Please follow the instructions [here](https://chromium.googlesource.com/chromium/src/+/main/docs/dependencies.md#adding-dependencies).
 
 ### Step 4. Setup Skia Autoroller to auto-update the dependency
 
