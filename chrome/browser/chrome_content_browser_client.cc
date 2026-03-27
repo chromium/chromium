@@ -248,6 +248,7 @@
 #include "components/error_page/common/localized_error.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/google/core/common/google_util.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -9171,4 +9172,17 @@ void ChromeContentBrowserClient::UpdateCorsExemptHeaderForPrefetch(
 bool ChromeContentBrowserClient::IsAttributionInternalsWebUIEnabled() {
   return !base::FeatureList::IsEnabled(
       privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+}
+
+bool ChromeContentBrowserClient::IsFullscreenAllowedForUnfocusedWebContents(
+    content::WebContents* unfocused_web_contents) {
+  guest_view::GuestViewBase* guest =
+      guest_view::GuestViewBase::FromWebContents(unfocused_web_contents);
+  if (!guest) {
+    return false;
+  }
+  if (guest->IsOwnedByControlledFrameEmbedder()) {
+    return guest->embedder_web_contents()->ContainsOrIsFocusedWebContents();
+  }
+  return false;
 }

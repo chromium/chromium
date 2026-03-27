@@ -2056,4 +2056,9 @@ bool ContentBrowserClient::IsAttributionInternalsWebUIEnabled() {
   return true;
 }
 
+bool ContentBrowserClient::IsFullscreenAllowedForUnfocusedWebContents(
+    content::WebContents* unfocused_web_contents) {
+  return false;
+}
+
 }  // namespace content

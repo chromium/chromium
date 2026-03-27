@@ -455,6 +455,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // debug URLs.
   virtual bool IsExplicitNavigation(ui::PageTransition transition);
 
+  // Returns whether the given |web_contents|, which does not currently have
+  // focus, should be allowed to enter fullscreen mode. This provides a hook
+  // for handling special scenarios where an unfocused WebContents needs
+  // fullscreen capability. The primary motivating use case is to allow
+  // embedded content, such as a Controlled Frame, to enter fullscreen
+  // if its embedding context is focused. By default, returns false.
+  virtual bool IsFullscreenAllowedForUnfocusedWebContents(
+      content::WebContents* unfocused_web_contents);
+
   // Returns whether all instances of the specified site URL should be
   // rendered by the same process, rather than using process-per-site-instance.
   virtual bool ShouldUseProcessPerSite(BrowserContext* browser_context,
