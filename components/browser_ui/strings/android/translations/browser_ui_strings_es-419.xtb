@@ -11,7 +11,7 @@
 <translation id="1126523729897810826">Completa estas acciones sugeridas para aprovechar Chrome al máximo</translation>
 <translation id="113098737392899175">Navega por las páginas con un cursor de texto cuando se conecta un teclado</translation>
 <translation id="1148624853678088576">Todo listo</translation>
-<translation id="1149644372535087155">Guardar contraseñas en Chrome</translation>
+<translation id="1149644372535087155">Guarda tus contraseñas en Chrome</translation>
 <translation id="1178015372320901893">Hoja inferior de Mis accesos directos</translation>
 <translation id="1178581264944972037">Detener</translation>
 <translation id="1181037720776840403">Quitar</translation>
@@ -226,7 +226,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
 <translation id="3164169438034704658">Puedes activar la ubicación precisa en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permitir que un sitio utilice cookies de terceros</translation>
-<translation id="3167868116600277716">Feed de Descubre</translation>
+<translation id="3167868116600277716">Feed Descubre</translation>
 <translation id="3198916472715691905">Datos almacenados: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Se permite esta vez • Aproximada</translation>
 <translation id="3208584281581115441">Verificar ahora</translation>
@@ -289,7 +289,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="381841723434055211">Números de teléfono</translation>
 <translation id="3823453485268218808">Fuente monoespaciada</translation>
 <translation id="3826050100957962900">Acceso de terceros</translation>
-<translation id="3831065134033923230">Revisar las contraseñas guardadas</translation>
+<translation id="3831065134033923230">Revisa las contraseñas guardadas</translation>
 <translation id="3835233591525155343">Uso de tu dispositivo</translation>
 <translation id="3843916486309149084">Chrome volverá a bloquear las cookies hoy</translation>
 <translation id="385051799172605136">Atrás</translation>
@@ -681,7 +681,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="8033047164036749181">Suscribirse para recibir notificaciones de este sitio</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">No se habilitarán las funciones que necesitan una cámara.</translation>
-<translation id="8056330801132235235">Chrome predeterminado</translation>
+<translation id="8056330801132235235">Predeterminado de Chrome</translation>
 <translation id="8067883171444229417">Reproducir video</translation>
 <translation id="8068648041423924542">No es posible seleccionar un certificado</translation>
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
