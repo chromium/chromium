@@ -2331,11 +2331,12 @@ int32_t WebContentsAccessibilityAndroid::FindElementType(
   return element_id;
 }
 
-bool WebContentsAccessibilityAndroid::NextAtGranularity(JNIEnv* env,
+bool WebContentsAccessibilityAndroid::MoveAtGranularity(JNIEnv* env,
                                                         int32_t granularity,
                                                         bool extend_selection,
                                                         int32_t unique_id,
-                                                        int32_t cursor_index) {
+                                                        int32_t cursor_index,
+                                                        bool forwards) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
   if (!root_manager) {
@@ -2349,16 +2350,22 @@ bool WebContentsAccessibilityAndroid::NextAtGranularity(JNIEnv* env,
 
   int32_t start_index = -1;
   int end_index = -1;
-  if (root_manager->NextAtGranularity(granularity, cursor_index, node,
-                                      &start_index, &end_index)) {
+  bool success =
+      forwards ? root_manager->NextAtGranularity(granularity, cursor_index,
+                                                 node, &start_index, &end_index)
+               : root_manager->PreviousAtGranularity(
+                     granularity, cursor_index, node, &start_index, &end_index);
+
+  if (success) {
     ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
     if (obj.is_null()) {
       return false;
     }
-    std::u16string text = node->GetTextContentUTF16();
-    Java_WebContentsAccessibilityImpl_finishGranularityMoveNext(
-        env, obj, base::android::ConvertUTF16ToJavaString(env, text),
-        extend_selection, start_index, end_index);
+    Java_WebContentsAccessibilityImpl_finishGranularityMove(
+        env, obj,
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetTextContentUTF16()),
+        extend_selection, start_index, end_index, forwards);
     return true;
   }
   return false;
@@ -2401,41 +2408,6 @@ void WebContentsAccessibilityAndroid::AddSpellingErrorForTesting(
       ax::mojom::IntListAttribute::kMarkerTypes,
       {static_cast<int>(ax::mojom::MarkerType::kSuggestion)});
   node->node()->SetData(data);
-}
-
-bool WebContentsAccessibilityAndroid::PreviousAtGranularity(
-    JNIEnv* env,
-    int32_t granularity,
-    bool extend_selection,
-    int32_t unique_id,
-    int32_t cursor_index) {
-  BrowserAccessibilityManagerAndroid* root_manager =
-      GetRootBrowserAccessibilityManager();
-  if (!root_manager) {
-    return false;
-  }
-
-  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node) {
-    return false;
-  }
-
-  int32_t start_index = -1;
-  int end_index = -1;
-  if (root_manager->PreviousAtGranularity(granularity, cursor_index, node,
-                                          &start_index, &end_index)) {
-    ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-    if (obj.is_null()) {
-      return false;
-    }
-    Java_WebContentsAccessibilityImpl_finishGranularityMovePrevious(
-        env, obj,
-        base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetTextContentUTF16()),
-        extend_selection, start_index, end_index);
-    return true;
-  }
-  return false;
 }
 
 void WebContentsAccessibilityAndroid::RecordInlineTextBoxMetrics(

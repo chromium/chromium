@@ -227,18 +227,13 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // of our own selection in BrowserAccessibilityManager.java for static
   // text, but if this is an editable text node, updates the selected text
   // in Blink, too, and either way calls
-  // Java_BrowserAccessibilityManager_finishGranularityMove[NEXT/PREVIOUS]
-  // with the result.
-  bool NextAtGranularity(JNIEnv* env,
+  // Java_BrowserAccessibilityManager_finishGranularityMove with the result.
+  bool MoveAtGranularity(JNIEnv* env,
                          int32_t granularity,
                          bool extend_selection,
                          int32_t id,
-                         int32_t cursor_index);
-  bool PreviousAtGranularity(JNIEnv* env,
-                             int32_t granularity,
-                             bool extend_selection,
-                             int32_t id,
-                             int32_t cursor_index);
+                         int32_t cursor_index,
+                         bool forwards);
 
   // Move accessibility focus. This sends a message to the renderer to
   // clear accessibility focus on the previous node and set accessibility
