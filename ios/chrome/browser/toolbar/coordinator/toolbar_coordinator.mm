@@ -893,11 +893,12 @@
 
 - (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/483994559): Implement this.
-    NOTREACHED();
+    [_topLocationBarCoordinator setLensOverlayVisible:lensOverlayVisible];
+    [_bottomLocationBarCoordinator setLensOverlayVisible:lensOverlayVisible];
+    return;
+  } else {
+    [self.locationBarCoordinator setLensOverlayVisible:lensOverlayVisible];
   }
-
-  [self.locationBarCoordinator setLensOverlayVisible:lensOverlayVisible];
 
   for (id<ToolbarCommands> coordinator in self.coordinators) {
     [coordinator indicateLensOverlayVisible:lensOverlayVisible];
