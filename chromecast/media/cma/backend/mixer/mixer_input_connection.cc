@@ -183,7 +183,7 @@ float* GetAudioData(net::IOBuffer* buffer) {
                                         int num_channels) {
   DCHECK_NE(layout, audio_service::CHANNEL_LAYOUT_BITSTREAM);
   if (layout == audio_service::CHANNEL_LAYOUT_NONE) {
-    return mixer::GuessChannelLayout(num_channels);
+    return ::media::GuessChannelLayout(num_channels);
   }
   return DecoderConfigAdapter::ToMediaChannelLayout(
       ConvertChannelLayout(layout));

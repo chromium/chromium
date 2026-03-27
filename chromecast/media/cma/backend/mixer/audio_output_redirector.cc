@@ -47,7 +47,7 @@ constexpr int kAudioMessageHeaderSize =
     chromecast::media::ChannelLayout layout,
     int num_channels) {
   if (layout == media::ChannelLayout::UNSUPPORTED) {
-    return mixer::GuessChannelLayout(num_channels);
+    return ::media::GuessChannelLayout(num_channels);
   }
   return DecoderConfigAdapter::ToMediaChannelLayout(layout);
 }

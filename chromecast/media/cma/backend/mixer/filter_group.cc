@@ -119,9 +119,9 @@ void FilterGroup::Initialize(const AudioPostProcessor2::Config& output_config) {
   for (auto& input : mixed_inputs_) {
     input.group->Initialize(input_config);
     input.channel_mixer = std::make_unique<InterleavedChannelMixer>(
-        mixer::GuessChannelLayout(input.group->GetOutputChannelCount()),
+        ::media::GuessChannelLayout(input.group->GetOutputChannelCount()),
         input.group->GetOutputChannelCount(),
-        mixer::GuessChannelLayout(num_channels_), num_channels_,
+        ::media::GuessChannelLayout(num_channels_), num_channels_,
         input_frames_per_write_);
   }
   post_processing_pipeline_->SetContentType(content_type_);

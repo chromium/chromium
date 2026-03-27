@@ -553,9 +553,9 @@ void StreamMixer::Start() {
     CHECK_GT(frames_per_write_, 0);
 
     output_channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
-        mixer::GuessChannelLayout(mixer_pipeline_->GetOutputChannelCount()),
+        ::media::GuessChannelLayout(mixer_pipeline_->GetOutputChannelCount()),
         mixer_pipeline_->GetOutputChannelCount(),
-        mixer::GuessChannelLayout(num_output_channels_), num_output_channels_,
+        ::media::GuessChannelLayout(num_output_channels_), num_output_channels_,
         frames_per_write_);
 
     int num_loopback_channels = mixer_pipeline_->GetLoopbackChannelCount();
@@ -565,10 +565,10 @@ void StreamMixer::Start() {
     AUDIO_LOG(INFO) << "Using " << num_loopback_channels << " loopback "
                     << ChannelString(num_loopback_channels);
     loopback_channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
-        mixer::GuessChannelLayout(mixer_pipeline_->GetLoopbackChannelCount()),
+        ::media::GuessChannelLayout(mixer_pipeline_->GetLoopbackChannelCount()),
         mixer_pipeline_->GetLoopbackChannelCount(),
-        mixer::GuessChannelLayout(num_loopback_channels), num_loopback_channels,
-        frames_per_write_);
+        ::media::GuessChannelLayout(num_loopback_channels),
+        num_loopback_channels, frames_per_write_);
 
     loopback_handler_->SetDataSize(frames_per_write_ *
                                    mixer_pipeline_->GetLoopbackChannelCount() *

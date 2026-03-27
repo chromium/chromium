@@ -10,13 +10,6 @@ namespace chromecast {
 namespace media {
 namespace mixer {
 
-::media::ChannelLayout GuessChannelLayout(int num_channels) {
-  if (num_channels > ::media::kMaxConcurrentChannels) {
-    return ::media::CHANNEL_LAYOUT_DISCRETE;
-  }
-  return ::media::GuessChannelLayout(num_channels);
-}
-
 ::media::AudioParameters CreateAudioParameters(
     ::media::AudioParameters::Format format,
     ::media::ChannelLayout channel_layout,
@@ -32,7 +25,7 @@ namespace mixer {
     ::media::ChannelLayout channel_layout,
     int num_channels) {
   if (channel_layout == ::media::CHANNEL_LAYOUT_NONE) {
-    channel_layout = GuessChannelLayout(num_channels);
+    channel_layout = ::media::GuessChannelLayout(num_channels);
   }
   if (channel_layout != ::media::CHANNEL_LAYOUT_DISCRETE) {
     DCHECK_EQ(num_channels,

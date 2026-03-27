@@ -12,10 +12,6 @@ namespace chromecast {
 namespace media {
 namespace mixer {
 
-// Guesses the channel layout based on the number of channels; supports using
-// CHANNEL_LAYOUT_DISCRETE is there are more than 8 channels.
-::media::ChannelLayout GuessChannelLayout(int num_channels);
-
 // Creates an AudioParameters with correct support for CHANNEL_LAYOUT_DISCRETE.
 ::media::AudioParameters CreateAudioParameters(
     ::media::AudioParameters::Format format,

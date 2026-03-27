@@ -185,7 +185,7 @@ void MixerInput::CreateChannelMixer(int playout_channel,
   }
   channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
       channel_layout, effective_channels,
-      mixer::GuessChannelLayout(filter_group->num_channels()),
+      ::media::GuessChannelLayout(filter_group->num_channels()),
       filter_group->num_channels(), filter_group->input_frames_per_write());
 }
 
