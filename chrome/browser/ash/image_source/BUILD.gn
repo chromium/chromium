@@ -15,7 +15,6 @@ static_library("image_source") {
   deps = [
     "//base",
     "//chrome/browser/ash/login/users/avatar",
-    "//chrome/common",
     "//components/user_manager",
     "//net",
   ]
