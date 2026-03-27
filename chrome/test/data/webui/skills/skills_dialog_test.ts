@@ -10,32 +10,36 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsDialogType, SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {DialogHandlerRemote} from 'chrome://skills/skills.mojom-webui.js';
-import {MAX_NAME_CHAR_COUNT, MAX_PROMPT_CHAR_COUNT, WindowProxyImpl} from 'chrome://skills/skills_dialog_app.js';
+import {AUTOCOMPLETE_MIN_CHARS, MAX_NAME_CHAR_COUNT, MAX_PROMPT_CHAR_COUNT, REFINE_SKILL_TIMEOUT_MS, WindowProxyImpl} from 'chrome://skills/skills_dialog_app.js';
 import type {SkillsDialogAppElement, WindowProxy} from 'chrome://skills/skills_dialog_app.js';
 import {SkillsDialogBrowserProxy} from 'chrome://skills/skills_dialog_browser_proxy.js';
-import { assertEquals, assertFalse, assertTrue, assertNull } from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestWindowProxy implements WindowProxy {
-  private callback_: Function|null = null;
+  private customTimeouts_ = new Map<number, Function>();
+  // Start at a high number to avoid colliding with native setTimeout ids
+  private nextTimeoutId_ = 10000;
 
   setTimeout(handler: TimerHandler, timeout?: number): number {
-    if (timeout === 5000) {
-      this.callback_ = handler as Function;
-      return 12345;
+    if (timeout === REFINE_SKILL_TIMEOUT_MS) {
+      const id = this.nextTimeoutId_++;
+      this.customTimeouts_.set(id, handler as Function);
+      return id;
     }
     return window.setTimeout(handler, timeout);
   }
-
   runTimeout() {
-    if (this.callback_) {
-      this.callback_();
+    const callbacks = Array.from(this.customTimeouts_.values());
+    this.customTimeouts_.clear();
+    for (const callback of callbacks) {
+      callback();
     }
   }
 
   hasScheduledTimeout(): boolean {
-    return !!this.callback_;
+    return this.customTimeouts_.size > 0;
   }
 }
 
@@ -49,6 +53,7 @@ suite('SkillsDialogAppPage', function() {
       MAX_PROMPT_CHAR_COUNT: 20000,
       MAX_NAME_CHAR_COUNT: 100,
       isRefinementEnabled: true,
+      isAutocompleteEnabled: true,
     });
     dialogHandler = TestMock.fromClass(DialogHandlerRemote);
     SkillsDialogBrowserProxy.setInstance(
@@ -721,6 +726,34 @@ suite('SkillsDialogAppPage', function() {
     assertEquals(generatedIcon, skillsDialogApp.$.emojiTrigger.value);
   });
 
+  test('AutoPopulatesNameAndIconOnLoadDisabledByFlag', async function() {
+    loadTimeData.overrideValues({
+      isAutocompleteEnabled: false,
+    });
+
+    dialogHandler.setResultFor('generateNameAndEmoji', Promise.resolve({
+      refinedSkill: {
+        id: '',
+        sourceSkillId: '',
+        name: 'Auto Generated Name',
+        icon: '🤖',
+        prompt: 'refined prompt',
+        description: '',
+        source: SkillSource.kUserCreated,
+      },
+    }));
+
+    const newSkill =
+        createSkill({prompt: 'Instruction that triggers auto-gen'});
+
+    await setupDialogInitialState(newSkill, SkillsDialogType.kAdd);
+
+    // Verify it was never called because the flag is off
+    assertEquals(0, dialogHandler.getCallCount('generateNameAndEmoji'));
+    assertEquals('', skillsDialogApp.$.nameText.value);
+    assertEquals('', skillsDialogApp.$.emojiTrigger.value);
+  });
+
   test('AutoPopulateDoesNotOverwriteExistingData', async function() {
     // 1. Setup mock response
     dialogHandler.setResultFor('generateNameAndEmoji', Promise.resolve({
@@ -880,5 +913,109 @@ suite('SkillsDialogAppPage', function() {
     await updateName('Valid Name');
     assertTrue(nameErrorMessage.hidden);
     assertFalse(skillsDialogApp.$.nameText.hasAttribute('invalid'));
+  });
+
+  test('AutocompleteIgnoresShortPromptOnNameFocus', async function() {
+    // Type a short prompt, shouldn't trigger
+    await updateInstructions('short');
+    skillsDialogApp.$.nameText.dispatchEvent(new Event('focus'));
+    await microtasksFinished();
+    assertEquals(0, dialogHandler.getCallCount('generateNameAndEmoji'));
+  });
+
+  test('AutocompleteFetchesOnNameFocus', async function() {
+    // Setup mock
+    const generatedName = 'Generated Name';
+    const generatedIcon = '🧠';
+    dialogHandler.setResultFor('generateNameAndEmoji', Promise.resolve({
+      refinedSkill: {
+        id: '',
+        sourceSkillId: '',
+        name: generatedName,
+        icon: generatedIcon,
+        prompt: '1'.repeat(AUTOCOMPLETE_MIN_CHARS),
+        description: '',
+        source: SkillSource.kUserCreated,
+        creationTime: {internalValue: 0n},
+        lastUpdateTime: {internalValue: 0n},
+      },
+    }));
+
+    // Type a long prompt
+    const longPrompt = '1'.repeat(AUTOCOMPLETE_MIN_CHARS);
+    await updateInstructions(longPrompt);
+
+    // Verify it didn't queue a timeout
+    assertFalse(testWindowProxy.hasScheduledTimeout());
+    assertEquals(0, dialogHandler.getCallCount('generateNameAndEmoji'));
+
+    // Focus the name input
+    skillsDialogApp.$.nameText.dispatchEvent(new Event('focus'));
+    await microtasksFinished();
+
+    // Verify proxy was called
+    await dialogHandler.whenCalled('generateNameAndEmoji');
+    await microtasksFinished();
+
+    // Placeholders should be hidden initially (already done above implicitly or
+    // explicitly via tests logic but let's keep assertions)
+    assertFalse(skillsDialogApp.$.generatedPlaceholder.hidden);
+    const generatedNameText = skillsDialogApp.$.generatedNameText.textContent;
+    assertEquals(generatedName, generatedNameText);
+    assertEquals(generatedIcon, skillsDialogApp.$.emojiTrigger.value);
+    assertTrue(skillsDialogApp.$.emojiZeroStateIcon.hidden);
+    assertEquals('', skillsDialogApp.$.nameText.placeholder);
+
+    // Ensure icon got the gray styling
+    assertTrue(
+        skillsDialogApp.$.emojiTrigger.classList.contains('placeholder-icon'));
+  });
+
+  test('AutocompleteTabAcceptsSuggestion', async function() {
+    // Setup mock
+    const generatedName = 'Generated Name';
+    const generatedIcon = '🧠';
+    dialogHandler.setResultFor('generateNameAndEmoji', Promise.resolve({
+      refinedSkill: {
+        id: '',
+        sourceSkillId: '',
+        name: generatedName,
+        icon: generatedIcon,
+        prompt: '1'.repeat(AUTOCOMPLETE_MIN_CHARS),
+        description: '',
+        source: SkillSource.kUserCreated,
+        creationTime: {internalValue: 0n},
+        lastUpdateTime: {internalValue: 0n},
+      },
+    }));
+
+    const longPrompt = '1'.repeat(AUTOCOMPLETE_MIN_CHARS);
+    await updateInstructions(longPrompt);
+
+    // Focus to trigger the fetch
+    skillsDialogApp.$.nameText.dispatchEvent(new Event('focus'));
+    await dialogHandler.whenCalled('generateNameAndEmoji');
+    await microtasksFinished();
+
+    // Tab key event
+    const tabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      cancelable: true,
+      bubbles: true,
+      composed: true,
+    });
+    skillsDialogApp.$.nameText.dispatchEvent(tabEvent);
+
+    await microtasksFinished();
+
+    // Event should be prevented (so focus doesn't actually fly away)
+    assertTrue(tabEvent.defaultPrevented);
+
+    // The attributes should be formally set on the skill, removing placeholder
+    // styling
+    assertEquals(generatedName, skillsDialogApp.$.nameText.value);
+    assertEquals(generatedIcon, skillsDialogApp.$.emojiTrigger.value);
+    assertFalse(
+        skillsDialogApp.$.emojiTrigger.classList.contains('placeholder-icon'));
   });
 });
