@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -409,23 +410,19 @@ TEST_P(GlicEnablingAnyFreModeTest,
 
 INSTANTIATE_TEST_SUITE_P(All, GlicEnablingAnyFreModeTest, testing::Bool());
 
-struct GatedFeatureParams {
+struct ContextMenuFeatureParams {
   std::string name;
   bool is_feature_enabled = false;
-  bool is_onboarding_param_enabled = false;
   bool has_user_consented = false;
   bool is_trust_first_enabled = false;
   bool expected_result = false;
 };
 
-// Base class for testing features that follow the "gated" enablement pattern
-// (Multi-instance -> Feature Flag -> Consent OR Onboarding Gate).
-class GlicEnablingGatedFeatureTest
+class GlicEnablingContextMenuTest
     : public GlicEnablingProfileReadyStateTestBase,
-      public testing::WithParamInterface<GatedFeatureParams> {
+      public testing::WithParamInterface<ContextMenuFeatureParams> {
  public:
-  void SetUpFeature(const base::Feature& feature,
-                    const base::FeatureParam<bool>& onboarding_param) {
+  void SetUp() override {
     GlicEnablingProfileReadyStateTestBase::SetUp();
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
@@ -437,12 +434,9 @@ class GlicEnablingGatedFeatureTest
     enabled_features.push_back({features::kGlicMultitabUnderlines, {}});
 
     if (GetParam().is_feature_enabled) {
-      enabled_features.push_back(
-          {feature,
-           {{onboarding_param.name,
-             GetParam().is_onboarding_param_enabled ? "true" : "false"}}});
+      enabled_features.push_back({features::kGlicContextMenu, {}});
     } else {
-      disabled_features.push_back(feature);
+      disabled_features.push_back(features::kGlicContextMenu);
     }
 
     if (GetParam().is_trust_first_enabled) {
@@ -467,53 +461,40 @@ class GlicEnablingGatedFeatureTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// --- Context Menu Item Tests ---
-
-class GlicEnablingContextMenuTest : public GlicEnablingGatedFeatureTest {
- public:
-  void SetUp() override {
-    SetUpFeature(features::kGlicContextMenu,
-                 features::kGlicContextMenuWithOnboarding);
-  }
-};
-
 TEST_P(GlicEnablingContextMenuTest, ExpectedBehavior) {
   SetConsent(GetParam().has_user_consented);
-  EXPECT_EQ(GetParam().expected_result,
-            GlicEnabling::IsContextualMenuItemEnabled(profile()))
+  base::HistogramTester histogram_tester;
+  bool expected = GetParam().expected_result;
+  EXPECT_EQ(expected, GlicEnabling::IsContextualMenuItemEnabled(profile()))
       << "Failed for case: " << GetParam().name;
+  histogram_tester.ExpectUniqueSample("Glic.WebContentContextMenu.Enabled",
+                                      expected, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     GlicEnablingContextMenuTest,
     testing::Values(
-        GatedFeatureParams{.name = "Default (All Off)",
-                           .expected_result = false},
-        GatedFeatureParams{.name = "TrustFirstOnly (Not Enough)",
-                           .is_trust_first_enabled = true,
-                           .expected_result = false},
-        GatedFeatureParams{.name = "Consented (Pure)",
-                           .is_feature_enabled = true,
-                           .has_user_consented = true,
-                           .expected_result = true},
-        GatedFeatureParams{.name = "ConsentedWithTrustFirst",
-                           .is_feature_enabled = true,
-                           .has_user_consented = true,
-                           .is_trust_first_enabled = true,
-                           .expected_result = true},
-        GatedFeatureParams{.name = "FeatureEnabledWithTrustFirst (No Gate)",
-                           .is_feature_enabled = true,
-                           .is_trust_first_enabled = true,
-                           .expected_result = false},
-        GatedFeatureParams{.name = "OnboardingGatedOnly (No TrustFirst)",
-                           .is_feature_enabled = true,
-                           .is_onboarding_param_enabled = true,
-                           .expected_result = false},
-        GatedFeatureParams{.name = "OnboardingGatedWithTrustFirst (Success)",
-                           .is_feature_enabled = true,
-                           .is_onboarding_param_enabled = true,
-                           .is_trust_first_enabled = true,
-                           .expected_result = true}));
+        ContextMenuFeatureParams{.name = "Default (All Off)",
+                                 .expected_result = false},
+        ContextMenuFeatureParams{.name = "TrustFirstOnly (Not Enough)",
+                                 .is_trust_first_enabled = true,
+                                 .expected_result = false},
+        ContextMenuFeatureParams{.name = "Consented (Pure)",
+                                 .is_feature_enabled = true,
+                                 .has_user_consented = true,
+                                 .expected_result = true},
+        ContextMenuFeatureParams{.name = "ConsentedWithTrustFirst",
+                                 .is_feature_enabled = true,
+                                 .has_user_consented = true,
+                                 .is_trust_first_enabled = true,
+                                 .expected_result = true},
+        ContextMenuFeatureParams{.name = "FeatureEnabledWithTrustFirst",
+                                 .is_feature_enabled = true,
+                                 .is_trust_first_enabled = true,
+                                 .expected_result = true},
+        ContextMenuFeatureParams{.name = "FeatureEnabledNoTrustFirstNoConsent",
+                                 .is_feature_enabled = true,
+                                 .expected_result = false}));
 }  // namespace
 }  // namespace glic

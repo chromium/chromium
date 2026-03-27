@@ -588,12 +588,21 @@ bool GlicEnabling::ShouldBypassFreUi(
          base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf) &&
          !HasConsentedForProfile(profile);
 }
-
 bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
-  return IsProfileEligible(profile) &&
-         IsTrustFirstOnboardingGatedFeatureEnabled(
-             profile, features::kGlicContextMenu,
-             features::kGlicContextMenuWithOnboarding);
+  bool enabled = IsEnabledForProfile(profile);
+  if (!enabled) {
+    base::UmaHistogramBoolean("Glic.WebContentContextMenu.Enabled", enabled);
+    return enabled;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+    enabled = base::FeatureList::IsEnabled(features::kGlicContextMenu);
+  } else {
+    enabled = HasConsentedForProfile(profile) &&
+              base::FeatureList::IsEnabled(features::kGlicContextMenu);
+  }
+  base::UmaHistogramBoolean("Glic.WebContentContextMenu.Enabled", enabled);
+  return enabled;
 }
 
 // static
