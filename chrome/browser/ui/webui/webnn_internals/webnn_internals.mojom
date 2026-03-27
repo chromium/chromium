@@ -5,6 +5,7 @@
 module webnn_internals.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_service_introspection.mojom";
 
 // Interface for the WebUI page to communicate with the browser.
 interface PageHandler {
@@ -15,6 +16,10 @@ interface PageHandler {
   // Returns whether recording of WebNN graphs is currently enabled.
   [EnableIf=webnn_enable_graph_dump]
   IsGraphRecording() => (bool enabled);
+
+  // Requests the details of existing contexts from the WebNN service.
+  RequestExistingContextsDetails()
+      => (array<webnn.mojom.WebNNContextIntrospectionDetails> contexts_info);
 };
 
 // Interface for the browser to communicate with the WebUI page.
@@ -27,6 +32,10 @@ interface Page {
   // Called when the graph recording state changes.
   [EnableIf=webnn_enable_graph_dump]
   OnGraphRecordEnabledChanged(bool is_enabled);
+
+  // Called when the WebNN contexts list is updated.
+  OnUpdateExistingContextDetails(
+      array<webnn.mojom.WebNNContextIntrospectionDetails> contexts_info);
 };
 
 // Factory interface to create the handler.

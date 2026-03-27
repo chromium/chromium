@@ -17,13 +17,18 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "browser_proxy.ts",
+    "contexts_viewer.ts",
+    "contexts_viewer.html.ts",
   ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "contexts_viewer.css",
+    "app.css",
+  ]
 
   if (webnn_enable_graph_dump) {
     ts_files += [
-      "browser_proxy.ts",
       "graph_dump.html.ts",
       "graph_dump.ts",
     ]
@@ -32,8 +37,12 @@ build_webui("build") {
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/webnn_internals:mojo_bindings_ts__generator",
+    "//services/webnn/public/mojom:webnn_service_introspection_ts__generator",
   ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/webnn_internals/webnn_internals.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/webnn_internals/webnn_internals.mojom-webui.ts",
+    "$root_gen_dir/services/webnn/public/mojom/webnn_service_introspection.mojom-webui.ts",
+  ]
 
   ts_composite = true
   ts_deps = [

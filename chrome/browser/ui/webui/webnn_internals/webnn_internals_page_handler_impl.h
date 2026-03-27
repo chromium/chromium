@@ -27,10 +27,10 @@ class WebNNInternalsPageHandlerImpl
   ~WebNNInternalsPageHandlerImpl() override;
 
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
-  // webnn_internals::mojom::WebNNInternalsHandler
+  // webnn_internals::mojom::PageHandler
   void SetGraphRecordEnabled(bool enabled) override;
 
-  // webnn_internals::mojom::WebNNInternalsHandler
+  // webnn_internals::mojom::PageHandler
   void IsGraphRecording(IsGraphRecordingCallback callback) override;
 
   // webnn::WebNNIntrospectionManager::Observer:
@@ -39,7 +39,11 @@ class WebNNInternalsPageHandlerImpl
 #endif
   // webnn::WebNNIntrospectionManager::Observer:
   void OnUpdateExistingContextDetails(
-      const std::string& contexts_info_json) override;
+      const std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>&
+          contexts_details) override;
+  // webnn_internals::mojom::PageHandler
+  void RequestExistingContextsDetails(
+      RequestExistingContextsDetailsCallback callback) override;
 
  private:
   mojo::Receiver<webnn_internals::mojom::PageHandler> receiver_;

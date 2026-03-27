@@ -5,10 +5,12 @@
 #ifndef CONTENT_PUBLIC_BROWSER_WEBNN_INTROSPECTION_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_WEBNN_INTROSPECTION_MANAGER_H_
 
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/webnn_buildflags.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom-forward.h"
 
 namespace content {
 
@@ -27,7 +29,8 @@ class CONTENT_EXPORT WebNNIntrospectionManager {
     virtual void OnGraphRecordEnabledChanged(bool is_enabled) {}
 #endif
     virtual void OnUpdateExistingContextDetails(
-        const std::string& contexts_details_json) = 0;
+        const std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>&
+            contexts_details) = 0;
   };
 
   // Return the singleton instance.
@@ -38,7 +41,10 @@ class CONTENT_EXPORT WebNNIntrospectionManager {
 
   // Establish the connection with the WebNN service in the GPU process and
   // request the details of existing WebNN contexts.
-  virtual void EstablishServiceConnectionAndGetExistingContextsDetails() = 0;
+  virtual void EstablishServiceConnectionAndGetExistingContextsDetails(
+      base::OnceCallback<
+          void(std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>)>
+          callback) = 0;
 
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
   // Enable recording of the ML graphs.

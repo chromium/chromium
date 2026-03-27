@@ -4,15 +4,11 @@
 
 #include "content/browser/webnn/webnn_introspection_manager_impl.h"
 
-#include <utility>
-
-#include "base/json/json_writer.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/webnn/public/mojom/webnn_service_introspection.mojom-forward.h"
 #include "third_party/blink/public/mojom/webnn/webnn_introspection.mojom.h"
 
 namespace content {
@@ -120,40 +116,29 @@ void WebNNIntrospectionManagerImpl::ConfigWebNNIntrospectionForProcess(
 
 void WebNNIntrospectionManagerImpl::OnServiceDisconnect() {
   std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr> empty_list;
-  NotifyObserversOfNewContextsDetails(std::move(empty_list));
+  for (auto& observer : observers_) {
+    observer.OnUpdateExistingContextDetails(empty_list);
+  }
   service_receiver_.reset();
   introspection_service_remote_.reset();
 }
 
-void WebNNIntrospectionManagerImpl::NotifyObserversOfNewContextsDetails(
-    const std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>&
-        contexts_details) {
-  base::ListValue context_details_list;
-  for (const auto& details : contexts_details) {
-    base::DictValue context_details;
-    context_details.Set("contextId", details->context_id);
-    context_details.Set("contextBackend", details->context_backend);
-    context_details_list.Append(std::move(context_details));
-  }
-  std::string contexts_details_json;
-  base::JSONWriter::Write(context_details_list, &contexts_details_json);
-  for (auto& observer : observers_) {
-    observer.OnUpdateExistingContextDetails(contexts_details_json);
-  }
-}
-
 void WebNNIntrospectionManagerImpl::OnUpdateExistingContextDetails(
-    const std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>
+    std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>
         contexts_details) {
-  NotifyObserversOfNewContextsDetails(std::move(contexts_details));
+  for (auto& observer : observers_) {
+    observer.OnUpdateExistingContextDetails(contexts_details);
+  }
 }
 
 void WebNNIntrospectionManagerImpl::
-    EstablishServiceConnectionAndGetExistingContextsDetails() {
+    EstablishServiceConnectionAndGetExistingContextsDetails(
+        base::OnceCallback<void(
+            std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>)>
+            callback) {
   if (introspection_service_remote_.is_bound()) {
-    introspection_service_remote_->GetExistingContextsDetails(base::BindOnce(
-        &WebNNIntrospectionManagerImpl::OnUpdateExistingContextDetails,
-        base::Unretained(this)));
+    introspection_service_remote_->GetExistingContextsDetails(
+        std::move(callback));
     return;
   }
   auto* host = content::GpuProcessHost::Get(content::GPU_PROCESS_KIND_SANDBOXED,
@@ -179,9 +164,8 @@ void WebNNIntrospectionManagerImpl::
   introspection_service_remote_.set_disconnect_handler(
       base::BindOnce(&WebNNIntrospectionManagerImpl::OnServiceDisconnect,
                      base::Unretained(this)));
-  introspection_service_remote_->GetExistingContextsDetails(base::BindOnce(
-      &WebNNIntrospectionManagerImpl::OnUpdateExistingContextDetails,
-      base::Unretained(this)));
+  introspection_service_remote_->GetExistingContextsDetails(
+      std::move(callback));
 }
 
 }  // namespace content

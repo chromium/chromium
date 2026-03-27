@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/webnn_internals/webnn_internals_page_handler_impl.h"
 
-#include "base/compiler_specific.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom.h"
 
 WebNNInternalsPageHandlerImpl::WebNNInternalsPageHandlerImpl(
     mojo::PendingReceiver<webnn_internals::mojom::PageHandler> receiver,
@@ -39,4 +40,17 @@ void WebNNInternalsPageHandlerImpl::OnGraphRecordEnabledChanged(
 #endif
 
 void WebNNInternalsPageHandlerImpl::OnUpdateExistingContextDetails(
-    const std::string& contexts_info_json) {}
+    const std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>&
+        contexts_details) {
+  page_->OnUpdateExistingContextDetails(mojo::Clone(contexts_details));
+}
+
+void WebNNInternalsPageHandlerImpl::RequestExistingContextsDetails(
+    RequestExistingContextsDetailsCallback callback) {
+  content::WebNNIntrospectionManager::GetInstance()
+      ->EstablishServiceConnectionAndGetExistingContextsDetails(
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(callback),
+              std::vector<
+                  webnn::mojom::WebNNContextIntrospectionDetailsPtr>()));
+}

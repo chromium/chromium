@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './contexts_viewer.js';
 // <if expr="webnn_enable_graph_dump">
 import './graph_dump.js';
 // </if>

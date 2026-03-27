@@ -596,6 +596,7 @@ source_set("browser_sources") {
     "//services/video_capture/public/mojom",
     "//services/viz/public/mojom",
     "//services/webnn/public/cpp",
+    "//services/webnn/public/mojom:webnn_service_introspection",
 
     # We expose skia headers in the public API.
     "//skia",

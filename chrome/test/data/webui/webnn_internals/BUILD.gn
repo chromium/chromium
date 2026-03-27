@@ -9,7 +9,10 @@ assert(!is_android)
 build_webui_tests("build") {
   cc_test_files = [ "webnn_internals_browsertest.cc" ]
 
-  files = [ "webnn_internals_test.ts" ]
+  files = [
+    "app_test.ts",
+    "test_webnn_internals_browser_proxy.ts",
+  ]
 
   ts_path_mappings =
       [ "chrome://webnn-internals/*|" +

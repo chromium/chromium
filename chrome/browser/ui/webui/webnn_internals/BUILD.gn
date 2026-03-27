@@ -10,7 +10,10 @@ assert(!is_android)
 mojom("mojo_bindings") {
   sources = [ "webnn_internals.mojom" ]
   webui_module_path = "/"
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//services/webnn/public/mojom",
+  ]
 
   enabled_features = []
   if (webnn_enable_graph_dump) {

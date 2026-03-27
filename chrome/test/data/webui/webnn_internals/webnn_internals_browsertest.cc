@@ -14,6 +14,6 @@ class WebNNInternalsBrowserTest : public WebUIMochaBrowserTest {
   ~WebNNInternalsBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(WebNNInternalsBrowserTest, All) {
-  RunTest("webnn_internals/webnn_internals_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(WebNNInternalsBrowserTest, App) {
+  RunTest("webnn_internals/app_test.js", "mocha.run()");
 }

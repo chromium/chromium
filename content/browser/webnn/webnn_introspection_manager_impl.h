@@ -43,7 +43,10 @@ class WebNNIntrospectionManagerImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  void EstablishServiceConnectionAndGetExistingContextsDetails() override;
+  void EstablishServiceConnectionAndGetExistingContextsDetails(
+      base::OnceCallback<
+          void(std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>)>
+          callback) override;
 
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
   void SetMLGraphRecordEnabled(bool enabled) override;
@@ -64,11 +67,8 @@ class WebNNIntrospectionManagerImpl
   void OnServiceDisconnect();
   // webnn::mojom::WebNNServiceIntrospectionClient:
   void OnUpdateExistingContextDetails(
-      const std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>
+      std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>
           contexts_details) override;
-  void NotifyObserversOfNewContextsDetails(
-      const std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>&
-          contexts_details);
 
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
   void ConfigWebNNIntrospectionForProcess(content::RenderProcessHost* host);

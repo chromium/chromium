@@ -15,6 +15,17 @@ mojom_component("features") {
   sources = [ "features.mojom" ]
 }
 
+mojom_component("webnn_service_introspection") {
+  output_prefix = "webnn_mojom_webnn_service_introspection"
+  macro_prefix = "WEBNN_MOJOM_WEBNN_SERVICE_INTROSPECTION"
+
+  webui_module_path = "/"
+  sources = [ "webnn_service_introspection.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+  generate_legacy_js_bindings = true
+}
+
 mojom_component("mojom") {
   output_prefix = "webnn_mojom"
   macro_prefix = "WEBNN_MOJOM"
@@ -27,7 +38,6 @@ mojom_component("mojom") {
     "webnn_error.mojom",
     "webnn_graph.mojom",
     "webnn_graph_builder.mojom",
-    "webnn_service_introspection.mojom",
     "webnn_tensor.mojom",
   ]
 
@@ -37,6 +47,7 @@ mojom_component("mojom") {
 
   deps = [
     ":features",
+    ":webnn_service_introspection",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

@@ -22,6 +22,10 @@ export class BrowserProxy {
   static getInstance(): BrowserProxy {
     return instance || (instance = new BrowserProxy());
   }
+
+  static setInstance(proxy: BrowserProxy) {
+    instance = proxy;
+  }
 }
 
 let instance: BrowserProxy|null = null;
