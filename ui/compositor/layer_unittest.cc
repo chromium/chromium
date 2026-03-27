@@ -852,6 +852,7 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   layer->SetTransform(transform);
   layer->SetColor(SK_ColorRED);
   layer->SetLayerInverted(true);
+  layer->SetBackgroundInverted(true);
   layer->SetLayerSepia(initial_sepia_amount);
   layer->SetLayerHueRotation(initial_hue_amount);
   layer->SetLayerCustomColorMatrix(color_matrix);
@@ -870,6 +871,7 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   EXPECT_EQ(SK_ColorRED, clone->background_color());
   EXPECT_EQ(SK_ColorRED, clone->GetTargetColor());
   EXPECT_TRUE(clone->layer_inverted());
+  EXPECT_TRUE(clone->background_inverted());
   EXPECT_FLOAT_EQ(initial_sepia_amount, clone->layer_sepia());
   EXPECT_FLOAT_EQ(initial_hue_amount, clone->layer_hue_rotation());
   EXPECT_TRUE(clone->LayerHasCustomColorMatrix());
@@ -895,6 +897,7 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   layer->SetTransform(gfx::Transform());
   layer->SetColor(SK_ColorGREEN);
   layer->SetLayerInverted(false);
+  layer->SetBackgroundInverted(false);
   layer->SetLayerSepia(new_layer_sepia);
   layer->SetLayerHueRotation(new_layer_hue_rotation);
   layer->ClearLayerCustomColorMatrix();
@@ -911,6 +914,7 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   EXPECT_EQ(SK_ColorRED, clone->background_color());
   EXPECT_EQ(SK_ColorRED, clone->GetTargetColor());
   EXPECT_TRUE(clone->layer_inverted());
+  EXPECT_TRUE(clone->background_inverted());
   EXPECT_FLOAT_EQ(initial_sepia_amount, clone->layer_sepia());
   EXPECT_FLOAT_EQ(initial_hue_amount, clone->layer_hue_rotation());
   EXPECT_TRUE(clone->LayerHasCustomColorMatrix());
@@ -2130,6 +2134,39 @@ TEST_P(LayerWithRealCompositorTest, ModifyHierarchy) {
   ASSERT_FALSE(bitmap.empty());
   EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2,
                              cc::AlphaDiscardingExactPixelComparator()));
+}
+
+TEST_P(LayerWithRealCompositorTest, BackgroundInvert) {
+  viz::ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  GetCompositor()->SetScaleAndSize(1.0f, gfx::Size(100, 100),
+                                   allocator.GetCurrentLocalSurfaceId());
+
+  const SkColor kBackgroundColor = SK_ColorWHITE;
+  const SkColor kInvertedBackgroundColor = SK_ColorBLACK;
+
+  std::unique_ptr<Layer> l0 =
+      CreateColorLayer(kBackgroundColor, gfx::Rect(0, 0, 100, 100));
+  std::unique_ptr<Layer> l1 =
+      CreateColorLayer(SK_ColorTRANSPARENT, gfx::Rect(25, 25, 50, 50));
+  l1->SetFillsBoundsOpaquely(false);
+  l1->SetBackgroundInverted(true);
+  EXPECT_TRUE(l1->background_inverted());
+
+  l0->Add(l1.get());
+  DrawTree(l0.get());
+
+  SkBitmap bitmap;
+  ReadPixels(&bitmap);
+  ASSERT_FALSE(bitmap.empty());
+
+  const gfx::PointF kPixelLocationInL1(50, 50);
+  const gfx::PointF kPixelLocationNotInL1(10, 10);
+
+  EXPECT_EQ(kInvertedBackgroundColor,
+            bitmap.getColor(kPixelLocationInL1.x(), kPixelLocationInL1.y()));
+  EXPECT_EQ(kBackgroundColor, bitmap.getColor(kPixelLocationNotInL1.x(),
+                                              kPixelLocationNotInL1.y()));
 }
 
 // TODO(crbug.com/40280155): Flaky on fuchsia-arm64 builds. Re-enable this test.

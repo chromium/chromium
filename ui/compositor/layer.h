@@ -259,6 +259,10 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   float background_blur() const { return background_blur_sigma_; }
   void SetBackgroundBlur(float blur_sigma);
 
+  // Invert anything below the layer and visible through the layer.
+  bool background_inverted() const { return background_inverted_; }
+  void SetBackgroundInverted(bool inverted);
+
   // Blur pixels of this layer by 3 * this amount.
   float layer_blur() const { return layer_blur_sigma_; }
   void SetLayerBlur(float blur_sigma);
@@ -801,6 +805,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   cc::Region paint_region_;
 
   float background_blur_sigma_;
+
+  bool background_inverted_ = false;
 
   // Several variables which will change the visible representation of
   // the layer.
