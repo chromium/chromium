@@ -4,21 +4,99 @@
 
 #include "chrome/browser/finds/core/finds_tab_helper.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
+#include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
 namespace finds {
 
+namespace {
+
+bool IsValidNavigation(content::NavigationHandle* navigation_handle) {
+  return navigation_handle->HasCommitted() &&
+         navigation_handle->IsInPrimaryMainFrame() &&
+         !navigation_handle->IsSameDocument() &&
+         navigation_handle->GetURL().is_valid() &&
+         navigation_handle->GetURL().SchemeIsHTTPOrHTTPS();
+}
+
+bool IsSupportedPlatform() {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_tv() ||
+      base::android::device_info::is_automotive() ||
+      base::android::device_info::is_xr()) {
+    return false;
+  }
+#endif
+  return true;
+}
+
+}  // namespace
+
 FindsTabHelper::FindsTabHelper(content::WebContents* web_contents,
-                               FindsService* finds_service)
+                               FindsService* finds_service,
+                               OptimizationGuideKeyedService* opt_guide_service,
+                               PrefService* pref_service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<FindsTabHelper>(*web_contents) {
   CHECK(finds_service);
   finds_service_ = finds_service;
+  pref_service_ = pref_service;
+  opt_guide_service_ = opt_guide_service;
+
+  if (opt_guide_service_) {
+    opt_guide_service_->RegisterOptimizationTypes(
+        {optimization_guide::proto::FINDS_PAGE_THEME});
+  }
 }
 
 FindsTabHelper::~FindsTabHelper() = default;
+
+void FindsTabHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!IsValidNavigation(navigation_handle)) {
+    return;
+  }
+
+  if (!IsSupportedPlatform()) {
+    return;
+  }
+
+  // Early exit if the opt in promo has already been shown.
+  if (pref_service_->GetBoolean(prefs::kFindsOptInPromoUserInteracted)) {
+    return;
+  }
+
+  if (!opt_guide_service_) {
+    return;
+  }
+
+  opt_guide_service_->CanApplyOptimization(
+      navigation_handle->GetURL(), optimization_guide::proto::FINDS_PAGE_THEME,
+      base::BindOnce(&FindsTabHelper::OnOptimizationGuideDecision,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FindsTabHelper::OnOptimizationGuideDecision(
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  if (decision == optimization_guide::OptimizationGuideDecision::kTrue) {
+    auto finds_metadata =
+        metadata.ParsedMetadata<optimization_guide::proto::FindsMetadata>();
+    if (finds_metadata && finds_metadata->has_theme_type() && finds_service_) {
+      finds_service_->RecordThemeURLVisited(finds_metadata->theme_type());
+    }
+  }
+}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FindsTabHelper);
 

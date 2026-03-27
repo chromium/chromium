@@ -9,9 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,9 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
-#include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -53,6 +49,10 @@ constexpr base::TimeDelta kHistoryLookbackInterval = base::Days(7);
 // than this threshold, it is considered to be for testing and will bypass the
 // notification scheduling throttling safeguards.
 constexpr int kThresholdMinutesForTesting = 5;
+
+// The number of times a theme should be visited in order for a user to be
+// eligible to receive the opt in promo for finds.
+constexpr int kThemeUrlVisitCountForOptIn = 3;
 
 std::string FindsSuggestionResponseToHumanReadableString(
     const optimization_guide::proto::FindsSuggestionResponse& response) {
@@ -205,6 +205,7 @@ void FindsService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // TODO(crbug.com/494040435): Add logic to clean out deprecated themes.
   registry->RegisterDictionaryPref(
       prefs::kFindsNotInterestedThemesLastTimestamp);
+  registry->RegisterBooleanPref(prefs::kFindsOptInPromoUserInteracted, false);
 }
 
 FindsService::FindsService(
@@ -270,6 +271,22 @@ void FindsService::ExecuteModelAndScheduleNotification(
       base::BindOnce(&FindsService::OnHistoryQueryComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       &history_task_tracker_);
+}
+
+void FindsService::RecordThemeURLVisited(
+    optimization_guide::proto::FindsMetadata::ThemeType theme_type) {
+  if (theme_type == optimization_guide::proto::FindsMetadata::UNKNOWN) {
+    return;
+  }
+
+  // Increment the theme url visit count for the given theme type and notify
+  // observers if the threshold is met.
+  theme_url_visit_count_[theme_type]++;
+  if (theme_url_visit_count_[theme_type] >= kThemeUrlVisitCountForOptIn) {
+    for (auto& observer : observers_) {
+      observer.OnOptInCriteriaFulfilled();
+    }
+  }
 }
 
 bool FindsService::ScheduleNotificationForInternalsPage() {

@@ -34,6 +34,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.AuxiliarySearch.IsSchemaV2Set",
                 "Chrome.ContinuousSearch.DismissalCount",
                 "Chrome.Cryptid.LastRenderTimestamp",
+                "Chrome.FindsNotifications.OptInDeclined",
                 "Chrome.FirstRun.FieldTrialEnabled",
                 "Chrome.FirstRun.VariationFieldTrialGroup",
                 "Chrome.Flags.PaintPreviewTestEnabled",

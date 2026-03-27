@@ -647,7 +647,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (base::FeatureList::IsEnabled(finds::features::kChromeFinds)) {
     if (auto* finds_service =
             finds::FindsServiceFactory::GetForProfile(profile)) {
-      finds::FindsTabHelper::CreateForWebContents(web_contents, finds_service);
+      finds::FindsTabHelper::CreateForWebContents(
+          web_contents, finds_service,
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+          profile->GetPrefs());
     }
   }
 

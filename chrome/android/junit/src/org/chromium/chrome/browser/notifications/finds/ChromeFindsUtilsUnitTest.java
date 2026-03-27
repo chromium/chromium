@@ -29,15 +29,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.notifications.finds.ChromeFindsUtils.ChromeFindsOptInState;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
@@ -182,47 +176,6 @@ public class ChromeFindsUtilsUnitTest {
                 (enabled) -> {
                     assertTrue(enabled);
                 });
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.CHROME_FINDS)
-    public void shouldShowOptInPromo_FlagDisabled() {
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.CHROME_FINDS_OPT_IN_PROMO_DECLINED);
-        assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.CHROME_FINDS)
-    public void shouldShowOptInPromo_FlagEnabled() {
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.CHROME_FINDS_OPT_IN_PROMO_DECLINED);
-        assertTrue(ChromeFindsUtils.shouldShowOptInPromo());
-
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.CHROME_FINDS_OPT_IN_PROMO_DECLINED, true);
-        assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.CHROME_FINDS)
-    public void shouldShowOptInPromo_Automotive() {
-        DeviceInfo.setIsAutomotiveForTesting(true);
-        assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.CHROME_FINDS)
-    public void shouldShowOptInPromo_XR() {
-        DeviceInfo.setIsXrForTesting(true);
-        assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.CHROME_FINDS)
-    public void shouldShowOptInPromo_TV() {
-        DeviceInfo.setIsTVForTesting(true);
-        assertFalse(ChromeFindsUtils.shouldShowOptInPromo());
     }
 
     @Test

@@ -16,7 +16,6 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -46,6 +45,11 @@ class MockHistoryService : public HistoryService {
 
 namespace finds {
 
+class MockFindsServiceObserver : public FindsService::Observer {
+ public:
+  MOCK_METHOD(void, OnOptInCriteriaFulfilled, (), (override));
+};
+
 class FindsServiceTest : public testing::Test {
  public:
   FindsServiceTest() = default;
@@ -74,6 +78,12 @@ class FindsServiceTest : public testing::Test {
       notification_schedule_service_;
   std::unique_ptr<FindsService> service_;
   base::HistogramTester histogram_tester_;
+
+  const base::flat_map<optimization_guide::proto::FindsMetadata::ThemeType,
+                       int>&
+  theme_url_visit_count() const {
+    return service_->theme_url_visit_count_;
+  }
 };
 
 TEST_F(FindsServiceTest, VerifyNotificationCooldownPref) {
@@ -720,6 +730,44 @@ TEST_F(FindsServiceTest, NoNotificationIfAllOnCooldown) {
         callback_called = true;
       }));
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(FindsServiceTest, RecordThemeURLVisitedIncrementsCount) {
+  EXPECT_TRUE(theme_url_visit_count().empty());
+
+  service_->RecordThemeURLVisited(
+      optimization_guide::proto::FindsMetadata::SHOPPING);
+
+  auto it = theme_url_visit_count().find(
+      optimization_guide::proto::FindsMetadata::SHOPPING);
+  EXPECT_NE(it, theme_url_visit_count().end());
+  EXPECT_EQ(it->second, 1);
+}
+
+TEST_F(FindsServiceTest, RecordThemeURLVisitedThresholdTriggersOptIn) {
+  testing::NiceMock<MockFindsServiceObserver> observer;
+  service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnOptInCriteriaFulfilled()).Times(1);
+
+  service_->RecordThemeURLVisited(
+      optimization_guide::proto::FindsMetadata::SHOPPING);
+  auto it = theme_url_visit_count().find(
+      optimization_guide::proto::FindsMetadata::SHOPPING);
+  EXPECT_NE(it, theme_url_visit_count().end());
+  EXPECT_EQ(it->second, 1);
+
+  service_->RecordThemeURLVisited(
+      optimization_guide::proto::FindsMetadata::SHOPPING);
+  it = theme_url_visit_count().find(
+      optimization_guide::proto::FindsMetadata::SHOPPING);
+  EXPECT_NE(it, theme_url_visit_count().end());
+  EXPECT_EQ(it->second, 2);
+
+  service_->RecordThemeURLVisited(
+      optimization_guide::proto::FindsMetadata::SHOPPING);
+
+  service_->RemoveObserver(&observer);
 }
 
 TEST_F(FindsServiceTest, ScheduleNotificationForInternalsPage) {

@@ -15,4 +15,10 @@ const char kFindsModelExecutionLastTimestamp[] =
 const char kFindsNotInterestedThemesLastTimestamp[] =
     "finds.themes.not_interested_last_timestamp";
 
+// LINT.IfChange(FindsOptInPromoInteractionPref)
+// A boolean of whether the finds opt in promo was interacted with by the user.
+const char kFindsOptInPromoUserInteracted[] =
+    "finds.opt_in_promo.user_interacted";
+// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/finds/ChromeFindsUtils.java:FindsOptInPromoInteractionPref)
+
 }  // namespace finds::prefs

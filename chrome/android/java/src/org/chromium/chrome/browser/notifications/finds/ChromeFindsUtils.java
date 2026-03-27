@@ -13,13 +13,10 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
@@ -29,6 +26,12 @@ import java.lang.annotation.RetentionPolicy;
 /** Static utilities for Chrome Finds Notifications. */
 @NullMarked
 public class ChromeFindsUtils {
+    // LINT.IfChange(FindsOptInPromoInteractionPref)
+    public static final String FINDS_OPT_IN_PROMO_USER_INTERACTED =
+            "finds.opt_in_promo.user_interacted";
+
+    // LINT.ThenChange(//chrome/browser/finds/core/finds_pref_names.cc:FindsOptInPromoInteractionPref)
+
     @IntDef({
         ChromeFindsOptInState.FIRST_TIME,
         ChromeFindsOptInState.ENABLED,
@@ -99,31 +102,6 @@ public class ChromeFindsUtils {
     static boolean shouldAlwaysShowOptInPromo() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.CHROME_FINDS, "always_show_opt_in_promo", false);
-    }
-
-    /**
-     * Checks if the current device type is supported. Chrome finds notifications are not designed
-     * for Automotive, TV and XR form factors. This is a proactive guardrailing for notification
-     * settings activity crashes that tips notifications saw on these form factors.
-     */
-    public static boolean isSupportedDeviceType() {
-        return !DeviceInfo.isAutomotive() && !DeviceInfo.isXr() && !DeviceInfo.isTV();
-    }
-
-    /**
-     * Returns whether the bottom sheet should be shown. This will be checked by the tab helper
-     * triggering the opt-in bottom sheet to show.
-     */
-    public static boolean shouldShowOptInPromo() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_FINDS)
-                || !isSupportedDeviceType()) {
-            return false;
-        }
-        if (shouldAlwaysShowOptInPromo()) {
-            return true;
-        }
-        return !ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.CHROME_FINDS_OPT_IN_PROMO_DECLINED, false);
     }
 
     /**

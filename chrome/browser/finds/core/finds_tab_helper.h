@@ -5,13 +5,20 @@
 #ifndef CHROME_BROWSER_FINDS_CORE_FINDS_TAB_HELPER_H_
 #define CHROME_BROWSER_FINDS_CORE_FINDS_TAB_HELPER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }
+
+class OptimizationGuideKeyedService;
 
 namespace finds {
 
@@ -27,10 +34,25 @@ class FindsTabHelper : public content::WebContentsObserver,
 
  private:
   explicit FindsTabHelper(content::WebContents* web_contents,
-                          FindsService* finds_service);
+                          FindsService* finds_service,
+                          OptimizationGuideKeyedService* opt_guide_service,
+                          PrefService* pref_service);
   friend class content::WebContentsUserData<FindsTabHelper>;
 
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  // Called when observing navigation metadata hints through an optimization
+  // guide decision.
+  void OnOptimizationGuideDecision(
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
   raw_ptr<FindsService> finds_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<OptimizationGuideKeyedService> opt_guide_service_ = nullptr;
+  base::WeakPtrFactory<FindsTabHelper> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

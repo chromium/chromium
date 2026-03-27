@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.notifications.finds;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
+
+import static org.chromium.chrome.browser.notifications.finds.ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED;
 
 import android.app.Activity;
 import android.app.NotificationChannel;
@@ -34,13 +35,14 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Unit tests for {@link ChromeFindsOptInCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -51,6 +53,8 @@ public class ChromeFindsOptInCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private BaseNotificationManagerProxy mNotificationManagerProxy;
+    @Mock private Profile mProfile;
+    @Mock private PrefService mPrefService;
 
     private ChromeFindsOptInCoordinator mCoordinator;
     private Activity mActivity;
@@ -61,10 +65,11 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManagerProxy);
+        UserPrefs.setPrefServiceForTesting(mPrefService);
 
         mCoordinator =
                 new ChromeFindsOptInCoordinator(
-                        mActivity, mBottomSheetController, mSnackbarManager);
+                        mActivity, mProfile, mBottomSheetController, mSnackbarManager);
     }
 
     @Test
@@ -104,6 +109,8 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         verify(mNotificationManagerProxy).createNotificationChannel(any());
         // Verify snackbar is shown
         verify(mSnackbarManager).showSnackbar(any());
+        // Verify preference is set via UserPrefs
+        verify(mPrefService).setBoolean(FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -135,7 +142,8 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         Intent intent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(intent);
         assertEquals(Settings.ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-
+        // Verify preference is set via UserPrefs
+        verify(mPrefService).setBoolean(FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -168,7 +176,8 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         Intent intent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(intent);
         assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
-
+        // Verify preference is set via UserPrefs
+        verify(mPrefService).setBoolean(FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -182,11 +191,8 @@ public class ChromeFindsOptInCoordinatorUnitTest {
 
         // Verify channel is created and disabled
         verify(mNotificationManagerProxy).createNotificationChannel(any());
-        // Verify preference is set
-        assertTrue(
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.CHROME_FINDS_OPT_IN_PROMO_DECLINED, false));
+        // Verify preference is set via UserPrefs
+        verify(mPrefService).setBoolean(FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 }

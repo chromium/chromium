@@ -144,10 +144,6 @@ public final class ChromePreferenceKeys {
     /** Whether Chrome is set as the default browser. Default value is false. */
     public static final String CHROME_DEFAULT_BROWSER = "applink.chrome_default_browser";
 
-    // Whether the Chrome Finds opt-in promo has been declined.
-    public static final String CHROME_FINDS_OPT_IN_PROMO_DECLINED =
-            "Chrome.FindsNotifications.OptInDeclined";
-
     /**
      * The ID generated to represent the current browser installation in the DM Server for Cloud
      * Management.
@@ -1149,7 +1145,6 @@ public final class ChromePreferenceKeys {
                 BLUETOOTH_NOTIFICATION_IDS,
                 BOOKMARKS_SORT_ORDER,
                 BOOKMARKS_VISUALS_PREF,
-                CHROME_FINDS_OPT_IN_PROMO_DECLINED,
                 CLIPBOARD_SHARED_URI,
                 CLIPBOARD_SHARED_URI_TIMESTAMP,
                 CLOUD_MANAGEMENT_CLIENT_ID,

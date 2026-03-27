@@ -16,6 +16,10 @@ extern const char kFindsModelExecutionLastTimestamp[];
 // and the values are timestamps (as doubles).
 extern const char kFindsNotInterestedThemesLastTimestamp[];
 
+// A boolean of whether the finds opt in promo was interacted with by the user,
+// indicating that we should not prompt them again.
+extern const char kFindsOptInPromoUserInteracted[];
+
 }  // namespace finds::prefs
 
 #endif  // CHROME_BROWSER_FINDS_CORE_FINDS_PREF_NAMES_H_
