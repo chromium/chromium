@@ -259,20 +259,10 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that typing in the Composebox shows the Send button.
 - (void)testComposeboxSendButtonVisibility {
-  // TODO(crbug.com/491478626): Fix test on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGreyUI focusOmnibox];
 
-  // Wait for the composebox to be visible.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
-
-  // Type some long text that expands the composebox.
-  [[EarlGrey selectElementWithMatcher:ComposeboxMatcher()]
-      performAction:grey_typeText(kLongText)];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:kLongText];
 
   // Send button is visible.
   [[EarlGrey
