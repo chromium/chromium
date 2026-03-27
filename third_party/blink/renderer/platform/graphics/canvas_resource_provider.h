@@ -276,7 +276,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Should only be called from static Create*() methods.
   // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
   // callsites.
-  void ClearAtCreation();
+  void ClearAtCreationForCanvas2D();
 
   gfx::Size size_;
   viz::SharedImageFormat format_;
@@ -323,6 +323,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
   void RasterRecord(cc::PaintRecord last_recording) override;
+  bool IsCanvas2D() const override { return true; }
   bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
                               const void* pixels,
                               size_t row_bytes,
@@ -359,7 +360,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
                                  Delegate* delegate);
 
   sk_sp<SkSurface> CreateSkSurface() const override;
-  bool IsCanvas2D() const override { return true; }
 };
 
 // * Renders to a SharedImage, which manages memory internally.
@@ -565,6 +565,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // CanvasResourceProvider:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   void RasterRecord(cc::PaintRecord last_recording) override;
+  bool IsCanvas2D() const override { return true; }
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
   }
@@ -598,8 +599,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 
  private:
-  bool IsCanvas2D() const override { return true; }
-
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
   // Notifies before any unaccelerated drawing will be done on the resource used
@@ -675,6 +674,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   void RasterRecord(cc::PaintRecord last_recording) override;
+  bool IsCanvas2D() const override { return false; }
   bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
                               const void* pixels,
                               size_t row_bytes,
@@ -733,8 +733,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
-  bool IsCanvas2D() const override { return false; }
-
   void FlushCanvas();
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);

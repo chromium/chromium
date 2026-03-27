@@ -1351,8 +1351,8 @@ Canvas2DResourceProviderBitmap::CreateWithClear(
       new Canvas2DResourceProviderBitmap(size, format, alpha_type, color_space,
                                          delegate));
   if (provider->IsValid()) {
-    provider->ClearAtCreation();
-    // The ClearAtCreation() call cannot turn a CRPBitmap invalid.
+    provider->ClearAtCreationForCanvas2D();
+    // The ClearAtCreationForCanvas2D() call cannot turn a CRPBitmap invalid.
     CHECK(provider->IsValid());
     return provider;
   }
@@ -1383,9 +1383,11 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositorBase(
                           shared_image_interface_provider, delegate);
   if (provider->IsValid()) {
     if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear)
-      provider->ClearAtCreation();
-    // The ClearAtCreation() call cannot turn a SW CRPSI invalid.
+        CanvasResourceProvider::ShouldInitialize::kCallClear) {
+      CHECK(provider->IsCanvas2D());
+      provider->ClearAtCreationForCanvas2D();
+    }
+    // The ClearAtCreationForCanvas2D() call cannot turn a SW CRPSI invalid.
     CHECK(provider->IsValid());
     return provider;
   }
@@ -1576,8 +1578,10 @@ std::unique_ptr<T> CanvasResourceProvider::CreateSharedImageProviderBase(
                                       shared_image_usage_flags, delegate);
   if (provider->IsValid()) {
     if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear)
-      provider->ClearAtCreation();
+        CanvasResourceProvider::ShouldInitialize::kCallClear) {
+      CHECK(provider->IsCanvas2D());
+      provider->ClearAtCreationForCanvas2D();
+    }
 
     // Check whether an error occurred while flushing the recording.
     if (!provider->IsValid()) {
@@ -2117,7 +2121,8 @@ bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
   return wrote_pixels;
 }
 
-void CanvasResourceProvider::ClearAtCreation() {
+void CanvasResourceProvider::ClearAtCreationForCanvas2D() {
+  CHECK(IsCanvas2D());
   // Clear the background transparent or opaque, as required. This should only
   // be called when a new resource provider is created to ensure that we're
   // not leaking data or displaying bad pixels (in the case of kOpaque
