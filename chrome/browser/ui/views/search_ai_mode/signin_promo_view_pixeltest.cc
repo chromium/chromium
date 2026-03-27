@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,8 +35,13 @@ class SearchAIModeSignInPromoViewPixelTest
  public:
   SearchAIModeSignInPromoViewPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam()) {
-    feature_list_.InitAndEnableFeature(
-        switches::kEnableSearchAIModeSigninPromo);
+    feature_list_.InitWithFeatures(
+        // The UI depends on the ContextualTasksUiServce which is only enabled
+        // with the kContextualTasks flag. The flag is not strictly required to
+        // enable the view.
+        /*enabled_features=*/{switches::kEnableSearchAIModeSigninPromo,
+                               contextual_tasks::kContextualTasks},
+        /*disabled_features=*/{});
   }
   ~SearchAIModeSignInPromoViewPixelTest() override = default;
 

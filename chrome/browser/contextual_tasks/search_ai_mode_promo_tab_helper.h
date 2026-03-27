@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -14,7 +15,14 @@
 
 class SearchAIModeSignInPromoController;
 
+namespace content {
+class NavigationHandle;
+class WebContents;
+}  // namespace content
+
 namespace contextual_tasks {
+
+class ContextualTaskNavigationObserver;
 
 // A tab helper that observes the initial navigation of a tab and shows a
 // sign-in promo if the navigation was initiated from an AI page and the user
@@ -22,8 +30,7 @@ namespace contextual_tasks {
 class SearchAiModePromoTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<SearchAiModePromoTabHelper>,
-      public signin::IdentityManager::Observer,
-      public ContextualTasksUiService::Observer {
+      public signin::IdentityManager::Observer {
  public:
   SearchAiModePromoTabHelper(const SearchAiModePromoTabHelper&) = delete;
   SearchAiModePromoTabHelper& operator=(const SearchAiModePromoTabHelper&) =
@@ -51,27 +58,25 @@ class SearchAiModePromoTabHelper
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
-  // ContextualTasksUiService::Observer:
-  void OnContextualTasksUiServiceShutdown(
-      ContextualTasksUiService* service) override;
-
   void TriggerCoBrowsePostSignIn();
   void MaybeTriggerCobrowse(const CoreAccountInfo& account_info);
 
   bool IsAIModeSearch(content::WebContents* web_contents);
 
+  void OnSearchResultNavigationComplete();
+
   raw_ptr<ContextualTasksUiService> contextual_tasks_ui_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+
   bool has_checked_initial_navigation_ = false;
   base::WeakPtr<content::WebContents> aim_search_web_contents_;
   std::unique_ptr<SearchAIModeSignInPromoController> signin_promo_controller_;
+  GURL target_url_;
+  std::unique_ptr<ContextualTaskNavigationObserver> contextual_task_observer_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_scoped_observation_{this};
-  base::ScopedObservation<ContextualTasksUiService,
-                          ContextualTasksUiService::Observer>
-      contextual_tasks_ui_service_scoped_observation_{this};
   base::WeakPtrFactory<SearchAiModePromoTabHelper> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

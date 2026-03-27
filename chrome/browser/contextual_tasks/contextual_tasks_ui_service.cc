@@ -133,13 +133,6 @@ bool IsSignInDomain(const GURL& url) {
   return false;
 }
 
-// Gets the contextual task Id from a contextual task host URL.
-base::Uuid GetTaskIdFromHostURL(const GURL& url) {
-  std::string task_id;
-  net::GetValueForKeyInQuery(url, kTaskQueryParam, &task_id);
-  return base::Uuid::ParseLowercase(task_id);
-}
-
 // LINT.IfChange(EntrypointSource)
 
 enum class EntrypointSource {
@@ -908,7 +901,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
     base::Uuid task_id;
     if (source_contents) {
-      task_id = GetTaskIdFromHostURL(source_contents->GetLastCommittedURL());
+      task_id = GetTaskIdFromUrl(source_contents->GetLastCommittedURL());
     }
 
     // If the navigation is to a search results page or AI page, it is allowed
@@ -1323,6 +1316,12 @@ bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
 bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
          url.host() == chrome::kChromeUIContextualTasksHost;
+}
+
+base::Uuid ContextualTasksUiService::GetTaskIdFromUrl(const GURL& url) {
+  std::string task_id;
+  net::GetValueForKeyInQuery(url, kTaskQueryParam, &task_id);
+  return base::Uuid::ParseLowercase(task_id);
 }
 
 bool ContextualTasksUiService::IsContextualTasksDisplayUrl(const GURL& url) {

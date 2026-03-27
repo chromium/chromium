@@ -4,15 +4,25 @@
 
 #include "chrome/browser/contextual_tasks/search_ai_mode_promo_tab_helper.h"
 
+#include <memory>
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/tabs/public/tab_interface.h"
@@ -43,7 +53,101 @@ std::optional<base::WeakPtr<content::WebContents>> GetInitiatorWebContents(
                                source_contents->GetWeakPtr())
                          : std::nullopt;
 }
+
+bool HasValidContextualTaskUrl(
+    content::WebContents* web_contents,
+    ContextualTasksUiService* contextual_tasks_ui_service) {
+  GURL contextual_task_url = GURL(chrome::kChromeUIContextualTasksURL);
+  return web_contents && contextual_tasks_ui_service->IsContextualTasksUrl(
+                             web_contents->GetLastCommittedURL());
+}
 }  // namespace
+
+// A WebContentsObserver that waits for a navigation to the contextual tasks
+// UI to complete.
+class ContextualTaskNavigationObserver
+    : public content::WebContentsObserver,
+      public ContextualTasksUIInterface::Observer {
+ public:
+  ContextualTaskNavigationObserver(content::WebContents* web_contents,
+                                   GURL target_url,
+                                   base::OnceClosure on_completion_callback)
+      : content::WebContentsObserver(web_contents),
+        target_url_(target_url),
+        contextual_tasks_ui_service_(
+            ContextualTasksUiServiceFactory::GetForBrowserContext(
+                Profile::FromBrowserContext(
+                    web_contents->GetBrowserContext()))),
+        on_completion_callback_(std::move(on_completion_callback)) {
+    CHECK(contextual_tasks_ui_service_);
+  }
+
+  ~ContextualTaskNavigationObserver() override = default;
+
+ private:
+  // ContextualTasksUIInterface::Observer implementation:
+  void OnInitComplete() override { MaybeNavigateToTargetUrl(); }
+
+  // content::WebContentsObserver implementation:
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override {
+    if (!render_frame_host->IsInPrimaryMainFrame() ||
+        !HasValidContextualTaskUrl(web_contents(),
+                                   contextual_tasks_ui_service_.get())) {
+      return;
+    }
+    MaybeNavigateToTargetUrl();
+  }
+
+  void MaybeNavigateToTargetUrl() {
+    if (!HasValidContextualTaskUrl(web_contents(),
+                                   contextual_tasks_ui_service_.get())) {
+      return;
+    }
+    ContextualTasksUIInterface* web_ui_interface =
+        GetWebUiInterface(web_contents());
+    if (!web_ui_interface) {
+      return;
+    }
+    if (!web_ui_interface->IsInitComplete()) {
+      if (!ui_observation_.IsObserving()) {
+        ui_observation_.Observe(web_ui_interface);
+      }
+      return;
+    }
+
+    // The WebUI is ready for the contextual task. Trigger the
+    // navigation to the target url.
+    base::Uuid task_id = ContextualTasksUiService::GetTaskIdFromUrl(
+        web_contents()->GetLastCommittedURL());
+    CHECK(task_id.is_valid());
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents());
+    BrowserWindowInterface* browser = web_ui_interface->GetBrowser();
+
+    if (contextual_tasks_ui_service_) {
+      contextual_tasks_ui_service_->OnThreadLinkClicked(
+          target_url_, task_id, tab->GetWeakPtr(), browser->GetWeakPtr());
+    }
+    NotifyComplete();
+  }
+
+  void NotifyComplete() {
+    ui_observation_.Reset();
+    if (on_completion_callback_) {
+      std::move(on_completion_callback_).Run();
+    }
+  }
+
+  const GURL target_url_;
+  raw_ptr<ContextualTasksUiService> contextual_tasks_ui_service_;
+  base::OnceClosure on_completion_callback_;
+  base::ScopedObservation<ContextualTasksUIInterface,
+                          ContextualTasksUIInterface::Observer>
+      ui_observation_{this};
+  base::WeakPtrFactory<ContextualTaskNavigationObserver> weak_ptr_factory_{
+      this};
+};
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchAiModePromoTabHelper);
 
@@ -56,10 +160,12 @@ SearchAiModePromoTabHelper::SearchAiModePromoTabHelper(
               Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       identity_manager_(IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-  if (contextual_tasks_ui_service_) {
-    contextual_tasks_ui_service_scoped_observation_.Observe(
-        contextual_tasks_ui_service_);
-  }
+    if (base::FeatureList::IsEnabled(
+            switches::kEnableSearchAIModeSigninPromo)) {
+      // TODO(crbug.com/486858611): This tab helper will be created only if the
+      // feature is enabled.
+      CHECK(contextual_tasks_ui_service_);
+    }
 }
 
 SearchAiModePromoTabHelper::~SearchAiModePromoTabHelper() = default;
@@ -71,27 +177,32 @@ void SearchAiModePromoTabHelper::TriggerCoBrowsePostSignIn() {
   }
   content::NavigationEntry* original_entry =
       aim_search_web_contents_->GetController().GetLastCommittedEntry();
-  if (original_entry) {
-    content::NavigationController::LoadURLParams params(
-        original_entry->GetURL());
-    params.referrer = content::Referrer(original_entry->GetReferrer().url,
-                                        original_entry->GetReferrer().policy);
-    params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-    params.extra_headers = original_entry->GetExtraHeaders();
-    // Load the AIM experience into the current tab (previously opened url from
-    // AIM).
-    // TODO(crbug.com/494541768): Today this gives us the original query of the
-    // user, the follow up conversations are lost (expected behavior for AIM).
-    // If this is updated in the future, ensure that the new tab loads the most
-    // up-to-date state that we can obtain from the AIM tab.
-    web_contents()->GetController().LoadURLWithParams(params);
-  }
-
-  // TODO(crbug.com/486858498): Observe the refreshed content and ensure that a
-  // contextual task is running and in a valid state. Then trigger the
-  // navigation to the url the user originally clicked and let the service
-  // handle the presentation.
   aim_search_web_contents_.reset();
+
+  if (!original_entry || !target_url_.is_valid()) {
+    return;
+  }
+  content::NavigationController::LoadURLParams params(original_entry->GetURL());
+  params.referrer = content::Referrer(original_entry->GetReferrer().url,
+                                      original_entry->GetReferrer().policy);
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  params.extra_headers = original_entry->GetExtraHeaders();
+  // Load the AIM experience into the current tab (previously opened url from
+  // AIM).
+  // TODO(crbug.com/494541768): Today this gives us the original query of the
+  // user, the follow up conversations are lost (expected behavior for AIM).
+  // If this is updated in the future, ensure that the new tab loads the most
+  // up-to-date state that we can obtain from the AIM tab.
+  web_contents()->GetController().LoadURLWithParams(params);
+
+  // Wait for the contextual task to be ready, then trigger the navigation to
+  // the target. Side-view opening is handled by the contextual ui task service.
+  contextual_task_observer_ =
+      std::make_unique<ContextualTaskNavigationObserver>(
+          web_contents(), target_url_,
+          base::BindOnce(
+              &SearchAiModePromoTabHelper::OnSearchResultNavigationComplete,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SearchAiModePromoTabHelper::DidFinishNavigation(
@@ -122,6 +233,7 @@ void SearchAiModePromoTabHelper::DidFinishNavigation(
     return;
   }
   aim_search_web_contents_ = initiator.value();
+  target_url_ = navigation_handle->GetURL();
   signin_promo_controller_ =
       std::make_unique<SearchAIModeSignInPromoController>(web_contents());
 
@@ -173,12 +285,6 @@ void SearchAiModePromoTabHelper::OnIdentityManagerShutdown(
   identity_manager_ = nullptr;
 }
 
-void SearchAiModePromoTabHelper::OnContextualTasksUiServiceShutdown(
-    ContextualTasksUiService* service) {
-  contextual_tasks_ui_service_scoped_observation_.Reset();
-  contextual_tasks_ui_service_ = nullptr;
-}
-
 void SearchAiModePromoTabHelper::MaybeTriggerCobrowse(
     const CoreAccountInfo& account_info) {
   if (!identity_manager_scoped_observation_.IsObserving() ||
@@ -205,4 +311,9 @@ bool SearchAiModePromoTabHelper::IsAIModeSearch(
   return contextual_tasks_ui_service_->IsAiUrl(
       web_contents->GetLastCommittedURL());
 }
+
+void SearchAiModePromoTabHelper::OnSearchResultNavigationComplete() {
+  contextual_task_observer_.reset();
+}
+
 }  // namespace contextual_tasks
