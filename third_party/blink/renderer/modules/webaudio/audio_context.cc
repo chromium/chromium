@@ -1628,7 +1628,9 @@ void AudioContext::DidInitialPermissionCheck(
       GetExecutionContext()->GetTaskRunner(TaskType::kPermission));
   permission_service_->AddPermissionObserver(
       CreatePermissionDescriptor(mojom::blink::PermissionName::AUDIO_CAPTURE),
-      microphone_permission_status_, std::move(observer));
+      mojom::blink::PermissionStatusWithDetails::New(
+          microphone_permission_status_, nullptr),
+      std::move(observer));
 }
 
 double AudioContext::GetOutputLatencyQuantizingFactor() const {

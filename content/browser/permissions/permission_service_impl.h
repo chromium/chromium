@@ -74,7 +74,7 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
                         PermissionStatusCallback callback) override;
   void AddPermissionObserver(
       blink::mojom::PermissionDescriptorPtr permission,
-      blink::mojom::PermissionStatus last_known_status,
+      blink::mojom::PermissionStatusWithDetailsPtr last_known_status,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer) override;
   void AddPageEmbeddedPermissionObserver(
       blink::mojom::PermissionDescriptorPtr permission,

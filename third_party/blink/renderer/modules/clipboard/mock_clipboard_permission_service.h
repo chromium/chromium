@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 
 namespace blink {
 using mojom::blink::PermissionDescriptorPtr;
@@ -68,7 +69,7 @@ class MockClipboardPermissionService final
   MOCK_METHOD(void,
               AddPermissionObserver,
               (mojom::blink::PermissionDescriptorPtr permission,
-               mojom::blink::PermissionStatus last_known_status,
+               mojom::blink::PermissionStatusWithDetailsPtr last_known_status,
                mojo::PendingRemote<mojom::blink::PermissionObserver>),
               (override));
 

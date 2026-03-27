@@ -202,7 +202,7 @@ interface PermissionService {
   // Subscribes |observer| to updates about changes to the current origin's
   // access to |permission|. Closing the pipe will cancel the subscription.
   AddPermissionObserver(PermissionDescriptor permission,
-                        PermissionStatus last_known_status,
+                        PermissionStatusWithDetails last_known_status,
                         pending_remote<PermissionObserver> observer);
   // Calling this method indicates that a `HTMLCapabilityElementBase` subscribes
   // |observer| to updates about changes to the current origin's access to

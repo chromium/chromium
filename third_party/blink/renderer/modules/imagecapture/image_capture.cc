@@ -2175,7 +2175,9 @@ ImageCapture::ImageCapture(ExecutionContext* context,
         context->GetTaskRunner(TaskType::kMiscPlatformAPI));
     permission_service_->AddPermissionObserver(
         CreateVideoCapturePermissionDescriptor(/*pan_tilt_zoom=*/true),
-        pan_tilt_zoom_permission_, std::move(observer));
+        mojom::blink::PermissionStatusWithDetails::New(
+            pan_tilt_zoom_permission_, nullptr),
+        std::move(observer));
   }
 }
 

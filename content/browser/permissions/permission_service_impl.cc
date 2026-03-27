@@ -476,7 +476,7 @@ void PermissionServiceImpl::RevokePermission(
 
 void PermissionServiceImpl::AddPermissionObserver(
     PermissionDescriptorPtr permission,
-    PermissionStatus last_known_status,
+    blink::mojom::PermissionStatusWithDetailsPtr last_known_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
   auto type = blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!type) {
@@ -485,9 +485,10 @@ void PermissionServiceImpl::AddPermissionObserver(
   }
 
   PermissionResult current_result = GetPermissionResult(permission);
-  context_->CreateSubscription(
-      permission, origin_, current_result, PermissionResult(last_known_status),
-      /*should_include_device_status*/ false, std::move(observer));
+  context_->CreateSubscription(permission, origin_, current_result,
+                               PermissionResult(last_known_status->status),
+                               /*should_include_device_status*/ false,
+                               std::move(observer));
 }
 
 void PermissionServiceImpl::AddPageEmbeddedPermissionObserver(

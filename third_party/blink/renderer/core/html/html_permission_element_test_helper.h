@@ -68,7 +68,7 @@ class PermissionElementTestPermissionService
                         RevokePermissionCallback) override;
   void AddPermissionObserver(
       mojom::blink::PermissionDescriptorPtr permission,
-      mojom::blink::PermissionStatus last_known_status,
+      mojom::blink::PermissionStatusWithDetailsPtr last_known_status,
       mojo::PendingRemote<mojom::blink::PermissionObserver> observer) override;
   void AddPageEmbeddedPermissionObserver(
       mojom::blink::PermissionDescriptorPtr permission,

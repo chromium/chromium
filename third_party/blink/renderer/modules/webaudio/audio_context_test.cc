@@ -206,7 +206,7 @@ class MockPermissionService final : public mojom::blink::PermissionService {
 
   void AddPermissionObserver(
       mojom::blink::PermissionDescriptorPtr permission,
-      mojom::blink::PermissionStatus last_known_status,
+      mojom::blink::PermissionStatusWithDetailsPtr last_known_status,
       mojo::PendingRemote<mojom::blink::PermissionObserver> observer) override {
     EXPECT_EQ(permission->name, mojom::blink::PermissionName::AUDIO_CAPTURE);
     observer_.Bind(std::move(observer));

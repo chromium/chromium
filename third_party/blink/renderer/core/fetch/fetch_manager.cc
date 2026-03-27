@@ -1791,9 +1791,11 @@ FetchLaterManager::FetchLaterManager(ExecutionContext* ec)
     // not have enough time to wait for response.
     auto descriptor = mojom::blink::PermissionDescriptor::New();
     descriptor->name = mojom::blink::PermissionName::BACKGROUND_SYNC;
-    permission_service->AddPermissionObserver(std::move(descriptor),
-                                              background_sync_permission_,
-                                              std::move(observer));
+    permission_service->AddPermissionObserver(
+        std::move(descriptor),
+        mojom::blink::PermissionStatusWithDetails::New(
+            background_sync_permission_, nullptr),
+        std::move(observer));
   }
 }
 

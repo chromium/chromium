@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
@@ -43,8 +44,10 @@ void PermissionStatusListener::StartListening() {
   mojo::Remote<mojom::blink::PermissionService> service;
   ConnectToPermissionService(GetExecutionContext(),
                              service.BindNewPipeAndPassReceiver(task_runner));
-  service->AddPermissionObserver(descriptor_->Clone(), status_,
-                                 std::move(observer));
+  service->AddPermissionObserver(
+      descriptor_->Clone(),
+      mojom::blink::PermissionStatusWithDetails::New(status_, nullptr),
+      std::move(observer));
 }
 
 void PermissionStatusListener::StopListening() {

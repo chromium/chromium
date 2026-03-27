@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 
 namespace blink {
@@ -112,7 +113,7 @@ void PermissionElementTestPermissionService::RevokePermission(
 
 void PermissionElementTestPermissionService::AddPermissionObserver(
     mojom::blink::PermissionDescriptorPtr permission,
-    mojom::blink::PermissionStatus last_known_status,
+    mojom::blink::PermissionStatusWithDetailsPtr last_known_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver> observer) {}
 
 void PermissionElementTestPermissionService::AddPageEmbeddedPermissionObserver(
