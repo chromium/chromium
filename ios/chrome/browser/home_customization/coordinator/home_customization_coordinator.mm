@@ -448,6 +448,7 @@ CGFloat const kSheetCornerRadius = 30;
 
     // The presenting page should become interactable for voiceover.
     self.currentPageViewController.view.accessibilityViewIsModal = YES;
+    self.currentPageViewController.view.accessibilityElementsHidden = NO;
   }
 }
 
