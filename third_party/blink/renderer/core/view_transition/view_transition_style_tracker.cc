@@ -492,7 +492,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
           for (const auto& [id, value] : source) {
             builder.Insert(FromTransitionPropertyId(id),
-                           String::FromUTF8(value));
+                           String::FromUtf8(value));
           }
           destination = std::move(builder).Finish();
         };

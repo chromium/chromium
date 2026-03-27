@@ -318,7 +318,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
               frame_point);
       context_stream << "=" << window_point.x() << "," << window_point.y()
                      << ").";
-      String failure_context_pos = String::FromUTF8(context_stream.str());
+      String failure_context_pos = String::FromUtf8(context_stream.str());
 
       LocalFrame* main_frame =
           To<LocalFrame>(WebFrame::ToCoreFrame(*web_view->MainFrame()));

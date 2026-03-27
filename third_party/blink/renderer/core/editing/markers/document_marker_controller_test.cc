@@ -63,7 +63,7 @@ class DocumentMarkerControllerTest : public EditingTestBase {
 };
 
 Text* DocumentMarkerControllerTest::CreateTextNode(const char* text_contents) {
-  return GetDocument().createTextNode(String::FromUTF8(text_contents));
+  return GetDocument().createTextNode(String::FromUtf8(text_contents));
 }
 
 void DocumentMarkerControllerTest::MarkNodeContents(Node* node) {

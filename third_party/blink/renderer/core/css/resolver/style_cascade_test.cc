@@ -3877,7 +3877,7 @@ TEST_F(StyleCascadeTest, UnicodeEscapeInCustomProperty) {
   cascade.Add("content", "var(--a)");
   cascade.Apply();
 
-  EXPECT_EQ(String::FromUTF8("\"日本\""), cascade.ComputedValue("content"));
+  EXPECT_EQ(String::FromUtf8("\"日本\""), cascade.ComputedValue("content"));
 }
 
 TEST_F(StyleCascadeTest, GetCascadedValues) {

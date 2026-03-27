@@ -185,7 +185,7 @@ void MediaFragmentURIParser::ParseTrackFragment() {
     }
 
     // The fragment value has already been URL-decoded.
-    default_tracks_.emplace_back(String::FromUTF8(fragment.second));
+    default_tracks_.emplace_back(String::FromUtf8(fragment.second));
   }
 }
 

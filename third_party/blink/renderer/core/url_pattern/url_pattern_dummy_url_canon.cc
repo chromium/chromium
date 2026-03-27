@@ -71,7 +71,7 @@ bool ContainsForbiddenHostnameCodePoint(const String& input,
 
 String StringFromCanonOutput(const url::CanonOutput& output,
                              const url::Component& component) {
-  return String::FromUTF8(output.view().substr(component.begin, component.len));
+  return String::FromUtf8(output.view().substr(component.begin, component.len));
 }
 
 // Convert from the output of the CanonicalizeInternal* functions to
@@ -236,7 +236,7 @@ base::expected<String, String> CanonicalizeIPv6HostnameInternal(
     }
     result += blink::ToAsciiLower(c);
   }
-  return base::ok(String::FromUTF8(result));
+  return base::ok(String::FromUtf8(result));
 }
 
 base::expected<String, String> CanonicalizePortInternal(const String& protocol,
@@ -475,61 +475,61 @@ String CanonicalizeHash(const String& input,
 base::expected<std::string, absl::Status> ProtocolEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizeProtocolInternal(String::FromUTF8(input)));
+      CanonicalizeProtocolInternal(String::FromUtf8(input)));
 }
 
 base::expected<std::string, absl::Status> UsernameEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizeUsernameInternal(String::FromUTF8(input)));
+      CanonicalizeUsernameInternal(String::FromUtf8(input)));
 }
 
 base::expected<std::string, absl::Status> PasswordEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizePasswordInternal(String::FromUTF8(input)));
+      CanonicalizePasswordInternal(String::FromUtf8(input)));
 }
 
 base::expected<std::string, absl::Status> HostnameEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizeHostnameInternal(String::FromUTF8(input), false));
+      CanonicalizeHostnameInternal(String::FromUtf8(input), false));
 }
 
 base::expected<std::string, absl::Status> IPv6HostnameEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizeIPv6HostnameInternal(String::FromUTF8(input)));
+      CanonicalizeIPv6HostnameInternal(String::FromUtf8(input)));
 }
 
 base::expected<std::string, absl::Status> PortEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizePortInternal(String(), String::FromUTF8(input)));
+      CanonicalizePortInternal(String(), String::FromUtf8(input)));
 }
 
 base::expected<std::string, absl::Status> StandardPathnameEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizePathnameInternal(true, String::FromUTF8(input)));
+      CanonicalizePathnameInternal(true, String::FromUtf8(input)));
 }
 
 base::expected<std::string, absl::Status> OpaquePathnameEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizePathnameInternal(false, String::FromUTF8(input)));
+      CanonicalizePathnameInternal(false, String::FromUtf8(input)));
 }
 
 base::expected<std::string, absl::Status> SearchEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizeSearchInternal(String::FromUTF8(input)));
+      CanonicalizeSearchInternal(String::FromUtf8(input)));
 }
 
 base::expected<std::string, absl::Status> HashEncodeCallback(
     std::string_view input) {
   return EncodeCallbackHelper(
-      CanonicalizeHashInternal(String::FromUTF8(input)));
+      CanonicalizeHashInternal(String::FromUtf8(input)));
 }
 
 }  // namespace blink::url_pattern_dummy_url_canon

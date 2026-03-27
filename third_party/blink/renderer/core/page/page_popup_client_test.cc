@@ -15,7 +15,7 @@ TEST(PagePopupClientTest, AddJavaScriptString) {
   test::TaskEnvironment task_environment;
   SegmentedBuffer buffer;
   PagePopupClient::AddJavaScriptString(
-      String::FromUTF8("abc\r\n'\"</script>\t\f\v\xE2\x80\xA8\xE2\x80\xA9"),
+      String::FromUtf8("abc\r\n'\"</script>\t\f\v\xE2\x80\xA8\xE2\x80\xA9"),
       buffer);
   const Vector<char> contiguous = std::move(buffer).CopyAs<Vector<char>>();
   EXPECT_EQ(

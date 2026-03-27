@@ -229,14 +229,14 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Word) {
   EXPECT_EQ_SELECTED_TEXT("");
 
   // Beginning of a symbol: Some emojis |😀 🍀.
-  text = AppendTextNode(String::FromUTF8("Some emojis 😀 🍀."));
+  text = AppendTextNode(String::FromUtf8("Some emojis 😀 🍀."));
   UpdateAllLifecyclePhasesForTest();
-  ResetAndPlaceCaret(text, String::FromUTF8("Some emojis ").length());
+  ResetAndPlaceCaret(text, String::FromUtf8("Some emojis ").length());
   EXPECT_TRUE(SelectWordAroundCaret());
   EXPECT_EQ_SELECTED_TEXT(" 😀");
 
   // End of a symbol: Some emojis 😀| 🍀.
-  ResetAndPlaceCaret(text, String::FromUTF8("Some emojis 😀").length());
+  ResetAndPlaceCaret(text, String::FromUtf8("Some emojis 😀").length());
   EXPECT_TRUE(SelectWordAroundCaret());
   EXPECT_EQ_SELECTED_TEXT("😀");
 }
@@ -432,16 +432,16 @@ TEST_F(FrameSelectionTest, GetSelectionRangeAroundCaret_Word) {
   EXPECT_EQ("", PlainText(range));
 
   // Beginning of a symbol: Some emojis |😀 🍀.
-  text = AppendTextNode(String::FromUTF8("Some emojis 😀 🍀."));
+  text = AppendTextNode(String::FromUtf8("Some emojis 😀 🍀."));
   UpdateAllLifecyclePhasesForTest();
-  ResetAndPlaceCaret(text, String::FromUTF8("Some emojis ").length());
+  ResetAndPlaceCaret(text, String::FromUtf8("Some emojis ").length());
   range = Selection().GetWordSelectionRangeAroundCaret();
-  EXPECT_EQ(String::FromUTF8(" 😀"), PlainText(range));
+  EXPECT_EQ(String::FromUtf8(" 😀"), PlainText(range));
 
   // End of a symbol: Some emojis 😀| 🍀.
-  ResetAndPlaceCaret(text, String::FromUTF8("Some emojis 😀").length());
+  ResetAndPlaceCaret(text, String::FromUtf8("Some emojis 😀").length());
   range = Selection().GetWordSelectionRangeAroundCaret();
-  EXPECT_EQ(String::FromUTF8("😀"), PlainText(range));
+  EXPECT_EQ(String::FromUtf8("😀"), PlainText(range));
 }
 
 TEST_F(FrameSelectionTest, GetSelectionRangeAroundCaret_Sentence) {

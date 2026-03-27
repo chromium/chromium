@@ -63,7 +63,7 @@ TEST_P(TrustTokenAttributeParsingSuccess, Roundtrip) {
           std::move(expected_params_and_serialization.params));
 
   std::unique_ptr<JSONValue> json_value = ParseJSON(
-      String::FromUTF8(expected_params_and_serialization.serialized_params));
+      String::FromUtf8(expected_params_and_serialization.serialized_params));
   ASSERT_TRUE(json_value);
   auto result = TrustTokenParamsFromJson(std::move(json_value));
   ASSERT_TRUE(result);

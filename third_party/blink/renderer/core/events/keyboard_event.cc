@@ -77,8 +77,8 @@ bool HasCurrentComposition(LocalDOMWindow* dom_window) {
   return local_frame->GetInputMethodController().HasComposition();
 }
 
-static String FromUTF8(const std::string& s) {
-  return String::FromUTF8(s);
+static String FromUtf8(const std::string& s) {
+  return String::FromUtf8(s);
 }
 
 }  // namespace
@@ -113,9 +113,9 @@ KeyboardEvent::KeyboardEvent(const WebKeyboardEvent& key,
               : nullptr),
       key_event_(std::make_unique<WebKeyboardEvent>(key)),
       // TODO(crbug.com/482880): Fix this initialization to lazy initialization.
-      code_(FromUTF8(ui::KeycodeConverter::DomCodeToCodeString(
+      code_(FromUtf8(ui::KeycodeConverter::DomCodeToCodeString(
           static_cast<ui::DomCode>(key.dom_code)))),
-      key_(FromUTF8(ui::KeycodeConverter::DomKeyToKeyString(
+      key_(FromUtf8(ui::KeycodeConverter::DomKeyToKeyString(
           static_cast<ui::DomKey>(key.dom_key)))),
       location_(GetKeyLocationCode(key)),
       is_composing_(HasCurrentComposition(dom_window)) {

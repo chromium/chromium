@@ -90,7 +90,7 @@ void SpeculationRulesHeader::ParseSpeculationRulesHeader(
           "and inner lists are ignored.";
       if (parsed_item.member.size() == 1u &&
           parsed_item.member[0].item.is_token()) {
-        String token = String::FromUTF8(parsed_item.member[0].item.GetString());
+        String token = String::FromUtf8(parsed_item.member[0].item.GetString());
         if (KURL(base_url, token).IsValid()) {
           message = StrCat({message, " However, ", token.EncodeForDebugging(),
                             " appears to be a valid URL. You may need to "

@@ -985,7 +985,7 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTableCell) {
 TEST_F(LayoutObjectTest, DumpLayoutObject) {
   // Test dumping for debugging, in particular that newlines and non-ASCII
   // characters are escaped as expected.
-  SetBodyInnerHTML(String::FromUTF8(R"HTML(
+  SetBodyInnerHTML(String::FromUtf8(R"HTML(
     <div id='block' style='background:
 lime'>
       testing Среќен роденден

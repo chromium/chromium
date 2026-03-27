@@ -805,7 +805,7 @@ class WebMediaPlayerImplTest
     // we're injecting the response artificially. It's value is unknown to the
     // underlying demuxer.
     const KURL kTestURL(
-        String::FromUTF8(std::string(is_streaming ? "http" : "file") +
+        String::FromUtf8(std::string(is_streaming ? "http" : "file") +
                          "://example.com/sample.webm"));
 
     // This block sets up a fetch context which ultimately provides us a pointer

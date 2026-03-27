@@ -260,14 +260,14 @@ TEST_F(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
 #define LTO "\xE2\x80\xAD"
 #define RTO "\xE2\x80\xAE"
   textarea.SetValue(
-      String::FromUTF8(RTO "Hebrew" LTO " English " RTO "Arabic" LTO));
+      String::FromUtf8(RTO "Hebrew" LTO " English " RTO "Arabic" LTO));
   // This textarea is rendered as:
   //    -----------------
   //    | EnglishwerbeH |
   //    |cibarA         |
   //     ----------------
   RunDocumentLifecycle();
-  EXPECT_EQ(String::FromUTF8(RTO "Hebrew" LTO " English \n" RTO "Arabic" LTO),
+  EXPECT_EQ(String::FromUtf8(RTO "Hebrew" LTO " English \n" RTO "Arabic" LTO),
             textarea.ValueWithHardLineBreaks());
 #undef LTO
 #undef RTO

@@ -26,9 +26,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
   result.message = SerializedScriptValue::Create(message.encoded_message);
   for (auto& blob : message.blobs) {
     result.message->BlobDataHandles().Set(
-        String::FromUTF8(blob->uuid),
-        BlobDataHandle::Create(String::FromUTF8(blob->uuid),
-                               String::FromUTF8(blob->content_type), blob->size,
+        String::FromUtf8(blob->uuid),
+        BlobDataHandle::Create(String::FromUtf8(blob->uuid),
+                               String::FromUtf8(blob->content_type), blob->size,
                                ToCrossVariantMojoType(std::move(blob->blob))));
   }
   if (message.sender_origin) {

@@ -216,7 +216,7 @@ TEST_F(MHTMLArchiveTest,
   const char kURL[] = "http://www.example.com/";
   const char kTitle[] = "abc";
   AddTestMainResource();
-  Serialize(ToKURL(kURL), String::FromUTF8(kTitle), "text/html",
+  Serialize(ToKURL(kURL), String::FromUtf8(kTitle), "text/html",
             MHTMLArchive::kUseDefaultEncoding);
 
   HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
@@ -235,7 +235,7 @@ TEST_F(MHTMLArchiveTest,
   const char kURL[] = "http://www.example.com/";
   const char kTitle[] = "abc \t=\xe2\x98\x9d\xf0\x9f\x8f\xbb";
   AddTestMainResource();
-  Serialize(ToKURL(kURL), String::FromUTF8(kTitle), "text/html",
+  Serialize(ToKURL(kURL), String::FromUtf8(kTitle), "text/html",
             MHTMLArchive::kUseDefaultEncoding);
 
   HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
@@ -258,7 +258,7 @@ TEST_F(MHTMLArchiveTest,
       "01234567890123456789012345678901234567890123456789"
       " \t=\xe2\x98\x9d\xf0\x9f\x8f\xbb";
   AddTestMainResource();
-  Serialize(ToKURL(kURL), String::FromUTF8(kTitle), "text/html",
+  Serialize(ToKURL(kURL), String::FromUtf8(kTitle), "text/html",
             MHTMLArchive::kUseDefaultEncoding);
 
   HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();

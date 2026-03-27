@@ -68,7 +68,7 @@ Vector<String> ConvertStdVectorOfStdStringsToVectorOfStrings(
   Vector<String> output;
   output.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(input.size()));
   for (const std::string& val : input) {
-    output.UncheckedAppend(String::FromUTF8(val));
+    output.UncheckedAppend(String::FromUtf8(val));
   }
   return output;
 }

@@ -27,7 +27,7 @@ namespace {
 Vector<String> ConvertToBlink(const std::vector<std::string>& in) {
   Vector<String> out;
   for (const std::string& str : in) {
-    out.push_back(String::FromUTF8(str));
+    out.push_back(String::FromUtf8(str));
   }
   return out;
 }

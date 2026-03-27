@@ -310,7 +310,7 @@ TEST_F(FocusControllerTest, FindScopeOwnerSlotOrReadingFlowContainer) {
       "</div>";
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8(main_html));
+      String::FromUtf8(main_html));
   auto* host = To<Element>(GetDocument().body()->firstChild());
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);

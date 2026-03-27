@@ -14,7 +14,7 @@ namespace blink {
 namespace {
 
 String MakeUTF16(const char* str) {
-  String utf16_string = String::FromUTF8(str);
+  String utf16_string = String::FromUtf8(str);
   utf16_string.Ensure16Bit();
   return utf16_string;
 }

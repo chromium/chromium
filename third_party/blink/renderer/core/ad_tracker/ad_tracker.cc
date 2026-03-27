@@ -170,7 +170,7 @@ String AdTracker::AdScriptAncestry::ToString() const {
     builder.Append("') ");
   }
   builder.Append("matched ad filterlist rule: ");
-  builder.Append(String::FromUTF8(root_script_filterlist_rule.ToString()));
+  builder.Append(String::FromUtf8(root_script_filterlist_rule.ToString()));
   return builder.ReleaseString();
 }
 

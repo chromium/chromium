@@ -155,7 +155,7 @@ TEST_F(InputMethodControllerTest, BackspaceFromEndOfInput) {
   EXPECT_EQ("foo", input->Value());
 
   input->SetValue(
-      String::FromUTF8("foo\xE2\x98\x85"));  // U+2605 == "black star"
+      String::FromUtf8("foo\xE2\x98\x85"));  // U+2605 == "black star"
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(4, 4));
   EXPECT_EQ("foo\xE2\x98\x85", input->Value().Utf8());
@@ -163,7 +163,7 @@ TEST_F(InputMethodControllerTest, BackspaceFromEndOfInput) {
   EXPECT_EQ("foo", input->Value());
 
   input->SetValue(
-      String::FromUTF8("foo\xF0\x9F\x8F\x86"));  // U+1F3C6 == "trophy"
+      String::FromUtf8("foo\xF0\x9F\x8F\x86"));  // U+1F3C6 == "trophy"
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(4, 4));
   EXPECT_EQ("foo\xF0\x9F\x8F\x86", input->Value().Utf8());
@@ -171,7 +171,7 @@ TEST_F(InputMethodControllerTest, BackspaceFromEndOfInput) {
   EXPECT_EQ("foo", input->Value());
 
   // composed U+0E01 "ka kai" + U+0E49 "mai tho"
-  input->SetValue(String::FromUTF8("foo\xE0\xB8\x81\xE0\xB9\x89"));
+  input->SetValue(String::FromUtf8("foo\xE0\xB8\x81\xE0\xB9\x89"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(4, 4));
   EXPECT_EQ("foo\xE0\xB8\x81\xE0\xB9\x89", input->Value().Utf8());
@@ -344,14 +344,14 @@ TEST_F(InputMethodControllerTest, SetCompositionWithGraphemeCluster) {
   // UTF16 = 0x0939 0x0947 0x0932 0x0932. Note that 0x0932 0x0932 is a grapheme
   // cluster.
   Controller().SetComposition(
-      String::FromUTF8("\xE0\xA4\xB9\xE0\xA5\x87\xE0\xA4\xB2\xE0\xA4\xB2"),
+      String::FromUtf8("\xE0\xA4\xB9\xE0\xA5\x87\xE0\xA4\xB2\xE0\xA4\xB2"),
       ime_text_spans, 4, 4);
   EXPECT_EQ(4u, Controller().GetSelectionOffsets().Start());
   EXPECT_EQ(4u, Controller().GetSelectionOffsets().End());
 
   // UTF16 = 0x0939 0x0947 0x0932 0x094D 0x0932 0x094B.
   Controller().SetComposition(
-      String::FromUTF8("\xE0\xA4\xB9\xE0\xA5\x87\xE0\xA4\xB2\xE0\xA5\x8D\xE0"
+      String::FromUtf8("\xE0\xA4\xB9\xE0\xA5\x87\xE0\xA4\xB2\xE0\xA5\x8D\xE0"
                        "\xA4\xB2\xE0\xA5\x8B"),
       ime_text_spans, 6, 6);
   EXPECT_EQ(6u, Controller().GetSelectionOffsets().Start());
@@ -373,7 +373,7 @@ TEST_F(InputMethodControllerTest,
   // UTF16 = 0x0939 0x0947 0x0932 0x094D 0x0932 0x094B. 0x0939 0x0947 0x0932 is
   // a grapheme cluster, so is the remainding 0x0932 0x094B.
   Controller().CommitText(
-      String::FromUTF8("\xE0\xA4\xB9\xE0\xA5\x87\xE0\xA4\xB2\xE0\xA5\x8D\xE0"
+      String::FromUtf8("\xE0\xA4\xB9\xE0\xA5\x87\xE0\xA4\xB2\xE0\xA5\x8D\xE0"
                        "\xA4\xB2\xE0\xA5\x8B"),
       ime_text_spans, 1);
   Controller().CommitText("\nab ", ime_text_spans, 1);
@@ -442,11 +442,11 @@ TEST_F(InputMethodControllerTest, SetCompositionWithEmojiKeepingStyle) {
 
   // 0xF0 0x9F 0x8F 0xAB is also an emoji character, with the same leading
   // surrogate pair to the previous one.
-  Controller().SetComposition(String::FromUTF8("\xF0\x9F\x8F\xAB"),
+  Controller().SetComposition(String::FromUtf8("\xF0\x9F\x8F\xAB"),
                               ime_text_spans, 2, 2);
   EXPECT_EQ("<b>\xF0\x9F\x8F\xAB</b>", div->GetInnerHTMLString().Utf8());
 
-  Controller().SetComposition(String::FromUTF8("\xF0\x9F\x8F\xA0"),
+  Controller().SetComposition(String::FromUtf8("\xF0\x9F\x8F\xA0"),
                               ime_text_spans, 2, 2);
   EXPECT_EQ("<b>\xF0\x9F\x8F\xA0</b>", div->GetInnerHTMLString().Utf8());
 }
@@ -468,11 +468,11 @@ TEST_F(InputMethodControllerTest,
 
   // 0xE0 0xB0 0x83 0xE0 0xB0 0x83, a telugu character with 2 code points in
   // 1 grapheme cluster.
-  Controller().SetComposition(String::FromUTF8("\xE0\xB0\x83\xE0\xB0\x83"),
+  Controller().SetComposition(String::FromUtf8("\xE0\xB0\x83\xE0\xB0\x83"),
                               ime_text_spans, 2, 2);
   EXPECT_EQ("<b>\xE0\xB0\x83\xE0\xB0\x83</b>", div->GetInnerHTMLString().Utf8());
 
-  Controller().SetComposition(String::FromUTF8("\xE0\xB0\x83"), ime_text_spans,
+  Controller().SetComposition(String::FromUtf8("\xE0\xB0\x83"), ime_text_spans,
                               1, 1);
   EXPECT_EQ("<b>\xE0\xB0\x83</b>", div->GetInnerHTMLString().Utf8());
 }
@@ -799,7 +799,7 @@ TEST_F(InputMethodControllerTest,
       To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
 
   // U+2605 == "black star". It takes up 1 space.
-  input->SetValue(String::FromUTF8("foo\xE2\x98\x85"));
+  input->SetValue(String::FromUtf8("foo\xE2\x98\x85"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(4, 4));
   EXPECT_EQ("foo\xE2\x98\x85", input->Value().Utf8());
@@ -807,7 +807,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("foo", input->Value());
 
   // U+1F3C6 == "trophy". It takes up 2 space.
-  input->SetValue(String::FromUTF8("foo\xF0\x9F\x8F\x86"));
+  input->SetValue(String::FromUtf8("foo\xF0\x9F\x8F\x86"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(5, 5));
   EXPECT_EQ("foo\xF0\x9F\x8F\x86", input->Value().Utf8());
@@ -815,7 +815,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("foo\xED\xA0\xBC", input->Value().Utf8());
 
   // composed U+0E01 "ka kai" + U+0E49 "mai tho". It takes up 2 space.
-  input->SetValue(String::FromUTF8("foo\xE0\xB8\x81\xE0\xB9\x89"));
+  input->SetValue(String::FromUtf8("foo\xE0\xB8\x81\xE0\xB9\x89"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(5, 5));
   EXPECT_EQ("foo\xE0\xB8\x81\xE0\xB9\x89", input->Value().Utf8());
@@ -823,7 +823,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("foo\xE0\xB8\x81", input->Value().Utf8());
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
+  input->SetValue(String::FromUtf8("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(7, 7));
   EXPECT_EQ("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86", input->Value().Utf8());
@@ -831,7 +831,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("foo\xF0\x9F\x8F\x86", input->Value().Utf8());
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
+  input->SetValue(String::FromUtf8("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(7, 7));
   EXPECT_EQ("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86", input->Value().Utf8());
@@ -839,7 +839,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("foo\xED\xA0\xBC", input->Value().Utf8());
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
+  input->SetValue(String::FromUtf8("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(7, 7));
   EXPECT_EQ("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86", input->Value().Utf8());
@@ -847,7 +847,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("foo", input->Value());
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
+  input->SetValue(String::FromUtf8("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(7, 7));
   EXPECT_EQ("foo\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86", input->Value().Utf8());
@@ -861,7 +861,7 @@ TEST_F(InputMethodControllerTest,
       To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
 
   // U+2605 == "black star". It takes up 1 space.
-  input->SetValue(String::FromUTF8("\xE2\x98\x85 foo"));
+  input->SetValue(String::FromUtf8("\xE2\x98\x85 foo"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 0));
   EXPECT_EQ("\xE2\x98\x85 foo", input->Value().Utf8());
@@ -869,7 +869,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(" foo", input->Value());
 
   // U+1F3C6 == "trophy". It takes up 2 space.
-  input->SetValue(String::FromUTF8("\xF0\x9F\x8F\x86 foo"));
+  input->SetValue(String::FromUtf8("\xF0\x9F\x8F\x86 foo"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 0));
   EXPECT_EQ("\xF0\x9F\x8F\x86 foo", input->Value().Utf8());
@@ -877,7 +877,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("\xED\xBF\x86 foo", input->Value().Utf8());
 
   // composed U+0E01 "ka kai" + U+0E49 "mai tho". It takes up 2 space.
-  input->SetValue(String::FromUTF8("\xE0\xB8\x81\xE0\xB9\x89 foo"));
+  input->SetValue(String::FromUtf8("\xE0\xB8\x81\xE0\xB9\x89 foo"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 0));
   EXPECT_EQ("\xE0\xB8\x81\xE0\xB9\x89 foo", input->Value().Utf8());
@@ -885,7 +885,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("\xE0\xB9\x89 foo", input->Value().Utf8());
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo"));
+  input->SetValue(String::FromUtf8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 0));
   EXPECT_EQ("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo", input->Value().Utf8());
@@ -893,7 +893,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("\xF0\x9F\x8F\x86 foo", input->Value().Utf8());
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo"));
+  input->SetValue(String::FromUtf8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 0));
   EXPECT_EQ("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo", input->Value().Utf8());
@@ -901,7 +901,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("\xED\xBF\x86 foo", input->Value().Utf8());
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo"));
+  input->SetValue(String::FromUtf8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 0));
   EXPECT_EQ("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo", input->Value().Utf8());
@@ -909,7 +909,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(" foo", input->Value());
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo"));
+  input->SetValue(String::FromUtf8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 0));
   EXPECT_EQ("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86 foo", input->Value().Utf8());
@@ -923,7 +923,7 @@ TEST_F(InputMethodControllerTest,
       To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
 
   // "trophy" + "trophy".
-  input->SetValue(String::FromUTF8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
+  input->SetValue(String::FromUtf8("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(2, 2));
   EXPECT_EQ("\xF0\x9F\x8F\x86\xF0\x9F\x8F\x86", input->Value().Utf8());
@@ -939,7 +939,7 @@ TEST_F(InputMethodControllerTest, DeleteSurroundingTextForComposedCharacter) {
   auto* input =
       To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
   // p̂p̂ (U+0070 U+0302 U+0070 U+0302)
-  input->SetValue(String::FromUTF8("\x70\xCC\x82\x70\xCC\x82"));
+  input->SetValue(String::FromUtf8("\x70\xCC\x82\x70\xCC\x82"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(4, 4));
   EXPECT_EQ("\x70\xCC\x82\x70\xCC\x82", input->Value().Utf8());
@@ -1053,7 +1053,7 @@ TEST_F(InputMethodControllerTest,
   // A "black star" is 1 grapheme cluster. It has 1 code point, and its length
   // is 1 (abbreviated as [1,1,1]). A "trophy": [1,1,2]. The composed text:
   // [1,2,2].
-  input->SetValue(String::FromUTF8(
+  input->SetValue(String::FromUtf8(
       "a\xE2\x98\x85 \xF0\x9F\x8F\x86 \xE0\xB8\x81\xE0\xB9\x89"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   // The cursor is at the end of the text.
@@ -1065,7 +1065,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ("a", input->Value());
 
   // 'a' + "black star" + SPACE + "trophy" + SPACE + composed text
-  input->SetValue(String::FromUTF8(
+  input->SetValue(String::FromUtf8(
       "a\xE2\x98\x85 \xF0\x9F\x8F\x86 \xE0\xB8\x81\xE0\xB9\x89"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   // The cursor is at the end of the text.
@@ -1083,7 +1083,7 @@ TEST_F(InputMethodControllerTest,
       To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
 
   // 'a' + "black star" + SPACE + "trophy" + SPACE + composed text
-  input->SetValue(String::FromUTF8(
+  input->SetValue(String::FromUtf8(
       "a\xE2\x98\x85 \xF0\x9F\x8F\x86 \xE0\xB8\x81\xE0\xB9\x89"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(0, 0));
@@ -1102,7 +1102,7 @@ TEST_F(InputMethodControllerTest,
       To<HTMLInputElement>(InsertHTMLElement("<input id='sample'>", "sample"));
 
   // 'a' + "black star" + SPACE + "trophy" + SPACE + composed text
-  input->SetValue(String::FromUTF8(
+  input->SetValue(String::FromUtf8(
       "a\xE2\x98\x85 \xF0\x9F\x8F\x86 \xE0\xB8\x81\xE0\xB9\x89"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(3, 3));
@@ -2924,7 +2924,7 @@ TEST_F(InputMethodControllerTest,
       Color::kTransparent, Color::kTransparent));
   Controller().CommitText(" ", ime_text_spans, 0);
   // Add character U+094D: 'DEVANAGARI SIGN VIRAMA'
-  Controller().SetComposition(String::FromUTF8("\xE0\xA5\x8D"), ime_text_spans,
+  Controller().SetComposition(String::FromUtf8("\xE0\xA5\x8D"), ime_text_spans,
                               1, 1);
 }
 
@@ -2935,7 +2935,7 @@ TEST_F(
 
   Controller().CommitText(" ", Vector<ImeTextSpan>(), 0);
   // Add character U+094D: 'DEVANAGARI SIGN VIRAMA'
-  Controller().SetComposition(String::FromUTF8("\xE0\xA5\x8D"),
+  Controller().SetComposition(String::FromUtf8("\xE0\xA5\x8D"),
                               Vector<ImeTextSpan>(), 1, 1);
 }
 
@@ -2955,15 +2955,15 @@ TEST_F(InputMethodControllerTest, SetCompositionTamilVirama) {
       InsertHTMLElement("<div id='sample' contenteditable></div>", "sample");
 
   // Commit TAMIL LETTER CA (U+0B9A) followed by TAMIL SIGN VIRAMA (U+U0BCD)
-  Controller().CommitText(String::FromUTF8("\xE0\xAE\x9A\xE0\xAF\x8D"),
+  Controller().CommitText(String::FromUtf8("\xE0\xAE\x9A\xE0\xAF\x8D"),
                           Vector<ImeTextSpan>(), 0);
 
   // Open composition with TAMIL LETTER CA (U+0B9A) followed by
   // TAMIL SIGN VIRAMA (U+U0BCD)
-  Controller().SetComposition(String::FromUTF8("\xE0\xAE\x9A\xE0\xAF\x8D"),
+  Controller().SetComposition(String::FromUtf8("\xE0\xAE\x9A\xE0\xAF\x8D"),
                               Vector<ImeTextSpan>(), 2, 2);
   // Remove the TAMIL SIGN VIRAMA from the end of the composition
-  Controller().SetComposition(String::FromUTF8("\xE0\xAE\x9A"),
+  Controller().SetComposition(String::FromUtf8("\xE0\xAE\x9A"),
                               Vector<ImeTextSpan>(), 1, 1);
 
   EXPECT_EQ(1u, div->CountChildren());
@@ -3773,28 +3773,28 @@ TEST_F(InputMethodControllerTest, SetCompositionInMyanmar) {
       InsertHTMLElement("<div id='sample' contenteditable></div>", "sample");
 
   // Add character U+200C: 'kZeroWidthNonJoiner' and Myanmar vowel
-  Controller().SetComposition(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
+  Controller().SetComposition(String::FromUtf8("\xE2\x80\x8C\xE1\x80\xB1"),
                               Vector<ImeTextSpan>(), 0, 0);
 
   EXPECT_EQ(1u, div->CountChildren());
-  EXPECT_EQ(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
+  EXPECT_EQ(String::FromUtf8("\xE2\x80\x8C\xE1\x80\xB1"),
             div->GetInnerHTMLString());
 
   Range* range = GetCompositionRange();
   EXPECT_EQ(0u, range->startOffset());
   EXPECT_EQ(2u, range->endOffset());
-  Controller().CommitText(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
+  Controller().CommitText(String::FromUtf8("\xE2\x80\x8C\xE1\x80\xB1"),
                           Vector<ImeTextSpan>(), 1);
-  EXPECT_EQ(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
+  EXPECT_EQ(String::FromUtf8("\xE2\x80\x8C\xE1\x80\xB1"),
             div->GetInnerHTMLString());
 
   // Add character U+200C: 'kZeroWidthNonJoiner' and Myanmar vowel
-  Controller().SetComposition(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
+  Controller().SetComposition(String::FromUtf8("\xE2\x80\x8C\xE1\x80\xB1"),
                               Vector<ImeTextSpan>(), 2, 2);
-  Controller().CommitText(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
+  Controller().CommitText(String::FromUtf8("\xE2\x80\x8C\xE1\x80\xB1"),
                           Vector<ImeTextSpan>(), 1);
   EXPECT_EQ(
-      String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1\xE2\x80\x8C\xE1\x80\xB1"),
+      String::FromUtf8("\xE2\x80\x8C\xE1\x80\xB1\xE2\x80\x8C\xE1\x80\xB1"),
       div->GetInnerHTMLString());
 }
 

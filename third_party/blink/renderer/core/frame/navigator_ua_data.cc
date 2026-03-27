@@ -43,16 +43,16 @@ void NavigatorUAData::AddBrandFullVersion(const String& brand,
 void NavigatorUAData::SetBrandVersionList(
     const UserAgentBrandList& brand_version_list) {
   for (const auto& brand_version : brand_version_list) {
-    AddBrandVersion(String::FromUTF8(brand_version.brand),
-                    String::FromUTF8(brand_version.version));
+    AddBrandVersion(String::FromUtf8(brand_version.brand),
+                    String::FromUtf8(brand_version.version));
   }
 }
 
 void NavigatorUAData::SetFullVersionList(
     const UserAgentBrandList& full_version_list) {
   for (const auto& brand_version : full_version_list) {
-    AddBrandFullVersion(String::FromUTF8(brand_version.brand),
-                        String::FromUTF8(brand_version.version));
+    AddBrandFullVersion(String::FromUtf8(brand_version.brand),
+                        String::FromUtf8(brand_version.version));
   }
 }
 

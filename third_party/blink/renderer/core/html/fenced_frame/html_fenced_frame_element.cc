@@ -348,7 +348,7 @@ void HTMLFencedFrameElement::ParseAttribute(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
             StrCat({"Error while parsing the 'sandbox' attribute: ",
-                    String::FromUTF8(parsed.error_message)})));
+                    String::FromUtf8(parsed.error_message)})));
       }
     }
     SetSandboxFlags(current_flags);

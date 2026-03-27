@@ -28,7 +28,7 @@ std::unique_ptr<protocol::Network::AdAncestry> CreateAdAncestryProtocolObject(
 
   if (ad_ancestry.root_script_filterlist_rule.IsValid()) {
     ad_ancestry_protocol->setRootScriptFilterlistRule(
-        String::FromUTF8(ad_ancestry.root_script_filterlist_rule.ToString()));
+        String::FromUtf8(ad_ancestry.root_script_filterlist_rule.ToString()));
   }
 
   return ad_ancestry_protocol;

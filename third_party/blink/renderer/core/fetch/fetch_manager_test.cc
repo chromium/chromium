@@ -511,7 +511,7 @@ class FetchLaterUrlTestBase : public FetchLaterTestBase {
         MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
     auto* controller = AbortController::Create(scope.GetScriptState());
     auto& exception_state = scope.GetExceptionState();
-    auto* request = CreateFetchLaterRequest(scope, String::FromUTF8(url),
+    auto* request = CreateFetchLaterRequest(scope, String::FromUtf8(url),
                                             controller->signal());
     auto* result = manager->FetchLater(
         scope.GetScriptState(),

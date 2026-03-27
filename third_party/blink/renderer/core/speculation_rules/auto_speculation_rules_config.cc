@@ -115,7 +115,7 @@ const AutoSpeculationRulesConfig& AutoSpeculationRulesConfig::GetInstance() {
 
   DEFINE_STATIC_LOCAL(
       AutoSpeculationRulesConfig, instance,
-      (String::FromUTF8(base::GetFieldTrialParamByFeatureAsString(
+      (String::FromUtf8(base::GetFieldTrialParamByFeatureAsString(
           features::kAutoSpeculationRules, "config", "{}"))));
 
   if (g_override) {

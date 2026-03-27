@@ -162,14 +162,14 @@ TEST(InspectorSessionStateTest, MapFields) {
     EXPECT_TRUE(maps_agent.strings_.IsEmpty());
 
     maps_agent.strings_.Set("key1", "Hello, world.");
-    maps_agent.strings_.Set("key2", String::FromUTF8("I ❤ Unicode."));
+    maps_agent.strings_.Set("key2", String::FromUtf8("I ❤ Unicode."));
 
     EXPECT_FALSE(maps_agent.strings_.IsEmpty());
 
     EXPECT_THAT(maps_agent.strings_.Keys(),
                 UnorderedElementsAre("key1", "key2"));
     EXPECT_EQ("Hello, world.", maps_agent.strings_.Get("key1"));
-    EXPECT_EQ(String::FromUTF8("I ❤ Unicode."),
+    EXPECT_EQ(String::FromUtf8("I ❤ Unicode."),
               maps_agent.strings_.Get("key2"));
     EXPECT_TRUE(maps_agent.strings_.Get("key3").IsNull());
 
@@ -185,7 +185,7 @@ TEST(InspectorSessionStateTest, MapFields) {
     EXPECT_THAT(maps_agent.strings_.Keys(),
                 UnorderedElementsAre("key1", "key2"));
     EXPECT_EQ("Hello, world.", maps_agent.strings_.Get("key1"));
-    EXPECT_EQ(String::FromUTF8("I ❤ Unicode."),
+    EXPECT_EQ(String::FromUtf8("I ❤ Unicode."),
               maps_agent.strings_.Get("key2"));
     EXPECT_TRUE(maps_agent.strings_.Get("key3").IsNull());
 

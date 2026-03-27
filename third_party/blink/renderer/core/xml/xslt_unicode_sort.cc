@@ -236,10 +236,10 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
           } else {
             Vector<UChar> string1;
             Vector<UChar> string2;
-            String::FromUTF8(
+            String::FromUtf8(
                 reinterpret_cast<const char*>(results[j]->stringval))
                 .AppendTo(string1);
-            String::FromUTF8(
+            String::FromUtf8(
                 reinterpret_cast<const char*>(results[j + incr]->stringval))
                 .AppendTo(string2);
             tst = ucol_strcoll(*collator, string1.data(), string1.size(),
@@ -295,10 +295,10 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
               } else {
                 Vector<UChar> string1;
                 Vector<UChar> string2;
-                String::FromUTF8(
+                String::FromUtf8(
                     reinterpret_cast<const char*>(res[j]->stringval))
                     .AppendTo(string1);
-                String::FromUTF8(
+                String::FromUtf8(
                     reinterpret_cast<const char*>(res[j + incr]->stringval))
                     .AppendTo(string2);
                 tst = ucol_strcoll(*collator, string1.data(), string1.size(),

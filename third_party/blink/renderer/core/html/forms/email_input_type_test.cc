@@ -35,13 +35,13 @@ TEST(EmailInputTypeTest, ConvertEmailAddressToASCII) {
   test::TaskEnvironment task_environment;
   // U+043C U+043E U+0439 . U+0434 U+043E U+043C U+0435 U+043D
   ExpectToFail(task_environment.isolate(),
-               String::FromUTF8("user@\xD0\xBC\xD0\xBE\xD0\xB9."
+               String::FromUtf8("user@\xD0\xBC\xD0\xBE\xD0\xB9."
                                 "\xD0\xB4\xD0\xBE\xD0\xBC\xD0\xB5\xD0\xBD@"));
   ExpectToFail(task_environment.isolate(),
-               String::FromUTF8("user@\xD0\xBC\xD0\xBE\xD0\xB9. "
+               String::FromUtf8("user@\xD0\xBC\xD0\xBE\xD0\xB9. "
                                 "\xD0\xB4\xD0\xBE\xD0\xBC\xD0\xB5\xD0\xBD"));
   ExpectToFail(task_environment.isolate(),
-               String::FromUTF8("user@\xD0\xBC\xD0\xBE\xD0\xB9."
+               String::FromUtf8("user@\xD0\xBC\xD0\xBE\xD0\xB9."
                                 "\t\xD0\xB4\xD0\xBE\xD0\xBC\xD0\xB5\xD0\xBD"));
 }
 
@@ -51,41 +51,41 @@ TEST(EmailInputTypeTest, ConvertEmailAddressToASCIIUTS46) {
 
   // U+00E0
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xC3\xA0.com"));
+                  String::FromUtf8("foo@\xC3\xA0.com"));
   // U+FF01
   ExpectToFail(task_environment.isolate(),
-               String::FromUTF8("foo@\xEF\xBC\x81.com"));
+               String::FromUtf8("foo@\xEF\xBC\x81.com"));
 
   // U+2132
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xE2\x84\xB2.com"));
+                  String::FromUtf8("foo@\xE2\x84\xB2.com"));
   // U+2F868
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xF0\xAF\xA1\xA8.com"));
+                  String::FromUtf8("foo@\xF0\xAF\xA1\xA8.com"));
 
   // U+00C0
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xC3\x80.com"));
+                  String::FromUtf8("foo@\xC3\x80.com"));
   // U+2665
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xE2\x99\xA5.com"));
+                  String::FromUtf8("foo@\xE2\x99\xA5.com"));
   // U+00DF
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xC3\x9F.com"));
+                  String::FromUtf8("foo@\xC3\x9F.com"));
 
   // U+0221
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xC8\xA1.com"));
+                  String::FromUtf8("foo@\xC8\xA1.com"));
   // U+0662
   ExpectToFail(task_environment.isolate(),
-               String::FromUTF8("foo@\xD8\x82.com"));
+               String::FromUtf8("foo@\xD8\x82.com"));
 
   // U+2615
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xE2\x98\x95.com"));
+                  String::FromUtf8("foo@\xE2\x98\x95.com"));
   // U+023A
   ExpectToSucceed(task_environment.isolate(),
-                  String::FromUTF8("foo@\xC8\xBA.com"));
+                  String::FromUtf8("foo@\xC8\xBA.com"));
 }
 
 }  // namespace blink

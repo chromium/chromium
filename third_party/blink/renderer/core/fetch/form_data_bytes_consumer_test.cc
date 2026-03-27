@@ -237,7 +237,7 @@ class FormDataBytesConsumerTest : public PageTestBase {
     CHECK(
         base::CreateTemporaryFileInDir(scoped_temp_dir_.GetPath(), &file_path));
     CHECK(base::WriteFile(file_path, content.Utf8()));
-    String file_name = String::FromUTF8(file_path.AsUTF8Unsafe());
+    String file_name = String::FromUtf8(file_path.AsUTF8Unsafe());
     data->AppendFile(file_name, std::nullopt);
   }
 

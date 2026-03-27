@@ -23,7 +23,7 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
   DummyExceptionStateForTesting exception_state;
-  auto* input = MakeGarbageCollected<V8URLPatternInput>(String::FromUTF8(data));
+  auto* input = MakeGarbageCollected<V8URLPatternInput>(String::FromUtf8(data));
   URLPattern::Create(task_environment.isolate(), input, exception_state);
   return 0;
 }

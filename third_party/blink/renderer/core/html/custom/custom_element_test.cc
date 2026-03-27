@@ -100,7 +100,7 @@ TEST(CustomElementTest, StateByParser) {
   auto page_holder = std::make_unique<DummyPageHolder>();
   Document& document = page_holder->GetDocument();
   document.body()->SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8(body_content));
+      String::FromUtf8(body_content));
 
   struct {
     const char* id;

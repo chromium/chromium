@@ -58,14 +58,14 @@ void FlatTreeTraversalTest::SetupSampleHTML(std::string_view main_html,
                                             std::string_view shadow_html,
                                             unsigned index) {
   Element* body = GetDocument().body();
-  body->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(main_html));
+  body->SetInnerHTMLWithoutTrustedTypes(String::FromUtf8(main_html));
   auto* shadow_host = To<Element>(NodeTraversal::ChildAt(*body, index));
   AttachOpenShadowRoot(*shadow_host, shadow_html);
 }
 
 void FlatTreeTraversalTest::SetupDocumentTree(std::string_view main_html) {
   Element* body = GetDocument().body();
-  body->SetInnerHTMLWithoutTrustedTypes(String::FromUTF8(main_html));
+  body->SetInnerHTMLWithoutTrustedTypes(String::FromUtf8(main_html));
 }
 
 void FlatTreeTraversalTest::AttachOpenShadowRoot(
@@ -74,7 +74,7 @@ void FlatTreeTraversalTest::AttachOpenShadowRoot(
   ShadowRoot& shadow_root =
       shadow_host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8(shadow_inner_html));
+      String::FromUtf8(shadow_inner_html));
 }
 
 namespace {

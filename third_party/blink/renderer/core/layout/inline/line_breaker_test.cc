@@ -556,7 +556,7 @@ TEST_F(LineBreakerTest, IdeographicTrailingSpaces) {
     <div id="container">xxx&#x3000;&#x3000;&#x3000;&#x3000;xxx&#x3000;&#x3000;&#x3000;&#x3000;</div>
   )HTML");
 
-  String expectedLine = String::FromUTF8("xxx\u3000\u3000\u3000\u3000");
+  String expectedLine = String::FromUtf8("xxx\u3000\u3000\u3000\u3000");
 
   // The ideographic spaces overflows the line at 60px but fully fits at 90px.
   for (LayoutUnit width : {LayoutUnit(60), LayoutUnit(90)}) {

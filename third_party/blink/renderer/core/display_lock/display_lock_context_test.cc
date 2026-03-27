@@ -129,7 +129,7 @@ class DisplayLockContextTest : public testing::Test {
 
   void SetHtmlInnerHTML(const char* content) {
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-        String::FromUTF8(content));
+        String::FromUtf8(content));
     UpdateAllLifecyclePhasesForTest();
   }
 

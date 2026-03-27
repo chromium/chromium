@@ -49,7 +49,7 @@ namespace blink {
 
 WebBlob WebBlob::CreateFromSerializedBlob(mojom::SerializedBlobPtr blob) {
   return MakeGarbageCollected<Blob>(BlobDataHandle::Create(
-      String::FromUTF8(blob->uuid), String::FromUTF8(blob->content_type),
+      String::FromUtf8(blob->uuid), String::FromUtf8(blob->content_type),
       blob->size, ToCrossVariantMojoType(std::move(blob->blob))));
 }
 

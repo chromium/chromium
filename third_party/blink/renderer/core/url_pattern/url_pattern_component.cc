@@ -262,7 +262,7 @@ Component* Component::Compile(v8::Isolate* isolate,
   if (!parse_result.has_value()) {
     exception_state.ThrowTypeError(
         StrCat({"Invalid ", TypeToString(type), " pattern '", final_pattern,
-                "'. ", String::FromUTF8(parse_result.error().message())}));
+                "'. ", String::FromUtf8(parse_result.error().message())}));
     return nullptr;
   }
 
@@ -315,7 +315,7 @@ Component* Component::Compile(v8::Isolate* isolate,
     wtf_name_list.ReserveInitialCapacity(
         static_cast<wtf_size_t>(name_list.size()));
     for (const auto& name : name_list) {
-      wtf_name_list.push_back(String::FromUTF8(name));
+      wtf_name_list.push_back(String::FromUtf8(name));
     }
   }
 
@@ -404,24 +404,24 @@ bool Component::Match(StringView input,
       // We need to be careful converting the group value to a blink::String.
       // If the value is std::nullopt, then we want to use a null String.
       // If the value exists, but is zero length, then we want to use an empty
-      // string.  We must handle this explicitly since FromUTF8() can convert
+      // string.  We must handle this explicitly since FromUtf8() can convert
       // some zero length strings to null String.
       String value;
       if (pair.second.has_value()) {
         if (pair.second->empty()) {
           value = g_empty_string;
         } else {
-          value = String::FromUTF8(*pair.second);
+          value = String::FromUtf8(*pair.second);
         }
       }
-      group_list->emplace_back(String::FromUTF8(pair.first), std::move(value));
+      group_list->emplace_back(String::FromUtf8(pair.first), std::move(value));
     }
   }
   return result;
 }
 
 String Component::GeneratePatternString() const {
-  return String::FromUTF8(pattern_.GeneratePatternString());
+  return String::FromUtf8(pattern_.GeneratePatternString());
 }
 
 bool Component::ShouldTreatAsStandardURL() const {
@@ -462,10 +462,10 @@ std::optional<String> Component::Generate(
   base::expected<std::string, absl::Status> result =
       pattern_.Generate(groups_map, callback);
   if (!result.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(result.error().message()));
+    exception_state.ThrowTypeError(String::FromUtf8(result.error().message()));
     return std::nullopt;
   }
-  return String::FromUTF8(result.value());
+  return String::FromUtf8(result.value());
 }
 
 const std::vector<liburlpattern::Part>& Component::PartList() const {

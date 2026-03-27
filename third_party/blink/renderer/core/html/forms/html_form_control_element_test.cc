@@ -76,7 +76,7 @@ TEST_F(HTMLFormControlElementTest, customValidationMessageTextDirection) {
 
   auto* input = To<HTMLInputElement>(GetElementById("input"));
   input->setCustomValidity(
-      String::FromUTF8("\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x89"));
+      String::FromUtf8("\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x89"));
   input->setAttribute(
       html_names::kTitleAttr,
       AtomicString::FromUtf8("\xD8\xB9\xD8\xB1\xD8\xA8\xD9\x89"));

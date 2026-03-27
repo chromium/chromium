@@ -11893,7 +11893,7 @@ TEST_F(WebFrameTest, SaveImageAt) {
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
 
   EXPECT_EQ(
-      String::FromUTF8("data:image/gif;base64"
+      String::FromUtf8("data:image/gif;base64"
                        ",R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="),
       frame_host.Result());
 
@@ -11910,7 +11910,7 @@ TEST_F(WebFrameTest, SaveImageAt) {
   local_frame->SaveImageAt(gfx::Point(3, 3));
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
   EXPECT_EQ(
-      String::FromUTF8("data:image/gif;base64"
+      String::FromUtf8("data:image/gif;base64"
                        ",R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="),
       frame_host.Result());
 
@@ -11938,7 +11938,7 @@ TEST_F(WebFrameTest, SaveImageWithImageMap) {
   local_frame->SaveImageAt(gfx::Point(25, 25));
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
   EXPECT_EQ(
-      String::FromUTF8("data:image/gif;base64"
+      String::FromUtf8("data:image/gif;base64"
                        ",R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="),
       frame_host.Result());
 
@@ -11946,7 +11946,7 @@ TEST_F(WebFrameTest, SaveImageWithImageMap) {
   local_frame->SaveImageAt(gfx::Point(75, 25));
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
   EXPECT_EQ(
-      String::FromUTF8("data:image/gif;base64"
+      String::FromUtf8("data:image/gif;base64"
                        ",R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="),
       frame_host.Result());
 
@@ -11978,7 +11978,7 @@ TEST_F(WebFrameTest, CopyImageWithImageMap) {
   local_frame->SaveImageAt(gfx::Point(25, 25));
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
   EXPECT_EQ(
-      String::FromUTF8("data:image/gif;base64"
+      String::FromUtf8("data:image/gif;base64"
                        ",R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="),
       frame_host.Result());
 
@@ -11986,7 +11986,7 @@ TEST_F(WebFrameTest, CopyImageWithImageMap) {
   local_frame->SaveImageAt(gfx::Point(75, 25));
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
   EXPECT_EQ(
-      String::FromUTF8("data:image/gif;base64"
+      String::FromUtf8("data:image/gif;base64"
                        ",R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="),
       frame_host.Result());
 

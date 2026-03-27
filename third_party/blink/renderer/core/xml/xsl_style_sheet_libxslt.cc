@@ -196,7 +196,7 @@ void XSLStyleSheet::LoadChildSheets() {
       if (IS_XSLT_ELEM(curr) && IS_XSLT_NAME(curr, "import")) {
         xmlChar* uri_ref =
             xsltGetNsProp(curr, (const xmlChar*)"href", XSLT_NAMESPACE);
-        LoadChildSheet(String::FromUTF8((const char*)uri_ref));
+        LoadChildSheet(String::FromUtf8((const char*)uri_ref));
         xmlFree(uri_ref);
       } else {
         break;
@@ -210,7 +210,7 @@ void XSLStyleSheet::LoadChildSheets() {
           IS_XSLT_NAME(curr, "include")) {
         xmlChar* uri_ref =
             xsltGetNsProp(curr, (const xmlChar*)"href", XSLT_NAMESPACE);
-        LoadChildSheet(String::FromUTF8((const char*)uri_ref));
+        LoadChildSheet(String::FromUtf8((const char*)uri_ref));
         xmlFree(uri_ref);
       }
       curr = curr->next;

@@ -107,7 +107,7 @@ String EscapeBaseURLString(const StringView& input, ValueType type) {
   StringUtf8Adaptor utf8(input);
   liburlpattern::EscapePatternStringAndAppend(utf8.AsStringView(), result);
 
-  return String::FromUTF8(result);
+  return String::FromUtf8(result);
 }
 
 // A utility method that takes a URLPatternInit, splits it apart, and applies
@@ -290,28 +290,28 @@ URLPatternInit* MakeURLPatternInit(
     const liburlpattern::ConstructorStringParser::Result& result) {
   auto* init = URLPatternInit::Create();
   if (result.protocol) {
-    init->setProtocol(String::FromUTF8(*result.protocol));
+    init->setProtocol(String::FromUtf8(*result.protocol));
   }
   if (result.username) {
-    init->setUsername(String::FromUTF8(*result.username));
+    init->setUsername(String::FromUtf8(*result.username));
   }
   if (result.password) {
-    init->setPassword(String::FromUTF8(*result.password));
+    init->setPassword(String::FromUtf8(*result.password));
   }
   if (result.hostname) {
-    init->setHostname(String::FromUTF8(*result.hostname));
+    init->setHostname(String::FromUtf8(*result.hostname));
   }
   if (result.port) {
-    init->setPort(String::FromUTF8(*result.port));
+    init->setPort(String::FromUtf8(*result.port));
   }
   if (result.pathname) {
-    init->setPathname(String::FromUTF8(*result.pathname));
+    init->setPathname(String::FromUtf8(*result.pathname));
   }
   if (result.search) {
-    init->setSearch(String::FromUTF8(*result.search));
+    init->setSearch(String::FromUtf8(*result.search));
   }
   if (result.hash) {
-    init->setHash(String::FromUTF8(*result.hash));
+    init->setHash(String::FromUtf8(*result.hash));
   }
   return init;
 }
@@ -395,7 +395,7 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
        &exception_state](std::string_view protocol_string)
           -> base::expected<bool, absl::Status> {
         protocol_component = Component::Compile(
-            isolate, String::FromUTF8(protocol_string),
+            isolate, String::FromUtf8(protocol_string),
             Component::Type::kProtocol,
             /*protocol_component=*/nullptr, *options, exception_state);
         if (exception_state.HadException()) {

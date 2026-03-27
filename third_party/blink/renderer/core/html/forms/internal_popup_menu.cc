@@ -760,7 +760,7 @@ void InternalPopupMenu::Update(bool force_update) {
   PagePopupClient::AddString("}\n", data);
   Vector<char> flatten_data = std::move(data).CopyAs<Vector<char>>();
   popup_->PostMessageToPopup(
-      String::FromUTF8(base::as_string_view(flatten_data)));
+      String::FromUtf8(base::as_string_view(flatten_data)));
 }
 
 void InternalPopupMenu::DisconnectClient() {

@@ -77,12 +77,9 @@ TEST(CSSMarkupTest, IdentSequenceHyphenatedWords) {
 TEST(CSSMarkupTest, IdentSequenceNonASCII) {
   test::TaskEnvironment task_environment;
   // Non-ASCII characters are valid ident-start code points.
-  EXPECT_TRUE(
-      IsCSSTokenizerIdentSequence(StringView(String::FromUTF8("日本語"))));
-  EXPECT_TRUE(
-      IsCSSTokenizerIdentSequence(StringView(String::FromUTF8("Ñoño"))));
-  EXPECT_TRUE(
-      IsCSSTokenizerIdentSequence(StringView(String::FromUTF8("Avenir Näxt"))));
+  EXPECT_TRUE(IsCSSTokenizerIdentSequence(String::FromUtf8("日本語")));
+  EXPECT_TRUE(IsCSSTokenizerIdentSequence(String::FromUtf8("Ñoño")));
+  EXPECT_TRUE(IsCSSTokenizerIdentSequence(String::FromUtf8("Avenir Näxt")));
 }
 
 TEST(CSSMarkupTest, IdentSequenceRejectsEmpty) {

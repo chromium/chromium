@@ -59,7 +59,7 @@ TEST_F(XMLHttpRequestTest, ResponseTextUsesDecodedData) {
 
   auto* xhr = XMLHttpRequest::Create(ToScriptStateForMainWorld(&GetFrame()));
   xhr->decoder_ =
-      std::make_unique<FakeTextResourceDecoder>(String::FromUTF8(decoded_data));
+      std::make_unique<FakeTextResourceDecoder>(String::FromUtf8(decoded_data));
 
   const char kData[] = "x";
   xhr->DidReceiveData(base::span_from_cstring(kData));

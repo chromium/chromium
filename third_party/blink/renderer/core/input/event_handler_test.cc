@@ -229,7 +229,7 @@ void EventHandlerTest::SetUp() {
 
 void EventHandlerTest::SetHtmlInnerHTML(const char* html_content) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8(html_content));
+      String::FromUtf8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -1713,7 +1713,7 @@ class EventHandlerLatencyTest : public PageTestBase {
 
   void SetHtmlInnerHTML(const char* html_content) {
     GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-        String::FromUTF8(html_content));
+        String::FromUtf8(html_content));
     UpdateAllLifecyclePhasesForTest();
   }
 

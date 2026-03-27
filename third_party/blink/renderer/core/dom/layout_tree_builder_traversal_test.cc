@@ -22,7 +22,7 @@ class LayoutTreeBuilderTraversalTest : public RenderingTest {
 };
 
 void LayoutTreeBuilderTraversalTest::SetupSampleHTML(const char* main_html) {
-  SetBodyInnerHTML(String::FromUTF8(main_html));
+  SetBodyInnerHTML(String::FromUtf8(main_html));
 }
 
 TEST_F(LayoutTreeBuilderTraversalTest, emptySubTree) {

@@ -197,7 +197,7 @@ class DocumentTest : public PageTestBase {
 
 void DocumentTest::SetHtmlInnerHTML(std::string_view html_content) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8(html_content));
+      String::FromUtf8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 

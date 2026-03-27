@@ -3516,19 +3516,19 @@ void HTMLMediaElement::AddTrack(const media::MediaTrack& track) {
     case media::MediaTrack::Type::kVideo: {
       bool enabled = track.enabled() && videoTracks().selectedIndex() == -1;
       videoTracks().Add(MakeGarbageCollected<VideoTrack>(
-          String::FromUTF8(track.track_id().value()),
-          AtomicString(String::FromUTF8(track.kind().value())),
-          AtomicString(String::FromUTF8(track.label().value())),
-          AtomicString(String::FromUTF8(track.language().value())), enabled));
+          String::FromUtf8(track.track_id().value()),
+          AtomicString::FromUtf8(track.kind().value()),
+          AtomicString::FromUtf8(track.label().value()),
+          AtomicString::FromUtf8(track.language().value()), enabled));
       break;
     }
     case media::MediaTrack::Type::kAudio: {
       audioTracks().Add(MakeGarbageCollected<AudioTrack>(
-          String::FromUTF8(track.track_id().value()),
-          AtomicString(String::FromUTF8(track.kind().value())),
-          AtomicString(String::FromUTF8(track.label().value())),
-          AtomicString(String::FromUTF8(track.language().value())),
-          track.enabled(), track.exclusive()));
+          String::FromUtf8(track.track_id().value()),
+          AtomicString::FromUtf8(track.kind().value()),
+          AtomicString::FromUtf8(track.label().value()),
+          AtomicString::FromUtf8(track.language().value()), track.enabled(),
+          track.exclusive()));
       break;
     }
   }
@@ -3537,11 +3537,11 @@ void HTMLMediaElement::AddTrack(const media::MediaTrack& track) {
 void HTMLMediaElement::RemoveTrack(const media::MediaTrack& track) {
   switch (track.type()) {
     case media::MediaTrack::Type::kVideo: {
-      videoTracks().Remove(String::FromUTF8(track.track_id().value()));
+      videoTracks().Remove(String::FromUtf8(track.track_id().value()));
       break;
     }
     case media::MediaTrack::Type::kAudio: {
-      audioTracks().Remove(String::FromUTF8(track.track_id().value()));
+      audioTracks().Remove(String::FromUtf8(track.track_id().value()));
       break;
     }
   }
@@ -3549,7 +3549,7 @@ void HTMLMediaElement::RemoveTrack(const media::MediaTrack& track) {
 
 void HTMLMediaElement::SetTrackState(const media::MediaTrack& track,
                                      media::MediaTrack::State state) {
-  auto id = String::FromUTF8(track.track_id().value());
+  auto id = String::FromUtf8(track.track_id().value());
   bool active = state == media::MediaTrack::State::kActive;
   switch (track.type()) {
     case media::MediaTrack::Type::kVideo: {

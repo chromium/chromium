@@ -118,7 +118,7 @@ void Mojo::bindInterface(ScriptState* script_state,
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
-          String::FromUTF8("MojoJS interface broker is specified, can't use "
+          String::FromUtf8("MojoJS interface broker is specified, can't use "
                            "scopes other than 'context'"));
     }
     return;

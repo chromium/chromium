@@ -3724,10 +3724,10 @@ void WebViewImpl::UpdateRendererPreferences(
 
   if (old_accept_languages != renderer_preferences_.accept_languages) {
     FontCache::AcceptLanguagesChanged(
-        String::FromUTF8(renderer_preferences_.accept_languages));
+        String::FromUtf8(renderer_preferences_.accept_languages));
     if (GetPage()) {
       GetPage()->GetSettings().SetAcceptLanguages(
-          String::FromUTF8(renderer_preferences_.accept_languages));
+          String::FromUtf8(renderer_preferences_.accept_languages));
     }
   }
 

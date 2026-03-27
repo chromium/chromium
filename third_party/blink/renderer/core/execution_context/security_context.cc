@@ -243,9 +243,9 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
   String reporting_endpoint;
   if (!permissions_policy_result) {
     reporting_endpoint =
-        String::FromUTF8(permissions_policy_->GetEndpointForFeature(feature));
+        String::FromUtf8(permissions_policy_->GetEndpointForFeature(feature));
   } else if (!report_only_permissions_policy_result) {
-    reporting_endpoint = String::FromUTF8(
+    reporting_endpoint = String::FromUtf8(
         report_only_permissions_policy_->GetEndpointForFeature(feature));
   }
 

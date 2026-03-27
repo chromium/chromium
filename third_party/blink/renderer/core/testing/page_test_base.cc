@@ -284,12 +284,12 @@ void PageTestBase::SetBodyInnerHTML(const String& body_content) {
 }
 
 void PageTestBase::SetBodyContent(const std::string& body_content) {
-  SetBodyInnerHTML(String::FromUTF8(body_content));
+  SetBodyInnerHTML(String::FromUtf8(body_content));
 }
 
 void PageTestBase::SetHtmlInnerHTML(const std::string& html_content) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8(html_content));
+      String::FromUtf8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 

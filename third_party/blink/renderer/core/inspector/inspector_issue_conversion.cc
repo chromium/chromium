@@ -493,7 +493,7 @@ ConvertInspectorIssueToProtocolFormat(InspectorIssue* issue) {
                          .setDetails(issueDetails.build())
                          .build();
   if (issue->Details()->issue_id) {
-    String issue_id = String::FromUTF8(issue->Details()->issue_id->ToString());
+    String issue_id = String::FromUtf8(issue->Details()->issue_id->ToString());
     final_issue->setIssueId(issue_id);
   }
   return final_issue;

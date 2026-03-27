@@ -49,7 +49,7 @@ class NodeTraversalTest : public PageTestBase {
 
 void NodeTraversalTest::SetupSampleHTML(const char* html) {
   Element* body = GetDocument().body();
-  SetBodyInnerHTML(String::FromUTF8(html));
+  SetBodyInnerHTML(String::FromUtf8(html));
   RemoveWhiteSpaceOnlyTextNodes(*body);
 }
 

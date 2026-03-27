@@ -582,7 +582,7 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
 
   static void Resolve(ScriptPromiseResolver<IDLString>* resolver,
                       std::string result) {
-    resolver->Resolve(String::FromUTF8(result));
+    resolver->Resolve(String::FromUtf8(result));
   }
   static void Reject(ScriptPromiseResolverBase* resolver) {
     ScriptState* script_state = resolver->GetScriptState();

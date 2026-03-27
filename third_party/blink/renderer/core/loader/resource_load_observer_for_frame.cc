@@ -213,8 +213,8 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
                                                            response);
       frame->GetLocalFrameHostRemote().DidLoadResourceFromMemoryCache(
           resource_request.Url(),
-          String::FromUTF8(resource_request.HttpMethod().Utf8()),
-          String::FromUTF8(response.MimeType().Utf8()),
+          String::FromUtf8(resource_request.HttpMethod().Utf8()),
+          String::FromUtf8(response.MimeType().Utf8()),
           resource_request.GetRequestDestination(),
           response.RequestIncludeCredentials());
     }

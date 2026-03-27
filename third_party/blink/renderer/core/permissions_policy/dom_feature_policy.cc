@@ -140,11 +140,11 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
         static_cast<wtf_size_t>(allowlist.SelfIfMatches().has_value()));
     if (allowlist.SelfIfMatches()) {
       result.push_back(
-          String::FromUTF8(allowlist.SelfIfMatches()->Serialize()));
+          String::FromUtf8(allowlist.SelfIfMatches()->Serialize()));
     }
     for (const auto& origin_with_possible_wildcards : allowed_origins) {
       result.push_back(
-          String::FromUTF8(origin_with_possible_wildcards.Serialize()));
+          String::FromUtf8(origin_with_possible_wildcards.Serialize()));
     }
     return result;
   }

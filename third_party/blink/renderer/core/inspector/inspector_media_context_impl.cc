@@ -57,7 +57,7 @@ const MediaPlayer& MediaInspectorContextImpl::MediaPlayerFromId(
 
 WebString MediaInspectorContextImpl::CreatePlayer() {
   String next_player_id =
-      String::FromUTF8(base::UnguessableToken::Create().ToString());
+      String::FromUtf8(base::UnguessableToken::Create().ToString());
   MediaPlayer* player = MakeGarbageCollected<MediaPlayer>();
   player->player_id = next_player_id;
   players_.insert(next_player_id, player);

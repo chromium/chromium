@@ -94,7 +94,7 @@ Text* GranularityStrategyTest::AppendTextNode(const String& data) {
 void GranularityStrategyTest::SetInnerHTMLWithoutTrustedTypes(
     const char* html_content) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::FromUTF8(html_content));
+      String::FromUtf8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 

@@ -18,19 +18,19 @@ NavigatorUAData* NavigatorUA::userAgentData() {
   UserAgentMetadata metadata = GetUserAgentMetadata();
   ua_data->SetBrandVersionList(metadata.brand_version_list);
   ua_data->SetMobile(metadata.mobile);
-  ua_data->SetPlatform(String::FromUTF8(metadata.platform),
-                       String::FromUTF8(metadata.platform_version));
-  ua_data->SetArchitecture(String::FromUTF8(metadata.architecture));
-  ua_data->SetModel(String::FromUTF8(metadata.model));
-  ua_data->SetUAFullVersion(String::FromUTF8(metadata.full_version));
-  ua_data->SetBitness(String::FromUTF8(metadata.bitness));
+  ua_data->SetPlatform(String::FromUtf8(metadata.platform),
+                       String::FromUtf8(metadata.platform_version));
+  ua_data->SetArchitecture(String::FromUtf8(metadata.architecture));
+  ua_data->SetModel(String::FromUtf8(metadata.model));
+  ua_data->SetUAFullVersion(String::FromUtf8(metadata.full_version));
+  ua_data->SetBitness(String::FromUtf8(metadata.bitness));
   ua_data->SetFullVersionList(metadata.brand_full_version_list);
   ua_data->SetWoW64(metadata.wow64);
   Vector<String> form_factors;
   form_factors.reserve(
       base::checked_cast<wtf_size_t>(metadata.form_factors.size()));
   for (auto& ff : metadata.form_factors) {
-    form_factors.push_back(String::FromUTF8(ff));
+    form_factors.push_back(String::FromUtf8(ff));
   }
   ua_data->SetFormFactors(std::move(form_factors));
 

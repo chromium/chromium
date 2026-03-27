@@ -161,16 +161,16 @@ TEST_P(FindLengthOfDeclarationListTest, IgnoringDangerousAfterBlock) {
 TEST_P(FindLengthOfDeclarationListTest, NonASCII) {
   // Non-ASCII long after the block should not matter.
   EXPECT_EQ(10u, FindLengthOfDeclarationList(
-                     String::FromUTF8("--foo: bar}                   ❤️")));
+                     String::FromUtf8("--foo: bar}                   ❤️")));
 
   // We should also support these characters inside the block itself.
-  EXPECT_TRUE(BlockAccepted(String::FromUTF8("--foo: \"❤️\"")));
-  EXPECT_TRUE(BlockAccepted(String::FromUTF8("font-family: 😊")));
+  EXPECT_TRUE(BlockAccepted(String::FromUtf8("--foo: \"❤️\"")));
+  EXPECT_TRUE(BlockAccepted(String::FromUtf8("font-family: 😊")));
 
   // Also make sure we don't simply _ignore_ the top UTF-16 byte;
   // these two characters become 01 7B and 7B 01 depending on
   // endianness, and should _not_ match as { (which is 0x7B).
-  EXPECT_TRUE(BlockAccepted(String::FromUTF8("--fooŻ笁: value")));
+  EXPECT_TRUE(BlockAccepted(String::FromUtf8("--fooŻ笁: value")));
 }
 
 TEST_P(FindLengthOfDeclarationListTest, NewlineInString) {
