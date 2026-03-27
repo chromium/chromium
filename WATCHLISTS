@@ -704,10 +704,6 @@
                   '|content/public/test/btm_.*' \
                   '|content/test/data/btm/'
     },
-    'bound_session_credentials': {
-      'filepath': 'chrome/renderer/bound_session_credentials/' \
-                  '|chrome/browser/signin/bound_session_credentials/'
-    },
     'browser_components': {
       'filepath': 'chrome/browser/autofill/' \
                   '|chrome/browser/bookmarks/' \
@@ -1151,10 +1147,6 @@
     },
     'device_bluetooth': {
       'filepath': 'device/.*bluetooth'
-    },
-    'device_bound_sessions': {
-      'filepath': 'net/device_bound_sessions/|'\
-                  'components/unexportable_keys/',
     },
     'device_chooser': {
       'filepath': 'chrome/browser/chooser_controller/|'\
@@ -1984,9 +1976,6 @@
     'profile_keyed_service': {
       'filepath': 'chrome/browser/profiles/profile_keyed_service_browsertest.cc',
     },
-    'proto_extras': {
-      'filepath': 'components/proto_extras',
-    },
     'psm_libs': {
       'filepath': 'third_party/private_membership/|' \
                   'third_party/shell-encryption/'
@@ -2087,9 +2076,6 @@
                   '|base/memory/.*shared_memory'\
                   '|components/cbor/'\
                   '|AndroidManifest',
-    },
-    'security_interstitials': {
-      'filepath': 'components/security_interstitials',
     },
     'select_to_speak': {
       'filepath': 'select_to_speak',
@@ -2829,7 +2815,6 @@
                                     'njeunje+watch-btm@chromium.org',
                                     'ortuno+watch-btm@chromium.org',
                                     'svend+watch-btm@chromium.org'],
-    'bound_session_credentials': ['drubery+watch@chromium.org'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
@@ -2989,7 +2974,6 @@
     'desktop_searchbox': ['omnibox-dev+watch@chromium.org', 'niharm+watch@google.com'],
     'desktop_whats_new': ['mickeyburks+watch@chromium.org'],
     'device_bluetooth': ['mattreynolds+watch@chromium.org'],
-    'device_bound_sessions': ['drubery+watch@chromium.org'],
     'device_chooser': ['mattreynolds+watch@chromium.org',
                        'odejesush+watch@chromium.org'],
     'devtools': ['devtools-reviews@chromium.org'],
@@ -2999,10 +2983,8 @@
                     'edgestoragedev@microsoft.com'],
     'download': ['dtrainor+watch@chromium.org'],
     'download_bubble': ['xinghuilu+watch@chromium.org',
-                        'drubery+watch@chromium.org',
                         'chlily+watch@chromium.org'],
     'downloads_ui': ['dtrainor+watch@chromium.org',
-                     'drubery+watch@chromium.org',
                      'chlily+watch@chromium.org'],
     'drive_resource_metadata': ['hashimoto+watch@chromium.org'],
     'eche': ['ajayramamurthy+watch-eche@google.com',
@@ -3270,7 +3252,6 @@
     'private_aggregation': ['alexmt+watch@chromium.org'],
     'private_ai': ['heronyang@google.com', 'mghiware@google.com'],
     'profile_keyed_service': ['rsult@google.com'],
-    'proto_extras': ['drubery+watch@chromium.org'],
     'psm_libs': ['amraboelkher+watch@chromium.org'],
     'push_messaging': ['peter@chromium.org', 'dibyapal+watch-webapps@chromium.org'],
     'quick_answers': ['croissant-eng+reviews@chromium.org'],
@@ -3284,7 +3265,6 @@
                'robertshield+watch@chromium.org'],
     'runtime_enabled_features': ['jmedley+watch@chromium.org'],
     'safe_browsing': ['andysjlim+watch@chromium.org',
-                      'drubery+watch@chromium.org',
                       'nwokedi+watch@chromium.org',
                       'vakh+safe_browsing_watch@chromium.org',
                       'xinghuilu+watch@chromium.org',
@@ -3295,7 +3275,6 @@
     'search_engine_choice_screen': ['chrome-regionalcapabilities+watch@google.com'],
     'search_prefetch': ['lingqi+watch@chromium.org'],
     'security': ['security-watchlist@chromium.org'],
-    'security_interstitials': ['drubery+watch@chromium.org'],
     'select_to_speak': ['katie+watch@chromium.org',
                         'anastasi+watch@google.com'],
     'send_tab_to_self': ['jeffreycohen+watch-send_tab_to_self@chromium.org',
