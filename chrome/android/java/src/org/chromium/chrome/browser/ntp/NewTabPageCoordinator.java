@@ -543,7 +543,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mManager.getNativePageHost().loadUrl(new LoadUrlParams(resolver.getNtpUrl()), true);
     }
 
-    private void initializeLayoutChangeListener() {
+    @VisibleForTesting
+    void initializeLayoutChangeListener() {
         TraceEvent.begin(TAG + ".initializeLayoutChangeListener()");
         mOnLayoutChangeListener = this::onLayoutChanged;
         mModel.set(NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER, mOnLayoutChangeListener);
@@ -1226,7 +1227,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         mSearchBoxCoordinator.destroy();
-        mSearchBoxCoordinator = null;
 
         if (mMostVisitedTilesCoordinator != null) {
             mMostVisitedTilesCoordinator.destroy();
@@ -1421,5 +1421,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     public @Nullable HomeModulesCoordinator getHomeModulesCoordinatorForTesting() {
         return mHomeModulesCoordinator;
+    }
+
+    public PropertyModel getModelForTesting() {
+        return mModel;
+    }
+
+    public @Nullable ViewGroup getHomeModulesContainerForTesting() {
+        return mHomeModulesContainer;
     }
 }

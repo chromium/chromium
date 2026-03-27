@@ -9,18 +9,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,40 +33,94 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.magic_stack.HomeModulesRecyclerView;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
+import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
+import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelperJni;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.suggestions.tile.TileGroup;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
+import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
+import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link NewTabPageCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures({
+    ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2,
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS
+})
 public class NewTabPageCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
+    @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
+    @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
     @Mock private NewTabPageManager mManager;
-    @Mock private NewTabPageLayout mNewTabPageLayout;
     @Mock private Tab mTab;
     @Mock private Tab mMostRecentTab;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private HomeSurfaceTracker mHomeSurfaceTracker;
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private Profile mProfile;
-    @Mock private View mSearchBoxView;
-    @Mock private ViewStub mHomeModulesStub;
-    @Mock private ViewGroup mHomeModulesContainer;
-    @Mock private HomeModulesRecyclerView mHomeModulesRecyclerView;
     @Mock private TabModel mTabModel;
+    @Mock private TileGroup.Delegate mTileGroupDelegate;
+    @Mock private FeedSurfaceScrollDelegate mScrollDelegate;
+    @Mock private TouchEnabledDelegate mTouchEnabledDelegate;
+    @Mock private UiConfig mUiConfig;
+    @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ActivityResultTracker mActivityResultTracker;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Supplier<Integer> mTabStripHeightSupplier;
+    @Mock private Supplier<GURL> mComposeplateUrlSupplier;
+    @Mock private SearchEngineUtils mSearchEngineUtils;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private SigninManager mSigninManager;
+    @Mock private SyncService mSyncService;
 
     private Activity mActivity;
+    private NewTabPageLayout mNewTabPageLayout;
     private NewTabPageCoordinator mCoordinator;
     private final OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
@@ -76,61 +130,76 @@ public class NewTabPageCoordinatorUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        when(mMostRecentTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(mTab.getProfile()).thenReturn(mProfile);
+        // Setup for MV tiles.
+        mSuggestionsDeps.getFactory().mostVisitedSites = new FakeMostVisitedSites();
+        mSuggestionsDeps.getFactory().offlinePageBridge = new FakeOfflinePageBridge();
+
+        // Setup for signin and sync.
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
+
+        // Setup for the composeplate buttons.
+        ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
+        when(mMockComposeplateUtilsJni.isAimEntrypointEligible(mProfile)).thenReturn(true);
+        when(mMockComposeplateUtilsJni.isEnabledByPolicy(mProfile)).thenReturn(true);
+        IncognitoUtils.setEnabledForTesting(true);
+
+        // Setup for home modules.
+        HomeModulesRankingHelperJni.setInstanceForTesting(mHomeModulesRankingHelperJniMock);
         mModuleRegistrySupplier.set(mModuleRegistry);
 
-        when(mNewTabPageLayout.findViewById(R.id.search_box)).thenReturn(mSearchBoxView);
-        when(mNewTabPageLayout.findViewById(R.id.home_modules_recycler_view_stub))
-                .thenReturn(mHomeModulesStub);
-        when(mHomeModulesStub.inflate()).thenReturn(mHomeModulesContainer);
-        when(mNewTabPageLayout.findViewById(R.id.home_modules_recycler_view))
-                .thenReturn(mHomeModulesRecyclerView);
-        when(mHomeModulesRecyclerView.getContext()).thenReturn(mActivity);
+        // Setup for lens.
+        WeakReference<Context> contextWeakReference = new WeakReference<>(mActivity);
+        when(mWindowAndroid.getContext()).thenReturn(contextWeakReference);
 
-        mCoordinator =
-                new NewTabPageCoordinator(
-                        mManager,
-                        mActivity,
-                        mNewTabPageLayout,
-                        mTab,
-                        mTabModelSelector,
-                        mModuleRegistrySupplier,
-                        mHomeSurfaceTracker);
+        // Setup for search.
+        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
+
+        when(mMostRecentTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        createCoordinator();
+    }
+
+    @After
+    public void tearDown() {
+        mCoordinator.destroy();
     }
 
     @Test
     public void testShowHomeSurfaceUiOnNtp() {
-        assertFalse(mCoordinator.isHomeSurface());
-        assertNull(mCoordinator.getHomeModulesCoordinatorForTesting());
-
-        mCoordinator.showHomeSurfaceUiOnNtp(mMostRecentTab);
-
-        verifyIsHomeSurface(/* isHomeSurface= */ true);
-        verify(mHomeModulesContainer, never()).setVisibility(anyInt());
+        testShowHomeSurfaceUiOnNtpImpl(
+                /* mostRecentTab= */ mMostRecentTab, /* isHomeSurface= */ true);
     }
 
     @Test
     public void testShowHomeSurfaceUiOnNtp_noMostVisitedTab() {
+        testShowHomeSurfaceUiOnNtpImpl(/* mostRecentTab= */ null, /* isHomeSurface= */ false);
+    }
+
+    private void testShowHomeSurfaceUiOnNtpImpl(Tab mostRecentTab, boolean isHomeSurface) {
         assertFalse(mCoordinator.isHomeSurface());
-        assertNull(mCoordinator.getHomeModulesCoordinatorForTesting());
 
-        mCoordinator.showHomeSurfaceUiOnNtp(null);
+        mCoordinator.showHomeSurfaceUiOnNtp(mostRecentTab);
 
-        verifyIsHomeSurface(/* isHomeSurface= */ false);
+        verifyIsHomeSurface(isHomeSurface);
     }
 
     @Test
     public void testOnHomeModulesShown() {
-        mCoordinator.showHomeSurfaceUiOnNtp(mMostRecentTab);
-
         boolean isVisible = true;
+        ViewGroup homeModulesContainer = mCoordinator.getHomeModulesContainerForTesting();
+        assertNotNull(homeModulesContainer);
+
         mCoordinator.onHomeModulesShown(isVisible);
-        verify(mHomeModulesContainer).setVisibility(eq(View.VISIBLE));
+        assertEquals(View.VISIBLE, homeModulesContainer.getVisibility());
 
         isVisible = false;
         mCoordinator.onHomeModulesShown(isVisible);
-        verify(mHomeModulesContainer).setVisibility(eq(View.GONE));
+        assertEquals(View.GONE, homeModulesContainer.getVisibility());
     }
 
     @Test
@@ -148,6 +217,8 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     public void testInitializeHomeModules_TrackingTabReady() {
+        mCoordinator.destroy();
+
         when(mHomeSurfaceTracker.isHomeSurfaceTab(mTab)).thenReturn(true);
         when(mHomeSurfaceTracker.getLastActiveTabToTrack()).thenReturn(mMostRecentTab);
 
@@ -155,35 +226,88 @@ public class NewTabPageCoordinatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord("NewTabPage.AsHomeSurface", true)
                         .build();
-        mCoordinator.initializeHomeModules();
+        createCoordinator();
 
         verifyIsHomeSurface(/* isHomeSurface= */ true);
+        assertNotNull(mCoordinator.getHomeModulesCoordinatorForTesting());
         histogramWatcher.assertExpected();
     }
 
     @Test
     public void testInitializeHomeModules_NormalNtp() {
+        mCoordinator.destroy();
         when(mHomeSurfaceTracker.isHomeSurfaceTab(mTab)).thenReturn(false);
         when(mTab.getLaunchType()).thenReturn(TabLaunchType.FROM_CHROME_UI);
 
-        mCoordinator.initializeHomeModules();
+        createCoordinator();
 
         verifyIsHomeSurface(/* isHomeSurface= */ false);
+        assertNotNull(mCoordinator.getHomeModulesCoordinatorForTesting());
     }
 
     @Test
     public void testInitializeHomeModules_StartupNtp() {
+        mCoordinator.destroy();
         when(mHomeSurfaceTracker.isHomeSurfaceTab(mTab)).thenReturn(false);
         when(mTab.getLaunchType()).thenReturn(TabLaunchType.FROM_STARTUP);
 
-        mCoordinator.initializeHomeModules();
-
+        createCoordinator();
         // Verifies that the HomeModulesCoordinator isn't created if the Ntp's tracking Tab isn't
         // ready.
         assertNull(mCoordinator.getHomeModulesCoordinatorForTesting());
 
         mCoordinator.showHomeSurfaceUiOnNtp(mMostRecentTab);
         verifyIsHomeSurface(/* isHomeSurface= */ true);
+        assertNotNull(mCoordinator.getHomeModulesCoordinatorForTesting());
+    }
+
+    @Test
+    public void testDestroy() {
+        mCoordinator.initializeLayoutChangeListener();
+        PropertyModel model = mCoordinator.getModelForTesting();
+
+        assertNotNull(model.get(NewTabPageLayoutProperties.DELEGATE));
+        assertNotNull(model.get(NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER));
+
+        mCoordinator.destroy();
+
+        assertNull(model.get(NewTabPageLayoutProperties.DELEGATE));
+        assertNull(model.get(NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER));
+    }
+
+    private void createCoordinator() {
+        mNewTabPageLayout =
+                (NewTabPageLayout)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.new_tab_page_layout, null, false);
+
+        mCoordinator =
+                new NewTabPageCoordinator(
+                        mManager,
+                        mActivity,
+                        mNewTabPageLayout,
+                        mTab,
+                        mTabModelSelector,
+                        mModuleRegistrySupplier,
+                        mHomeSurfaceTracker);
+
+        mCoordinator.initialize(
+                mTileGroupDelegate,
+                /* searchProviderHasLogo= */ true,
+                /* searchProviderIsGoogle= */ true,
+                mScrollDelegate,
+                mTouchEnabledDelegate,
+                mUiConfig,
+                mLifecycleDispatcher,
+                mProfile,
+                mWindowAndroid,
+                mActivityResultTracker,
+                mBottomSheetController,
+                mModalDialogManager,
+                mSnackbarManager,
+                /* isTablet= */ false,
+                mTabStripHeightSupplier,
+                mComposeplateUrlSupplier);
     }
 
     private void verifyIsHomeSurface(boolean isHomeSurface) {
