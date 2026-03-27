@@ -702,12 +702,12 @@ void AutofillManager::ParseFormsAsyncCommon(
   // variables).
   auto run_heuristics = [](AsyncContext context, bool ignore_small_forms) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
-    context.regex_predictions.reserve(context.forms.size());
-    for (const FormData& form : context.forms) {
-      context.regex_predictions.push_back(DetermineRegexTypes(
-          context.country_code, context.current_page_language, form,
-          context.log_manager.get(), ignore_small_forms));
-    }
+    context.regex_predictions =
+        base::ToVector(context.forms, [&](const FormData& form) {
+          return DetermineRegexTypes(
+              context.country_code, context.current_page_language, form,
+              context.log_manager.get(), ignore_small_forms);
+        });
     return context;
   };
 

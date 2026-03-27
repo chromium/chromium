@@ -653,35 +653,36 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
   AutofillPlusAddressDelegate* plus_address_delegate =
       client.GetPlusAddressDelegate();
 
-  std::vector<FormFieldData> fields_for_autocomplete;
-  fields_for_autocomplete.reserve(form_structure.fields().size());
-  for (const auto& autofill_field : form_structure) {
-    fields_for_autocomplete.push_back(*autofill_field);
-    if (autofill_field->Type().GetCreditCardType() ==
-        CREDIT_CARD_VERIFICATION_CODE) {
-      // However, if Autofill has recognized a field as CVC, that shouldn't be
-      // saved.
-      fields_for_autocomplete.back().set_should_autocomplete(false);
-    }
-
-    if (autofill_field->Type().GetLoyaltyCardType() == LOYALTY_MEMBERSHIP_ID &&
-        autofill_field->last_modifier() == FieldModifier::kAutofill) {
-      // Only store loyalty cards values in Autocomplete if they were filled
-      // manually.
-      fields_for_autocomplete.back().set_should_autocomplete(false);
-    }
-    const std::u16string& value = autofill_field->value_for_import();
-    if (plus_address_delegate &&
-        (plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value)) ||
-         plus_address_delegate->MatchesPlusAddressFormat(value))) {
-      // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
-      // Note that the feature is experimental, and `plus_address_delegate`
-      // will be null if the feature is not enabled (it's disabled by default).
-      // If the plus address format happens to change or gets extended, we still
-      // keep filtering existing plus addresses.
-      fields_for_autocomplete.back().set_should_autocomplete(false);
-    }
-  }
+  std::vector<FormFieldData> fields_for_autocomplete =
+      base::ToVector(form_structure, [&](const auto& autofill_field) {
+        FormFieldData field = *autofill_field;
+        if (autofill_field->Type().GetCreditCardType() ==
+            CREDIT_CARD_VERIFICATION_CODE) {
+          // However, if Autofill has recognized a field as CVC, that shouldn't
+          // be saved.
+          field.set_should_autocomplete(false);
+        }
+        if (autofill_field->Type().GetLoyaltyCardType() ==
+                LOYALTY_MEMBERSHIP_ID &&
+            autofill_field->last_modifier() == FieldModifier::kAutofill) {
+          // Only store loyalty cards values in Autocomplete if they were filled
+          // manually.
+          field.set_should_autocomplete(false);
+        }
+        const std::u16string& value = autofill_field->value_for_import();
+        if (plus_address_delegate &&
+            (plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value)) ||
+             plus_address_delegate->MatchesPlusAddressFormat(value))) {
+          // Similarly to CVC, any plus addresses needn't be saved to
+          // autocomplete. Note that the feature is experimental, and
+          // `plus_address_delegate` will be null if the feature is not enabled
+          // (it's disabled by default). If the plus address format happens to
+          // change or gets extended, we still keep filtering existing plus
+          // addresses.
+          field.set_should_autocomplete(false);
+        }
+        return field;
+      });
 
   // TODO crbug.com/40100455 - Eliminate `form_for_autocomplete`.
   FormData form_for_autocomplete = form_structure.ToFormData();
