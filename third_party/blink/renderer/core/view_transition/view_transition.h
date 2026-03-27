@@ -221,6 +221,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
   bool HasActiveAnimations() const;
 
+  bool HasIncompatibleStyle() const;
+
   // Returns true if this object was created to cache a snapshot of the current
   // Document for a navigation.
   bool IsForNavigationSnapshot() const {

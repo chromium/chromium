@@ -12658,11 +12658,16 @@ void Element::InvalidateStyleAttribute(
 void Element::UpdateTransitionPseudoElements(
     const StyleRecalcChange style_recalc_change,
     const StyleRecalcContext& style_recalc_context) {
-  const auto* transition = ViewTransitionUtils::GetTransition(*this);
+  ViewTransition* transition = ViewTransitionUtils::GetTransition(*this);
 
   if (!IsPseudoElement()) {
     PseudoElement* old_transition_pseudo =
         GetPseudoElement(kPseudoIdViewTransition);
+    if (transition && transition->HasIncompatibleStyle() &&
+        !transition->IsDone()) {
+      transition->SkipTransitionSoon();
+      transition = nullptr;
+    }
     if (old_transition_pseudo &&
         (!transition ||
          !transition->IsGeneratingPseudo(

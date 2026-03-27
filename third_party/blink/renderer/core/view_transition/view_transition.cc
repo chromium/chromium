@@ -317,8 +317,8 @@ bool ViewTransition::AdvanceTo(State state) {
   CHECK(!blocked_on_ || state == State::kAborted)
       << "Blocked on DOM callback for skipped transition. Attempted to advance "
       << "from " << StateToString(state_) << " to " << StateToString(state);
-  DCHECK(CanAdvanceTo(state)) << "Current state " << static_cast<int>(state_)
-                              << " new state " << static_cast<int>(state);
+  DCHECK(CanAdvanceTo(state)) << "Current state " << StateToString(state_)
+                              << " new state " << StateToString(state);
 
   if (state == State::kCapturing || state_ == State::kCapturing) {
     DCHECK(style_tracker_);
@@ -1027,6 +1027,24 @@ gfx::Vector2d ViewTransition::GetFrameToSnapshotRootOffset() const {
 bool ViewTransition::HasActiveAnimations() const {
   return (state_ == State::kAnimating) && style_tracker_ &&
          style_tracker_->HasActiveAnimations();
+}
+
+bool ViewTransition::HasIncompatibleStyle() const {
+  // Display: contents is not supported on the view-transition scope element.
+  // Not only does it produce no layout box, but it changes the layout
+  // hierarchy.
+  // Note that we can have a valid view-transition from or to display: none.
+  // These correspond to a fade in or fade out transition.
+  const Element* source = scope_ ? Scope() : document_->documentElement();
+  if (const ComputedStyle* style = source->GetComputedStyle()) {
+    if (style && style->Display() == EDisplay::kContents) {
+      return true;
+    }
+  }
+
+  // Further pruning based on the type of layout object can be found in
+  // ViewTransitionStyleTracker::RunPostPrePaintSteps().
+  return false;
 }
 
 void ViewTransition::PauseRendering() {
