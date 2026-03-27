@@ -14,12 +14,15 @@ namespace {
 constexpr char cc_model_name[] = "Chromecast";
 constexpr char cc_ultra_model_name[] = "Chromecast Ultra";
 constexpr char cc_dongle_model_name[] = "Eureka Dongle";
+constexpr char gtv_streamer_model_name[] = "Google TV Streamer";
 }  // namespace
 
 TEST(DeviceCapabilityCheckerTest, CheckDeviceCapability) {
   EXPECT_TRUE(IsKnownToSupportRemoting(cc_model_name));
   EXPECT_TRUE(IsKnownToSupportRemoting(cc_ultra_model_name));
   EXPECT_TRUE(IsKnownToSupportRemoting(cc_dongle_model_name));
+  EXPECT_TRUE(IsKnownToSupportRemoting(gtv_streamer_model_name));
+  EXPECT_FALSE(IsKnownToSupportRemoting("Google TV Streamer v2"));
   EXPECT_FALSE(IsKnownToSupportRemoting("Nest"));
 }
 
@@ -28,6 +31,10 @@ TEST(DeviceCapabilityCheckerTest, CheckVideoCapability) {
   EXPECT_TRUE(IsVideoCodecCompatible(cc_ultra_model_name, VideoCodec::kHEVC));
   EXPECT_TRUE(IsVideoCodecCompatible(cc_ultra_model_name, VideoCodec::kVP9));
   EXPECT_TRUE(IsVideoCodecCompatible(cc_dongle_model_name, VideoCodec::kVP8));
+  EXPECT_TRUE(
+      IsVideoCodecCompatible(gtv_streamer_model_name, VideoCodec::kVP9));
+  EXPECT_FALSE(
+      IsVideoCodecCompatible(gtv_streamer_model_name, VideoCodec::kHEVC));
 }
 
 TEST(DeviceCapabilityCheckerTest, CheckAudioCapability) {

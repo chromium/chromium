@@ -21,11 +21,15 @@ bool IsKnownToSupportRemoting(const std::string& model_name) {
   return base::StartsWith(model_name, "Chromecast",
                           base::CompareCase::SENSITIVE) ||
          base::StartsWith(model_name, "Eureka Dongle",
-                          base::CompareCase::SENSITIVE);
+                          base::CompareCase::SENSITIVE) ||
+         model_name == "Google TV Streamer";
 }
 
 bool IsVideoCodecCompatible(const std::string& model_name,
                             VideoCodec video_codec) {
+  // TODO(b/496224579): Update the supported codecs for `Google TV streamer`
+  // once the receiver device correctly responded its supported codec.
+
   if (!IsKnownToSupportRemoting(model_name)) {
     return false;
   }
@@ -33,8 +37,12 @@ bool IsVideoCodecCompatible(const std::string& model_name,
   if (video_codec == VideoCodec::kH264 || video_codec == VideoCodec::kVP8) {
     return true;
   }
-  if (model_name == "Chromecast Ultra" &&
-      (video_codec == VideoCodec::kHEVC || video_codec == VideoCodec::kVP9)) {
+  if ((model_name == "Chromecast Ultra" ||
+       model_name == "Google TV Streamer") &&
+      video_codec == VideoCodec::kVP9) {
+    return true;
+  }
+  if (model_name == "Chromecast Ultra" && video_codec == VideoCodec::kHEVC) {
     return true;
   }
   return false;
