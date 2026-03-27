@@ -2762,28 +2762,11 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   private capabilityToString(capability: HostCapability): string {
-    switch (capability) {
-      case HostCapability.SCROLL_TO_PDF:
-        return 'SCROLL_TO_PDF';
-      case HostCapability.RESET_SIZE_AND_LOCATION_ON_OPEN:
-        return 'RESET_SIZE_AND_LOCATION_ON_OPEN';
-      case HostCapability.GET_MODEL_QUALITY_CLIENT_ID:
-        return 'GET_MODEL_QUALITY_CLIENT_ID';
-      case HostCapability.MULTI_INSTANCE:
-        return 'MULTI_INSTANCE';
-      case HostCapability.TRUST_FIRST_ONBOARDING_ARM1:
-        return 'TRUST_FIRST_ONBOARDING_ARM_1';
-      case HostCapability.TRUST_FIRST_ONBOARDING_ARM2:
-        return 'TRUST_FIRST_ONBOARDING_ARM_2';
-      case HostCapability.SHARE_ADDITIONAL_IMAGE_CONTEXT:
-        return 'SHARE_ADDITIONAL_IMAGE_CONTEXT';
-      case HostCapability.PDF_ZERO_STATE:
-        return 'PDF_ZERO_STATE';
-      case HostCapability.INVOKE:
-        return 'INVOKE';
-      default:
-        throw new Error(`Unhandled capability: ${capability}`);
+    const capabilityName = HostCapability[capability];
+    if (capabilityName) {
+      return capabilityName;
     }
+    throw new Error(`Unknown capability: ${capability}`);
   }
 }
 

@@ -2104,6 +2104,8 @@ enum HostCapability {
   kPdfZeroState = 7,
   // Indicates that the host supports the invoke mechanism.
   kInvoke = 8,
+  // Indicates that the host does not support Live Mode.
+  kNoLiveMode = 9,
 };
 
 // @generate glic_api

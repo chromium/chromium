@@ -932,6 +932,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(
           mojom::HostCapability::kShareAdditionalImageContext);
     }
+    if (!base::FeatureList::IsEnabled(features::kGlicLiveMode)) {
+      state->host_capabilities.push_back(mojom::HostCapability::kNoLiveMode);
+    }
     state->enable_get_page_metadata =
         base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
     state->enable_api_activation_gating =

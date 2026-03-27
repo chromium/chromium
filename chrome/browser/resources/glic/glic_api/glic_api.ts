@@ -2954,6 +2954,8 @@ export enum HostCapability {
   PDF_ZERO_STATE = 7,
   // Indicates that the host supports the invoke mechanism.
   INVOKE = 8,
+  // Indicates that the host does not support Live Mode.
+  NO_LIVE_MODE = 9,
 }
 
 ///////////////////////////////////////////////
