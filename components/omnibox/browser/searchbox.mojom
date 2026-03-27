@@ -460,9 +460,6 @@ interface Page {
   // Called when content sharing policy changes.
   UpdateContentSharingPolicy(bool enabled);
 
-  // Notifies the UI to show or hide AI features.
-  UpdateAimEligibility(bool eligible);
-
-  // Called when pref 'omnibox::kShowAiModeOmniboxButton' changes.
-  OnShowAiModePrefChanged(bool canShow);
+  // Notifies the UI to show or hide the AIM popup for omnibox.
+  UpdateAimPopupEligibility(bool eligible);
 };

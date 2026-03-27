@@ -92,14 +92,13 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
   MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
   MOCK_METHOD(void, UpdateContentSharingPolicy, (bool enabled), (override));
   MOCK_METHOD(void, UpdateLensSearchEligibility, (bool eligible), (override));
-  MOCK_METHOD(void, UpdateAimEligibility, (bool eligible), (override));
+  MOCK_METHOD(void, UpdateAimPopupEligibility, (bool eligible), (override));
   MOCK_METHOD(void,
               StepSelection,
               (searchbox::mojom::SelectionDirection,
                searchbox::mojom::SelectionStep));
   MOCK_METHOD(void, OpenCurrentSelection, (WindowOpenDisposition));
   MOCK_METHOD(void, SetAimButtonVisible, (bool visible));
-  void OnShowAiModePrefChanged(bool canShow) override {}
 
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();
