@@ -240,8 +240,8 @@ bool SyncSchedulerImpl::CanRunJobNow(RespectGlobalBackoff respect_backoff) {
   }
 
   if (!ignore_auth_credentials_ &&
-      cycle_context_->connection_manager()->HasInvalidAccessToken()) {
-    SDVLOG(1) << "Unable to run a job because we have no valid access token.";
+      !cycle_context_->connection_manager()->HasAccessToken()) {
+    SDVLOG(1) << "Unable to run a job because we have no access token.";
     return false;
   }
 
@@ -621,7 +621,7 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl(
     // We must be in an error state. Transitioning out of each of these
     // error states should trigger a sync cycle job.
     DCHECK(IsGlobalThrottle() || IsGlobalBackoff() ||
-           cycle_context_->connection_manager()->HasInvalidAccessToken());
+           !cycle_context_->connection_manager()->HasAccessToken());
   }
 
   RestartWaiting();

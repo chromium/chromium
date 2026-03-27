@@ -42,21 +42,6 @@ const char* GetServerConnectionCodeString(
 
 #undef ENUM_CASE
 
-bool IsAccessTokenValid(const signin::AccessTokenInfo& access_token_info) {
-  if (access_token_info.token.empty()) {
-    return false;
-  }
-
-  // Assume the token is valid if the expiration time is not set or the
-  // validation feature is disabled.
-  if (access_token_info.expiration_time.is_null() ||
-      !base::FeatureList::IsEnabled(kSyncValidateAccessToken)) {
-    return true;
-  }
-
-  return access_token_info.expiration_time > base::Time::Now();
-}
-
 }  // namespace
 
 HttpResponse::HttpResponse()
@@ -117,26 +102,23 @@ bool ServerConnectionManager::SetAccessTokenInfo(
     const signin::AccessTokenInfo& access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (IsAccessTokenValid(access_token_info)) {
-    access_token_info_ = access_token_info;
+  access_token_info_ = access_token_info;
+  if (IsAccessTokenValid()) {
     return true;
   }
 
   ClearAccessToken();
 
-  // The access token could be non-empty in cases like server outage/bug. E.g.
-  // token returned by first request is considered invalid by sync server and
-  // because of token server's caching policy, etc, same token is returned on
-  // second request. Need to notify sync frontend again to request new token,
-  // otherwise backend will stay in SYNC_AUTH_ERROR state while frontend thinks
-  // everything is fine and takes no actions.
+  // The token was probably expired. Notify sync frontend again to request new
+  // token, otherwise backend will stay in SYNC_AUTH_ERROR state while frontend
+  // thinks everything is fine and takes no actions.
   SetServerResponse(HttpResponse::ForHttpStatusCode(net::HTTP_UNAUTHORIZED));
   return false;
 }
 
-bool ServerConnectionManager::HasInvalidAccessToken() const {
+bool ServerConnectionManager::HasAccessToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !IsAccessTokenValid(access_token_info_);
+  return !access_token_info_.token.empty();
 }
 
 void ServerConnectionManager::ClearAccessToken() {
@@ -145,6 +127,21 @@ void ServerConnectionManager::ClearAccessToken() {
 
 std::string ServerConnectionManager::GetAccessToken() const {
   return access_token_info_.token;
+}
+
+bool ServerConnectionManager::IsAccessTokenValid() const {
+  if (access_token_info_.token.empty()) {
+    return false;
+  }
+
+  // Assume the token is valid if the expiration time is not set or the
+  // validation feature is disabled.
+  if (access_token_info_.expiration_time.is_null() ||
+      !base::FeatureList::IsEnabled(kSyncValidateAccessToken)) {
+    return true;
+  }
+
+  return access_token_info_.expiration_time > base::Time::Now();
 }
 
 void ServerConnectionManager::SetServerResponse(

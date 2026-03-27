@@ -8,8 +8,10 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -133,10 +135,10 @@ SyncServerConnectionManager::~SyncServerConnectionManager() = default;
 HttpResponse SyncServerConnectionManager::PostBuffer(
     const std::string& buffer_in,
     std::string* buffer_out) {
-  base::UmaHistogramBoolean("Sync.URLFetchAccessToken",
-                            !HasInvalidAccessToken());
+  const bool is_access_token_valid = IsAccessTokenValid();
+  base::UmaHistogramBoolean("Sync.URLFetchAccessToken", is_access_token_valid);
 
-  if (HasInvalidAccessToken()) {
+  if (!is_access_token_valid) {
     ClearAccessToken();
 
     // Return an auth error in case the access token is invalid (e.g. expired),

@@ -78,7 +78,7 @@ HttpResponse FakeConnectionManager::PostBuffer(const std::string& buffer_in,
   sync_pb::ClientToServerResponse client_to_server_response;
   client_to_server_response.Clear();
 
-  if (HasInvalidAccessToken()) {
+  if (!IsAccessTokenValid()) {
     return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
   }
 

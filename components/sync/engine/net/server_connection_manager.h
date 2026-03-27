@@ -122,9 +122,8 @@ class ServerConnectionManager {
   // authentication error state.
   bool SetAccessTokenInfo(const signin::AccessTokenInfo& access_token_info);
 
-  // Returns true if the current access token is invalid (e.g. expired or
-  // empty).
-  bool HasInvalidAccessToken() const;
+  // Returns true if the current access token is not empty.
+  bool HasAccessToken() const;
 
  protected:
   // Updates `server_response_` and notifies listeners if the server status
@@ -141,6 +140,8 @@ class ServerConnectionManager {
 
   // Returns the current raw access token, empty if there is no valid token.
   std::string GetAccessToken() const;
+
+  bool IsAccessTokenValid() const;
 
  private:
   void NotifyStatusChanged();
