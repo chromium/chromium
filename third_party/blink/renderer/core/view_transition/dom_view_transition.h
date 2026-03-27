@@ -97,6 +97,7 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   Member<PromiseProperty> finished_promise_property_;
   Member<PromiseProperty> ready_promise_property_;
   Member<PromiseProperty> dom_updated_promise_property_;
+  bool mark_promises_as_handled_ = false;
 
   // The task attribution task state to be restored for `update_dom_callback_`,
   // captured on startViewTransition() path.
