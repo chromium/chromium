@@ -182,6 +182,8 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   }
   V8ObservableArrayCSSStyleSheet& EnsureAdoptedStyleSheets();
   bool HasAdoptedStyleSheets() const;
+  void ReplaceAdoptedStyleSheet(CSSStyleSheet& old_sheet,
+                                CSSStyleSheet& new_sheet);
   void AppendAdoptedStyleSheets(HeapVector<Member<CSSStyleSheet>>&&);
   void SetAdoptedStyleSheetsForTesting(HeapVector<Member<CSSStyleSheet>>);
   void ClearAdoptedStyleSheets();
