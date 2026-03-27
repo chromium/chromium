@@ -2589,9 +2589,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
       document_frame, std::make_unique<ChromePDFDocumentHelperClient>());
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::GetForCurrentDocument(document_frame);
-  pdf_helper->SaveUrlAs(
-      subframe_url,
-      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin);
+  pdf_helper->SavePdf();
 
   request_waiter.Run();
 

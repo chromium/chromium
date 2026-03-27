@@ -74,7 +74,6 @@
 #include "pdf/ui/thumbnail.h"
 #include "printing/metafile_skia.h"
 #include "printing/units.h"
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -2348,7 +2347,7 @@ void PdfViewWebPlugin::SaveToFile(const std::string& token) {
   client_->PostMessage(
       base::DictValue().Set("type", "consumeSaveToken").Set("token", token));
 
-  pdf_host_->SaveUrlAs(GURL(url_), network::mojom::ReferrerPolicy::kDefault);
+  pdf_host_->SavePdf();
 }
 
 void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {

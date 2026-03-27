@@ -16,6 +16,7 @@
 #include "content/public/common/referrer_type_converters.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_features.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -422,8 +423,7 @@ void PDFDocumentHelper::OnDocumentLoadComplete() {
   client_->OnDocumentLoadComplete(&render_frame_host());
 }
 
-void PDFDocumentHelper::SaveUrlAs(const GURL& url,
-                                  network::mojom::ReferrerPolicy policy) {
+void PDFDocumentHelper::SavePdf() {
   client_->OnSaveURL();
 
   // Save using the PDF embedder host.
@@ -435,7 +435,8 @@ void PDFDocumentHelper::SaveUrlAs(const GURL& url,
     return;
   }
 
-  content::Referrer referrer(url, policy);
+  const GURL& url = rfh->GetLastCommittedURL();
+  content::Referrer referrer(url, network::mojom::ReferrerPolicy::kDefault);
   referrer = content::Referrer::SanitizeForRequest(url, referrer);
   GetWebContents().SaveFrame(url, referrer, rfh);
 }

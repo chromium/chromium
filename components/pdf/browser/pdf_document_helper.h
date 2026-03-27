@@ -87,8 +87,7 @@ class PDFDocumentHelper
   // pdf::mojom::PdfHost:
   void SetListener(mojo::PendingRemote<mojom::PdfListener> listener) override;
   void OnDocumentLoadComplete() override;
-  void SaveUrlAs(const GURL& url,
-                 network::mojom::ReferrerPolicy policy) override;
+  void SavePdf() override;
   void UpdateContentRestrictions(int32_t content_restrictions) override;
   void SelectionChanged(const gfx::PointF& left,
                         int32_t left_height,

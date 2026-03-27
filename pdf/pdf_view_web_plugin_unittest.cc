@@ -51,7 +51,6 @@
 #include "pdf/test/test_pdfium_engine.h"
 #include "printing/metafile_skia.h"
 #include "printing/units.h"
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -386,10 +385,7 @@ class FakePdfHost : public pdf::mojom::PdfHost {
               (override));
   MOCK_METHOD(void, OnDocumentLoadComplete, (), (override));
   MOCK_METHOD(void, UpdateContentRestrictions, (int32_t), (override));
-  MOCK_METHOD(void,
-              SaveUrlAs,
-              (const GURL&, network::mojom::ReferrerPolicy),
-              (override));
+  MOCK_METHOD(void, SavePdf, (), (override));
   MOCK_METHOD(void,
               SelectionChanged,
               (const gfx::PointF&, int32_t, const gfx::PointF&, int32_t),
@@ -2208,9 +2204,7 @@ class PdfViewWebPluginSaveTest : public PdfViewWebPluginTest {
 TEST_F(PdfViewWebPluginSaveTest, OriginalInNonEditMode) {
   {
     InSequence pdf_host_sequence;
-
-    EXPECT_CALL(pdf_host_, SaveUrlAs(GURL(kPdfUrl),
-                                     network::mojom::ReferrerPolicy::kDefault));
+    EXPECT_CALL(pdf_host_, SavePdf());
   }
 
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
@@ -2238,8 +2232,7 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInEditMode) {
     InSequence pdf_host_sequence;
 
     EXPECT_CALL(pdf_host_, SetPluginCanSave(false));
-    EXPECT_CALL(pdf_host_, SaveUrlAs(GURL(kPdfUrl),
-                                     network::mojom::ReferrerPolicy::kDefault));
+    EXPECT_CALL(pdf_host_, SavePdf());
     EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
   }
 

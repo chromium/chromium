@@ -91,8 +91,8 @@ interface PdfHost {
   // Updates the content restrictions, i.e. to disable print/copy.
   UpdateContentRestrictions(int32 restrictions);
 
-  // Brings up SaveAs... dialog to save specified URL.
-  SaveUrlAs(url.mojom.Url url, network.mojom.ReferrerPolicy policy);
+  // Brings up SaveAs... dialog to save the PDF.
+  SavePdf();
 
   // Notifies the embedder of the top-left and bottom-right coordinates of the
   // current selection.
