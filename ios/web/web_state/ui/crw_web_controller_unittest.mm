@@ -327,7 +327,7 @@ TEST_F(CRWWebControllerTest, UserAgentOverrideUsedInNavigation) {
   EXPECT_NSEQ(base::SysUTF8ToNSString(alternate_ua),
               [mock_web_view_ customUserAgent]);
 
-  // An explicit empty string is passed directly to the web view.
+  // An explicit empty string is treated as no override.
   web_state()->SetUserAgentOverride("");
   [navigation_delegate_ webView:mock_web_view_
       decidePolicyForNavigationAction:navigation_action
@@ -336,7 +336,9 @@ TEST_F(CRWWebControllerTest, UserAgentOverrideUsedInNavigation) {
                                         WKWebpagePreferences* prefs){
                       }];
 
-  EXPECT_NSEQ(@"", [mock_web_view_ customUserAgent]);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(
+                  GetWebClient()->GetUserAgent(UserAgentType::MOBILE)),
+              [mock_web_view_ customUserAgent]);
 }
 
 // Tests that the WebView is correctly removed/added from the view hierarchy.

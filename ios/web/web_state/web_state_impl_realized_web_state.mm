@@ -708,6 +708,9 @@ void WebStateImpl::RealizedWebState::SetUserAgentOverride(
   if (ua_override && !net::HttpUtil::IsValidHeaderValue(*ua_override)) {
     return;
   }
+  if (ua_override && ua_override->empty()) {
+    ua_override = std::nullopt;
+  }
   user_agent_override_ = std::move(ua_override);
 }
 

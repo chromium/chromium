@@ -320,10 +320,12 @@ TEST_F(WebStateTest, UserAgentOverride) {
   web_state()->SetUserAgentOverride(std::nullopt);
   EXPECT_FALSE(web_state()->GetUserAgentOverride().has_value());
 
-  // An explicit empty string is treated as an empty override.
-  web_state()->SetUserAgentOverride("");
+  web_state()->SetUserAgentOverride(ua_override);
   EXPECT_TRUE(web_state()->GetUserAgentOverride().has_value());
-  EXPECT_EQ("", web_state()->GetUserAgentOverride().value());
+
+  // An explicit empty string is treated as no override (std::nullopt).
+  web_state()->SetUserAgentOverride("");
+  EXPECT_FALSE(web_state()->GetUserAgentOverride().has_value());
 }
 
 // Tests that setting an invalid user agent override is ignored.
