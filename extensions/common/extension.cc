@@ -37,6 +37,8 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler.h"
+// TODO(crbug.com/324534603): Remove this.
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -797,22 +799,10 @@ bool Extension::LoadExtent(const char* key,
 }
 
 bool Extension::LoadSharedFeatures(std::u16string* error) {
-  if (!LoadDescription(error) ||
-      !ManifestHandler::ParseExtension(this, error) || !LoadShortName(error)) {
+  if (!ManifestHandler::ParseExtension(this, error) || !LoadShortName(error)) {
     return false;
   }
 
-  return true;
-}
-
-bool Extension::LoadDescription(std::u16string* error) {
-  if (const base::Value* temp = manifest_->FindKey(keys::kDescription)) {
-    if (!temp->is_string()) {
-      *error = errors::kInvalidDescription;
-      return false;
-    }
-    description_ = temp->GetString();
-  }
   return true;
 }
 
@@ -865,6 +855,11 @@ bool Extension::LoadShortName(std::u16string* error) {
     short_name_ = display_name_;
   }
   return true;
+}
+
+// TODO(crbug.com/324534603): Remove this.
+const std::string& Extension::description() const {
+  return DescriptionInfo::GetDescription(*this);
 }
 
 ExtensionInfo::ExtensionInfo(const base::DictValue* manifest,

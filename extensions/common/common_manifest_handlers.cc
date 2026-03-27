@@ -25,6 +25,7 @@
 #include "extensions/common/manifest_handlers/cross_origin_isolation_info.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/devtools_page_handler.h"
 #include "extensions/common/manifest_handlers/extension_action_handler.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
@@ -69,6 +70,7 @@ void RegisterCommonManifestHandlers(ManifestHandlerRegistry* registry) {
       std::make_unique<declarative_net_request::DNRManifestHandler>());
   registry->RegisterHandler(std::make_unique<DeclarativeManifestHandler>());
   registry->RegisterHandler(std::make_unique<DefaultLocaleHandler>());
+  registry->RegisterHandler(std::make_unique<DescriptionHandler>());
   registry->RegisterHandler(std::make_unique<DevToolsPageHandler>());
   registry->RegisterHandler(std::make_unique<ExternallyConnectableHandler>());
   registry->RegisterHandler(std::make_unique<ExtensionActionHandler>());
