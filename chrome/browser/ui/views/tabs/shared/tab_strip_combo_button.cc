@@ -341,7 +341,23 @@ void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
   } else {
     return;
   }
-  prefs->SetBoolean(pref_name, !prefs->GetBoolean(pref_name));
+
+  const bool is_pinned = prefs->GetBoolean(pref_name);
+  if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
+    base::RecordAction(base::UserMetricsAction(
+        is_pinned ? "TabStripComboButton.TabSearch.Unpinned"
+                  : "TabStripComboButton.TabSearch.Pinned"));
+  } else if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
+    base::RecordAction(base::UserMetricsAction(
+        is_pinned ? "TabStripComboButton.ProjectsPanel.Unpinned"
+                  : "TabStripComboButton.ProjectsPanel.Pinned"));
+  } else if (command_id == IDC_EVERYTHING_MENU_TOGGLE_PIN) {
+    base::RecordAction(base::UserMetricsAction(
+        is_pinned ? "TabStripComboButton.EverythingMenu.Unpinned"
+                  : "TabStripComboButton.EverythingMenu.Pinned"));
+  }
+
+  prefs->SetBoolean(pref_name, !is_pinned);
 }
 
 void TabStripComboButton::OnBubbleInitializing() {
