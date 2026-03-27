@@ -44,6 +44,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -149,15 +150,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   }));
 }
 
-// TODO(https://crbug.com/492810570): Fix the flakiness.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FormWaiterFindsFormAndSubmits \
-  DISABLED_FormWaiterFindsFormAndSubmits
-#else
-#define MAYBE_FormWaiterFindsFormAndSubmits FormWaiterFindsFormAndSubmits
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
-                       MAYBE_FormWaiterFindsFormAndSubmits) {
+                       FormWaiterFindsFormAndSubmits) {
   Profile* profile = browser()->profile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
@@ -173,12 +167,16 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/password/update_form_empty_fields.html");
 
+  content::TestNavigationObserver observer(url.GetWithEmptyPath());
+  observer.StartWatchingNewWebContents();
+
   delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
                                     original_web_contents->GetWeakPtr());
+
+  observer.Wait();
+
   content::WebContents* new_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  PasswordsNavigationObserver observer(new_web_contents);
-  EXPECT_TRUE(observer.Wait());
   ASSERT_TRUE(content::NavigateToURL(new_web_contents, url));
 
   base::RunLoop run_loop;
