@@ -153,10 +153,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Indicates that the platform allows client applications to manipulate
     // global screen coordinates. Wayland, for example, disallow it by design.
     bool supports_global_screen_coordinates = true;
-
-    // Whether the platform supports system/shell integrated color picker
-    // dialog. An example is XDG Desktop Portal provided PickColor dialog.
-    bool supports_color_picker_dialog = true;
   };
 
   // Groups platform properties that can only be known at run time.

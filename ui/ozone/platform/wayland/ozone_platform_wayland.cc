@@ -359,11 +359,6 @@ class OzonePlatformWayland : public OzonePlatform,
       // arbitrary position.
       properties->supports_global_screen_coordinates = false;
 
-      // TODO(crbug.com/40800718): Revisit (and maybe remove) once proper
-      // support, probably backed by org.freedesktop.portal.Screenshot.PickColor
-      // API is implemented.
-      properties->supports_color_picker_dialog = false;
-
       initialised = true;
     }
 
