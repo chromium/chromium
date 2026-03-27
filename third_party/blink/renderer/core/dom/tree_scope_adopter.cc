@@ -90,7 +90,9 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
     // 3-2. If inclusiveDescendant's custom element registry is a global custom
     // element registry then set inclusiveDescendant's custom element registry
     // to document's effective global custom element registry.
-    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+        (old_document.ScopedCustomElementRegistryUsed() ||
+         new_document.ScopedCustomElementRegistryUsed())) {
       // If the original document is using scoped custom element registry, we
       // need to make sure the new document is also prepared to run SCER related
       // operations.
@@ -140,7 +142,9 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
   // inclusiveDescendant's custom element registry to document's effective
   // global custom element registry.
   auto* shadow_root_registry = shadow_root.customElementRegistry();
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      (old_document.ScopedCustomElementRegistryUsed() ||
+       new_document.ScopedCustomElementRegistryUsed())) {
     if ((!shadow_root_registry &&
          !shadow_root.ShouldKeepCustomElementRegistryNull()) ||
         (shadow_root_registry && shadow_root_registry->IsGlobalRegistry())) {
