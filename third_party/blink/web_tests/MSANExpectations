@@ -73,6 +73,9 @@ crbug.com/931660 [ Linux ] fast/history/replacestate-nocrash.html [ Pass Timeout
 
 
 crbug.com/856601 [ Linux ] external/wpt/compression/compression-stream.any.serviceworker.html [ Pass Timeout ]
+crbug.com/490781032 [ Linux ] external/wpt/compression/compression-stream.any.worker.html [ Pass Timeout ]
+crbug.com/490702367 [ Linux ] external/wpt/compression/compression-stream.any.sharedworker.html [ Pass Timeout ]
+crbug.com/856601 [ Linux ] external/wpt/compression/compression-stream.any.html [ Pass Timeout ]
 
 # Sheriff 2020-02-10
 crbug.com/1050559 [ Linux ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1-1000 [ Skip ]
