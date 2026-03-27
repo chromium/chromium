@@ -102,6 +102,8 @@ class CORE_EXPORT ViewTransitionUtils {
   // Called when the lifecycle will update style and layout tree for the given
   // document. Used to invalidate pseudo styles if necessary.
   static void WillUpdateStyleAndLayoutTree(Document& document);
+
+  static PseudoId ParentViewTransitionPseudoId(PseudoId pseudo_id);
 };
 
 }  // namespace blink

@@ -297,4 +297,23 @@ void ViewTransitionUtils::WillUpdateStyleAndLayoutTree(Document& document) {
   }
 }
 
+// static
+PseudoId ViewTransitionUtils::ParentViewTransitionPseudoId(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdViewTransitionNew:
+    case kPseudoIdViewTransitionOld:
+      return kPseudoIdViewTransitionImagePair;
+
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionGroupChildren:
+      return kPseudoIdViewTransitionGroup;
+
+    case kPseudoIdViewTransitionGroup:
+      return kPseudoIdViewTransition;
+
+    default:
+      return kPseudoIdNone;
+  }
+}
+
 }  // namespace blink

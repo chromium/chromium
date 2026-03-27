@@ -9883,6 +9883,18 @@ const ComputedStyle* Element::EnsureComputedStyle(
     filter_root = nullptr;
   }
 
+  // The SelectorFilter relies on FlatTreeTraversal matching the inheritance
+  // order for consistency checks, but FlatTreeTraversal does not traverse
+  // ::view-transition* pseudo-elements in their inheritance order.
+  // Disable fast-rejection of selectors to avoid the consistency check failure.
+  // This can make getComputedStyle(originating, "::view-transition-...") slower
+  // when the pseudo-element is not generated.
+  if (IsTransitionPseudoElement(pseudo_element_specifier) &&
+      pseudo_element_specifier != kPseudoIdViewTransition &&
+      !IsTransitionPseudoElement(GetPseudoId())) {
+    filter_root = nullptr;
+  }
+
   SelectorFilterParentScope root_scope(
       filter_root, SelectorFilterParentScope::ScopeType::kRoot);
   SelectorFilter& filter =
@@ -9980,6 +9992,21 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   }
 
   const ComputedStyle* layout_parent_style = element_style;
+  const ComputedStyle* parent_style = element_style;
+
+  PseudoId parent_pseudo = ViewTransitionUtils::ParentViewTransitionPseudoId(
+      pseudo_element_specifier);
+  if (parent_pseudo != kPseudoIdNone) {
+    const AtomicString& parent_argument =
+        parent_pseudo == PseudoId::kPseudoIdViewTransition ? g_null_atom
+                                                           : pseudo_argument;
+    Element* parent_element =
+        GetStyledPseudoElement(parent_pseudo, parent_argument);
+    parent_style = (parent_element)
+                       ? parent_element->GetComputedStyle()
+                       : EnsureComputedStyle(parent_pseudo, parent_argument);
+  }
+
   if (HasDisplayContentsStyle()) {
     LayoutObject* parent_layout_object =
         LayoutTreeBuilderTraversal::ParentLayoutObject(*this);
@@ -10011,7 +10038,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     style_request.layout_parent_override = highlight_element_style;
     style_request.originating_element_style = element_style;
   } else {
-    style_request.parent_override = element_style;
+    style_request.parent_override = parent_style;
     style_request.layout_parent_override = layout_parent_style;
   }
   style_request.pseudo_argument = pseudo_argument;

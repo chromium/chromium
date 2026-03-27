@@ -215,6 +215,9 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
     if (overscroll_style_sheet_) {
       expected_rule_count += 1u;
     }
+    if (default_view_transition_style_sheet_) {
+      expected_rule_count += 11u;
+    }
     DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(),
               expected_rule_count);
   }
