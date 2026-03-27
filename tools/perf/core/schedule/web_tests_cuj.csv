@@ -1,2 +1,2 @@
-bot,repeat,shard
-android-brya-kano-i5-8gb-perf,1,1
+bot,repeat,shard,flags
+android-brya-kano-i5-8gb-perf,1,1,--web-tests-cuj --debug

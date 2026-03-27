@@ -392,11 +392,11 @@ def _views_perftests(estimated_runtime: int = 7):
 
 
 @_register('web_tests_cuj')
-def _web_tests_cuj(estimated_runtime: int = 10):
+def _web_tests_cuj(estimated_runtime: int = 10, flags: tuple[str, ...] = ()):
   return CrossbenchConfig('web_tests_cuj',
                           'speedometer_3.1',
                           estimated_runtime=estimated_runtime,
-                          flags=('--web-tests-cuj', '--debug'))
+                          flags=flags)
 
 # Speedometer:
 @_register('speedometer2.0.crossbench')
