@@ -312,6 +312,65 @@ TEST_F(AmountExtractionManagerTest,
       IsEmpty());
 }
 
+TEST_F(
+    AmountExtractionManagerTest,
+    PayLaterTabs_AiBasedAmountExtractionShouldNotTriggerWhenNoBnplSuggestionAndNoLoadingThrobber) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+  EXPECT_THAT(
+      amount_extraction_manager_->GetEligibleFeatures(
+          /*is_autofill_payments_enabled=*/true,
+          /*should_suppress_suggestions=*/false,
+          /*suggestions=*/
+          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
+          /*filling_product=*/FillingProduct::kCreditCard,
+          /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+      IsEmpty());
+}
+
+TEST_F(
+    AmountExtractionManagerTest,
+    PayLaterTabs_AiBasedAmountExtractionTriggeredWhenThereIsALoadingThrobber) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+  EXPECT_THAT(
+      amount_extraction_manager_->GetEligibleFeatures(
+          /*is_autofill_payments_enabled=*/true,
+          /*should_suppress_suggestions=*/false,
+          /*suggestions=*/
+          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
+                                  Suggestion(SuggestionType::kLoadingThrobber)},
+          /*filling_product=*/FillingProduct::kCreditCard,
+          /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+      ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
+}
+
+TEST_F(
+    AmountExtractionManagerTest,
+    PayLaterTabs_AiBasedAmountExtractionTriggeredWhenThereIsABnplSuggestion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+  EXPECT_THAT(
+      amount_extraction_manager_->GetEligibleFeatures(
+          /*is_autofill_payments_enabled=*/true,
+          /*should_suppress_suggestions=*/false,
+          /*suggestions=*/
+          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
+                                  Suggestion(SuggestionType::kBnplEntry)},
+          /*filling_product=*/FillingProduct::kCreditCard,
+          /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
+      ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
+}
+
 TEST_F(AmountExtractionManagerTest,
        AiBasedAmountExtractionShouldNotTriggerWhenAutofillDisabled) {
   base::test::ScopedFeatureList scoped_feature_list{

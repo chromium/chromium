@@ -113,10 +113,21 @@ AmountExtractionManager::GetEligibleFeatures(
     const std::vector<Suggestion>& suggestions,
     FillingProduct filling_product,
     FieldType field_type) const {
-  // In AI-based amount extraction case, if there is a BNPL suggestion present,
-  // then the amount extraction flow should be initiated.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAiBasedAmountExtraction)) {
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    // In the Pay Now Pay Later tabs case, if there is no BNPL suggestion and no
+    // loading throbber suggestion, then no pay later tab was displayed, so
+    // return that there are no eligible features.
+    if (std::ranges::none_of(suggestions, [](const Suggestion& suggestion) {
+          return (suggestion.type == SuggestionType::kBnplEntry ||
+                  suggestion.type == SuggestionType::kLoadingThrobber);
+        })) {
+      return {};
+    }
+  } else if (base::FeatureList::IsEnabled(
+                 features::kAutofillEnableAiBasedAmountExtraction)) {
+    // In AI-based amount extraction case, if there is a BNPL suggestion
+    // present, then the amount extraction flow should be initiated.
     if (std::ranges::none_of(suggestions, [](const Suggestion& suggestion) {
           return suggestion.type == SuggestionType::kBnplEntry;
         })) {
