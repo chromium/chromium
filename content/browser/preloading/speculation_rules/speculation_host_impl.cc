@@ -91,6 +91,20 @@ SpeculationHostImpl::SpeculationHostImpl(
 
 SpeculationHostImpl::~SpeculationHostImpl() = default;
 
+bool SpeculationHostImpl::ValidateFrameState() {
+  // Window gets inactive randomly by user-interaction, which is not avoidable.
+  if (!render_frame_host().IsActive()) {
+    return false;
+  }
+  // Sending messages from sub frames won't happen unless it is compromised.
+  if (render_frame_host().GetParent()) {
+    mojo::ReportBadMessage(
+        "SpeculationHost mojo message is sent from a subframe.");
+    return false;
+  }
+  return true;
+}
+
 void SpeculationHostImpl::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates,
     bool enable_cross_origin_prerender_iframes) {
@@ -100,6 +114,7 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   }
 
   // Only handle messages from an active main frame.
+  // TODO(crbug.com/489033320): Validate with ValidateFrameState().
   if (!render_frame_host().IsActive()) {
     return;
   }
@@ -115,12 +130,19 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 
 void SpeculationHostImpl::OnLCPPredicted() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!ValidateFrameState()) {
+    return;
+  }
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
   preloading_decider->OnLCPPredicted();
 }
 
 void SpeculationHostImpl::InitiatePreview(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!ValidateFrameState()) {
+    return;
+  }
   if (!base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
     mojo::ReportBadMessage("SH_PREVIEW");
     return;

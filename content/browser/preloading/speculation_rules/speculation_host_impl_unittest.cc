@@ -356,5 +356,101 @@ TEST_F(SpeculationHostImplLinkPreviewTest,
   remote.FlushForTesting();
 }
 
+// Tests that SpeculationHostImpl::OnLCPPredicted ignores messages from an
+// inactive frame.
+TEST_F(SpeculationHostImplTest, OnLCPPredictedInactiveFrame) {
+  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  SpeculationHostImpl::Bind(render_frame_host,
+                            remote.BindNewPipeAndPassReceiver());
+
+  // Set the frame to inactive.
+  render_frame_host->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  EXPECT_FALSE(render_frame_host->IsActive());
+
+  // Call OnLCPPredicted. It should return early without creating a decider or
+  // calling its method.
+  EXPECT_FALSE(PreloadingDecider::GetForCurrentDocument(render_frame_host));
+  remote->OnLCPPredicted();
+  remote.FlushForTesting();
+  EXPECT_FALSE(PreloadingDecider::GetForCurrentDocument(render_frame_host));
+}
+
+// Tests that SpeculationHostImpl::OnLCPPredicted crashes the renderer process
+// if it receives a message from a subframe.
+TEST_F(SpeculationHostImplTest, OnLCPPredictedSubframe) {
+  // Add a subframe.
+  RenderFrameHostImpl* subframe_rfh = static_cast<RenderFrameHostImpl*>(
+      content::RenderFrameHostTester::For(GetRenderFrameHost())
+          ->AppendChild("subframe"));
+  EXPECT_TRUE(subframe_rfh->GetParent());
+
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  SpeculationHostImpl::Bind(subframe_rfh, remote.BindNewPipeAndPassReceiver());
+
+  // Set up the error handler for bad mojo messages.
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { bad_message_error = error; }));
+
+  EXPECT_FALSE(PreloadingDecider::GetForCurrentDocument(subframe_rfh));
+  remote->OnLCPPredicted();
+  remote.FlushForTesting();
+  EXPECT_FALSE(PreloadingDecider::GetForCurrentDocument(subframe_rfh));
+  EXPECT_EQ(bad_message_error,
+            "SpeculationHost mojo message is sent from a subframe.");
+}
+
+// Tests that SpeculationHostImpl::InitiatePreview ignores messages from an
+// inactive frame.
+TEST_F(SpeculationHostImplLinkPreviewTest, InitiatePreviewInactiveFrame) {
+  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  SpeculationHostImpl::Bind(render_frame_host,
+                            remote.BindNewPipeAndPassReceiver());
+
+  // Set the frame to inactive.
+  render_frame_host->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  EXPECT_FALSE(render_frame_host->IsActive());
+
+  StrictMock<test::MockLinkPreviewWebContentsDelegate> delegate;
+  WebContents::FromRenderFrameHost(render_frame_host)->SetDelegate(&delegate);
+  const GURL preview_url = GetSameOriginUrl("/empty.html");
+  EXPECT_CALL(delegate, InitiatePreview(_, preview_url)).Times(Exactly(0));
+
+  remote->InitiatePreview(preview_url);
+  remote.FlushForTesting();
+}
+
+// Tests that SpeculationHostImpl::InitiatePreview crashes the renderer process
+// if it receives a message from a subframe.
+TEST_F(SpeculationHostImplLinkPreviewTest, InitiatePreviewSubframe) {
+  // Add a subframe.
+  RenderFrameHostImpl* subframe_rfh = static_cast<RenderFrameHostImpl*>(
+      content::RenderFrameHostTester::For(GetRenderFrameHost())
+          ->AppendChild("subframe"));
+  EXPECT_TRUE(subframe_rfh->GetParent());
+
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  SpeculationHostImpl::Bind(subframe_rfh, remote.BindNewPipeAndPassReceiver());
+
+  // Set up the error handler for bad mojo messages.
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { bad_message_error = error; }));
+
+  StrictMock<test::MockLinkPreviewWebContentsDelegate> delegate;
+  WebContents::FromRenderFrameHost(subframe_rfh)->SetDelegate(&delegate);
+  const GURL preview_url = GetSameOriginUrl("/empty.html");
+  EXPECT_CALL(delegate, InitiatePreview(_, preview_url)).Times(Exactly(0));
+
+  remote->InitiatePreview(preview_url);
+  remote.FlushForTesting();
+  EXPECT_EQ(bad_message_error,
+            "SpeculationHost mojo message is sent from a subframe.");
+}
+
 }  // namespace
 }  // namespace content
