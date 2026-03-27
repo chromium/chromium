@@ -175,6 +175,9 @@ void ConfigureImageColor(UIButtonConfiguration* button_configuration,
     case ChromeButtonStyleSecondary:
       [self updateButtonToMatchSecondaryAction];
       break;
+    case ChromeButtonStyleSecondaryDestructive:
+      [self updateButtonToMatchSecondaryDestructiveAction];
+      break;
     case ChromeButtonStyleTertiary:
       [self updateButtonToMatchTertiaryAction];
       break;
@@ -355,6 +358,25 @@ void ConfigureImageColor(UIButtonConfiguration* button_configuration,
   }
   SetButtonTitleTextAttributes(configuration, font, enabled_text_color);
   configuration.baseForegroundColor = enabled_text_color;
+  self.configuration = configuration;
+  self.configurationUpdateHandler =
+      NonPrimaryActionConfigurationUpdateHandler();
+}
+
+// Updates `button` to match a secondary destructive action style.
+- (void)updateButtonToMatchSecondaryDestructiveAction {
+  UIButtonConfiguration* configuration = self.configuration;
+  configuration.background.backgroundColor = UIColor.clearColor;
+  UIColor* enabledTextColor = [UIColor colorNamed:kRed600Color];
+  UIFont* font;
+  if (@available(iOS 26, *)) {
+    font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    self.tintColor = UIColor.clearColor;
+  } else {
+    font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  }
+  SetButtonTitleTextAttributes(configuration, font, enabledTextColor);
+  configuration.baseForegroundColor = enabledTextColor;
   self.configuration = configuration;
   self.configurationUpdateHandler =
       NonPrimaryActionConfigurationUpdateHandler();

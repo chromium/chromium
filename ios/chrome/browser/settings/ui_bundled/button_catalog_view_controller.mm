@@ -128,6 +128,18 @@ UILabel* CreateLabel(NSString* text) {
     [stackView addArrangedSubview:button];
   }
 
+  [stackView addArrangedSubview:CreateLabel(@"Secondary Destructive Buttons")];
+  for (int i = 0; i < 2; ++i) {
+    ChromeButton* button = [[ChromeButton alloc]
+        initWithStyle:ChromeButtonStyleSecondaryDestructive];
+    button.enabled = i == 1;
+    NSString* state = i == 1 ? @"enabled" : @"disabled";
+    NSString* title =
+        [NSString stringWithFormat:@"Secondary Destructive Button (%@)", state];
+    [button setTitle:title forState:UIControlStateNormal];
+    [stackView addArrangedSubview:button];
+  }
+
   [stackView addArrangedSubview:CreateLabel(@"Tertiary Buttons")];
   for (int i = 0; i < 2; ++i) {
     ChromeButton* button =

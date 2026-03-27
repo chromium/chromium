@@ -12,6 +12,7 @@ typedef NS_ENUM(NSInteger, ChromeButtonStyle) {
   ChromeButtonStylePrimary,
   ChromeButtonStylePrimaryDestructive,
   ChromeButtonStyleSecondary,
+  ChromeButtonStyleSecondaryDestructive,
   ChromeButtonStyleTertiary,
 };
 
