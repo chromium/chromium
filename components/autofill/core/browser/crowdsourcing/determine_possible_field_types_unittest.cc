@@ -187,9 +187,7 @@ class ProfileMatchingTypesTest
  public:
   ProfileMatchingTypesTest() {
     features_.InitWithFeatures(
-        {features::kAutofillUseNegativePatternForAllAttributes,
-         features::kAutofillSupportLastNamePrefix},
-        {});
+        {features::kAutofillUseNegativePatternForAllAttributes}, {});
   }
 
  protected:
@@ -202,7 +200,7 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"Elvis", {NAME_FIRST}},
     {"Aaron", {NAME_MIDDLE}},
     {"A", {NAME_MIDDLE_INITIAL}},
-    {"Presley", {NAME_LAST, NAME_LAST_SECOND, NAME_LAST_CORE}},
+    {"Presley", {NAME_LAST, NAME_LAST_SECOND}},
     {"Elvis Aaron Presley", {NAME_FULL}},
     {"theking@gmail.com", {EMAIL_ADDRESS}},
     {"RCA", {COMPANY_NAME}},
@@ -292,14 +290,6 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"5", {UNKNOWN_TYPE}},
     {"56", {UNKNOWN_TYPE}},
     {"901", {UNKNOWN_TYPE}},
-
-    // Make sure that last name prefix and last name core is handled correctly.
-    {"Vincent Wilhelm van Gogh", {NAME_FULL}},
-    {"Vincent", {NAME_FIRST}},
-    {"Wilhelm", {NAME_MIDDLE}},
-    {"van Gogh", {NAME_LAST}},
-    {"van", {NAME_LAST_PREFIX}},
-    {"Gogh", {NAME_LAST_CORE, NAME_LAST_SECOND}},
 };
 
 // Tests that DeterminePossibleFieldTypesForUpload finds accurate possible
@@ -319,7 +309,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles(
-      4, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
+      3, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
 
   test::SetProfileInfo(
       &profiles[0],
@@ -355,14 +345,6 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
                                          .with_phone("+33 2 49 19 70 70")
                                          .Build());
   profiles[2].set_guid(MakeGuid(1));
-
-  test::SetProfileInfo(&profiles[3], test::SetProfileInfoOptionsBuilder()
-                                         .with_first_name("Vincent")
-                                         .with_middle_name("Wilhelm")
-                                         .with_last_name("van Gogh")
-                                         .with_country("NL")
-                                         .Build());
-  profiles[3].set_guid(MakeGuid(4));
 
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "John Doe", "4234-5678-9012-3456", "04",

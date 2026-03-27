@@ -87,37 +87,6 @@ NameLastConjunction::NameLastConjunction()
 
 NameLastConjunction::~NameLastConjunction() = default;
 
-NameLastPrefix::NameLastPrefix()
-    : AddressComponent(NAME_LAST_PREFIX, {}, MergeMode::kDefault) {}
-
-NameLastPrefix::~NameLastPrefix() = default;
-
-NameLastCore::NameLastCore()
-    : AddressComponent(NAME_LAST_CORE, {}, MergeMode::kDefault) {
-  RegisterChildNode(&last_first_);
-  RegisterChildNode(&last_conjuntion_);
-  RegisterChildNode(&last_second_);
-}
-
-NameLastCore::~NameLastCore() = default;
-
-void NameLastCore::ParseValueAndAssignSubcomponentsByFallbackMethod() {
-  SetValueForType(NAME_LAST_SECOND, GetValue(), VerificationStatus::kParsed);
-}
-
-std::vector<const re2::RE2*>
-NameLastCore::GetParseRegularExpressionsByRelevance() const {
-  auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
-  DCHECK(pattern_provider);
-
-  // Check if the name has the characteristics of an Hispanic/Latinx name.
-  if (HasHispanicLatinxNameCharacteristics(base::UTF16ToUTF8(GetValue()))) {
-    return {pattern_provider->GetRegEx(RegEx::kParseHispanicLastNameCore)};
-  }
-  return {
-      pattern_provider->GetRegEx(RegEx::kParseLastNameCoreIntoSecondLastName)};
-}
-
 std::vector<const re2::RE2*> NameLast::GetParseRegularExpressionsByRelevance()
     const {
   auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
@@ -126,10 +95,6 @@ std::vector<const re2::RE2*> NameLast::GetParseRegularExpressionsByRelevance()
   // Check if the name has the characteristics of an Hispanic/Latinx name.
   if (HasHispanicLatinxNameCharacteristics(base::UTF16ToUTF8(GetValue()))) {
     return {pattern_provider->GetRegEx(RegEx::kParseHispanicLastName)};
-  }
-
-  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
-    return {pattern_provider->GetRegEx(RegEx::kParseLastName)};
   }
 
   return {pattern_provider->GetRegEx(RegEx::kParseLastNameIntoSecondLastName)};
@@ -141,24 +106,15 @@ NameLastSecond::NameLastSecond()
 NameLastSecond::~NameLastSecond() = default;
 
 NameLast::NameLast() : AddressComponent(NAME_LAST, {}, MergeMode::kDefault) {
-  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
-    RegisterChildNode(&last_prefix_);
-    RegisterChildNode(&last_core_);
-  } else {
-    RegisterChildNode(&last_first_);
-    RegisterChildNode(&last_conjuntion_);
-    RegisterChildNode(&last_second_);
-  }
+  RegisterChildNode(&last_first_);
+  RegisterChildNode(&last_conjuntion_);
+  RegisterChildNode(&last_second_);
 }
 
 NameLast::~NameLast() = default;
 
 void NameLast::ParseValueAndAssignSubcomponentsByFallbackMethod() {
-  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
-    SetValueForType(NAME_LAST_CORE, GetValue(), VerificationStatus::kParsed);
-  } else {
-    SetValueForType(NAME_LAST_SECOND, GetValue(), VerificationStatus::kParsed);
-  }
+  SetValueForType(NAME_LAST_SECOND, GetValue(), VerificationStatus::kParsed);
 }
 
 // TODO(crbug.com/40143553): Honorifics are temporally disabled.
