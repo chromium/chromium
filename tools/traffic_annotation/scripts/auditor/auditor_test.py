@@ -117,49 +117,82 @@ class AuditorTest(unittest.TestCase):
 
   def test_get_files_from_git(self):
     """Tests that FileFilter.get_files_from_git() returns correct files given
-    a mock git_list.txt file. It also inherently checks
-    FileFilter._is_supported_source_file()."""
-    filter = FileFilter([".cc", ".mm"])
+    a mock git_list.txt file."""
+    filter = FileFilter()
     filter.git_file_for_testing = TEST_DATA_DIR / "git_list.txt"
     filter.get_files_from_git()
 
-    relevant_files = [
+    all_files = [
+        "tools/traffic_annotation/scripts/test_data/git_list.txt",
+        "tools/traffic_annotation/scripts/test_data/irrelevant_file_name.txt",
+        "tools/traffic_annotation/scripts/test_data/objective_cpp.mm",
         "tools/traffic_annotation/scripts/test_data/"
-        "objective_cpp.mm", "tools/traffic_annotation/scripts/test_data/"
         "test_sample_annotations.cc",
         "tools/traffic_annotation/scripts/test_data/"
         "missing_new_field_sample_data/test_new_field_safelisted.cc",
         "tools/traffic_annotation/scripts/test_data/"
         "missing_new_field_sample_data/sample_new_field_not_safelisted.cc"
     ]
-    self.assertCountEqual([Path(f) for f in relevant_files], filter.git_files)
+    self.assertCountEqual([Path(f) for f in all_files], filter.git_files)
 
-  def test_get_source_files(self):
-    """Tests that FileFilter.get_source_files() gives the correct list of
+  def test_get_filtered_files(self):
+    """Tests that FileFilter.get_filtered_files() gives the correct list of
     files, given a mock git_list.txt file."""
-    filter = FileFilter([".cc", ".mm"])
+    filter = FileFilter()
     filter.git_file_for_testing = TEST_DATA_DIR / "git_list.txt"
     filter.get_files_from_git()
 
-    # Check if all files are returned with no ignore list and directory.
+    relevant_files = [
+        Path("tools/traffic_annotation/scripts/test_data/objective_cpp.mm"),
+        Path("tools/traffic_annotation/scripts/test_data/"
+             "test_sample_annotations.cc"),
+        Path("tools/traffic_annotation/scripts/test_data/"
+             "missing_new_field_sample_data/test_new_field_safelisted.cc"),
+        Path("tools/traffic_annotation/scripts/test_data/"
+             "missing_new_field_sample_data/sample_new_field_not_safelisted.cc")
+    ]
+
+    # Check if all relevant files are returned with no ignore list and prefix.
     ignore_list = {}
-    self.assertCountEqual(filter.git_files,
-                          filter.get_source_files(ignore_list, ""))
+    self.assertCountEqual(
+        relevant_files,
+        filter.get_filtered_files([".cc", ".mm"], ignore_list, ""))
 
     # Check if a file is ignored when added to the ignore list.
     ignore_list = {
-        ExceptionType.ALL: [re.compile(filter.git_files[0].as_posix())]
+        ExceptionType.ALL: [re.compile(relevant_files[0].as_posix())]
     }
     self.assertCountEqual(
-        set(filter.git_files) - set(filter.git_files[:1]),
-        filter.get_source_files(ignore_list, ""))
+        set(relevant_files) - set(relevant_files[:1]),
+        filter.get_filtered_files([".cc", ".mm"], ignore_list, ""))
 
     # Check if files are filtered based on given directory.
     ignore_list = {}
     self.assertCountEqual(
-        filter.git_files,
-        filter.get_source_files(ignore_list, "tools/traffic_annotation"))
-    self.assertEqual([], filter.get_source_files(ignore_list, "content"))
+        relevant_files,
+        filter.get_filtered_files([".cc", ".mm"], ignore_list,
+                                  "tools/traffic_annotation"))
+    self.assertEqual([],
+                     filter.get_filtered_files([".cc", ".mm"], ignore_list,
+                                               "content"))
+
+  def test_get_filtered_files_sequential(self):
+    """Tests that FileFilter.get_filtered_files() correctly respects different
+    accepted_suffixes when called sequentially."""
+    filter = FileFilter()
+    filter.git_file_for_testing = TEST_DATA_DIR / "git_list.txt"
+    filter.get_files_from_git()
+
+    cc_files = filter.get_filtered_files([".cc"], {}, "")
+    for f in cc_files:
+      self.assertEqual(".cc", f.suffix)
+    self.assertTrue(
+        any(f.name == "test_sample_annotations.cc" for f in cc_files))
+
+    mm_files = filter.get_filtered_files([".mm"], {}, "")
+    for f in mm_files:
+      self.assertEqual(".mm", f.suffix)
+    self.assertTrue(any(f.name == "objective_cpp.mm" for f in mm_files))
 
   def test_is_safelisted(self):
     """Tests if Auditor._is_safe_listed() works as expected. Inherently checks

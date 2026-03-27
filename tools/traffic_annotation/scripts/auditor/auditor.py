@@ -638,32 +638,34 @@ class FileFilter:
   """Provides the list of files to scan via extractor.py.
 
   Attributes:
-    git_files: The list of files extracted via `git ls-files` (filtered).
+    git_files: The list of files extracted via `git ls-files`.
     git_file_for_testing: If present, use this .txt file to mock the output of
        `git ls-files`."""
 
-  def __init__(self, accepted_suffixes: List[str]):
+  def __init__(self):
     self.git_files: List[Path] = []
     self.git_file_for_testing: Optional[Path] = None
-    self.accepted_suffixes = accepted_suffixes
 
-  def get_source_files(self, safe_list: SafeList, prefix: str) -> List[Path]:
+  def get_filtered_files(self, accepted_suffixes: List[str],
+                         safe_list: SafeList, prefix: str) -> List[Path]:
     """Returns a filtered list of files in the prefix directory.
 
     Relevant files:
       - Are tracked by git.
-      - Are in a supported programming language (see
-        _is_supported_source_file()).
+      - Have an accepted suffix (see _is_accepted_file()).
       - Do not match any of the regexen in the ALL category of safe_list.
-      - Are inside the directory_name directory."""
+      - Are inside the prefix directory."""
     file_paths = []
 
     if not self.git_files:
-      self.get_files_from_git()
+      raise RuntimeError(
+          'get_filtered_files() called before get_files_from_git()')
 
     for file_path in self.git_files:
       posix_path = file_path.as_posix()
       if not posix_path.startswith(prefix):
+        continue
+      if not self._is_accepted_file(file_path, accepted_suffixes):
         continue
       if (ExceptionType.ALL in safe_list
           and any(r.match(posix_path) for r in safe_list[ExceptionType.ALL])):
@@ -672,10 +674,11 @@ class FileFilter:
 
     return file_paths
 
-  def _is_supported_source_file(self, file_path: Path) -> bool:
-    """Returns true if file_path looks like a non-test C++/Obj-C++ file."""
+  def _is_accepted_file(self, file_path: Path,
+                        accepted_suffixes: List[str]) -> bool:
+    """Returns true if file_path has an accepted suffix and is not a test."""
     # Check file extension.
-    if file_path.suffix not in self.accepted_suffixes:
+    if file_path.suffix not in accepted_suffixes:
       return False
 
     # Ignore test files to speed up the tests. They would be only tested when
@@ -686,9 +689,7 @@ class FileFilter:
     return True
 
   def get_files_from_git(self) -> None:
-    """Populates self.git_files with the output of `git ls-files`.
-
-    Only keeps supported source file (per _is_supported_source_file())."""
+    """Populates self.git_files with the output of `git ls-files`."""
     # Change directory to source path to access git and check files.
     original_cwd = os.getcwd()
     os.chdir(SRC_DIR)
@@ -705,9 +706,7 @@ class FileFilter:
       process = subprocess.run(command_line, capture_output=True)
       lines = process.stdout.decode("utf-8").split("\n")
 
-    self.git_files = [
-        Path(f) for f in lines if f and self._is_supported_source_file(Path(f))
-    ]
+    self.git_files = [Path(f) for f in lines if f]
 
     # Now that we're done, undo the chdir().
     os.chdir(original_cwd)
@@ -1385,11 +1384,11 @@ class Auditor:
 
     self.exporter = Exporter(current_platform)
 
-    accepted_suffixes = [".cc", ".mm"]
+    self.accepted_suffixes = [".cc", ".mm"]
     if current_platform == "android":
-      accepted_suffixes.append(".java")
+      self.accepted_suffixes.append(".java")
 
-    self.file_filter = FileFilter(accepted_suffixes)
+    self.file_filter = FileFilter()
 
   def _get_safe_list(self) -> SafeList:
     """Lazily loads safe_list.txt and returns it."""
@@ -1486,8 +1485,7 @@ class Auditor:
       # TODO(nicolaso): Move FileFilter and `git ls-files` logic to
       # extractor.py, or maybe a separate file?
       logger.info("Getting list of files from git.")
-      files_future = executor.submit(self.file_filter.get_source_files,
-                                     safe_list, "")
+      files_future = executor.submit(self.file_filter.get_files_from_git)
 
       # Skip compdb generation while testing to speed up tests.
       if self.file_filter.git_file_for_testing is not None:
@@ -1498,11 +1496,13 @@ class Auditor:
         compdb_files_future = executor.submit(tools.GetCompDBFiles,
                                               not skip_compdb)
 
-      files = files_future.result()
+      _ = files_future.result()
       compdb_files = compdb_files_future.result(
       ) if compdb_files_future else None
 
-    suffixes = '/'.join(self.file_filter.accepted_suffixes)
+    files = self.file_filter.get_filtered_files(self.accepted_suffixes,
+                                                safe_list, "")
+    suffixes = '/'.join(self.accepted_suffixes)
     if path_filters:
       logger.info("Parsing valid {} files in the Chromium repository, "
                   "that match any of these prefixes: {}".format(
@@ -1725,7 +1725,7 @@ class Auditor:
     if path_filters:
       self._add_missing_annotations(path_filters)
 
-    suffixes = '/'.join(self.file_filter.accepted_suffixes)
+    suffixes = '/'.join(self.accepted_suffixes)
     logger.info("Checking the validity of annotations extracted from {} "
                 "files.".format(suffixes))
 
