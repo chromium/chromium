@@ -3,6 +3,7 @@
 //base/allocator/partition_allocator
 //base/allocator/partition_allocator/src/partition_alloc
 //base/android/linker
+//base/logging
 //base/numerics
 //base/third_party/cityhash
 //base/third_party/cityhash_v103
@@ -28,8 +29,6 @@
 //components/cbor
 //components/cronet
 //components/cronet/android
-//components/cronet/native
-//components/grpc_support
 //components/metrics
 //components/network_time/time_tracker
 //components/prefs

@@ -1,0 +1,55 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_bindgen("log_severity_bindgen") {
+  header = "log_severity.h"
+  cpp = true
+  visibility = [ ":*" ]
+
+  # This somewhat random `deps` entry is needed, because `log_severity.h` ends
+  # up transitively including `debug/debugging_buildflags.h` (a generated
+  # header that needs to be written first).
+  #
+  # TODO(https://crbug.com/495537792): Depend directly on a target that
+  # provides `log_severity.h`.  Today this target is `//base` and depending
+  # on it is impossible because it would lead to a circular dependency.
+  # In the future we should fix this by extracting `log_severity.h` into a
+  # separate, smaller target.
+  deps = [ "//base:debugging_buildflags" ]
+}
+
+rust_static_library("rust_logger") {
+  allow_unsafe = true  # Unsafe needed for FFI.
+  deps = [
+    ":log_severity_bindgen",
+    "//third_party/rust/log/v0_4:lib",
+  ]
+
+  # These somewhat random `deps` are needed, because `rust_logger.rs`
+  # contains: `include!("base/logging/rust_log_integration.h")` and it ends
+  # up transitively including `debug/debugging_buildflags.h` (a generated
+  # header that needs to be written first) as well as PartitionAlloc headers
+  # (which require specific `include_dirs` to be set up via `deps`).
+  #
+  # TODO(https://crbug.com/495537792): Depend directly on a target that
+  # provides `rust_log_integration.h`.  Today this target is `//base` and
+  # depending on `//base` would create a circular dependency.  In the future we
+  # should move `rust_log_integration.h` into a separate target (which may also
+  # necessitary moving `logging::LogMessage` into a small target, as well as
+  # moving _its_ dependencies into smaller/low-layer targets).  See also
+  # https://crbug.com/406267472.
+  deps += [
+    "//base:debugging_buildflags",
+    "//base:tracing_buildflags",
+    "//base/allocator/partition_allocator:raw_ptr",
+    "//build:chromeos_buildflags",
+  ]
+  visibility = [ "//base" ]
+  crate_root = "logger.rs"
+  sources = [ crate_root ]
+  cxx_bindings = [ crate_root ]
+}

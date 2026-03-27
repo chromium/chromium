@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chromium::import! {
-    "//base:logging_log_severity_bindgen" as log_severity;
+    "//base/logging:log_severity_bindgen" as log_severity;
 }
 
 use log::Level::{Debug, Error, Info, Trace, Warn};
