@@ -517,7 +517,6 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
 }
 
 bool SiteInfo::IsSandboxed() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return is_sandboxed_;
 }
 

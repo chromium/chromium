@@ -21,6 +21,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/url_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -77,18 +78,27 @@ class CodeCacheHostImplTest : public testing::Test,
 
   bool IsSitePerProcessOrStricter() { return GetParam(); }
 
-  void SetupRendererWithLock(ChildProcessId process_id, const GURL& url) {
+  void SetupRendererWithLock(ChildProcessId process_id,
+                             const UrlInfo& url_info) {
     ChildProcessSecurityPolicyImpl* p =
         ChildProcessSecurityPolicyImpl::GetInstance();
     p->AddForTesting(process_id, &browser_context_);
 
     scoped_refptr<SiteInstanceImpl> site_instance =
-        SiteInstanceImpl::CreateForTesting(&browser_context_, url);
+        SiteInstanceImpl::CreateForUrlInfo(
+            &browser_context_, url_info,
+            /*is_guest=*/false,
+            /*is_fenced=*/false,
+            /*is_fixed_storage_partition=*/false);
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
         site_instance->GetIsolationContext(), process_id, false,
         ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
 
     added_renderers_.push_back(process_id);
+  }
+
+  void SetupRendererWithLock(ChildProcessId process_id, const GURL& url) {
+    SetupRendererWithLock(process_id, UrlInfo::CreateForTesting(url));
   }
 
  protected:
@@ -500,6 +510,120 @@ TEST_P(CodeCacheHostImplTest, OpenWebObliviousToWebUi) {
           EXPECT_EQ(base::span(fetch_future.Get<1>()).size(), 0U);
         }
         run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
+// Tests that a PDF page does not see a resource cached by an open web site
+// on the same origin. Validates that process separation is properly maintained
+// in the V8 cache.
+TEST_P(CodeCacheHostImplTest, PdfObliviousToOpenWeb) {
+  base::RunLoop run_loop;
+
+  // The URL of a resource loaded by both a site on the open web and a PDF
+  // page.
+  const GURL resource_url("https://victim.example.com/script.js");
+
+  // State for a site on the open web that loads the above resource.
+  const ChildProcessId kOpenWebProcessId(12);
+  const GURL open_web_site("https://victim.example.com/");
+  SetupRendererWithLock(kOpenWebProcessId, open_web_site);
+
+  // State for a PDF page that also loads the above resource on the same site.
+  // Note that this requires setting is_pdf to true in the starting UrlInfo.
+  const ChildProcessId kPdfProcessId(13);
+  UrlInfo url_info(UrlInfoInit(open_web_site).WithIsPdf(true));
+  SetupRendererWithLock(kPdfProcessId, url_info);
+
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        // Create the open web's cache and put the resource into it.
+        auto open_web_host = CodeCacheHostImpl::Create(
+            kOpenWebProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{open_web_site},
+                                     net::SchemefulSite{open_web_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(open_web_site)));
+        open_web_host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::Time::Now(),
+            mojo_base::BigBuffer(base::byte_span_from_cstring("hi")));
+
+        // Create a PDF page's cache and make sure the resource is absent.
+        // It should NOT receive the contents of the HTML's V8 cache!
+        auto pdf_host = CodeCacheHostImpl::Create(
+            kPdfProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{open_web_site},
+                                     net::SchemefulSite{open_web_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(open_web_site)));
+        pdf_host->FetchCachedCode(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::BindLambdaForTesting([&](base::Time found_response_time,
+                                           mojo_base::BigBuffer found_data) {
+              EXPECT_EQ(found_response_time, base::Time());
+              EXPECT_EQ(found_data.size(), 0U);
+              run_loop.Quit();
+            }));
+      }));
+
+  run_loop.Run();
+}
+
+// Tests that an origin-restricted sandboxed iframe does not see a resource
+// cached by an open web site on the same origin.
+TEST_P(CodeCacheHostImplTest, SandboxedIframeObliviousToOpenWeb) {
+  base::RunLoop run_loop;
+
+  // The URL of a resource loaded by both a site on the open web and a
+  // sandboxed iframe.
+  const GURL resource_url("https://victim.example.com/script.js");
+
+  // State for a site on the open web that loads the above resource.
+  const ChildProcessId kOpenWebProcessId(12);
+  const GURL open_web_site("https://victim.example.com/");
+  SetupRendererWithLock(kOpenWebProcessId, open_web_site);
+
+  // State for a sandboxed iframe that also loads the above resource on the
+  // same site. Note that this requires setting is_sandboxed to true in the
+  // starting UrlInfo.
+  const ChildProcessId kSandboxedProcessId(13);
+  UrlInfo url_info(UrlInfoInit(open_web_site).WithSandbox(true));
+  SetupRendererWithLock(kSandboxedProcessId, url_info);
+
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        // Create the open web's cache and put the resource into it.
+        auto open_web_host = CodeCacheHostImpl::Create(
+            kOpenWebProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{open_web_site},
+                                     net::SchemefulSite{open_web_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(open_web_site)));
+        open_web_host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::Time::Now(),
+            mojo_base::BigBuffer(base::byte_span_from_cstring("hi")));
+
+        // Create a sandboxed iframe's cache and make sure the resource is
+        // absent. It should NOT receive the contents of the HTML's V8 cache!
+        auto sandboxed_host = CodeCacheHostImpl::Create(
+            kSandboxedProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{open_web_site},
+                                     net::SchemefulSite{open_web_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(open_web_site)));
+        sandboxed_host->FetchCachedCode(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::BindLambdaForTesting([&](base::Time found_response_time,
+                                           mojo_base::BigBuffer found_data) {
+              EXPECT_EQ(found_response_time, base::Time());
+              EXPECT_EQ(found_data.size(), 0U);
+              run_loop.Quit();
+            }));
       }));
 
   run_loop.Run();
