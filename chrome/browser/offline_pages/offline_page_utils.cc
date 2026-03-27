@@ -10,12 +10,9 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
@@ -36,13 +33,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/download/android/download_controller_base.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace offline_pages {
 namespace {
