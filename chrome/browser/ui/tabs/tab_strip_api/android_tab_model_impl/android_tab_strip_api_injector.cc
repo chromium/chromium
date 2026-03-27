@@ -14,11 +14,15 @@ namespace tabs_api {
 
 base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr>
 UselessTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
-  NOTREACHED() << "not implemented";
+  // TODO(crbug.com/494284032): Implement more then move it out to its own
+  // class.
+  auto tab = mojom::Tab::New();
+  tab->id = tabs_api::NodeId::FromTabHandle(handle);
+  return std::move(tab);
 }
 
 AndroidTabStripApiInjector::AndroidTabStripApiInjector(TabModel* model)
-    : browser_adapter_(std::make_unique<AndroidBrowserAdapterImpl>()),
+    : browser_adapter_(std::make_unique<AndroidBrowserAdapterImpl>(model)),
       tab_model_adapter_(std::make_unique<AndroidTabStripModelAdapter>(model)) {
 
 }

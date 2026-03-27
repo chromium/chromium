@@ -85,13 +85,20 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Instantiates) {
 
     // Ordering is actually material, we need to ensure that the tab
     // order returned by the API matches the underlying model.
-    ASSERT_EQ(base::NumberToString(
-                  model_->GetAllTabs().at(0)->GetHandle().raw_value()),
+    ASSERT_EQ(base::NumberToString(model_->GetTab(0)->GetHandle().raw_value()),
               tab_strip_container->children.at(0)->data->get_tab()->id.Id());
-    ASSERT_EQ(base::NumberToString(
-                  model_->GetAllTabs().at(1)->GetHandle().raw_value()),
+    ASSERT_EQ(base::NumberToString(model_->GetTab(1)->GetHandle().raw_value()),
               tab_strip_container->children.at(1)->data->get_tab()->id.Id());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Create) {
+  ASSERT_EQ(1, model_->GetTabCount());
+
+  auto result = service_->CreateTabAt(std::nullopt, GURL("http://there.where"));
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(2, model_->GetTabCount());
 }
 
 }  // namespace

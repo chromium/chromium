@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
 
+#include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/tabs/public/tab_collection.h"
@@ -18,7 +19,7 @@ class FakedAndroidTabCollection : public tabs::TabCollection {
 };
 
 AndroidTabStripModelAdapter::AndroidTabStripModelAdapter(TabModel* model)
-    : model_(*model),
+    : model_(CHECK_DEREF(model)),
       fake_root_(std::make_unique<FakedAndroidTabCollection>()) {}
 
 AndroidTabStripModelAdapter::~AndroidTabStripModelAdapter() = default;
@@ -42,7 +43,12 @@ void AndroidTabStripModelAdapter::CloseTab(size_t tab_index) {
 
 std::optional<int> AndroidTabStripModelAdapter::GetIndexForHandle(
     tabs::TabHandle tab_handle) const {
-  NOTREACHED() << "not implemented";
+  for (int i = 0; i < model_->GetTabCount(); ++i) {
+    if (model_->GetTab(i)->GetHandle() == tab_handle) {
+      return i;
+    }
+  }
+  return std::nullopt;
 }
 
 void AndroidTabStripModelAdapter::ActivateTab(size_t index) {
@@ -135,7 +141,10 @@ tabs_api::Path AndroidTabStripModelAdapter::GetPathForCollection(
 
 InsertionParams AndroidTabStripModelAdapter::CalculateInsertionParams(
     const std::optional<tabs_api::Position>& pos) const {
-  NOTREACHED() << "not implemented";
+  // TODO(crbug.com/494284032): hardcoded to always insert at the end for now.
+  return {.index = model_->GetTabCount(),
+          .group_id = std::nullopt,
+          .pinned = false};
 }
 
 void AndroidTabStripModelAdapter::ReplaceTabInSplit(

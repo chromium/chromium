@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ANDROID_TAB_MODEL_IMPL_ANDROID_BROWSER_ADAPTER_IMPL_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ANDROID_TAB_MODEL_IMPL_ANDROID_BROWSER_ADAPTER_IMPL_H_
 
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 
 namespace tabs_api {
 
 class AndroidBrowserAdapterImpl : public BrowserAdapter {
  public:
-  AndroidBrowserAdapterImpl() = default;
-  AndroidBrowserAdapterImpl(const AndroidBrowserAdapterImpl&&) = delete;
+  explicit AndroidBrowserAdapterImpl(TabModel* tab_model);
+  AndroidBrowserAdapterImpl(const AndroidBrowserAdapterImpl&) = delete;
   AndroidBrowserAdapterImpl operator=(const AndroidBrowserAdapterImpl&) =
       delete;
   ~AndroidBrowserAdapterImpl() override = default;
@@ -25,6 +26,9 @@ class AndroidBrowserAdapterImpl : public BrowserAdapter {
                            std::optional<int> index,
                            std::optional<tab_groups::TabGroupId> group,
                            bool pinned) override;
+
+ private:
+  raw_ref<TabModel> model_;
 };
 
 }  // namespace tabs_api
