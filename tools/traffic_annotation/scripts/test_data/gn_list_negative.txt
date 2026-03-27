@@ -3,7 +3,6 @@
 //chrome/test:browser_tests
 //chrome/test/media_router:media_router_tests
 //remoting:remoting_all
-//remoting:remoting_perftests
 //remoting:remoting_unittests
 //remoting:test_support
 //remoting/host:all
