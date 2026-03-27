@@ -12,7 +12,6 @@
 #include "skia/ext/image_operations.h"
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
