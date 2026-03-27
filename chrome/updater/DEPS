@@ -22,6 +22,7 @@ include_rules = [
   "+third_party/updater",
   "+third_party/wtl",
   "+third_party/zlib/google",
+  "+third_party/webview2",
 
   # The metainstaller should not depend on ICU, to minimize binary size.
   "-base/i18n",

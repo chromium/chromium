@@ -70,7 +70,7 @@
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
-#include "chrome/updater/win/ui/webview_progress_wnd.h"
+#include "chrome/updater/win/ui/webview2_progress_wnd.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/update_client/update_client_errors.h"
 #include "url/gurl.h"
@@ -898,7 +898,7 @@ void AppInstallControllerImpl::InitializeUI() {
   observer_.reset(progress_wnd.release());
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(kWebViewUISwitch)) {
-      auto wnd = std::make_unique<ui::WebviewProgressWnd>();
+      auto wnd = std::make_unique<ui::WebView2ProgressWnd>();
       VISIT_PROGRESS_WND(wnd);
       return;
     }

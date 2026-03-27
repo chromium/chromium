@@ -373,6 +373,10 @@ if (is_win || is_mac || is_linux) {
         "win/ui/ui_util.h",
         "win/ui/webbrowser.cc",
         "win/ui/webbrowser.h",
+        "win/ui/webview2_progress_wnd.cc",
+        "win/ui/webview2_progress_wnd.h",
+        "win/ui/webview2ui.cc",
+        "win/ui/webview2ui.h",
         "win/ui/webview_progress_wnd.cc",
         "win/ui/webview_progress_wnd.h",
       ]
@@ -395,6 +399,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/windows_services/service_program:delegate",
         "//chrome/windows_services/service_program:lib",
         "//components/winhttp",
+        "//third_party/webview2:webview2_static",
         "//third_party/wtl",
       ]
 
