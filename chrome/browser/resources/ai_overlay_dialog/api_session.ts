@@ -74,6 +74,11 @@ export interface ApiSessionDelegate {
   onConnectionChanged(connected: boolean): void;
 }
 
+function log(msg: string, ...args: any[]) {
+  console.info(
+      `[${performance.now().toFixed(2)}] [ApiSession] ${msg}`, ...args);
+}
+
 /**
  * Manages the connection and communication with the server.
  */
@@ -98,7 +103,7 @@ export class ApiSession {
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
-      console.info('WebSocket Opened');
+      log('WebSocket Opened');
       this.sendSetup();
     };
 
@@ -133,7 +138,7 @@ export class ApiSession {
     };
 
     this.ws.onclose = (e) => {
-      console.info('WebSocket Closed: ', e);
+      log('WebSocket Closed: ', e);
       this.delegate.onConnectionChanged(false);
       this.stop();
     };
@@ -146,7 +151,7 @@ export class ApiSession {
   }
 
   stop() {
-    console.info('ApiSession: stop');
+    log('stop()');
     this.ws?.close();
     this.ws = null;
   }
@@ -170,6 +175,7 @@ export class ApiSession {
         outputAudioTranscription: {},
       },
     };
+    log('Sending Setup Message:', JSON.stringify(setup, null, 2));
     this.ws?.send(JSON.stringify(setup));
   }
 
@@ -187,7 +193,7 @@ export class ApiSession {
 
   private handleMessage(msg: ServerContentMessage) {
     if (msg.setupComplete) {
-      console.info('ApiSession SetupComplete');
+      log('SetupComplete');
       this.delegate.onConnectionChanged(true);
       return;
     }
@@ -198,10 +204,12 @@ export class ApiSession {
     }
 
     if (content.inputTranscription?.text) {
+      log('Input transcription:', content.inputTranscription.text);
       this.delegate.onTranscription(content.inputTranscription.text, true);
     }
 
     if (content.outputTranscription?.text) {
+      log('Output transcription:', content.outputTranscription.text);
       this.delegate.onTranscription(content.outputTranscription.text, false);
     }
 
@@ -214,10 +222,12 @@ export class ApiSession {
     }
 
     if (content.turnComplete) {
+      log('TurnComplete');
       this.delegate.onTurnComplete();
     }
 
     if (content.interrupted) {
+      log('Interrupted');
       this.delegate.interrupt();
     }
   }

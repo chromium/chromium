@@ -5,6 +5,11 @@
 import {AudioPlayer} from './audio_player.js';
 import {encodeFloat32ToPcmBase64} from './audio_utils.js';
 
+function log(msg: string, ...args: any[]) {
+  console.info(
+      `[${performance.now().toFixed(2)}] [AudioCapturer] ${msg}`, ...args);
+}
+
 /**
  * Interface for audio capture.
  */
@@ -76,29 +81,59 @@ export class BlobAudioCapturer implements AudioCapturer {
   private static readonly SAMPLE_RATE = 16000;
   private audioContext: AudioContext|null = null;
   private onAudioCallback: ((data: string) => void)|null = null;
-  private isStopped: boolean = false;
+  // This promise is used to sequence multiple injections.
+  private sendPromise: Promise<void> = Promise.resolve();
+  // This is used to pause the silence loop while audio is being injected.
+  private isInjecting: boolean = false;
 
   private audioPlayer: AudioPlayer;
+
+  private get isStopped(): boolean {
+    return !this.onAudioCallback;
+  }
 
   constructor() {
     this.audioPlayer = new AudioPlayer();
   }
 
-  /* Sets up internal state but doesn't actually play the audio. */
+  /* Sets up internal state and outputs silence until audio data is provided. */
   start(onAudioCallback: (data: string) => void): Promise<boolean> {
     this.onAudioCallback = onAudioCallback;
-    this.isStopped = false;
     this.audioContext =
         new AudioContext({sampleRate: BlobAudioCapturer.SAMPLE_RATE});
+
+    // Start a continuous loop of silence to mimic a real microphone.
+    this.startSilenceLoop();
 
     return Promise.resolve(true);
   }
 
+  private async startSilenceLoop() {
+    const chunkMs = 250;  // Increased to 250ms to reduce empty packet spam
+    const chunkSize = BlobAudioCapturer.SAMPLE_RATE * (chunkMs / 1000);
+    const silentChunk = new Float32Array(chunkSize);
+    const silentBase64 = encodeFloat32ToPcmBase64(silentChunk);
+
+    log(`Started mock silence heartbeat (${chunkMs}ms)`);
+    let nextTick = performance.now();
+
+    while (!this.isStopped) {
+      if (!this.isInjecting && this.onAudioCallback) {
+        this.onAudioCallback(silentBase64);
+      }
+
+      nextTick += chunkMs;
+      const delay = Math.max(0, nextTick - performance.now());
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+    log('Stopped mock silence heartbeat');
+  }
+
   stop() {
-    this.isStopped = true;
     this.audioContext?.close();
     this.audioContext = null;
     this.onAudioCallback = null;
+    this.isInjecting = false;
   }
 
   getSampleRate() {
@@ -107,40 +142,76 @@ export class BlobAudioCapturer implements AudioCapturer {
 
   /* Sends the audio data to the callback. */
   async send(blob: Blob): Promise<void> {
+    // Chain the send operation to the previous one to prevent interleaving.
+    this.sendPromise = this.sendPromise.then(() => this.sendInternal(blob));
+    return this.sendPromise;
+  }
+
+  private async sendInternal(blob: Blob): Promise<void> {
     if (!this.onAudioCallback || !this.audioContext) {
+      log('BlobAudioCapturer not ready');
       return;
     }
 
     const arrayBuffer = await blob.arrayBuffer();
+    log(`Decoding audio data of size ${arrayBuffer.byteLength}`);
     let audioBuffer: AudioBuffer;
     try {
       audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
     } catch (e) {
-      console.error('Failed to decode audio data', e);
+      log('Failed to decode audio data', e);
       return;
     }
 
-    console.info('Sending mock prompt');
+    log(`Injecting mock prompt: ${audioBuffer.duration.toFixed(2)}s, rate ${
+        audioBuffer.sampleRate}Hz`);
+    this.isInjecting = true;
 
     // Play back the audio so we can hear what's sent.
     this.audioPlayer.playBuffer(audioBuffer);
 
     const float32Data = audioBuffer.getChannelData(0);
 
-    // 100ms at sample rate
-    const chunkSize = BlobAudioCapturer.SAMPLE_RATE * 0.1;
+    const chunkMs = 40;  // 40ms chunks for smoother delivery
+    const chunkSize = BlobAudioCapturer.SAMPLE_RATE * (chunkMs / 1000);
+    let chunksSent = 0;
+    let nextTick = performance.now();
 
     for (let i = 0; i < float32Data.length; i += chunkSize) {
       if (this.isStopped) {
+        log('Mock audio injection stopped early');
         break;
       }
 
       const chunk = float32Data.slice(i, i + chunkSize);
       this.onAudioCallback?.(encodeFloat32ToPcmBase64(chunk));
+      chunksSent++;
 
-      // Simulate real-time by waiting 100ms
-      await new Promise(resolve => setTimeout(resolve, 100));
+      nextTick += chunkMs;
+      const delay = Math.max(0, nextTick - performance.now());
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
-    console.info('Finished sending mock prompt');
+
+    // Send a period of silence (e.g., 2 seconds) to ensure the server's Voice
+    // Activity Detection (VAD) detects the end of speech, sent in realistic
+    // chunks rather than all at once.
+    const silenceDurationMs = 2000;
+    const silenceChunks = Math.ceil(silenceDurationMs / chunkMs);
+    const silentChunk = new Float32Array(chunkSize);
+    const silentBase64 = encodeFloat32ToPcmBase64(silentChunk);
+
+    for (let i = 0; i < silenceChunks; i++) {
+      if (this.isStopped) {
+        break;
+      }
+      this.onAudioCallback?.(silentBase64);
+      nextTick += chunkMs;
+      const delay = Math.max(0, nextTick - performance.now());
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    log(`Finished injecting mock prompt, sent ${
+        chunksSent} chunks. Resuming silence.`);
+    this.isInjecting = false;
   }
 }

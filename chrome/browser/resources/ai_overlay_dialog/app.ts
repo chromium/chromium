@@ -58,6 +58,10 @@ const DEFAULT_PERSONA: Persona = {
   voice: 'Puck',
 };
 
+function log(msg: string, ...args: any[]) {
+  console.info(`[${performance.now().toFixed(2)}] [App] ${msg}`, ...args);
+}
+
 export class AppElement extends CrLitElement {
   static get is() {
     return 'ai-overlay-dialog-app';
@@ -237,13 +241,18 @@ export class AppElement extends CrLitElement {
       return;
     }
 
-    const binaryString = atob(button.wavdata);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
+    log(`Injecting audio: ${button.name}, length: ${button.wavdata.length}`);
+    try {
+      const binaryString = atob(button.wavdata);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], {type: 'audio/wav'});
+      this.blobCapturer.send(blob);
+    } catch (e) {
+      log('Failed to inject audio:', e);
     }
-    const blob = new Blob([bytes], {type: 'audio/wav'});
-    this.blobCapturer.send(blob);
   }
 
   private createAudioPlayer(): AudioPlayer {
@@ -262,20 +271,22 @@ export class AppElement extends CrLitElement {
       const stream = await navigator.mediaDevices.getUserMedia({audio: true});
       return new MicrophoneAudioCapturer(stream);
     } catch (e) {
-      console.warn('No Microphone Found', e);
+      log('No Microphone Found', e);
 
       try {
         const {jsonData} = await this.pageHandler.getMockAudioData();
         if (jsonData) {
+          log('Received mock audio data:', jsonData.substring(0, 100) + '...');
           const config = JSON.parse(jsonData);
           this.mockButtons = config.buttons || [];
+          log(`Loaded ${this.mockButtons.length} mock buttons`);
           this.blobCapturer = new BlobAudioCapturer();
           return this.blobCapturer;
         } else {
-          console.warn('No mock audio data provided or found');
+          log('No mock audio data provided or found');
         }
       } catch (mojoError) {
-        console.error('Failed to get mock audio data', mojoError);
+        log('Failed to get mock audio data', mojoError);
       }
     }
 
@@ -307,7 +318,7 @@ export class AppElement extends CrLitElement {
     }
 
     if (!this.conversation.connected) {
-      console.info('Attempting to connect');
+      log('Attempting to connect');
       this.isConnecting = true;
       this.conversation.start();
     } else {
@@ -316,7 +327,7 @@ export class AppElement extends CrLitElement {
   }
 
   private async onConversationStateChanged(state: State, oldState: State) {
-    console.info('onConversationStateChanged: ', state);
+    log('onConversationStateChanged: ', state);
 
     if (oldState === State.STOPPED && state !== State.STOPPED) {
       this.isConnecting = false;
