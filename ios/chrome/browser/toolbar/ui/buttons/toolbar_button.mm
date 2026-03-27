@@ -107,12 +107,16 @@ constexpr CGFloat kDisabledOpacity = 0.4;
   BOOL isCurrentRegularRegular = IsRegularXRegularSizeClass(self);
   BOOL isCurrentCompactHeight =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  BOOL isCurrentWideLayout = isCurrentRegularRegular || isCurrentCompactHeight;
 
   switch (self.visibilityMask) {
     case ToolbarButtonVisibility::kAlways:
       break;
     case ToolbarButtonVisibility::kRegularRegular:
       self.hidden = !isCurrentRegularRegular;
+      break;
+    case ToolbarButtonVisibility::kWideLayout:
+      self.hidden = !isCurrentWideLayout;
       break;
     case ToolbarButtonVisibility::kCompactHeight:
       self.hidden = !isCurrentCompactHeight;

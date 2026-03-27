@@ -87,7 +87,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
 - (ToolbarButton*)makeReloadButton {
   ToolbarButton* button = [self toolbarButtonForImageNamed:kArrowClockWiseSymbol
                                               defaultImage:NO];
-  button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
+  button.visibilityMask = ToolbarButtonVisibility::kWideLayout;
   button.accessibilityIdentifier = kToolbarReloadButtonIdentifier;
   return button;
 }
@@ -95,7 +95,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
 - (ToolbarButton*)makeStopButton {
   ToolbarButton* button = [self toolbarButtonForImageNamed:kXMarkSymbol
                                               defaultImage:YES];
-  button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
+  button.visibilityMask = ToolbarButtonVisibility::kWideLayout;
   button.accessibilityIdentifier = kToolbarStopButtonIdentifier;
   return button;
 }
