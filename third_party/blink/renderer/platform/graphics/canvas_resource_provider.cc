@@ -351,7 +351,8 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
           kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
           is_software_);
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii, "CanvasResourceSharedImage", /*max_pool_size=*/0);
+          image_info, sii, "CanvasResourceSharedImage",
+          kMaxRecycledCanvasResources);
     }
   }
 }
