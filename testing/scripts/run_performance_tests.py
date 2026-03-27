@@ -986,6 +986,13 @@ class CrossbenchTest(object):
           f'--variations-test-seed-path={resolved_path}',
           '--accept-empty-variations-seed-signature',
       ]
+    if (self.is_chrome and self.cb_options.official_browser
+        and sys.platform == 'darwin'):
+      # CBB running Chrome on MacOS, add a flag to disable updater process
+      # (see crbug.com/492924102).
+      if not extra_browser_args:
+        extra_browser_args = ['--']
+      extra_browser_args += ['--disable-updater-scheduler']
     return (['vpython3', '-Xutf8'] + [self.options.executable] + [benchmark] +
             ['--env-validation=throw'] + [self.OUTDIR % working_dir] +
             [self.browser] + self.driver_path_arg + self.network + self.env +
