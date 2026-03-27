@@ -34,14 +34,14 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
 // Returns true if the entry point should be shown.
 bool ShouldDisplayEntryPoint(content::WebContents* web_contents);
 
-// Creates a PageContext for the given `web_contents` by extracting form data
-// from all frames.
-PageContext ExtractFormFieldsFromWebContents(
+// Creates a PageContext::FormFieldInfo for the given `web_contents` by
+// extracting form data from all frames.
+PageContext::FormFieldInfo ExtractFormFieldsFromWebContents(
     content::WebContents* web_contents);
 
 // Similar to ExtractFormFieldsFromWebContents, but allows injecting an ostream
 // for detailed insights of the extraction process.
-PageContext ExtractFormFieldsFromWebContentsForTesting(
+PageContext::FormFieldInfo ExtractFormFieldsFromWebContentsForTesting(
     content::WebContents* web_contents,
     std::ostream& os);
 

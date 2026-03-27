@@ -37,17 +37,17 @@ namespace {
 using ExtractorCallback = base::RepeatingCallback<
     PageContext::FormFieldInfo(autofill::AutofillManager&, const url::Origin&)>;
 
-PageContext ExtractFormFieldsFromWebContentsInternal(
+PageContext::FormFieldInfo ExtractFormFieldsFromWebContentsInternal(
     content::WebContents* web_contents,
     ExtractorCallback extractor) {
   if (!web_contents) {
-    return PageContext();
+    return PageContext::FormFieldInfo();
   }
 
   const url::Origin main_origin =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
-  PageContext context;
+  PageContext::FormFieldInfo form_field_info;
 
   web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
     autofill::ContentAutofillDriver* driver =
@@ -58,13 +58,13 @@ PageContext ExtractFormFieldsFromWebContentsInternal(
 
     PageContext::FormFieldInfo frame_info =
         extractor.Run(driver->GetAutofillManager(), main_origin);
-    context.form_field_info.fields.insert(
-        context.form_field_info.fields.end(),
+    form_field_info.fields.insert(
+        form_field_info.fields.end(),
         std::make_move_iterator(frame_info.fields.begin()),
         std::make_move_iterator(frame_info.fields.end()));
   });
 
-  return context;
+  return form_field_info;
 }
 
 }  // namespace
@@ -87,13 +87,14 @@ bool ShouldDisplayEntryPoint(content::WebContents* web_contents) {
   return GetEntryPointDisplayReason(web_contents).has_value();
 }
 
-PageContext ExtractFormFieldsFromWebContents(
+PageContext::FormFieldInfo ExtractFormFieldsFromWebContents(
     content::WebContents* web_contents) {
   return ExtractFormFieldsFromWebContentsInternal(
       web_contents, base::BindRepeating(&ExtractOutgoingTabFormFields));
 }
 
-PageContext ExtractFormFieldsFromWebContentsForTesting(  // IN-TEST
+PageContext::FormFieldInfo
+ExtractFormFieldsFromWebContentsForTesting(  // IN-TEST
     content::WebContents* web_contents,
     std::ostream& os) {
   return ExtractFormFieldsFromWebContentsInternal(

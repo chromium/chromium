@@ -61,7 +61,8 @@ void SendTabToSelfPageHandler::SendTabToDevice(
 
   if (is_sharing_current_page &&
       base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
-    request.page_context = ExtractFormFieldsFromWebContents(web_contents());
+    request.page_context.form_field_info =
+        ExtractFormFieldsFromWebContents(web_contents());
   }
 
   if (!is_sharing_current_page ||

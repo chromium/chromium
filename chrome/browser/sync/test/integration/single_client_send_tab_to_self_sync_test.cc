@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
     EXPECT_THAT(
         send_tab_to_self::ExtractFormFieldsFromWebContentsForTesting(
             web_contents, os)
-            .form_field_info.fields,
+            .fields,
         UnorderedElementsAre(
             AllOf(Field(&send_tab_to_self::PageContext::FormField::id_attribute,
                         Eq(u"NAME_FIRST")),
@@ -251,11 +251,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
 
   // Trigger sending.
   const std::string target_guid = "target_guid";
+  send_tab_to_self::PageContext context;
+  context.form_field_info =
+      send_tab_to_self::ExtractFormFieldsFromWebContents(web_contents);
   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
       ->GetSendTabToSelfModel()
-      ->AddEntry(
-          kUrl, "example", target_guid,
-          send_tab_to_self::ExtractFormFieldsFromWebContents(web_contents));
+      ->AddEntry(kUrl, "example", target_guid, context);
 
   // Wait for the entry to be committed to the server.
   ASSERT_TRUE(

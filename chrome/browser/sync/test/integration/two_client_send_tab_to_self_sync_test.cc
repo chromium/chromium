@@ -306,11 +306,12 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
 
   // Trigger sending.
   const std::string target_guid = GetCacheGuid(1);
+  send_tab_to_self::PageContext context;
+  context.form_field_info =
+      send_tab_to_self::ExtractFormFieldsFromWebContents(sender_web_contents);
   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
       ->GetSendTabToSelfModel()
-      ->AddEntry(kUrl, "example", target_guid,
-                 send_tab_to_self::ExtractFormFieldsFromWebContents(
-                     sender_web_contents));
+      ->AddEntry(kUrl, "example", target_guid, context);
 
   // Client 1: Wait for entry and fill.
   send_tab_to_self::SendTabToSelfSyncService* service1 =
