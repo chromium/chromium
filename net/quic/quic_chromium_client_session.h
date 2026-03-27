@@ -182,8 +182,7 @@ enum class MTCResult {
   kClassicalCertExpectedMTC = 2,
   kClassicalCertOldClient = 3,
   kClassicalCertUnknownLandmarkDelta = 4,
-  kResumption = 5,
-  kMaxValue = kResumption,
+  kMaxValue = kClassicalCertUnknownLandmarkDelta,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:MTCResult)
 

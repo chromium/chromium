@@ -77,6 +77,7 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   void OnOneRttPacketAcknowledged() override;
   std::unique_ptr<quic::QuicDecrypter>
   AdvanceKeysAndCreateCurrentOneRttDecrypter() override;
+  bool ResumptionAttempted() const override;
   bool EarlyDataAccepted() const override;
   ssl_early_data_reason_t EarlyDataReason() const override;
   // Override QuicCryptoClientStream::SetServerApplicationStateForResumption()

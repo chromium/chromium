@@ -5105,8 +5105,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Net.QuicSession.CertVerificationResult.{Condition}{IsResumption}"
+<histogram name="Net.QuicSession.CertVerificationResult.{Condition}"
     enum="NetErrorCodes" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -5115,18 +5114,11 @@ chromium-metrics-reviews@google.com.
     The network error code returned to a QUIC session from the CertVerifier when
     a certification verification is attempted.
 
-    This metric is only recorded when {Condition} {IsResumption}.
+    This metric is only recorded when {Condition}.
   </summary>
   <token key="Condition">
-    <variant name="MTCAdvertised" summary="server advertised MTC support"/>
-    <variant name="MTCReceived" summary="server sent an MTC"/>
-  </token>
-  <token key="IsResumption">
-    <variant name=""
-        summary="aggregated across new connections and resumption"/>
-    <variant name=".NewConnection" summary="on a new connection"/>
-    <variant name=".Resumption"
-        summary="on a connection that Chrome is attempting to resume"/>
+    <variant name="MTCAdvertised2" summary="server advertised MTC support"/>
+    <variant name="MTCReceived2" summary="server sent an MTC"/>
   </token>
 </histogram>
 
@@ -5751,7 +5743,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.HasMTCMetadata" enum="Boolean"
+<histogram name="Net.QuicSession.HasMTCMetadata2" enum="Boolean"
     expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -5977,7 +5969,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.MTCLandmarkDelta.CurrentClient{IsResumption}"
+<histogram name="Net.QuicSession.MTCLandmarkDelta2.CurrentClient"
     units="MTC landmarks" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -5989,16 +5981,9 @@ chromium-metrics-reviews@google.com.
     server's MTC). Only recorded for QUIC connections where the client supports
     verifying MTCs and the server supports sending MTCs.
   </summary>
-  <token key="IsResumption">
-    <variant name=""
-        summary="aggregated across new connections and resumption"/>
-    <variant name=".NewConnection" summary="on a new connection"/>
-    <variant name=".Resumption"
-        summary="on a connection that Chrome is attempting to resume"/>
-  </token>
 </histogram>
 
-<histogram name="Net.QuicSession.MTCLandmarkDelta.OldClient{IsResumption}"
+<histogram name="Net.QuicSession.MTCLandmarkDelta2.OldClient"
     units="MTC landmarks" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -6010,16 +5995,9 @@ chromium-metrics-reviews@google.com.
     unable to verify the server's MTC). Only recorded for QUIC connections where
     the client supports verifying MTCs and the server supports sending MTCs.
   </summary>
-  <token key="IsResumption">
-    <variant name=""
-        summary="aggregated across new connections and resumption"/>
-    <variant name=".NewConnection" summary="on a new connection"/>
-    <variant name=".Resumption"
-        summary="on a connection that Chrome is attempting to resume"/>
-  </token>
 </histogram>
 
-<histogram name="Net.QuicSession.MTCMetadataAge" units="Milliseconds"
+<histogram name="Net.QuicSession.MTCMetadataAge2" units="Milliseconds"
     expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -6032,7 +6010,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.MTCResult" enum="MTCResult"
+<histogram name="Net.QuicSession.MTCResult2" enum="MTCResult"
     expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>

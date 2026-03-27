@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kClassicalCertExpectedMTC"/>
   <int value="3" label="kClassicalCertOldClient"/>
   <int value="4" label="kClassicalCertUnknownLandmarkDelta"/>
-  <int value="5" label="kResumption"/>
+  <int value="5" label="Reserved (was kResumption)"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/quic/quic_chromium_client_session.h:MTCResult) -->
