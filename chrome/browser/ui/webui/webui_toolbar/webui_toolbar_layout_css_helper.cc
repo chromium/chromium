@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/style/typography_provider.h"
 
 namespace {
@@ -165,7 +166,21 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
   std::string css_string;
   // At time this was implemented, actual usage was about 2.5K
   css_string.reserve(3 * 1024);
+
+  css_string.append(
+      "@property --touch-mode {\n"
+      "  syntax: \"<number>\";\n"
+      "  inherits: true;\n"
+      "  initial-value: 0;\n"
+      "}\n");
+
   css_string.append(":host{");
+
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    css_string.append("--touch-mode: 1;");
+  } else {
+    css_string.append("--touch-mode: 0;");
+  }
 
   for (int layout_constant_num = 0;
        layout_constant_num <= static_cast<int>(LayoutConstant::kLast);

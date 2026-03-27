@@ -53,6 +53,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/webui:webui_util",
+    "//ui/base",
   ]
 }
 

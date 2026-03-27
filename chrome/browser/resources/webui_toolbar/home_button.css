@@ -9,3 +9,10 @@
  * #scheme=relative
  * #include=cr-hidden-style-lit toolbar-button
  * #css_wrapper_metadata_end */
+
+#button {
+  --cr-icon-image: if(
+    style(--touch-mode: 1): url('browser_controls_icons/home_24.svg');
+    else: url('browser_controls_icons/home_20.svg')
+  );
+}

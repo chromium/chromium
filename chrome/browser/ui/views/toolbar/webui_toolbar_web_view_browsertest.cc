@@ -68,6 +68,7 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -2001,6 +2002,43 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
     observer.WaitForNavigationFinished();
   }
   EXPECT_EQ(home_url, new_tab->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
+                       TouchModeChangesIcon) {
+  WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton();
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  std::string get_icon_js =
+      base::StrCat({"window.getComputedStyle(", GetButtonIconJS(kHomeSelector),
+                    ").getPropertyValue('--cr-icon-image')"});
+
+  // Verify standard mode icon
+  EXPECT_TRUE(content::EvalJs(web_contents, get_icon_js)
+                  .ExtractString()
+                  .find("home_20.svg") != std::string::npos);
+
+  {
+    ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
+
+    // Wait and verify Touch mode icon
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      std::string current_icon =
+          content::EvalJs(web_contents, get_icon_js).ExtractString();
+      return current_icon.find("home_24.svg") != std::string::npos;
+    }));
+  }
+
+  // Revert to non-touch mode happens automatically when scoper goes out of
+  // scope
+
+  // Wait and verify standard mode icon again
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    std::string current_icon =
+        content::EvalJs(web_contents, get_icon_js).ExtractString();
+    return current_icon.find("home_20.svg") != std::string::npos;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,

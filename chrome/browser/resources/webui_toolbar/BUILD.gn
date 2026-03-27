@@ -11,6 +11,8 @@ build_webui("build") {
   grd_prefix = "webui_toolbar"
 
   static_files = [
+    "browser_controls_icons/home_20.svg",
+    "browser_controls_icons/home_24.svg",
     "webui_toolbar.html",
     "webui_toolbar.css",
   ]
@@ -23,7 +25,6 @@ build_webui("build") {
     "browser_proxy.ts",
     "home_button.html.ts",
     "home_button.ts",
-    "home_button_icon.html.ts",
     "location_bar.ts",
     "location_bar.html.ts",
     "metrics_recorder.ts",
