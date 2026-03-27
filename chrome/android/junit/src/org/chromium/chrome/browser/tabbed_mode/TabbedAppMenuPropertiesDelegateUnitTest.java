@@ -599,8 +599,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.new_incognito_tab_menu_id,
                                 R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
-                                R.id.info_menu_id,
                                 R.id.history_parent_menu_id,
+                                R.id.info_menu_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -649,8 +649,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.new_incognito_tab_menu_id,
                                 R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
-                                R.id.info_menu_id,
                                 R.id.history_parent_menu_id,
+                                R.id.info_menu_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -711,8 +711,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_add_tab_to_new_group);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
-        expectedItems.add(R.id.info_menu_id);
-        expectedTitles.add(R.string.menu_page_info);
         expectedItems.add(R.id.history_parent_menu_id);
         expectedTitles.add(R.string.menu_history);
         historyExpectedItems.add(R.id.open_history_menu_id);
@@ -721,6 +719,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         historyExpectedTitles.add(R.string.menu_recent_tabs);
         historyExpectedItems.add(R.id.quick_delete_menu_id);
         historyExpectedTitles.add(R.string.menu_quick_delete);
+        expectedItems.add(R.id.info_menu_id);
+        expectedTitles.add(R.string.menu_site_controls);
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);
@@ -817,12 +817,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_add_tab_to_new_group);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
-        expectedItems.add(R.id.info_menu_id);
-        expectedTitles.add(R.string.menu_page_info);
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             expectedItems.add(R.id.history_parent_menu_id);
             expectedTitles.add(R.string.menu_history);
         }
+        expectedItems.add(R.id.info_menu_id);
+        expectedTitles.add(R.string.menu_site_controls);
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);
@@ -909,8 +909,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_add_tab_to_new_group);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
-        expectedItems.add(R.id.info_menu_id);
-        expectedTitles.add(R.string.menu_page_info);
         expectedItems.add(R.id.history_parent_menu_id);
         expectedTitles.add(R.string.menu_history);
         historyExpectedItems.add(R.id.open_history_menu_id);
@@ -919,6 +917,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         historyExpectedTitles.add(R.string.menu_recent_tabs);
         historyExpectedItems.add(R.id.quick_delete_menu_id);
         historyExpectedTitles.add(R.string.menu_quick_delete);
+        expectedItems.add(R.id.info_menu_id);
+        expectedTitles.add(R.string.menu_site_controls);
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);
@@ -999,8 +999,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.new_incognito_tab_menu_id,
                                 R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
-                                R.id.info_menu_id,
                                 R.id.history_parent_menu_id,
+                                R.id.info_menu_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -1072,8 +1072,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.new_tab_menu_id,
                                 R.id.new_incognito_tab_menu_id,
                                 R.id.add_to_group_menu_id,
-                                R.id.info_menu_id,
                                 R.id.history_parent_menu_id,
+                                R.id.info_menu_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.translate_id,
@@ -1371,8 +1371,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.new_incognito_tab_menu_id,
                                 R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
-                                R.id.info_menu_id,
                                 R.id.history_parent_menu_id,
+                                R.id.info_menu_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -1462,8 +1462,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.new_incognito_tab_menu_id,
                                 R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
-                                R.id.info_menu_id,
                                 R.id.history_parent_menu_id,
+                                R.id.info_menu_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -1528,8 +1528,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.new_incognito_tab_menu_id,
                                 R.id.add_to_group_menu_id,
                                 R.id.divider_line_id,
-                                R.id.info_menu_id,
                                 R.id.history_parent_menu_id,
+                                R.id.info_menu_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,

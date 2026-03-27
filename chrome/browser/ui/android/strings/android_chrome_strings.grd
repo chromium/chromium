@@ -4399,6 +4399,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_QUICK_DELETE" desc="Menu item for quick delete functionality that allows users to delete their browsing data. [CHAR_LIMIT=27]">
         Delete browsing data
       </message>
+      <message name="IDS_MENU_SITE_CONTROLS" desc="Menu item on Android to view and manage controls for the current website. [CHAR_LIMIT=27]">
+        Site controls
+      </message>
       <message name="IDS_MENU_DOWNLOADS" desc="Menu item for opening the downloads page. [CHAR_LIMIT=27]">
         Downloads
       </message>

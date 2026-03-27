@@ -294,11 +294,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Divider
         maybeAddDividerLine(modelList, R.id.divider_line_id);
 
-        // Page info
-        if (shouldShowPageInfoItem()) {
-            modelList.add(buildPageInfoItem(currentTab));
-        }
-
         // History parent
         if (shouldShowHistoryParentItem()) {
             modelList.add(buildHistoryParentItem());
@@ -315,6 +310,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 && shouldShowQuickDeleteItem()) {
             modelList.add(buildQuickDeleteItem());
             maybeAddDividerLine(modelList, R.id.quick_delete_divider_line_id);
+        }
+
+        // Page info
+        if (shouldShowPageInfoItem()) {
+            modelList.add(buildPageInfoItem(currentTab));
         }
 
         // Downloads
@@ -697,7 +697,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         AppMenuHandler.AppMenuItemType.STANDARD,
                         buildModelForStandardMenuItem(
                                 R.id.info_menu_id,
-                                R.string.menu_page_info,
+                                R.string.menu_site_controls,
                                 shouldShowIconBeforeItem() ? R.drawable.ic_settings_tune_24dp : 0));
         item.model.set(AppMenuItemProperties.ENABLED, currentTab != null);
         return item;
