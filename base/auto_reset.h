@@ -48,18 +48,20 @@ class [[maybe_unused, nodiscard]] AutoReset {
         original_value_(std::move(other.original_value_)) {}
 
   AutoReset& operator=(AutoReset&& rhs) {
+    Reset();
     scoped_variable_ = std::exchange(rhs.scoped_variable_, nullptr);
     original_value_ = std::move(rhs.original_value_);
     return *this;
   }
 
-  ~AutoReset() {
+  ~AutoReset() { Reset(); }
+
+ private:
+  void Reset() {
     if (scoped_variable_) {
       *scoped_variable_ = std::move(original_value_);
     }
   }
-
- private:
   // `scoped_variable_` is not a raw_ptr<T> for performance reasons: Large
   // number of non-PartitionAlloc pointees + AutoReset is typically short-lived
   // (e.g. allocated on the stack).
