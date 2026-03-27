@@ -27,7 +27,7 @@ export function getHtml(this: ComposeboxElement) {
         ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
                          this.files.size === 0}"
         .errorMessage="${this.errorMessage}"
-        @dismiss-error-scrim="${this.onDismissErrorScrim_}">
+        @dismiss-error-scrim="${this.onDismissErrorScrim}">
     </ntp-error-scrim>
     <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
         @keydown="${this.onKeydown_}"
@@ -102,11 +102,11 @@ export function getHtml(this: ComposeboxElement) {
               .selectedMatchIndex="${this.selectedMatchIndex}"
               .maxSuggestions="${this.maxSuggestions}"
               .toolMode="${this.inputState?.activeTool}"
-              @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
+              @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
               @match-focusin="${this.onMatchFocusin_}"
               @match-click="${this.onMatchClick_}"
               ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
-              .lastQueriedInput="${this.lastQueriedInput_}">
+              .lastQueriedInput="${this.lastQueriedInput}">
           </cr-composebox-dropdown>
           ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`
             ${this.contextMenuEnabled ? getContextMenuHtml.bind(this)() : ''}
@@ -145,8 +145,8 @@ export function getHtml(this: ComposeboxElement) {
         @voice-search-cancel="${this.onVoiceSearchCancel_}"
         @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
         @voice-search-error="${this.onVoiceSearchError_}"
-        @transcript-update="${this.onTranscriptUpdate_}"
-        @speech-received="${this.onSpeechReceived_}"
+        @transcript-update="${this.onTranscriptUpdate}"
+        @speech-received="${this.onSpeechReceived}"
         exportparts="voice-close-button">
     </cr-composebox-voice-search>
   ` : ''}

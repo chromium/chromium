@@ -987,7 +987,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
 
     // Check that input and lastQueriedInput are set.
     assertEquals(testProxy.element.input, 'hello world');
-    assertEquals((testProxy.element as any).lastQueriedInput_, 'hello world');
+    assertEquals(testProxy.element.lastQueriedInput, 'hello world');
     // Autocomplete should be queried again.
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);

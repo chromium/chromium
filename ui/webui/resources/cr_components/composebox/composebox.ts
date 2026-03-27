@@ -266,8 +266,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       SubmitButtonIconType.UPWARD;
   protected isRtl_: boolean = document.documentElement.dir === 'rtl';
 
-  protected composeboxNoFlickerSuggestionsFix_: boolean =
-      loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
@@ -280,7 +278,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // When enabled, the file input buttons will not be rendered.
   protected accessor smartComposeEnabled_: boolean =
       loadTimeData.getBoolean('composeboxSmartComposeEnabled');
-  protected lastQueriedInput_: string = '';
   protected contextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor showContextMenuDescription_: boolean =
@@ -296,8 +293,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // Retains the latest version of the pending automatic active tab's title.
   protected pendingAutomaticActiveTabTitle_: string = '';
   protected dragAndDropHandler_: DragAndDropHandler;
-  private showTypedSuggest_: boolean =
-      loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private showTypedSuggestWithContext_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggestWithContext');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
@@ -320,10 +315,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.valueExists('clearAllInputsWhenSubmittingQuery') ?
       loadTimeData.getBoolean('clearAllInputsWhenSubmittingQuery') :
       false;
-  // Whether the composebox is actively waiting for an autocomplete response. If
-  // this is false, that means at least one response has been received (even if
-  // the response was empty or had an error).
-  private haveReceivedAutcompleteResponse_: boolean = false;
   private pendingUploads_: Set<string> = new Set<string>([]);
   private contextMenuOpened_: boolean = false;
   private automaticActiveTab_: ComposeboxFile|null = null;
@@ -369,6 +360,22 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
+  override getDropdownElement(): ComposeboxDropdownElement {
+    return this.$.matches;
+  }
+
+  override getActiveElement(): Element|null {
+    return this.shadowRoot?.activeElement || null;
+  }
+
+  override getPageHandler(): PageHandlerRemote {
+    return this.pageHandler_;
+  }
+
+  override getSearchboxHandler(): SearchboxPageHandlerRemote {
+    return this.searchboxHandler_;
+  }
+
   constructor() {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
@@ -407,14 +414,14 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     ];
 
     this.eventTracker_.add(this.getInputElement().inputElement, 'input', () => {
-      this.submitEnabled = this.computeSubmitEnabled_();
+      this.submitEnabled = this.computeSubmitEnabled();
     });
 
     this.focusInput();
     // For "next" searchboxes (Realbox Next, Omnibox Next, etc.), the zps
     // autocomplete query is triggered after the state has been initialized.
     if (this.queryZpsOnLoad && !this.searchboxNextEnabled) {
-      this.queryAutocomplete_(/* clearMatches= */ false);
+      this.queryAutocomplete(/* clearMatches= */ false);
     }
 
     this.searchboxHandler_.notifySessionStarted();
@@ -526,14 +533,14 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         // Update the input.
         const text = this.selectedMatch.fillIntoEdit;
         this.input = text;
-      } else if (!this.lastQueriedInput_) {
+      } else if (!this.lastQueriedInput) {
         // This is for cases when focus leaves the matches/input.
         // If there was already text in the input do not clear it.
         this.clearInput();
       } else {
         // For typed queries reset the input back to typed value when
         // focus leaves the match.
-        this.input = this.lastQueriedInput_;
+        this.input = this.lastQueriedInput;
       }
     }
 
@@ -541,7 +548,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         changedPrivateProperties.has('inputState') ||
         changedPrivateProperties.has('isFollowupQuery') ||
         changedPrivateProperties.has('files')) {
-      this.submitEnabled = this.computeSubmitEnabled_();
+      this.submitEnabled = this.computeSubmitEnabled();
       this.canSubmitFilesAndInput =
           this.submitEnabled && this.fileUploadsComplete;
     }
@@ -573,12 +580,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.getInputElement().inputElement.focus();
   }
 
-  queryAutocomplete(clearMatches: boolean) {
-    this.queryAutocomplete_(clearMatches);
-  }
-
   protected onQueryAutocomplete_(e: CustomEvent<{clearMatches: boolean}>) {
-    this.queryAutocomplete_(e.detail.clearMatches);
+    this.queryAutocomplete(e.detail.clearMatches);
   }
 
   playGlowAnimation() {
@@ -654,10 +657,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return carousel.getThumbnailElementByUuid(this.automaticActiveTab_.uuid);
   }
 
-  hasFiles(): boolean {
-    return this.files.size > 0;
-  }
-
   isExpanded(): boolean {
     return this.expanding_;
   }
@@ -670,10 +669,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     if (text) {
       this.input = text;
-      this.lastQueriedInput_ = text;
+      this.lastQueriedInput = text;
     }
     if (this.showZps && files.length === 0) {
-      this.queryAutocomplete_(/* clearMatches= */ false);
+      this.queryAutocomplete(/* clearMatches= */ false);
     }
     if (files.length > 0) {
       const dataTransfer = new DataTransfer();
@@ -775,7 +774,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return false;
     }
 
-    if (this.showTypedSuggest_ && this.lastQueriedInput_.trim()) {
+    if (this.showTypedSuggest && this.lastQueriedInput.trim()) {
       // If context is present, but not enabled, continue to avoid showing the
       // dropdown.
       if (!this.showTypedSuggestWithContext_ && this.files.size > 0) {
@@ -790,13 +789,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    // lastQueriedInput_ is used here since the input changes based on
+    // lastQueriedInput is used here since the input changes based on
     // the selected match. If typed suggest is not enabled and input is used,
     // the dropdown will hide if the user keys down over zps matches.
-    return this.showZps && !this.lastQueriedInput_;
+    return this.showZps && !this.lastQueriedInput;
   }
 
-  private hasValidQuery_() {
+  override hasValidQuery(): boolean {
     // If there is at least one file that supports unimodal search, query is
     // valid.
     if (this.files.values().find(
@@ -824,10 +823,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return false;
   }
 
-  private computeSubmitEnabled_() {
-    return this.hasValidQuery_();
-  }
-
   protected shouldShowSuggestionActivityLink_() {
     const showActivityLink = this.result && this.showDropdown &&
         this.result.matches.some((match) => match.isNoncannedAimSuggestion);
@@ -842,16 +837,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   protected shouldShowVoiceSearchAnimation_(): boolean {
     return !this.disableVoiceSearchAnimation && this.shouldShowVoiceSearch_();
-  }
-
-  protected onTranscriptUpdate_(e: CustomEvent<string>) {
-    // Update property that is sent to searchAnimatedGlow binding.
-    this.transcript = e.detail;
-  }
-
-  protected onSpeechReceived_() {
-    // Update property that is sent to searchAnimatedGlow binding.
-    this.receivedSpeech = true;
   }
 
   deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean) {
@@ -899,7 +884,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // therefore, check if we're removing this chip to see if the delayed tab
     // is getting removed.
     if (fromAutoSuggestedChip || !this.getHasAutomaticActiveTabChipToken()) {
-      this.queryAutocomplete_(/* clearMatches= */ true);
+      this.queryAutocomplete(/* clearMatches= */ true);
     } else {
       // TODO(crbug.com/482150500): Have URL-suggestions for tabs with delayed
       // uploads.
@@ -1002,7 +987,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // when delayed tab is present. Right now, while url-based suggestions are
       // not set-up, clear the autocomplete matches.
       if (!tab) {
-        this.queryAutocomplete_(/* clearMatches= */ true);
+        this.queryAutocomplete(/* clearMatches= */ true);
       }
       return;
     }
@@ -1254,7 +1239,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.clearAllInputs(/* querySubmitted= */ false,
                           /* shouldBlockAutoSuggestedTabs= */ true);
       this.focusInput();
-      this.queryAutocomplete_(/* clearMatches= */ true);
+      this.queryAutocomplete(/* clearMatches= */ true);
 
       if (!this.disableCaretColorAnimation) {
         this.getInputElement().resetCaret();
@@ -1270,7 +1255,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.clearAllInputs(/* querySubmitted= */ false,
                           /* shouldBlockAutoSuggestedTabs= */ false);
       this.focusInput();
-      this.queryAutocomplete_(/* clearMatches= */ true);
+      this.queryAutocomplete(/* clearMatches= */ true);
     } else {
       this.closeComposebox_();
     }
@@ -1391,7 +1376,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   private handleToolModeUpdate_(newTool: ToolMode) {
     this.searchboxHandler_.setActiveToolMode(newTool);
-    this.queryAutocomplete_(/* clearMatches= */ true);
+    this.queryAutocomplete(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
   }
 
@@ -1399,10 +1384,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.searchboxHandler_.recordModelSelectionAction(e.detail.model);
     this.searchboxHandler_.setActiveModelMode(e.detail.model);
     this.updateInputPlaceholder_();
-  }
-
-  protected onDismissErrorScrim_() {
-    this.errorMessage = '';
   }
 
   // Sets the input property to compute the cancel button title without using
@@ -1414,16 +1395,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // before requerying for on-focus (zero-suggest) inputs. The searchbox
     // doesn't allow zero-suggest requests to be made while the ACController
     // is not done.
-    if (this.composeboxNoFlickerSuggestionsFix_) {
+    if (this.composeboxNoFlickerSuggestionsFix) {
       // If the composebox no flickering fix is enabled, stop the ACController
       // from querying for suggestions when the input is empty, but don't clear
       // the matches so the dropdown doesn't close.
       if (this.input === '') {
         this.searchboxHandler_.stopAutocomplete(/*clearResult=*/ true);
       }
-      this.queryAutocomplete_(/* clearMatches= */ false);
+      this.queryAutocomplete(/* clearMatches= */ false);
     } else {
-      this.queryAutocomplete_(/* clearMatches= */ this.input === '');
+      this.queryAutocomplete(/* clearMatches= */ this.input === '');
     }
   }
 
@@ -1471,7 +1452,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.input = this.input + this.smartComposeInlineHint;
         this.smartComposeInlineHint = '';
         e.preventDefault();
-        this.queryAutocomplete_(/* clearMatches= */ true);
+        this.queryAutocomplete(/* clearMatches= */ true);
       }
       return;
     }
@@ -1552,7 +1533,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   protected onInputFocusin_() {
     // if there's a last queried input, it's guaranteed that at least
     // the verbatim match will exist.
-    if (this.lastQueriedInput_) {
+    if (this.lastQueriedInput) {
       this.selectFirstMatch();
     }
   }
@@ -1566,7 +1547,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // If the composebox was focused out, collapsed and now focused in,
     // requery autocomplete to get fresh contextual suggestions.
     if (this.isCollapsible) {
-      this.queryAutocomplete_(/* clearMatches= */ true);
+      this.queryAutocomplete(/* clearMatches= */ true);
     }
 
     this.expanding_ = true;
@@ -1608,7 +1589,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
     // Query for ZPS even if there's no context.
     if (this.showZps) {
-      this.queryAutocomplete_(/* clearMatches= */ false);
+      this.queryAutocomplete(/* clearMatches= */ false);
     }
   }
 
@@ -1643,7 +1624,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // If we're unable to submit (e.g., still uploading files) or the query
     // synchronously evaluates to invalid (e.g. state hasn't updated in Lit
     // due to synchronous eventing), do nothing.
-    if (!this.canSubmitFilesAndInput || !this.hasValidQuery_()) {
+    if (!this.canSubmitFilesAndInput || !this.hasValidQuery()) {
       return;
     }
 
@@ -1700,19 +1681,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.selectedMatch = this.result?.matches[this.selectedMatchIndex] || null;
   }
 
-  /**
-   * Clears the autocomplete result on the page and on the autocomplete backend.
-   */
-  clearAutocompleteMatches() {
-    this.showDropdown = false;
-    this.result = null;
-    this.$.matches.unselect();
-    this.searchboxHandler_.stopAutocomplete(/*clearResult=*/ true);
-    // Autocomplete sends updates once it is stopped. Invalidate those results
-    // by setting the |this.lastQueriedInput_| to its default value.
-    this.lastQueriedInput_ = '';
-  }
-
   getRemainingFilesToUpload(): Set<string> {
     return this.pendingUploads_;
   }
@@ -1722,8 +1690,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
-    if (this.lastQueriedInput_ === null ||
-        this.lastQueriedInput_.trimStart() !== result.input) {
+    if (this.lastQueriedInput === null ||
+        this.lastQueriedInput.trimStart() !== result.input) {
       return;
     }
 
@@ -1731,8 +1699,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // the ACController is not sending multiple responses for a single query,
     // especially when the matches is empty. Remove this logic once a long term
     // fix is found.
-    if (this.composeboxNoFlickerSuggestionsFix_ && this.showTypedSuggest_ &&
-        !this.haveReceivedAutcompleteResponse_) {
+    if (this.composeboxNoFlickerSuggestionsFix && this.showTypedSuggest &&
+        !this.haveReceivedAutcompleteResponse) {
       // The first autcomplete response for ZPS contains no matches, since
       // composebox doesn't support ZPS from local providers (ex. history
       // suggestion). Similarly, since composebox doesn't support local
@@ -1745,9 +1713,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         result.matches.push(...this.result.matches.filter(
             match => match.type !== 'search-what-you-typed'));
       }
-      this.haveReceivedAutcompleteResponse_ = true;
+      this.haveReceivedAutcompleteResponse = true;
     }
-    this.haveReceivedAutcompleteResponse_ = true;
+    this.haveReceivedAutcompleteResponse = true;
     this.result = result;
     /* Indicates when suggestion results have changed so that zero state
      * suggestion results in contextual tasks composebox can update accordingly.
@@ -1831,14 +1799,14 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       if (status === ContextUploadStatus.kProcessingSuggestSignalsReady &&
           this.showZps && !file.type.includes('image')) {
         // Query autocomplete to get contextual suggestions for files.
-        this.queryAutocomplete_(/* clearMatches= */ true);
+        this.queryAutocomplete(/* clearMatches= */ true);
       }
       // For image files:
       if (status === ContextUploadStatus.kProcessingSuggestSignalsReady &&
           file.type.includes('image')) {
         if (this.enableImageContextualSuggestions_) {
           // Query autocomplete to get contextual suggestions for files.
-          this.queryAutocomplete_(/* clearMatches= */ true);
+          this.queryAutocomplete(/* clearMatches= */ true);
         } else {
           this.showDropdown = false;
         }
@@ -1847,21 +1815,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // Query autocomplete to get contextual suggestions for tabs.
       if (status === ContextUploadStatus.kProcessing &&
           file.type.includes('tab')) {
-        this.queryAutocomplete_(/* clearMatches= */ true);
+        this.queryAutocomplete(/* clearMatches= */ true);
       }
     }
-  }
-
-  // `queryAutocomplete` updates the `lastQueriedInput_` and makes an
-  // autocomplete call through the handler. It also optionally clears existing
-  // matches.
-  private queryAutocomplete_(clearMatches: boolean) {
-    if (clearMatches) {
-      this.clearAutocompleteMatches();
-    }
-    this.lastQueriedInput_ = this.input;
-    this.haveReceivedAutcompleteResponse_ = false;
-    this.searchboxHandler_.queryAutocomplete(this.input, false);
   }
 
   clearAllInputs(
@@ -1899,7 +1855,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   clearInput() {
     this.input = '';
-    this.lastQueriedInput_ = '';
+    this.lastQueriedInput = '';
     this.$.matches.unselect();
   }
 

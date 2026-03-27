@@ -5,10 +5,12 @@
 import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteMatch, AutocompleteResult, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import type {ComposeboxFile, ComposeboxState} from './common.js';
+import type {PageHandlerRemote} from './composebox.mojom-webui.js';
+import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import type {InputState} from './composebox_query.mojom-webui.js';
 
@@ -115,9 +117,95 @@ export const ComposeboxEmbedderMixin =
         accessor tabSuggestions: TabInfo[] = [];
         accessor transcript: string = '';
         accessor uploadButtonDisabled: boolean = false;
+        composeboxNoFlickerSuggestionsFix: boolean =
+            loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
+        showTypedSuggest: boolean =
+            loadTimeData.getBoolean('composeboxShowTypedSuggest');
+        lastQueriedInput: string = '';
+        haveReceivedAutcompleteResponse: boolean = false;
+
+        // =====================================================================
+        // Embedder-provided methods for DOM and Mojo access
+        // =====================================================================
 
         getInputElement(): ComposeboxInputElement {
           assertNotReached();
+        }
+
+        getDropdownElement(): ComposeboxDropdownElement {
+          assertNotReached();
+        }
+
+        getActiveElement(): Element|null {
+          assertNotReached();
+        }
+
+        getPageHandler(): PageHandlerRemote {
+          assertNotReached();
+        }
+
+        getSearchboxHandler(): SearchboxPageHandlerRemote {
+          assertNotReached();
+        }
+
+        // =====================================================================
+        // Common event handlers
+        // =====================================================================
+
+        onTranscriptUpdate(e: CustomEvent<string>) {
+          this.transcript = e.detail;
+        }
+
+        onSpeechReceived() {
+          this.receivedSpeech = true;
+        }
+
+        onDismissErrorScrim() {
+          this.errorMessage = '';
+        }
+
+        onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>) {
+          this.selectedMatchIndex = e.detail.value;
+          this.selectedMatch =
+              this.result?.matches[this.selectedMatchIndex] || null;
+        }
+
+        // =====================================================================
+        // Common helper methods
+        // =====================================================================
+
+        hasFiles(): boolean {
+          return this.files.size > 0;
+        }
+
+        queryAutocomplete(clearMatches: boolean) {
+          if (clearMatches) {
+            this.clearAutocompleteMatches();
+          }
+          this.lastQueriedInput = this.input;
+          this.haveReceivedAutcompleteResponse = false;
+          this.getSearchboxHandler().queryAutocomplete(this.input, false);
+        }
+
+        clearAutocompleteMatches() {
+          this.showDropdown = false;
+          this.result = null;
+          this.getDropdownElement().unselect();
+          this.getSearchboxHandler().stopAutocomplete(/*clearResult=*/ true);
+          // Autocomplete sends updates once it is stopped. Invalidate those
+          // results by setting the |this.lastQueriedInput| to its default
+          // value.
+          this.lastQueriedInput = '';
+        }
+
+        computeSubmitEnabled(): boolean {
+          // Embedders can override this.
+          return this.hasValidQuery();
+        }
+
+        hasValidQuery(): boolean {
+          // Embedders can override this.
+          return false;
         }
       }
 
@@ -153,6 +241,28 @@ export interface ComposeboxEmbedderMixinInterface {
   tabSuggestions: TabInfo[];
   transcript: string;
   uploadButtonDisabled: boolean;
+  composeboxNoFlickerSuggestionsFix: boolean;
+  showTypedSuggest: boolean;
+  lastQueriedInput: string;
+  haveReceivedAutcompleteResponse: boolean;
 
+  // Embedder-provided methods for DOM and Mojo access
   getInputElement(): ComposeboxInputElement;
+  getDropdownElement(): ComposeboxDropdownElement;
+  getActiveElement(): Element|null;
+  getPageHandler(): PageHandlerRemote;
+  getSearchboxHandler(): SearchboxPageHandlerRemote;
+
+  // Common event handlers
+  onTranscriptUpdate(e: CustomEvent<string>): void;
+  onSpeechReceived(): void;
+  onDismissErrorScrim(): void;
+  onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
+
+  // Common helper methods
+  hasFiles(): boolean;
+  queryAutocomplete(clearMatches: boolean): void;
+  clearAutocompleteMatches(): void;
+  computeSubmitEnabled(): boolean;
+  hasValidQuery(): boolean;
 }
