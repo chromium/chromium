@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 
 @interface ReaderModeCoordinator () <ReaderModeOptionsCommands>
@@ -33,6 +34,8 @@
 - (void)startAnimated:(BOOL)animated {
   _viewController = [[ReaderModeViewController alloc] init];
   _viewController.overscrollDelegate = self.overscrollDelegate;
+  _viewController.readerModeHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ReaderModeCommands);
   _viewController.delegate = self;
   ProfileIOS* profile = self.browser->GetProfile();
   BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);

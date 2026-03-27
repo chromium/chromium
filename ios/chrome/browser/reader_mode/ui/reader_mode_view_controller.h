@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_consumer.h"
 
 @class ReaderModeViewController;
+@protocol ReaderModeCommands;
 @protocol ReaderModeMutator;
 @protocol OverscrollActionsControllerDelegate;
 
@@ -25,6 +26,7 @@
 
 @property(nonatomic, weak) id<ReaderModeViewControllerDelegate> delegate;
 @property(nonatomic, weak) id<ReaderModeMutator> mutator;
+@property(nonatomic, weak) id<ReaderModeCommands> readerModeHandler;
 // Required to support Overscroll Actions UI, which is displayed when Reader
 // mode is pulled down.
 @property(nonatomic, weak) id<OverscrollActionsControllerDelegate>

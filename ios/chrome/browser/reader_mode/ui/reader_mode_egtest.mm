@@ -1452,4 +1452,19 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   [self assertReaderModePageIsVisible];
 }
 
+// Tests that the escape key can be used to exit Reader mode.
+- (void)testReaderModeEscapeKey {
+  const GURL readerModeURL = self.testServer->GetURL("/article.html");
+  [ChromeEarlGrey loadURL:readerModeURL];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
+  [self assertReaderModePageIsHidden];
+}
+
 @end

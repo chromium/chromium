@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_view_controller.h"
 
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_mutator.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/common/ui/animations/radial_wipe_animation.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -143,6 +145,25 @@
   }
   [self didMoveToParentViewController:self.parentViewController];
   _radialWipeAnimation = nil;
+  [self becomeFirstResponder];
+}
+
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+#pragma mark - KeyCommandActions
+
+- (void)keyCommand_close {
+  [self.readerModeHandler hideReaderMode];
 }
 
 @end
