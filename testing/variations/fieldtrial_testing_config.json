@@ -11132,7 +11132,9 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux",
+                "chromeos"
             ],
             "experiments": [
                 {
