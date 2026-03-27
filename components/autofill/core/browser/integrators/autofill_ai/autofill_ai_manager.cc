@@ -79,6 +79,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/strike_database/strike_database.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -410,12 +411,17 @@ void AutofillAiManager::HandlePromptResult(
     switch (prompt_type) {
       case AutofillClient::AutofillAiImportPromptType::kSave:
       case AutofillClient::AutofillAiImportPromptType::kMigrate: {
-        // To accept an import, the user needs to click a confirmation button.
-        CHECK(ui_context.clicked_button_string_id.has_value());
-        consent_auditor::ConsentAuditor::SessionId session_id =
-            RecordWalletPrivatePassConsent(ui_context.ui_string_ids,
-                                           *ui_context.clicked_button_string_id,
-                                           *client_);
+        consent_auditor::ConsentAuditor::SessionId session_id;
+        // When the feature flag is disabled, `SaveWalletEntityInstance()`
+        // doesn't require a valid `session_id`.
+        if (base::FeatureList::IsEnabled(
+                wallet::features::kWalletApiPrivatePassesConsent)) {
+          // To accept an import, the user needs to click a confirmation button.
+          CHECK(ui_context.clicked_button_string_id.has_value());
+          session_id = RecordWalletPrivatePassConsent(
+              ui_context.ui_string_ids, *ui_context.clicked_button_string_id,
+              *client_);
+        }
         wallet_manager->SaveWalletEntityInstance(entity, session_id,
                                                  std::move(callback));
         break;

@@ -71,6 +71,7 @@
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -1196,10 +1197,15 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
 
   if (autofill::WalletPassAccessManager* pass_manager =
           autofill_client()->GetWalletPassAccessManager()) {
-    consent_auditor::ConsentAuditor::SessionId session_id =
-        RecordWalletPrivatePassConsent(ui_context.ui_string_ids,
-                                       ui_context.clicked_button_string_id,
-                                       *autofill_client());
+    consent_auditor::ConsentAuditor::SessionId session_id;
+    // When the feature flag is disabled, `SaveWalletEntityInstance()`
+    // doesn't require a valid `session_id`.
+    if (base::FeatureList::IsEnabled(
+            wallet::features::kWalletApiPrivatePassesConsent)) {
+      session_id = RecordWalletPrivatePassConsent(
+          ui_context.ui_string_ids, ui_context.clicked_button_string_id,
+          *autofill_client());
+    }
     pass_manager->SaveWalletEntityInstance(
         entity_instance, session_id,
         base::BindOnce(&AutofillPrivateAddOrUpdateEntityInstanceFunction::

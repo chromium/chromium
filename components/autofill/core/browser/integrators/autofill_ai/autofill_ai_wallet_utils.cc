@@ -137,14 +137,8 @@ consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
     const std::vector<int>& ui_string_ids,
     int clicked_button_string_id,
     AutofillClient& client) {
-  if (!base::FeatureList::IsEnabled(
-          wallet::features::kWalletApiPrivatePassesConsent)) {
-    // The save API expects a session ID in every case, since this is the target
-    // state of the API. When kWalletApiPrivatePassesConsent is disabled, it is
-    // dropped before calling Wallet. Return a dummy session ID to proceed with
-    // the save.
-    return consent_auditor::ConsentAuditor::GenerateSessionId();
-  }
+  CHECK(base::FeatureList::IsEnabled(
+      wallet::features::kWalletApiPrivatePassesConsent));
   consent_auditor::ConsentAuditor* consent_auditor = client.GetConsentAuditor();
   // As a profile keyed service, the `consent_auditor` exists.
   CHECK(consent_auditor);
