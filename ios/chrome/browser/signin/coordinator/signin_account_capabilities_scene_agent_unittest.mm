@@ -322,6 +322,16 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest,
   AddIdentity(identity);
   SetPrimaryIdentity(identity);
 
+  // Trigger the External Privacy Context build so that the scene agent marks
+  // this identity as handled.
+  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
+      base::BindRepeating(^(
+          id<SystemIdentity> cur_identity, UIViewController* view_controller,
+          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
+        std::move(callback).Run(nil);
+      }));
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
   AccountInfo account = identity_manager->FindExtendedAccountInfoByEmailAddress(
@@ -345,4 +355,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest,
       AuthenticationServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
+
+  // Wait for the sign-out completion block to finish.
+  base::RunLoop().RunUntilIdle();
 }

@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SIGNIN_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/signin/ui/age_mismatch_signout_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // View controller for the Age Mismatch prompt.
 // This prompt is displayed after a signout, when Chrome detects that the device
 // is set up for a child but the Google account signing in to Chrome is not.
-@interface AgeMismatchSignoutViewController : PromoStyleViewController
+@interface AgeMismatchSignoutViewController
+    : PromoStyleViewController <AgeMismatchSignoutConsumer>
 
 @end
 

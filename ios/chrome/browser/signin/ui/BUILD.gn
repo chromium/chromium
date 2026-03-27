@@ -4,13 +4,16 @@
 
 source_set("ui") {
   sources = [
+    "age_mismatch_signout_consumer.h",
     "age_mismatch_signout_view_controller.h",
     "age_mismatch_signout_view_controller.mm",
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/views",
     "//ios/chrome/browser/shared/ui/image",
     "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]

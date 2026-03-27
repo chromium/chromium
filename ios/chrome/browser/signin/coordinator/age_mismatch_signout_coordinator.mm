@@ -4,16 +4,67 @@
 
 #import "ios/chrome/browser/signin/coordinator/age_mismatch_signout_coordinator.h"
 
+#import "base/not_fatal_until.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/coordinator/age_mismatch_signout_mediator.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/ui/age_mismatch_signout_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+
+@interface AgeMismatchSignoutCoordinator () <PromoStyleViewControllerDelegate>
+@end
 
 @implementation AgeMismatchSignoutCoordinator {
   // View controller for the Age Mismatch Prompt.
   AgeMismatchSignoutViewController* _viewController;
+
+  // Mediator for the Age Mismatch Prompt.
+  AgeMismatchSignoutMediator* _mediator;
+
+  // The identity to display the account details for.
+  id<SystemIdentity> _identity;
+
+  // Block the application UI when the Age Mismatch Prompt is visible.
+  std::unique_ptr<ScopedUIBlocker> _applicationUIBlocker;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                  identity:(id<SystemIdentity>)identity {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _identity = identity;
+  }
+  return self;
 }
 
 - (void)start {
   [super start];
+
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+  CHECK(
+      !authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
+      base::NotFatalUntil::M153);
+
+  _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
+      self.browser->GetSceneState(), UIBlockerExtent::kApplication);
+  _mediator = [[AgeMismatchSignoutMediator alloc]
+            initWithIdentity:_identity
+      identityAvatarProvider:GetApplicationContext()
+                                 ->GetIdentityAvatarProvider()];
   _viewController = [[AgeMismatchSignoutViewController alloc] init];
+  _viewController.delegate = self;
+  _mediator.consumer = _viewController;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
@@ -21,9 +72,52 @@
 
 - (void)stop {
   [super stop];
+  [_mediator disconnect];
+  _mediator = nil;
+  if (_viewController) {
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+    _viewController.delegate = nil;
+    _viewController = nil;
+  }
+  _applicationUIBlocker.reset();
+}
+
+#pragma mark - PromoStyleViewControllerDelegate
+
+- (void)didTapPrimaryActionButton {
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
+  _viewController.delegate = nil;
   _viewController = nil;
+
+  // TODO(crbug.com/481654850): update the access point.
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kSigninOnly
+            accessPoint:signin_metrics::AccessPoint::kSettings];
+
+  __weak __typeof(self) weakSelf = self;
+  [command addSigninCompletion:^(SigninCoordinator* coordinator,
+                                 SigninCoordinatorResult result,
+                                 id<SystemIdentity> completionIdentity) {
+    [weakSelf notifyDelegateToDismiss];
+  }];
+
+  id<SceneCommands> sceneCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneCommandsHandler showSignin:command
+                baseViewController:self.baseViewController];
+}
+
+- (void)didTapSecondaryActionButton {
+  [self notifyDelegateToDismiss];
+}
+
+#pragma mark - Private
+
+- (void)notifyDelegateToDismiss {
+  [self.delegate ageMismatchSignoutCoordinatorWantsToBeStopped:self];
 }
 
 @end

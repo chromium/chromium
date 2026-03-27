@@ -12,6 +12,7 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
@@ -52,6 +53,7 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
 }  // namespace
 
 @interface SigninAccountCapabilitiesSceneAgent () <
+    AgeMismatchSignoutCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     ProfileStateObserver,
     SystemIdentityManagerObserving,
@@ -76,6 +78,13 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
 
   // Timer to periodically rebuild the External Privacy Contexts
   base::RepeatingTimer _refreshTimer;
+
+  // Tracks if a sign-out from an age mismatch is currently in progress.
+  BOOL _isAgeMismatchSignoutInProgress;
+
+  // Tracks if External Privacy Contexts are currently being built
+  // asynchronously.
+  BOOL _areExternalPrivacyContextsBeingBuilt;
 }
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider {
@@ -126,6 +135,7 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
   _systemIdentityManagerObserver.reset();
   _identityManagerObserver.reset();
   _refreshTimer.Stop();
+  _ageMismatchSignoutCoordinator.delegate = nil;
   [_ageMismatchSignoutCoordinator stop];
   _ageMismatchSignoutCoordinator = nil;
 }
@@ -169,26 +179,13 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
     return;
   }
 
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(
-          self.sceneState.profileState.profile);
-  if (!authenticationService) {
-    return;
-  }
-
   if (info.capabilities.can_sign_in_to_chrome() == signin::Tribool::kFalse) {
-    authenticationService->SignOut(
-        signin_metrics::ProfileSignout::kSignoutFromCanSignInToChromeCapability,
-        nil);
-
-    // Show the age mismatch signout screen.
-    if (!_ageMismatchSignoutCoordinator) {
-      _ageMismatchSignoutCoordinator = [[AgeMismatchSignoutCoordinator alloc]
-          initWithBaseViewController:[_sceneUIProvider activeViewController]
-                             browser:self.sceneState.browserProviderInterface
-                                         .mainBrowserProvider.browser];
-      [_ageMismatchSignoutCoordinator start];
-    }
+    // Capabilities are only available after the External Privacy Contexts have
+    // been built.
+    CHECK(!_areExternalPrivacyContextsBeingBuilt, base::NotFatalUntil::M153);
+    CHECK(_handledIdentities.contains(GaiaId(info.gaia)),
+          base::NotFatalUntil::M153);
+    [self handleAgeMismatchSignout];
   }
 }
 
@@ -198,7 +195,18 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
   [self fetchCapabilitiesForUnhandledIdentities];
 }
 
-#pragma mark - Internal
+#pragma mark - AgeMismatchSignoutCoordinatorDelegate
+
+- (void)ageMismatchSignoutCoordinatorWantsToBeStopped:
+    (AgeMismatchSignoutCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _ageMismatchSignoutCoordinator,
+           base::NotFatalUntil::M153);
+  _ageMismatchSignoutCoordinator.delegate = nil;
+  [_ageMismatchSignoutCoordinator stop];
+  _ageMismatchSignoutCoordinator = nil;
+}
+
+#pragma mark - Private
 
 // Fetches capabilities for unhandled identities after building the External
 // Privacy Context, which communicates device signals to the capabilities
@@ -213,6 +221,8 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
   if (!identities.count) {
     return;
   }
+
+  _areExternalPrivacyContextsBeingBuilt = YES;
 
   std::unique_ptr<ScopedUIBlocker> applicationUIBlocker =
       std::make_unique<ScopedUIBlocker>(self.sceneState,
@@ -256,7 +266,55 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
 // Called after all External Privacy Contexts have been built.
 - (void)onAllExternalPrivacyContextsBuilt:
     (NSArray<id<SystemIdentity>>*)identities {
+  _areExternalPrivacyContextsBeingBuilt = NO;
+
   RunSystemCapabilitiesPrefetch(identities);
+
+  // Read capability value and signout if needed.
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  if (identityManager &&
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    AccountInfo info = identityManager->FindExtendedAccountInfoByAccountId(
+        identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+    if (info.capabilities.can_sign_in_to_chrome() == signin::Tribool::kFalse) {
+      [self handleAgeMismatchSignout];
+    }
+  }
+}
+
+// Signs out the user and shows the age mismatch signout UI.
+- (void)handleAgeMismatchSignout {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  if (!authenticationService) {
+    return;
+  }
+
+  id<SystemIdentity> primaryIdentity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
+  if (primaryIdentity && !_isAgeMismatchSignoutInProgress) {
+    _isAgeMismatchSignoutInProgress = YES;
+
+    std::unique_ptr<ScopedUIBlocker> applicationUIBlocker =
+        std::make_unique<ScopedUIBlocker>(self.sceneState,
+                                          UIBlockerExtent::kApplication);
+
+    base::OnceClosure signoutCompletion = base::BindOnce(
+        [](std::unique_ptr<ScopedUIBlocker> blocker, __typeof(self) strong_self,
+           id<SystemIdentity> primary_identity) {
+          [strong_self markAgeMismatchSignoutCompletedAndShowPromptForIdentity:
+                           primary_identity];
+        },
+        std::move(applicationUIBlocker), self, primaryIdentity);
+
+    authenticationService->SignOut(
+        signin_metrics::ProfileSignout::kSignoutFromCanSignInToChromeCapability,
+        base::CallbackToBlock(std::move(signoutCompletion)));
+  }
 }
 
 // Returns a list of identities that haven't been handled yet.
@@ -319,6 +377,22 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
   }
 
   return YES;
+}
+
+- (void)markAgeMismatchSignoutCompletedAndShowPromptForIdentity:
+    (id<SystemIdentity>)identity {
+  _isAgeMismatchSignoutInProgress = NO;
+
+  // Show the age mismatch signout screen.
+  if (!_ageMismatchSignoutCoordinator) {
+    _ageMismatchSignoutCoordinator = [[AgeMismatchSignoutCoordinator alloc]
+        initWithBaseViewController:[_sceneUIProvider activeViewController]
+                           browser:self.sceneState.browserProviderInterface
+                                       .mainBrowserProvider.browser
+                          identity:identity];
+    _ageMismatchSignoutCoordinator.delegate = self;
+    [_ageMismatchSignoutCoordinator start];
+  }
 }
 
 @end
