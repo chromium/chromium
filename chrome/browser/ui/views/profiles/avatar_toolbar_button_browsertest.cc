@@ -943,8 +943,11 @@ class AvatarToolbarButtonReplaceSyncPromosWithSignInPromosOffBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  public:
   AvatarToolbarButtonReplaceSyncPromosWithSignInPromosOffBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   }
 
  private:
@@ -1581,6 +1584,7 @@ class MAYBE_AvatarToolbarButtonPromoBrowserTest
         feature_list_.InitWithFeatureStates(
             // `enable_replace_sync_with_signin` is ignored.
             {{syncer::kReplaceSyncPromosWithSignInPromos, false},
+             {syncer::kReplaceSyncPromosWithSigninPromosNewSignin, false},
              {switches::kAvatarButtonSyncPromoForTesting, true}});
         break;
       case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
@@ -3392,11 +3396,17 @@ class AvatarToolbarButtonSignInBenefitsIphBrowserTest
     // Disable the migration feature flag for PRE tests. This allows simulating
     // users signing in before the sync-to-signin migration.
     if (content::IsPreTest()) {
-      feature_list_.InitAndDisableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              syncer::kReplaceSyncPromosWithSignInPromos,
+              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
     } else {
-      feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {syncer::kReplaceSyncPromosWithSignInPromos,
+           syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
+          /*disabled_features=*/{});
     }
   }
 

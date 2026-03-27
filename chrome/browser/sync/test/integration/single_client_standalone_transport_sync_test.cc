@@ -381,6 +381,8 @@ class ReplaceSyncWithSigninMigrationSyncTest : public SyncTest {
     // The Sync-to-Signin feature is only enabled in non-PRE_ tests.
     sync_to_signin_feature_.InitWithFeatureStates(
         {{syncer::kReplaceSyncPromosWithSignInPromos, !content::IsPreTest()},
+         {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
+          !content::IsPreTest()},
          {switches::kEnablePreferencesAccountStorage, !content::IsPreTest()}});
   }
   ~ReplaceSyncWithSigninMigrationSyncTest() override = default;

@@ -2828,7 +2828,11 @@ TEST_F(TabGroupSyncServiceImplTest, MetricsOnSignin) {
 // TODO(crbug.com/417950948): Remove this test once kSync is fully deprecated.
 TEST_F(TabGroupSyncServiceImplTest, MetricsOnSync) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+  features.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
 
   base::HistogramTester histograms;
   identity_test_environment_.MakePrimaryAccountAvailable(

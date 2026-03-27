@@ -78,8 +78,7 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
          autofill::features::kAutofillSupportSplitZipCode,
          syncer::kReplaceSyncPromosWithSignInPromos,
          syncer::kUnoPhase2FollowUp},
-        /*disabled_features=*/{
-            syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers});
+        /*disabled_features=*/{});
 
     // Ensure profile creation occurs after flag initialization to guarantee
     // their effectiveness within the profile's constructor.
@@ -297,55 +296,6 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
 
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
   EXPECT_EQ(0u, GetLocalPasswords().size());
-}
-
-// Remove this test and replace it with the one in
-// `SelectTypeAndMigrateLocalDataItemsWhenActiveWithContactInfoForCustomPassphraseUsersTest`
-// once `kSyncEnableContactInfoDataTypeForCustomPassphraseUsers` is enabled by
-// default.
-IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
-                       ShouldNotUploadAddressWithCustomPassphrase) {
-  ASSERT_TRUE(SetupClients());
-
-  // Set up a custom passphrase.
-  const syncer::KeyParamsForTesting kCustomPassphraseKeyParams =
-      syncer::Pbkdf2PassphraseKeyParamsForTesting("hritika");
-  SetNigoriInFakeServer(
-      BuildCustomPassphraseNigoriSpecifics(kCustomPassphraseKeyParams),
-      GetFakeServer());
-
-  SaveLocalAddress();
-  ASSERT_EQ(1u, GetLocalAddresses().size());
-
-  SignIn();
-  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
-  ASSERT_EQ(
-      0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());
-
-  // This should not turn on account storage. The address will stay local.
-  // Entering the passphrase does not change that.
-  GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
-      syncer::CONTACT_INFO, {address().guid()});
-  EXPECT_EQ(1u,
-            GetSyncService(0)->GetQueuedLocalDataMigrationItemCountForTest());
-  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
-      kCustomPassphraseKeyParams.password));
-  ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-
-  EXPECT_EQ(
-      0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());
-  EXPECT_EQ(1u, GetLocalAddresses().size());
-
-  // The address is still in the queue, but will be cleared once the user signs
-  // out.
-  EXPECT_EQ(1u,
-            GetSyncService(0)->GetQueuedLocalDataMigrationItemCountForTest());
-  GetClient(0)->SignOutPrimaryAccount();
-  EXPECT_EQ(0u,
-            GetSyncService(0)->GetQueuedLocalDataMigrationItemCountForTest());
 }
 
 IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
@@ -620,6 +570,72 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
 
   EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::CONTACT_INFO, 1).Wait());
   EXPECT_EQ(0u, GetLocalAddresses().size());
+  EXPECT_EQ(0u,
+            GetSyncService(0)->GetQueuedLocalDataMigrationItemCountForTest());
+}
+
+class
+    SelectTypeAndMigrateLocalDataItemsWhenActiveWithoutContactInfoForCustomPassphraseUsersTest
+    : public SelectTypeAndMigrateLocalDataItemsWhenActiveTest {
+ public:
+  SelectTypeAndMigrateLocalDataItemsWhenActiveWithoutContactInfoForCustomPassphraseUsersTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Remove this test and replace it with the one in
+// `SelectTypeAndMigrateLocalDataItemsWhenActiveWithContactInfoForCustomPassphraseUsersTest`
+// once `kSyncEnableContactInfoDataTypeForCustomPassphraseUsers` is enabled by
+// default.
+IN_PROC_BROWSER_TEST_F(
+    SelectTypeAndMigrateLocalDataItemsWhenActiveWithoutContactInfoForCustomPassphraseUsersTest,
+    ShouldNotUploadAddressWithCustomPassphrase) {
+  ASSERT_TRUE(SetupClients());
+
+  // Set up a custom passphrase.
+  const syncer::KeyParamsForTesting kCustomPassphraseKeyParams =
+      syncer::Pbkdf2PassphraseKeyParamsForTesting("hritika");
+  SetNigoriInFakeServer(
+      BuildCustomPassphraseNigoriSpecifics(kCustomPassphraseKeyParams),
+      GetFakeServer());
+
+  SaveLocalAddress();
+  ASSERT_EQ(1u, GetLocalAddresses().size());
+
+  SignIn();
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
+  ASSERT_EQ(
+      0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());
+
+  // This should not turn on account storage. The address will stay local.
+  // Entering the passphrase does not change that.
+  GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
+      syncer::CONTACT_INFO, {address().guid()});
+  EXPECT_EQ(1u,
+            GetSyncService(0)->GetQueuedLocalDataMigrationItemCountForTest());
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kCustomPassphraseKeyParams.password));
+  ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+
+  EXPECT_EQ(
+      0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());
+  EXPECT_EQ(1u, GetLocalAddresses().size());
+
+  // The address is still in the queue, but will be cleared once the user signs
+  // out.
+  EXPECT_EQ(1u,
+            GetSyncService(0)->GetQueuedLocalDataMigrationItemCountForTest());
+  GetClient(0)->SignOutPrimaryAccount();
   EXPECT_EQ(0u,
             GetSyncService(0)->GetQueuedLocalDataMigrationItemCountForTest());
 }

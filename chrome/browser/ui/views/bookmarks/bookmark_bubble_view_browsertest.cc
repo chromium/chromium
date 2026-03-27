@@ -415,12 +415,14 @@ class BookmarkBubbleViewShoppingCollectionBrowserTest
       : BookmarkBubbleViewMigrationBrowserTest(InitializationMode::kDefer) {
     if (GetParam()) {
       test_features_.InitWithFeatures(
-          {commerce::kShoppingList, syncer::kReplaceSyncPromosWithSignInPromos},
+          {commerce::kShoppingList, syncer::kReplaceSyncPromosWithSignInPromos,
+           syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
           {});
     } else {
       test_features_.InitWithFeatures(
           {commerce::kShoppingList},
-          {syncer::kReplaceSyncPromosWithSignInPromos});
+          {syncer::kReplaceSyncPromosWithSignInPromos,
+           syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
     }
   }
 

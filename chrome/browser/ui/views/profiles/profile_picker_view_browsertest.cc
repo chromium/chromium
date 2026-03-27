@@ -1314,7 +1314,11 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
       bool force_signin_enabled = true)
       : base::test::WithFeatureOverride(
             syncer::kReplaceSyncPromosWithSignInPromos),
-        force_signin_setter_(force_signin_enabled) {}
+        force_signin_setter_(force_signin_enabled) {
+    scoped_feature_list_.InitWithFeatureState(
+        syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
+        IsParamFeatureEnabled());
+  }
 
   // ProfilePickerCreationFlowBrowserTest:
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
@@ -1347,6 +1351,7 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter_;
   base::HistogramTester histogram_tester_;
   ProfileManagementCounter profile_management_counter_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,

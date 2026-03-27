@@ -209,8 +209,11 @@ class TurnSyncOnHelperBrowserTestWithParam
       : SigninBrowserTestBase(/*use_main_profile=*/false) {
     // Class `TurnSyncOnHelper` is only reachable and usable if the feature is
     // disabled.
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   }
 
   void SetUpOnMainThread() override {
@@ -350,8 +353,11 @@ class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
       : SigninBrowserTestBase(/*use_main_profile=*/false) {
     // Class `TurnSyncOnHelper` is only reachable and usable if the feature is
     // disabled.
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   }
 
   void SetUpOnMainThread() override {

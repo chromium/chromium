@@ -469,8 +469,11 @@ class UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled
     : public UserPolicySigninServiceTest {
  public:
   UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled() {
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   }
 
  private:

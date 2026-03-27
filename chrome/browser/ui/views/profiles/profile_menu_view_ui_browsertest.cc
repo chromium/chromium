@@ -162,13 +162,17 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {
         .pixel_test_param = {.test_suffix = "SignedIn_Sync"},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
-        .disabled_features = {syncer::kReplaceSyncPromosWithSignInPromos},
+        .disabled_features =
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param = {.test_suffix = "SignedIn_SyncPaused",
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused,
-        .disabled_features = {syncer::kReplaceSyncPromosWithSignInPromos},
+        .disabled_features =
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param = {.test_suffix = "SignInPending"},
@@ -202,7 +206,9 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
         .management_status = ManagementStatus::kSupervisedUser,
-        .disabled_features = {syncer::kReplaceSyncPromosWithSignInPromos},
+        .disabled_features =
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param =
@@ -228,7 +234,9 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
             },
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
         .management_status = ManagementStatus::kSupervisedUser,
-        .disabled_features = {syncer::kReplaceSyncPromosWithSignInPromos},
+        .disabled_features =
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param =
@@ -306,7 +314,9 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         // behavior. Explicitly disable in this case.
         .extra_features_and_params =
             {{switches::kAvatarButtonSyncPromoForTesting, {}}},
-        .disabled_features = {syncer::kReplaceSyncPromosWithSignInPromos},
+        .disabled_features =
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param = {.test_suffix = "SignedIn_HistorySyncEnabled"},

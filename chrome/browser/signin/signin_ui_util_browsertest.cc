@@ -259,7 +259,11 @@ class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
  public:
   SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos()
       : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {}
+            syncer::kReplaceSyncPromosWithSignInPromos) {
+    feature_list_.InitWithFeatureState(
+        syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
+        IsParamFeatureEnabled());
+  }
 
   bool IsReplaceSyncPromosWithSignInPromosEnabled() const {
     return IsParamFeatureEnabled();

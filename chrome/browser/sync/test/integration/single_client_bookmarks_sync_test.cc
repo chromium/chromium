@@ -3316,8 +3316,11 @@ class
  public:
   SingleClientBookmarksWithAccountStorageSyncTestSyncToSignInDisabledOnDesktop() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    features_override_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    features_override_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   }
 

@@ -452,7 +452,8 @@ TEST_F(SyncPrefsTest,
       /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             switches::kEnablePreferencesAccountStorage},
-      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
+      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos,
+                             kReplaceSyncPromosWithSigninPromosNewSignin});
 
   EXPECT_THAT(
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_),

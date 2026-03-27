@@ -1333,8 +1333,11 @@ class DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos
     : public DiceBrowserTest {
  public:
   DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos() {
-    feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   }
 
  private:

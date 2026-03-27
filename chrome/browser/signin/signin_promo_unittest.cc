@@ -1411,7 +1411,9 @@ class ComputeProfileMenuAvatarButtonPromoInfoParamTest
             // `syncer::kReplaceSyncPromosWithSignInPromos` must be off.
             /*enabled_features=*/{switches::kAvatarButtonSyncPromoForTesting,
                                   switches::kSigninPromoOnAvatarPill},
-            /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+            /*disabled_features=*/{
+                syncer::kReplaceSyncPromosWithSignInPromos,
+                syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
         break;
     }
   }

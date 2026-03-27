@@ -22616,6 +22616,24 @@
             ]
         }
     ],
+    "UnoPhase2DesktopNewSignin": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_SignInBenefitsNewSignin",
+                        "ReplaceSyncPromosWithSigninPromosNewSignin"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2FollowUpDesktop": [
         {
             "platforms": [
