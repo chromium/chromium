@@ -7,7 +7,10 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,9 +21,13 @@ namespace indigo {
 
 class IndigoServiceTest : public testing::Test {
  public:
+  void SetUp() override {
+    ::indigo::prefs::RegisterProfilePrefs(prefs_.registry());
+  }
+
   void CreateService() {
     service_ = std::make_unique<IndigoService>(
-        &profile_, identity_test_env_.identity_manager());
+        &profile_, identity_test_env_.identity_manager(), &prefs_);
   }
 
   void MakeAccountAvailableAndCapable() {
@@ -29,6 +36,10 @@ class IndigoServiceTest : public testing::Test {
     AccountCapabilitiesTestMutator mutator(&info.capabilities);
     mutator.set_can_use_model_execution_features(true);
     identity_test_env_.UpdateAccountInfoForAccount(info);
+  }
+
+  void SetPolicySettings(prefs::Policy value) {
+    prefs_.SetInteger(prefs::kIndigoPolicy, value);
   }
 
   ::testing::AssertionResult LocalEligibilityBecomes(
@@ -56,6 +67,7 @@ class IndigoServiceTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  TestingPrefServiceSimple prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<IndigoService> service_;
 };
@@ -81,6 +93,22 @@ TEST_F(IndigoServiceTest, CapabilitiesDisable) {
   identity_test_env_.UpdateAccountInfoForAccount(info);
 
   EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kMissingCapabilities));
+}
+
+TEST_F(IndigoServiceTest, PolicyDisabledFromConstruction) {
+  SetPolicySettings(prefs::Policy::kDisallowed);
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kDisabledByPolicy));
+}
+
+TEST_F(IndigoServiceTest, PolicyChangeTriggersUpdate) {
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  SetPolicySettings(prefs::Policy::kDisallowed);
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kDisabledByPolicy));
 }
 
 }  // namespace indigo

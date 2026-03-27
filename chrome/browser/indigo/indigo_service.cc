@@ -5,16 +5,31 @@
 #include "chrome/browser/indigo/indigo_service.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace indigo {
 
 IndigoService::IndigoService(Profile* profile,
-                             signin::IdentityManager* identity_manager)
-    : profile_(profile), identity_manager_(identity_manager) {
+                             signin::IdentityManager* identity_manager,
+                             PrefService* pref_service)
+    : profile_(profile),
+      identity_manager_(identity_manager),
+      pref_service_(pref_service) {
   if (identity_manager_) {
     identity_manager_observation_.Observe(identity_manager_);
+  }
+
+  if (pref_service_) {
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(pref_service_);
+    pref_change_registrar_->Add(
+        prefs::kIndigoPolicy,
+        base::BindRepeating(&IndigoService::UpdateLocalEligibilityAndNotify,
+                            base::Unretained(this)));
   }
 
   last_known_local_eligibility_ = ComputeLocalEligibility();
@@ -24,6 +39,7 @@ IndigoService::~IndigoService() = default;
 
 void IndigoService::Shutdown() {
   identity_manager_observation_.Reset();
+  pref_change_registrar_.reset();
 }
 
 void IndigoService::OnPrimaryAccountChanged(
@@ -45,6 +61,13 @@ IndigoService::RegisterLocalEligibilityChangedCallback(
 }
 
 LocalEligibility IndigoService::ComputeLocalEligibility() const {
+  if (pref_service_) {
+    int policy_val = pref_service_->GetInteger(prefs::kIndigoPolicy);
+    if (policy_val != prefs::Policy::kAllowed) {
+      return LocalEligibility::kDisabledByPolicy;
+    }
+  }
+
   CoreAccountId account_id = identity_manager_
                                  ? identity_manager_->GetPrimaryAccountId(
                                        signin::ConsentLevel::kSignin)

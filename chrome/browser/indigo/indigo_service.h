@@ -14,6 +14,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+class PrefChangeRegistrar;
+class PrefService;
 class Profile;
 
 namespace indigo {
@@ -22,6 +24,7 @@ enum class LocalEligibility {
   kEligible,
   kNotSignedIn,
   kMissingCapabilities,
+  kDisabledByPolicy,
 };
 
 class IndigoService : public KeyedService,
@@ -30,7 +33,9 @@ class IndigoService : public KeyedService,
   using LocalEligibilityChangedCallback =
       base::RepeatingCallback<void(LocalEligibility)>;
 
-  IndigoService(Profile* profile, signin::IdentityManager* identity_manager);
+  IndigoService(Profile* profile,
+                signin::IdentityManager* identity_manager,
+                PrefService* pref_service);
   ~IndigoService() override;
 
   // Get and subscribe to information about whether the profile is eligible to
@@ -63,6 +68,7 @@ class IndigoService : public KeyedService,
 
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<PrefService> pref_service_;
 
   LocalEligibility last_known_local_eligibility_;
   base::RepeatingCallbackList<void(LocalEligibility)>
@@ -71,6 +77,7 @@ class IndigoService : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 
 }  // namespace indigo
