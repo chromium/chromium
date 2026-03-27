@@ -54,6 +54,7 @@ static_library("parent_access") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/chromeos/parent_access:resources",
     "//chrome/browser/resources/chromeos/supervision:resources",
     "//chrome/browser/signin",

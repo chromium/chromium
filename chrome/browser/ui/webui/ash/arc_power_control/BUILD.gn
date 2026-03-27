@@ -33,6 +33,7 @@ static_library("arc_power_control") {
     "//chrome/browser/ash/arc/instance_throttle",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/throttle",
     "//chromeos/ash/experiences/arc/session",
     "//services/network/public/mojom:url_loader_base",

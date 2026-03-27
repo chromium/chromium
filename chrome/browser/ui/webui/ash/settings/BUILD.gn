@@ -72,6 +72,7 @@ static_library("settings") {
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/contacts",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/resources/settings_shared:resources",
     "//chrome/browser/ui/ash/wallpaper",

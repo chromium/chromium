@@ -24,6 +24,7 @@ source_set("impl") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
     "//components/strings:components_strings",
     "//content/public/browser",

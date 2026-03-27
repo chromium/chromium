@@ -26,6 +26,7 @@ static_library("input_device_settings") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_install",
     "//chrome/browser/apps/peripherals/proto",
+    "//chrome/browser/profiles:profile_manager",
     "//components/services/app_service/public/cpp:app_types",
     "//components/version_info",
     "//services/network/public/cpp",

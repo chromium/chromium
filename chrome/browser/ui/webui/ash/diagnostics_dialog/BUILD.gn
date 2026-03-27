@@ -19,6 +19,7 @@ static_library("diagnostics_dialog") {
     "//base",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//ui/display",
   ]

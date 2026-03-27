@@ -62,6 +62,7 @@ source_set("impl") {
       "//chrome/browser/feature_engagement",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",

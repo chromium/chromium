@@ -21,6 +21,7 @@ static_library("borealis") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/feedback",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chromeos/dbus/power",

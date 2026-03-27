@@ -177,6 +177,7 @@ source_set("impl") {
     "//chrome/browser/preloading",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",
     "//chrome/browser/sharing_hub",

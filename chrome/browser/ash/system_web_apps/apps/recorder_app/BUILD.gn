@@ -28,6 +28,7 @@ static_library("recorder_app") {
     "//chrome/browser/consent_auditor",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chromeos/ash/experiences/system_web_apps/types",

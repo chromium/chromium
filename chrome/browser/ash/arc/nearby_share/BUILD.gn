@@ -36,6 +36,7 @@ static_library("nearby_share") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",

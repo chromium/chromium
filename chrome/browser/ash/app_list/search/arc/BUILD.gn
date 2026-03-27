@@ -44,6 +44,7 @@ static_library("arc") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/string_matching",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",

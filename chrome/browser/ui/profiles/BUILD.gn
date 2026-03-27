@@ -76,6 +76,7 @@ source_set("impl") {
       "//chrome/browser:browser_process",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/prefs",
+      "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/themes",

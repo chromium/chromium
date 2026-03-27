@@ -61,6 +61,7 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/glic",
     "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/status_icons",
     "//chrome/browser/ui",

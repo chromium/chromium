@@ -57,6 +57,7 @@ static_library("keystore_service") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/platform_keys",
     "//components/keyed_service/core",

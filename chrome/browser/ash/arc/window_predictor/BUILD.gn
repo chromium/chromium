@@ -21,6 +21,7 @@ static_library("window_predictor") {
   deps = [
     "//base",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ui/base",
     "//components/app_restore",

@@ -40,6 +40,7 @@ static_library("usb") {
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/notifications:system_notification_helper",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",

@@ -42,6 +42,7 @@ static_library("input_overlay") {
     "//chrome/browser/ash/arc/input_overlay/db",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
     "//chrome/browser/ash/arc/input_overlay/ui",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/input_overlay/resources",
     "//chromeos/ash/experiences/arc/mojom",

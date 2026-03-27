@@ -17,6 +17,7 @@ static_library("system_web_dialog") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/constants",
     "//components/session_manager/core",
     "//content/public/browser",

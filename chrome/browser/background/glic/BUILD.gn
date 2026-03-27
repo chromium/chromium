@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/glic:resources_grit",
     "//chrome/browser/status_icons",
     "//chrome/browser/ui",

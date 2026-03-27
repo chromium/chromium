@@ -75,6 +75,7 @@ static_library("fileapi") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/common",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",

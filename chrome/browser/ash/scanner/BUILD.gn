@@ -26,6 +26,7 @@ static_library("scanner") {
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/scanner_feedback_dialog",
     "//chromeos/ash/components/browser_context_helper",

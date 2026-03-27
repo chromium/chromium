@@ -144,6 +144,7 @@ static_library("apps") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/feedback:feedback_enum",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",

@@ -29,6 +29,7 @@ source_set("enterprise_networking_attributes") {
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/network",

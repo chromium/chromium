@@ -20,6 +20,7 @@ static_library("profiles") {
     "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/browser_context_helper",
     "//components/user_manager",
   ]

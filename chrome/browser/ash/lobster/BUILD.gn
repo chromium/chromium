@@ -53,6 +53,7 @@ static_library("lobster") {
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/chromeos/mako:resources",
     "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/lobster",

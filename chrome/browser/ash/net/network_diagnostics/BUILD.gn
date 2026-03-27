@@ -66,6 +66,7 @@ static_library("network_diagnostics") {
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/mojo_service_manager",

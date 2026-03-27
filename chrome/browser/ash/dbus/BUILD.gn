@@ -102,6 +102,7 @@ static_library("dbus") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/attestation",

@@ -16,6 +16,7 @@ source_set("services") {
 
   deps = [
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_manager",
     "//components/keyed_service/core",
     "//components/paint_preview/browser",
     "//components/paint_preview/common",

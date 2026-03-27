@@ -38,6 +38,7 @@ source_set("extensions") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//components/pref_registry",

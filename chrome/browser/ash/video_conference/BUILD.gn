@@ -41,6 +41,7 @@ static_library("video_conference") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chromeos/crosapi/mojom:mojom_shared",
     "//chromeos/crosapi/mojom:mojom_shared_cpp_sources",

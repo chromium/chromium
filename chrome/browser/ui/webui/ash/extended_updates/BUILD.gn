@@ -39,6 +39,7 @@ static_library("extended_updates") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/extended_updates",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/ash/extended_updates:resources",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",

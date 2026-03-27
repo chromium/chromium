@@ -25,6 +25,7 @@ static_library("exo") {
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/borealis",
     "//chromeos/ash/experiences/arc",
     "//components/exo",

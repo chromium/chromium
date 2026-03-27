@@ -133,6 +133,7 @@ static_library("devtools") {
     # //chrome/browser:browser, we include indirect dependencies here.
     ":protocol_generated_sources",
     "//chrome/browser/autofill",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//components/autofill/content/browser",

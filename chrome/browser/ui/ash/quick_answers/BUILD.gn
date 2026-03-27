@@ -42,6 +42,7 @@ source_set("quick_answers") {
     "//ash",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/editor_menu:utils",
     "//chrome/browser/ui/ash/quick_answers/ui:loading_view",
     "//chrome/browser/ui/ash/quick_answers/ui:quick_answers_stage_button",

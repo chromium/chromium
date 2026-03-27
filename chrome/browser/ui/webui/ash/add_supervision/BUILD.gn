@@ -51,6 +51,7 @@ static_library("add_supervision") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/chromeos/add_supervision:resources",
     "//chrome/browser/resources/chromeos/add_supervision:resources_grit",
     "//chrome/browser/resources/chromeos/supervision:resources",

@@ -46,6 +46,7 @@ static_library("input_device_settings") {
     "//chrome/app:generated_resources",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/prefs",
     "//components/services/app_service",

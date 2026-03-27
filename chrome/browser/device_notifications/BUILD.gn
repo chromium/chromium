@@ -51,6 +51,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/notifications:system_notification_helper",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/ui",
       "//content/public/browser",
       "//url",

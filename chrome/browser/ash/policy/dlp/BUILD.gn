@@ -49,6 +49,7 @@ static_library("dlp") {
     "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chromeos/dbus/dlp",

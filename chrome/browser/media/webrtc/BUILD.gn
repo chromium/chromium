@@ -138,6 +138,7 @@ source_set("webrtc") {
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/policy:policy_util",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/status_icons",

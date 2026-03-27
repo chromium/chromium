@@ -79,6 +79,7 @@ source_set("impl") {
     "//chrome/browser:global_features",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/ui",

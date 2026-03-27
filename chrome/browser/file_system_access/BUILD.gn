@@ -49,6 +49,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//chrome/browser/ui/file_system_access",

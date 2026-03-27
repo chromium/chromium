@@ -503,6 +503,7 @@ if (!is_android) {
       "//chrome/browser/preloading/new_tab_page_preload",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/search",
       "//chrome/browser/sessions",
       "//chrome/browser/signin",

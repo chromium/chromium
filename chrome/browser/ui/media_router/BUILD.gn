@@ -61,6 +61,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/global_media_controls",
     "//chrome/browser/ui/toolbar",
     "//chrome/common",

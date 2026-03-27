@@ -33,6 +33,7 @@ static_library("info_private") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common:constants",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",

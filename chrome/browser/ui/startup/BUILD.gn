@@ -135,6 +135,7 @@ source_set("impl") {
     "//chrome/browser/infobars",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
@@ -169,7 +170,7 @@ source_set("impl") {
     "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:runtime_features_for_public",
     "//ui/base",
-    "//ui/gfx",
+    "//ui/gfx:native_ui_types",
     "//url",
   ]
   public_deps = [

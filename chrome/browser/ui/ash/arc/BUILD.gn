@@ -32,6 +32,7 @@ static_library("arc") {
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/browser/web_applications",

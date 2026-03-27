@@ -68,6 +68,7 @@ static_library("extensions") {
     "//chrome/browser/extensions:external_loader",
     "//chrome/browser/extensions/api/input_ime",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/chromeos:app_icon_resources",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/multi_user",

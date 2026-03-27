@@ -28,6 +28,7 @@ source_set("impl") {
   ]
   deps = [
     ":status_icons",
+    "//chrome/browser/profiles:profile_manager",
     "//ui/gfx",
   ]
 

@@ -58,6 +58,7 @@ source_set("metrics_provider_impl") {
     ":regional_capabilities",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//components/regional_capabilities",
     "//components/regional_capabilities:data",
   ]

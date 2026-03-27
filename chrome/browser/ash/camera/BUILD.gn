@@ -17,6 +17,7 @@ static_library("camera") {
   deps = [
     "//base",
     "//chrome/browser/ash/hats",
+    "//chrome/browser/profiles:profile_manager",
     "//media/capture:capture_lib",
     "//media/capture/video/chromeos/mojom:cros_camera",
   ]

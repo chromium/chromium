@@ -171,6 +171,7 @@ static_library("router") {
       "//chrome/browser/media/router/discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_manager",
       "//components/access_code_cast/common:metrics",
       "//components/embedder_support:user_agent",
       "//components/mirroring/mojom:service",

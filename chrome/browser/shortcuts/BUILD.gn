@@ -184,7 +184,10 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "shortcut_creator_win_unittest.cc" ]
-    deps += [ "//chrome/browser" ]
+    deps += [
+      "//chrome/browser",
+      "//chrome/browser/profiles:profile_manager",
+    ]
   }
 
   if (is_mac) {

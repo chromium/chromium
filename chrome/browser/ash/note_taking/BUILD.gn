@@ -28,6 +28,7 @@ static_library("note_taking") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chromeos/ash/experiences/arc",

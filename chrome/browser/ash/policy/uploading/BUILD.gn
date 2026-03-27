@@ -26,6 +26,7 @@ static_library("uploading") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/device_identity",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",

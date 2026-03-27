@@ -20,6 +20,7 @@ static_library("smart_charging") {
     "//base",
     "//chrome/browser/ash/power/ml",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chromeos/constants",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

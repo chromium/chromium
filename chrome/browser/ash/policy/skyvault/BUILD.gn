@@ -61,6 +61,7 @@ static_library("skyvault") {
     "//chrome/browser/notifications",
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",

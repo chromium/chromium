@@ -42,6 +42,7 @@ source_set("impl") {
   deps = [
     ":background",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/task_manager",
     "//services/metrics/public/cpp:ukm_builders",
   ]

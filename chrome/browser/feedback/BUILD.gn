@@ -122,6 +122,7 @@ source_set("feedback_impl") {
       "//chrome/browser/google",
       "//chrome/browser/metrics",
       "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",

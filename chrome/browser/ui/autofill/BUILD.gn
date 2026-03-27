@@ -270,6 +270,7 @@ source_set("impl") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/feedback",
+      "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/desktop_to_mobile_promos:utils",

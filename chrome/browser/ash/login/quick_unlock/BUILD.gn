@@ -55,6 +55,7 @@ static_library("quick_unlock") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common:constants",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/cryptohome:public",

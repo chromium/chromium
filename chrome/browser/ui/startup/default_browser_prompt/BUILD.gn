@@ -71,6 +71,7 @@ source_set("impl") {
     "//chrome/browser:shell_integration",
     "//chrome/browser/default_browser",
     "//chrome/browser/infobars",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",

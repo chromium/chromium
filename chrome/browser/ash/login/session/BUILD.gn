@@ -74,6 +74,7 @@ static_library("session") {
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
     "//chrome/browser/prefs:util",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
     "//chrome/browser/signin",
     "//chrome/browser/trusted_vault",

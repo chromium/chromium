@@ -39,6 +39,7 @@ static_library("public") {
     "//chrome/browser/ash/guest_os/infra",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
     "//chromeos/ash/components/dbus:vm_wl_proto",

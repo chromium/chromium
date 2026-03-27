@@ -25,6 +25,7 @@ static_library("auth") {
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy",
     "//chromeos/ash/components/cryptohome",

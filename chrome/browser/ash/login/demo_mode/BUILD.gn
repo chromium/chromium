@@ -51,6 +51,7 @@ static_library("demo_mode") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",

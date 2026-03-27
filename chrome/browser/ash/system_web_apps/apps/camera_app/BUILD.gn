@@ -51,6 +51,7 @@ static_library("camera_app") {
     "//chrome/browser/feedback",
     "//chrome/browser/pdf:pdf_service",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

@@ -263,6 +263,7 @@ source_set("ui_impl") {
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/contextual_tasks:resources",
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",

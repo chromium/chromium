@@ -72,6 +72,7 @@ static_library("arc") {
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

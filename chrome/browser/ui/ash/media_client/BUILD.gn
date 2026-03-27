@@ -32,6 +32,7 @@ static_library("media_client") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip",
     "//components/account_id",

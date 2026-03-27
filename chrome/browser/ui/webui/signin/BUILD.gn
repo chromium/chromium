@@ -63,6 +63,7 @@ source_set("signin_utils_impl") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/signin",
@@ -82,7 +83,6 @@ source_set("signin_utils_impl") {
     deps += [ ":signin_ui_error" ]
   }
 }
-
 source_set("signin") {
   sources = [
     "signin_web_dialog_ui.h",
@@ -160,6 +160,7 @@ source_set("signin_impl") {
     "//chrome/browser/consent_auditor",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/resources/signin:resources",
     "//chrome/browser/sync",
@@ -251,6 +252,12 @@ source_set("login_ui_service_impl") {
 
   deps = [
     ":login_ui_service",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/signin:signin_promo",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/signin",
   ]
@@ -389,6 +396,7 @@ if (!is_chromeos) {
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/resources/signin:resources",

@@ -27,6 +27,7 @@ static_library("event_based_logs") {
     "//chrome/browser/ash/policy/reporting/os_updates",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/support_tool:support_tool_proto",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/settings",

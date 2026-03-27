@@ -35,7 +35,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"  // nogncheck
 
 class GlobalBrowserCollection;
 #endif  // !BUILDFLAG(IS_ANDROID)
