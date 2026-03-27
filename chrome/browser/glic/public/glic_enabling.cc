@@ -556,9 +556,10 @@ bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
 }
 
 bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
-  return IsTrustFirstOnboardingGatedFeatureEnabled(
-      profile, features::kGlicContextMenu,
-      features::kGlicContextMenuWithOnboarding);
+  return IsEnabledForProfile(profile) &&
+         IsTrustFirstOnboardingGatedFeatureEnabled(
+             profile, features::kGlicContextMenu,
+             features::kGlicContextMenuWithOnboarding);
 }
 
 // static
