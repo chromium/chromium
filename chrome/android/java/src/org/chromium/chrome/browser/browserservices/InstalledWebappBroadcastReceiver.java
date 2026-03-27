@@ -80,7 +80,6 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
     }
 
     @Override
-    @SuppressWarnings("ThreadConstraint")
     public void onReceive(Context context, Intent intent) {
         if (intent == null) return;
         // Since we only care about ACTION_PACKAGE_DATA_CLEARED and and ACTION_PACKAGE_FULLY_REMOVED

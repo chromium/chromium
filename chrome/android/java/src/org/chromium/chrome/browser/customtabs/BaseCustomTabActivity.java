@@ -149,7 +149,6 @@ import java.util.function.Supplier;
  * CustomTabActivity}. Purpose of the class is to simplify merging {@link WebappActivity} and {@link
  * CustomTabActivity}.
  */
-@SuppressWarnings("ThreadConstraint")
 public abstract class BaseCustomTabActivity extends ChromeActivity {
     private static Integer sOverrideCoreCountForTesting;
 

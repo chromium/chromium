@@ -187,7 +187,6 @@ public class NotificationServiceImpl extends SplitCompatIntentService.Impl {
      * @param intent The intent containing the specific information.
      */
     @Override
-    @SuppressWarnings("ThreadConstraint")
     public void onHandleIntent(final @Nullable Intent intent) {
         if (intent == null) return;
         if (!intent.hasExtra(NotificationConstants.EXTRA_NOTIFICATION_ID)
