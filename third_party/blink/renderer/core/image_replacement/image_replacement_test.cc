@@ -18,12 +18,16 @@
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/image_replacement/document_image_replacements.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_image_replacement.h"
@@ -47,6 +51,16 @@ size_t CountDrawImageRectOps(const cc::PaintRecord& record) {
   }
   return count;
 }
+
+class ClickEventListener : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event* event) override { clicked_ = true; }
+  bool clicked() const { return clicked_; }
+
+ private:
+  bool clicked_ = false;
+};
+
 }  // namespace
 
 class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
@@ -134,6 +148,10 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   auto* iframe =
       DynamicTo<HTMLIFrameElement>(img->UserAgentShadowRoot()->firstChild());
   ASSERT_TRUE(iframe);
+  ASSERT_TRUE(iframe->InlineStyle());
+  EXPECT_EQ(
+      iframe->InlineStyle()->GetPropertyValue(CSSPropertyID::kPointerEvents),
+      "none");
   ASSERT_TRUE(iframe->ContentFrame());
   EXPECT_TRUE(mock_host.frame_token().has_value());
   EXPECT_EQ(iframe->ContentFrame()->GetFrameToken(), mock_host.frame_token());
@@ -151,6 +169,65 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   EXPECT_FALSE(img->UserAgentShadowRoot()->HasChildren());
   EXPECT_FALSE(DocumentImageReplacements::FromIfExists(GetDocument())
                    ->GetImageReplacement(img));
+}
+
+TEST_F(ImageReplacementSimTest, ClickFiresOnImageAfterReplacement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <style> img { width: 100px; height: 100px; } </style>
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target"></img>
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+  gfx::Point center =
+      img->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint();
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  auto* iframe =
+      DynamicTo<HTMLIFrameElement>(img->UserAgentShadowRoot()->firstChild());
+  ASSERT_TRUE(iframe);
+
+  HitTestLocation location(center);
+  HitTestResult hit_result =
+      GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
+          location);
+  EXPECT_EQ(hit_result.InnerNode(), img);
+
+  auto* listener = MakeGarbageCollected<ClickEventListener>();
+  img->addEventListener(AtomicString("click"), listener);
+
+  // Simulate click.
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      WebMouseEvent(WebMouseEvent::Type::kMouseDown, gfx::PointF(center),
+                    gfx::PointF(center), WebPointerProperties::Button::kLeft, 1,
+                    WebInputEvent::Modifiers::kLeftButtonDown,
+                    WebInputEvent::GetStaticTimeStampForTests()));
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+      WebMouseEvent(WebMouseEvent::Type::kMouseUp, gfx::PointF(center),
+                    gfx::PointF(center), WebPointerProperties::Button::kLeft, 1,
+                    WebInputEvent::kNoModifiers,
+                    WebInputEvent::GetStaticTimeStampForTests()));
+
+  EXPECT_TRUE(listener->clicked());
 }
 
 TEST_F(ImageReplacementSimTest, ImageReplacementRendering) {

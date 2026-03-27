@@ -159,6 +159,7 @@ void ImageReplacement::CreateImageReplacementShadowTree(
       MakeGarbageCollected<HTMLIFrameElement>(image_element.GetDocument());
   iframe->SetInlineStyleProperty(CSSPropertyID::kBorderStyle, "none");
   iframe->SetInlineStyleProperty(CSSPropertyID::kBorderWidth, "0");
+  iframe->SetInlineStyleProperty(CSSPropertyID::kPointerEvents, "none");
   // Note: We use opacity: 0 (instead of visibility: hidden) to ensure that
   // the iframe's rendering isn't throttled.
   iframe->SetInlineStyleProperty(CSSPropertyID::kOpacity, "0");
