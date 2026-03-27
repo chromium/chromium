@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/notimplemented.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "net/cert/cert_status_flags.h"
 
 namespace {
 
@@ -73,7 +75,8 @@ void WebUIReadOnlyOmnibox::ResetTabState(content::WebContents* web_contents) {
 }
 
 void WebUIReadOnlyOmnibox::Update() {
-  // TODO: Identical to OmniboxViewViews; need a sharing strategy.
+  // TODO(crbug.com/474060468): Identical to OmniboxViewViews; need a sharing
+  // strategy.
   if (controller()->edit_model()->ResetDisplayTexts()) {
     RevertAll();
 
@@ -98,9 +101,14 @@ void WebUIReadOnlyOmnibox::SetWindowTextAndCaretPos(const std::u16string& text,
                                                     bool update_popup,
                                                     bool notify_text_changed) {
   text_ = text;
+  text_strike_through_.SetMax(text_.size());
+  text_colors_.SetMax(text_.size());
+  text_strike_through_.ClearAndSetInitialValue(false);
+  text_colors_.ClearAndSetInitialValue(
+      toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxText);
   selection_ = gfx::Range(caret_pos);
 
-  // TODO: update_popup?
+  // TODO(crbug.com/474060468): update_popup?
 
   if (notify_text_changed) {
     TextChanged();
@@ -197,16 +205,51 @@ int WebUIReadOnlyOmnibox::GetOmniboxTextLength() const {
 }
 
 void WebUIReadOnlyOmnibox::EmphasizeURLComponents() {
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/474060468): remove dupe w/Views impl.
+  text_is_url_ = controller()->edit_model()->CurrentTextIsURL();
+  text_strike_through_.ClearAndSetInitialValue(false);
+
+  UpdateTextStyle(text_, text_is_url_,
+                  controller()->client()->GetSchemeClassifier());
 }
 
 void WebUIReadOnlyOmnibox::SetEmphasis(bool emphasize,
                                        const gfx::Range& range) {
-  NOTIMPLEMENTED();
+  toolbar_ui_api::mojom::OmniboxTextColor color =
+      emphasize ? toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxText
+                : toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxTextDimmed;
+  if (range.IsValid()) {
+    text_colors_.ApplyValue(color, range);
+  } else {
+    text_colors_.ClearAndSetInitialValue(color);
+  }
 }
 
 void WebUIReadOnlyOmnibox::UpdateSchemeStyle(const gfx::Range& range) {
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/474060468): partial dupe with OmniboxViewViews
+  DCHECK(range.IsValid());
+  DCHECK(!controller()->edit_model()->user_input_in_progress());
+
+  // Do not style the scheme for non-http/https URLs. For such schemes, styling
+  // could be confusing or misleading. For example, the scheme isn't meaningful
+  // in about:blank URLs. Or in blob: or filesystem: URLs, which have an inner
+  // origin, the URL is likely too syntax-y to be able to meaningfully draw
+  // attention to any part of it.
+  if (!controller()->client()->GetNavigationEntryURL().SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  if (net::IsCertStatusError(controller()->client()->GetCertStatus())) {
+    toolbar_ui_api::mojom::OmniboxTextColor color =
+        toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxText;
+    if (controller()->client()->GetSecurityLevel() ==
+        security_state::DANGEROUS) {
+      color = toolbar_ui_api::mojom::OmniboxTextColor::
+          kOmniboxSecurityChipDangerous;
+    }
+    text_colors_.ApplyValue(color, range);
+    text_strike_through_.ApplyValue(true, range);
+  }
 }
 
 toolbar_ui_api::mojom::OmniboxViewStatePtr
@@ -215,7 +258,33 @@ WebUIReadOnlyOmnibox::ComputeMojoState() const {
   if (selection_.IsValid()) {
     state->selection = selection_;
   }
-  state->text = base::UTF16ToUTF8(text_);
+  state->text_is_url = text_is_url_;
+
+  // Figure out all the breakpoints so we can go through text span-by-span.
+  std::vector<size_t> breakpoints;
+  for (const auto& b : text_strike_through_.breaks()) {
+    breakpoints.push_back(b.first);
+  }
+  for (const auto& b : text_colors_.breaks()) {
+    breakpoints.push_back(b.first);
+  }
+  // Add size for convenience.
+  breakpoints.push_back(text_.size());
+  std::ranges::sort(breakpoints);
+  auto [rm_begin, rm_end] = std::ranges::unique(breakpoints);
+  breakpoints.erase(rm_begin, rm_end);
+
+  // Now we can just split the text into pieces w/proper formatting.
+  for (size_t i = 0; i < breakpoints.size() - 1; ++i) {
+    size_t begin = breakpoints[i];
+    size_t end = breakpoints[i + 1];
+
+    state->text_pieces.push_back(toolbar_ui_api::mojom::OmniboxTextPortion::New(
+        base::UTF16ToUTF8(text_.substr(begin, end - begin)),
+        text_strike_through_.GetBreak(begin)->second,
+        text_colors_.GetBreak(begin)->second));
+  }
+
   return state;
 }
 

@@ -21,6 +21,15 @@ import {BrowserProxyImpl, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE} fro
 import type {BrowserProxy, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
+// clang-format off
+// Helper so tests can find what they needed when optimization is on.
+// This should probably be a separate file, but rollup support only
+// handles 2 at most now.
+import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
+
+export {OmniboxTextColor, ReadonlyOmniboxElement};
+// clang-format on
 
 const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   {selector: '#back', id: 'kToolbarBackButtonElementId'},
@@ -90,8 +99,9 @@ export class ToolbarAppElement extends CrLitElement {
       isContextMenuVisible: false,
     },
     omniboxViewState: {
-      text: '',
+      textPieces: [],
       selection: null,
+      textIsUrl: false,
     },
     layoutConstantsVersion: 0,
     contentSettingState: {

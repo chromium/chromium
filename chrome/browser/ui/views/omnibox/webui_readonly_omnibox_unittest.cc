@@ -17,10 +17,30 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace {
+
+using testing::ElementsAre;
+
+MATCHER_P2(IsSpan, expect_text, expect_color, "") {
+  EXPECT_EQ(arg->text, expect_text);
+  EXPECT_EQ(arg->color, expect_color);
+  EXPECT_FALSE(arg->strikethrough);
+  return true;
+}
+
+MATCHER_P2(IsStrikethrough, expect_text, expect_color, "") {
+  EXPECT_EQ(arg->text, expect_text);
+  EXPECT_EQ(arg->color, expect_color);
+  EXPECT_TRUE(arg->strikethrough);
+  return true;
+}
+
+using toolbar_ui_api::mojom::OmniboxTextColor;
 
 class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
  public:
@@ -90,7 +110,12 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
 
   auto mojo_state = update_propagator_.TakeState();
   ASSERT_TRUE(mojo_state);
-  EXPECT_EQ(base::UTF16ToUTF8(partial), mojo_state->text);
+  ASSERT_EQ(2u, mojo_state->text_pieces.size());
+  EXPECT_TRUE(mojo_state->text_is_url);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("uk.wikipe", OmniboxTextColor::kOmniboxText)));
   EXPECT_EQ(gfx::Range(partial.size()), mojo_state->selection);
 
   std::u16string complete = u"https://chromium.org";
@@ -102,8 +127,13 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
 
   mojo_state = update_propagator_.TakeState();
   ASSERT_TRUE(mojo_state);
-  EXPECT_EQ(base::UTF16ToUTF8(complete), mojo_state->text);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("chromium.org", OmniboxTextColor::kOmniboxText)));
+  ASSERT_EQ(2u, mojo_state->text_pieces.size());
   EXPECT_EQ(gfx::Range(0, complete.size()), mojo_state->selection);
+  EXPECT_TRUE(mojo_state->text_is_url);
 
   // Emulate switching back to wc1.
   omnibox_view_->OnTabChanged(wc1_);
@@ -113,8 +143,12 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
 
   mojo_state = update_propagator_.TakeState();
   ASSERT_TRUE(mojo_state);
-  EXPECT_EQ(base::UTF16ToUTF8(partial), mojo_state->text);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("uk.wikipe", OmniboxTextColor::kOmniboxText)));
   EXPECT_EQ(gfx::Range(partial.size()), mojo_state->selection);
+  EXPECT_TRUE(mojo_state->text_is_url);
 
   // Switch back to wc2.
   omnibox_view_->OnTabChanged(wc2_);
@@ -125,8 +159,12 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
 
   mojo_state = update_propagator_.TakeState();
   ASSERT_TRUE(mojo_state);
-  EXPECT_EQ(base::UTF16ToUTF8(complete), mojo_state->text);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("chromium.org", OmniboxTextColor::kOmniboxText)));
   EXPECT_EQ(gfx::Range(0, complete.size()), mojo_state->selection);
+  EXPECT_TRUE(mojo_state->text_is_url);
 
   // If no saved state, pulls from the location bar model.
   std::u16string navigated_to = u"https://developer.mozilla.org/";
@@ -138,8 +176,14 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
 
   mojo_state = update_propagator_.TakeState();
   ASSERT_TRUE(mojo_state);
-  EXPECT_EQ(base::UTF16ToUTF8(navigated_to), mojo_state->text);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(
+          IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
+          IsSpan("developer.mozilla.org", OmniboxTextColor::kOmniboxText),
+          IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
   EXPECT_EQ(gfx::Range(0, 0), mojo_state->selection);
+  EXPECT_TRUE(mojo_state->text_is_url);
 
   // Update() can pull further changes.
   std::u16string navigated_to2 = u"https://developer.mozilla.org/en-US";
@@ -149,8 +193,24 @@ TEST_F(WebUIReadOnlyOmniboxTest, StateManagement) {
 
   mojo_state = update_propagator_.TakeState();
   ASSERT_TRUE(mojo_state);
-  EXPECT_EQ(base::UTF16ToUTF8(navigated_to2), mojo_state->text);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(
+          IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
+          IsSpan("developer.mozilla.org", OmniboxTextColor::kOmniboxText),
+          IsSpan("/en-US", OmniboxTextColor::kOmniboxTextDimmed)));
   EXPECT_EQ(gfx::Range(0, 0), mojo_state->selection);
+  EXPECT_TRUE(mojo_state->text_is_url);
+
+  // Can also specify user-entered stuff (which is not a URL).
+  omnibox_view_->SetUserText(u"Searching for stuff");
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_THAT(mojo_state->text_pieces,
+              ElementsAre(IsSpan("Searching for stuff",
+                                 OmniboxTextColor::kOmniboxText)));
+  EXPECT_EQ(gfx::Range(19, 19), mojo_state->selection);
+  EXPECT_FALSE(mojo_state->text_is_url);
 }
 
 TEST_F(WebUIReadOnlyOmniboxTest, GetOmniboxTextLength) {
@@ -158,6 +218,52 @@ TEST_F(WebUIReadOnlyOmniboxTest, GetOmniboxTextLength) {
   omnibox_view_->SetUserText(partial);
   EXPECT_EQ(partial.size(),
             static_cast<size_t>(omnibox_view_->GetOmniboxTextLength()));
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, SSLError) {
+  location_bar_model()->set_cert_status(net::CERT_STATUS_REVOKED);
+
+  // https + dangerous: red, crossed out.
+  location_bar_model()->set_url(GURL("https://broken.example.org/"));
+  location_bar_model()->set_security_level(security_state::DANGEROUS);
+  omnibox_view_->Update();
+  auto mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsStrikethrough(
+                      "https", OmniboxTextColor::kOmniboxSecurityChipDangerous),
+                  IsSpan("://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("broken.example.org", OmniboxTextColor::kOmniboxText),
+                  IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
+  EXPECT_TRUE(mojo_state->text_is_url);
+
+  // No dangerous loses the red.
+  location_bar_model()->set_security_level(security_state::WARNING);
+  omnibox_view_->RevertAll();
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsStrikethrough("https", OmniboxTextColor::kOmniboxText),
+                  IsSpan("://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("broken.example.org", OmniboxTextColor::kOmniboxText),
+                  IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
+  EXPECT_TRUE(mojo_state->text_is_url);
+
+  // Weird scheme + dangerous doesn't get anything special.
+  // I wonder how we would get a certificate error in that case?
+  location_bar_model()->set_url(GURL("chrome://version"));
+  location_bar_model()->set_security_level(security_state::DANGEROUS);
+  omnibox_view_->Update();
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsSpan("chrome://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("version", OmniboxTextColor::kOmniboxText),
+                  IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
+  EXPECT_TRUE(mojo_state->text_is_url);
 }
 
 }  // namespace

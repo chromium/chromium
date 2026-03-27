@@ -30,8 +30,9 @@ export class LocationBarElement extends CrLitElement {
   }
 
   protected accessor omniboxViewState: OmniboxViewState = {
-    text: '',
+    textPieces: [],
     selection: null,
+    textIsUrl: false,
   };
 }
 

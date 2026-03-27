@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "ui/gfx/break_list.h"
 #include "ui/gfx/range/range.h"
 
 namespace content {
@@ -94,6 +95,11 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   // Text and selection (or caret) we were asked to display (e.g. via
   // SetWindowTextAndCaretPos()) by either the base class or OmniboxEditModel.
   std::u16string text_;
+
+  // Rich text formatting for `text`.
+  gfx::BreakList<bool> text_strike_through_;
+  gfx::BreakList<toolbar_ui_api::mojom::OmniboxTextColor> text_colors_;
+  bool text_is_url_ = false;
 
   // When start and end positions match, this represents a caret position;
   // if they don't, it's a selection.

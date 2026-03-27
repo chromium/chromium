@@ -6,6 +6,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
 import {type ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/readonly_omnibox.js';
 
 // These tests care about focus and selection so can't be parallelized.
@@ -33,8 +34,15 @@ suite('ReadOnlyOmniboxFocus', function() {
 
   test('Setting text with selection', async () => {
     omnibox.omniboxViewState = {
-      text: 'Hello',
+      textPieces: [
+        {
+          text: 'Hello',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
       selection: {start: 1, end: 5},
+      textIsUrl: false,
     };
     await microtasksFinished();
     assertEquals('Hello', omnibox.$.textContainer.textContent);
@@ -43,12 +51,41 @@ suite('ReadOnlyOmniboxFocus', function() {
     assertEquals('clip', style.get('text-overflow')?.toString());
   });
 
+  test('Setting multi-piece text with selection', async () => {
+    omnibox.omniboxViewState = {
+      textPieces: [
+        {
+          text: 'He',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+        {
+          text: 'llo',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
+      selection: {start: 1, end: 5},
+      textIsUrl: false,
+    };
+    await microtasksFinished();
+    assertEquals('Hello', omnibox.$.textContainer.textContent);
+    assertEquals('ello', getStringSelection());
+  });
+
   // Focus out should clear our selection, set line to use ellipsis, then
   // going back should restore it and show everything.
   test('Focus out and back in', async () => {
     omnibox.omniboxViewState = {
-      text: 'Hello',
+      textPieces: [
+        {
+          text: 'Hello',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
       selection: {start: 1, end: 5},
+      textIsUrl: false,
     };
     await microtasksFinished();
 
@@ -67,8 +104,15 @@ suite('ReadOnlyOmniboxFocus', function() {
 
   test('Focus out and back in w/user-blanked selection', async () => {
     omnibox.omniboxViewState = {
-      text: 'Hello',
+      textPieces: [
+        {
+          text: 'Hello',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
       selection: {start: 1, end: 5},
+      textIsUrl: false,
     };
     await microtasksFinished();
     const selection = document.getSelection();
@@ -87,8 +131,15 @@ suite('ReadOnlyOmniboxFocus', function() {
 
   test('Focus out and back in w/custom user selection', async () => {
     omnibox.omniboxViewState = {
-      text: 'Hello',
+      textPieces: [
+        {
+          text: 'Hello',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
       selection: {start: 1, end: 5},
+      textIsUrl: false,
     };
     await microtasksFinished();
     const selection = document.getSelection();
@@ -104,9 +155,6 @@ suite('ReadOnlyOmniboxFocus', function() {
 
     omnibox.$.textContainer.focus();
     await microtasksFinished();
-    // TODO(crbug.com/474060468): This is wrong (it confused offsets in parent
-    // to those of text node), but next CL reworks some relevant code quite a
-    // bit, so no point trying to fix it now.
-    assertEquals('He', getStringSelection());
+    assertEquals('Hello', getStringSelection());
   });
 });

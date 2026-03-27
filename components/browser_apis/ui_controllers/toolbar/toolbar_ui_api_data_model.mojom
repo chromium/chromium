@@ -118,13 +118,35 @@ struct ContentSettingImageState {
   // and `is_blocked`.
 };
 
+// Colors used by the omnibox.
+enum OmniboxTextColor {
+  // Should never be used. If this value is received, there is a bug.
+  kUnspecified,
+
+  // These colors correspond to the Chrome palette entries of matching names ---
+  // e.g. kOmniboxText corresponds to kColorOmniboxText, etc.
+  kOmniboxText,
+  kOmniboxTextDimmed,
+  kOmniboxForegroundDisabled,
+  kOmniboxSecurityChipDangerous,
+};
+
+struct OmniboxTextPortion {
+  string text;
+  bool strikethrough = false;
+  OmniboxTextColor color;
+};
+
 struct OmniboxViewState {
   // Text to display in the omnibox view.
-  // TODO(crbug.com/474060468): This should have formatting info.
-  string text;
+  array<OmniboxTextPortion> text_pieces;
 
   // Selection or caret (if start == end) to set on the omnibox view, if any.
   gfx.mojom.Range? selection;
+
+  // This is set if the omnibox view contains a URL and must therefore force
+  // LTR rendering even in RTL languages.
+  bool text_is_url;
 };
 
 // Enum of all supported pinned toolbar actions.

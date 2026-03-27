@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/range.mojom-webui.js';
 
 import type {OmniboxViewState} from './browser_proxy.js';
 import {getCss} from './readonly_omnibox.css.js';
 import {getHtml} from './readonly_omnibox.html.js';
+import type {OmniboxTextPortion} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 enum UserSelectionStatus {
   NOT_SET = 0,
@@ -20,6 +22,7 @@ enum UserSelectionStatus {
 export interface ReadonlyOmniboxElement {
   $: {
     textContainer: HTMLElement,
+    textContainerWrap: HTMLElement,
   };
 }
 
@@ -43,8 +46,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   accessor omniboxViewState: OmniboxViewState = {
-    text: '',
+    textPieces: [],
     selection: null,
+    textIsUrl: false,
   };
 
   private eventTracker: EventTracker = new EventTracker();
@@ -55,7 +59,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-
     this.eventTracker.add(
         document, 'selectionchange', this.onSelectionChange.bind(this));
   }
@@ -69,6 +72,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     super.firstUpdated(changedProperties);
     this.addEventListener('blur', this.onBlur.bind(this));
     this.addEventListener('focus', this.onFocus.bind(this));
+    this.$.textContainerWrap.addEventListener(
+        'focus', this.onWrapFocus.bind(this));
   }
 
   override updated(changedProperties: PropertyValues<this>): void {
@@ -79,6 +84,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       // or it specifically wants specific things selected (or not).
       this.userSelection = UserSelectionStatus.NOT_SET;
       this.updateSelection();
+
+      this.$.textContainer.classList.toggle(
+          'force-ltr', this.omniboxViewState.textIsUrl);
     }
   }
 
@@ -109,11 +117,18 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
     if (this.hasFocus() && selectionState) {
       selection.removeAllRanges();
-      const text = this.firstTextChild();
-      if (text) {
+      const textChildren = this.textChildren();
+      if (textChildren.length) {
         const range = document.createRange();
-        range.setStart(text, selectionState.start);
-        range.setEnd(text, selectionState.end);
+        const start =
+            this.globalOffsetToNodeRel(textChildren, selectionState.start);
+        const end =
+            this.globalOffsetToNodeRel(textChildren, selectionState.end);
+
+        assert(start[0]);
+        assert(end[0]);
+        range.setStart(start[0], start[1]);
+        range.setEnd(end[0], end[1]);
         selection.addRange(range);
       }
     } else if (selection.containsNode(
@@ -172,33 +187,155 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     assert(ranges.length === 1);
     assert(ranges[0]);
     const range = ranges[0];
-    const text = this.firstTextChild();
-    if (!text || !range.startContainer || !range.endContainer) {
+    const textChildren = this.textChildren();
+    if (textChildren.length === 0 || !range.startContainer ||
+        !range.endContainer) {
       return;
     }
 
+    // Convert from StaticRange to full DOM Range for the API access.
+    const domRange = document.createRange();
+    domRange.setStart(range.startContainer, range.startOffset);
+    domRange.setEnd(range.endContainer, range.endOffset);
+
     this.userSelection = {
-      start: range.startOffset,
-      end: range.endOffset,
+      start: ReadonlyOmniboxElement.nodeRelToGlobalOffsetStart(
+          textChildren, domRange),
+      end: ReadonlyOmniboxElement.nodeRelToGlobalOffsetEnd(
+          textChildren, domRange),
     };
   }
 
-  // We need to dig a bit to find the actual text node since Lit has some
-  // bookkeeping stuff around. When styling is added this will be generalized
-  // to returning an array.
-  private firstTextChild(): Node|null {
-    const firstChildNode = this.$.textContainer.firstChild;
-    if (!firstChildNode) {
-      return null;
-    }
-    let node: Node|null = firstChildNode;
-    while (node) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        return node;
+  private onWrapFocus(): void {
+    // We forward focus requests from the entirety of textContainerWrap to
+    // textContainer.
+    this.$.textContainer.focus();
+  }
+
+  // Given character offset `offset`, returns which of `textChildren`
+  // (representing pieces of the overall text) and the offset into that
+  // child, that correspond to it. Will return null for the node if `offset`
+  // is out of range.
+  private globalOffsetToNodeRel(textChildren: Text[], offset: number):
+      [Text|null, number] {
+    for (const child of textChildren) {
+      if (offset <= child.length) {
+        return [child, offset];
       }
-      node = node.nextSibling;
+      offset -= child.length;
     }
-    return node;
+    return [null, 0];
+  }
+
+  // Assuming the overall text is represented as concatenation of
+  // `textChildren`, returns the offset into the text corresponding to the
+  // beginning of `range`.
+  static nodeRelToGlobalOffsetStart(textChildren: Text[], range: Range):
+      number {
+    let offset = 0;
+    for (const child of textChildren) {
+      if (child === range.startContainer) {
+        return offset + range.startOffset;
+      }
+
+      const rel = range.comparePoint(child, 0);
+      if (rel === -1) {
+        // The child is before the range (and isn't startContainer),
+        // so the text offset should skip it.
+        offset += child.length;
+      } else {
+        // The text child is within the range (and isn't startContainer), or
+        // after, so we skipped over everything that needs to be skipped.
+        break;
+      }
+    }
+    return offset;
+  }
+
+  // Assuming the overall text is represented as concatenation of
+  // `textChildren`, returns the offset into the text corresponding to the
+  // end of `range`.
+  static nodeRelToGlobalOffsetEnd(textChildren: Text[], range: Range): number {
+    let offset = 0;
+    for (const child of textChildren) {
+      offset += child.length;
+    }
+
+    for (let i = textChildren.length - 1; i >= 0; --i) {
+      const child = textChildren[i]!;
+
+      if (child === range.endContainer) {
+        return offset - child.length + range.endOffset;
+      }
+
+      const rel = range.comparePoint(child, 0);
+      if (rel === 1) {
+        // The child is after the range (and isn't endContainer),
+        // so the text offset should skip it.
+        offset -= child.length;
+      } else {
+        // The text child is within the range (and isn't endContainer) or
+        // before, so we skipped over everything that needs to be skipped.
+        break;
+      }
+    }
+    return offset;
+  }
+
+  // Return all Text nodes that are descendants of the textContainer.
+  textChildren(): Text[] {
+    const result: Text[] = [];
+    this.collectTextChildren(this.$.textContainer, result);
+    return result;
+  }
+
+  // Helper to recursively accumulate Text nodes into `out` starting from
+  // `node`.
+  private collectTextChildren(node: Node|null, out: Text[]): void {
+    if (!node) {
+      return;
+    }
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      out.push(node as Text);
+      return;
+    }
+
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      node = node.firstChild;
+      while (node) {
+        this.collectTextChildren(node, out);
+        node = node.nextSibling;
+      }
+    }
+  }
+
+  // Returns an html template for rendering the given text piece.
+  static renderTextPiece(piece: OmniboxTextPortion) {
+    let classes = '';
+    switch (piece.color) {
+      case OmniboxTextColor.kOmniboxTextDimmed:
+        classes = 'color-dim ';
+        break;
+      case OmniboxTextColor.kOmniboxForegroundDisabled:
+        classes = 'color-foreground-disabled ';
+        break;
+      case OmniboxTextColor.kOmniboxSecurityChipDangerous:
+        classes = 'color-danger ';
+        break;
+      case OmniboxTextColor.kUnspecified:
+        console.error('Unexected kUnspecified for text color');
+        break;
+      case OmniboxTextColor.kOmniboxText:
+        // The default is fine.
+        break;
+      default:
+        assertNotReachedCase(piece.color);
+    }
+    if (piece.strikethrough) {
+      classes += 'strikethrough';
+    }
+    return html`<span class='${classes}'>${piece.text}</span>`;
   }
 }
 

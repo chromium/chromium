@@ -19,16 +19,28 @@
   font-weight: var(--omnibox-primary-font-weight);
 }
 
-#textContainer {
+/* #textContainerWrap exists to fill up space in a way that's sensitive to
+ * user locale's text direction, even when #textContainer is forced into LTR.
+ */
+#textContainerWrap {
+  display: flex;
   flex: 1;
-  outline: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-wrap: nowrap;
   /* Giving this a width makes flex shrink it to fit available space when this
    * is too long. The exact value will get replaced by whatever flex computes
    */
   width: 200px;
+}
+
+#textContainer {
+  flex: 0 1 min-content;
+  outline: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+}
+
+#textContainer.force-ltr {
+  direction: ltr;
 }
 
 /* Need to consider document focus here as well, hence :focus-visible */
@@ -49,4 +61,20 @@
 
 #textContainer::grammar-error {
   text-decoration: none;
+}
+
+#textContainer .color-dim {
+  color: var(--color-omnibox-text-dimmed);
+}
+
+#textContainer .color-foreground-disabled {
+  color: var(--color-omnibox-foreground-disabled);
+}
+
+#textContainer .color-danger {
+  color: var(--color-omnibox-security-chip-dangerous);
+}
+
+#textContainer .strikethrough {
+  text-decoration: line-through;
 }
