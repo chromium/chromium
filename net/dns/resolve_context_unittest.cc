@@ -1620,9 +1620,12 @@ TEST_F(ResolveContextTest, RecordDohSessionStatus) {
 
   HttpResponseInfo response_info;
   response_info.connection_info = HttpConnectionInfo::kHTTP2;
+  response_info.network_accessed = true;
+  response_info.ssl_info.early_data_accepted = true;
 
   LoadTimingInternalInfo load_timing;
   load_timing.session_source = SessionSource::kNew;
+  load_timing.max_stream_limit_pending_delay = base::Milliseconds(10);
 
   context.RecordDohSessionStatus(/*server_index=*/0u, response_info,
                                  load_timing, base::Milliseconds(100), OK,
@@ -1633,6 +1636,14 @@ TEST_F(ResolveContextTest, RecordDohSessionStatus) {
       1);
   histogram_tester.ExpectUniqueTimeSample(
       "Net.DNS.DnsTransaction.Other.Http2.New.SuccessTime",
+      base::Milliseconds(100), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.DnsTransaction.Other.Http2.New.MaxStreamLimitPendingDelay",
+      base::Milliseconds(10), 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.DNS.DnsTransaction.Other.Http2.New.EarlyDataAccepted", true, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.DnsTransaction.Other.Http2.New.0RTT.Time",
       base::Milliseconds(100), 1);
 
   response_info.connection_info = HttpConnectionInfo::kQUIC_RFC_V1;

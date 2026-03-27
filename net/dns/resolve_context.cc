@@ -308,13 +308,44 @@ void ResolveContext::RecordDohSessionStatus(
           "."),
       internal_load_timing.session_source.value());
 
-  const std::string_view outcome =
-      (rv == OK || rv == ERR_NAME_NOT_RESOLVED) ? "SuccessTime" : "FailureTime";
+  const bool success = rv == OK || rv == ERR_NAME_NOT_RESOLVED;
+  const std::string_view outcome = success ? "SuccessTime" : "FailureTime";
   base::UmaHistogramMediumTimes(
       base::JoinString({"Net.DNS.DnsTransaction", provider_id, protocol,
                         session_source_str, outcome},
                        "."),
       rtt);
+
+  // Record further metrics for successful responses.
+  if (success) {
+    // Max stream limit pending delay must be populated for successful
+    // responses.
+    CHECK(internal_load_timing.max_stream_limit_pending_delay.has_value());
+    base::UmaHistogramMediumTimes(
+        base::JoinString({"Net.DNS.DnsTransaction", provider_id, protocol,
+                          session_source_str, "MaxStreamLimitPendingDelay"},
+                         "."),
+        internal_load_timing.max_stream_limit_pending_delay.value());
+
+    // SSLInfo::early_data_accepted is populated only when the request accessed
+    // network.
+    // TODO(crbug.com/485672648): Change this `if` to CHECK if responses always
+    // come from network (i.e., not coming from caches).
+    if (response_info.network_accessed) {
+      base::UmaHistogramBoolean(
+          base::JoinString({"Net.DNS.DnsTransaction", provider_id, protocol,
+                            session_source_str, "EarlyDataAccepted"},
+                           "."),
+          response_info.ssl_info.early_data_accepted);
+      const std::string_view early_data_status =
+          response_info.ssl_info.early_data_accepted ? "0RTT" : "1RTT";
+      base::UmaHistogramMediumTimes(
+          base::JoinString({"Net.DNS.DnsTransaction", provider_id, protocol,
+                            session_source_str, early_data_status, "Time"},
+                           "."),
+          rtt);
+    }
+  }
 }
 
 base::TimeDelta ResolveContext::NextClassicFallbackPeriod(

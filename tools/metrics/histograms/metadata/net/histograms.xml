@@ -135,6 +135,11 @@ chromium-metrics-reviews@google.com.
                and otherwise the initial referrer URL)."/>
 </variants>
 
+<variants name="SessionSource">
+  <variant name="Existing" summary="an existing session"/>
+  <variant name="New" summary="a new session"/>
+</variants>
+
 <variants name="SqlPersistentStoreCheckpointType">
   <variant name="ForceCheckpoint"
       summary="A checkpoint was executed when a commit to the DB occurred
@@ -2735,6 +2740,54 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Net.DNS.DnsTransaction.{DohProviderId}{Protocol}.{SessionSource}.EarlyDataAccepted"
+    enum="Boolean" expires_after="2026-09-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Measures whether early data was accepted for a DoH request. Recorded when a
+    non-probe, auto-upgrade mode DoH transaction succeeds.
+  </summary>
+  <token key="DohProviderId" variants="DohProviderId"/>
+  <token key="Protocol" variants="HttpConnectionProtocol"/>
+  <token key="SessionSource" variants="SessionSource"/>
+</histogram>
+
+<histogram
+    name="Net.DNS.DnsTransaction.{DohProviderId}{Protocol}.{SessionSource}.MaxStreamLimitPendingDelay"
+    units="ms" expires_after="2026-09-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time taken for a SPDY/QUIC session to create an active stream for a DoH
+    request. Measures pending time due to max stream limits. Recorded when a
+    non-probe, auto-upgrade mode DoH transaction succeeds.
+  </summary>
+  <token key="DohProviderId" variants="DohProviderId"/>
+  <token key="Protocol" variants="HttpConnectionProtocol"/>
+  <token key="SessionSource" variants="SessionSource"/>
+</histogram>
+
+<histogram
+    name="Net.DNS.DnsTransaction.{DohProviderId}{Protocol}.{SessionSource}.{EarlyDataStatus}.Time"
+    units="ms" expires_after="2026-09-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Duration of time taken by a DoH transaction which {EarlyDataStatus}.
+    Recorded when a non-probe, auto-upgrade mode DoH transaction succeeds. Valid
+    only for requests that access the network.
+  </summary>
+  <token key="DohProviderId" variants="DohProviderId"/>
+  <token key="Protocol" variants="HttpConnectionProtocol"/>
+  <token key="SessionSource" variants="SessionSource"/>
+  <token key="EarlyDataStatus">
+    <variant name="0RTT" summary="accepted early data"/>
+    <variant name="1RTT" summary="did not accept early data"/>
+  </token>
+</histogram>
+
+<histogram
     name="Net.DNS.DnsTransaction.{DohProviderId}{Protocol}.{SessionSource}.{Outcome}Time"
     units="ms" expires_after="2026-09-13">
   <owner>bashi@chromium.org</owner>
@@ -2745,10 +2798,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="DohProviderId" variants="DohProviderId"/>
   <token key="Protocol" variants="HttpConnectionProtocol"/>
-  <token key="SessionSource">
-    <variant name="Existing"/>
-    <variant name="New"/>
-  </token>
+  <token key="SessionSource" variants="SessionSource"/>
   <token key="Outcome">
     <variant name="Failure"/>
     <variant name="Success"/>
