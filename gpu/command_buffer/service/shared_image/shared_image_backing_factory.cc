@@ -95,6 +95,7 @@ bool SharedImageBackingFactory::CanCreateSharedImage(
 
 bool SharedImageBackingFactory::IsSupportedForAccessStream(
     SharedImageAccessStream stream,
+    viz::SharedImageFormat format,
     const AccessParams* params) const {
   return true;
 }

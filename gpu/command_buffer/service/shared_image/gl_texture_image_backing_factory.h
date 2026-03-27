@@ -71,6 +71,7 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
   SharedImageBackingType GetBackingType() override;
   bool IsSupportedForAccessStream(SharedImageAccessStream stream,
+                                  viz::SharedImageFormat format,
                                   const AccessParams* params) const override;
 
   void EnableSupportForAllMetalUsagesForTesting(bool enable);

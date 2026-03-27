@@ -363,6 +363,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
 
 bool WrappedGraphiteTextureBacking::CheckSupportForAccessStream(
     SharedImageAccessStream stream,
+    viz::SharedImageFormat format,
     const AccessParams& params) {
   if (base::FeatureList::IsEnabled(
           features::kUseCompoundImageBackingAsDefault) &&
@@ -393,7 +394,7 @@ bool WrappedGraphiteTextureBacking::CheckSupportForAccessStream(
 bool WrappedGraphiteTextureBacking::SupportsAccess(
     SharedImageAccessStream stream,
     const AccessParams& params) const {
-  return CheckSupportForAccessStream(stream, params);
+  return CheckSupportForAccessStream(stream, format(), params);
 }
 
 bool WrappedGraphiteTextureBacking::InsertRecordingAndSubmit() {

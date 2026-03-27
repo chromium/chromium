@@ -225,6 +225,7 @@ SharedImageBackingType GLTextureImageBackingFactory::GetBackingType() {
 
 bool GLTextureImageBackingFactory::IsSupportedForAccessStream(
     SharedImageAccessStream stream,
+    viz::SharedImageFormat format,
     const AccessParams* params) const {
   AccessParams default_params;
   return GLTextureImageBacking::CheckSupportForAccessStream(

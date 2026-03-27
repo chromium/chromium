@@ -108,6 +108,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
   // Returns true if the backing created by this factory will support the given
   // access stream.
   virtual bool IsSupportedForAccessStream(SharedImageAccessStream stream,
+                                          viz::SharedImageFormat format,
                                           const AccessParams* params) const;
 
   // Return BackingType of the implementation. This value isn't guaranteed to

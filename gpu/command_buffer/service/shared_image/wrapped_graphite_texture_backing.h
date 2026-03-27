@@ -66,6 +66,7 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
 
   // Determines if access for a given stream and parameters is supported.
   static bool CheckSupportForAccessStream(SharedImageAccessStream stream,
+                                          viz::SharedImageFormat format,
                                           const AccessParams& params);
 
   bool SupportsAccess(SharedImageAccessStream stream,

@@ -58,6 +58,7 @@ SharedImageBackingType DawnImageBackingFactory::GetBackingType() {
 
 bool DawnImageBackingFactory::IsSupportedForAccessStream(
     SharedImageAccessStream stream,
+    viz::SharedImageFormat format,
     const AccessParams* params) const {
   AccessParams default_params;
   return DawnImageBacking::CheckSupportForAccessStream(

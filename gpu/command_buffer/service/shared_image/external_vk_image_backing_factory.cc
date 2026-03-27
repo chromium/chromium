@@ -323,6 +323,18 @@ bool ExternalVkImageBackingFactory::IsSupported(
   return true;
 }
 
+bool ExternalVkImageBackingFactory::IsSupportedForAccessStream(
+    SharedImageAccessStream stream,
+    viz::SharedImageFormat format,
+    const AccessParams* params) const {
+  AccessParams access_params = params ? *params : AccessParams();
+  if (!access_params.context_state) {
+    access_params.context_state = context_state_;
+  }
+  return ExternalVkImageBacking::CheckSupportForAccessStream(stream, format,
+                                                             access_params);
+}
+
 SharedImageBackingType ExternalVkImageBackingFactory::GetBackingType() {
   return SharedImageBackingType::kExternalVkImage;
 }

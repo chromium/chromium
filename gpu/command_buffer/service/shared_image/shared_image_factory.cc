@@ -992,7 +992,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
       // perform an additional check using the factory's
       // `IsSupportedForAccessStream`.
       if (stream.has_value() &&
-          !factory->IsSupportedForAccessStream(*stream, params)) {
+          !factory->IsSupportedForAccessStream(*stream, format, params)) {
         continue;
       }
       return factory.get();

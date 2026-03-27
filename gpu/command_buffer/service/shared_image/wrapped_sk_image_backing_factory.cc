@@ -250,6 +250,7 @@ SharedImageBackingType WrappedSkImageBackingFactory::GetBackingType() {
 
 bool WrappedSkImageBackingFactory::IsSupportedForAccessStream(
     SharedImageAccessStream stream,
+    viz::SharedImageFormat format,
     const AccessParams* params) const {
   if (use_graphite_) {
     // We create a temporary backing just to check for support.
@@ -257,7 +258,7 @@ bool WrappedSkImageBackingFactory::IsSupportedForAccessStream(
     // context_state or a backing instance.
     AccessParams access_params = params ? *params : AccessParams();
     bool supported = WrappedGraphiteTextureBacking::CheckSupportForAccessStream(
-        stream, access_params);
+        stream, format, access_params);
     return supported;
   }
   return true;

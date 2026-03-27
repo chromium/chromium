@@ -40,6 +40,7 @@ class GPU_GLES2_EXPORT DawnImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
   SharedImageBackingType GetBackingType() override;
   bool IsSupportedForAccessStream(SharedImageAccessStream stream,
+                                  viz::SharedImageFormat format,
                                   const AccessParams* params) const override;
 };
 

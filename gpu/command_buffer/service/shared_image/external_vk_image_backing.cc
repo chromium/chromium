@@ -16,6 +16,8 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gl_utils.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_gl_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_overlay_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_skia_representation.h"
@@ -24,6 +26,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
@@ -99,10 +102,14 @@ class ScopedDedicatedMemoryObject {
   GLuint id_;
 };
 
-bool UseSeparateGLTexture(SharedContextState* context_state,
-                          viz::SharedImageFormat format) {
-  if (!context_state->support_vulkan_external_object())
+}  // namespace
+
+bool ExternalVkImageBacking::UseSeparateGLTexture(
+    SharedContextState* context_state,
+    viz::SharedImageFormat format) {
+  if (!context_state->support_vulkan_external_object()) {
     return true;
+  }
 
   if (format != viz::SinglePlaneFormat::kBGRA_8888) {
     return false;
@@ -111,22 +118,27 @@ bool UseSeparateGLTexture(SharedContextState* context_state,
   auto* gl_context = context_state->real_context();
   const auto* version_info = gl_context->GetVersionInfo();
   const auto& ext = gl_context->GetCurrentGL()->Driver->ext;
-  if (!ext.b_GL_EXT_texture_format_BGRA8888)
+  if (!ext.b_GL_EXT_texture_format_BGRA8888) {
     return true;
+  }
 
-  if (!version_info->is_angle)
+  if (!version_info->is_angle) {
     return false;
+  }
 
   // If ANGLE is using vulkan, there is no problem for importing BGRA8888
   // textures.
-  if (version_info->is_angle_vulkan)
+  if (version_info->is_angle_vulkan) {
     return false;
+  }
 
   // ANGLE claims GL_EXT_texture_format_BGRA8888, but glTexStorageMem2DEXT
   // doesn't work correctly.
   // TODO(crbug.com/angleproject/4831): fix ANGLE and return false.
   return true;
 }
+
+namespace {
 
 bool UseMinimalUsageFlags(SharedContextState* context_state) {
   return context_state->support_gl_external_object_flags();
@@ -234,7 +246,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   }
 
   bool use_separate_gl_texture =
-      UseSeparateGLTexture(context_state.get(), format);
+      ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
   DCHECK(!enable_webgpu_on_vk_via_gl_interop || !use_separate_gl_texture);
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
@@ -307,7 +319,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
   textures.emplace_back(std::move(image), format, color_space);
 
   bool use_separate_gl_texture =
-      UseSeparateGLTexture(context_state.get(), format);
+      ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
   DCHECK(!enable_webgpu_on_vk_via_gl_interop || !use_separate_gl_texture);
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
@@ -638,6 +650,35 @@ void ExternalVkImageBacking::EndAccess(bool readonly,
   }
 }
 
+bool ExternalVkImageBacking::CheckSupportForAccessStream(
+    SharedImageAccessStream stream,
+    viz::SharedImageFormat format,
+    const AccessParams& params) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseCompoundImageBackingAsDefault) &&
+      base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
+      params.context_state &&
+      UseSeparateGLTexture(params.context_state.get(), format)) {
+    if (stream == SharedImageAccessStream::kGL) {
+      return false;
+    }
+    if (stream == SharedImageAccessStream::kSkia &&
+        params.context_state->GrContextIsGL()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ExternalVkImageBacking::SupportsAccess(SharedImageAccessStream stream,
+                                            const AccessParams& params) const {
+  AccessParams access_params = params;
+  if (!access_params.context_state) {
+    access_params.context_state = context_state_;
+  }
+  return CheckSupportForAccessStream(stream, format(), access_params);
+}
+
 SharedImageBackingType ExternalVkImageBacking::GetType() const {
   return SharedImageBackingType::kExternalVkImage;
 }
@@ -914,6 +955,11 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 std::unique_ptr<GLTextureImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
+  CHECK(
+      !(base::FeatureList::IsEnabled(
+            features::kUseCompoundImageBackingAsDefault) &&
+        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
+        use_separate_gl_texture()));
   if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/false)) {
       return nullptr;
@@ -934,6 +980,11 @@ std::unique_ptr<GLTexturePassthroughImageRepresentation>
 ExternalVkImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
+  CHECK(
+      !(base::FeatureList::IsEnabled(
+            features::kUseCompoundImageBackingAsDefault) &&
+        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
+        use_separate_gl_texture()));
   if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/true)) {
       return nullptr;
