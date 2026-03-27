@@ -493,6 +493,33 @@ void CorsURLLoader::FollowRedirect(
   const std::string original_method = std::move(request_.method);
   request_.UpdateOnRedirect(redirect_info_);
 
+  // Update the shared dictionary storage location if the isolation key changed
+  // as a result of the redirect for a navigation.
+  if (request_.mode == mojom::RequestMode::kNavigate) {
+    CHECK(request_.trusted_params);
+    isolation_info_ = request_.trusted_params->isolation_info;
+    if (shared_dictionary_storage_) {
+      // `client_security_state` is not set for top-level navigation requests.
+      const bool secure_context =
+          request_.trusted_params->client_security_state
+              ? request_.trusted_params->client_security_state
+                    ->is_web_secure_context
+              : network::IsUrlPotentiallyTrustworthy(request_.url);
+      const auto shared_dictionary_isolation_key =
+          (secure_context && context_->GetSharedDictionaryManager())
+              ? net::SharedDictionaryIsolationKey::MaybeCreate(isolation_info_)
+              : std::nullopt;
+      if (!shared_dictionary_isolation_key) {
+        shared_dictionary_storage_.reset();
+      } else if (shared_dictionary_storage_->isolation_key() !=
+                 *shared_dictionary_isolation_key) {
+        shared_dictionary_storage_ =
+            context_->GetSharedDictionaryManager()->GetStorage(
+                *shared_dictionary_isolation_key);
+      }
+    }
+  }
+
   // The request method can be changed to "GET". In this case we need to
   // reset the request body manually.
   if (request_.method == net::HttpRequestHeaders::kGetMethod)

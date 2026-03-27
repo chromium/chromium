@@ -31,6 +31,11 @@ SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
 
 SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
+const net::SharedDictionaryIsolationKey&
+SharedDictionaryStorageInMemory::isolation_key() const {
+  return isolation_key_;
+}
+
 scoped_refptr<net::SharedDictionary>
 SharedDictionaryStorageInMemory::GetDictionarySync(
     const GURL& url,

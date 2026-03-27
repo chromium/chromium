@@ -16,6 +16,7 @@
 #include "base/strings/pattern.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -80,6 +81,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       mojom::RequestDestination destination,
       base::OnceCallback<void(scoped_refptr<net::SharedDictionary>)>
           callback) = 0;
+
+  // Returns the isolation key for this storage.
+  virtual const net::SharedDictionaryIsolationKey& isolation_key() const = 0;
 
  protected:
   friend class base::RefCounted<SharedDictionaryStorage>;

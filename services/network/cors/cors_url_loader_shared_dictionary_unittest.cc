@@ -164,6 +164,15 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
         ->GetStorageCountForTesting();
   }
 
+  size_t GetDictionaryCount(SharedDictionaryStorage* storage) {
+    const auto& dictionary_map = GetInMemoryDictionaryMap(storage);
+    size_t count = 0;
+    for (const auto& it : dictionary_map) {
+      count += it.second.size();
+    }
+    return count;
+  }
+
   net::IsolationInfo isolation_info_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
@@ -572,6 +581,87 @@ TEST_F(CorsURLLoaderSharedDictionaryTest,
   // Starting a navigation request for insecure context should not create a
   // SharedDictionaryStorage.
   EXPECT_EQ(0u, GetStorageCount());
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest, CrossOriginRedirect) {
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  CorsURLLoaderTestBase::ResetFactory(isolation_info_.frame_origin(),
+                                      OriginatingProcessId::browser(),
+                                      factory_params);
+
+  const GURL kUrlA("https://a.test/test");
+  const GURL kUrlB("https://b.test/test");
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.mode = mojom::RequestMode::kNavigate;
+  request.url = kUrlA;
+  request.request_initiator = url::Origin::Create(kUrlA);
+  request.site_for_cookies =
+      net::SiteForCookies::FromOrigin(url::Origin::Create(kUrlA));
+  request.shared_dictionary_writer_enabled = true;
+
+  request.trusted_params = ResourceRequest::TrustedParams();
+  url::Origin originA = url::Origin::Create(kUrlA);
+  request.trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, originA, originA,
+      net::SiteForCookies::FromOrigin(originA));
+  request.trusted_params->client_security_state =
+      ClientSecurityStateBuilder().WithIsSecureContext(true).Build();
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Make sure a single SharedDictionaryStorage was created for the initial
+  // request and that no actual dictionaries were written.
+  EXPECT_EQ(1u, GetStorageCount());
+  std::optional<net::SharedDictionaryIsolationKey> isolation_key_a =
+      net::SharedDictionaryIsolationKey::MaybeCreate(
+          request.trusted_params->isolation_info);
+  ASSERT_TRUE(isolation_key_a);
+  scoped_refptr<SharedDictionaryStorage> storage_a =
+      network_context()->GetSharedDictionaryManager()->GetStorage(
+          *isolation_key_a);
+  EXPECT_EQ(0u, GetDictionaryCount(storage_a.get()));
+
+  // Follow the redirect to a different origin.
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = kUrlB;
+  redirect_info.new_method = "GET";
+  redirect_info.new_site_for_cookies =
+      net::SiteForCookies::FromOrigin(url::Origin::Create(kUrlB));
+  redirect_info.new_referrer_policy = net::ReferrerPolicy::NO_REFERRER;
+
+  NotifyLoaderClientOnReceiveRedirect(redirect_info);
+
+  FollowRedirect();
+  CreateDataPipeAndWriteTestData();
+  CallOnReceiveResponseAndOnCompleteAndFinishBody();
+
+  RunUntilComplete();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+
+  // Make sure a second SharedDictionaryStorage was created for the final
+  // request and that a dictionary was written to the correctly partitioned
+  // storage and there is still nothing in the first storage.
+  EXPECT_EQ(2u, GetStorageCount());
+
+  EXPECT_EQ(0u, GetDictionaryCount(storage_a.get()));
+  CheckDictionaryInStorage(/*expect_exists=*/false);
+
+  url::Origin originB = url::Origin::Create(kUrlB);
+  isolation_info_ = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, originB, originB,
+      net::SiteForCookies::FromOrigin(originB));
+  std::optional<net::SharedDictionaryIsolationKey> isolation_key_b =
+      net::SharedDictionaryIsolationKey::MaybeCreate(isolation_info_);
+  ASSERT_TRUE(isolation_key_b);
+  scoped_refptr<SharedDictionaryStorage> storage_b =
+      network_context()->GetSharedDictionaryManager()->GetStorage(
+          *isolation_key_b);
+  EXPECT_EQ(1u, GetDictionaryCount(storage_b.get()));
+  CheckDictionaryInStorage(/*expect_exists=*/true, kUrlB);
 }
 
 }  // namespace network::cors

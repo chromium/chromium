@@ -124,6 +124,11 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
 
 SharedDictionaryStorageOnDisk::~SharedDictionaryStorageOnDisk() = default;
 
+const net::SharedDictionaryIsolationKey&
+SharedDictionaryStorageOnDisk::isolation_key() const {
+  return isolation_key_;
+}
+
 scoped_refptr<net::SharedDictionary>
 SharedDictionaryStorageOnDisk::GetDictionarySync(
     const GURL& url,

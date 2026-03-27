@@ -34,10 +34,22 @@ namespace {
 class CorsURLLoaderTAOTest : public CorsURLLoaderTestBase {
  protected:
   void CreateLoaderAndStartNavigation(const GURL& origin, const GURL& url) {
-    ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser());
-    CreateLoaderAndStart(origin, url, mojom::RequestMode::kNavigate,
-                         mojom::RedirectMode::kManual,
-                         mojom::CredentialsMode::kInclude);
+    ResetFactoryParams params;
+    params.is_trusted = true;
+    ResetFactory(std::nullopt /* initiator */, OriginatingProcessId::browser(),
+                 params);
+
+    ResourceRequest request;
+    request.mode = mojom::RequestMode::kNavigate;
+    request.redirect_mode = mojom::RedirectMode::kManual;
+    request.credentials_mode = mojom::CredentialsMode::kInclude;
+    request.method = net::HttpRequestHeaders::kGetMethod;
+    request.url = url;
+    request.navigation_redirect_chain.push_back(url);
+    request.request_initiator = url::Origin::Create(origin);
+    request.devtools_request_id = "devtools";
+    request.trusted_params = ResourceRequest::TrustedParams();
+    CreateLoaderAndStart(request);
   }
 };
 
