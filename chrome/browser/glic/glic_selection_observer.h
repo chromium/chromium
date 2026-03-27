@@ -92,7 +92,11 @@ class GlicSelectionObserver
   bool is_key_selection_ = false;
   int bounds_retry_count_ = 0;
 
+  bool has_sent_selection_context_ = false;
+
   base::WeakPtr<views::Widget> selection_widget_;
+
+  friend class GlicSelectionObserverTest;
 };
 
 }  // namespace glic
