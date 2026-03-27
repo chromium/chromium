@@ -480,9 +480,6 @@ TaskEnvironment::TaskEnvironment(
             sequence_manager::QueueName::TASK_ENVIRONMENT_DEFAULT_TQ));
     task_runner_ = task_queue_->task_runner();
     sequence_manager_->SetDefaultTaskRunner(task_runner_);
-    if (mock_time_domain_) {
-      sequence_manager_->SetTimeDomain(mock_time_domain_.get());
-    }
     CHECK(base::SingleThreadTaskRunner::HasCurrentDefault())
         << "SingleThreadTaskRunner::CurrentDefaultHandle should've been set "
            "now.";
@@ -549,6 +546,10 @@ void TaskEnvironment::InitializeThreadPool() {
 
 void TaskEnvironment::CompleteInitialization() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (mock_time_domain_) {
+    sequence_manager_->SetTimeDomain(mock_time_domain_.get());
+  }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   if (main_thread_type() == MainThreadType::IO) {
@@ -1145,10 +1146,6 @@ TaskEnvironmentWithMainThreadPriorities::BaseTaskPriorityToQueuePriority(
 }
 
 void TaskEnvironmentWithMainThreadPriorities::InitTaskQueues() {
-  if (GetMockTimeDomain()) {
-    sequence_manager()->SetTimeDomain(GetMockTimeDomain());
-  }
-
   static_assert(BaseTaskPriorityToQueuePriority(TaskPriority::HIGHEST) == 0u,
                 "TaskPriority::HIGHEST should map to smallest QueuePriority.");
   static_assert(
