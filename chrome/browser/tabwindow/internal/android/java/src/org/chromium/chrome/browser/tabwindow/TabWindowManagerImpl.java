@@ -483,10 +483,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     @Override
     public @Nullable Tab getTabById(@TabId int tabId, @WindowId int windowId) {
         @Nullable TabModelSelector selector = getTabModelSelectorById(windowId);
-        @Nullable final Tab tab = getTabFromTabModelSelector(selector, tabId);
-        if (tab != null) return tab;
-
-        return getTabFromOtherSource(tabId);
+        return getTabFromTabModelSelector(selector, tabId);
     }
 
     @Override
