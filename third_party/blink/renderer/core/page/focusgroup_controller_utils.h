@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class Document;
 class Element;
 class GridFocusgroupStructureInfo;
 class KeyboardEvent;
@@ -48,8 +49,10 @@ enum class FocusgroupItemPosition { kFirst, kLast };
 //
 // - Focusgroup Segment: A contiguous sequence of focusgroup items within a
 //   focusgroup scope, bounded by barriers. Barriers include items in nested
-//   focusgroups, opted-out subtrees, and focused native arrow key handlers.
+//   focusgroups and opted-out subtrees (focusgroup="none").
 //   Segments determine guaranteed tab stops during sequential navigation.
+//   Tab escape from arrow key handlers is handled via the entry override
+//   in IsNonEntryFocusgroupItem and does not affect segment boundaries.
 //
 // Example:
 //   <div focusgroup="toolbar">           <!-- Focusgroup Owner -->
@@ -217,11 +220,15 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // for |element|'s nearest focusgroup owner, or nullptr if none exists.
   static const Element* GetArrowKeyHandlerRoot(const Element* element);
 
-  // Returns true if |element| itself is an excluded subtree root:
-  // 1. Has focusgroup="none" (explicit opt-out), OR
-  // 2. Is the root of a focused native arrow key handler subtree.
-  // These are subtrees excluded from the focusgroup scope but are not nested
-  // focusgroups (which are checked separately during traversal).
+  // If the document's currently focused element is within an arrow key handler
+  // subtree, returns the handler root. Otherwise returns nullptr.
+  static const Element* GetArrowKeyHandlerRootForFocusedElement(
+      const Document& document);
+
+  // Returns true if |element| itself is an excluded subtree root, i.e., it
+  // has focusgroup="none" (explicit opt-out). These are subtrees excluded from
+  // the focusgroup scope but are not nested focusgroups (which are checked
+  // separately during traversal).
   static bool IsExcludedSubtreeRoot(const Element* element);
 
   // Returns the nearest excluded subtree root ancestor (or self), stopping at

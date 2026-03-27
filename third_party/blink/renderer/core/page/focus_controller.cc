@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 
 #include <limits>
+#include <optional>
 #include <ranges>
 
 #include "base/containers/adapters.h"
@@ -800,6 +801,12 @@ class ScopedFocusNavigation {
   // Value: Entry element for that segment.
   HeapHashMap<Member<const Element>, Member<const Element>>
       focusgroup_segment_entry_cache_;
+
+  // Lazily cached arrow-key handler root for the focused element. The focused
+  // element does not change during a single navigation pass, so this value
+  // is stable for the lifetime of this ScopedFocusNavigation instance.
+  // std::nullopt means not yet computed; the inner pointer may be nullptr.
+  std::optional<const Element*> focused_arrow_key_handler_root_;
 };
 
 ScopedFocusNavigation::ScopedFocusNavigation(
@@ -815,10 +822,19 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
     return false;
   }
 
-  // When an element is in an excluded subtree (either explicitly via
-  // focusgroup="none", or because it's inside a focused arrow key handler),
-  // treat it as not a focusgroup item for sequential navigation purposes.
-  // This allows normal Tab order to apply.
+  // Compute the focused arrow key handler root once per navigation pass.
+  if (!focused_arrow_key_handler_root_.has_value()) {
+    focused_arrow_key_handler_root_ =
+        FocusgroupControllerUtils::GetArrowKeyHandlerRootForFocusedElement(
+            element.GetDocument());
+  }
+  const Element* focused_arrow_key_handler_root =
+      *focused_arrow_key_handler_root_;
+
+  // When an element is in an excluded subtree (explicitly via
+  // focusgroup="none"), treat it as not a focusgroup item for sequential
+  // navigation purposes. This allows normal Tab order to apply within the
+  // opted-out subtree.
   if (FocusgroupControllerUtils::FindExcludedSubtreeRoot(&element)) {
     return false;
   }
@@ -861,6 +877,21 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
                          << segment_first_item->ToString()
                          << " but no entry element.";
     focusgroup_segment_entry_cache_.insert(segment_first_item, segment_entry);
+  }
+
+  // When the focused element is an arrow key handler root in the same
+  // focusgroup, treat this candidate as the entry so Tab lands on it
+  // rather than skipping to the 'normal' segment entry element.
+  if (segment_entry != &element) {
+    if (focused_arrow_key_handler_root &&
+        focused_arrow_key_handler_root != &element &&
+        FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(
+            focused_arrow_key_handler_root) == focusgroup_owner) {
+      // Focus is on (or within) an arrow key handler in the same focusgroup.
+      // Treat this candidate as the entry so Tab lands on it rather than
+      // skipping to the 'normal' segment entry element.
+      return false;
+    }
   }
 
   // Return whether the current element is NOT the entry element.
