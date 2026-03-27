@@ -7,12 +7,11 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,10 +23,11 @@
 #include "ui/views/view_utils.h"
 
 class BrowserView;
-class SidePanelAnimationPerfReporter;
 
 class SidePanel : public views::AccessiblePaneView,
-                  public views::ResizeAreaDelegate {
+                  public views::ResizeAreaDelegate,
+                  public SidePanelAnimationCoordinator::AnimationIdObserver,
+                  public SidePanelAnimationCoordinator::AnimationTypeObserver {
   METADATA_HEADER(SidePanel, views::AccessiblePaneView)
 
  public:
@@ -44,7 +44,10 @@ class SidePanel : public views::AccessiblePaneView,
   ~SidePanel() override;
 
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kOpenAnimationCompletedEvent);
-  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kCloseAnimationCompletedEvent);
+
+  SidePanelAnimationCoordinator* animation_coordinator() {
+    return animation_coordinator_.get();
+  }
 
   void SetPanelWidth(int width);
   bool ShouldRestrictMaxWidth() const;
@@ -99,16 +102,13 @@ class SidePanel : public views::AccessiblePaneView,
 
   // Reflects the current state of the visibility of the side panel.
   enum class State { kClosed, kOpening, kOpen, kClosing };
-  State state() const { return state_; }
+  State state() { return state_; }
 
   // These two methods are the only mechanism to change visibility of the side
   // panel. `animated` may be ignored.
   void Open(bool animated);
   void Close(bool animated);
 
-  // This should only be set just before executing Open() when a content
-  // transition is required. It will be reset when the transition ends, or
-  // if it is canceled via `ResetSidePanelAnimationContent()`.
   void set_animation_starting_bounds_for_content(
       const gfx::Rect& content_starting_bounds) {
     content_starting_bounds_ = content_starting_bounds;
@@ -132,7 +132,7 @@ class SidePanel : public views::AccessiblePaneView,
   // This method is the shared implementation of Open/Close.
   void UpdateVisibility(bool should_be_open, bool animated);
 
-  double GetAnimationValueFor(BrowserAnimationSequence which) const;
+  double GetAnimationValueFor(SidePanelAnimationId animation_id) const;
 
   bool ShouldShowAnimation() const;
   void AnnounceResize();
@@ -142,14 +142,22 @@ class SidePanel : public views::AccessiblePaneView,
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  void OnAnimationProgressed(const BrowserAnimationController* controller,
-                             BrowserAnimationUpdate status);
+  // SidePanelAnimationCoordinator::AnimationIdObserver
+  void OnAnimationSequenceProgressed(SidePanelAnimationId animation_id,
+                                     double animation_value) override;
+
+  // SidePanelAnimationCoordinator::AnimationTypeObserver:
+  void OnAnimationTypeStarted(
+      SidePanelAnimationCoordinator::AnimationType type) override;
+  void OnAnimationTypeEnded(
+      SidePanelAnimationCoordinator::AnimationType type) override;
 
   raw_ptr<BorderView> border_view_ = nullptr;
   const raw_ptr<BrowserView> browser_view_;
   const SidePanelEntry::PanelType type_;
-  raw_ptr<views::View> resize_area_ = nullptr;
+  raw_ptr<View> resize_area_ = nullptr;
   raw_ptr<views::View> header_view_ = nullptr;
+  // Owned by `this` indirectly through the views tree.
   raw_ptr<views::View> content_parent_view_;
 
   // -1 if a side panel resize is not in progress, otherwise the width of the
@@ -168,6 +176,11 @@ class SidePanel : public views::AccessiblePaneView,
   // Starting bounds for the side panel content if kOpenWithContentTransition
   // animation is shown.
   std::optional<gfx::Rect> content_starting_bounds_;
+
+  // The animation coordinator for the side panel. This controls all of the
+  // animations that are tied to the side panel when triggering the show and
+  // hide states.
+  std::unique_ptr<SidePanelAnimationCoordinator> animation_coordinator_;
 
   // Helps to clip layer backed children to their visible bounds.
   // TODO: 344626785 - Remove this once WebView layer behavior has been fixed.
@@ -189,15 +202,7 @@ class SidePanel : public views::AccessiblePaneView,
 
   State state_ = State::kClosed;
 
-  // Subscription for animation updates.
-  BrowserAnimationGroup animation_group_;
-  base::CallbackListSubscription animation_subscription_;
-
-  // Animation perf reporter.
-  std::unique_ptr<SidePanelAnimationPerfReporter> animation_perf_reporter_;
-
-  // Cache of recent animation values.
-  std::map<BrowserAnimationSequence, double> last_animation_values_;
+  std::map<SidePanelAnimationId, double> last_animation_values_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_

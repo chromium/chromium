@@ -31,8 +31,6 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/ui/animation/browser_animation_controller.h"
-#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -51,7 +49,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
@@ -2829,11 +2826,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   auto* toolbar_height_side_panel =
       browser()->GetBrowserView().toolbar_height_side_panel();
 
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
   // Set a custom container to control the animation time.
-  auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
-  animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
@@ -2889,11 +2886,14 @@ IN_PROC_BROWSER_TEST_F(
   registry->Register(std::move(entry));
   coordinator()->SetNoDelaysForTesting(true);
 
+  auto* toolbar_height_side_panel =
+      browser()->GetBrowserView().toolbar_height_side_panel();
+
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
   // Set a custom container to control the animation time.
-  auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
-  animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   gfx::Rect browser_view_bounds = browser()->GetBrowserView().bounds();
@@ -2961,11 +2961,14 @@ IN_PROC_BROWSER_TEST_F(
   registry->Register(std::move(entry));
   coordinator()->SetNoDelaysForTesting(true);
 
+  auto* toolbar_height_side_panel =
+      browser()->GetBrowserView().toolbar_height_side_panel();
+
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
   // Set a custom container to control the animation time.
-  auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
-  animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   gfx::Rect browser_view_bounds = browser()->GetBrowserView().bounds();
@@ -3032,11 +3035,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   auto* toolbar_height_side_panel =
       browser()->GetBrowserView().toolbar_height_side_panel();
 
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
   // Set a custom container to control the animation time.
-  auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
-  animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),
@@ -3108,11 +3111,11 @@ IN_PROC_BROWSER_TEST_F(
   auto* toolbar_height_side_panel =
       browser()->GetBrowserView().toolbar_height_side_panel();
 
+  auto* animation_coordinator =
+      toolbar_height_side_panel->animation_coordinator();
   // Set a custom container to control the animation time.
-  auto* animation_coordinator = BrowserAnimationController::From(browser());
   auto container = base::MakeRefCounted<gfx::AnimationContainer>();
-  animation_coordinator->SetAnimationContainerForTesting(
-      SidePanelAnimations::kToolbarHeightSidePanel, container.get());
+  animation_coordinator->animation_for_testing()->SetContainer(container.get());
   gfx::AnimationContainerTestApi test_api(container.get());
 
   coordinator()->ShowFrom(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite),

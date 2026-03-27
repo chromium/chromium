@@ -10,24 +10,25 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 
-namespace views {
-class Widget;
+namespace gfx {
+class Animation;
 }
+
+class SidePanel;
 
 // Handles reporting performance metrics for each side panel animation. This
 // needs to be created per animation and the metrics are emitted during
 // destruction of the the object.
 class SidePanelAnimationPerfReporter : public ui::CompositorObserver {
  public:
-  SidePanelAnimationPerfReporter(SidePanelEntry::PanelType panel_type,
-                                 SidePanelAnimationType animation_type,
-                                 base::TimeDelta total_animation_time,
-                                 views::Widget* widget);
+  SidePanelAnimationPerfReporter(
+      SidePanel* side_panel,
+      SidePanelAnimationCoordinator::AnimationType animation_type,
+      base::TimeDelta animation_duration);
   ~SidePanelAnimationPerfReporter() override;
 
   SidePanelAnimationPerfReporter(const SidePanelAnimationPerfReporter&) =
@@ -35,21 +36,24 @@ class SidePanelAnimationPerfReporter : public ui::CompositorObserver {
   SidePanelAnimationPerfReporter& operator=(
       const SidePanelAnimationPerfReporter&) = delete;
 
-  void OnAnimationProgressed();
-
  private:
   friend class SidePanelAnimationCoordinator;
 
-  // ui::CompositorObserver:
+  void OnAnimationProgressed(const gfx::Animation* animation);
+
   void OnDidPresentCompositorFrame(
       ui::Compositor* compositor,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
-  const SidePanelEntry::PanelType panel_type_;
-  const SidePanelAnimationType animation_type_;
-  const base::TimeDelta total_animation_time_;
+  // Pointer to the side panel instance. Since side panel instance owns
+  // the animation coordinator, which in turn owns this class, it's safe
+  // to keep a reference to it.
+  raw_ptr<SidePanel> side_panel_;
+
+  SidePanelAnimationCoordinator::AnimationType animation_type_;
+  base::TimeDelta animation_duration_;
 
   // Tracks all the successfully presented compositor frame during the
   // course of the animation. This is used to compute the animation FPS.
