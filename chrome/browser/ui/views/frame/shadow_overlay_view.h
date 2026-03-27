@@ -5,24 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_SHADOW_OVERLAY_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_SHADOW_OVERLAY_VIEW_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
 
 class BrowserView;
-class SidePanel;
 
 // This view is responsible for framing the primary elements of the UI when
 // toolbar height side panel is showing, providing a nice drop shadow.
-class ShadowOverlayView
-    : public views::View,
-      public views::LayoutDelegate,
-      public SidePanelAnimationCoordinator::AnimationIdObserver,
-      public views::ViewObserver {
+class ShadowOverlayView : public views::View, public views::LayoutDelegate {
   METADATA_HEADER(ShadowOverlayView, views::View)
 
  public:
@@ -35,20 +30,15 @@ class ShadowOverlayView
  private:
   // views::View:
   void VisibilityChanged(View* starting_from, bool visible) override;
-  void AddedToWidget() override;
-  void RemovedFromWidget() override;
 
   // views::LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
-  // SidePanelAnimationCoordinator::AnimationIdObserver
-  void OnAnimationSequenceProgressed(SidePanelAnimationId animation_id,
-                                     double animation_value) override;
-  void OnAnimationSequenceEnded(SidePanelAnimationId animation_id) override;
+  void OnAnimationProgressed(const BrowserAnimationController* controller,
+                             BrowserAnimationUpdate status);
 
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* observed_view) override;
+  double GetShadowValue() const;
 
   raw_ref<BrowserView> browser_view_;
   raw_ptr<ShadowBox> shadow_box_ = nullptr;
@@ -57,8 +47,7 @@ class ShadowOverlayView
   raw_ptr<CornerView> bottom_leading_corner_ = nullptr;
   raw_ptr<CornerView> bottom_trailing_corner_ = nullptr;
 
-  base::ScopedObservation<SidePanel, views::ViewObserver> side_panel_observer_{
-      this};
+  base::CallbackListSubscription animation_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SHADOW_OVERLAY_VIEW_H_

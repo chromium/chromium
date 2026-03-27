@@ -7,13 +7,15 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -255,6 +257,13 @@ ShadowOverlayView::ShadowOverlayView(BrowserView& browser_view)
 
   // Starts hidden; visibility set by layout.
   SetVisible(false);
+
+  animation_subscription_ =
+      BrowserAnimationController::From(browser_view_->browser())
+          ->Subscribe(
+              SidePanelAnimations::kToolbarHeightSidePanel,
+              base::BindRepeating(&ShadowOverlayView::OnAnimationProgressed,
+                                  base::Unretained(this)));
 }
 
 ShadowOverlayView::~ShadowOverlayView() = default;
@@ -266,35 +275,8 @@ void ShadowOverlayView::VisibilityChanged(View* starting_from, bool visible) {
 
     // Ensure the opacity matches the current animation value in cases where the
     // panel should not animate but is open such as swapping between tabs.
-    if (side_panel_observer_.IsObserving()) {
-      shadow_box_->SetShadowOpacity(
-          side_panel_observer_.GetSource()
-              ->animation_coordinator()
-              ->GetAnimationValueFor(kShadowOverlayOpacityAnimation));
-    }
+    shadow_box_->SetShadowOpacity(GetShadowValue());
   }
-}
-
-void ShadowOverlayView::AddedToWidget() {
-  side_panel_observer_.Observe(browser_view_->toolbar_height_side_panel());
-  side_panel_observer_.GetSource()->animation_coordinator()->AddObserver(
-      kShadowOverlayOpacityAnimation, this);
-}
-
-void ShadowOverlayView::RemovedFromWidget() {
-  if (side_panel_observer_.IsObserving()) {
-    side_panel_observer_.GetSource()->animation_coordinator()->RemoveObserver(
-        kShadowOverlayOpacityAnimation, this);
-    side_panel_observer_.Reset();
-  }
-}
-
-void ShadowOverlayView::OnViewIsDeleting(views::View* observed_view) {
-  CHECK(observed_view == side_panel_observer_.GetSource());
-
-  side_panel_observer_.GetSource()->animation_coordinator()->RemoveObserver(
-      kShadowOverlayOpacityAnimation, this);
-  side_panel_observer_.Reset();
 }
 
 views::ProposedLayout ShadowOverlayView::CalculateProposedLayout(
@@ -348,31 +330,28 @@ views::ProposedLayout ShadowOverlayView::CalculateProposedLayout(
   return layout;
 }
 
-void ShadowOverlayView::OnAnimationSequenceProgressed(
-    SidePanelAnimationId animation_id,
-    double animation_value) {
-  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
-    return;
+double ShadowOverlayView::GetShadowValue() const {
+  // Get the current animation value (if any).
+  const auto animation_value =
+      BrowserAnimationController::From(browser_view_->browser())
+          ->GetCurrentValue(SidePanelAnimations::kToolbarHeightSidePanel,
+                            SidePanelAnimations::kMainAreaShadow);
+  if (animation_value) {
+    return *animation_value;
   }
-
-  CHECK_EQ(kShadowOverlayOpacityAnimation, animation_id);
-
-  shadow_box_->SetShadowOpacity(animation_value);
+  if (const auto* panel = browser_view_->toolbar_height_side_panel()) {
+    return panel->state() == SidePanel::State::kOpen ? 1.0 : 0.0;
+  }
+  return 0.0;
 }
 
-void ShadowOverlayView::OnAnimationSequenceEnded(
-    SidePanelAnimationId animation_id) {
+void ShadowOverlayView::OnAnimationProgressed(
+    const BrowserAnimationController* controller,
+    BrowserAnimationUpdate status) {
   if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
     return;
   }
-
-  // When the animation ends, set the final opacity based on whether the side
-  // panel is closing or opening.
-  const double ending_opacity =
-      side_panel_observer_.GetSource()->animation_coordinator()->IsClosing()
-          ? 0.0f
-          : 1.0f;
-  shadow_box_->SetShadowOpacity(ending_opacity);
+  shadow_box_->SetShadowOpacity(GetShadowValue());
 }
 
 BEGIN_METADATA(ShadowOverlayView)

@@ -8,32 +8,34 @@
 
 #include <string_view>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/side_panel/side_panel_metrics.h"
-#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "ui/views/widget/widget.h"
 
 SidePanelAnimationPerfReporter::SidePanelAnimationPerfReporter(
-    SidePanel* side_panel,
-    SidePanelAnimationCoordinator::AnimationType animation_type,
-    base::TimeDelta animation_duration)
-    : side_panel_(side_panel),
+    SidePanelEntry::PanelType panel_type,
+    SidePanelAnimationType animation_type,
+    base::TimeDelta total_animation_time,
+    views::Widget* widget)
+    : panel_type_(panel_type),
       animation_type_(animation_type),
-      animation_duration_(animation_duration),
+      total_animation_time_(total_animation_time),
       last_animation_step_timestamp_(base::TimeTicks::Now()) {
-  compositor_observation_.Observe(side_panel_->GetWidget()->GetCompositor());
+  compositor_observation_.Observe(widget->GetCompositor());
 }
 
 SidePanelAnimationPerfReporter::~SidePanelAnimationPerfReporter() {
-  int animation_fps = static_cast<int>(std::round(
-      animation_presented_times_.size() / animation_duration_.InSecondsF()));
-
-  SidePanelMetrics::RecordSidePanelAnimationMetrics(
-      side_panel_->type(), animation_type_, largest_animation_step_time_,
-      animation_fps);
+  if (total_animation_time_.is_positive()) {
+    int animation_fps =
+        static_cast<int>(std::round(animation_presented_times_.size() /
+                                    total_animation_time_.InSecondsF()));
+    SidePanelMetrics::RecordSidePanelAnimationMetrics(
+        panel_type_, animation_type_, largest_animation_step_time_,
+        animation_fps);
+  }
 }
 
-void SidePanelAnimationPerfReporter::OnAnimationProgressed(
-    const gfx::Animation* animation) {
+void SidePanelAnimationPerfReporter::OnAnimationProgressed() {
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta elapsed = now - last_animation_step_timestamp_;
   last_animation_step_timestamp_ = now;
