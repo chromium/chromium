@@ -1793,7 +1793,7 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
   CHECK(IsCanvas2D());
   // When printing we avoid flushing if it is still possible to print in
   // vector mode.
-  if (IsPrinting() && clear_frame_) {
+  if (IsPrinting() && clear_frame_for_canvas2d_) {
     return;
   }
   if (recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
@@ -1895,7 +1895,9 @@ void CanvasResourceProvider::RecordingCleared() {
   // is now safe to discard the old copy of canvas content on a subsequent
   // CopyOnWrite.
   must_preserve_content_on_copy_on_write_ = false;
-  clear_frame_ = true;
+  if (IsCanvas2D()) {
+    clear_frame_for_canvas2d_ = true;
+  }
 }
 
 MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas() {
@@ -1967,10 +1969,6 @@ CanvasNon2DResourceProviderSharedImage::FlushCanvas() {
   }
   auto timer = CreateScopedRasterTimer();
 
-  // If a previous flush rasterized some paint ops, we lost part of the
-  // recording and must fallback to raster printing instead of vectorial
-  // printing.
-  clear_frame_ = false;
   cc::PaintRecord recording;
   recording = recorder_->ReleaseMainRecording();
   RasterRecord(recording);
@@ -1990,12 +1988,12 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
   auto timer = CreateScopedRasterTimer();
   bool want_to_print = IsPrinting() || reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;
-  bool preserve_recording = want_to_print && clear_frame_;
+  bool preserve_recording = want_to_print && clear_frame_for_canvas2d_;
 
   // If a previous flush rasterized some paint ops, we lost part of the
   // recording and must fallback to raster printing instead of vectorial
   // printing.
-  clear_frame_ = false;
+  clear_frame_for_canvas2d_ = false;
   cc::PaintRecord recording;
   recording = recorder_->ReleaseMainRecording();
   RasterRecord(recording);
