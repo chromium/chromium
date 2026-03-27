@@ -57,6 +57,7 @@ class GlicInvokeHandler : public Host::Observer {
   void SendToClient();
   mojom::InvokeOptionsPtr CreateMojoOptions();
   bool RequiresAutoSubmitIncompatibleFre() const;
+  bool RequiresOverrideIncompatibleFre() const;
 
   // May delete this.
   void OnSuccess();

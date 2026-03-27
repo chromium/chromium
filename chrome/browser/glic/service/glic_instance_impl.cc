@@ -329,7 +329,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   }
 
   MaybeShowHostUi(embedder_to_show, options.invocation_source,
-                  options.prompt_suggestion, options.auto_send);
+                  options.prompt_suggestion, options.auto_send,
+                  options.fre_override);
   embedder_to_show->Show(options);
   if (options.focus_on_show) {
     embedder_to_show->Focus();
@@ -928,7 +929,8 @@ void GlicInstanceImpl::MaybeShowHostUi(
     GlicUiEmbedder* embedder,
     mojom::InvocationSource invocation_source,
     std::optional<std::string> prompt_suggestion,
-    bool auto_send) {
+    bool auto_send,
+    mojom::FreOverride fre_override) {
   Host::EmbedderDelegate* delegate = embedder->GetHostEmbedderDelegate();
   if (!delegate) {
     return;
@@ -939,7 +941,8 @@ void GlicInstanceImpl::MaybeShowHostUi(
       content::Visibility::VISIBLE);
   host_.NotifyWindowIntentToShow();
 
-  NotifyPanelWillOpen(invocation_source, prompt_suggestion, auto_send);
+  NotifyPanelWillOpen(invocation_source, prompt_suggestion, auto_send,
+                      fre_override);
 }
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab) {
