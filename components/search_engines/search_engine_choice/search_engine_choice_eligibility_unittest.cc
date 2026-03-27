@@ -133,11 +133,9 @@ class KeywordsDatabaseHolder {
   scoped_refptr<KeywordWebDataService> keyword_web_data;
 };
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_IOS)
 const ui::DeviceFormFactorSet kPhoneFormFactors{
     ui::DEVICE_FORM_FACTOR_PHONE, ui::DEVICE_FORM_FACTOR_FOLDABLE};
-const ui::DeviceFormFactorSet kNonPhoneFormFactors =
-    base::Difference(ui::DeviceFormFactorSet::All(), kPhoneFormFactors);
 #endif
 
 SearchEngineChoiceScreenConditions IfSupported(

@@ -60,6 +60,9 @@ using ::testing::get;
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 const ui::DeviceFormFactorSet kPhoneFormFactors{
     ui::DEVICE_FORM_FACTOR_PHONE, ui::DEVICE_FORM_FACTOR_FOLDABLE};
+#endif
+
+#if BUILDFLAG(IS_IOS)
 const ui::DeviceFormFactorSet kNonPhoneFormFactors =
     base::Difference(ui::DeviceFormFactorSet::All(), kPhoneFormFactors);
 #endif
