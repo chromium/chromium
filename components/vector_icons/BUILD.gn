@@ -293,10 +293,7 @@ if (current_toolchain == default_toolchain) {
     ]
 
     if (is_chromeos) {
-      sources += [
-        "notification_download.icon",
-        "videogame_asset_outline.icon",
-      ]
+      sources += [ "notification_download.icon" ]
     }
 
     if (is_chrome_branded) {
