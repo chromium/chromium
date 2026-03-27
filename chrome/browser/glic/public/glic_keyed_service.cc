@@ -352,6 +352,10 @@ void GlicKeyedService::ToggleUIInternal(
     glic_profile_manager->SetActiveGlic(this);
   }
 
+  if (MaybeInvoke(bwi, source, prompt_suggestion)) {
+    return;
+  }
+
   // Show the FRE if not yet completed, and if we have a browser to use.
   // Ignore ShouldBypassFreUi if auto_send is true.
   if ((!GlicEnabling::ShouldBypassFreUi(profile_, source) || auto_send) &&
@@ -376,6 +380,36 @@ void GlicKeyedService::ToggleUIInternal(
   window_controller().Toggle(bwi ? bwi : GetActiveGlicEligibleBrowser(profile_),
                              prevent_close, source, prompt_suggestion,
                              auto_send, conversation_id);
+}
+
+bool GlicKeyedService::MaybeInvoke(
+    BrowserWindowInterface* bwi,
+    mojom::InvocationSource source,
+    const std::optional<std::string>& prompt_suggestion) {
+  BrowserWindowInterface* target_bwi =
+      bwi ? bwi : GetActiveGlicEligibleBrowser(profile_);
+  if (!target_bwi) {
+    return false;
+  }
+
+  bool panel_closed = !IsPanelShowingForBrowser(*target_bwi);
+  bool fre_override_compatible =
+      !GlicEnabling::HasConsentedForProfile(profile_) &&
+      GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_);
+
+  if (fre_override_compatible && panel_closed &&
+      base::FeatureList::IsEnabled(features::kGlicMessageFirstFre)) {
+    GlicInvokeOptions options(source);
+    options.fre_override = mojom::FreOverride::kTrustFirstInline;
+    if (prompt_suggestion) {
+      options.prompts.push_back(*prompt_suggestion);
+    }
+    Invoke(TabListInterface::From(target_bwi)->GetActiveTab(),
+           std::move(options));
+    return true;
+  }
+
+  return false;
 }
 
 void GlicKeyedService::InvokeWithAutoSubmit(

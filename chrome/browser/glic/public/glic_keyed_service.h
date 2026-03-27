@@ -440,6 +440,10 @@ class GlicKeyedService : public KeyedService,
                         bool auto_send,
                         std::optional<std::string> conversation_id);
 
+  bool MaybeInvoke(BrowserWindowInterface* bwi,
+                   mojom::InvocationSource source,
+                   const std::optional<std::string>& prompt_suggestion);
+
   void FinishPreload(GlicPrewarmingChecksResult reason);
   void FinishPreloadFre(GlicPrewarmingFreSource source,
                         GlicPrewarmingChecksResult result);
