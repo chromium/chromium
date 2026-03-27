@@ -79,13 +79,13 @@ cr-composebox {
 }
 
 cr-composebox[searchbox-layout-mode='Compact'],
-cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs_]) {
+cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs]) {
   --input-bottom-spacing: 14px;
   --cr-composebox-context-margin-top: -12px;
 }
 
 cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon),
-cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs_])::part(context-menu-entrypoint-icon) {
+cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs])::part(context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-size: 28px;
   left: 12px;
@@ -116,17 +116,17 @@ cr-composebox[searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
   bottom: 11px;
 }
 
-cr-composebox[submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])::part(submit) {
+cr-composebox[submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])::part(submit) {
   bottom: 6px;
 }
 
-cr-composebox[submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
+cr-composebox[submit-enabled][searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
   inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 6px);
   margin-inline-end: 6px;
 }
 
 :host-context([dir='rtl']) cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon),
-:host-context([dir='rtl']) cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs_])::part(context-menu-entrypoint-icon) {
+:host-context([dir='rtl']) cr-composebox[searchbox-layout-mode^='Tall']:not([has-allowed-inputs])::part(context-menu-entrypoint-icon) {
   left: unset;
   right: 12px;
 }

@@ -207,7 +207,7 @@ search-animated-glow {
   transition: var(--icon-entry-transition);
 }
 
-:host([in-voice-search-mode_]) .icon-fade {
+:host([in-voice-search-mode]) .icon-fade {
   opacity: 0;
   transition: var(--icon-exit-transition);
 }
