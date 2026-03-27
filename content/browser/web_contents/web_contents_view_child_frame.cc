@@ -258,10 +258,14 @@ void WebContentsViewChildFrame::TakeFocus(bool reverse) {
 void WebContentsViewChildFrame::ShowContextMenu(
     RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
+#if BUILDFLAG(IS_ANDROID)
+  return GetOuterDelegateView()->ShowContextMenu(render_frame_host, params);
+#else
   if (delegate_) {
     delegate_->ShowContextMenu(render_frame_host, params);
     // WARNING: we may have been deleted during the call to ShowContextMenu().
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
