@@ -1511,8 +1511,7 @@ CanvasResourceDispatcher* HTMLCanvasElement::GetOrCreateResourceDispatcher() {
   return frame_dispatcher_.get();
 }
 
-bool HTMLCanvasElement::PushFrame(scoped_refptr<CanvasResource>&& image,
-                                  std::optional<SkIRect> damage_rect) {
+bool HTMLCanvasElement::PushFrame(scoped_refptr<CanvasResource>&& image) {
   NOTIMPLEMENTED();
   return false;
 }

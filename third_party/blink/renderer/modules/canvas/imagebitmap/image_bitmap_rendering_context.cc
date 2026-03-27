@@ -33,7 +33,6 @@ ImageBitmapRenderingContext::ImageBitmapRenderingContext(
       image_layer_bridge_(MakeGarbageCollected<ImageLayerBridge>(
           attrs.alpha ? kNonOpaque : kOpaque)) {
   host->InitializeLayerWithCSSProperties(image_layer_bridge_->CcLayer());
-  dirty_rect_for_commit_.setEmpty();
 }
 
 ImageBitmapRenderingContext::~ImageBitmapRenderingContext() = default;
@@ -52,10 +51,6 @@ ImageBitmapRenderingContext::getHTMLOrOffscreenCanvas(
 void ImageBitmapRenderingContext::Reset() {
   CHECK(Host());
   CHECK(Host()->IsOffscreenCanvas());
-  // We're resetting canvas and potentially resizing it, so the next frame needs
-  // to have full damage.
-  dirty_rect_for_commit_ =
-      SkIRect::MakeWH(Host()->Size().width(), Host()->Size().height());
   resource_provider_for_offscreen_canvas_.reset();
   Host()->DiscardResources();
 }
@@ -113,8 +108,6 @@ void ImageBitmapRenderingContext::SetImage(ImageBitmap* image_bitmap) {
     ResetInternalBitmapToBlackTransparent(Host()->width(), Host()->height());
   }
 
-  dirty_rect_for_commit_.join(
-      SkIRect::MakeWH(Host()->Size().width(), Host()->Size().height()));
   DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
   if (image_bitmap) {
@@ -219,8 +212,6 @@ bool ImageBitmapRenderingContext::PushFrame() {
       base::UmaHistogramEnumeration(
           "Blink.Canvas.ResourceProviderType",
           resource_provider_for_offscreen_canvas_.get()->GetType());
-      dirty_rect_for_commit_.join(
-          SkIRect::MakeWH(Host()->Size().width(), Host()->Size().height()));
       Host()->DidDraw();
     }
   }
@@ -236,8 +227,7 @@ bool ImageBitmapRenderingContext::PushFrame() {
       &paint_flags);
   scoped_refptr<CanvasResource> resource =
       resource_provider_for_offscreen_canvas_->ProduceCanvasResource();
-  Host()->PushFrame(std::move(resource), dirty_rect_for_commit_);
-  dirty_rect_for_commit_.setEmpty();
+  Host()->PushFrame(std::move(resource));
   return true;
 }
 

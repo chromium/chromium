@@ -117,7 +117,6 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
       canvas->SetDisableReadingFromCanvasTrue();
     return;
   }
-  dirty_rect_for_commit_.setEmpty();
   WorkerSettings* worker_settings =
       To<WorkerGlobalScope>(execution_context)->GetWorkerSettings();
   if (worker_settings && worker_settings->DisableReadingFromCanvas())
@@ -266,7 +265,6 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                   resource_provider_->GetType());
 
-    dirty_rect_for_commit_ = SkIRect::MakeWH(Width(), Height());
     host->DidDraw();
   }
   return resource_provider_.get();
@@ -296,9 +294,6 @@ void OffscreenCanvasRenderingContext2D::Reset() {
   BaseRenderingContext2D::ResetInternal();
   // Because the host may have changed to a zero size
   is_valid_size_ = Host()->IsValidImageSize();
-  // We must resize the damage rect to avoid a potentially larger damage than
-  // actual canvas size. See: crbug.com/1227165
-  dirty_rect_for_commit_ = SkIRect::MakeWH(Width(), Height());
 }
 
 scoped_refptr<CanvasResource>
@@ -325,14 +320,8 @@ OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
 }
 
 bool OffscreenCanvasRenderingContext2D::PushFrame() {
-  if (dirty_rect_for_commit_.isEmpty())
-    return false;
-
-  SkIRect damage_rect(dirty_rect_for_commit_);
   FinalizeFrame(FlushReason::kOther);
-  bool ret = Host()->PushFrame(ProduceCanvasResource(FlushReason::kOther),
-                               damage_rect);
-  dirty_rect_for_commit_.setEmpty();
+  bool ret = Host()->PushFrame(ProduceCanvasResource(FlushReason::kOther));
   GetOffscreenFontCache().PruneLocalFontCache(kMaxCachedFonts);
   return ret;
 }
@@ -429,9 +418,8 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
     adjusted_dirty_rect.intersect(SkIRect::MakeWH(Width(), Height()));
   }
 
-  dirty_rect_for_commit_.join(adjusted_dirty_rect);
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
-  Host()->DidDraw(dirty_rect_for_commit_);
+  Host()->DidDraw(adjusted_dirty_rect);
 
   if (layer_count_ == 0 && resource_provider_ != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.

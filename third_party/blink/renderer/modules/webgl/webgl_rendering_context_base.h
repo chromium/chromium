@@ -2124,7 +2124,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   bool has_been_drawn_to_ = false;
 
-  SkIRect dirty_rect_for_commit_;
   // Tracks if the context has ever called glBeginPixelLocalStorageANGLE. If it
   // has, we need to start using the pixel local storage interrupt mechanism
   // when we take over the client's context.

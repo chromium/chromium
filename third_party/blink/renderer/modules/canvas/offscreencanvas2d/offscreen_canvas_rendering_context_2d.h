@@ -71,8 +71,9 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     if (!Host())
       return false;
     DCHECK(Host()->IsOffscreenCanvas());
-    return static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas() &&
-           !dirty_rect_for_commit_.isEmpty();
+    auto* offscreen_canvas = static_cast<OffscreenCanvas*>(Host());
+    return offscreen_canvas->HasPlaceholderCanvas() &&
+           !offscreen_canvas->IsDirtyRectEmpty();
   }
 
   // BaseRenderingContext2D implementation
@@ -145,8 +146,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
       std::unique_ptr<CanvasResourceProvider>) override;
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
-
-  SkIRect dirty_rect_for_commit_;
 
   bool is_valid_size_ = false;
 };

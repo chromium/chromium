@@ -74,6 +74,8 @@ class CORE_EXPORT OffscreenCanvas final
   void DeregisterFromAnimationFrameProvider();
   DOMNodeId PlaceholderCanvasId() const { return placeholder_canvas_id_; }
   bool HasPlaceholderCanvas() const;
+  bool IsDirtyRectEmpty() const { return dirty_rect_for_commit_.isEmpty(); }
+
   bool IsNeutered() const override { return is_neutered_; }
   void SetNeutered();
   CanvasRenderingContext* GetCanvasRenderingContext(
@@ -121,8 +123,7 @@ class CORE_EXPORT OffscreenCanvas final
   void DiscardResources() override;
 
   bool PushFrameIfNeeded();
-  bool PushFrame(scoped_refptr<CanvasResource>&& frame,
-                 std::optional<SkIRect> damage_rect) override;
+  bool PushFrame(scoped_refptr<CanvasResource>&& frame) override;
   void DidDraw(const SkIRect&) override;
   using CanvasRenderingContextHost::DidDraw;
   bool ShouldAccelerate2dContext() const override;
@@ -258,6 +259,11 @@ class CORE_EXPORT OffscreenCanvas final
   std::unique_ptr<CanvasResourceDispatcher> frame_dispatcher_;
 
   SkIRect current_frame_damage_rect_;
+
+  // Rect is in a canvas's space (i.e Size() is a full rect and not in a
+  // CanvasResource space).
+  // TODO(vasilyt): We should reconsile this rect with the one above.
+  SkIRect dirty_rect_for_commit_;
 
   bool needs_push_frame_ = false;
   bool inside_worker_raf_ = false;

@@ -290,7 +290,7 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
             EXPECT_NE(shared_quad_state_list.front()->are_contents_opaque,
                       context_alpha);
           }));
-  offscreen_canvas().PushFrame(std::move(canvas_resource), std::nullopt);
+  offscreen_canvas().PushFrame(std::move(canvas_resource));
   platform->RunUntilIdle();
 }
 

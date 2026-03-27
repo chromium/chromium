@@ -117,10 +117,6 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
 
   void ResetInternalBitmapToBlackTransparent(int width, int height);
 
-  // Rect is in canvas host space (i.e Host()->Size() is the full rect), not the
-  // context (i.e Image) space.
-  SkIRect dirty_rect_for_commit_;
-
   Member<ImageLayerBridge> image_layer_bridge_;
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
       resource_provider_for_offscreen_canvas_;

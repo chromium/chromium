@@ -217,8 +217,7 @@ class CORE_EXPORT HTMLCanvasElement final
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
   void DiscardResourceDispatcher() override { frame_dispatcher_ = nullptr; }
 
-  bool PushFrame(scoped_refptr<CanvasResource>&& image,
-                 std::optional<SkIRect> damage_rect) override;
+  bool PushFrame(scoped_refptr<CanvasResource>&& image) override;
 
   // ExecutionContextLifecycleObserver and PageVisibilityObserver implementation
   void ContextDestroyed() override;

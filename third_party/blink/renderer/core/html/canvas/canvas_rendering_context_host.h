@@ -68,8 +68,7 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   virtual void PostFinalizeFrame(FlushReason) = 0;
   void NotifyCachesOfSwitchingFrame();
-  virtual bool PushFrame(scoped_refptr<CanvasResource>&& frame,
-                         std::optional<SkIRect> damage_rect) = 0;
+  virtual bool PushFrame(scoped_refptr<CanvasResource>&& frame) = 0;
   virtual bool OriginClean() const = 0;
   virtual void SetOriginTainted() = 0;
   virtual CanvasRenderingContext* RenderingContext() const = 0;
