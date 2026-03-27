@@ -15,3 +15,31 @@ enum PermissionStatus {
   ASK,
   LAST = ASK
 };
+
+// Indicates the accuracy level requested by the site.
+enum GeolocationAccuracy {
+  // Prefer more accuracy (less uncertainty).
+  kPrecise,
+  // Require approximate location (more uncertainty).
+  kApproximate,
+};
+
+// Encodes additional details, specific to a permission type, about the status
+// of a permission, which is useful to populate an extended PermissionStatus to
+// be returned by the Permission API.
+union PermissionDetails {
+  // GeolocationAccuracy is populated for permissions of type "geolocation" if
+  // approximate geolocation support is enabled. This field is only populated
+  // when the status is GRANTED, and indicates the accuracy level of the granted
+  // permission.
+  GeolocationAccuracy geolocation_accuracy;
+};
+
+// Struct that stores and represents the known status of a permission.
+struct PermissionStatusWithDetails {
+  // The overall status of the permission.
+  PermissionStatus status;
+
+  // Additional details.
+  PermissionDetails? details;
+};

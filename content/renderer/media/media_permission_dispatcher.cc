@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
 
@@ -78,13 +79,24 @@ void MediaPermissionDispatcher::HasPermission(
 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  int request_id = RegisterCallback(std::move(permission_status_cb));
+  uint32_t request_id = RegisterCallback(std::move(permission_status_cb));
   DVLOG(2) << __func__ << ": request ID " << request_id;
 
   GetPermissionService()->HasPermission(
       MediaPermissionTypeToPermissionDescriptor(type),
-      base::BindOnce(&MediaPermissionDispatcher::OnPermissionStatus, weak_ptr_,
-                     request_id));
+      base::BindOnce(
+          // TODO(crbug.com/494089503): Simplify this once all mojo permission
+          // methods return a PermissionStatusWithDetails by letting
+          // dispatcher->OnPermissionStatus take a PermissionStatusWithDetails
+          // directly.
+          [](base::WeakPtr<MediaPermissionDispatcher> dispatcher,
+             uint32_t request_id,
+             blink::mojom::PermissionStatusWithDetailsPtr result) {
+            if (dispatcher) {
+              dispatcher->OnPermissionStatus(request_id, result->status);
+            }
+          },
+          weak_ptr_, request_id));
 }
 
 void MediaPermissionDispatcher::RequestPermission(

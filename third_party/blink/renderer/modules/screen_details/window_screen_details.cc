@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/screen_details/window_screen_details.h"
 
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -79,19 +80,34 @@ ScriptPromise<ScreenDetails> WindowScreenDetails::GetScreenDetails(
       script_state, exception_state.GetContext());
   const bool has_transient_user_activation =
       LocalFrame::HasTransientUserActivation(GetSupplementable()->GetFrame());
-  auto callback =
-      BindOnce(&WindowScreenDetails::OnPermissionInquiryComplete,
-               WrapPersistent(this), WrapPersistent(resolver),
-               /*permission_requested=*/has_transient_user_activation);
-
   // Only request permission with transient activation, otherwise check quietly.
   // This lets sites with permission get screen details any time (e.g. on load),
   // but prevents sites from prompting users without a transient activation.
   if (has_transient_user_activation) {
+    auto callback =
+        BindOnce(&WindowScreenDetails::OnPermissionInquiryComplete,
+                 WrapPersistent(this), WrapPersistent(resolver),
+                 /*permission_requested=*/has_transient_user_activation);
+
     permission_service_->RequestPermission(std::move(permission_descriptor),
                                            /*user_gesture=*/true,
                                            std::move(callback));
   } else {
+    // TODO(crbug.com/494089503): Simplify this once all mojo permission
+    // methods return a PermissionStatusWithDetails and let
+    // OnPermissionInquiryComplete take a
+    // PermissionStatusWithDetails directly.
+    auto callback = BindOnce(
+        [](WindowScreenDetails* details,
+           ScriptPromiseResolver<ScreenDetails>* resolver,
+           bool permission_requested,
+           mojom::blink::PermissionStatusWithDetailsPtr result) {
+          details->OnPermissionInquiryComplete(resolver, permission_requested,
+                                               result->status);
+        },
+        WrapPersistent(this), WrapPersistent(resolver),
+        has_transient_user_activation);
+
     permission_service_->HasPermission(std::move(permission_descriptor),
                                        std::move(callback));
   }

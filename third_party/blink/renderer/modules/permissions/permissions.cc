@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -125,8 +126,19 @@ ScriptPromise<PermissionStatus> Permissions::query(
   PermissionDescriptorPtr descriptor_copy = descriptor->Clone();
   GetService(context)->HasPermission(
       std::move(descriptor),
-      blink::BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
-                      WrapPersistent(resolver), std::move(descriptor_copy)));
+      // TODO(crbug.com/494089503): Simplify this once all mojo permission
+      // methods return a PermissionStatusWithDetails and let TaskComplete
+      // take a PermissionStatusWithDetails directly.
+      blink::BindOnce(
+          [](Permissions* permissions,
+             ScriptPromiseResolver<PermissionStatus>* resolver,
+             mojom::blink::PermissionDescriptorPtr descriptor,
+             mojom::blink::PermissionStatusWithDetailsPtr result) {
+            permissions->TaskComplete(resolver, std::move(descriptor),
+                                      result->status);
+          },
+          WrapPersistent(this), WrapPersistent(resolver),
+          std::move(descriptor_copy)));
   return promise;
 }
 
@@ -327,12 +339,30 @@ void Permissions::VerifyPermissionsAndReturnStatus(
       auto descriptor_copy = descriptors[internal_index]->Clone();
       service_->HasPermission(
           std::move(descriptor_copy),
-          BindOnce(&Permissions::PermissionVerificationComplete,
-                   WrapPersistent(this), WrapPersistent(resolver),
-                   std::move(descriptors),
-                   std::move(caller_index_to_internal_index),
-                   std::move(results), std::move(verification_descriptor),
-                   internal_index, is_bulk_request));
+          // TODO(crbug.com/494089503): Simplify this once all mojo permission
+          // methods return a PermissionStatusWithDetails and let
+          // PermissionVerificationComplete take a PermissionStatusWithDetails
+          // directly.
+          BindOnce(
+              [](Permissions* permissions, ScriptPromiseResolverBase* resolver,
+                 Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
+                 Vector<int> caller_index_to_internal_index,
+                 const Vector<mojom::blink::PermissionStatus> results,
+                 mojom::blink::PermissionDescriptorPtr verification_descriptor,
+                 int internal_index_to_verify, bool is_bulk_request,
+                 mojom::blink::PermissionStatusWithDetailsPtr
+                     verification_result) {
+                permissions->PermissionVerificationComplete(
+                    resolver, std::move(descriptors),
+                    std::move(caller_index_to_internal_index),
+                    std::move(results), std::move(verification_descriptor),
+                    internal_index_to_verify, is_bulk_request,
+                    std::move(verification_result));
+              },
+              WrapPersistent(this), WrapPersistent(resolver),
+              std::move(descriptors), std::move(caller_index_to_internal_index),
+              std::move(results), std::move(verification_descriptor),
+              internal_index, is_bulk_request));
       return;
     }
 
@@ -363,8 +393,8 @@ void Permissions::PermissionVerificationComplete(
     mojom::blink::PermissionDescriptorPtr verification_descriptor,
     int internal_index_to_verify,
     bool is_bulk_request,
-    mojom::blink::PermissionStatus verification_result) {
-  if (verification_result != results[internal_index_to_verify]) {
+    mojom::blink::PermissionStatusWithDetailsPtr verification_result) {
+  if (verification_result->status != results[internal_index_to_verify]) {
     // The permission actually came from the verification descriptor, so use
     // that descriptor when returning the permission status.
     descriptors[internal_index_to_verify] = std::move(verification_descriptor);

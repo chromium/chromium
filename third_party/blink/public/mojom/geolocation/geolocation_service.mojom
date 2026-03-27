@@ -7,14 +7,6 @@ module blink.mojom;
 import "services/device/public/mojom/geolocation.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 
-// Indicates the accuracy level requested by the site.
-enum GeolocationAccuracy {
-  // Prefer more accuracy (less uncertainty).
-  kPrecise,
-  // Require approximate location (more uncertainty).
-  kApproximate,
-};
-
 // GeolocationService provides a Geolocation. It exists in order to examine the
 // environment (permissions, etc.) before creating a Geolocation.
 // There should only be one GeolocationService instance that creates many

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event_controller.h"
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -93,8 +94,8 @@ void ClipboardChangeEventController::OnClipboardChanged() {
 }
 
 void ClipboardChangeEventController::OnPermissionResult(
-    mojom::blink::PermissionStatus status) {
-  if (status == mojom::blink::PermissionStatus::GRANTED) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  if (status->status == mojom::blink::PermissionStatus::GRANTED) {
     // Note: There's a benign race condition where if the clipboard changes
     // again while waiting for permission, and the window gains sticky
     // activation, two events may fire (one from activation, one from this
@@ -145,7 +146,7 @@ void ClipboardChangeEventController::MaybeDispatchClipboardChangeEvent() {
   permission_service->HasPermission(
       std::move(permission_descriptor),
       BindOnce(&ClipboardChangeEventController::OnPermissionResult,
-               WrapWeakPersistent(this)));
+               WrapPersistent(this)));
 }
 
 void ClipboardChangeEventController::DispatchClipboardChangeEvent() {

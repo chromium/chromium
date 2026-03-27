@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -154,4 +155,96 @@ TEST_F(PermissionUtilTest, TestSameOriginInvalidDomainOverride) {
   EXPECT_FALSE(PermissionUtil::ValidateDomainOverride(
       descriptors, web_contents->GetPrimaryMainFrame(), descriptor));
 }
+
+TEST_F(PermissionUtilTest, ToPermissionStatusWithDetails_ContentSetting) {
+  PermissionResult result(blink::mojom::PermissionStatus::GRANTED,
+                          PermissionStatusSource::UNSPECIFIED,
+                          CONTENT_SETTING_ALLOW);
+  auto status_with_details =
+      PermissionUtil::ToPermissionStatusWithDetails(result);
+  EXPECT_EQ(status_with_details,
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::GRANTED, nullptr));
+}
+
+TEST_F(PermissionUtilTest,
+       ToPermissionStatusWithDetails_GeolocationSetting_Precise) {
+  GeolocationSetting geolocation_setting = {
+      .approximate = PermissionOption::kAllowed,
+      .precise = PermissionOption::kAllowed};
+  PermissionResult result(blink::mojom::PermissionStatus::GRANTED,
+                          PermissionStatusSource::UNSPECIFIED,
+                          geolocation_setting);
+  auto status_with_details =
+      PermissionUtil::ToPermissionStatusWithDetails(result);
+  EXPECT_EQ(status_with_details,
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::GRANTED,
+                blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+                    blink::mojom::GeolocationAccuracy::kPrecise)));
+}
+
+TEST_F(PermissionUtilTest,
+       ToPermissionStatusWithDetails_GeolocationSetting_PreciseDenied) {
+  GeolocationSetting geolocation_setting = {
+      .approximate = PermissionOption::kAllowed,
+      .precise = PermissionOption::kDenied};
+  PermissionResult result(blink::mojom::PermissionStatus::GRANTED,
+                          PermissionStatusSource::UNSPECIFIED,
+                          geolocation_setting);
+  auto status_with_details =
+      PermissionUtil::ToPermissionStatusWithDetails(result);
+  EXPECT_EQ(status_with_details,
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::GRANTED,
+                blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+                    blink::mojom::GeolocationAccuracy::kApproximate)));
+}
+
+TEST_F(PermissionUtilTest,
+       ToPermissionStatusWithDetails_GeolocationSetting_PreciseAsk) {
+  GeolocationSetting geolocation_setting = {
+      .approximate = PermissionOption::kAllowed,
+      .precise = PermissionOption::kAsk};
+  PermissionResult result(blink::mojom::PermissionStatus::GRANTED,
+                          PermissionStatusSource::UNSPECIFIED,
+                          geolocation_setting);
+  auto status_with_details =
+      PermissionUtil::ToPermissionStatusWithDetails(result);
+  EXPECT_EQ(status_with_details,
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::GRANTED,
+                blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+                    blink::mojom::GeolocationAccuracy::kApproximate)));
+}
+
+TEST_F(PermissionUtilTest,
+       ToPermissionStatusWithDetails_GeolocationSetting_DeniedStatus) {
+  GeolocationSetting geolocation_setting = {
+      .approximate = PermissionOption::kDenied,
+      .precise = PermissionOption::kDenied};
+  PermissionResult result(blink::mojom::PermissionStatus::DENIED,
+                          PermissionStatusSource::UNSPECIFIED,
+                          geolocation_setting);
+  auto status_with_details =
+      PermissionUtil::ToPermissionStatusWithDetails(result);
+  EXPECT_EQ(status_with_details,
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::DENIED, nullptr));
+}
+
+TEST_F(PermissionUtilTest,
+       ToPermissionStatusWithDetails_GeolocationSetting_AskStatus) {
+  GeolocationSetting geolocation_setting = {
+      .approximate = PermissionOption::kAsk, .precise = PermissionOption::kAsk};
+  PermissionResult result(blink::mojom::PermissionStatus::ASK,
+                          PermissionStatusSource::UNSPECIFIED,
+                          geolocation_setting);
+  auto status_with_details =
+      PermissionUtil::ToPermissionStatusWithDetails(result);
+  EXPECT_EQ(status_with_details,
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::ASK, nullptr));
+}
+
 }  // namespace content

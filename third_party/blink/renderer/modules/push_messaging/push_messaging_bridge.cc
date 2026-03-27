@@ -91,8 +91,8 @@ void PushMessagingBridge::Trace(Visitor* visitor) const {
 
 void PushMessagingBridge::DidGetPermissionState(
     ScriptPromiseResolver<V8PermissionState>* resolver,
-    mojom::blink::PermissionStatus status) {
-  resolver->Resolve(ToV8PermissionState(status));
+    mojom::blink::PermissionStatusWithDetailsPtr result) {
+  resolver->Resolve(ToV8PermissionState(result->status));
 }
 
 }  // namespace blink

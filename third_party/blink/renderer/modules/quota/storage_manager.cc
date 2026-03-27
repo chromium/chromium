@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/quota/storage_manager.h"
 
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -143,8 +144,17 @@ ScriptPromise<IDLBoolean> StorageManager::persisted(
   GetPermissionService(ExecutionContext::From(script_state))
       ->HasPermission(
           CreatePermissionDescriptor(PermissionName::PERSISTENT_STORAGE),
-          BindOnce(&StorageManager::PermissionRequestComplete,
-                   WrapPersistent(this), WrapPersistent(resolver)));
+          // TODO(crbug.com/494089503): Simplify this once all mojo permission
+          // methods return a PermissionStatusWithDetails and let
+          // PermissionRequestComplete take a
+          // PermissionStatusWithDetails directly.
+          BindOnce(
+              [](StorageManager* manager,
+                 ScriptPromiseResolver<IDLBoolean>* resolver,
+                 mojom::blink::PermissionStatusWithDetailsPtr result) {
+                manager->PermissionRequestComplete(resolver, result->status);
+              },
+              WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 

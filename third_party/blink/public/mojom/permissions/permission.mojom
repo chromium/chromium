@@ -173,7 +173,7 @@ struct EmbeddedPermissionRequestDescriptor {
 // methods to check, request, and revoke permissions. It also allows a client to
 // start listening to permission changes.
 interface PermissionService {
-  HasPermission(PermissionDescriptor permission) => (PermissionStatus status);
+  HasPermission(PermissionDescriptor permission) => (PermissionStatusWithDetails status);
 
   // Calling this method to register a capability element. Provide a pending
   // remote `EmbeddedPermissionControlClient` so that it can receive

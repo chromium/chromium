@@ -51,7 +51,7 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
 
   // blink::mojom::PermissionService.
   void HasPermission(blink::mojom::PermissionDescriptorPtr permission,
-                     PermissionStatusCallback callback) override;
+                     HasPermissionCallback callback) override;
   void RegisterPageEmbeddedPermissionControl(
       std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
       blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,

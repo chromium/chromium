@@ -33,6 +33,7 @@
 #include "base/time/time.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
@@ -790,8 +791,9 @@ void Fullscreen::EnforceRequestFullscreenConditions(
       std::move(descriptor),
       blink::BindOnce(
           [](base::OnceCallback<void(RequestFullscreenError)> callback,
-             Document* document, mojom::blink::PermissionStatus status) {
-            if (status == mojom::blink::PermissionStatus::GRANTED) {
+             Document* document,
+             mojom::blink::PermissionStatusWithDetailsPtr result) {
+            if (result->status == mojom::blink::PermissionStatus::GRANTED) {
               UseCounter::Count(document,
                                 WebFeature::kFullscreenAllowedByContentSetting);
               std::move(callback).Run(RequestFullscreenError::kNone);

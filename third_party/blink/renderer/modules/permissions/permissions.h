@@ -90,7 +90,7 @@ class Permissions final : public ScriptWrappable,
       mojom::blink::PermissionDescriptorPtr verification_descriptor,
       int internal_index_to_verify,
       bool is_bulk_request,
-      mojom::blink::PermissionStatus verification_result);
+      mojom::blink::PermissionStatusWithDetailsPtr verification_result);
 
   PermissionStatusListener* GetOrCreatePermissionStatusListener(
       mojom::blink::PermissionStatus status,

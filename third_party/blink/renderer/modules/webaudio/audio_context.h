@@ -354,7 +354,7 @@ class MODULES_EXPORT AudioContext final
   void OnAudioContextManagerServiceConnectionError();
 
   void DidInitialPermissionCheck(mojom::blink::PermissionDescriptorPtr,
-                                 mojom::blink::PermissionStatus);
+                                 mojom::blink::PermissionStatusWithDetailsPtr);
   double GetOutputLatencyQuantizingFactor() const;
 
   void InitializeMediaDeviceService();

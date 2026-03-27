@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -95,8 +96,18 @@ ScriptPromise<IDLUndefined> MaybePromptWindowManagementPermission(
                                           /*user_gesture=*/true,
                                           std::move(callback));
   } else {
-    permission_service->HasPermission(std::move(permission_descriptor),
-                                      std::move(callback));
+    permission_service->HasPermission(
+        std::move(permission_descriptor),
+        // TODO(crbug.com/494089503): Simplify this once all mojo permission
+        // methods return a PermissionStatusWithDetails by letting
+        // AdditionalWindowingControlsActionCallback take a
+        // PermissionStatusWithDetails directly.
+        blink::BindOnce(
+            [](AdditionalWindowingControlsActionCallback callback,
+               mojom::blink::PermissionStatusWithDetailsPtr result) {
+              std::move(callback).Run(result->status);
+            },
+            std::move(callback)));
   }
 
   return resolver->Promise();

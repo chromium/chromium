@@ -40,6 +40,27 @@ PermissionOption PermissionUtil::ToPermissionOption(
   NOTREACHED();
 }
 
+blink::mojom::PermissionStatusWithDetailsPtr
+PermissionUtil::ToPermissionStatusWithDetails(PermissionResult result) {
+  blink::mojom::PermissionStatus status = result.status;
+  blink::mojom::PermissionDetailsPtr details;
+
+  GeolocationSetting* geolocation_setting =
+      result.retrieved_permission_setting
+          ? std::get_if<GeolocationSetting>(
+                &result.retrieved_permission_setting.value())
+          : nullptr;
+  if (status == blink::mojom::PermissionStatus::GRANTED &&
+      geolocation_setting) {
+    details = blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+        geolocation_setting->precise == PermissionOption::kAllowed
+            ? blink::mojom::GeolocationAccuracy::kPrecise
+            : blink::mojom::GeolocationAccuracy::kApproximate);
+  }
+  return blink::mojom::PermissionStatusWithDetails::New(status,
+                                                        std::move(details));
+}
+
 // Due to dependency issues, this method is duplicated from
 // components/permissions/permission_util.cc.
 GURL PermissionUtil::GetLastCommittedOriginAsURL(

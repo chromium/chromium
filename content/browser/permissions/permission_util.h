@@ -7,9 +7,10 @@
 
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 #include "url/origin.h"
 
 class GURL;
@@ -22,6 +23,10 @@ class PermissionUtil {
   // Converts a PemissionStatus to a PermissionOption.
   CONTENT_EXPORT static PermissionOption ToPermissionOption(
       blink::mojom::PermissionStatus permission_status);
+
+  // Converts a PermissionResult to a PermissionStatusWithDetails.
+  CONTENT_EXPORT static blink::mojom::PermissionStatusWithDetailsPtr
+  ToPermissionStatusWithDetails(PermissionResult result);
 
   // Returns the authoritative `embedding origin`, as a GURL, to be used for
   // permission decisions in `render_frame_host`.

@@ -8,6 +8,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_test_utils.h"
 #include "third_party/blink/renderer/modules/clipboard/mock_clipboard_permission_service.h"
@@ -173,7 +174,9 @@ TEST_F(ClipboardChangeEventTest,
       .WillOnce(
           [](mojom::blink::PermissionDescriptorPtr,
              MockClipboardPermissionService::HasPermissionCallback callback) {
-            std::move(callback).Run(mojom::blink::PermissionStatus::DENIED);
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::DENIED, nullptr));
           });
 
   auto* clipboard_change_event_controller =

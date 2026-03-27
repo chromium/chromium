@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/permissions/embedded_permission_control_checker.h"
@@ -30,7 +31,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
 using blink::mojom::EmbeddedPermissionControlClient;
@@ -408,8 +409,9 @@ void PermissionServiceImpl::OnRequestPermissionsResponse(
 }
 
 void PermissionServiceImpl::HasPermission(PermissionDescriptorPtr permission,
-                                          PermissionStatusCallback callback) {
-  std::move(callback).Run(GetPermissionResult(permission).status);
+                                          HasPermissionCallback callback) {
+  std::move(callback).Run(PermissionUtil::ToPermissionStatusWithDetails(
+      GetPermissionResult(permission)));
 }
 
 void PermissionServiceImpl::RevokePermission(
