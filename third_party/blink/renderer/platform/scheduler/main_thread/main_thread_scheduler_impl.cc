@@ -276,7 +276,7 @@ perfetto::StaticString RenderingPrioritizationStateToString(
 }
 
 // Treat "input handling" specially in V8.
-BASE_FEATURE(kInputHandlingModeFromUseCase, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInputHandlingModeFromUseCase, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kInputHandlingModeFromPerformanceScenario,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Attempt to treat inputs as one longer window, instead of many shorter ones.
