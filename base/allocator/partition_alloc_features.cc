@@ -7,6 +7,7 @@
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "partition_alloc/buildflags.h"
@@ -188,7 +189,8 @@ BASE_FEATURE_ENUM_PARAM(BackupRefPtrEnabledProcesses,
                         kBackupRefPtrEnabledProcessesParam,
                         &kPartitionAllocBackupRefPtr,
                         kPAFeatureEnabledProcessesStr,
-#if PA_BUILDFLAG(IS_ANDROID)
+// Exception for IS_DESKTOP_ANDROID approved in crbug.com/482155132.
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
                         BackupRefPtrEnabledProcesses::kNonRenderer,
 #else
                         BackupRefPtrEnabledProcesses::kAllProcesses,
