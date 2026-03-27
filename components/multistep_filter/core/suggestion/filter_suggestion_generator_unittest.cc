@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -25,12 +26,13 @@ namespace multistep_filter {
 
 namespace {
 
-constexpr char kTestId[] = "0";
+constexpr char kTestId[] = "12345678-1234-5678-1234-567812345678";
 constexpr char kTestUrl[] = "https://example.com";
 constexpr char kTestDomain[] = "example.com";
 constexpr char kShoppingTask[] = "SHOPPING";
 constexpr char kTestAttributeKey[] = "category";
 constexpr char kTestAttributeValue[] = "shoes";
+constexpr char16_t kTestAttributeValue16[] = u"shoes";
 constexpr char kTestSuggestionText[] = "Recall info from previous tabs?";
 constexpr char kTestSuggestionUrl[] = "https://example.com/shoes";
 
@@ -91,9 +93,9 @@ TEST_F(FilterSuggestionGeneratorTest,
   ASSERT_TRUE(store_future.Get());
 
   FilterSuggestionCandidate expected_candidate(
-      kTestId, GURL(kTestSuggestionUrl),
+      base::Uuid::ParseLowercase(kTestId), GURL(kTestSuggestionUrl),
       {FilterSuggestionCandidateAttribute(kTestAttributeKey,
-                                          kTestAttributeValue)});
+                                          kTestAttributeValue16)});
   UrlFilterSuggestion expected_suggestion(kTestSuggestionText,
                                           GURL(kTestSuggestionUrl));
 

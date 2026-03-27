@@ -8,17 +8,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/uuid.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
 
 FilterSuggestionCandidateAttribute::FilterSuggestionCandidateAttribute(
     std::string key,
-    std::string label)
+    std::u16string label)
     : key(std::move(key)), label(std::move(label)) {}
 
 FilterSuggestionCandidate::FilterSuggestionCandidate(
-    std::string filter_annotation_id,
+    base::Uuid filter_annotation_id,
     GURL navigation_url,
     std::vector<FilterSuggestionCandidateAttribute> attributes)
     : filter_annotation_id(std::move(filter_annotation_id)),

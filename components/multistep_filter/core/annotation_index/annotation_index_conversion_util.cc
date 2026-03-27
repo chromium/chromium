@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
@@ -65,7 +66,7 @@ std::vector<FilterSuggestionCandidate> ToFilterSuggestionCandidates(
        response.execution_strategies()) {
     std::vector<FilterSuggestionCandidateAttribute> attributes;
     for (const AppliedFilterUIString& filter : strategy.applied_filters()) {
-      attributes.emplace_back(filter.key(), filter.label());
+      attributes.emplace_back(filter.key(), base::UTF8ToUTF16(filter.label()));
     }
 
     GURL navigation_url;
@@ -78,7 +79,13 @@ std::vector<FilterSuggestionCandidate> ToFilterSuggestionCandidates(
       continue;
     }
 
-    candidates.emplace_back(strategy.candidate_id(), std::move(navigation_url),
+    base::Uuid annotation_id =
+        base::Uuid::ParseLowercase(strategy.candidate_id());
+    if (!annotation_id.is_valid()) {
+      continue;
+    }
+
+    candidates.emplace_back(std::move(annotation_id), std::move(navigation_url),
                             std::move(attributes));
   }
 

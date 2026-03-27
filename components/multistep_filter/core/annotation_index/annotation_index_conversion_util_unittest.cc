@@ -82,7 +82,7 @@ TEST(AnnotationIndexConversionUtilTest, ToFilterSuggestionCandidates) {
   GetTaskExecutionStrategiesResponse response;
 
   TaskExecutionStrategy* strategy = response.add_execution_strategies();
-  strategy->set_candidate_id("test-candidate");
+  strategy->set_candidate_id("12345678-1234-5678-1234-567812345678");
 
   AppliedFilterUIString* filter1 = strategy->add_applied_filters();
   filter1->set_key("PRICE_MIN");
@@ -107,14 +107,15 @@ TEST(AnnotationIndexConversionUtilTest, ToFilterSuggestionCandidates) {
   ASSERT_EQ(candidates.size(), 1u);
   const FilterSuggestionCandidate& suggestion = candidates[0];
 
-  EXPECT_EQ(suggestion.filter_annotation_id, "test-candidate");
+  EXPECT_EQ(suggestion.filter_annotation_id.AsLowercaseString(),
+            "12345678-1234-5678-1234-567812345678");
   EXPECT_EQ(suggestion.navigation_url.spec(),
             "https://travel.com/flights?min=100&max=500");
   ASSERT_EQ(suggestion.attributes.size(), 2u);
   EXPECT_EQ(suggestion.attributes[0].key, "PRICE_MIN");
-  EXPECT_EQ(suggestion.attributes[0].label, "Min Price");
+  EXPECT_EQ(suggestion.attributes[0].label, u"Min Price");
   EXPECT_EQ(suggestion.attributes[1].key, "PRICE_MAX");
-  EXPECT_EQ(suggestion.attributes[1].label, "Max Price");
+  EXPECT_EQ(suggestion.attributes[1].label, u"Max Price");
 }
 
 TEST(AnnotationIndexConversionUtilTest, ToExtractTaskAttributesRequest) {

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/uuid.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -13,8 +14,8 @@
 namespace multistep_filter {
 
 TEST(UrlFilterSuggestionTest, ConstructorFromFilterSuggestionCandidate) {
-  FilterSuggestionCandidate candidate("test_id", GURL("https://example.com"),
-                                      {});
+  FilterSuggestionCandidate candidate(base::Uuid::GenerateRandomV4(),
+                                      GURL("https://example.com"), {});
 
   UrlFilterSuggestion suggestion(std::move(candidate));
 

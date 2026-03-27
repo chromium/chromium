@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/uuid.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
@@ -18,9 +19,9 @@ struct FilterSuggestionCandidateAttribute {
   // The normalized key of the filter (e.g., "PRICE_MIN").
   std::string key;
   // User-visible label for the filter (e.g., "Minimum Price").
-  std::string label;
+  std::u16string label;
 
-  FilterSuggestionCandidateAttribute(std::string key, std::string label);
+  FilterSuggestionCandidateAttribute(std::string key, std::u16string label);
 
   FilterSuggestionCandidateAttribute(
       const FilterSuggestionCandidateAttribute&) = default;
@@ -42,16 +43,16 @@ struct FilterSuggestionCandidateAttribute {
 // `attributes` with user-friendly labels) and the action to take when
 // applied (navigating to the `navigation_url`).
 struct FilterSuggestionCandidate {
-  // ID of the suggestion candidate. This comes from the `FilterAnnotation` used
-  // to generate this suggestion candidate.
-  std::string filter_annotation_id;
+  // ID of the filter annotation which was used to generate this suggestion
+  // candidate.
+  base::Uuid filter_annotation_id;
   // The URL to navigate to when the suggestion is applied.
   GURL navigation_url;
   // Attributes applied to this suggestion.
   std::vector<FilterSuggestionCandidateAttribute> attributes;
 
   FilterSuggestionCandidate(
-      std::string filter_annotation_id,
+      base::Uuid filter_annotation_id,
       GURL navigation_url,
       std::vector<FilterSuggestionCandidateAttribute> attributes);
 

@@ -192,7 +192,7 @@ TEST_F(AnnotationIndexClientImplTest, GetSupportedTaskTypesForDomain_Success) {
 TEST_F(AnnotationIndexClientImplTest, GetFilterSuggestionCandidates_Success) {
   GetTaskExecutionStrategiesResponse proto_response;
   TaskExecutionStrategy* strategy = proto_response.add_execution_strategies();
-  strategy->set_candidate_id("test-candidate");
+  strategy->set_candidate_id("12345678-1234-5678-1234-567812345678");
   AppliedFilterUIString* filter1 = strategy->add_applied_filters();
   filter1->set_key("PRICE_MIN");
   filter1->set_label("Min Price");
@@ -215,7 +215,8 @@ TEST_F(AnnotationIndexClientImplTest, GetFilterSuggestionCandidates_Success) {
   std::optional<std::vector<FilterSuggestionCandidate>> result = future.Take();
   ASSERT_TRUE(result);
   EXPECT_EQ(result->size(), 1u);
-  EXPECT_EQ((*result)[0].filter_annotation_id, "test-candidate");
+  EXPECT_EQ((*result)[0].filter_annotation_id.AsLowercaseString(),
+            "12345678-1234-5678-1234-567812345678");
   EXPECT_EQ((*result)[0].navigation_url.spec(),
             "https://travel.com/flights?min=100");
 }
