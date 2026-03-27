@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   // Disable user verification support. This can happen e.g. if the user
   // disables Windows Hello or Touch ID.
-  DisableUVKeySupport();
+  OverrideUVKeyAvailability(false);
 
   // Try to make a new credential. The UI should go to the onboarding screen to
   // avoid surprising the user with a gaia prompt.
@@ -1233,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   // Disable user verification support. This can happen e.g. if the user
   // disables Windows Hello or Touch ID.
-  DisableUVKeySupport();
+  OverrideUVKeyAvailability(false);
 
   // Try to get an assertion with the credential. The UI should go to the
   // onboarding screen to avoid surprising the user with a gaia prompt.
@@ -1318,7 +1318,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   // Disable user verification support. This can happen e.g. if the user
   // disables Windows Hello or Touch ID.
-  DisableUVKeySupport();
+  OverrideUVKeyAvailability(false);
 
   // Simulate adding a PIN from another device.
   AuthenticationFactorsResult registration_state_result;

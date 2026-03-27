@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -445,6 +446,22 @@ GPMEnclaveController::GPMEnclaveController(
     return;
   }
   SetActive(EnclaveEnabledStatus::kEnabled);
+  FIDO_LOG(EVENT) << "Checking for UV key capability";
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&EnclaveManager::AreUserVerifyingKeysSupported,
+                     base::BindOnce(&GPMEnclaveController::OnUVCapabilityKnown,
+                                    weak_ptr_factory_.GetWeakPtr())));
+}
+
+GPMEnclaveController::~GPMEnclaveController() {
+  // Ensure that any secret is dropped from memory after a transaction.
+  enclave_manager_->TakeSecret();
+}
+
+void GPMEnclaveController::OnUVCapabilityKnown(bool can_make_uv_keys) {
+  FIDO_LOG(EVENT) << "UV key capability: " << can_make_uv_keys;
+  can_make_uv_keys_ = can_make_uv_keys;
   if (enclave_manager_->IsLoaded()) {
     OnEnclaveLoaded();
   } else {
@@ -455,22 +472,26 @@ GPMEnclaveController::GPMEnclaveController(
   }
 }
 
-GPMEnclaveController::~GPMEnclaveController() {
-  // Ensure that any secret is dropped from memory after a transaction.
-  enclave_manager_->TakeSecret();
+EnclaveManager::PlatformUvSupport GPMEnclaveController::GetPlatformUvSupport() {
+  if (!can_make_uv_keys_) {
+    return EnclaveManager::PlatformUvSupport::kNoUvKey;
+  }
+  return model_->platform_has_biometrics.value_or(false)
+             ? EnclaveManager::PlatformUvSupport::kUvKeyWithBiometrics
+             : EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics;
 }
 
 std::optional<EnclaveUserVerificationMethod>
 GPMEnclaveController::GetEnclaveUserVerificationMethod() {
-  // TODO(crbug.com/393055190): Figure out why `ready_for_ui` is not enough for
-  // `IsReady`.
   if (!enclave_manager_->IsReady()) {
+    // We allow the UI to show before the controller had time to load the
+    // enclave and check for UV availability. In that case, we return nullopt to
+    // signal that we don't know the enclave user verification method.
     return std::nullopt;
   }
-
   bool has_pin = enclave_manager_->has_wrapped_pin();
-  EnclaveManager::UvKeyState uv_key_state = enclave_manager_->uv_key_state(
-      model_->platform_has_biometrics.value_or(false));
+  EnclaveManager::UvKeyState uv_key_state =
+      enclave_manager_->uv_key_state(GetPlatformUvSupport());
 
   return PickEnclaveUserVerificationMethod(
       user_verification_requirement_, /*have_entered_pin_for_recovery=*/false,
@@ -540,7 +561,7 @@ EnclaveUserVerificationMethod GPMEnclaveController::GetUvMethod() {
       user_verification_requirement_,
       have_added_device_ && !recovered_with_icloud_keychain_,
       enclave_manager_->has_wrapped_pin(),
-      enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
+      enclave_manager_->uv_key_state(GetPlatformUvSupport()),
       *model_->platform_has_biometrics, BrowserIsApp());
   return *uv_method_;
 }
@@ -608,7 +629,7 @@ void GPMEnclaveController::OnEnclaveLoaded() {
           user_verification_requirement_,
           /*have_entered_pin_for_recovery=*/false,
           enclave_manager_->has_wrapped_pin(),
-          enclave_manager_->uv_key_state(/*platform_has_biometrics=*/false),
+          enclave_manager_->uv_key_state(GetPlatformUvSupport()),
           /*platform_has_biometrics=*/false, BrowserIsApp())) {
         case EnclaveUserVerificationMethod::kPIN:
         case EnclaveUserVerificationMethod::kUnsatisfiable:
@@ -625,20 +646,6 @@ void GPMEnclaveController::OnEnclaveLoaded() {
       }
     }
   }
-
-  FIDO_LOG(EVENT) << "Checking for UV key capability";
-  EnclaveManager::AreUserVerifyingKeysSupported(
-      base::BindOnce(&GPMEnclaveController::OnUVCapabilityKnown,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GPMEnclaveController::OnUVCapabilityKnown(bool can_make_uv_keys) {
-  FIDO_LOG(EVENT) << "UV key capability: " << can_make_uv_keys;
-  can_make_uv_keys_ = can_make_uv_keys;
-  DownloadAccountState();
-}
-
-void GPMEnclaveController::DownloadAccountState() {
   FIDO_LOG(EVENT) << "Fetching account state";
 
   auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id_);
@@ -788,7 +795,7 @@ void GPMEnclaveController::OnKeysStored() {
   store_keys_lock_.reset();
 
   if ((pin_metadata_.has_value() && pin_metadata_->usable_pin_metadata) ||
-      *can_make_uv_keys_) {
+      GetPlatformUvSupport() != EnclaveManager::PlatformUvSupport::kNoUvKey) {
     // No need to create a GPM PIN if the user already has a usable GPM PIN or
     // can make UV keys.
     if (!enclave_manager_->AddDeviceToAccount(
@@ -942,7 +949,7 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
       user_verification_requirement_,
       have_added_device_ && !recovered_with_icloud_keychain_,
       enclave_manager_->has_wrapped_pin(),
-      enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
+      enclave_manager_->uv_key_state(GetPlatformUvSupport()),
       *model_->platform_has_biometrics, BrowserIsApp());
   switch (*uv_method_) {
     case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
@@ -1063,7 +1070,7 @@ void GPMEnclaveController::OnGPMCreationSelected() {
           user_verification_requirement_,
           have_added_device_ && !recovered_with_icloud_keychain_,
           enclave_manager_->has_wrapped_pin(),
-          enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
+          enclave_manager_->uv_key_state(GetPlatformUvSupport()),
           *model_->platform_has_biometrics, BrowserIsApp());
 
       switch (*uv_method_) {
@@ -1138,7 +1145,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
           user_verification_requirement_,
           have_added_device_ && !recovered_with_icloud_keychain_,
           enclave_manager_->has_wrapped_pin(),
-          enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
+          enclave_manager_->uv_key_state(GetPlatformUvSupport()),
           *model_->platform_has_biometrics, BrowserIsApp());
 
       switch (*uv_method_) {

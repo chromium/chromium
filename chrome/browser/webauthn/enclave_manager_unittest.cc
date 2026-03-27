@@ -2075,7 +2075,8 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
 #if BUILDFLAG(IS_WIN)
   // Windows does deferred UV key creation. This test has to trigger the actual
   // create before testing that it is later deleted.
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
   std::unique_ptr<EnclaveManager::UvKeyCreationLock> uv_creation_lock;
   device::enclave::UVKeyCreationCallback key_creation_callback;
@@ -2657,10 +2658,12 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyAvailable) {
   EXPECT_TRUE(add_future.Wait());
 
 #if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
 #else
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUI);
 #endif
 }
@@ -2690,7 +2693,7 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUnavailable) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
   ASSERT_TRUE(manager_.IsRegistered());
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(EnclaveManager::PlatformUvSupport::kNoUvKey),
             EnclaveManager::UvKeyState::kNone);
 }
 
@@ -2722,7 +2725,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
 #if BUILDFLAG(IS_WIN)
   // Windows does deferred UV key creation. This test has to trigger the actual
   // create before testing that it is later deleted.
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
   std::unique_ptr<EnclaveManager::UvKeyCreationLock> uv_creation_lock;
   device::enclave::UVKeyCreationCallback key_creation_callback;
@@ -2737,7 +2741,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
           }));
   task_env_.RunUntilQuit();
 #else
-  ASSERT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  ASSERT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUI);
 #endif
   manager_.ClearCachedKeysForTesting();
@@ -2802,7 +2807,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
 
-  ASSERT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  ASSERT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUI);
 }
 
@@ -3095,12 +3101,14 @@ TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
 
   scoped_fake_keychain_.SetUVMethod(
       crypto::apple::ScopedFakeKeychainV2::UVMethod::kBiometrics);
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/true),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyWithBiometrics),
             EnclaveManager::UvKeyState::kUsesChromeUI);
 
   scoped_fake_keychain_.SetUVMethod(
       crypto::apple::ScopedFakeKeychainV2::UVMethod::kPasswordOnly);
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUI);
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -3130,7 +3138,8 @@ TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
 
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
   const auto& user_state = manager_.local_state_for_testing()
                                .users()
@@ -3181,7 +3190,8 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
 
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
   const auto& user_state = manager_.local_state_for_testing()
                                .users()
@@ -3251,7 +3261,8 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
 
   base::RepeatingClosure quit_closure;
 
-  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+  EXPECT_EQ(manager_.uv_key_state(
+                EnclaveManager::PlatformUvSupport::kUvKeyButNoBiometrics),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
 
   // Generate a UV key and reset the deferred UV key flag, without sending a
