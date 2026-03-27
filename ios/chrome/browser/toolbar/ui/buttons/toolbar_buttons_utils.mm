@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 constexpr CGFloat kShadowOpacity = 0.12;
@@ -37,7 +38,13 @@ void ConfigureShadowForToolbarButton(UIView* button) {
 }
 
 void ConfigureCornerRadiusForToolbarButtonContainer(UIView* container) {
-  BOOL compactWidth = container.traitCollection.horizontalSizeClass ==
-                      UIUserInterfaceSizeClassCompact;
-  container.layer.cornerRadius = compactWidth ? kSquareCornerRadius : kSize / 2;
+  // Whether the window has a regular height x compact width size class,
+  // corresponding to iPhone portrait mode or a skinny iPad window.
+  BOOL isRegularXCompactSizeClass =
+      container.traitCollection.verticalSizeClass ==
+          UIUserInterfaceSizeClassRegular &&
+      container.traitCollection.horizontalSizeClass ==
+          UIUserInterfaceSizeClassCompact;
+  container.layer.cornerRadius =
+      isRegularXCompactSizeClass ? kSquareCornerRadius : kSize / 2;
 }

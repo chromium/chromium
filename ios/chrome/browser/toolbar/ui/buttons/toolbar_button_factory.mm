@@ -76,7 +76,8 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
   forwardButton.backgroundColor = [UIColor clearColor];
 
   [buttonsContainer
-      registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                   withHandler:^(id<UITraitEnvironment>, UITraitCollection*) {
                     ConfigureCornerRadiusForToolbarButtonContainer(
                         buttonsContainer);
