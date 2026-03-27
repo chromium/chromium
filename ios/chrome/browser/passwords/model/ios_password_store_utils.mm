@@ -84,7 +84,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
           // browser state.
           dispatch_async(dispatch_get_main_queue(), ^{
             BOOL enabled = state.isEnabled;
-            LogIfCredentialProviderEnabled(pref_service, enabled);
+            LogIfCredentialProviderEnabled(enabled);
           });
         }];
   }
@@ -100,7 +100,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
   // Logs if the user had enabled the credential provider in their iOS settings
   // at startup. Also if the value has changed since the last launch, log the
   // new value.
-  void LogIfCredentialProviderEnabled(PrefService* pref_service, BOOL enabled) {
+  void LogIfCredentialProviderEnabled(BOOL enabled) {
     base::UmaHistogramBoolean("IOS.CredentialExtension.IsEnabled.Startup",
                               enabled);
     PrefService* local_state = GetApplicationContext()->GetLocalState();
