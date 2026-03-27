@@ -1967,7 +1967,6 @@ CanvasNon2DResourceProviderSharedImage::FlushCanvas() {
   if (!recorder_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
-  auto timer = CreateScopedRasterTimer();
 
   cc::PaintRecord recording;
   recording = recorder_->ReleaseMainRecording();
