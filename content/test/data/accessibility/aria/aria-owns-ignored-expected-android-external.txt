@@ -5,7 +5,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++Button text:"button-in-owned-tree" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
 ++View text:"Element with aria-owns is never ignored" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++EditText viewIdResName:"textbox" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="textField", clickableScore="300"]
+++++EditText viewIdResName:"textbox" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
 ++View text:"Owning an element with an ignored parent serializes cleanly" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="group"]
 ++++CheckBox viewIdResName:"checkbox" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", clickableScore="300"]

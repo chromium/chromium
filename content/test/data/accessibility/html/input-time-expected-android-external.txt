@@ -2,4 +2,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++TimePicker text:"00:00:00" clickable focusable inputType:36 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="inputTime", clickableScore="300", roleDescription="time picker"]
 ++++TimePicker text:"00:00:00" supplementalDescription:"Breakfast" clickable focusable inputType:36 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="inputTime", clickableScore="300", roleDescription="time picker"]
-++++EditText canOpenPopUp clickable editable focusable inputType:36 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER, SET_EXTENDED_SELECTION] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300"]
+++++EditText canOpenPopUp clickable editable focusable inputType:36 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300"]

@@ -373,11 +373,6 @@ public final class AccessibilityNodeInfoCompatDumper {
                         .getId()) {
             return "SET_SELECTION";
         } else if (action
-                == AccessibilityNodeInfoCompat.AccessibilityActionCompat
-                        .ACTION_SET_EXTENDED_SELECTION
-                        .getId()) {
-            return "SET_EXTENDED_SELECTION";
-        } else if (action
                 == AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT.getId()) {
             return "CUT";
         } else if (action

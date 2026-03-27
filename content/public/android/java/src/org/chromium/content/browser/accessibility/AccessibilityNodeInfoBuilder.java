@@ -30,7 +30,6 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_LEFT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_RIGHT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_UP;
-import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_EXTENDED_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_PROGRESS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
@@ -265,7 +264,6 @@ public class AccessibilityNodeInfoBuilder {
     private void addAccessibilityNodeInfoActions(
             AccessibilityNodeInfoCompat node,
             int virtualViewId,
-            boolean canSetExtendedSelection,
             boolean canScrollForward,
             boolean canScrollBackward,
             boolean canScrollUp,
@@ -307,9 +305,6 @@ public class AccessibilityNodeInfoBuilder {
                 }
                 node.addAction(ACTION_COPY);
             }
-        }
-        if (canSetExtendedSelection) {
-            node.addAction(ACTION_SET_EXTENDED_SELECTION);
         }
 
         if (canScrollForward) {

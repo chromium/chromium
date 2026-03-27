@@ -3,7 +3,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="iframe"]
 ++++++View actions:[AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++++++++Button text:"Button with focus handler" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
-++++++++TextView viewIdResName:"focused_log" actions:[AX_FOCUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="genericContainer"]
+++++++++TextView viewIdResName:"focused_log" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="iframe"]
 ++++++View actions:[AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++++++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]

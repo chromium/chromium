@@ -66,4 +66,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++View text:"A" CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
 ++++++View text:"B" CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]
-++TextView text:"Alphabet" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_EXTENDED_SELECTION] bundle:[chromeRole="genericContainer"]
+++TextView text:"Alphabet" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

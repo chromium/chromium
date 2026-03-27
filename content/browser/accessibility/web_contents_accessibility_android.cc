@@ -1539,12 +1539,12 @@ void WebContentsAccessibilityAndroid::
 
   int32_t unique_id = node->GetUniqueId();
   Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions(
-      env, obj, info, unique_id, node->CanSetExtendedSelection(),
-      node->CanScrollForward(), node->CanScrollBackward(), node->CanScrollUp(),
-      node->CanScrollDown(), node->CanScrollLeft(), node->CanScrollRight(),
-      node->IsClickable(), node->IsTextField(), node->IsEnabled(),
-      node->IsEditable(), node->IsFocusable(), node->IsFocused(),
-      node->IsCollapsed(), node->IsExpanded(), node->HasNonEmptyValue(),
+      env, obj, info, unique_id, node->CanScrollForward(),
+      node->CanScrollBackward(), node->CanScrollUp(), node->CanScrollDown(),
+      node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
+      node->IsTextField(), node->IsEnabled(), node->IsEditable(),
+      node->IsFocusable(), node->IsFocused(), node->IsCollapsed(),
+      node->IsExpanded(), node->HasNonEmptyValue(),
       !node->GetTextContentUTF16().empty(), node->IsSeekControl(),
       node->IsFormDescendant());
 }
