@@ -325,6 +325,25 @@ class ObserverList {
     }
   }
 
+  // A nested struct to act as the range
+  struct ReentrantRange {
+    ObserverList::Iter<false> begin_;
+    ObserverList::Iter<false> end_;
+
+    auto begin() { return begin_; }
+    auto end() { return end_; }
+  };
+
+  // Method to return the reentrant range adapter. Use this if it's safe to
+  // iterate observers even if the observer list itself should be non-reentrant
+  // The observer should be non reentrant.
+  // TODO(40562847): Add static_assert to ensure the reentrancy is
+  // kDisallowReentrancy.
+  ReentrantRange GetReentrantRange() {
+    return ReentrantRange{Iter</*check_reentrancy=*/false>(this),
+                          Iter</*check_reentrancy=*/false>()};
+  }
+
   // Add an observer to this list. An observer should not be added to the same
   // list more than once.
   //
@@ -427,9 +446,8 @@ class ObserverList {
   template <typename Method, typename... Args>
     requires std::invocable<Method, ObserverType*, const Args&...>
   void NotifyAllowReentrancy(Method method, const Args&... args) {
-    for (auto iter = Iter</*check_reentrancy=*/false>(this);
-         iter != Iter</*check_reentrancy=*/false>(); iter++) {
-      std::invoke(method, *iter, args...);
+    for (auto& observer : GetReentrantRange()) {
+      std::invoke(method, observer, args...);
     }
   }
 

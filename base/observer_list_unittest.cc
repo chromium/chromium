@@ -983,6 +983,27 @@ TYPED_TEST(ObserverListTest, ReentrantObserverList) {
   }
   EXPECT_TRUE(passed);
 }
+
+TYPED_TEST(ObserverListTest, GetReentrantRange) {
+  DECLARE_TYPES;
+  using NonReentrantObserverListFoo =
+      typename PickObserverList<Foo>::template ObserverListType<
+          Foo, /*check_empty=*/false,
+          ObserverListReentrancyPolicy::kDisallowReentrancy>;
+  NonReentrantObserverListFoo non_reentrant_observer_list;
+  Adder a(1);
+  non_reentrant_observer_list.AddObserver(&a);
+  bool passed = false;
+  for (const Foo& observer : non_reentrant_observer_list) {
+    for (const Foo& nested_observer :
+         non_reentrant_observer_list.GetReentrantRange()) {
+      std::ignore = observer;
+      std::ignore = nested_observer;
+      passed = true;
+    }
+  }
+  EXPECT_TRUE(passed);
+}
 #endif
 
 class TestCheckedObserver : public CheckedObserver {
