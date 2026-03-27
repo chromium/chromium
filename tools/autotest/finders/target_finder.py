@@ -131,7 +131,11 @@ def FindTestTargets(target_cache: TargetCache,
       print(f'Warning, found {len(test_targets)} test targets.',
             file=sys.stderr)
       if len(test_targets) > 10:
-        command.ExitWithMessage('Your query likely involves non-test sources.')
+        if len(test_targets) < 50:
+          print('Targets found:', '\n'.join(test_targets), file=sys.stderr)
+        command.ExitWithMessage(
+            'Your query may involve non-test sources. Use --target to choose'
+            ' one explicitly.')
       print('Trying to run all of them!', file=sys.stderr)
     elif target_index is not None and 0 <= target_index < len(test_targets):
       test_targets = [test_targets[target_index]]

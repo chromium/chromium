@@ -14,6 +14,7 @@ class AutotestConfig:
   name: list[str] | None
   run_all: bool | None
   target_index: str | None
+  target: tuple[str, ...] | None
   path_index: str | None
   run_changed: bool | None
   run_related: bool | None
@@ -112,6 +113,12 @@ def autotest_options(f):
           '--target_index',
           type=int,
           help='When the target is ambiguous, choose the one with this index.'),
+      click.option(
+          '--target',
+          multiple=True,
+          help=('Disable the logic to find targets in favor of using the given'
+                ' target(s). If no files are given, runs the entire test suite.'
+                )),
       click.option(
           '--path-index',
           '--path_index',

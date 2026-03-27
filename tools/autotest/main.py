@@ -93,7 +93,7 @@ def main(ctx, **kwargs) -> int:
   target_cache: target_finder.TargetCache = target_finder.TargetCache(out_dir)
 
   if (not config.run_changed and not config.run_related and not config.files
-      and not config.name):
+      and not config.name and not config.target):
     raise click.UsageError(
         'Specify a file to test or use --run-changed or --run-related')
 
@@ -143,12 +143,16 @@ def main(ctx, **kwargs) -> int:
         file_finder.FindMatchingTestFiles(f, use_remote_search,
                                           config.path_index))
 
-  if not filenames:
-    command.ExitWithMessage('No associated test files found.')
+  if config.target:
+    targets = [t.removeprefix('//') for t in config.target]
+    used_cache = False
+  else:
+    if not filenames:
+      command.ExitWithMessage('No associated test files found.')
 
-  targets, used_cache = target_finder.FindTestTargets(
-      target_cache, out_dir, filenames, config.run_all, config.run_changed
-      or config.run_related, config.target_index)
+    targets, used_cache = target_finder.FindTestTargets(
+        target_cache, out_dir, filenames, config.run_all, config.run_changed
+        or config.run_related, config.target_index)
 
   if not current_gtest_filter:
     current_gtest_filter = filters.BuildTestFilter(filenames, config.line)
