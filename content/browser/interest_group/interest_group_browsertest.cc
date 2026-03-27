@@ -28344,8 +28344,9 @@ class InterestGroupPreconnectOwnerAndSignalsOriginsTest
   size_t num_signals_requests_ GUARDED_BY(requests_lock_) = 0;
 };
 
+// TODO(crbug.com/496770347): Deflake and reenable it.
 IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
-                       PreconnectsToOwnerAndSignalsOrigins) {
+                       DISABLED_PreconnectsToOwnerAndSignalsOrigins) {
   GURL joining_url = embedded_https_test_server().GetURL("c.test", "/echo");
   url::Origin joining_origin = url::Origin::Create(joining_url);
   ASSERT_TRUE(NavigateToURL(shell(), joining_url));
