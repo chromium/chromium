@@ -835,6 +835,21 @@
             ]
         }
     ],
+    "AndroidDesktopStyleScrollbars": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDesktopStyleScrollbars"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopWebPrefsLargeDisplays": [
         {
             "platforms": [

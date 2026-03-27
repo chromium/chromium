@@ -30,6 +30,9 @@ BASE_FEATURE(kAccessibilityExposeNonAtomicTextFieldChildren,
 BASE_FEATURE(kAllowContentInitiatedDataUrlNavigations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables desktop-style scrollbars.
+BASE_FEATURE(kAndroidDesktopStyleScrollbars, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows Blink to request fonts from the Android Downloadable Fonts API through
 // the service implemented on the Java side.
 BASE_FEATURE(kAndroidDownloadableFontsMatching,

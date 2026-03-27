@@ -17,6 +17,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExpandEventMetadata);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityExposeNonAtomicTextFieldChildren);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAllowContentInitiatedDataUrlNavigations);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDesktopStyleScrollbars);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDownloadableFontsMatching);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDragDropOopif);
 #if BUILDFLAG(IS_WIN)

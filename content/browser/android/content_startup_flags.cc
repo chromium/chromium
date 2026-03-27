@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_switches.h"
 
 namespace content {
@@ -43,6 +44,10 @@ void SetContentCommandLineFlags(bool single_process) {
   }
 
   parsed_command_line->AppendSwitch(switches::kEnableViewport);
+  if (base::FeatureList::IsEnabled(features::kAndroidDesktopStyleScrollbars)) {
+    parsed_command_line->AppendSwitch(
+        blink::switches::kEnableDesktopAndroidScrollbars);
+  }
   parsed_command_line->AppendSwitch(input::switches::kValidateInputEventStream);
 
   if (base::android::android_info::sdk_int() >=
