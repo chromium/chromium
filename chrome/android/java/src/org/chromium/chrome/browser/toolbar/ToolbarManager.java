@@ -370,7 +370,7 @@ public class ToolbarManager
     private final OverrideUrlLoadingDelegateImpl mOverrideUrlLoadingDelegate;
     private final TopInsetProvider mTopInsetProvider;
     private final SettableNonNullObservableSupplier<@ControlsPosition Integer>
-            mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.NONE);
+            mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
     private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
 
     private @MonotonicNonNull HomeButtonCoordinator mHomeButtonCoordinator;
