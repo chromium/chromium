@@ -4,9 +4,11 @@
 
 #include "content/browser/renderer_host/renderer_sandboxed_process_launcher_delegate.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -20,12 +22,58 @@
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
+#include "sandbox/win/src/security_capabilities.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace content::sandbox::policy {
 
 namespace {
+
+class TestAppContainer final : public ::sandbox::AppContainer {
+ public:
+  TestAppContainer(::sandbox::AppContainerType type) { type_ = type; }
+
+  bool AccessCheck(base::wcstring_view object_name,
+                   base::win::SecurityObjectType object_type,
+                   DWORD desired_access,
+                   DWORD* granted_access,
+                   BOOL* access_status) override {
+    return false;
+  }
+  void AddCapability(std::wstring_view capability_name) override {}
+  void AddCapability(base::win::WellKnownCapability capability) override {}
+  bool AddCapabilitySddl(base::wcstring_view sddl_sid) override { return true; }
+  void AddImpersonationCapability(std::wstring_view capability_name) override {}
+  void AddImpersonationCapability(
+      base::win::WellKnownCapability capability) override {}
+  bool AddImpersonationCapabilitySddl(base::wcstring_view sddl_sid) override {
+    return true;
+  }
+  void SetEnableLowPrivilegeAppContainer(bool enable) override {
+    enable_low_privilege_app_container_ = enable;
+  }
+  bool GetEnableLowPrivilegeAppContainer() override {
+    return enable_low_privilege_app_container_;
+  }
+  ::sandbox::AppContainerType GetAppContainerType() override { return type_; }
+  const std::vector<base::win::Sid>& GetCapabilities() override {
+    return capabilities_;
+  }
+  const std::vector<base::win::Sid>& GetImpersonationCapabilities() override {
+    return impersonation_capabilities_;
+  }
+  std::unique_ptr<::sandbox::SecurityCapabilities> GetSecurityCapabilities()
+      override {
+    return nullptr;
+  }
+
+ private:
+  std::vector<base::win::Sid> capabilities_;
+  std::vector<base::win::Sid> impersonation_capabilities_;
+  ::sandbox::AppContainerType type_ = ::sandbox::AppContainerType::kNone;
+  bool enable_low_privilege_app_container_ = false;
+};
 
 class TestTargetConfig : public ::sandbox::TargetConfig {
  public:
@@ -64,6 +112,9 @@ class TestTargetConfig : public ::sandbox::TargetConfig {
   ::sandbox::IntegrityLevel GetIntegrityLevel() const override { return {}; }
   void SetDelayedIntegrityLevel(::sandbox::IntegrityLevel level) override {}
   ::sandbox::ResultCode SetLowBox(base::wcstring_view sid) override {
+    app_container_ = std::make_unique<TestAppContainer>(
+        ::sandbox::AppContainerType::kLowbox);
+
     return ::sandbox::SBOX_ALL_OK;
   }
   ::sandbox::ResultCode SetProcessMitigations(
@@ -85,10 +136,14 @@ class TestTargetConfig : public ::sandbox::TargetConfig {
 
   ::sandbox::ResultCode AddAppContainerProfile(
       base::wcstring_view package_name) override {
+    app_container_ = std::make_unique<TestAppContainer>(
+        ::sandbox::AppContainerType::kProfile);
     return ::sandbox::SBOX_ALL_OK;
   }
 
-  ::sandbox::AppContainer* GetAppContainer() override { return nullptr; }
+  ::sandbox::AppContainer* GetAppContainer() override {
+    return app_container_.get();
+  }
 
   void SetDesktop(::sandbox::Desktop desktop) override {}
   void SetFilterEnvironment(bool env) override {}
@@ -105,6 +160,7 @@ class TestTargetConfig : public ::sandbox::TargetConfig {
  private:
   std::optional<std::wstring> security_attribute_name_;
   std::vector<std::wstring> blocklisted_dlls_;
+  std::unique_ptr<TestAppContainer> app_container_;
 };
 
 class TestTargetPolicy : public ::sandbox::TargetPolicy {
@@ -121,7 +177,7 @@ class TestTargetPolicy : public ::sandbox::TargetPolicy {
   void AddHandleToShare(HANDLE handle) override {}
   void AddDelegateData(base::span<const uint8_t> data) override {}
 
-  const TestTargetConfig& GetTestConfig() const { return config_; }
+  TestTargetConfig& GetTestConfig() { return config_; }
 
  private:
   TestTargetConfig config_;
@@ -178,8 +234,31 @@ INSTANTIATE_TEST_SUITE_P(
         /* renderer app container feature */ ::testing::Bool(),
         /* ktm mitigation feature */ ::testing::Bool()));
 
-TEST(RendererSandboxedProcessLauncherDelegateTest,
-     IsolationSecurityAttributeName) {
+class RendererSandboxedProcessLauncherDelegateTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  RendererSandboxedProcessLauncherDelegateTest() {
+    feature_list_.InitWithFeatureState(
+        ::sandbox::policy::features::kRendererAppContainer, GetParam());
+  }
+
+  ::sandbox::AppContainerType GetExpectedAppContainerType() const {
+    // App Containers are not well supported until Windows 10 RS5.
+    if (base::win::GetVersion() >= base::win::Version::WIN10_RS5 &&
+        GetParam()) {
+      return ::sandbox::AppContainerType::kLowbox;
+    }
+
+    return ::sandbox::AppContainerType::kNone;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(RendererSandboxedProcessLauncherDelegateTest,
+       IsolationSecurityAttributeName) {
   // This security attribute is present on all processes, and is thus useful for
   // testing.
   static const constexpr wchar_t kProcUniqueAttribute[] = L"TSA://ProcUnique";
@@ -215,6 +294,14 @@ TEST(RendererSandboxedProcessLauncherDelegateTest,
     ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
     ASSERT_EQ(policy.GetTestConfig().GetSecurityAttributeName(),
               kProcUniqueAttribute);
+    auto* app_container = policy.GetTestConfig().GetAppContainer();
+    if (GetExpectedAppContainerType() == ::sandbox::AppContainerType::kNone) {
+      ASSERT_EQ(app_container, nullptr);
+    } else {
+      ASSERT_NE(app_container, nullptr);
+      ASSERT_EQ(app_container->GetAppContainerType(),
+                GetExpectedAppContainerType());
+    }
   }
   // Verify the broker's policy handles the security attribute name correctly,
   // although it's not possible currently to verify that it correctly applies to
@@ -229,5 +316,9 @@ TEST(RendererSandboxedProcessLauncherDelegateTest,
     ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         RendererSandboxedProcessLauncherDelegateTest,
+                         ::testing::Bool());
 
 }  // namespace content::sandbox::policy
