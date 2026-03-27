@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/notifications/notification_database_conversions.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

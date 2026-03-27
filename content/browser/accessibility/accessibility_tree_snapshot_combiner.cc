@@ -4,7 +4,6 @@
 
 #include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace content {

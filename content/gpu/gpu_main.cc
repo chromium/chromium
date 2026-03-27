@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
 #include "base/process/current_process.h"
 #include "base/process/process_metrics.h"

@@ -17,7 +17,6 @@
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/pending_task.h"
 #include "base/process/current_process.h"
 #include "base/run_loop.h"

@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -47,6 +46,7 @@
 #include "sandbox/policy/sandbox_type.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/time/time.h"
 #include "media/filters/decrypting_video_decoder.h"
 #endif
 

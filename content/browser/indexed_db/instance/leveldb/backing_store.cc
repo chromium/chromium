@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 
 #include <algorithm>
+#include <array>
 #include <cinttypes>
 #include <cstdint>
 #include <list>
@@ -35,7 +36,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"

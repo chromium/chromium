@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"

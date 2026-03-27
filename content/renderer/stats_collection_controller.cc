@@ -6,7 +6,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_util.h"
 #include "content/common/renderer_host.mojom.h"

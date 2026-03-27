@@ -10,7 +10,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/webauthn/core/browser/remote_validation.h"
 #include "components/webauthn/core/browser/webauthn_security_utils.h"

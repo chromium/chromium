@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "cc/paint/paint_flags.h"
 #include "components/vector_icons/vector_icons.h"

@@ -4,7 +4,8 @@
 
 #include "content/browser/metrics/histograms_monitor.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

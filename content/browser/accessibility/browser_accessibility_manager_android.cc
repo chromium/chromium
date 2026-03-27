@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"

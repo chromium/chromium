@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "content/browser/xr/metrics/session_metrics_helper.h"
+
+#include <memory>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "content/browser/xr/metrics/session_timer.h"
 #include "content/browser/xr/metrics/webxr_session_tracker.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"

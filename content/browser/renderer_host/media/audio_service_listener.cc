@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
 #include "base/time/default_tick_clock.h"
 #include "content/browser/media/audio_log_factory.h"

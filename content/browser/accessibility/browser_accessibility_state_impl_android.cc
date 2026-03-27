@@ -11,7 +11,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/accessibility/android/accessibility_state.h"

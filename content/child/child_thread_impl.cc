@@ -28,7 +28,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -101,6 +100,8 @@
 #endif
 #if BUILDFLAG(IS_WIN)
 #include <io.h>
+
+#include "base/time/time.h"
 #endif
 // Function provided by libclang_rt.profile-*.a, declared and documented at:
 // https://github.com/llvm/llvm-project/blob/master/compiler-rt/lib/profile/InstrProfiling.h

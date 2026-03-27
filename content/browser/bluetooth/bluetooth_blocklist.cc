@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "content/browser/bluetooth/bluetooth_util.h"

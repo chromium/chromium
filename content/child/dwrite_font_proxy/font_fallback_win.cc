@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <string>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"

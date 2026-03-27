@@ -4,7 +4,7 @@
 
 #include "content/browser/android/content_ui_event_handler.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
