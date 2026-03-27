@@ -462,7 +462,8 @@ public class SearchActivity extends AsyncInitializationActivity
                 // Lens/voice input aren't supported for hub search.
                 mLocationBarUiOverrides
                         .setLensEntrypointAllowed(false)
-                        .setVoiceEntrypointAllowed(false);
+                        .setVoiceEntrypointAllowed(false)
+                        .setEmbedderControlledHint(true);
                 mSearchBoxDataProvider.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
                 setHubSearchBoxVisualElements();
                 break;
