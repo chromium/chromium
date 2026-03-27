@@ -3912,6 +3912,17 @@ inline constexpr char kReplaceSyncPromosWithSignInPromosName[] =
 inline constexpr char kReplaceSyncPromosWithSignInPromosDescription[] =
     "When enabled, all sync-related UIs will be replaced by sign-in ones.";
 
+inline constexpr char kReplaceSyncPromosWithSigninPromosNewSigninName[] =
+    "Replace sync promos with sign-in promos (New Sign-in events)";
+inline constexpr char kReplaceSyncPromosWithSigninPromosNewSigninDescription[] =
+    "When enabled, all sync-related UIs will be replaced by sign-in ones. "
+    "Similar to #replace-sync-promos-with-sign-in-promos-desktop but only "
+    "enables extensions and bookmarks sync on new signin events.";
+
+inline constexpr char kUnoPhase2FollowUpName[] = "Uno phase 2 follow-up";
+inline constexpr char kUnoPhase2FollowUpDescription[] =
+    "UI tweaks for signin surfaces";
+
 inline constexpr char kResetShortcutCustomizationsName[] =
     "Reset all shortcut customizations";
 inline constexpr char kResetShortcutCustomizationsDescription[] =

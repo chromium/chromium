@@ -3414,25 +3414,29 @@ const flags_ui::FeatureEntry::FeatureVariation
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
-    {"Default", "", ""},
-    {"Disabled", switches::kDisableFeatures,
-     "ReplaceSyncPromosWithSignInPromos"},
-    {"Enabled", switches::kEnableFeatures,
-     "ReplaceSyncPromosWithSignInPromos:explicit_signin_for_extensions/"
-     "false/explicit_signin_for_bookmarks/false"},
-    {"Enabled with follow-ups", switches::kEnableFeatures,
-     "ReplaceSyncPromosWithSignInPromos:explicit_signin_for_extensions/"
-     "false/explicit_signin_for_bookmarks/false,UnoPhase2FollowUp"},
-    {"Enabled with explicit signin for extensions and bookmarks",
-     switches::kEnableFeatures,
-     "ReplaceSyncPromosWithSignInPromos:explicit_signin_for_extensions/"
-     "true/explicit_signin_for_bookmarks/true"},
-    {"Enabled with explicit signin for extensions and bookmarks and follow-ups",
-     switches::kEnableFeatures,
-     "ReplaceSyncPromosWithSignInPromos:explicit_signin_for_extensions/"
-     "true/explicit_signin_for_bookmarks/true,UnoPhase2FollowUp"},
-};
+const char kReplaceSyncPromosWithSignInPromosDesktopFeatures[] =
+    "ReplaceSyncPromosWithSignInPromos,"
+    "IPH_SignInBenefits,"
+    "SyncEnableContactInfoDataTypeForCustomPassphraseUsers";
+
+const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosDesktopChoices[] =
+    {{"Default", "", ""},
+     {"Disabled", switches::kDisableFeatures,
+      kReplaceSyncPromosWithSignInPromosDesktopFeatures},
+     {"Enabled", switches::kEnableFeatures,
+      kReplaceSyncPromosWithSignInPromosDesktopFeatures}};
+
+const char kReplaceSyncPromosWithSigninPromosNewSigninFeatures[] =
+    "ReplaceSyncPromosWithSigninPromosNewSignin,"
+    "IPH_SignInBenefitsNewSignin";
+
+const FeatureEntry::Choice
+    kReplaceSyncPromosWithSigninPromosNewSigninChoices[] = {
+        {"Default", "", ""},
+        {"Disabled", switches::kDisableFeatures,
+         kReplaceSyncPromosWithSigninPromosNewSigninFeatures},
+        {"Enabled", switches::kEnableFeatures,
+         kReplaceSyncPromosWithSigninPromosNewSigninFeatures}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -10177,7 +10181,18 @@ const FeatureEntry kFeatureEntries[] = {
     {"replace-sync-promos-with-sign-in-promos-desktop",
      flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
      flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
-     kOsDesktop, MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)},
+     kOsDesktop,
+     MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosDesktopChoices)},
+
+    {"replace-sync-promos-with-signin-promos-new-signin",
+     flag_descriptions::kReplaceSyncPromosWithSigninPromosNewSigninName,
+     flag_descriptions::kReplaceSyncPromosWithSigninPromosNewSigninDescription,
+     kOsDesktop,
+     MULTI_VALUE_TYPE(kReplaceSyncPromosWithSigninPromosNewSigninChoices)},
+
+    {"uno-phase-2-follow-up", flag_descriptions::kUnoPhase2FollowUpName,
+     flag_descriptions::kUnoPhase2FollowUpDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(syncer::kUnoPhase2FollowUp)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
     {"pwm-show-suggestions-on-autofocus",

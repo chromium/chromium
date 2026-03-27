@@ -8072,6 +8072,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "replace-sync-promos-with-signin-promos-new-signin",
+    "owners": [ "droger@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "report-notification-content-detection-data",
     "owners": ["skrakowi@chromium.org", "chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 143
@@ -9090,6 +9095,11 @@
     "name": "unexportable-key-deletion",
     "owners": [ "jdoerrie@chromium.org" ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "uno-phase-2-follow-up",
+    "owners": [ "droger@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "unsafely-treat-insecure-origin-as-secure",
