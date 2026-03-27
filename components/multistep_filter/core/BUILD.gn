@@ -10,6 +10,14 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("switches") {
+  sources = [
+    "switches.cc",
+    "switches.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("util") {
   sources = [
     "multistep_filter_util.cc",

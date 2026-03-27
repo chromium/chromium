@@ -19,6 +19,8 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMultistepFilterSuggestionMaxCandidates);
 
 BASE_DECLARE_FEATURE_PARAM(std::string, kMultistepFilterAllowedDomains);
 
+BASE_DECLARE_FEATURE_PARAM(std::string, kMultistepFilterIndexServerApiBaseUrl);
+
 }  // namespace multistep_filter
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_FEATURES_H_

@@ -31,4 +31,11 @@ BASE_FEATURE_PARAM(std::string,
                    "allowed_domains",
                    "*");
 
+// The base URL for the `SiteAutomationIndexServer` APIs.
+BASE_FEATURE_PARAM(std::string,
+                   kMultistepFilterIndexServerApiBaseUrl,
+                   &kMultistepFilter,
+                   "api_url",
+                   "");
+
 }  // namespace multistep_filter

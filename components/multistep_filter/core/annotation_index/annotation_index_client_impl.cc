@@ -14,15 +14,20 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
-#include "components/multistep_filter/core/annotation_index/annotation_index_client_impl_config.h"
+#include "base/time/time.h"
+#include "components/google/core/common/google_util.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_conversion_util.h"
 #include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
+#include "components/multistep_filter/core/features.h"
+#include "components/multistep_filter/core/switches.h"
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
@@ -38,6 +43,76 @@
 namespace multistep_filter {
 
 namespace {
+
+// The MIME type used when uploading Protocol Buffer data.
+constexpr std::string_view kApplicationProtobufContentType =
+    "application/x-protobuf";
+
+// The maximum allowed download size for API responses (1 MB).
+constexpr size_t kMaxDownloadSize = 1024 * 1024;
+
+// The timeout duration for network requests.
+constexpr base::TimeDelta kNetworkRequestTimeout = base::Seconds(10);
+
+// This allows reading the error message within the API response when status
+// is not 200 (e.g., 400). Otherwise, URL loader will not give any content in
+// the response when there is a failure, which makes debugging hard.
+constexpr bool kAllowHttpErrorResults = true;
+
+// `SiteAutomationIndexServer` API endpoints.
+constexpr std::string_view kGetTaskExecutionStrategiesEndpoint =
+    "GetTaskExecutionStrategies";
+constexpr std::string_view kGetSupportedTasksEndpoint = "GetSupportedTasks";
+constexpr std::string_view kExtractTaskAttributesEndpoint =
+    "ExtractTaskAttributes";
+
+// Network traffic annotation for `SiteAutomationIndexServer` API calls.
+constexpr net::NetworkTrafficAnnotationTag
+    kMultiStepFilterServerRequestsTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation(
+            "multistep_filter_server_requests",
+            R"(
+          semantics {
+            sender: "Multistep Filter Service"
+            description:
+              "The Multistep Filter feature helps users automatically re-apply "
+              "their historical filtering preferences (e.g., price ranges or "
+              "categories) on supported websites. To enable this, Chrome "
+              "communicates with a Google server to evaluate if a website "
+              "supports filtering automation, extract the user's active "
+              "filtering preferences from the current URL to save them "
+              "locally, and retrieve instructions (such as a constructed URL) "
+              "for re-applying the user's previously saved filters."
+            trigger:
+              "When a signed-in user navigates to a supported webpage."
+            data:
+              "The request may include the domain of the current page, the "
+              "full page URL, and a list of the user's previously applied "
+              "filter key-value pairs."
+            destination: GOOGLE_OWNED_SERVICE
+            internal {
+              contacts {
+                email: "magic-journeys-eng@google.com"
+              }
+            }
+            user_data {
+              type: SENSITIVE_URL
+              type: USER_CONTENT
+            }
+            last_reviewed: "2026-03-20"
+          }
+          policy {
+            cookies_allowed: NO
+            setting:
+              "This feature is currently in development and is not yet exposed "
+              "publicly to users via settings."
+            policy_exception_justification:
+              "User-facing controls via chrome://flags are under development."
+              "Tracking bug: b/485180737."
+              "Enterprise policy for this feature is also under development."
+              "Tracking bug: b/494568600."
+              "The core feature is tracked in b/483675770."
+          })");
 
 // Determines whether a HTTP request was successful based on its response code.
 bool IsHttpSuccess(int response_code) {
@@ -79,29 +154,102 @@ void AnnotationIndexClientImpl::GetFilterSuggestionCandidates(
     base::span<const FilterAnnotation> filter_annotations,
     base::OnceCallback<
         void(std::optional<std::vector<FilterSuggestionCandidate>>)> callback) {
-  // TODO(crbug.com/483677417): Implement the logic to retrieve the
-  // `FilterSuggestionCandidate`s for a given url and filter annotations.
-  NOTIMPLEMENTED();
-  std::move(callback).Run(std::nullopt);
+  GURL api_base_url = GetIndexServerApiBaseUrl();
+  if (!api_base_url.is_valid()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  GetTaskExecutionStrategiesRequest proto_request =
+      ToGetTaskExecutionStrategiesRequest(url, filter_annotations);
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = api_base_url.Resolve(kGetTaskExecutionStrategiesEndpoint);
+  request->method = "POST";
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  auto parse_and_convert_callback = base::BindOnce(
+      [](base::OnceCallback<void(
+             std::optional<std::vector<FilterSuggestionCandidate>>)> callback,
+         std::optional<std::string> response_body) {
+        if (GetTaskExecutionStrategiesResponse proto;
+            response_body && proto.ParseFromString(*response_body)) {
+          std::move(callback).Run(ToFilterSuggestionCandidates(proto));
+        } else {
+          std::move(callback).Run(std::nullopt);
+        }
+      },
+      std::move(callback));
+
+  ExecuteRequest(std::move(request), proto_request.SerializeAsString(),
+                 kMultiStepFilterServerRequestsTrafficAnnotation,
+                 std::move(parse_and_convert_callback));
 }
 
 void AnnotationIndexClientImpl::GetSupportedTaskTypesForDomain(
     std::string_view domain,
     base::OnceCallback<void(std::optional<std::vector<std::string>>)>
         callback) {
-  // TODO(crbug.com/483677417): Implement the logic to retrieve supported
-  // task types for a given domain.
-  NOTIMPLEMENTED();
-  std::move(callback).Run(std::nullopt);
+  GURL api_base_url = GetIndexServerApiBaseUrl();
+  if (!api_base_url.is_valid()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  GetSupportedTasksRequest proto_request = ToGetSupportedTasksRequest(domain);
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = api_base_url.Resolve(kGetSupportedTasksEndpoint);
+  request->method = "POST";
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  auto parse_and_convert_callback = base::BindOnce(
+      [](base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+             callback,
+         std::optional<std::string> response_body) {
+        if (GetSupportedTasksResponse proto;
+            response_body && proto.ParseFromString(*response_body)) {
+          std::move(callback).Run(ToSupportedTasks(proto));
+        } else {
+          std::move(callback).Run(std::nullopt);
+        }
+      },
+      std::move(callback));
+
+  ExecuteRequest(std::move(request), proto_request.SerializeAsString(),
+                 kMultiStepFilterServerRequestsTrafficAnnotation,
+                 std::move(parse_and_convert_callback));
 }
 
 void AnnotationIndexClientImpl::ExtractFilterAnnotation(
     const GURL& url,
     base::OnceCallback<void(std::optional<FilterAnnotation>)> callback) {
-  // TODO(crbug.com/483677417): Implement the logic to retrieve the extracted
-  // `FilterAnnotation` from the url.
-  NOTIMPLEMENTED();
-  std::move(callback).Run(std::nullopt);
+  GURL api_base_url = GetIndexServerApiBaseUrl();
+  if (!api_base_url.is_valid()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  ExtractTaskAttributesRequest proto_request =
+      ToExtractTaskAttributesRequest(url);
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = api_base_url.Resolve(kExtractTaskAttributesEndpoint);
+  request->method = "POST";
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  auto parse_and_convert_callback = base::BindOnce(
+      [](base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
+         std::optional<std::string> response_body) {
+        if (ExtractTaskAttributesResponse proto;
+            response_body && proto.ParseFromString(*response_body)) {
+          std::move(callback).Run(ToFilterAnnotation(proto));
+        } else {
+          std::move(callback).Run(std::nullopt);
+        }
+      },
+      std::move(callback));
+
+  ExecuteRequest(std::move(request), proto_request.SerializeAsString(),
+                 kMultiStepFilterServerRequestsTrafficAnnotation,
+                 std::move(parse_and_convert_callback));
 }
 
 void AnnotationIndexClientImpl::ExecuteRequest(
@@ -109,41 +257,42 @@ void AnnotationIndexClientImpl::ExecuteRequest(
     std::string request_body,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     base::OnceCallback<void(std::optional<std::string>)> callback) {
-  if (!api_key_.empty()) {
+  // Add API key to the request if a key exists, and the endpoint is trusted by
+  // Google.
+  if (!api_key_.empty() && request->url.SchemeIs(url::kHttpsScheme) &&
+      google_util::IsGoogleAssociatedDomainUrl(request->url)) {
     google_apis::AddAPIKeyToRequest(*request, api_key_);
   }
 
   active_url_loaders_.push_back(
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation));
-  network::SimpleURLLoader& loader =
-      CHECK_DEREF(active_url_loaders_.back().get());
+  auto loader_it = std::prev(active_url_loaders_.end());
+  network::SimpleURLLoader* loader = loader_it->get();
 
-  loader.AttachStringForUpload(
-      std::move(request_body),
-      annotation_index_client_impl_config::kApplicationProtobufContentType);
-  loader.SetAllowHttpErrorResults(
-      annotation_index_client_impl_config::kAllowHttpErrorResults);
-  loader.SetTimeoutDuration(
-      annotation_index_client_impl_config::kNetworkRequestTimeout);
-  loader.DownloadToString(
+  loader->AttachStringForUpload(std::move(request_body),
+                                kApplicationProtobufContentType);
+  loader->SetAllowHttpErrorResults(kAllowHttpErrorResults);
+  loader->SetTimeoutDuration(kNetworkRequestTimeout);
+  loader->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&AnnotationIndexClientImpl::OnSimpleURLLoaderComplete,
-                     weak_ptr_factory_.GetWeakPtr(), &loader,
+                     weak_ptr_factory_.GetWeakPtr(), loader_it,
                      std::move(callback)),
-      annotation_index_client_impl_config::kMaxDownloadSize);
+      kMaxDownloadSize);
 }
 
 void AnnotationIndexClientImpl::OnSimpleURLLoaderComplete(
-    network::SimpleURLLoader* loader,
+    SimpleURLLoaderList::iterator loader_it,
     base::OnceCallback<void(std::optional<std::string>)> callback,
     std::optional<std::string> response_body) {
+  network::SimpleURLLoader* loader = loader_it->get();
   int response_code = -1;
   if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     response_code = loader->ResponseInfo()->headers->response_code();
   }
   const bool is_success = IsHttpSuccess(response_code) && response_body;
 
-  std::erase_if(active_url_loaders_, base::MatchesUniquePtr(loader));
+  active_url_loaders_.erase(loader_it);
 
   if (!is_success) {
     std::move(callback).Run(std::nullopt);
@@ -151,6 +300,16 @@ void AnnotationIndexClientImpl::OnSimpleURLLoaderComplete(
   }
 
   std::move(callback).Run(std::move(response_body));
+}
+
+GURL AnnotationIndexClientImpl::GetIndexServerApiBaseUrl() const {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          switches::kMultistepFilterIndexServerApiBaseUrl)) {
+    return GURL(command_line->GetSwitchValueASCII(
+        switches::kMultistepFilterIndexServerApiBaseUrl));
+  }
+  return GURL(kMultistepFilterIndexServerApiBaseUrl.Get());
 }
 
 }  // namespace multistep_filter

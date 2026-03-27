@@ -7,13 +7,15 @@ static_library("annotation_index") {
   sources = [
     "annotation_index_client_impl.cc",
     "annotation_index_client_impl.h",
-    "annotation_index_client_impl_config.h",
     "annotation_index_conversion_util.cc",
   ]
 
   friend = [ ":*" ]
 
   deps = [
+    "//components/google/core/common",
+    "//components/multistep_filter/core:features",
+    "//components/multistep_filter/core:switches",
     "//google_apis",
     "//google_apis/common:request_util",
     "//services/network/public/cpp",
@@ -63,6 +65,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/multistep_filter/core",
+    "//components/multistep_filter/core:features",
     "//components/multistep_filter/core/annotation_index/proto",
     "//components/multistep_filter/core/data_models",
     "//google_apis/common:test_support",

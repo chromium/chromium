@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -19,6 +20,7 @@
 #include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
+#include "components/multistep_filter/core/features.h"
 #include "google_apis/common/api_key_request_test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -54,12 +56,17 @@ class AnnotationIndexClientImplTest : public testing::Test {
                 &test_url_loader_factory_)),
         client_(AnnotationIndexClientImplTestApi::CreateManagerForApiKey(
             test_shared_loader_factory_,
-            "dummykey")) {}
+            "dummykey")) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kMultistepFilter,
+        {{kMultistepFilterIndexServerApiBaseUrl.name, kTestApiUrl}});
+  }
 
   ~AnnotationIndexClientImplTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
@@ -158,6 +165,87 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_HttpError) {
   std::optional<std::string> result = future.Take();
 
   EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(AnnotationIndexClientImplTest, GetSupportedTaskTypesForDomain_Success) {
+  GetSupportedTasksResponse proto_response;
+  proto_response.add_supported_tasks()->set_task_type("TASK1");
+  proto_response.add_supported_tasks()->set_task_type("TASK2");
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+  client_->GetSupportedTaskTypesForDomain("example.com", future.GetCallback());
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
+      request, proto_response.SerializeAsString());
+
+  std::optional<std::vector<std::string>> result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->size(), 2u);
+  EXPECT_EQ((*result)[0], "TASK1");
+  EXPECT_EQ((*result)[1], "TASK2");
+}
+
+TEST_F(AnnotationIndexClientImplTest, GetFilterSuggestionCandidates_Success) {
+  GetTaskExecutionStrategiesResponse proto_response;
+  TaskExecutionStrategy* strategy = proto_response.add_execution_strategies();
+  strategy->set_candidate_id("test-candidate");
+  AppliedFilterUIString* filter1 = strategy->add_applied_filters();
+  filter1->set_key("PRICE_MIN");
+  filter1->set_label("Min Price");
+  strategy->mutable_execution()->mutable_url_navigation()->set_navigation_url(
+      "https://travel.com/flights?min=100");
+
+  base::test::TestFuture<std::optional<std::vector<FilterSuggestionCandidate>>>
+      future;
+
+  std::vector<FilterAnnotation> annotations;
+  client_->GetFilterSuggestionCandidates(GURL("https://example.com/test"),
+                                         annotations, future.GetCallback());
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
+      request, proto_response.SerializeAsString());
+
+  std::optional<std::vector<FilterSuggestionCandidate>> result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->size(), 1u);
+  EXPECT_EQ((*result)[0].filter_annotation_id, "test-candidate");
+  EXPECT_EQ((*result)[0].navigation_url.spec(),
+            "https://travel.com/flights?min=100");
+}
+
+TEST_F(AnnotationIndexClientImplTest, ExtractFilterAnnotation_Success) {
+  ExtractTaskAttributesResponse proto_response;
+  proto_response.set_domain("example.com");
+  proto_response.set_task_type("SEARCH_FLIGHTS");
+  TaskAttribute* attr = proto_response.add_task_attributes();
+  attr->set_key("PRICE_MIN");
+  attr->set_value("100");
+
+  base::test::TestFuture<std::optional<FilterAnnotation>> future;
+
+  client_->ExtractFilterAnnotation(GURL("https://example.com/path?q=1"),
+                                   future.GetCallback());
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
+      request, proto_response.SerializeAsString());
+
+  std::optional<FilterAnnotation> result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->task_type, "SEARCH_FLIGHTS");
+  EXPECT_EQ(result->source_domain, "example.com");
+  ASSERT_EQ(result->attributes.size(), 1u);
+  EXPECT_EQ(result->attributes[0].key, "PRICE_MIN");
+  EXPECT_EQ(result->attributes[0].value, "100");
 }
 
 }  // namespace

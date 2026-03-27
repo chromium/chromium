@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/google/core/common",
   "+components/version_info",
   "+google_apis",
   "+net/base",

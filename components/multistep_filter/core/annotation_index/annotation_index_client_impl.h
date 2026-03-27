@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string_view>
+#include <list>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -57,7 +58,7 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   friend class AnnotationIndexClientImplTestApi;
 
   using SimpleURLLoaderList =
-      std::vector<std::unique_ptr<network::SimpleURLLoader>>;
+      std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
   // Centralized helper to launch a network request. It creates the loader,
   // stores it in `active_url_loaders_` to keep it alive, and dispatches the
@@ -71,9 +72,12 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   // Invoked when `SimpleURLLoader` finishes. Cleans up the specific loader
   // from `active_url_loaders_` and forwards the raw response to the parser.
   void OnSimpleURLLoaderComplete(
-      network::SimpleURLLoader* loader,
+      SimpleURLLoaderList::iterator loader_it,
       base::OnceCallback<void(std::optional<std::string>)> callback,
       std::optional<std::string> response_body);
+
+  // Returns the base URL for the `SiteAutomationIndexServer` server APIs.
+  GURL GetIndexServerApiBaseUrl() const;
 
  protected:
   AnnotationIndexClientImpl(
