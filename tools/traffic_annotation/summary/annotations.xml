@@ -530,8 +530,5 @@ Refer to README.md for content description and update process.
  <item id="devtools_gca_service" added_in_milestone="147" content_hash_code="06699f6b" os_list="linux,windows,android,chromeos" file_path="chrome/browser/devtools/gca_service_handler.cc" />
  <item id="actor_login_permission_service" added_in_milestone="148" content_hash_code="004d2614" os_list="linux,windows,android,chromeos" file_path="components/password_manager/core/browser/actor_login/internal/actor_login_permission_service_impl.cc" />
  <item id="fetch_email_one_time_token" added_in_milestone="148" content_hash_code="069305a9" os_list="linux,windows,android,chromeos" file_path="components/one_time_tokens/core/browser/email_one_time_token_fetcher.cc" />
- <item id="multistep_filter_get_task_execution_strategies" added_in_milestone="148" content_hash_code="012eded0" os_list="linux,windows,android" file_path="components/multistep_filter/core/annotation_index/annotation_index_client_impl.cc" />
- <item id="multistep_filter_get_supported_tasks" added_in_milestone="148" content_hash_code="04153238" os_list="linux,windows,android" file_path="components/multistep_filter/core/annotation_index/annotation_index_client_impl.cc" />
- <item id="multistep_filter_extract_task_attributes" added_in_milestone="148" content_hash_code="05aeb357" os_list="linux,windows,android" file_path="components/multistep_filter/core/annotation_index/annotation_index_client_impl.cc" />
- </annotations>
+ <item id="multistep_filter_server_requests" added_in_milestone="148" content_hash_code="054b2094" os_list="linux,windows,android,chromeos" file_path="components/multistep_filter/core/annotation_index/annotation_index_client_impl.cc" />
 </annotations>
