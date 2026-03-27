@@ -35,6 +35,7 @@
 #import "components/contextual_search/input_state_model.h"
 #import "components/lens/contextual_input.h"
 #import "components/lens/lens_bitmap_processing.h"
+#import "components/lens/lens_overlay_mime_type.h"
 #import "components/lens/lens_url_utils.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/lens_suggest_inputs_utils.h"
@@ -239,6 +240,27 @@ CreateInputDataFromAnnotatedPageContent(
   input_data->page_url = web_state->GetVisibleURL();
   input_data->page_title = base::UTF16ToUTF8(web_state->GetTitle());
   return input_data;
+}
+
+// Helper to map ComposeboxInputItemCollection to lens::MimeType
+std::vector<lens::MimeType> MimeTypesFromCollection(
+    ComposeboxInputItemCollection* items) {
+  std::vector<lens::MimeType> types;
+  if (!items || items.empty) {
+    return types;
+  }
+
+  if (items.imagesCount > 0) {
+    types.push_back(lens::MimeType::kImage);
+  }
+  if (items.tabsCount > 0) {
+    types.push_back(lens::MimeType::kAnnotatedPageContent);
+  }
+  if (items.filesCount > 0) {
+    types.push_back(lens::MimeType::kPdf);
+  }
+
+  return types;
 }
 
 }  // namespace
@@ -668,6 +690,14 @@ CreateInputDataFromAnnotatedPageContent(
       default:
         break;
     }
+
+    contextual_search::ContextualSearchMetricsRecorder* recorder =
+        _contextualSearchSession
+            ? _contextualSearchSession->GetMetricsRecorder()
+            : nullptr;
+    if (explicitUserAction && recorder) {
+      recorder->RecordModelMode(_inputStateModel->GetInputState().active_model);
+    }
   }
 
   // When the model option is reset (set to none), reset the mode to regular
@@ -1070,6 +1100,23 @@ CreateInputDataFromAnnotatedPageContent(
   [self attachSelectedTabsWithWebStateIDs:webStateIDs cachedWebStateIDs:{}];
 }
 
+- (void)recordPlusMenuOpenedWithVisibleInternalButtons:
+    (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons {
+  contextual_search::ContextualSearchMetricsRecorder* recorder =
+      _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
+                               : nullptr;
+  if (_inputStateModel && recorder) {
+    for (const auto& tool : _inputState.allowed_tools) {
+      recorder->RecordToolModeShown(tool);
+    }
+    for (const auto& model : _inputState.allowed_models) {
+      recorder->RecordModelModeShown(model);
+    }
+  }
+  [self.metricsRecorder
+      recordAttachmentsMenuOpenedWithVisibleButtons:visibleInternalButtons];
+}
+
 - (void)requestUIRefresh {
   [self commitUIUpdates];
 }
@@ -1332,11 +1379,12 @@ CreateInputDataFromAnnotatedPageContent(
 
   [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
                             [self currentAutocompleteRequestType]];
-
-  if (_contextualSearchSession &&
-      _contextualSearchSession->GetMetricsRecorder()) {
-    _contextualSearchSession->GetMetricsRecorder()->RecordModesOnSubmission(
-        _inputState.active_tool, _inputState.active_model);
+  contextual_search::ContextualSearchMetricsRecorder* recorder =
+      _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
+                               : nullptr;
+  if (recorder) {
+    recorder->RecordModesOnSubmission(_inputState.active_tool,
+                                      _inputState.active_model);
   }
 }
 
@@ -1347,6 +1395,23 @@ CreateInputDataFromAnnotatedPageContent(
                                 withAttachments:!_items.empty
                                     requestType:
                                         [self currentAutocompleteRequestType]];
+
+  contextual_search::ContextualSearchMetricsRecorder* recorder =
+      _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
+                               : nullptr;
+  if (recorder) {
+    std::vector<lens::MimeType> types = MimeTypesFromCollection(_items);
+
+    recorder->RecordFileTypesOnSessionEnd(types, _inNavigation);
+
+    if (_inputStateModel) {
+      recorder->RecordActiveModesOnSessionEnd(
+          _inputStateModel->GetInputState().active_tool,
+          _inputStateModel->GetInputState().active_model, _inNavigation);
+    }
+
+    recorder->RecordNavigationResult(_inNavigation);
+  }
 }
 
 // Reloads the displayed suggestions based on the attachments/modeHolder.
@@ -2290,6 +2355,15 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)setActiveTool:(omnibox::ToolMode)activeTool {
   if (_inputStateModel) {
+    if (_inputStateModel->GetInputState().active_tool != activeTool) {
+      contextual_search::ContextualSearchMetricsRecorder* recorder =
+          _contextualSearchSession
+              ? _contextualSearchSession->GetMetricsRecorder()
+              : nullptr;
+      if (recorder) {
+        recorder->RecordToolMode(activeTool);
+      }
+    }
     _inputStateModel->setActiveTool(activeTool);
   }
 }

@@ -80,6 +80,25 @@ const char kContextualSearchTabContextAddedFromPlusButton[] =
 const char kContextualSearchTabWithDuplicateTitleClicked[] =
     "ContextualSearch.TabWithDuplicateTitleClicked.V2.Unknown";
 
+const char kContextualSearchToolModeShown[] =
+    "ContextualSearch.Tools.Shown.Unknown";
+const char kContextualSearchModelModeShown[] =
+    "ContextualSearch.Models.Shown.Unknown";
+const char kContextualSearchSessionEndNavigationResultPdf[] =
+    "ContextualSearch.SessionEnd.NavigationResult.Pdf.Unknown";
+const char kContextualSearchSessionEndNavigatedToolMode[] =
+    "ContextualSearch.SessionEnd.Navigated.ToolMode.Unknown";
+const char kContextualSearchSessionEndAbandonedToolMode[] =
+    "ContextualSearch.SessionEnd.Abandoned.ToolMode.Unknown";
+const char kContextualSearchSessionEndNavigatedModelMode[] =
+    "ContextualSearch.SessionEnd.Navigated.ModelMode.Unknown";
+const char kContextualSearchSessionEndAbandonedModelMode[] =
+    "ContextualSearch.SessionEnd.Abandoned.ModelMode.Unknown";
+const char kContextualSearchEntrypointNavigated[] =
+    "ContextualSearch.Entrypoint.Navigated";
+const char kContextualSearchEntrypointAbandoned[] =
+    "ContextualSearch.Entrypoint.Abandoned";
+
 const char kContextualSearchSubmitQueryV2WithoutContext[] =
     "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Unknown";
 const char kContextualSearchSubmitQueryV2WithTabContext[] =
@@ -742,6 +761,71 @@ INSTANTIATE_TEST_SUITE_P(
                                      ContextUploadStatus::kUploadFailed,
                                      ContextUploadStatus::kUploadExpired,
                                      ContextUploadStatus::kUploadReplaced)));
+
+TEST_F(ContextualSearchMetricsRecorderTest, ToolModeShown) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordToolModeShown(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectUniqueSample(kContextualSearchToolModeShown,
+                                        omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+                                        1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, ModelModeShown) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordModelModeShown(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchModelModeShown,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, FileTypesOnSessionEnd) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordFileTypesOnSessionEnd({lens::MimeType::kPdf},
+                                        /*navigated=*/true);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndNavigationResultPdf, true, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, ActiveModesOnSessionEnd) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordActiveModesOnSessionEnd(
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO,
+      /*navigated=*/true);
+  metrics().RecordActiveModesOnSessionEnd(
+      omnibox::ToolMode::TOOL_MODE_CANVAS,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR,
+      /*navigated=*/false);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndNavigatedToolMode,
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndAbandonedToolMode,
+      omnibox::ToolMode::TOOL_MODE_CANVAS, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndNavigatedModelMode,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchSessionEndAbandonedModelMode,
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, NavigationResult) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordNavigationResult(/*navigated=*/true);
+  CreateMetricsRecorder();
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordNavigationResult(/*navigated=*/false);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectUniqueSample(kContextualSearchEntrypointNavigated,
+                                        ContextualSearchSource::kUnknown, 1);
+  histogram_tester().ExpectUniqueSample(kContextualSearchEntrypointAbandoned,
+                                        ContextualSearchSource::kUnknown, 1);
+}
 
 TEST_F(ContextualSearchMetricsRecorderTest, FunnelMetrics) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);

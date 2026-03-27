@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+#include <vector>
 
 #import "components/omnibox/composebox/ios/composebox_context_upload_observer_bridge.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
@@ -21,6 +22,8 @@
 @protocol ComposeboxDebuggerLogger;
 @class ComposeboxMetricsRecorder;
 @protocol ComposeboxURLLoader;
+@protocol SceneCommands;
+enum class FuseboxAttachmentButtonType;
 class AimEligibilityService;
 class FaviconLoader;
 class PersistTabContextBrowserAgent;
@@ -90,6 +93,11 @@ class ContextualSearchSessionHandle;
 // Returns the maximum number of images allowed based on the current
 // composebox mode and current number of attachments.
 - (NSUInteger)remainingNumberOfImagesAllowed;
+
+// Records that the plus menu opened with the given visible attachment buttons,
+// and maps dynamically injected Tools and Models to metrics.
+- (void)recordPlusMenuOpenedWithVisibleInternalButtons:
+    (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons;
 
 @end
 
