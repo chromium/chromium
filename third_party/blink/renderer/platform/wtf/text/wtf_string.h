@@ -438,10 +438,6 @@ class WTF_EXPORT String {
   // This method exists for historical reasons. For compatibility with
   // `std::string::substr`, consider using the `substr()` method.
   [[nodiscard]] String Substring(size_type pos, size_type len = npos) const;
-  [[nodiscard]] String Left(size_type len) const { return Substring(0, len); }
-  [[nodiscard]] String Right(size_type len) const {
-    return Substring(length() - len, len);
-  }
 
   bool starts_with(const StringView& prefix) const {
     return impl_ ? impl_->StartsWith(prefix) : prefix.empty();

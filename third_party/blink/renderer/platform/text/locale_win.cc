@@ -114,10 +114,7 @@ unsigned GetFirstDayOfWeek(LCID lcid, bool defaults_for_locale) {
 }
 
 String ExtractLanguageCode(const String& locale) {
-  wtf_size_t dash_position = locale.find('-');
-  if (dash_position == kNotFound)
-    return locale;
-  return locale.Left(dash_position);
+  return locale.substr(0, locale.find('-'));
 }
 
 LCID LCIDFromLocaleInternal(LCID user_default_lcid,

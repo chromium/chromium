@@ -48,10 +48,7 @@ namespace blink {
 static inline String LanguageFromLocale(const String& locale) {
   String normalized_locale = locale;
   normalized_locale.Replace('-', '_');
-  wtf_size_t separator_position = normalized_locale.find('_');
-  if (separator_position == kNotFound)
-    return normalized_locale;
-  return normalized_locale.Left(separator_position);
+  return normalized_locale.substr(0, normalized_locale.find('_'));
 }
 
 static NSLocale* DetermineLocale(const String& locale) {
