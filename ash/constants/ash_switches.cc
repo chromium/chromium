@@ -1003,6 +1003,9 @@ const char kTemporaryAllowEmptyPasswordsInTests[] =
 // Enables testing for encryption migration UI.
 const char kTestEncryptionMigrationUI[] = "test-encryption-migration-ui";
 
+// Passes the name of the current running automated test to Chrome.
+const char kTestName[] = "test-name";
+
 // Enables the wallpaper picker to fetch images from the test server.
 const char kTestWallpaperServer[] = "test-wallpaper-server";
 

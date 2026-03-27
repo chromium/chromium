@@ -350,6 +350,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTelemetryExtensionDirectory[];
 extern const char kTemporaryAllowEmptyPasswordsInTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTestEncryptionMigrationUI[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTestName[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTestWallpaperServer[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTetherHostScansIgnoreWiredConnections[];

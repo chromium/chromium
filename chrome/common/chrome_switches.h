@@ -194,7 +194,6 @@ extern const char kTabCaptureAudioDefaultUnchecked[];
 extern const char kThisTabCaptureAutoAccept[];
 extern const char kThisTabCaptureAutoReject[];
 extern const char kTestMemoryLogDelayInMinutes[];
-extern const char kTestName[];
 extern const char kTrustedDownloadSources[];
 extern const char kTtcBundleUrl[];
 extern const char kUnlimitedStorage[];
