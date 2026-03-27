@@ -254,10 +254,10 @@ TEST_F(FindsServiceTest, Success) {
                  callback) {
             optimization_guide::OptimizationGuideModelExecutionResult result;
             optimization_guide::proto::FindsSuggestionResponse response;
-            auto* suggestion_theme = response.add_suggestions();
+            auto* suggestion_theme = response.add_suggested_themes();
             suggestion_theme->set_theme_title("Shopping");
             suggestion_theme->set_theme_type(SuggestionTheme::SHOPPING);
-            suggestion_theme->add_suggestions();
+            suggestion_theme->add_theme_suggested_contents();
             optimization_guide::proto::Any any;
             any.set_type_url(
                 "type.googleapis.com/"
@@ -335,10 +335,10 @@ TEST_F(FindsServiceTest, ExecutionCooldownPassed) {
                  callback) {
             optimization_guide::OptimizationGuideModelExecutionResult result;
             optimization_guide::proto::FindsSuggestionResponse response;
-            auto* suggestion_theme = response.add_suggestions();
+            auto* suggestion_theme = response.add_suggested_themes();
             suggestion_theme->set_theme_title("Shopping");
             suggestion_theme->set_theme_type(SuggestionTheme::SHOPPING);
-            suggestion_theme->add_suggestions();
+            suggestion_theme->add_theme_suggested_contents();
             optimization_guide::proto::Any any;
             any.set_type_url(
                 "type.googleapis.com/"
@@ -387,10 +387,10 @@ TEST_F(FindsServiceTest, EmptyNotificationService) {
                  callback) {
             optimization_guide::OptimizationGuideModelExecutionResult result;
             optimization_guide::proto::FindsSuggestionResponse response;
-            auto* suggestion_theme = response.add_suggestions();
+            auto* suggestion_theme = response.add_suggested_themes();
             suggestion_theme->set_theme_title("Shopping");
             suggestion_theme->set_theme_type(SuggestionTheme::SHOPPING);
-            suggestion_theme->add_suggestions();
+            suggestion_theme->add_theme_suggested_contents();
             optimization_guide::proto::Any any;
             any.set_type_url(
                 "type.googleapis.com/"
@@ -480,7 +480,7 @@ TEST_F(FindsServiceTest, NoSuggestionsForTheme) {
                  callback) {
             optimization_guide::OptimizationGuideModelExecutionResult result;
             optimization_guide::proto::FindsSuggestionResponse response;
-            auto* suggestion_theme = response.add_suggestions();
+            auto* suggestion_theme = response.add_suggested_themes();
             suggestion_theme->set_theme_title("Shopping");
             suggestion_theme->set_theme_type(SuggestionTheme::SHOPPING);
             optimization_guide::proto::Any any;
@@ -529,22 +529,24 @@ TEST_F(FindsServiceTest, ReturnsHighestScore) {
                  callback) {
             optimization_guide::OptimizationGuideModelExecutionResult result;
             optimization_guide::proto::FindsSuggestionResponse response;
-            auto* entertainment_theme = response.add_suggestions();
+            auto* entertainment_theme = response.add_suggested_themes();
             entertainment_theme->set_theme_title("Entertainment");
             entertainment_theme->set_theme_type(SuggestionTheme::ENTERTAINMENT);
-            entertainment_theme->set_score(7);
-            entertainment_theme->add_suggestions()->set_title(
-                "Trending Movies");
-            auto* shopping_theme = response.add_suggestions();
+            entertainment_theme->set_theme_score(7);
+            entertainment_theme->add_theme_suggested_contents()
+                ->set_content_title("Trending Movies");
+            auto* shopping_theme = response.add_suggested_themes();
             shopping_theme->set_theme_title("Shopping");
             shopping_theme->set_theme_type(SuggestionTheme::SHOPPING);
-            shopping_theme->set_score(9);
-            shopping_theme->add_suggestions()->set_title("Latest Deals");
-            auto* travel_theme = response.add_suggestions();
+            shopping_theme->set_theme_score(9);
+            shopping_theme->add_theme_suggested_contents()->set_content_title(
+                "Latest Deals");
+            auto* travel_theme = response.add_suggested_themes();
             travel_theme->set_theme_title("Travel");
             travel_theme->set_theme_type(SuggestionTheme::TRAVEL);
-            travel_theme->set_score(8);
-            travel_theme->add_suggestions()->set_title("Top Destinations");
+            travel_theme->set_theme_score(8);
+            travel_theme->add_theme_suggested_contents()->set_content_title(
+                "Top Destinations");
             optimization_guide::proto::Any any;
             any.set_type_url(
                 "type.googleapis.com/"
@@ -600,22 +602,24 @@ TEST_F(FindsServiceTest, SkipsThemeOnCooldown) {
                  callback) {
             optimization_guide::OptimizationGuideModelExecutionResult result;
             optimization_guide::proto::FindsSuggestionResponse response;
-            auto* entertainment_theme = response.add_suggestions();
+            auto* entertainment_theme = response.add_suggested_themes();
             entertainment_theme->set_theme_title("Entertainment");
             entertainment_theme->set_theme_type(SuggestionTheme::ENTERTAINMENT);
-            entertainment_theme->set_score(7);
-            entertainment_theme->add_suggestions()->set_title(
-                "Trending Movies");
-            auto* shopping_theme = response.add_suggestions();
+            entertainment_theme->set_theme_score(7);
+            entertainment_theme->add_theme_suggested_contents()
+                ->set_content_title("Trending Movies");
+            auto* shopping_theme = response.add_suggested_themes();
             shopping_theme->set_theme_title("Shopping");
             shopping_theme->set_theme_type(SuggestionTheme::SHOPPING);
-            shopping_theme->set_score(9);
-            shopping_theme->add_suggestions()->set_title("Latest Deals");
-            auto* travel_theme = response.add_suggestions();
+            shopping_theme->set_theme_score(9);
+            shopping_theme->add_theme_suggested_contents()->set_content_title(
+                "Latest Deals");
+            auto* travel_theme = response.add_suggested_themes();
             travel_theme->set_theme_title("Travel");
             travel_theme->set_theme_type(SuggestionTheme::TRAVEL);
-            travel_theme->set_score(8);
-            travel_theme->add_suggestions()->set_title("Top Destinations");
+            travel_theme->set_theme_score(8);
+            travel_theme->add_theme_suggested_contents()->set_content_title(
+                "Top Destinations");
             optimization_guide::proto::Any any;
             any.set_type_url(
                 "type.googleapis.com/"
@@ -673,22 +677,24 @@ TEST_F(FindsServiceTest, NoNotificationIfAllOnCooldown) {
                  callback) {
             optimization_guide::OptimizationGuideModelExecutionResult result;
             optimization_guide::proto::FindsSuggestionResponse response;
-            auto* entertainment_theme = response.add_suggestions();
+            auto* entertainment_theme = response.add_suggested_themes();
             entertainment_theme->set_theme_title("Entertainment");
             entertainment_theme->set_theme_type(SuggestionTheme::ENTERTAINMENT);
-            entertainment_theme->set_score(7);
-            entertainment_theme->add_suggestions()->set_title(
-                "Trending Movies");
-            auto* shopping_theme = response.add_suggestions();
+            entertainment_theme->set_theme_score(7);
+            entertainment_theme->add_theme_suggested_contents()
+                ->set_content_title("Trending Movies");
+            auto* shopping_theme = response.add_suggested_themes();
             shopping_theme->set_theme_title("Shopping");
             shopping_theme->set_theme_type(SuggestionTheme::SHOPPING);
-            shopping_theme->set_score(9);
-            shopping_theme->add_suggestions()->set_title("Latest Deals");
-            auto* travel_theme = response.add_suggestions();
+            shopping_theme->set_theme_score(9);
+            shopping_theme->add_theme_suggested_contents()->set_content_title(
+                "Latest Deals");
+            auto* travel_theme = response.add_suggested_themes();
             travel_theme->set_theme_title("Travel");
             travel_theme->set_theme_type(SuggestionTheme::TRAVEL);
-            travel_theme->set_score(8);
-            travel_theme->add_suggestions()->set_title("Top Destinations");
+            travel_theme->set_theme_score(8);
+            travel_theme->add_theme_suggested_contents()->set_content_title(
+                "Top Destinations");
             optimization_guide::proto::Any any;
             any.set_type_url(
                 "type.googleapis.com/"

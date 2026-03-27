@@ -57,17 +57,17 @@ constexpr int kThresholdMinutesForTesting = 5;
 std::string FindsSuggestionResponseToHumanReadableString(
     const optimization_guide::proto::FindsSuggestionResponse& response) {
   std::vector<std::string> lines;
-  for (int i = 0; i < response.suggestions_size(); ++i) {
-    const auto& theme = response.suggestions(i);
-    lines.push_back(base::StringPrintf("Theme: %s (Type: %d, Score: %lld)",
-                                       theme.theme_title().c_str(),
-                                       static_cast<int>(theme.theme_type()),
-                                       static_cast<int64_t>(theme.score())));
-    for (int j = 0; j < theme.suggestions_size(); ++j) {
-      const auto& suggestion = theme.suggestions(j);
+  for (int i = 0; i < response.suggested_themes_size(); ++i) {
+    const auto& theme = response.suggested_themes(i);
+    lines.push_back(base::StringPrintf(
+        "Theme: %s (Type: %d, Score: %lld)", theme.theme_title().c_str(),
+        static_cast<int>(theme.theme_type()),
+        static_cast<int64_t>(theme.theme_score())));
+    for (int j = 0; j < theme.theme_suggested_contents_size(); ++j) {
+      const auto& suggestion = theme.theme_suggested_contents(j);
       lines.push_back(base::StringPrintf("  - %s: %s",
-                                         suggestion.title().c_str(),
-                                         suggestion.target_url().c_str()));
+                                         suggestion.content_title().c_str(),
+                                         suggestion.content_url().c_str()));
     }
   }
   return base::JoinString(lines, "\n");
@@ -129,7 +129,7 @@ const SuggestionTheme* GetHighestScoredThemeIfPossible(
   }
   std::sort(sorted_themes.begin(), sorted_themes.end(),
             [](const SuggestionTheme* a, const SuggestionTheme* b) {
-              return a->score() > b->score();
+              return a->theme_score() > b->theme_score();
             });
 
   for (const auto* theme : sorted_themes) {
@@ -163,10 +163,10 @@ notifications::NotificationData GetNotificationData(
     const SuggestionTheme::SuggestedContent& suggestion,
     SuggestionTheme::ThemeType theme_type) {
   notifications::NotificationData data;
-  data.title = base::UTF8ToUTF16(suggestion.title());
-  data.message = base::UTF8ToUTF16(suggestion.description());
+  data.title = base::UTF8ToUTF16(suggestion.content_title());
+  data.message = base::UTF8ToUTF16(suggestion.content_description());
   data.custom_data[notifications::kChromeFindsNotificationsUrl] =
-      suggestion.target_url();
+      suggestion.content_url();
   data.custom_data[notifications::kChromeFindsNotificationsThemeType] =
       base::NumberToString(static_cast<int>(theme_type));
   data.buttons.clear();
@@ -279,11 +279,11 @@ bool FindsService::ScheduleNotificationForInternalsPage() {
                            SuggestionTheme::SHOPPING);
   theme.set_theme_title("Internals Test Theme");
 
-  auto* suggestion = theme.add_suggestions();
-  suggestion->set_title("Test Notification");
-  suggestion->set_description(
+  auto* suggestion = theme.add_theme_suggested_contents();
+  suggestion->set_content_title("Test Notification");
+  suggestion->set_content_description(
       "This is a test notification from the internals page.");
-  suggestion->set_target_url("https://www.google.com");
+  suggestion->set_content_url("https://www.google.com");
 
   return ScheduleNotificationWithModelResult(theme);
 }
@@ -351,15 +351,15 @@ void FindsService::OnModelExecutionComplete(
     return;
   }
 
-  if (response->suggestions().empty()) {
+  if (response->suggested_themes().empty()) {
     RecordFindsResultAndRunCallback(
         std::move(callback),
         {Result::Status::kNoThemesFound, "No themes found."});
     return;
   }
 
-  const SuggestionTheme* best_theme =
-      GetHighestScoredThemeIfPossible(pref_service_, response->suggestions());
+  const SuggestionTheme* best_theme = GetHighestScoredThemeIfPossible(
+      pref_service_, response->suggested_themes());
   if (!best_theme) {
     RecordFindsResultAndRunCallback(
         std::move(callback),
@@ -368,7 +368,7 @@ void FindsService::OnModelExecutionComplete(
     return;
   }
 
-  if (best_theme->suggestions().empty()) {
+  if (best_theme->theme_suggested_contents().empty()) {
     RecordFindsResultAndRunCallback(
         std::move(callback), {Result::Status::kNoSuggestionsForTheme,
                               "No suggestions available for this theme."});
@@ -396,7 +396,7 @@ bool FindsService::ScheduleNotificationWithModelResult(
   }
 
   // Take the first suggestion in the list per theme.
-  const auto& suggestion = theme.suggestions(0);
+  const auto& suggestion = theme.theme_suggested_contents(0);
   notifications::ScheduleParams scheduler_params = GetCurrentScheduleParams();
   notifications::NotificationData data =
       GetNotificationData(suggestion, theme.theme_type());
