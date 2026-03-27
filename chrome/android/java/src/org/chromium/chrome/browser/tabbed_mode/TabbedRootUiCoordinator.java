@@ -1086,8 +1086,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mMultiInstanceManager,
                             mTabModelSelectorSupplier.get(),
                             mActivity,
-                            mLayoutStateProviderOneShotSupplier,
-                            getDesktopWindowStateManager());
+                            mLayoutStateProviderOneShotSupplier);
 
             mCompositorViewHolderSupplier.get().setOnDragListener(chromeTabbedOnDragListener);
 

@@ -105,13 +105,8 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             Supplier<@Nullable Activity> activitySupplier,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
-            Supplier<Boolean> isAppInDesktopWindowSupplier,
             TabSwitcherBackPressHandlerManager dragHandlerManager) {
-        super(
-                activitySupplier,
-                multiInstanceManager,
-                dragAndDropDelegate,
-                isAppInDesktopWindowSupplier);
+        super(activitySupplier, multiInstanceManager, dragAndDropDelegate);
         mDragHandlerManager = dragHandlerManager;
         mDragHandlerManager.addHandler(this);
     }

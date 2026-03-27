@@ -114,7 +114,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
      *     dimens.
      * @param activitySupplier Supplier for the current activity.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
-     * @param isAppInDesktopWindowSupplier Supplier for the current window desktop state.
      */
     public TabStripDragHandler(
             Context context,
@@ -126,13 +125,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             DragAndDropDelegate dragAndDropDelegate,
             BrowserControlsStateProvider browserControlStateProvider,
             Supplier<@Nullable Activity> activitySupplier,
-            Supplier<Integer> tabStripHeightSupplier,
-            Supplier<Boolean> isAppInDesktopWindowSupplier) {
-        super(
-                activitySupplier,
-                multiInstanceManager,
-                dragAndDropDelegate,
-                isAppInDesktopWindowSupplier);
+            Supplier<Integer> tabStripHeightSupplier) {
+        super(activitySupplier, multiInstanceManager, dragAndDropDelegate);
         mPxToDp = 1.f / context.getResources().getDisplayMetrics().density;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mStripLayoutHelperSupplier = stripLayoutHelperSupplier;
@@ -418,10 +412,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             res = onDropInStrip(dropEvent);
         } else {
             DragDropMetricUtils.recordDragDropResult(
-                    DragDropResult.IGNORED_TOOLBAR,
-                    mIsAppInDesktopWindowSupplier.get(),
-                    isTabGroupDrop(),
-                    isMultiTabDrop());
+                    DragDropResult.IGNORED_TOOLBAR, isTabGroupDrop(), isMultiTabDrop());
             res = false;
         }
         if (res) DragDropGlobalState.notifyChromeHandledDrop(dropEvent);
@@ -497,7 +488,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         }
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
-                mIsAppInDesktopWindowSupplier.get(),
                 /* isTabGroup= */ false,
                 /* isMultiTab= */ false);
         return true;
@@ -544,7 +534,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         }
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
-                mIsAppInDesktopWindowSupplier.get(),
                 /* isTabGroup= */ false,
                 /* isMultiTab= */ true);
         return true;
@@ -586,7 +575,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         }
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
-                mIsAppInDesktopWindowSupplier.get(),
                 /* isTabGroup= */ true,
                 /* isMultiTab= */ false);
         return true;
@@ -726,10 +714,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         String text = context.getString(R.string.tab_cannot_be_moved, tabTitle);
         Toast.makeText(context, text, Toast.LENGTH_LONG).show();
         DragDropMetricUtils.recordDragDropResult(
-                DragDropResult.IGNORED_MHTML_TAB,
-                mIsAppInDesktopWindowSupplier.get(),
-                /* isTabGroup= */ true,
-                /* isMultiTab= */ false);
+                DragDropResult.IGNORED_MHTML_TAB, /* isTabGroup= */ true, /* isMultiTab= */ false);
         return true;
     }
 

@@ -322,7 +322,6 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -2978,8 +2977,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
-                AppHeaderUtils.isAppInDesktopWindow(
-                        mRootUiCoordinator.getDesktopWindowStateManager()),
                 /* isTabGroup= */ false,
                 /* isMultiTab= */ false);
         return true;
@@ -3013,8 +3010,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
-                AppHeaderUtils.isAppInDesktopWindow(
-                        mRootUiCoordinator.getDesktopWindowStateManager()),
                 /* isTabGroup= */ false,
                 /* isMultiTab= */ true);
         return true;
@@ -3035,8 +3030,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mWindowId, tabGroupMetadata, /* destTabIndex= */ 0);
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
-                AppHeaderUtils.isAppInDesktopWindow(
-                        mRootUiCoordinator.getDesktopWindowStateManager()),
                 /* isTabGroup= */ true,
                 /* isMultiTab= */ false);
         return true;

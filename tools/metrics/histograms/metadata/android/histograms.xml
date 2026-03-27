@@ -2055,7 +2055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.TabOrGroup.MaxInstanceFailureCount"
-    units="failures" expires_after="2026-05-05">
+    units="failures" expires_after="2027-03-27">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -2096,24 +2096,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabObjectType" variants="TabObjectType"/>
 </histogram>
 
-<histogram
-    name="Android.DragDrop{TabObjectType}.FromStrip.Result.DesktopWindow"
-    enum="DragDropResult" expires_after="2026-05-05">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>zheliooo@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the {TabObjectType} drag and drop results in desktop windowing mode,
-    including successful drops and failed drops with varied reasons. For failed
-    drops, it is recorded during ACTION_DROP. For successful drops, it is
-    recored during ACTION_DRAG_ENDED. Note that the successful drops count can
-    be recorded more often than Android.DragDrop.Tab.Type.DesktopWindow or
-    Android.DragDrop.TabGroup.Type.DesktopWindow, such as reorder within strip
-    or tabs being consumed as text by EditText in native pages.
-  </summary>
-  <token key="TabObjectType" variants="TabObjectType"/>
-</histogram>
-
 <histogram name="Android.DragDrop{TabObjectType}.ReorderStripWithDragDrop"
     enum="Boolean" expires_after="2026-07-05">
   <owner>shuyng@google.com</owner>
@@ -2129,7 +2111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop{TabObjectType}.SourceWindowClosed"
-    enum="Boolean" expires_after="2026-05-05">
+    enum="Boolean" expires_after="2027-03-27">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>zheliooo@google.com</owner>
@@ -2151,18 +2133,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the drag source and drop target when a {TabObjectType} is dropped
     successfully.
-  </summary>
-  <token key="TabObjectType" variants="TabObjectType"/>
-</histogram>
-
-<histogram name="Android.DragDrop{TabObjectType}.Type.DesktopWindow"
-    enum="DragDropType" expires_after="2026-05-05">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>zheliooo@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the drag source and drop target when a {TabObjectType} is dropped
-    successfully in desktop windowing mode.
   </summary>
   <token key="TabObjectType" variants="TabObjectType"/>
 </histogram>

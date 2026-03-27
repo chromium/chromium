@@ -65,10 +65,9 @@ public class DragDropMetricUtils {
     }
 
     /**
-     * Enum used by Android.DragDrop.Tab*.FromStrip.Result.* which records the drag and drop
-     * results, including successful drops and failed drops with varies reasons. These values are
-     * persisted to logs. Entries should not be renumbered and numeric values should never be
-     * reused.
+     * Enum used by Android.DragDrop.*Tab*.FromStrip.Result which records the drag and drop results,
+     * including successful drops and failed drops with varies reasons. These values are persisted
+     * to logs. Entries should not be renumbered and numeric values should never be reused.
      */
     @IntDef({
         DragDropResult.SUCCESS,
@@ -98,48 +97,31 @@ public class DragDropMetricUtils {
      * dragged tab or tab group data.
      *
      * @param dragDropType An enum indicating the drag source and drop target.
-     * @param isInDesktopWindow Whether the app is running in a desktop window.
      * @param isTabGroup True if the dragged item is a tab group.
      * @param isMultiTab True if the dragged item is part of a multi-tab operation.
      */
     public static void recordDragDropType(
-            @DragDropType int dragDropType,
-            boolean isInDesktopWindow,
-            boolean isTabGroup,
-            boolean isMultiTab) {
+            @DragDropType int dragDropType, boolean isTabGroup, boolean isMultiTab) {
         String dragDropItemType = getDragDropItemType(isTabGroup, isMultiTab);
         String histogram = String.format("Android.DragDrop.%s.Type", dragDropItemType);
         RecordHistogram.recordEnumeratedHistogram(
                 histogram, dragDropType, DragDropType.NUM_ENTRIES);
-        if (isInDesktopWindow) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    histogram + ".DesktopWindow", dragDropType, DragDropType.NUM_ENTRIES);
-        }
     }
 
     /**
-     * Record enumerated histograms Android.DragDrop.Tab.FromStrip.Result and
-     * Android.DragDrop.TabGroup.FromStrip.Result.
+     * Record enumerated histograms Android.DragDrop.*Tab*.FromStrip.Result.
      *
      * @param result An enum indicating the tab or tab group drag and drop results, including
      *     successful drops and failed drops with varies reasons.
-     * @param isInDesktopWindow Whether the app is running in a desktop window.
      * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
      *     single tab.
      * @param isMultiTab True if the dragged item is part of a multi-tab operation.
      */
     public static void recordDragDropResult(
-            @DragDropResult int result,
-            boolean isInDesktopWindow,
-            boolean isTabGroup,
-            boolean isMultiTab) {
+            @DragDropResult int result, boolean isTabGroup, boolean isMultiTab) {
         String dragDropItemType = getDragDropItemType(isTabGroup, isMultiTab);
         String histogram = String.format("Android.DragDrop.%s.FromStrip.Result", dragDropItemType);
         RecordHistogram.recordEnumeratedHistogram(histogram, result, DragDropResult.NUM_ENTRIES);
-        if (isInDesktopWindow) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    histogram + ".DesktopWindow", result, DragDropResult.NUM_ENTRIES);
-        }
     }
 
     /**

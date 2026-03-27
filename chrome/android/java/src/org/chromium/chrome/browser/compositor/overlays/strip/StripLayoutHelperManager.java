@@ -637,8 +637,7 @@ public class StripLayoutHelperManager
                             dragDropDelegate,
                             browserControlsStateProvider,
                             () -> windowAndroid.getActivity().get(),
-                            toolbarManager.getTabStripHeightSupplier(),
-                            this::isAppInDesktopWindow);
+                            toolbarManager.getTabStripHeightSupplier());
 
             if (ChromeFeatureList.sEscCancelDrag.isEnabled()) {
                 backPressManager.addHandler(

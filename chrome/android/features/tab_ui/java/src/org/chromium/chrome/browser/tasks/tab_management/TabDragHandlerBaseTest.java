@@ -58,7 +58,7 @@ public class TabDragHandlerBaseTest {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         mTabDragHandler =
                 new TabDragHandlerBase(
-                        () -> mActivity, mMultiInstanceManager, mDragAndDropDelegate, () -> false) {
+                        () -> mActivity, mMultiInstanceManager, mDragAndDropDelegate) {
                     @Override
                     public boolean onDrag(View v, DragEvent event) {
                         return false;
