@@ -291,19 +291,7 @@ aggregate_vector_icons("chrome_vector_icons") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "floating_workspace_notification.icon",
-      "game_controls_done.icon",
-      "mouse_left_click_edit.icon",
-      "mouse_right_click_edit.icon",
-      "notification_battery.icon",
-      "notification_google.icon",
-      "notification_image.icon",
-      "notification_installed.icon",
-      "notification_messages.icon",
-      "person_add.icon",
-      "tip.icon",
-    ]
+    sources += [ "notification_google.icon" ]
   }
 
   if (enable_webui_tab_strip) {
