@@ -3846,16 +3846,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.Tasks.OrderValidOnStartup" enum="Boolean"
-    expires_after="2026-05-03">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>clank-tab-dev@chromium.org</owner>
-  <summary>
-    [Android] boolean value indicating whether the invariant that tab groups are
-    contiguous holds. Recorded on cold start after all tabs are restored.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.Tasks.TabAddedWithValidProposedPosition" enum="Boolean"
     expires_after="2026-06-08">
   <owner>ckitagawa@chromium.org</owner>
