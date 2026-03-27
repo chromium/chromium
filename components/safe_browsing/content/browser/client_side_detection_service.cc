@@ -150,6 +150,11 @@ void ClientSideDetectionService::OnPrefsUpdated() {
                             weak_factory_.GetWeakPtr()));
     if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       client_side_phishing_model_->SubscribeToImageEmbedderOptimizationGuide();
+      if (base::FeatureList::IsEnabled(
+              kClientSideDetectionOnlyESBClassification)) {
+        client_side_phishing_model_
+            ->SubscribeToImageClassifierOptimizationGuide();
+      }
     } else {
       UnsubscribeToModelSubscription();
     }
@@ -180,6 +185,11 @@ void ClientSideDetectionService::UnsubscribeToModelSubscription() {
   // when the model object is not available.
   if (client_side_phishing_model_) {
     client_side_phishing_model_->UnsubscribeToImageEmbedderOptimizationGuide();
+    if (base::FeatureList::IsEnabled(
+            kClientSideDetectionOnlyESBClassification)) {
+      client_side_phishing_model_
+          ->UnsubscribeToImageClassifierOptimizationGuide();
+    }
   }
 }
 
@@ -864,6 +874,12 @@ bool ClientSideDetectionService::IsSubscribedToImageEmbeddingModelUpdates() {
   return client_side_phishing_model_ &&
          client_side_phishing_model_
              ->IsSubscribedToImageEmbeddingModelUpdates();
+}
+
+bool ClientSideDetectionService::IsSubscribedToImageClassifierModelUpdates() {
+  return client_side_phishing_model_ &&
+         client_side_phishing_model_
+             ->IsSubscribedToImageClassifierModelUpdates();
 }
 
 base::CallbackListSubscription

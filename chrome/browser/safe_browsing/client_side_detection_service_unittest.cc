@@ -706,4 +706,66 @@ TEST_P(ClientSideDetectionServiceTest,
   EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
 }
 
+class ClientSideDetectionServiceOnlyESBTest
+    : public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ClientSideDetectionServiceOnlyESBTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    EXPECT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("test-user");
+  }
+
+  bool is_esb_enabled() const { return std::get<0>(GetParam()); }
+  bool is_feature_enabled() const { return std::get<1>(GetParam()); }
+
+ protected:
+  void SetUp() override {
+    if (is_feature_enabled()) {
+      feature_list_.InitAndEnableFeature(
+          kClientSideDetectionOnlyESBClassification);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          kClientSideDetectionOnlyESBClassification);
+    }
+    model_observer_tracker_ =
+        std::make_unique<ClientSidePhishingModelObserverTracker>();
+  }
+
+  void TearDown() override {
+    base::RunLoop().RunUntilIdle();
+    csd_service_.reset();
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
+  raw_ptr<TestingProfile> profile_;
+  std::unique_ptr<ClientSideDetectionService> csd_service_;
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ClientSidePhishingModelObserverTracker>
+      model_observer_tracker_;
+};
+
+TEST_P(ClientSideDetectionServiceOnlyESBTest,
+       TestReceivingImageClassifierUpdatesAfterResubscription) {
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                   is_esb_enabled());
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  if (is_feature_enabled()) {
+    EXPECT_EQ(csd_service_->IsSubscribedToImageClassifierModelUpdates(),
+              is_esb_enabled());
+  } else {
+    EXPECT_TRUE(csd_service_->IsSubscribedToImageClassifierModelUpdates());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientSideDetectionServiceOnlyESBTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
 }  // namespace safe_browsing

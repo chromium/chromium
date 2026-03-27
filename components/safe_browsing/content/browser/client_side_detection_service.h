@@ -216,6 +216,7 @@ class ClientSideDetectionService
 #endif
 
   bool IsSubscribedToImageEmbeddingModelUpdates();
+  bool IsSubscribedToImageClassifierModelUpdates();
 
   base::CallbackListSubscription RegisterCallbackForModelUpdates(
       base::RepeatingClosure callback);

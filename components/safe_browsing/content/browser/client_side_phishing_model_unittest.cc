@@ -760,4 +760,53 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
 #endif
 }
 
+class ClientSidePhishingModelFeatureTest
+    : public content::RenderViewHostTestHarness,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool is_feature_enabled() const { return GetParam(); }
+
+  void SetUp() override {
+    if (is_feature_enabled()) {
+      feature_list_.InitAndEnableFeature(
+          kClientSideDetectionOnlyESBClassification);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          kClientSideDetectionOnlyESBClassification);
+    }
+    content::RenderViewHostTestHarness::SetUp();
+    model_observer_tracker_ =
+        std::make_unique<ClientSidePhishingModelObserverTracker>();
+  }
+
+  void TearDown() override {
+    client_side_phishing_model_.reset();
+    model_observer_tracker_.reset();
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ClientSidePhishingModelObserverTracker>
+      model_observer_tracker_;
+  std::unique_ptr<ClientSidePhishingModel> client_side_phishing_model_;
+};
+
+TEST_P(ClientSidePhishingModelFeatureTest, SubscriptionOnCreation) {
+  client_side_phishing_model_ =
+      std::make_unique<ClientSidePhishingModel>(model_observer_tracker_.get());
+
+  if (is_feature_enabled()) {
+    EXPECT_FALSE(client_side_phishing_model_
+                     ->IsSubscribedToImageClassifierModelUpdates());
+  } else {
+    EXPECT_TRUE(client_side_phishing_model_
+                    ->IsSubscribedToImageClassifierModelUpdates());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientSidePhishingModelFeatureTest,
+                         testing::Bool());
+
 }  // namespace safe_browsing

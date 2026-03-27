@@ -142,6 +142,9 @@ BASE_FEATURE(kClientSideDetectionOnDeviceModelLazyDownloadAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kClientSideDetectionOnlyESBClassification,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

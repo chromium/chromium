@@ -130,6 +130,9 @@ extern const base::FeatureParam<double> kCsdClassificationDelay;
 BASE_DECLARE_FEATURE(kClientSideDetectionOnDeviceModelLazyDownloadAndroid);
 #endif
 
+// Deprecation of page load triggers for SSB users.
+BASE_DECLARE_FEATURE(kClientSideDetectionOnlyESBClassification);
+
 // Killswitch for force request redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionRedirectChainKillswitch);
 

@@ -68,11 +68,13 @@ class ClientSidePhishingModel
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
-  // Enhanced Safe Browsing users receive an additional image embedding model to
-  // be attached to CSD-Phishing ping to better train the models.
+  // Enhanced Safe Browsing users receive the image classifier and embedding
+  // model.
   void SubscribeToImageEmbedderOptimizationGuide();
+  void SubscribeToImageClassifierOptimizationGuide();
 
   void UnsubscribeToImageEmbedderOptimizationGuide();
+  void UnsubscribeToImageClassifierOptimizationGuide();
 
   // Register a callback to be notified whenever the model changes. All
   // notifications will occur on the UI thread.
@@ -147,6 +149,7 @@ class ClientSidePhishingModel
                                 base::File visual_tflite_model);
 
   bool IsSubscribedToImageEmbeddingModelUpdates();
+  bool IsSubscribedToImageClassifierModelUpdates();
 
   int GetClassificationInputWidth();
   int GetClassificationInputHeight();
@@ -225,13 +228,14 @@ class ClientSidePhishingModel
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // If the users subscribe to ESB, the code will add an observer to the
-  // OptimizationGuide service for the image embedder model. We can choose to
-  // remove the observer, but it will be on the list to be removed, and not
-  // removed instantly. Therefore, if the user subscribes, unsubscribes, and
-  // re-subscribes again in very quick succession, the code will crash because
-  // the DCHECK fails, indicating that the observer is added already. Therefore,
-  // this will be a one time use flag.
+  // OptimizationGuide service for the image embedder and classifier model. We
+  // can choose to remove the observer, but it will be on the list to be
+  // removed, and not removed instantly. Therefore, if the user subscribes,
+  // unsubscribes, and re-subscribes again in very quick succession, the code
+  // will crash because the DCHECK fails, indicating that the observer is added
+  // already. Therefore, this will be a one time use flag.
   bool subscribed_to_image_embedder_ = false;
+  bool subscribed_to_image_classifier_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
