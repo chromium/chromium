@@ -15,9 +15,9 @@
 #include "base/compiler_specific.h"
 #include "base/containers/linked_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/async_memory_consumer_registration.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -38,9 +38,8 @@ namespace disk_cache {
 
 // This class implements the Backend interface. An object of this class handles
 // the operations of the cache without writing to disk.
-class NET_EXPORT_PRIVATE MemBackendImpl final
-    : public Backend,
-      public base::MemoryPressureListener {
+class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend,
+                                                public base::MemoryConsumer {
  public:
   explicit MemBackendImpl(net::NetLog* net_log);
 
@@ -139,9 +138,11 @@ class NET_EXPORT_PRIVATE MemBackendImpl final
   // Deletes entries until the current size is below |goal|.
   void EvictTill(int target_size);
 
-  // Called when we get low on memory.
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  int32_t CalculateTargetMemoryLimit() const;
+
+  // base::MemoryConsumer.
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   raw_ptr<base::Clock> custom_clock_for_testing_ = nullptr;  // usually nullptr.
 
@@ -162,8 +163,7 @@ class NET_EXPORT_PRIVATE MemBackendImpl final
   raw_ptr<net::NetLog> net_log_;
   base::OnceClosure post_cleanup_callback_;
 
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
 
   base::WeakPtrFactory<MemBackendImpl> weak_factory_{this};
 };

@@ -88,6 +88,13 @@ AsyncMemoryConsumerRegistration::AsyncMemoryConsumerRegistration(
     CheckUnregister check_unregister,
     CheckRegistryExists check_registry_exists)
     : consumer_(consumer) {
+  // TODO(crbug.com/441951621): DCHECK instead of silently failing when a
+  // AsyncMemoryConsumerRegistration is created in a non-sequenced context.
+  // Tests will need to be adjusted for that to work.
+  if (!SingleThreadTaskRunner::HasMainThreadDefault()) {
+    return;
+  }
+
   main_thread_task_runner_ = SingleThreadTaskRunner::GetMainThreadDefault();
   main_thread_ = std::make_unique<MainThread>();
   main_thread_task_runner_->PostTask(

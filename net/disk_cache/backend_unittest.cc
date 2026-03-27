@@ -15,9 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -212,8 +211,17 @@ class DiskCacheBackendTest : public DiskCacheTestWithCache {
                      net::BackendType backend_type,
                      bool expect_limit);
 
+  void UpdateLimitAndReleaseMemory(int percentage) {
+    base::RunLoop run_loop;
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+        percentage, base::DoNothing());
+    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  private:
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
 };
 
 class DiskCacheGenericBackendTest
@@ -862,21 +870,13 @@ TEST_F(DiskCacheBackendTest, MemoryListensToMemoryPressure) {
   EXPECT_GT(CalculateSizeOfAllEntries(), 0.8 * kLimit);
 
   // Signal low-memory of various sorts, and see how small it gets.
-  {
-    base::RunLoop run_loop;
-    base::MemoryPressureListener::SimulatePressureNotificationAsync(
-        base::MEMORY_PRESSURE_LEVEL_MODERATE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  UpdateLimitAndReleaseMemory(50);
   EXPECT_LT(CalculateSizeOfAllEntries(), 0.5 * kLimit);
 
-  {
-    base::RunLoop run_loop;
-    base::MemoryPressureListener::SimulatePressureNotificationAsync(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-  EXPECT_LT(CalculateSizeOfAllEntries(), 0.1 * kLimit);
+  // At 10% memory limit, the new policy (linear interpolation between 10% and
+  // 50% of max_size_) sets a limit of ~18%.
+  UpdateLimitAndReleaseMemory(10);
+  EXPECT_LT(CalculateSizeOfAllEntries(), 0.2 * kLimit);
 }
 
 TEST_F(DiskCacheBackendTest, ExternalFiles) {

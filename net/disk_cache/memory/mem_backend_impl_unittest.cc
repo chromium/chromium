@@ -7,8 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"
@@ -36,9 +35,13 @@ class MemBackendImplTest : public testing::Test {
   }
 
  protected:
-  void SimulatePressureNotification(base::MemoryPressureLevel level) {
-    base::MemoryPressureListener::SimulatePressureNotificationAsync(
-        level, task_environment_.QuitClosure());
+  void SimulateMemoryLimitAndRelease(int percentage) {
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+        percentage, task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
+
+    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+        task_environment_.QuitClosure());
     task_environment_.RunUntilQuit();
   }
 
@@ -70,7 +73,7 @@ class MemBackendImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   std::unique_ptr<MemBackendImpl> backend_;
 };
 
@@ -92,15 +95,14 @@ TEST_F(MemBackendImplTest, EvictionMargin) {
   }
 }
 
-TEST_F(MemBackendImplTest, MemoryPressure) {
+TEST_F(MemBackendImplTest, MemoryConsumer) {
   // 1. Fill the cache.
   for (int i = 0; i < kNumEntries; ++i) {
     CreateAndWriteEntry("key" + base::NumberToString(i));
   }
 
-  // 2. Simulate MODERATE memory pressure (50% limit).
-  // Memory pressure evicts exactly to the new limit (no 10% margin).
-  SimulatePressureNotification(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  // 2. Simulate moderate memory pressure (50% limit).
+  SimulateMemoryLimitAndRelease(50);
 
   // key0 to key4 should be evicted.
   for (int i = 0; i < 5; ++i) {
@@ -111,8 +113,8 @@ TEST_F(MemBackendImplTest, MemoryPressure) {
     EXPECT_TRUE(EntryExists("key" + base::NumberToString(i)));
   }
 
-  // 3. Simulate CRITICAL memory pressure (10% limit).
-  SimulatePressureNotification(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  // 3. Simulate critical memory pressure (10% limit).
+  SimulateMemoryLimitAndRelease(10);
 
   // Only the most recent entry (key9) should remain.
   for (int i = 0; i < 9; ++i) {
@@ -120,11 +122,43 @@ TEST_F(MemBackendImplTest, MemoryPressure) {
   }
   EXPECT_TRUE(EntryExists("key9"));
 
-  // 4. Simulate NONE memory pressure.
-  SimulatePressureNotification(base::MEMORY_PRESSURE_LEVEL_NONE);
+  // 4. Simulate no memory pressure (100% limit).
+  SimulateMemoryLimitAndRelease(100);
 
   // Should be able to add new entries.
   CreateAndWriteEntry("key10");
+}
+
+TEST_F(MemBackendImplTest, UpdateMemoryLimitDoesNotEvict) {
+  // 1. Fill the cache.
+  for (int i = 0; i < kNumEntries; ++i) {
+    CreateAndWriteEntry("key" + base::NumberToString(i));
+  }
+
+  // 2. Notify about the new limit (50%), but DO NOT request memory release.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      50, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  // 3. Verify that no eviction has occurred yet. All entries should still
+  // exist.
+  for (int i = 0; i < kNumEntries; ++i) {
+    EXPECT_TRUE(EntryExists("key" + base::NumberToString(i)))
+        << "Entry " << i << " was prematurely evicted.";
+  }
+
+  // 4. Now explicitly ask the consumer to release memory.
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  // 5. Verify that eviction finally happened to reach the 50% target.
+  for (int i = 0; i < 5; ++i) {
+    EXPECT_FALSE(EntryExists("key" + base::NumberToString(i)));
+  }
+  for (int i = 5; i < kNumEntries; ++i) {
+    EXPECT_TRUE(EntryExists("key" + base::NumberToString(i)));
+  }
 }
 
 }  // namespace

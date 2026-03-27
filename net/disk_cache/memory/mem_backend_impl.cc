@@ -5,6 +5,7 @@
 #include "net/disk_cache/memory/mem_backend_impl.h"
 
 #include <algorithm>
+#include <cmath>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -12,6 +13,8 @@
 #include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -66,10 +69,13 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
     : Backend(net::MEMORY_CACHE),
       net_log_(net_log),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kMemBackend,
-          this) {}
+      memory_consumer_registration_(
+          "MemBackendImpl",
+          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
+              kDisabled) {}
 
 MemBackendImpl::~MemBackendImpl() {
   while (!entries_.empty())
@@ -335,19 +341,32 @@ void MemBackendImpl::EvictTill(int target_size) {
   }
 }
 
-void MemBackendImpl::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-      current_max_size_ = max_size_;
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      current_max_size_ = max_size_ / 2;
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      current_max_size_ = max_size_ / 10;
-      break;
+int32_t MemBackendImpl::CalculateTargetMemoryLimit() const {
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    // Under moderate pressure or worse, we use linear interpolation to ensure
+    // the cache is never completely cleared. We map the [0, 50] memory limit
+    // range to [10%, 50%] of max_size_.
+    float min = max_size_ / 10.0f;
+    float max = max_size_ / 2.0f;
+    return base::checked_cast<int32_t>(
+        std::lerp(min, max, memory_limit_ratio() / 0.5));
   }
+
+  int64_t target_size =
+      (static_cast<int64_t>(max_size_) * memory_limit()) / 100;
+  return base::checked_cast<int32_t>(target_size);
+}
+
+void MemBackendImpl::OnUpdateMemoryLimit() {
+  // IMPORTANT: Ensure no memory is released during this call.
+  // By using std::max, we ensure the new limit is at least the current size,
+  // preventing growth without triggering immediate eviction.
+  current_max_size_ = std::max(current_size_, CalculateTargetMemoryLimit());
+}
+
+void MemBackendImpl::OnReleaseMemory() {
+  // Now we actually evict entries to reach the target size.
+  current_max_size_ = CalculateTargetMemoryLimit();
   EvictTill(current_max_size_);
 }
 
