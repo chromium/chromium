@@ -13,6 +13,10 @@ DownloadRecordObserverBridge::DownloadRecordObserverBridge(
 
 DownloadRecordObserverBridge::~DownloadRecordObserverBridge() = default;
 
+void DownloadRecordObserverBridge::ClearDelegate() {
+  delegate_ = nil;
+}
+
 void DownloadRecordObserverBridge::OnDownloadAdded(
     const DownloadRecord& record) {
   [delegate_ downloadRecordWasAdded:record];

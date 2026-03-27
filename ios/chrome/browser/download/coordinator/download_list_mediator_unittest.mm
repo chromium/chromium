@@ -8,7 +8,6 @@
 
 #import <algorithm>
 #import <memory>
-#import <set>
 #import <string>
 #import <vector>
 
@@ -16,6 +15,7 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/observer_list.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -201,11 +201,11 @@ class MockDownloadRecordService : public DownloadRecordService {
   }
 
   void AddObserver(DownloadRecordObserver* observer) override {
-    observers_.insert(observer);
+    observers_.AddObserver(observer);
   }
 
   void RemoveObserver(DownloadRecordObserver* observer) override {
-    observers_.erase(observer);
+    observers_.RemoveObserver(observer);
   }
 
   size_t GetRecordCount() const { return stored_records_.size(); }
@@ -222,8 +222,11 @@ class MockDownloadRecordService : public DownloadRecordService {
   // Provides public methods for testing access to internal state.
   void AddRecordForTesting(const DownloadRecord& record) {
     stored_records_.push_back(record);
-    for (auto* observer : observers_) {
-      observer->OnDownloadAdded(record);
+    // Use the real ObserverList iteration so that CheckedObserverAdapter
+    // deferred-removal mechanics are exercised. This means the regression test
+    // for crbug.com/61549711 actually hits the CHECK() path that was crashing.
+    for (auto& observer : observers_) {
+      observer.OnDownloadAdded(record);
     }
   }
 
@@ -238,8 +241,8 @@ class MockDownloadRecordService : public DownloadRecordService {
       *it = record;
     }
 
-    for (auto* observer : observers_) {
-      observer->OnDownloadUpdated(record);
+    for (auto& observer : observers_) {
+      observer.OnDownloadUpdated(record);
     }
   }
 
@@ -252,8 +255,8 @@ class MockDownloadRecordService : public DownloadRecordService {
     if (it != stored_records_.end()) {
       stored_records_.erase(it);
       std::vector<std::string_view> removed_ids = {download_id};
-      for (auto* observer : observers_) {
-        observer->OnDownloadsRemoved(removed_ids);
+      for (auto& observer : observers_) {
+        observer.OnDownloadsRemoved(removed_ids);
       }
     }
   }
@@ -267,7 +270,7 @@ class MockDownloadRecordService : public DownloadRecordService {
 
  private:
   std::vector<DownloadRecord> stored_records_;
-  std::set<DownloadRecordObserver*> observers_;
+  base::ObserverList<DownloadRecordObserver> observers_;
   base::ScopedTempDir temp_dir_;
   base::FilePath downloads_path_;
   std::map<std::string, std::unique_ptr<web::FakeDownloadTask>>
@@ -1129,5 +1132,68 @@ TEST_F(DownloadListMediatorIncognitoTest,
   // Add non-incognito record through mock service.
   mock_service_->AddRecordForTesting(nonIncognitoRecord);
 
+  [mock_consumer_ verify];
+}
+
+// Tests that calling disconnect() from within an OnDownloadAdded observer
+// callback does not crash.
+//
+// Regression test for crbug.com/61549711.
+//
+// Root cause: when disconnect() is called from inside an OnDownloadAdded
+// callback, subsequent observer callbacks could reach the mediator's ObjC
+// consumer after it has already been torn down.
+//
+// The fix calls ClearDelegate() on the bridge before reset(), making any
+// remaining in-flight callback a harmless no-op. Synchronous reset() is safe
+// because RemoveObserver() either erases the adapter immediately (no active
+// iteration) or calls MarkForRemoval(), which sets the adapter's WeakPtr ptr_
+// to null. Since WasInvalidated() is defined as `ptr_ && !ref_.IsValid()`, a
+// null ptr_ always evaluates to false — so the iterator's IsMarkedForRemoval()
+// never hits CHECK(!weak_ptr_.WasInvalidated()) after a synchronous reset().
+TEST_F(DownloadListMediatorTest, DisconnectDuringOnDownloadAddedDoesNotCrash) {
+  // Allow any consumer calls during this test — the focus is on crash safety,
+  // not consumer interaction.
+  OCMStub([mock_consumer_ setDownloadListItems:[OCMArg any]]);
+
+  [mediator_ connect];
+
+  class DisconnectingObserver : public DownloadRecordObserver {
+   public:
+    explicit DisconnectingObserver(DownloadListMediator* mediator)
+        : mediator_(mediator) {}
+
+    void OnDownloadAdded(const DownloadRecord& record) override {
+      // Calling disconnect() here mirrors the production crash path: the
+      // mediator receives an observer callback and tears itself down mid-
+      // iteration. Without ClearDelegate() the ObjC consumer could still be
+      // called after disconnect() returns.
+      [mediator_ disconnect];
+    }
+
+   private:
+    __weak DownloadListMediator* mediator_;
+  };
+
+  DisconnectingObserver disconnecting_observer(mediator_);
+  mock_service_->AddObserver(&disconnecting_observer);
+
+  DownloadRecord record;
+  record.download_id = "crash_test";
+  record.original_url = "https://example.com/file.pdf";
+  record.mime_type = kAdobePortableDocumentFormatMimeType;
+  record.file_name = "file.pdf";
+  record.file_path = base::FilePath("file.pdf");
+  record.created_time = base::Time::Now();
+
+  // Must not crash. Before the fix, calling disconnect() inside a callback
+  // could result in the ObjC consumer being called on a torn-down mediator.
+  EXPECT_NO_FATAL_FAILURE(mock_service_->AddRecordForTesting(record));
+
+  mock_service_->RemoveObserver(&disconnecting_observer);
+
+  // Verify the mock consumer to satisfy OCMock strict mock requirements.
+  // disconnect() was already called inside OnDownloadAdded, so TearDown's
+  // second disconnect() is a no-op.
   [mock_consumer_ verify];
 }

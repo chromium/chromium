@@ -41,6 +41,11 @@ class DownloadRecordObserverBridge : public DownloadRecordObserver {
 
   ~DownloadRecordObserverBridge() override;
 
+  // Clears the delegate so that any in-flight observer callbacks become no-ops.
+  // Call this before destroying the bridge while it may still be referenced by
+  // an active ObserverList iteration (see DownloadListMediator::disconnect).
+  void ClearDelegate();
+
   // DownloadRecordObserver implementation.
   void OnDownloadAdded(const DownloadRecord& record) override;
   void OnDownloadUpdated(const DownloadRecord& record) override;
