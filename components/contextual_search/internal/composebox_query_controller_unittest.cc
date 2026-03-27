@@ -5739,6 +5739,90 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_AimSearch_DoesNotIncrementRequestId) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Capture the request ID before CreateSearchUrl.
+  auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  auto original_request_id = file_info->GetRequestIdForTesting();
+  EXPECT_EQ(original_request_id->sequence_id(), 1);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kAim;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  // Assert: vsrid param is present and sequence_id is not incremented.
+  std::optional<lens::LensOverlayRequestId> request_id =
+      GetRequestIdFromUrl(aim_url.spec());
+  ASSERT_TRUE(request_id.has_value());
+  EXPECT_EQ(request_id->sequence_id(), 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_StandardSearch_IncrementsRequestId) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Capture the request ID before CreateSearchUrl.
+  auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  auto original_request_id = file_info->GetRequestIdForTesting();
+  EXPECT_EQ(original_request_id->sequence_id(), 1);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Assert: vsrid param is present and sequence_id is incremented.
+  std::optional<lens::LensOverlayRequestId> request_id =
+      GetRequestIdFromUrl(search_url.spec());
+  ASSERT_TRUE(request_id.has_value());
+  EXPECT_EQ(request_id->sequence_id(), 2);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        CreateAddedInputs_IncludesFilesWithoutLensUsageIntent) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
