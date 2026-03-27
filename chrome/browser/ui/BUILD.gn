@@ -257,6 +257,7 @@ static_library("ui") {
     "//base",
     "//base:i18n",
     "//base/allocator:buildflags",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//build/config/linux/dbus:buildflags",
@@ -1209,12 +1210,6 @@ static_library("ui") {
       "webui/image/image_navigation_throttle.h",
       "webui/inspect/inspect_ui.cc",
       "webui/inspect/inspect_ui.h",
-      "webui/management/management_ui.cc",
-      "webui/management/management_ui.h",
-      "webui/management/management_ui_constants.cc",
-      "webui/management/management_ui_constants.h",
-      "webui/management/management_ui_handler.cc",
-      "webui/management/management_ui_handler.h",
       "webui/media_router/media_router_internals_ui.cc",
       "webui/media_router/media_router_internals_ui.h",
       "webui/media_router/media_router_internals_webui_message_handler.cc",
@@ -2994,6 +2989,12 @@ static_library("ui") {
       "webui/discards/graph_dump_impl.h",
       "webui/discards/site_data_provider_impl.cc",
       "webui/discards/site_data_provider_impl.h",
+      "webui/management/management_ui.cc",
+      "webui/management/management_ui.h",
+      "webui/management/management_ui_constants.cc",
+      "webui/management/management_ui_constants.h",
+      "webui/management/management_ui_handler.cc",
+      "webui/management/management_ui_handler.h",
     ]
   }
 

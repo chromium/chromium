@@ -1181,6 +1181,8 @@ if (is_android) {
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//chrome/browser/ui/android/extensions:buildflags_java",
+      "//chrome/browser/ui/android/extensions:java",
       "//components/browser_ui/accessibility/android:page_zoom_utils_java",
       "//components/supervised_user/android:content_filters_observer_bridge_java",
     ]

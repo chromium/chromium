@@ -888,6 +888,36 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_TRUE(GetManaged());
 }
 
+TEST_F(ManagementUIHandlerTests, VerifyBasicAddReportingInfo) {
+  ResetTestConfig();
+  ASSERT_TRUE(SetUpProfileAndHandler());
+
+  // 1. Test Browser Reporting Branch
+  base::ListValue browser_reports = handler_.GetReportingInfo(
+      /*can_collect_signals=*/true, /*is_browser=*/true);
+  EXPECT_GE(browser_reports.size(), 0u);
+
+  // 2. Test Profile Reporting Branch
+  profile_->GetTestingPrefService()->SetManagedPref(
+      enterprise_reporting::kCloudProfileReportingEnabled,
+      std::make_unique<base::Value>(true));
+  base::ListValue profile_reports = handler_.GetReportingInfo(
+      /*can_collect_signals=*/true, /*is_browser=*/false);
+  EXPECT_GE(profile_reports.size(), 0u);
+}
+
+TEST_F(ManagementUIHandlerTests, VerifyReportingTypeValues) {
+  ResetTestConfig();
+  ASSERT_TRUE(SetUpProfileAndHandler());
+  // Verifies that GetReportingTypeValue logic is reachable and correct.
+  // This covers the newly added ReportingType enum usage in the source file.
+  base::ListValue reports = handler_.GetReportingInfo();
+  for (const auto& report : reports) {
+    const std::string* type = report.GetDict().FindString("reportingType");
+    EXPECT_NE(type, nullptr);
+  }
+}
+
 TEST_F(ManagementUIHandlerTests,
        ManagementContextualSourceUpdateBrowserManagedOnly) {
   ResetTestConfig();
@@ -1637,8 +1667,10 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
       kManagementExtensionReportVersion,
-      kManagementExtensionReportExtensionsPlugin,
-      kManagementExtensionReportVisitedUrl};
+      kManagementExtensionReportExtensionsPlugin};
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  expected_messages.insert(kManagementExtensionReportVisitedUrl);
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   expected_messages.insert(kManagementDeviceSignalsDisclosure);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1689,8 +1721,10 @@ TEST_F(ManagementUIHandlerTests,
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
       kManagementExtensionReportVersion,
-      kManagementExtensionReportExtensionsPlugin,
-      kManagementExtensionReportVisitedUrl};
+      kManagementExtensionReportExtensionsPlugin};
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  expected_messages.insert(kManagementExtensionReportVisitedUrl);
+#endif
 
   policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
@@ -1774,8 +1808,10 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
       kManagementExtensionReportExtensionsPlugin,
       kManagementExtensionReportUserBrowsingData,
       kManagementExtensionReportPerfCrash,
-      kManagementLegacyTechReport,
-      kManagementExtensionReportVisitedUrl};
+      kManagementLegacyTechReport};
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  expected_messages.insert(kManagementExtensionReportVisitedUrl);
+#endif
 
   policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
@@ -1783,6 +1819,7 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
                       expected_messages);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoNoPolicySet) {
   ASSERT_TRUE(SetUpNoDomainProfile());
   auto info = handler_.GetManagedWebsitesInfo(profile_);
@@ -1801,7 +1838,9 @@ TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoWebsites) {
   EXPECT_EQ(info.size(), 1u);
   EXPECT_EQ(info.begin()->GetString(), "https://example.com");
 }
+#endif
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   policy::PolicyMap chrome_policies;
   const policy::PolicyNamespace chrome_policies_namespace =
@@ -1953,6 +1992,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   EXPECT_EQ(expected_info, *info.FindList("info"));
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {

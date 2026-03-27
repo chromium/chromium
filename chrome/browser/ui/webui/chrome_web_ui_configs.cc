@@ -99,7 +99,6 @@
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_ui.h"
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
-#include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/media_router/media_router_internals_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -176,6 +175,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
+#include "chrome/browser/ui/webui/management/management_ui.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
@@ -341,7 +341,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<InternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<TabStripInternalsUIConfig>());
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
-  map.AddWebUIConfig(std::make_unique<ManagementUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<media_router::MediaRouterInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<NewTabFooterUIConfig>());
@@ -422,6 +421,7 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
   map.AddWebUIConfig(std::make_unique<DiscardsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ManagementUIConfig>());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
 

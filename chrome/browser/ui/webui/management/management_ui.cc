@@ -7,13 +7,16 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/current_channel_logo.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -83,6 +86,12 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
 
   webui::SetupWebUIDataSource(source, kManagementResources,
                               IDR_MANAGEMENT_MANAGEMENT_HTML);
+
+#if BUILDFLAG(IS_ANDROID)
+  source->AddResourcePath("images/product_logo.png",
+                          webui::CurrentChannelLogoResourceId());
+#endif
+
   return source;
 }
 
@@ -205,7 +214,7 @@ void ManagementUI::GetLocalizedStrings(
       {"applicationPermissions", IDS_MANAGEMENT_APPLICATIONS_PERMISSIONS},
       {"title", IDS_MANAGEMENT_TITLE},
       {"toolbarTitle", IDS_MANAGEMENT_TOOLBAR_TITLE},
-      {"searchPrompt", IDS_SETTINGS_SEARCH_PROMPT},
+      {"searchPrompt", IDS_MANAGEMENT_SEARCH_PROMPT},
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"backButton", IDS_ACCNAME_BACK},
       {"managedWebsites", IDS_MANAGEMENT_MANAGED_WEBSITES},
@@ -300,7 +309,10 @@ void ManagementUI::GetLocalizedStrings(
 
 ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  CreateAndAddManagementUIHtmlSource(Profile::FromWebUI(web_ui));
+  CreateAndAddManagementUIHtmlSource(profile);
+#if !BUILDFLAG(IS_ANDROID)
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
+#endif
 
   web_ui->AddMessageHandler(ManagementUIHandler::Create(profile));
 }

@@ -242,6 +242,10 @@
 
 #include "chrome/browser/media/unified_autoplay_config.h"
 
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/ui/webui/management/management_ui.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/android/ntp/recent_tabs_page_prefs.h"
@@ -298,7 +302,6 @@
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
-#include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -1871,7 +1874,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   GoogleCalendarPageHandler::RegisterProfilePrefs(registry);
   HatsServiceDesktop::RegisterProfilePrefs(registry);
   lens::prefs::RegisterProfilePrefs(registry);
-  ManagementUI::RegisterProfilePrefs(registry);
   media_router::RegisterAccessCodeProfilePrefs(registry);
   media_router::RegisterProfilePrefs(registry);
   MicrosoftAuthPageHandler::RegisterProfilePrefs(registry);
@@ -1896,6 +1898,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ThemeService::RegisterProfilePrefs(registry);
   toolbar::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  ManagementUI::RegisterProfilePrefs(registry);
+#endif
 
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   DevToolsWindow::RegisterProfilePrefs(registry);

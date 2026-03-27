@@ -12,6 +12,12 @@ export function getHtml(this: ManagementUiElement) {
 <cr-toolbar page-name="$i18n{toolbarTitle}" role="banner" autofocus
     @search-changed="${this.onSearchChanged_}" clear-label="$i18n{clearSearch}"
     search-prompt="$i18n{searchPrompt}">
+  <if expr="is_android">
+    <!-- Android doesn't have full theme support; workaround for broken logo. -->
+    <picture slot="product-logo">
+      <img srcset="images/product_logo.png" role="presentation">
+    </picture>
+  </if>
 </cr-toolbar>
 <main id="mainContent" class="cr-scrollable">
   <div class="cr-scrollable-top-shadow"></div>

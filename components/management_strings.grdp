@@ -19,6 +19,9 @@
     <message name="IDS_MANAGEMENT_TOOLBAR_TITLE" desc="Title of the toolbar in the management page.">
       Settings
     </message>
+    <message name="IDS_MANAGEMENT_SEARCH_PROMPT" desc="Label for input field to search within settings.">
+      Search settings
+    </message>
   </if>
 
   <!-- Subtitles of the ChromeOS version of the management page -->
@@ -475,7 +478,7 @@
   </if>
 
   <!-- Strings related to Chrome Enterprise Device Signals Sharing -->
-  <if expr="is_win or is_linux or is_macosx">
+  <if expr="is_win or is_linux or is_macosx or is_android">
     <message name="IDS_MANAGEMENT_DEVICE_SIGNALS_DISCLOSURE" desc="Disclosure message explaining that device signals can be shared.">
       Information about your browser, OS, device, installed software, files, and IP addresses
     </message>

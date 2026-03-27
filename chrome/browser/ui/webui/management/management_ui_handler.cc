@@ -23,12 +23,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/device_api/managed_configuration_api.h"
-#include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
@@ -43,10 +40,6 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -63,7 +56,18 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "management_ui_handler.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/apps/app_service/app_icon_source.h"
+#include "chrome/browser/device_api/managed_configuration_api.h"
+#include "chrome/browser/device_api/managed_configuration_api_factory.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif
+
+#include "build/android_buildflags.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
@@ -432,7 +436,8 @@ base::DictValue ManagementUIHandler::GetContextualManagedData(
                    message_id, chrome::kManagedUiLearnMoreUrl,
                    base::EscapeForHTML(l10n_util::GetStringUTF16(
                        IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
-  response.Set("pageSubtitle", GetManagementPageSubtitle(profile));
+
+  response.Set("pageSubtitle", ::GetManagementPageSubtitle(profile));
 
   response.Set("extensionReportingSubtitle",
                l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
@@ -535,6 +540,7 @@ base::DictValue ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
 base::ListValue ManagementUIHandler::GetManagedWebsitesInfo(
     Profile* profile) const {
   base::ListValue managed_websites;
+#if !BUILDFLAG(IS_ANDROID)
   auto* managed_configuration =
       ManagedConfigurationAPIFactory::GetForProfile(profile);
 
@@ -545,14 +551,14 @@ base::ListValue ManagementUIHandler::GetManagedWebsitesInfo(
   for (const auto& entry : managed_configuration->GetManagedOrigins()) {
     managed_websites.Append(entry.Serialize());
   }
-
+#endif
   return managed_websites;
 }
 
 base::ListValue ManagementUIHandler::GetApplicationsInfo(
     Profile* profile) const {
   base::ListValue applications;
-
+#if !BUILDFLAG(IS_ANDROID)
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // Only display web apps for the profile that contains them.
   if (provider == nullptr || !provider->is_registry_ready()) {
@@ -583,7 +589,7 @@ base::ListValue ManagementUIHandler::GetApplicationsInfo(
       applications.Append(std::move(app_info));
     }
   }
-
+#endif
   return applications;
 }
 
@@ -877,9 +883,7 @@ void ManagementUIHandler::RemoveObservers() {
   extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))
       ->RemoveObserver(this);
 
-  policy::PolicyService* policy_service = Profile::FromWebUI(web_ui())
-                                              ->GetProfilePolicyConnector()
-                                              ->policy_service();
+  auto* policy_service = GetPolicyService();
   policy_service->RemoveObserver(policy::POLICY_DOMAIN_EXTENSIONS, this);
 
   pref_registrar_.RemoveAll();

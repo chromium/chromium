@@ -10303,8 +10303,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/reporting/extension_telemetry_event_router_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc",
       "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc",
-      "../browser/ui/webui/management/management_ui_handler_unittest.cc",
-      "../browser/ui/webui/management/management_ui_unittest.cc",
     ]
     deps += [
       "../browser/enterprise/connectors/test:test_support",
@@ -10317,6 +10315,14 @@ test("unit_tests") {
         "//chromeos/constants",
       ]
     }
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
+    sources += [
+      "../browser/ui/webui/management/management_ui_handler_unittest.cc",
+      "../browser/ui/webui/management/management_ui_unittest.cc",
+    ]
+    deps += [ "../browser/enterprise/connectors/test:test_support" ]
   }
 
   if (enterprise_client_certificates) {

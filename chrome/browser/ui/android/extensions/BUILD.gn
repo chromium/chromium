@@ -12,7 +12,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUi.java",
     "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUiBackend.java",
   ]
-  srcjar_deps = [ ":generate_buildflags" ]
+  srcjar_deps = []
 
   deps = [
     "//base:base_java",
@@ -84,13 +84,15 @@ if (enable_extensions_core) {
   }
 }
 
-# Generate feature-specific flags to avoid dependency cycles with the main
-# BuildConfig.
 java_cpp_template("generate_buildflags") {
   sources = [ "java/templates/ExtensionsBuildflags.template" ]
   if (enable_desktop_android_extensions) {
     defines = [ "_ENABLE_DESKTOP_ANDROID_EXTENSIONS" ]
   }
+}
+
+android_library("buildflags_java") {
+  srcjar_deps = [ ":generate_buildflags" ]
 }
 
 android_library("test_support_java") {
@@ -100,6 +102,7 @@ android_library("test_support_java") {
     "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionUiBackendRule.java",
   ]
   deps = [
+    ":buildflags_java",
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",

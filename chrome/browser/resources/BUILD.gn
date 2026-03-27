@@ -54,7 +54,6 @@ group("resources") {
       "key_value_pair_viewer_shared:resources",
       "lens/overlay:resources",
       "lens/shared:resources",
-      "management:resources",
       "new_tab_footer:resources",
       "new_tab_page:resources",
       "new_tab_page/untrusted:resources",
@@ -121,7 +120,10 @@ group("resources") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
-    public_deps += [ "discards:resources" ]
+    public_deps += [
+      "discards:resources",
+      "management:resources",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
