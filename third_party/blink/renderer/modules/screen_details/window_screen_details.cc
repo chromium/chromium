@@ -83,31 +83,15 @@ ScriptPromise<ScreenDetails> WindowScreenDetails::GetScreenDetails(
   // Only request permission with transient activation, otherwise check quietly.
   // This lets sites with permission get screen details any time (e.g. on load),
   // but prevents sites from prompting users without a transient activation.
+  auto callback =
+      BindOnce(&WindowScreenDetails::OnPermissionInquiryComplete,
+               WrapPersistent(this), WrapPersistent(resolver),
+               /*permission_requested=*/has_transient_user_activation);
   if (has_transient_user_activation) {
-    auto callback =
-        BindOnce(&WindowScreenDetails::OnPermissionInquiryComplete,
-                 WrapPersistent(this), WrapPersistent(resolver),
-                 /*permission_requested=*/has_transient_user_activation);
-
     permission_service_->RequestPermission(std::move(permission_descriptor),
                                            /*user_gesture=*/true,
                                            std::move(callback));
   } else {
-    // TODO(crbug.com/494089503): Simplify this once all mojo permission
-    // methods return a PermissionStatusWithDetails and let
-    // OnPermissionInquiryComplete take a
-    // PermissionStatusWithDetails directly.
-    auto callback = BindOnce(
-        [](WindowScreenDetails* details,
-           ScriptPromiseResolver<ScreenDetails>* resolver,
-           bool permission_requested,
-           mojom::blink::PermissionStatusWithDetailsPtr result) {
-          details->OnPermissionInquiryComplete(resolver, permission_requested,
-                                               result->status);
-        },
-        WrapPersistent(this), WrapPersistent(resolver),
-        has_transient_user_activation);
-
     permission_service_->HasPermission(std::move(permission_descriptor),
                                        std::move(callback));
   }
@@ -118,15 +102,16 @@ ScriptPromise<ScreenDetails> WindowScreenDetails::GetScreenDetails(
 void WindowScreenDetails::OnPermissionInquiryComplete(
     ScriptPromiseResolver<ScreenDetails>* resolver,
     bool permission_requested,
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   if (!resolver->GetScriptState()->ContextIsValid())
     return;
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     auto* const isolate = resolver->GetScriptState()->GetIsolate();
     ScriptState::Scope scope(resolver->GetScriptState());
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         isolate, DOMExceptionCode::kNotAllowedError,
-        (status == mojom::blink::PermissionStatus::ASK && !permission_requested)
+        (status->status == mojom::blink::PermissionStatus::ASK &&
+         !permission_requested)
             ? "Transient activation is required to request permission."
             : "Permission denied."));
     return;

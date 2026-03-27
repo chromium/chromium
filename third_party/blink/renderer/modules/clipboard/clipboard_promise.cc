@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/promise_all.h"
@@ -342,12 +343,12 @@ void ClipboardPromise::HandleWriteText(const String& data) {
 }
 
 void ClipboardPromise::HandleReadWithPermission(
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext()) {
     return;
   }
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, "Read permission denied.");
     return;
@@ -488,12 +489,12 @@ void ClipboardPromise::OnRead(Blob* blob, const String& mime_type) {
 }
 
 void ClipboardPromise::HandleReadTextWithPermission(
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext()) {
     return;
   }
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, "Read permission denied.");
     return;
@@ -610,12 +611,12 @@ void ClipboardPromise::WriteClipboardItemData(
 }
 
 void ClipboardPromise::HandleWriteWithPermission(
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext()) {
     return;
   }
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, "Write permission denied.");
     return;
@@ -647,12 +648,12 @@ void ClipboardPromise::HandleWriteWithPermission(
 }
 
 void ClipboardPromise::HandleWriteTextWithPermission(
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext()) {
     return;
   }
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, "Write permission denied.");
     return;
@@ -683,7 +684,8 @@ PermissionService* ClipboardPromise::GetPermissionService() {
 void ClipboardPromise::ValidatePreconditions(
     mojom::blink::PermissionName permission,
     bool will_be_sanitized,
-    base::OnceCallback<void(mojom::blink::PermissionStatus)> callback) {
+    base::OnceCallback<void(mojom::blink::PermissionStatusWithDetailsPtr)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(script_promise_resolver_);
   DCHECK(permission == mojom::blink::PermissionName::CLIPBOARD_READ ||
@@ -729,8 +731,10 @@ void ClipboardPromise::ValidatePreconditions(
             ->GetContentSettingsClient()
             ->AllowWriteToClipboard()))) {
     GetClipboardTaskRunner()->PostTask(
-        FROM_HERE, blink::BindOnce(std::move(callback),
-                                   mojom::blink::PermissionStatus::GRANTED));
+        FROM_HERE,
+        blink::BindOnce(std::move(callback),
+                        mojom::blink::PermissionStatusWithDetails::New(
+                            mojom::blink::PermissionStatus::GRANTED, nullptr)));
     return;
   }
 
@@ -739,8 +743,10 @@ void ClipboardPromise::ValidatePreconditions(
       (permission == mojom::blink::PermissionName::CLIPBOARD_READ &&
        ClipboardCommands::IsExecutingPaste(*context))) {
     GetClipboardTaskRunner()->PostTask(
-        FROM_HERE, blink::BindOnce(std::move(callback),
-                                   mojom::blink::PermissionStatus::GRANTED));
+        FROM_HERE,
+        blink::BindOnce(std::move(callback),
+                        mojom::blink::PermissionStatusWithDetails::New(
+                            mojom::blink::PermissionStatus::GRANTED, nullptr)));
     return;
   }
 

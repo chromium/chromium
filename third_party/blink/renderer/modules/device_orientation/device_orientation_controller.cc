@@ -199,8 +199,8 @@ ScriptPromise<V8PermissionState> DeviceOrientationController::RequestPermission(
       LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()),
       resolver->WrapCallbackInScriptScope(
           BindOnce([](ScriptPromiseResolver<V8PermissionState>* resolver,
-                      mojom::blink::PermissionStatus status) {
-            resolver->Resolve(ToV8PermissionState(status));
+                      mojom::blink::PermissionStatusWithDetailsPtr status) {
+            resolver->Resolve(ToV8PermissionState(status->status));
           })));
 
   return promise;

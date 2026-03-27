@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_midi_options.h"
@@ -138,9 +139,9 @@ void MIDIAccessInitializer::StartSession() {
 }
 
 void MIDIAccessInitializer::OnPermissionRequestResult(
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   permission_service_.reset();
-  if (status == mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status == mojom::blink::PermissionStatus::GRANTED) {
     // After `OnPermissionRequestResult` returns there is nothing retaining the
     // object.  Use `self_keep_alive_` to prevent it from being garbage
     // collected before the promise is resolved.  See crbug.com/447189642

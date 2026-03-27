@@ -81,7 +81,7 @@ class MediaPermissionDispatcher : public media::MediaPermission {
 
   // Callback for |permission_service_| calls.
   void OnPermissionStatus(uint32_t request_id,
-                          blink::mojom::PermissionStatus status);
+                          blink::mojom::PermissionStatusWithDetailsPtr status);
 
   // Callback for |permission_service_| connection errors.
   void OnPermissionServiceConnectionError();

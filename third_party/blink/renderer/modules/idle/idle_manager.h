@@ -42,8 +42,9 @@ class MODULES_EXPORT IdleManager final : public GarbageCollected<IdleManager>,
       mojo::PendingRemote<mojom::blink::IdleManager> idle_service);
 
  private:
-  void OnPermissionRequestComplete(ScriptPromiseResolver<V8PermissionState>*,
-                                   mojom::blink::PermissionStatus);
+  void OnPermissionRequestComplete(
+      ScriptPromiseResolver<V8PermissionState>*,
+      mojom::blink::PermissionStatusWithDetailsPtr);
 
   HeapMojoRemote<mojom::blink::IdleManager> idle_service_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;

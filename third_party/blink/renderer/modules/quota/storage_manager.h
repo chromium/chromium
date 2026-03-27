@@ -40,8 +40,7 @@ class StorageManager final : public ScriptWrappable {
 
   void PermissionServiceConnectionError();
   void PermissionRequestComplete(ScriptPromiseResolver<IDLBoolean>*,
-                                 mojom::blink::PermissionStatus);
-
+                                 mojom::blink::PermissionStatusWithDetailsPtr);
   // Binds the interface (if not already bound) with the given interface
   // provider, and returns it,
   mojom::blink::QuotaManagerHost* GetQuotaHost(ExecutionContext*);

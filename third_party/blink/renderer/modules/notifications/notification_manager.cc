@@ -154,8 +154,8 @@ V8NotificationPermission PermissionStatusToEnum(
 void NotificationManager::OnPermissionRequestComplete(
     ScriptPromiseResolver<V8NotificationPermission>* resolver,
     V8NotificationPermissionCallback* deprecated_callback,
-    mojom::blink::PermissionStatus status) {
-  V8NotificationPermission permission = PermissionStatusToEnum(status);
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  V8NotificationPermission permission = PermissionStatusToEnum(status->status);
   if (deprecated_callback) {
     deprecated_callback->InvokeAndReportException(nullptr, permission);
   }

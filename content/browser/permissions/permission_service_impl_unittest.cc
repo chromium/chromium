@@ -95,4 +95,40 @@ TEST_F(PermissionServiceImplTest, HasPermission) {
                     blink::mojom::GeolocationAccuracy::kPrecise)));
 }
 
+TEST_F(PermissionServiceImplTest, RequestPermission) {
+  for (const auto& [geolocation_setting, expected_status] : {
+           std::make_pair(
+               GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                                  .precise = PermissionOption::kAllowed},
+               blink::mojom::PermissionStatusWithDetails::New(
+                   blink::mojom::PermissionStatus::GRANTED,
+                   blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+                       blink::mojom::GeolocationAccuracy::kPrecise))),
+           std::make_pair(
+               GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                                  .precise = PermissionOption::kDenied},
+               blink::mojom::PermissionStatusWithDetails::New(
+                   blink::mojom::PermissionStatus::GRANTED,
+                   blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+                       blink::mojom::GeolocationAccuracy::kApproximate))),
+           std::make_pair(
+               GeolocationSetting{.approximate = PermissionOption::kDenied,
+                                  .precise = PermissionOption::kDenied},
+               blink::mojom::PermissionStatusWithDetails::New(
+                   blink::mojom::PermissionStatus::DENIED, nullptr)),
+       }) {
+    GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
+        GURL(kTestUrl), GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+        geolocation_setting);
+
+    auto descriptor = blink::mojom::PermissionDescriptor::New();
+    descriptor->name = blink::mojom::PermissionName::GEOLOCATION;
+
+    base::test::TestFuture<blink::mojom::PermissionStatusWithDetailsPtr> future;
+    remote()->RequestPermission(std::move(descriptor), /*user_gesture=*/true,
+                                future.GetCallback());
+    EXPECT_EQ(future.Take(), expected_status);
+  }
+}
+
 }  // namespace content

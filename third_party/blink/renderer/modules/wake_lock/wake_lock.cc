@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock.h"
 
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -189,7 +190,7 @@ void WakeLock::DoRequest(V8WakeLockType::Enum type,
 void WakeLock::DidReceivePermissionResponse(
     V8WakeLockType::Enum type,
     ScriptPromiseResolver<WakeLockSentinel>* resolver,
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
   // 8.2. If state is "denied", then:
   // 8.2.1. Queue a global task on the screen wake lock task source given
@@ -197,7 +198,7 @@ void WakeLock::DidReceivePermissionResponse(
   //        "NotAllowedError" DOMException.
   // 8.2.2. Abort these steps.
   // Note: Treat ASK permission (default in headless_shell) as DENIED.
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
         resolver->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotAllowedError,

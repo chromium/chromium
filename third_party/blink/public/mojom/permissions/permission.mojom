@@ -194,7 +194,7 @@ interface PermissionService {
   // Request permission for the given `PermissionDescriptor`, and returns
   // permission status result.
   RequestPermission(PermissionDescriptor permission, bool user_gesture)
-      => (PermissionStatus status);
+      => (PermissionStatusWithDetails status);
   RequestPermissions(array<PermissionDescriptor> permission, bool user_gesture)
       => (array<PermissionStatus> statuses);
   RevokePermission(PermissionDescriptor permission)

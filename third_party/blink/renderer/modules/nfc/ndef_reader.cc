@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "services/device/public/mojom/nfc.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -206,7 +207,7 @@ ScriptPromise<IDLUndefined> NDEFReader::scan(ScriptState* script_state,
 
 void NDEFReader::ReadOnRequestPermission(
     const NDEFScanOptions* options,
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   if (!scan_resolver_)
     return;
 
@@ -218,7 +219,7 @@ void NDEFReader::ReadOnRequestPermission(
     return;
   }
 
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     scan_resolver_->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
                                            "NFC permission request denied.");
     scan_resolver_.Clear();
@@ -360,7 +361,7 @@ void NDEFReader::WriteOnRequestPermission(
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     const NDEFWriteOptions* options,
     device::mojom::blink::NDEFMessagePtr message,
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK(resolver);
 
   ScriptState* script_state = resolver->GetScriptState();
@@ -371,8 +372,7 @@ void NDEFReader::WriteOnRequestPermission(
   }
 
   ScriptState::Scope script_state_scope(script_state);
-
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
                                      "NFC permission request denied.");
     return;
@@ -474,7 +474,7 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     const NDEFMakeReadOnlyOptions* options,
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK(resolver);
 
   ScriptState* script_state = resolver->GetScriptState();
@@ -486,7 +486,7 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
 
   ScriptState::Scope script_state_scope(resolver->GetScriptState());
 
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
                                      "NFC permission request denied.");
     return;

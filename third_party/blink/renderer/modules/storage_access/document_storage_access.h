@@ -76,14 +76,14 @@ class DocumentStorageAccess final
       ScriptPromiseResolver<T>* resolver,
       bool request_unpartitioned_cookie_access,
       base::OnceCallback<void(ScriptPromiseResolver<T>*)> on_resolve,
-      mojom::blink::PermissionStatus status);
+      mojom::blink::PermissionStatusWithDetailsPtr status);
 
   // Resolves the promise if the `status` can approve; rejects the promise
   // otherwise, and consumes user activation.  Notably, does not modify the
   // per-frame storage access bit.
   void ProcessTopLevelStorageAccessPermissionState(
       ScriptPromiseResolver<IDLUndefined>* resolver,
-      mojom::blink::PermissionStatus status);
+      mojom::blink::PermissionStatusWithDetailsPtr status);
 };
 
 }  // namespace blink

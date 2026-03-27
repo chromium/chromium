@@ -73,7 +73,7 @@ class Permissions final : public ScriptWrappable,
   void VerifyPermissionAndReturnStatus(
       ScriptPromiseResolverBase* resolver,
       mojom::blink::PermissionDescriptorPtr descriptor,
-      mojom::blink::PermissionStatus result);
+      mojom::blink::PermissionStatusWithDetailsPtr result);
   void VerifyPermissionsAndReturnStatus(
       ScriptPromiseResolverBase* resolver,
       Vector<mojom::blink::PermissionDescriptorPtr> descriptors,

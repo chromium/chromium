@@ -80,7 +80,7 @@ class MODULES_EXPORT MIDIAccessInitializer
  private:
   void StartSession();
 
-  void OnPermissionRequestResult(mojom::blink::PermissionStatus);
+  void OnPermissionRequestResult(mojom::blink::PermissionStatusWithDetailsPtr);
 
   Member<ScriptPromiseResolver<MIDIAccess>> resolver_;
   Member<MIDIDispatcher> dispatcher_;

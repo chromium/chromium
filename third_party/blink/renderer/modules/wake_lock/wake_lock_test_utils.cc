@@ -247,7 +247,8 @@ void MockPermissionService::RequestPermission(
     RequestPermissionCallback callback) {
   V8WakeLockType::Enum type;
   if (!GetWakeLockTypeFromDescriptor(permission, &type)) {
-    std::move(callback).Run(mojom::blink::PermissionStatus::DENIED);
+    std::move(callback).Run(mojom::blink::PermissionStatusWithDetails::New(
+        mojom::blink::PermissionStatus::DENIED, nullptr));
     return;
   }
 
@@ -255,8 +256,10 @@ void MockPermissionService::RequestPermission(
   DCHECK(permission_responses_[pos].has_value());
   if (request_permission_callbacks_[pos])
     std::move(request_permission_callbacks_[pos]).Run();
-  std::move(callback).Run(permission_responses_[pos].value_or(
-      mojom::blink::PermissionStatus::DENIED));
+  std::move(callback).Run(mojom::blink::PermissionStatusWithDetails::New(
+      permission_responses_[pos].value_or(
+          mojom::blink::PermissionStatus::DENIED),
+      nullptr));
 }
 
 void MockPermissionService::RequestPermissions(

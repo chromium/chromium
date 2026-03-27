@@ -58,7 +58,7 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
   void OnPermissionInquiryComplete(
       ScriptPromiseResolver<ScreenDetails>* resolver,
       bool permission_requested,
-      mojom::blink::PermissionStatus status);
+      mojom::blink::PermissionStatusWithDetailsPtr status);
 
   Member<ScreenDetails> screen_details_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;

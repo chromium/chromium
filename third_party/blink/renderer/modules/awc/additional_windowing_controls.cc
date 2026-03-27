@@ -27,19 +27,20 @@ using mojom::blink::PermissionName;
 namespace {
 
 using AdditionalWindowingControlsActionCallback =
-    base::OnceCallback<void(mojom::blink::PermissionStatus)>;
+    base::OnceCallback<void(mojom::blink::PermissionStatusWithDetailsPtr)>;
 using ui::mojom::blink::WindowShowState;
 
-bool IsPermissionGranted(ScriptPromiseResolver<IDLUndefined>* resolver,
-                         mojom::blink::PermissionStatus status) {
+bool IsPermissionGranted(
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    const mojom::blink::PermissionStatusWithDetails& status) {
   if (!resolver->GetScriptState()->ContextIsValid()) {
     return false;
   }
 
-  if (status != mojom::blink::PermissionStatus::GRANTED) {
+  if (status.status != mojom::blink::PermissionStatus::GRANTED) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
-        status == mojom::blink::PermissionStatus::DENIED
+        status.status == mojom::blink::PermissionStatus::DENIED
             ? "Permission denied."
             : "Permission decision deferred.");
     return false;
@@ -96,18 +97,8 @@ ScriptPromise<IDLUndefined> MaybePromptWindowManagementPermission(
                                           /*user_gesture=*/true,
                                           std::move(callback));
   } else {
-    permission_service->HasPermission(
-        std::move(permission_descriptor),
-        // TODO(crbug.com/494089503): Simplify this once all mojo permission
-        // methods return a PermissionStatusWithDetails by letting
-        // AdditionalWindowingControlsActionCallback take a
-        // PermissionStatusWithDetails directly.
-        blink::BindOnce(
-            [](AdditionalWindowingControlsActionCallback callback,
-               mojom::blink::PermissionStatusWithDetailsPtr result) {
-              std::move(callback).Run(result->status);
-            },
-            std::move(callback)));
+    permission_service->HasPermission(std::move(permission_descriptor),
+                                      std::move(callback));
   }
 
   return resolver->Promise();
@@ -155,8 +146,8 @@ base::OnceCallback<void(bool)> GetSetResizableCallback(
 void OnMaximizePermissionRequestComplete(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     LocalDOMWindow* window,
-    mojom::blink::PermissionStatus status) {
-  if (!IsPermissionGranted(resolver, status)) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  if (!IsPermissionGranted(resolver, *status)) {
     return;
   }
 
@@ -171,8 +162,8 @@ void OnMaximizePermissionRequestComplete(
 void OnMinimizePermissionRequestComplete(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     LocalDOMWindow* window,
-    mojom::blink::PermissionStatus status) {
-  if (!IsPermissionGranted(resolver, status)) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  if (!IsPermissionGranted(resolver, *status)) {
     return;
   }
 
@@ -187,8 +178,8 @@ void OnMinimizePermissionRequestComplete(
 void OnRestorePermissionRequestComplete(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     LocalDOMWindow* window,
-    mojom::blink::PermissionStatus status) {
-  if (!IsPermissionGranted(resolver, status)) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  if (!IsPermissionGranted(resolver, *status)) {
     return;
   }
 
@@ -204,8 +195,8 @@ void OnSetResizablePermissionRequestComplete(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     LocalDOMWindow* window,
     bool resizable,
-    mojom::blink::PermissionStatus status) {
-  if (!IsPermissionGranted(resolver, status)) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  if (!IsPermissionGranted(resolver, *status)) {
     return;
   }
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_controller.h"
 
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
@@ -147,8 +148,8 @@ ScriptPromise<V8PermissionState> DeviceMotionController::RequestPermission(
       LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()),
       resolver->WrapCallbackInScriptScope(
           BindOnce([](ScriptPromiseResolver<V8PermissionState>* resolver,
-                      mojom::blink::PermissionStatus status) {
-            resolver->Resolve(ToV8PermissionState(status));
+                      mojom::blink::PermissionStatusWithDetailsPtr status) {
+            resolver->Resolve(ToV8PermissionState(status->status));
           })));
 
   return promise;

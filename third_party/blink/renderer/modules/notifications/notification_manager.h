@@ -107,7 +107,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   void OnPermissionRequestComplete(
       ScriptPromiseResolver<V8NotificationPermission>* resolver,
       V8NotificationPermissionCallback* deprecated_callback,
-      mojom::blink::PermissionStatus status);
+      mojom::blink::PermissionStatusWithDetailsPtr status);
 
   void OnNotificationServiceConnectionError();
   void OnPermissionServiceConnectionError();

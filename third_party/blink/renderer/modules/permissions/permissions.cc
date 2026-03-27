@@ -293,11 +293,11 @@ void Permissions::TaskComplete(
 void Permissions::VerifyPermissionAndReturnStatus(
     ScriptPromiseResolverBase* resolver,
     mojom::blink::PermissionDescriptorPtr descriptor,
-    mojom::blink::PermissionStatus result) {
+    mojom::blink::PermissionStatusWithDetailsPtr result) {
   Vector<int> caller_index_to_internal_index;
   caller_index_to_internal_index.push_back(0);
   Vector<mojom::blink::PermissionStatus> results;
-  results.push_back(std::move(result));
+  results.push_back(std::move(result->status));
   Vector<mojom::blink::PermissionDescriptorPtr> descriptors;
   descriptors.push_back(std::move(descriptor));
 

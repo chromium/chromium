@@ -57,9 +57,10 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   void DoRequest(V8WakeLockType::Enum,
                  ScriptPromiseResolver<WakeLockSentinel>*);
 
-  void DidReceivePermissionResponse(V8WakeLockType::Enum,
-                                    ScriptPromiseResolver<WakeLockSentinel>*,
-                                    mojom::blink::PermissionStatus);
+  void DidReceivePermissionResponse(
+      V8WakeLockType::Enum type,
+      ScriptPromiseResolver<WakeLockSentinel>* resolver,
+      mojom::blink::PermissionStatusWithDetailsPtr status);
 
   // ExecutionContextLifecycleObserver implementation
   void ContextDestroyed() override;

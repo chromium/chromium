@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
@@ -145,7 +146,9 @@ TEST_F(ClipboardTest, ClipboardPromiseReadText) {
       .WillOnce(WithArg<2>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
-            std::move(callback).Run(mojom::blink::PermissionStatus::GRANTED);
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
           }));
   BindMockPermissionService(executionContext);
 
@@ -182,7 +185,9 @@ TEST_F(ClipboardTest, SelectiveClipboardFormatRead) {
       .WillOnce(WithArg<2>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
-            std::move(callback).Run(mojom::blink::PermissionStatus::GRANTED);
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
           }));
   BindMockPermissionService(executionContext);
 
@@ -225,7 +230,9 @@ TEST_F(ClipboardTest, ReadAllClipboardFormats) {
       .WillOnce(WithArg<2>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
-            std::move(callback).Run(mojom::blink::PermissionStatus::GRANTED);
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
           }));
   BindMockPermissionService(executionContext);
 
@@ -270,7 +277,9 @@ TEST_F(ClipboardTest, ReadOnlyMimeTypesInClipboardRead) {
       .WillOnce(WithArg<2>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
-            std::move(callback).Run(mojom::blink::PermissionStatus::GRANTED);
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
           }));
   BindMockPermissionService(executionContext);
 
@@ -308,7 +317,9 @@ TEST_F(ClipboardTest, ClipboardItemGetTypeTest) {
       .WillOnce(WithArg<2>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
-            std::move(callback).Run(mojom::blink::PermissionStatus::GRANTED);
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::GRANTED, nullptr));
           }));
   BindMockPermissionService(executionContext);
 

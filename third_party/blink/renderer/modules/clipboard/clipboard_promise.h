@@ -138,10 +138,12 @@ class MODULES_EXPORT ClipboardPromise final
   void HandleWriteText(const String& text);
 
   // Reads/Writes after permission check.
-  void HandleReadWithPermission(mojom::blink::PermissionStatus permission);
-  void HandleReadTextWithPermission(mojom::blink::PermissionStatus permission);
-  void HandleWriteWithPermission(mojom::blink::PermissionStatus permission);
-  void HandleWriteTextWithPermission(mojom::blink::PermissionStatus permission);
+  void HandleReadWithPermission(mojom::blink::PermissionStatusWithDetailsPtr);
+  void HandleReadTextWithPermission(
+      mojom::blink::PermissionStatusWithDetailsPtr);
+  void HandleWriteWithPermission(mojom::blink::PermissionStatusWithDetailsPtr);
+  void HandleWriteTextWithPermission(
+      mojom::blink::PermissionStatusWithDetailsPtr);
 
 #if BUILDFLAG(IS_MAC)
   // Callback for macOS platform permission check for readText()
@@ -178,7 +180,8 @@ class MODULES_EXPORT ClipboardPromise final
   void ValidatePreconditions(
       mojom::blink::PermissionName permission,
       bool will_be_sanitized,
-      base::OnceCallback<void(mojom::blink::PermissionStatus)> callback);
+      base::OnceCallback<void(mojom::blink::PermissionStatusWithDetailsPtr)>
+          callback);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetClipboardTaskRunner();
 

@@ -45,6 +45,8 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
 
   using PermissionStatusCallback =
       base::OnceCallback<void(blink::mojom::PermissionStatus)>;
+  using InternalRequestPermissionsCallback =
+      base::OnceCallback<void(const std::vector<PermissionResult>&)>;
 
   class PendingRequest;
   using RequestsMap = base::IDMap<std::unique_ptr<PendingRequest>>;
@@ -63,7 +65,7 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
       RequestPageEmbeddedPermissionCallback callback) override;
   void RequestPermission(blink::mojom::PermissionDescriptorPtr permission,
                          bool user_gesture,
-                         PermissionStatusCallback callback) override;
+                         RequestPermissionCallback callback) override;
   void RequestPermissions(
       std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
       bool user_gesture,
@@ -85,11 +87,11 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
   void RequestPermissionsInternal(
       BrowserContext* browser_context,
       PermissionRequestDescription request_description,
-      RequestPermissionsCallback callback);
+      InternalRequestPermissionsCallback callback);
 
   int CreatePendingRequest(
       const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
-      RequestPermissionsCallback callback);
+      InternalRequestPermissionsCallback callback);
 
   void OnRequestPermissionsResponse(
       int pending_request_id,

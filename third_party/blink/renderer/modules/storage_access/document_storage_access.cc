@@ -8,7 +8,7 @@
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -359,7 +359,7 @@ void DocumentStorageAccess::ProcessStorageAccessPermissionState(
     ScriptPromiseResolver<T>* resolver,
     bool request_unpartitioned_cookie_access,
     base::OnceCallback<void(ScriptPromiseResolver<T>*)> on_resolve,
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK(resolver);
 
   ScriptState* script_state = resolver->GetScriptState();
@@ -374,7 +374,7 @@ void DocumentStorageAccess::ProcessStorageAccessPermissionState(
     return;
   }
 
-  if (status == mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status == mojom::blink::PermissionStatus::GRANTED) {
     if (request_unpartitioned_cookie_access) {
       GetSupplementable()->dom_window_->SetStorageAccessApiStatus(
           net::StorageAccessApiStatus::kAccessViaAPI);
@@ -523,14 +523,14 @@ ScriptPromise<IDLUndefined> DocumentStorageAccess::requestStorageAccessFor(
 
 void DocumentStorageAccess::ProcessTopLevelStorageAccessPermissionState(
     ScriptPromiseResolver<IDLUndefined>* resolver,
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK(resolver);
   DCHECK(GetSupplementable()->GetFrame());
   ScriptState* script_state = resolver->GetScriptState();
   DCHECK(script_state);
   ScriptState::Scope scope(script_state);
 
-  if (status == mojom::blink::PermissionStatus::GRANTED) {
+  if (status->status == mojom::blink::PermissionStatus::GRANTED) {
     FireRequestStorageAccessForMetrics(
         RequestStorageResult::APPROVED_NEW_OR_EXISTING_GRANT,
         ExecutionContext::From(script_state));
