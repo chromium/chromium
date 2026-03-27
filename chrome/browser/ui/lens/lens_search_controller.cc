@@ -718,6 +718,11 @@ LensSearchController::CreateLensComposeboxController() {
   return std::make_unique<lens::LensComposeboxController>(this, profile);
 }
 
+std::unique_ptr<lens::LensQueryFlowRouter>
+LensSearchController::CreateLensQueryFlowRouter() {
+  return std::make_unique<lens::LensQueryFlowRouter>(this);
+}
+
 std::unique_ptr<lens::LensSearchContextualizationController>
 LensSearchController::CreateLensSearchContextualizationController() {
   return std::make_unique<lens::LensSearchContextualizationController>(this);
@@ -776,7 +781,7 @@ void LensSearchController::StartLensSession(
   // Create the query controller to be used for the current invocation.
   CHECK(!lens_overlay_query_controller_);
   lens_overlay_query_controller_ = CreateLensQueryController(invocation_source);
-  query_router_ = std::make_unique<lens::LensQueryFlowRouter>(this);
+  query_router_ = CreateLensQueryFlowRouter();
   query_router_->SetSuggestInputsReadyCallback(
       base::BindRepeating(&LensSearchController::OnSuggestInputsReady,
                           weak_ptr_factory_.GetWeakPtr()));
