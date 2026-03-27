@@ -515,9 +515,7 @@ VisiblePositionInFlatTree SelectionModifier::ModifyMovingForward(
     case TextGranularity::kParagraphBoundary:
       return EndOfParagraph(
           EndForPlatform(),
-          RuntimeEnabledFeatures::
-                      MoveToParagraphStartOrEndSkipsNonEditableEnabled() &&
-                  IsEditablePosition(EndForPlatform().DeepEquivalent())
+          IsEditablePosition(EndForPlatform().DeepEquivalent())
               ? EditingBoundaryCrossingRule::kCanSkipOverEditingBoundary
               : EditingBoundaryCrossingRule::kCannotCrossEditingBoundary);
     case TextGranularity::kDocumentBoundary: {
@@ -712,9 +710,7 @@ VisiblePositionInFlatTree SelectionModifier::ModifyMovingBackward(
     case TextGranularity::kParagraphBoundary:
       pos = StartOfParagraph(
           StartForPlatform(),
-          RuntimeEnabledFeatures::
-                      MoveToParagraphStartOrEndSkipsNonEditableEnabled() &&
-                  IsEditablePosition(StartForPlatform().DeepEquivalent())
+          IsEditablePosition(StartForPlatform().DeepEquivalent())
               ? EditingBoundaryCrossingRule::kCanSkipOverEditingBoundary
               : EditingBoundaryCrossingRule::kCannotCrossEditingBoundary);
       break;
