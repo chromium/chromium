@@ -108,6 +108,7 @@
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html/menu_safe_triangle.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
@@ -1655,7 +1656,9 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     // :popover-open https://issues.chromium.org/issues/375004874
     OwnerShadowHost()->PseudoStateChanged(CSSSelector::kPseudoOpen);
   }
-  if (IsA<HTMLMenuItemElement>(invoker)) {
+  HTMLMenuItemElement* invoker_menuitem =
+      DynamicTo<HTMLMenuItemElement>(invoker);
+  if (invoker_menuitem) {
     // There are some edge cases where :open doesn't change here, but in
     // practice this basically means it's changing.
     invoker->PseudoStateChanged(CSSSelector::kPseudoOpen);
@@ -1663,6 +1666,13 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
 
   CHECK(!original_document.AllOpenPopovers().Contains(this));
   original_document.AllOpenPopovers().insert(this);
+
+  if (invoker_menuitem) {
+    if (HTMLMenuListElement* invoked_submenu =
+            invoker_menuitem->GetInvokedSubmenu()) {
+      MenuSafeTriangle::MaybeCreate(invoker_menuitem, invoked_submenu);
+    }
+  }
 
   SetPopoverFocusOnShow();
 
@@ -2115,6 +2125,15 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
   }
 
   document.AllOpenPopovers().erase(this);
+
+  if (IsA<HTMLMenuListElement>(this)) {
+    if (MenuSafeTriangle* safe_triangle = document.GetMenuSafeTriangle()) {
+      // If the MenuSafeTriangle existed to allow the user to move the mouse
+      // to the menulist that we just closed, we need to clear it.  We should
+      // do so immediately, before we try to install a new one.
+      safe_triangle->Recheck();
+    }
+  }
 
   Element* previously_focused_element =
       GetPopoverData()->previouslyFocusedElement();

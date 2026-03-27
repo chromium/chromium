@@ -226,6 +226,7 @@ class Locale;
 class Location;
 class MediaQueryListListener;
 class MediaQueryMatcher;
+class MenuSafeTriangle;
 class NodeIterator;
 class NthIndexCache;
 class Page;
@@ -1763,6 +1764,14 @@ class CORE_EXPORT Document : public ContainerNode,
     return elements_with_interest_;
   }
 
+  MenuSafeTriangle* GetMenuSafeTriangle();
+  void SetMenuSafeTriangle(MenuSafeTriangle*);
+  // TODO(https://crbug.com/406566432): For now the menu stack is just the
+  // same as the popover stack, but it's possible it should be slightly
+  // different.  Having it be a distinct method also makes it clearer why
+  // callers are using it.
+  PopoverStack& MenuStack() { return popover_auto_stack_; }
+
   // https://crbug.com/1453291
   // The DOM Parts API:
   // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
@@ -3239,6 +3248,10 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapHashSet<Member<const Element>> overscroll_command_targets_;
   HeapHashSet<Member<Element>> overscroll_command_invokers_;
   bool overscroll_command_targets_dirty_ = false;
+
+  // Data on the currently active safe-triangle (if any), for HTML menu
+  // elements, that is delaying interest gain/loss.
+  Member<MenuSafeTriangle> menu_safe_triangle_;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

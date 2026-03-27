@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/html/menu_safe_triangle.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -1068,6 +1069,11 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
         frame_->GetDocument()->GetAnchorElementInteractionTracker();
     if (tracker) {
       tracker->OnMouseMoveEvent(mouse_event);
+    }
+
+    if (MenuSafeTriangle* safe_triangle =
+            frame_->GetDocument()->GetMenuSafeTriangle()) {
+      safe_triangle->Recheck();
     }
   }
 

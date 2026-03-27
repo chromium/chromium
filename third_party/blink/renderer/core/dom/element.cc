@@ -213,6 +213,7 @@
 #include "third_party/blink/renderer/core/html/html_table_rows_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html/menu_safe_triangle.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
@@ -1890,6 +1891,12 @@ bool Element::InterestGained(Element* target, InterestState state) {
     return false;
   }
 
+  if (MenuSafeTriangle* safe_triangle = GetDocument().GetMenuSafeTriangle()) {
+    if (safe_triangle->ShouldDeferInterestGained(this, target, state)) {
+      return false;
+    }
+  }
+
   if (Element* existing_invoker = target->SourceInterestInvoker()) {
     // We're gaining interest, but the target already has an active interest
     // invoker. There are two cases:
@@ -1960,6 +1967,13 @@ bool Element::InterestLost(Element* target,
     return false;
   }
 
+  if (MenuSafeTriangle* safe_triangle = GetDocument().GetMenuSafeTriangle()) {
+    if (safe_triangle->ShouldDeferInterestLost(this, target, cancelable,
+                                               behavior)) {
+      return false;
+    }
+  }
+
   Event* lose_interest_event =
       InterestEvent::Create(event_type_names::kLoseinterest, this,
                             cancelable == InterestLostCancelable::kCancelable
@@ -1997,6 +2011,7 @@ bool Element::InterestLost(Element* target,
 void Element::HandlePointerEventsForInterestFor(
     const AtomicString& event_type) {
   if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
+    CHECK(!RuntimeEnabledFeatures::MenuElementsEnabled());
     return;
   }
   if (event_type == event_type_names::kPointerover) {
@@ -2030,6 +2045,9 @@ void Element::DefaultEventHandler(Event& event) {
     // explicitly check it here. So we just immediately show interest here for
     // all buttons that don't yet have interest.
     // TODO: should <area> elements be handled here also?
+    // TODO(https://crbug.com/406566432): Should this also consider
+    // <menuitem>?  This affects whether we can assume <menuitem> never has
+    // InterestState::kExplicitInterest.
     if (auto* button = DynamicTo<HTMLButtonElement>(this);
         button && IsA<GestureEvent>(event) &&
         type == event_type_names::kGesturelongpress &&

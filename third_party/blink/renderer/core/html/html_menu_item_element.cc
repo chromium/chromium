@@ -507,6 +507,10 @@ HTMLMenuOwnerElement* HTMLMenuItemElement::OwningMenuElement() const {
 void HTMLMenuItemElement::ResetAncestorElementCache() {
   owning_menu_element_ = nullptr;
   nearest_ancestor_field_set_ = nullptr;
+  // TODO(https://crbug.com/406566432): Should this be stricter about the
+  // content model?
+  // TODO(https://crbug.com/406566432): Should this consider flat tree
+  // ancestors?
   for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
     if (auto* owning_menu = DynamicTo<HTMLMenuOwnerElement>(ancestor)) {
       owning_menu_element_ = owning_menu;

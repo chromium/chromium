@@ -266,6 +266,7 @@
 #include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/html_unknown_element.h"
 #include "third_party/blink/renderer/core/html/media/lazy_load_media_observer.h"
+#include "third_party/blink/renderer/core/html/menu_safe_triangle.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
@@ -8770,6 +8771,15 @@ void Document::SetPopoverPickerPointerdown(PopoverPickerPointerdownInfo info) {
   popover_picker_pointerdown_info_ = std::move(info);
 }
 
+MenuSafeTriangle* Document::GetMenuSafeTriangle() {
+  return menu_safe_triangle_;
+}
+
+void Document::SetMenuSafeTriangle(MenuSafeTriangle* new_safe_triangle) {
+  CHECK_NE(!menu_safe_triangle_, !new_safe_triangle);
+  menu_safe_triangle_ = new_safe_triangle;
+}
+
 void Document::exitPointerLock() {
   if (!GetPage())
     return;
@@ -9581,6 +9591,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(view_transitions_);
   visitor->Trace(overscroll_command_targets_);
   visitor->Trace(overscroll_command_invokers_);
+  visitor->Trace(menu_safe_triangle_);
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
