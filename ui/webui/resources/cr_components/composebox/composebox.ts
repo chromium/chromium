@@ -34,7 +34,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, FILE_VALIDATION_ERRORS_MAP, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -293,13 +293,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // Retains the latest version of the pending automatic active tab's title.
   protected pendingAutomaticActiveTabTitle_: string = '';
   protected dragAndDropHandler_: DragAndDropHandler;
-  private showTypedSuggestWithContext_: boolean =
-      loadTimeData.getBoolean('composeboxShowTypedSuggestWithContext');
+  private showTypedSuggestWithContext_: boolean = getLoadTimeBoolean(
+      'composeboxShowTypedSuggestWithContext', /*defaultValue=*/ false);
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
   // Determines whether to query zps when the composebox is rendered.
-  private queryZpsOnLoad: boolean = loadTimeData.valueExists('queryZpsOnLoad') ?
-      loadTimeData.valueExists('queryZpsOnLoad') :
-      true;
+  private queryZpsOnLoad: boolean =
+      getLoadTimeBoolean('queryZpsOnLoad', /*defaultValue=*/ true);
   private browserProxy: ComposeboxProxyImpl = ComposeboxProxyImpl.getInstance();
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -308,13 +307,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxListenerIds: number[] = [];
   private resizeObservers_: ResizeObserver[] = [];
   private composeboxCloseByEscape_: boolean =
-      loadTimeData.getBoolean('composeboxCloseByEscape');
+      getLoadTimeBoolean('composeboxCloseByEscape', /*defaultValue=*/ true);
   private dragAndDropEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
-  private clearAllInputsWhenSubmittingQuery_: boolean =
-      loadTimeData.valueExists('clearAllInputsWhenSubmittingQuery') ?
-      loadTimeData.getBoolean('clearAllInputsWhenSubmittingQuery') :
-      false;
+  private clearAllInputsWhenSubmittingQuery_: boolean = getLoadTimeBoolean(
+      'clearAllInputsWhenSubmittingQuery', /*defaultValue=*/ false);
   private pendingUploads_: Set<string> = new Set<string>([]);
   private contextMenuOpened_: boolean = false;
   private automaticActiveTab_: ComposeboxFile|null = null;

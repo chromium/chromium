@@ -407,8 +407,6 @@ export class AppElement extends AppElementBase {
   protected accessor wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
   protected accessor showWallpaperSearchButton_: boolean = false;
-  protected accessor composeboxCloseByClickOutside_: boolean =
-      loadTimeData.getBoolean('composeboxCloseByClickOutside');
   protected accessor isActionChipsVisible_: boolean =
       loadTimeData.getBoolean('actionChipsEnabled');
   protected accessor isFooterVisible_: boolean = false;
@@ -879,8 +877,8 @@ export class AppElement extends AppElementBase {
   }
 
   protected onScrimClick_() {
-    if (this.showComposebox_ && this.composeboxCloseByClickOutside_) {
-      this.onComposeboxClickOutside_();
+    if (this.showComposebox_) {
+      this.onComposeboxOutsideClick_();
     }
     if (this.showLensUploadDialog_) {
       this.onCloseLensSearch_();
@@ -888,7 +886,7 @@ export class AppElement extends AppElementBase {
     this.containerFocused_ = false;
   }
 
-  protected onComposeboxClickOutside_() {
+  protected onComposeboxOutsideClick_() {
     const composebox =
         this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
     assert(composebox);

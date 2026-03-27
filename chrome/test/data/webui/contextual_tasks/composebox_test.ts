@@ -1177,6 +1177,10 @@ suite('ContextualTasksComposeboxTest', () => {
     const threadFrame = contextualTasksApp.$.threadFrame;
     const composebox = contextualTasksApp.$.composebox;
 
+    // Set to zero state to ensure autocomplete is queried.
+    testProxy.callbackRouterRemote.onZeroStateChange(true);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
     // Simulate a load to initialize state.
     const loadStartEventOnline =
         new Event('loadstart') as Event & {isTopLevel?: boolean, url?: string};
@@ -1189,7 +1193,7 @@ suite('ContextualTasksComposeboxTest', () => {
     assertFalse(
         contextualTasksApp.isLoadErrorForTesting, 'Should be online initially');
     assertTrue(isVisible(composebox), 'Composebox should be visible initially');
-    assertEquals(mockSearchboxPageHandler.getCallCount('queryAutocomplete'), 1);
+    assertEquals(1, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
 
     // 2. Go offline.
     Object.defineProperty(window.navigator, 'onLine', {

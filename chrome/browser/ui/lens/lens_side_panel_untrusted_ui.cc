@@ -190,9 +190,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   // Disable context menu and related features.
   html_source->AddBoolean("composeboxShowContextMenu", false);
   html_source->AddBoolean("composeboxShowContextMenuDescription", true);
-  // Send event when escape is pressed.
-  html_source->AddBoolean("composeboxCloseByEscape", true);
-  html_source->AddBoolean("composeboxShowLensSearchChip", false);
   // Enables a fix that causes no flickering when transitioning between ZPS and
   // typed suggestions.
   html_source->AddBoolean("composeboxNoFlickerSuggestionsFix", true);

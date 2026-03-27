@@ -1292,8 +1292,6 @@ suite('NewTabPageAppTest', () => {
       loadTimeData.overrideValues({
         searchboxShowComposeEntrypoint: true,
         searchboxShowComposebox: true,
-        composeboxCloseByEscape: true,
-        composeboxCloseByClickOutside: true,
       });
       // Needed so `.click()` calls don't navigate.
       window.open = () => null;
@@ -1485,82 +1483,6 @@ suite('NewTabPageAppTest', () => {
                     .querySelector('cr-searchbox-input')!.shadowRoot
                     .querySelector<HTMLInputElement>('#input')!.value);
           });
-    });
-    suite('Close options disabled', () => {
-      suiteSetup(() => {
-        loadTimeData.overrideValues({
-          composeboxCloseByEscape: false,
-          composeboxCloseByClickOutside: false,
-        });
-      });
-
-      test('Close by escape is disabled', async () => {
-        searchboxHandler.reset();
-        searchboxHandler.setResultFor('getInputState', Promise.resolve({
-          state: {
-            allowedModels: [],
-            allowedTools: [],
-            allowedInputTypes: [],
-            activeModel: 0,
-            activeTool: 0,
-            disabledModels: [],
-            disabledTools: [],
-            disabledInputTypes: [],
-          },
-        }));
-        assertEquals(
-            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
-        ($$(app,
-            '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
-          detail: {text: '', files: []},
-        })));
-        await microtasksFinished();
-        const escapeKeyEvent = new KeyboardEvent('keydown', {
-          key: 'Escape',
-          bubbles: true,
-          cancelable: true,
-        });
-        const composebox = app.shadowRoot.querySelector('cr-composebox');
-        assertTrue(!!composebox);
-        composebox.dispatchEvent(escapeKeyEvent);
-        await microtasksFinished();
-
-        // Assert.
-        assertEquals(
-            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
-      });
-
-      test('Exit by click outside is disabled', async () => {
-        searchboxHandler.reset();
-        searchboxHandler.setResultFor('getInputState', Promise.resolve({
-          state: {
-            allowedModels: [],
-            allowedTools: [],
-            allowedInputTypes: [],
-            activeModel: 0,
-            activeTool: 0,
-            disabledModels: [],
-            disabledTools: [],
-            disabledInputTypes: [],
-          },
-        }));
-        assertEquals(
-            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
-        ($$(app,
-            '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
-          detail: {text: '', files: []},
-        })));
-        await microtasksFinished();
-        const composeboxScrim =
-            app.shadowRoot.querySelector<HTMLElement>('#scrim');
-        assertTrue(!!composeboxScrim);
-        composeboxScrim.click();
-        await microtasksFinished();
-
-        // Assert.
-        assertEquals(
-            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
-      });
     });
   });
 

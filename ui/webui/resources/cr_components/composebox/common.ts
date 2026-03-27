@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -163,4 +164,18 @@ export function hasAllowedInputs(
       (inputState.allowedModels.length > 0 ||
        inputState.allowedTools.length > 0 ||
        inputState.allowedInputTypes.length > 0);
+}
+
+/**
+ * Helper to retrieve a boolean from loadTimeData with a fallback if the
+ * value hasn't been set.
+ */
+// TODO(b/474406096): As part of componentization, the use of
+// `loadTimeData.valueExists` in this file should be removed and the
+// per-embedder behavior migrated into the relevant embedder. If a feature does
+// still need to exist in the base component, it should become a property
+// instead.
+export function getLoadTimeBoolean(id: string, defaultValue: boolean): boolean {
+  return loadTimeData.valueExists(id) ? loadTimeData.getBoolean(id) :
+                                        defaultValue;
 }

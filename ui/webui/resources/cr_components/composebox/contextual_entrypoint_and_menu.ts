@@ -14,11 +14,11 @@ import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbo
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {GlifAnimationState} from './common.js';
+import {getLoadTimeBoolean, GlifAnimationState} from './common.js';
 import type {ContextualActionMenuElement} from './contextual_action_menu.js';
-import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 import {getCss} from './contextual_entrypoint_and_menu.css.js';
 import {getHtml} from './contextual_entrypoint_and_menu.html.js';
+import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 
 export interface ContextualEntrypointAndMenuElement {
   $: {
@@ -89,9 +89,7 @@ export class ContextualEntrypointAndMenuElement extends
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
   protected accessor usePecApi_: boolean =
-      loadTimeData.valueExists('contextualMenuUsePecApi') ?
-      loadTimeData.getBoolean('contextualMenuUsePecApi') :
-      false;
+      getLoadTimeBoolean('contextualMenuUsePecApi', /*defaultValue=*/ false);
 
   // TODO(crbug.com/491126593): Explore avoiding/removing this local property.
   private shouldOpenMenuForMultiSelection_: boolean = false;

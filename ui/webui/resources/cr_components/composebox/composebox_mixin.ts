@@ -8,6 +8,7 @@ import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
+import {getLoadTimeBoolean} from './common.js';
 import type {ComposeboxFile, ComposeboxState} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -103,22 +104,18 @@ export const ComposeboxEmbedderMixin =
         accessor showDropdown: boolean =
             loadTimeData.getBoolean('composeboxShowZps');
         accessor showFileCarousel: boolean = false;
-        accessor showModelPicker: boolean =
-            loadTimeData.valueExists('contextualMenuUsePecApi') ?
-            loadTimeData.getBoolean('contextualMenuUsePecApi') :
-            false;
-        showVoiceSearch: boolean =
-            loadTimeData.valueExists('composeboxShowVoiceSearch') ?
-            loadTimeData.getBoolean('composeboxShowVoiceSearch') :
-            false;
+        accessor showModelPicker: boolean = getLoadTimeBoolean(
+            'contextualMenuUsePecApi', /*defaultValue=*/ false);
+        showVoiceSearch: boolean = getLoadTimeBoolean(
+            'composeboxShowVoiceSearch', /*defaultValue=*/ false);
         accessor smartComposeInlineHint: string = '';
         accessor state: ComposeboxState|null = null;
         accessor submitEnabled: boolean = false;
         accessor tabSuggestions: TabInfo[] = [];
         accessor transcript: string = '';
         accessor uploadButtonDisabled: boolean = false;
-        composeboxNoFlickerSuggestionsFix: boolean =
-            loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
+        composeboxNoFlickerSuggestionsFix: boolean = getLoadTimeBoolean(
+            'composeboxNoFlickerSuggestionsFix', /*defaultValue=*/ false);
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
         lastQueriedInput: string = '';

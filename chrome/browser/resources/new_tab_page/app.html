@@ -1,6 +1,3 @@
-<!-- #html_wrapper_imports_start
-import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
-#html_wrapper_imports_end -->
 <div id="content"
   ?ntp-threads-rail-open="${this.showComposebox_ && this.enableThreadsRail_}">
   ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
@@ -185,7 +182,7 @@ ${this.showVoiceSearchOverlay_ ? html`
 ` : ''}
 ${!this.ntpRealboxNextEnabled_ && this.showComposebox_ ? html`
   <div id="scrim"
-      @click="${this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"></div>
+      @click="${this.onComposeboxOutsideClick_}"></div>
 ` : ''}
 <svg>
   <defs>
