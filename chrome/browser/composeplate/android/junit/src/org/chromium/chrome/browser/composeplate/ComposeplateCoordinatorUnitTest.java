@@ -19,7 +19,6 @@ import android.content.res.ColorStateList;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -48,8 +47,6 @@ public class ComposeplateCoordinatorUnitTest {
 
     @Mock private ViewGroup mParentView;
     @Mock private ComposeplateView mComposeplateView;
-    @Mock private ImageView mVoiceSearchButton;
-    @Mock private ImageView mLensButton;
     @Mock private View mIncognitoButton;
     @Mock private View mComposeplateButton;
     @Mock private View.OnClickListener mOriginalOnClickListener;
@@ -71,9 +68,6 @@ public class ComposeplateCoordinatorUnitTest {
         when(mParentView.findViewById(R.id.composeplate_view)).thenReturn(mComposeplateView);
         when(mParentView.getResources()).thenReturn(mContext.getResources());
         when(mComposeplateView.getContext()).thenReturn(mContext);
-        when(mComposeplateView.findViewById(R.id.voice_search_button))
-                .thenReturn(mVoiceSearchButton);
-        when(mComposeplateView.findViewById(R.id.lens_camera_button)).thenReturn(mLensButton);
         when(mComposeplateView.findViewById(R.id.incognito_button)).thenReturn(mIncognitoButton);
         when(mComposeplateView.findViewById(R.id.composeplate_button))
                 .thenReturn(mComposeplateButton);
@@ -97,40 +91,6 @@ public class ComposeplateCoordinatorUnitTest {
         mCoordinator.setVisibility(/* visible= */ false, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.GONE);
         histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void testSetVoiceSearchClickListener() {
-        mCoordinator.setVoiceSearchClickListener(mOriginalOnClickListener);
-        View.OnClickListener enhancedListener = getCapturedOnClickListener(mVoiceSearchButton);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "NewTabPage.Module.Click",
-                        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_VOICE_SEARCH_BUTTON);
-
-        View clickedView = mock(View.class);
-        enhancedListener.onClick(clickedView);
-
-        histogramWatcher.assertExpected();
-        verify(mOriginalOnClickListener).onClick(clickedView);
-    }
-
-    @Test
-    public void testSetLensClickListener() {
-        mCoordinator.setLensClickListener(mOriginalOnClickListener);
-        View.OnClickListener enhancedListener = getCapturedOnClickListener(mLensButton);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "NewTabPage.Module.Click",
-                        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_LENS_BUTTON);
-
-        View clickedView = mock(View.class);
-        enhancedListener.onClick(clickedView);
-
-        histogramWatcher.assertExpected();
-        verify(mOriginalOnClickListener).onClick(clickedView);
     }
 
     @Test
@@ -168,20 +128,14 @@ public class ComposeplateCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
-        mCoordinator.setVoiceSearchClickListener(mOriginalOnClickListener);
-        mCoordinator.setLensClickListener(mOriginalOnClickListener);
         mCoordinator.setIncognitoClickListener(mOriginalOnClickListener);
         mCoordinator.setComposeplateButtonClickListener(mOriginalOnClickListener);
 
-        assertNotNull(mPropertyModel.get(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER));
-        assertNotNull(mPropertyModel.get(ComposeplateProperties.LENS_CLICK_LISTENER));
         assertNotNull(mPropertyModel.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
         assertNotNull(
                 mPropertyModel.get(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER));
 
         mCoordinator.destroy();
-        assertNull(mPropertyModel.get(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER));
-        assertNull(mPropertyModel.get(ComposeplateProperties.LENS_CLICK_LISTENER));
         assertNull(mPropertyModel.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
         assertNull(mPropertyModel.get(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER));
     }

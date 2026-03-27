@@ -55,31 +55,6 @@ public class ComposeplateCoordinator {
     }
 
     /**
-     * Sets the click listener for the voice search button.
-     *
-     * @param voiceSearchClickListener The click listener for the voice search button.
-     */
-    public void setVoiceSearchClickListener(View.OnClickListener voiceSearchClickListener) {
-        mModel.set(
-                ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER,
-                createEnhancedClickListener(
-                        voiceSearchClickListener,
-                        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_VOICE_SEARCH_BUTTON));
-    }
-
-    /**
-     * Sets the click listener for the lens button.
-     *
-     * @param lensClickListener The click listener for the lens button.
-     */
-    public void setLensClickListener(View.OnClickListener lensClickListener) {
-        mModel.set(
-                ComposeplateProperties.LENS_CLICK_LISTENER,
-                createEnhancedClickListener(
-                        lensClickListener, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_LENS_BUTTON));
-    }
-
-    /**
      * Sets the click listener for the incognito button.
      *
      * @param incognitoClickListener The click listener for the incognito button.
@@ -147,8 +122,6 @@ public class ComposeplateCoordinator {
     }
 
     public void destroy() {
-        mModel.set(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER, null);
-        mModel.set(ComposeplateProperties.LENS_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.INCOGNITO_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER, null);
     }

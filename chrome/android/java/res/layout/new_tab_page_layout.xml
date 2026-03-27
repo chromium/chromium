@@ -32,16 +32,6 @@ found in the LICENSE file.
     <include layout="@layout/fake_search_box_layout"/>
 
     <ViewStub
-        android:id="@+id/composeplate_view_stub"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/composeplate_view_height"
-        android:layout_marginTop="@dimen/composeplate_view_margin_top_v1"
-        android:layout_marginStart="@dimen/mvt_container_lateral_margin"
-        android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
-        android:layout="@layout/composeplate_view_layout"
-        />
-
-    <ViewStub
         android:id="@+id/composeplate_view_v2_stub"
         android:layout_width="match_parent"
         android:layout_height="@dimen/composeplate_view_height"

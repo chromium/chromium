@@ -48,8 +48,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class ComposeplateViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ComposeplateView mViewMock;
-    @Mock private ImageView mVoiceSearchButtonView;
-    @Mock private ImageView mLensButtonView;
     @Mock private ImageView mIncognitoButtonView;
     @Mock private View mComposeplateButtonView;
     @Mock private OnClickListener mOnClickListener;
@@ -82,21 +80,6 @@ public class ComposeplateViewBinderUnitTest {
 
         mPropertyModel.set(ComposeplateProperties.IS_VISIBLE, false);
         verify(mViewMock).setVisibility(eq(View.GONE));
-    }
-
-    @Test
-    public void testSetVoiceSearchButtonClickListener() {
-        when(mViewMock.findViewById(eq(R.id.voice_search_button)))
-                .thenReturn(mVoiceSearchButtonView);
-        mPropertyModel.set(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER, mOnClickListener);
-        verify(mVoiceSearchButtonView).setOnClickListener(eq(mOnClickListener));
-    }
-
-    @Test
-    public void testSetLensButtonClickListener() {
-        when(mViewMock.findViewById(eq(R.id.lens_camera_button))).thenReturn(mLensButtonView);
-        mPropertyModel.set(ComposeplateProperties.LENS_CLICK_LISTENER, mOnClickListener);
-        verify(mLensButtonView).setOnClickListener(eq(mOnClickListener));
     }
 
     @Test
@@ -170,29 +153,6 @@ public class ComposeplateViewBinderUnitTest {
 
         ImageView incognitoIconView = mView.findViewById(R.id.incognito_button_icon);
         assertEquals(colorStateList, incognitoIconView.getImageTintList());
-    }
-
-    @Test
-    public void testSetColorStateList_v1() {
-        mView =
-                (ComposeplateView)
-                        LayoutInflater.from(mContext)
-                                .inflate(R.layout.composeplate_view_layout, null);
-        // Bind PropertyModel with mView.
-        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
-
-        ColorStateList colorStateList =
-                AppCompatResources.getColorStateList(mContext, R.color.default_red);
-        mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
-
-        ImageView incognitoButton = mView.findViewById(R.id.incognito_button);
-        assertEquals(colorStateList, incognitoButton.getImageTintList());
-
-        ImageView voiceSearchButton = mView.findViewById(R.id.voice_search_button);
-        assertEquals(colorStateList, voiceSearchButton.getImageTintList());
-
-        ImageView lensButton = mView.findViewById(R.id.lens_camera_button);
-        assertEquals(colorStateList, lensButton.getImageTintList());
     }
 
     @Test

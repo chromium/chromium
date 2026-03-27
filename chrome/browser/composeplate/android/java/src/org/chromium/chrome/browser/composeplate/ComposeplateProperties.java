@@ -19,11 +19,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 interface ComposeplateProperties {
     WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey IS_INCOGNITO_BUTTON_VISIBLE = new WritableBooleanPropertyKey();
-    WritableObjectPropertyKey<View.OnClickListener> VOICE_SEARCH_CLICK_LISTENER =
-            new WritableObjectPropertyKey<>();
-
-    WritableObjectPropertyKey<View.OnClickListener> LENS_CLICK_LISTENER =
-            new WritableObjectPropertyKey<>();
 
     WritableObjectPropertyKey<View.OnClickListener> INCOGNITO_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -42,8 +37,6 @@ interface ComposeplateProperties {
             new PropertyKey[] {
                 IS_VISIBLE,
                 IS_INCOGNITO_BUTTON_VISIBLE,
-                VOICE_SEARCH_CLICK_LISTENER,
-                LENS_CLICK_LISTENER,
                 INCOGNITO_CLICK_LISTENER,
                 COMPOSEPLATE_BUTTON_CLICK_LISTENER,
                 APPLY_WHITE_BACKGROUND_WITH_SHADOW,
