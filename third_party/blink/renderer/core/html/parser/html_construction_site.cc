@@ -427,9 +427,7 @@ void HTMLConstructionSite::FlushPendingText() {
     task.parent = pending_text_.parent;
     task.next_child = pending_text_.next_child;
     task.child = Text::Create(task.parent->GetDocument(), std::move(substring));
-    if (SanitizeIfNeeded(task)) {
-      QueueTask(task, false);
-    }
+    QueueTask(task, false);
     DCHECK_EQ(To<Text>(task.child.Get())->length(),
               break_index - current_position);
     current_position = break_index;
@@ -437,17 +435,16 @@ void HTMLConstructionSite::FlushPendingText() {
   pending_text_.Discard();
 }
 
-void HTMLConstructionSite::QueueTask(const HTMLConstructionSiteTask& task,
+void HTMLConstructionSite::QueueTask(HTMLConstructionSiteTask& task,
                                      bool flush_pending_text) {
   if (flush_pending_text)
     FlushPendingText();
-  task_queue_.push_back(task);
+  if (SanitizeIfNeeded(task)) {
+    task_queue_.push_back(task);
+  }
 }
 
 bool HTMLConstructionSite::SanitizeIfNeeded(HTMLConstructionSiteTask& task) {
-  // TODO(nrosenthal): sanitize also reparenting etc?
-  CHECK(task.operation == HTMLConstructionSiteTask::Operation::kInsert ||
-        task.operation == HTMLConstructionSiteTask::Operation::kInsertText);
   if (!RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled() || !task.child ||
       !sanitizer_) {
     return true;
@@ -505,9 +502,7 @@ void HTMLConstructionSite::AttachLater(InsertionLocation location,
   }
 
   DCHECK(task.parent);
-  if (SanitizeIfNeeded(task)) {
-    QueueTask(task, true);
-  }
+  QueueTask(task, true);
 }
 
 void HTMLConstructionSite::ExecuteQueuedTasks() {

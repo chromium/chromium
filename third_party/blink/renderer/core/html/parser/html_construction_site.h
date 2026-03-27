@@ -296,7 +296,7 @@ class HTMLConstructionSite final {
   void MergeAttributesFromTokenIntoElement(AtomicHTMLToken*, Element*);
 
   void ExecuteTask(HTMLConstructionSiteTask&);
-  void QueueTask(const HTMLConstructionSiteTask&, bool flush_pending_text);
+  void QueueTask(HTMLConstructionSiteTask&, bool flush_pending_text);
   bool SanitizeIfNeeded(HTMLConstructionSiteTask&);
 
   void SetAttributes(Element* element, AtomicHTMLToken* token);
