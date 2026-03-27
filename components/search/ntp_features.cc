@@ -323,11 +323,6 @@ const base::FeatureParam<bool> kNtpNextShowDeepDiveSuggestionsParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowDeepDiveSuggestionsParam",
     false);
-const base::FeatureParam<bool>
-    kNtpNextSuggestionsFromNewSearchSuggestionsEndpointParam(
-        &ntp_features::kNtpNextFeatures,
-        "NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam",
-        false);
 const base::FeatureParam<bool> kNtpNextShowStaticRecentTabChipParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowStaticRecentTabChipParam",

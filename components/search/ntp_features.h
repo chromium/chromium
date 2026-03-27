@@ -252,13 +252,6 @@ extern const base::FeatureParam<bool> kNtpNextShowDeepDiveSuggestionsParam;
 // sensitivity check.
 extern const base::FeatureParam<bool> kNtpNextClientSensitivityCheckParam;
 
-// Parameter determining if the suggestions are retrieved from the newly
-// implemented search suggestions endpoint. If true, the new one is used.
-// If false, an existing endpoint (used by ZPS) is used for deep dive chips,
-// and static data is used for steady state chips.
-extern const base::FeatureParam<bool>
-    kNtpNextSuggestionsFromNewSearchSuggestionsEndpointParam;
-
 // Parameter determining if the Canvas action chip should be enabled.
 extern const base::FeatureParam<bool> kNtpNextEnableCanvasChipParam;
 

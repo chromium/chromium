@@ -1591,26 +1591,14 @@ const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
      kShowNextRealboxCyclingPlaceholders, nullptr},
 };
 
-const FeatureEntry::FeatureParam kNtpNextShowDeepDiveSuggestions[] = {
-    {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-    {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
-};
-const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDeepDive[] = {
-    {"NtpNextShowSimplificationUIParam", "true"},
-    {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-    {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
-};
-
 const FeatureEntry::FeatureParam
     kNtpNextShowChipsUIWithChromeNtpActionClient[] = {
         {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
 };
 
 const FeatureEntry::FeatureParam
     kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas[] = {
         {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
         {"NtpNextEnableCanvasChipParam", "true"},
 };
 
@@ -1618,21 +1606,18 @@ const FeatureEntry::FeatureParam
     kNtpNextShowSimplificationUIWithChromeNtpActionClient[] = {
         {"NtpNextShowSimplificationUIParam", "true"},
         {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
 };
 
 const FeatureEntry::FeatureParam
     kNtpNextShowSimplificationUIWithChromeNtpActionClientAndCanvas[] = {
         {"NtpNextShowSimplificationUIParam", "true"},
         {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
         {"NtpNextEnableCanvasChipParam", "true"},
 };
 
 const FeatureEntry::FeatureParam
     kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState[] = {
         {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
         {"kNtpNextShowStaticRecentTabChipParam", "false"},
 };
 
@@ -1640,7 +1625,6 @@ const FeatureEntry::FeatureParam
     kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState
         [] = {
             {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-            {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
             {"kNtpNextShowStaticRecentTabChipParam", "false"},
             {"NtpNextEnableCanvasChipParam", "true"},
 };
@@ -1650,7 +1634,6 @@ const FeatureEntry::FeatureParam
         [] = {
             {"NtpNextShowSimplificationUIParam", "true"},
             {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-            {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
             {"kNtpNextShowStaticRecentTabChipParam", "false"},
 };
 
@@ -1659,7 +1642,6 @@ const FeatureEntry::FeatureParam
         [] = {
             {"NtpNextShowSimplificationUIParam", "true"},
             {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-            {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
             {"kNtpNextShowStaticRecentTabChipParam", "false"},
             {"NtpNextEnableCanvasChipParam", "true"},
 };
@@ -1667,7 +1649,6 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
-    {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
     {"NtpNextShowDismissalUIParam", "true"},
 };
 
@@ -1676,9 +1657,6 @@ const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
 };
 
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
-    {"- Show Deep Dive Suggestions", kNtpNextShowDeepDiveSuggestions, nullptr},
-    {"- Show Row UI With Deep Dive", kNtpNextShowSimplificationUIWithDeepDive,
-     nullptr},
     {"- Show Chips UI with a New Suggestions Client",
      kNtpNextShowChipsUIWithChromeNtpActionClient, nullptr},
     {"- Show Row UI with a New Suggestions Client",

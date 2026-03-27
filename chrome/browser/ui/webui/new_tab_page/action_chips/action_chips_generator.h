@@ -62,18 +62,6 @@ class ActionChipsGeneratorImpl : public ActionChipsGenerator {
       base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
           callback);
 
-  void GenerateActionChipsFromScenario(
-      base::optional_ref<const tabs::TabInterface> tab,
-      base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-          callback);
-
-  void GenerateDeepDiveChipsFromRemoteResponse(
-      action_chips::mojom::TabInfoPtr tab,
-      base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
-          callback,
-      action_chips::RemoteSuggestionsServiceSimple::
-          ActionChipSuggestionsResult&& result);
-
   void GenerateActionChipsFromRemoteResponse(
       action_chips::mojom::TabInfoPtr tab,
       std::optional<const omnibox::PageVertical> page_vertical,
