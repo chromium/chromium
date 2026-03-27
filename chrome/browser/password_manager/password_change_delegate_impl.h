@@ -92,7 +92,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void Stop() override;
   void OpenPasswordChangeTab() override;
   void OpenPasswordDetails() override;
-  void OnPasswordFormSubmission(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
   void OnPasswordChangeDeclined() override;
   void RetryLoginCheck() override;

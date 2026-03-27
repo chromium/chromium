@@ -135,8 +135,6 @@ class PasswordChangeDelegate {
   // from the page, then navigates to password details in password settings.
   virtual void OpenPasswordDetails() = 0;
 
-  // To be executed after a password form was submitted
-  virtual void OnPasswordFormSubmission(content::WebContents* web_contents) = 0;
 
   virtual void OnPrivacyNoticeAccepted() = 0;
 

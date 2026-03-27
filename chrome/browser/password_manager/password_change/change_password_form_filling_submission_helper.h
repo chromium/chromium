@@ -91,8 +91,6 @@ class ChangePasswordFormFillingSubmissionHelper {
       const std::u16string& login_password,
       const std::u16string& generated_password);
 
-  // Triggers verification if `web_contents` is the same as initial WebContents.
-  void OnPasswordFormSubmission(content::WebContents* web_contents);
 
   // Saves a password with a given `username`. Must be called only after
   // `callback_` was invoked.
@@ -137,7 +135,7 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   void OnButtonClicked(actor::mojom::ActionResultCode result);
 
-  void OnSubmissionDetectedOrTimeout();
+  void OnTimeout();
 
   void OnChangePasswordFormFound(
       password_manager::PasswordFormManager* form_manager);
@@ -169,7 +167,6 @@ class ChangePasswordFormFillingSubmissionHelper {
   // Timeout for verifying submission detection.
   base::OneShotTimer timeout_timer_;
 
-  bool submission_detected_ = false;
 
   std::unique_ptr<FormFillingHelper> form_filler_;
 

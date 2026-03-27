@@ -459,12 +459,6 @@ void PasswordChangeDelegateImpl::Stop() {
                     this);
 }
 
-void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
-    content::WebContents* web_contents) {
-  if (form_submission_helper_) {
-    form_submission_helper_->OnPasswordFormSubmission(web_contents);
-  }
-}
 
 void PasswordChangeDelegateImpl::OnOtpFieldDetected() {
   if (auto logger = GetLoggerIfAvailable(executor())) {

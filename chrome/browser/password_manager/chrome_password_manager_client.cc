@@ -848,14 +848,7 @@ void ChromePasswordManagerClient::NotifyOnSuccessfulLogin(
   } else {
     ResetSubmissionTrackingAfterTouchToFill();
   }
-#else
-  ChromePasswordChangeService* password_change_service =
-      PasswordChangeServiceFactory::GetForProfile(GetProfile());
-  if (password_change_service &&
-      password_change_service->GetPasswordChangeDelegate(web_contents())) {
-    password_change_service->GetPasswordChangeDelegate(web_contents())
-        ->OnPasswordFormSubmission(web_contents());
-  }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

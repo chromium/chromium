@@ -153,10 +153,6 @@ BASE_DECLARE_FEATURE(kOtpPhishGuard);
 // Populate the `date_last_filled` timestamp for passwords.
 BASE_DECLARE_FEATURE(kPasswordDateLastFilled);
 
-// When enabled, the callback in `OnButtonClicked` will be invoked immediately
-// with the result.
-BASE_DECLARE_FEATURE(kPasswordChangeImmediateSubmission);
-
 // Enables running the clientside form classifier to parse password forms.
 BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
 
