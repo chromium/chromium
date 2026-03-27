@@ -14,6 +14,9 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 
 /**
@@ -27,6 +30,14 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final Callback<EdgeToEdgeController> mEdgeToEdgeControllerObserver =
             this::onEdgeToEdgeControllerChanged;
+    private final BottomSheetController mBottomSheetController;
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+                    updateMargin();
+                }
+            };
 
     private @Nullable EdgeToEdgeController mCurrentEdgeToEdgeController;
 
@@ -34,12 +45,18 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
      * Constructs a new ChromeActivitySnackbarHelper.
      *
      * @param edgeToEdgeControllerSupplier The supplier for the EdgeToEdgeController.
+     * @param bottomSheetController The {@link BottomSheetController} to observe.
      */
     public ChromeActivitySnackbarHelper(
-            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            BottomSheetController bottomSheetController) {
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
-        mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
-                mEdgeToEdgeControllerObserver);
+        mBottomSheetController = bottomSheetController;
+
+        edgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(mEdgeToEdgeControllerObserver);
+        bottomSheetController.addObserver(mBottomSheetObserver);
+
+        updateMargin();
     }
 
     /** Returns the supplier for the snackbar bottom margin. */
@@ -54,6 +71,8 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
             mCurrentEdgeToEdgeController = null;
         }
         mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeControllerObserver);
+
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 
     private void onEdgeToEdgeControllerChanged(@Nullable EdgeToEdgeController controller) {
@@ -63,15 +82,21 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
         mCurrentEdgeToEdgeController = controller;
         if (mCurrentEdgeToEdgeController != null) {
             mCurrentEdgeToEdgeController.registerObserver(this);
-            mSupplier.set(mCurrentEdgeToEdgeController.getBottomInsetPx());
-        } else {
-            mSupplier.set(0);
         }
+        updateMargin();
     }
 
     @Override
     public void onToEdgeChange(
             @Px int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
-        mSupplier.set(bottomInset);
+        updateMargin();
+    }
+
+    private void updateMargin() {
+        int bottomInset =
+                mCurrentEdgeToEdgeController != null
+                        ? mCurrentEdgeToEdgeController.getBottomInsetPx()
+                        : 0;
+        mSupplier.set(bottomInset + mBottomSheetController.getCurrentOffset());
     }
 }
