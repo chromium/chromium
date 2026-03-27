@@ -26,8 +26,7 @@ class EditAddressProfileDialogControllerImplTest
   EditAddressProfileDialogControllerImplTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillSupportLastNamePrefix,
-         features::kAutofillSupportSplitZipCode},
+        {features::kAutofillSupportSplitZipCode},
         /*disabled_features=*/{});
     local_profile_ = std::make_unique<AutofillProfile>(
         AutofillProfile::RecordType::kLocalOrSyncable,

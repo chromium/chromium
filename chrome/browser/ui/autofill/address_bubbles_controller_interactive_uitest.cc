@@ -36,7 +36,6 @@ class BaseAddressBubblesControllerTest
   BaseAddressBubblesControllerTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kAutofillSupportLastNamePrefix, {}},
             {features::kAutofillSupportSplitZipCode, {}},
             {::features::kPageActionsMigration,
              {{"autofill_address", GetParam() ? "true" : "false"}}},
