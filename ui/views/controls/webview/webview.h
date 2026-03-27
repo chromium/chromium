@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -139,6 +140,28 @@ class WEBVIEW_EXPORT WebView : public View,
   // `crashed_overlay_view`.
   void SetCrashedOverlayView(View* crashed_overlay_view);
 
+  // A scoped object that disconnects the webview from the accessibility tree.
+  // When destroyed, it restores the previous accessibility state.
+  class WEBVIEW_EXPORT ScopedAxDisconnectLock {
+   public:
+    ScopedAxDisconnectLock(const ScopedAxDisconnectLock&) = delete;
+    ScopedAxDisconnectLock& operator=(const ScopedAxDisconnectLock&) = delete;
+    ~ScopedAxDisconnectLock();
+
+   private:
+    friend class WebView;
+    explicit ScopedAxDisconnectLock(base::WeakPtr<WebView> web_view);
+
+    base::WeakPtr<WebView> web_view_;
+  };
+
+  // Temporarily prevents the webview from generating its own AX tree or being
+  // exposed to screen readers, in favor of another WebContents, e.g. in the
+  // Immersive Reading Mode view.  Returns a scoped object that will restore the
+  // previous state when destroyed.
+  [[nodiscard]] std::unique_ptr<ScopedAxDisconnectLock>
+  DisconnectWebContentsAccessibility();
+
   // Takes ownership of `crashed_overlay_view` and shows it when the web
   // contents is in a crashed state. If the web_contents is cleared, the view
   // is returned to the caller via `return_to_owner`. By default, ownership is
@@ -223,6 +246,9 @@ class WEBVIEW_EXPORT WebView : public View,
     ~ScopedWebContentsCreatorForTesting();
   };
 
+  // View:
+  FocusBehavior GetFocusBehavior() const override;
+
  protected:
   // Called when letterboxing (scaling the native view to preserve aspect
   // ratio) is enabled or disabled.
@@ -280,6 +306,7 @@ class WEBVIEW_EXPORT WebView : public View,
   void UpdateCrashedOverlayView();
   void UpdateNativeViewHostAccessibleParent();
   void NotifyAccessibilityWebContentsChanged();
+  void UpdateAccessibilityDisconnectState(bool disconnect);
   void HandleWidgetAXManagerEnablement();
 
   // Called when the main frame in the renderer becomes present.
@@ -338,6 +365,11 @@ class WEBVIEW_EXPORT WebView : public View,
 
   // List of subscriptions listening for attached WebContents being focused.
   base::RepeatingCallbackList<void(WebView*)> web_contents_focused_callbacks_;
+
+  // Number of active ScopedAxDisconnectLocks.
+  int ax_disconnect_count_ = 0;
+
+  base::WeakPtrFactory<WebView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(WEBVIEW_EXPORT, WebView, View)
