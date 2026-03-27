@@ -18,7 +18,7 @@ enum DegradedRecoverabilityValue {
   kNotDegraded = 1;
   kDegraded = 2;
 }
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDegradedRecoverabilityValue)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDegradedRecoverabilityValue)
 
 message LocalTrustedVaultKey {
   // The actual key.

@@ -43,6 +43,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:RecoveryKeyStoreCertificatesFetchStatus) -->
 
+<!-- LINT.IfChange(TrustedVaultDegradedRecoverabilityValue) -->
+
+<enum name="TrustedVaultDegradedRecoverabilityValue">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not degraded"/>
+  <int value="2" label="Degraded"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/proto/local_trusted_vault.proto:TrustedVaultDegradedRecoverabilityValue) -->
+
 <!-- LINT.IfChange(TrustedVaultDownloadKeysStatus) -->
 
 <enum name="TrustedVaultDownloadKeysStatus">
@@ -80,6 +90,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultHintDegradedRecoverabilityChangedReason) -->
+
+<enum name="TrustedVaultHintDegradedRecoverabilityChangedReason">
+  <int value="0" label="Recovery method added"/>
+  <int value="1" label="Persistent auth error resolved"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultHintDegradedRecoverabilityChangedReason) -->
 
 <!-- LINT.IfChange(TrustedVaultListSecurityDomainMembersPinStatus) -->
 

@@ -21,7 +21,7 @@ enum class TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA {
   kPersistentAuthErrorResolved = 1,
   kMaxValue = kPersistentAuthErrorResolved,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultHintDegradedRecoverabilityChangedReason)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultHintDegradedRecoverabilityChangedReason)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
