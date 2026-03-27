@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
-#include "components/cross_device/nearby/nearby_features.h"
 
 namespace nearby::chrome {
 
@@ -76,17 +75,6 @@ bool BluetoothAdapter::SetName(std::string_view name, bool persist) {
   // The `persist` parameter is ignored by ChromeOS; we always persist the
   // requested adapter name change. The `persist` argument only exists to
   // support Windows. See b/234135746 for more context."
-
-  if (!features::IsNearbyBluetoothClassicAdvertisingEnabled()) {
-    // SetName is called in Nearby Connections to use the name for
-    // "advertising", triggered by Nearby Connections becoming discoverable over
-    // Bluetooth Classic. We return true here despite ignoring the request to
-    // change the adapter name. This flag should only be false in tests, in
-    // order to ensure that Classic "advertising" is not active.
-    VLOG(1) << ": Classic advertising disabled, ignoring SetName for name: "
-            << name.data();
-    return true;
-  }
 
   bool set_name_success = false;
   bool call_success = adapter_->SetName(name.data(), &set_name_success);
