@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 
 namespace extensions {
 namespace {

@@ -18,6 +18,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/constants.h"
 
 namespace save_to_drive {

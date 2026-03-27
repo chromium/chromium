@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
+
 #include <stdint.h>
 
 #include <memory>
 
-#include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"

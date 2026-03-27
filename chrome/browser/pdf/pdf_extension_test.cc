@@ -107,6 +107,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"

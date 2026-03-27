@@ -44,6 +44,7 @@ source_set("pdf") {
     "//components/user_education/webui",
     "//components/zoom",
     "//extensions/browser",
+    "//extensions/browser/mime_handler:stream_container",
     "//extensions/common:common_constants",
     "//pdf:features",
     "//printing/buildflags",
@@ -116,6 +117,7 @@ source_set("pdf_test_utils") {
   deps = [
     "//base",
     "//extensions/browser",
+    "//extensions/browser/mime_handler:stream_container",
     "//net",
     "//services/network/public/mojom:url_loader_base",
     "//url",

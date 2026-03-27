@@ -25,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/url_constants.h"

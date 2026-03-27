@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

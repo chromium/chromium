@@ -8,7 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"

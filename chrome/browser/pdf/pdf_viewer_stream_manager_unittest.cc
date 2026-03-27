@@ -17,7 +17,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

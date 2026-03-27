@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/pdf_features.h"
 
 namespace save_to_drive {

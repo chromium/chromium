@@ -21,6 +21,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_features.h"
 

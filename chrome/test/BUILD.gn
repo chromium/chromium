@@ -4282,6 +4282,7 @@ if (!is_android) {
         "//components/pdf/browser",
         "//components/pdf/common:constants",
         "//components/pdf/common:util",
+        "//extensions/browser/mime_handler:stream_container",
         "//pdf:features",
         "//pdf/loader",
       ]
@@ -10451,6 +10452,7 @@ test("unit_tests") {
       "//chrome/browser/pdf",
       "//chrome/browser/pdf:pdf_test_utils",
       "//extensions/browser",
+      "//extensions/browser/mime_handler:stream_container",
       "//net",
       "//pdf:content_restriction",
       "//pdf:features",

@@ -25,6 +25,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
 #include "net/http/http_response_headers.h"
