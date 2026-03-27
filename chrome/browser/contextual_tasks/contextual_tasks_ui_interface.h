@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_INTERFACE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_INTERFACE_H_
 
+#include "base/observer_list.h"
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "content/public/browser/page_navigator.h"
@@ -35,6 +36,11 @@ class Page;
 // from the rest of the browser process.
 class ContextualTasksUIInterface : public TaskInfoDelegate {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnInitComplete() {}
+  };
+
   ~ContextualTasksUIInterface() override = default;
 
   // Returns the Profile associated with this WebUI.
@@ -112,6 +118,14 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
 
   // Returns the WebContents of the embedded page, if it exists.
   virtual content::WebContents* GetInnerWebContents() const = 0;
+
+  // Returns whether the web ui is initialized.
+  virtual bool IsInitComplete() = 0;
+  // A notification that the web ui is initialized.
+  virtual void OnInitComplete() = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 }  // namespace contextual_tasks
