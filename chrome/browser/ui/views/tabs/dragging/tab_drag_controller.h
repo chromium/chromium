@@ -677,6 +677,10 @@ class TabDragController : public views::WidgetObserver,
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;
 
+  // True while we are waiting for the newly detached browser window to be shown
+  // (which might be deferred by InitialWebUI) before starting the move loop.
+  bool waiting_for_dragged_window_to_show_ = false;
+
   // Used by StartSystemDnDSessionIfNecessary() and IsSystemDnDSessionRunning().
   // This cannot be deduced from `current_state_`, because the system drag
   // session keeps running even when `current_state_` changes back to

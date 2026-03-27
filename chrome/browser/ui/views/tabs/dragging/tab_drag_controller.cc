@@ -21,6 +21,8 @@
 #include "base/memory/weak_auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,6 +63,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -114,6 +117,31 @@ namespace {
 // creation and makes it easier to drag tabs out of a restored window that had
 // maximized size.
 constexpr int kMaximizedWindowInset = 10;  // DIPs.
+
+class VisibilityWaiter : public views::WidgetObserver {
+ public:
+  explicit VisibilityWaiter(views::Widget* widget) {
+    observation_.Observe(widget);
+  }
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override {
+    if (visible) {
+      run_loop_.Quit();
+    }
+  }
+  void OnWidgetDestroying(views::Widget* widget) override {
+    observation_.Reset();
+    run_loop_.Quit();
+  }
+
+  // Required to cooperatively halt the OS drag session while awaiting
+  // WebUI paint without blocking the UI thread.
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
 
 constexpr char kTabDraggingPresentationTimeHistogram[] =
     "Browser.TabDragging.PresentationTime";
@@ -632,11 +660,13 @@ TabDragController::Liveness TabDragController::Drag(
   // If we're in `kWaitingToExitRunLoop` or `kWaitingToDragTabs`, then we have
   // asked to exit the nested run loop, but are still in it. We should ignore
   // any events until we actually exit the nested run loop, to avoid potentially
-  // starting another one (see https://crbug.com/41493121). Similary, if we're
-  // kStopped but haven't been destroyed yet, we should ignore events.
+  // starting another one (see https://crbug.com/41493121). Similarly, if we're
+  // kStopped but haven't been destroyed yet, or if we are waiting for the
+  // detached window to show, we should ignore events.
   if (current_state_ == DragState::kWaitingToExitRunLoop ||
       current_state_ == DragState::kWaitingToDragTabs ||
-      current_state_ == DragState::kStopped) {
+      current_state_ == DragState::kStopped ||
+      waiting_for_dragged_window_to_show_) {
     return Liveness::kAlive;
   }
 
@@ -1610,6 +1640,25 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
   browser->window()->Show();
   dragged_widget->SetVisibilityChangedAnimationsEnabled(true);
+
+  // When InitialWebUI is enabled, the asynchronous loading of WebUI might cause
+  // the detached browser window to be momentarily invisible during creation. To
+  // prevent the mouse drag from racing ahead of the window rendering and
+  // dispatching inputs to the wrong target, we wait for the widget to properly
+  // show itself before starting the nested move loop.
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    if (!dragged_widget->IsVisible()) {
+      waiting_for_dragged_window_to_show_ = true;
+      VisibilityWaiter waiter(dragged_widget);
+
+      base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
+      waiter.Wait();
+      if (!ref) {
+        return Liveness::kDeleted;
+      }
+      waiting_for_dragged_window_to_show_ = false;
+    }
+  }
 
 #if BUILDFLAG(IS_MAC)
   // Set the window origin after making it visible, to avoid child windows (such
