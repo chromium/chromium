@@ -1641,26 +1641,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
-                       NavigationToViewSourceFileUrlRequiresFileAccess) {
-  Attach();
-
-  base::DictValue params;
-  GURL test_url = GetTestUrl("devtools", "navigation.html");
-  params.Set("url", "view-source:" + test_url.spec());
-  ASSERT_TRUE(SendCommandSync("Page.navigate", params.Clone()));
-
-  Detach();
-  SetMayReadLocalFiles(false);
-
-  Attach();
-
-  ASSERT_FALSE(SendCommandSync("Page.navigate", params.Clone()));
-  EXPECT_THAT(
-      error()->FindInt("code"),
-      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
-}
-
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteNoDetach) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());

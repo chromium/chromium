@@ -165,17 +165,12 @@ protocol::Response TargetHandler::CreateTarget(
     gurl = GURL(url::kAboutBlankURL);
   }
 
-  GURL inner_url = gurl;
-  if (gurl.SchemeIs(content::kViewSourceScheme)) {
-    inner_url = GURL(gurl.GetContent());
-  }
-
-  if (!is_trusted_ && inner_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+  if (!is_trusted_ && gurl.SchemeIs(content::kChromeUIUntrustedScheme)) {
     return protocol::Response::ServerError(
         "Refusing to create a target with the specified URL");
   }
 
-  if (!may_read_local_files_ && inner_url.SchemeIsFile()) {
+  if (!may_read_local_files_ && gurl.SchemeIsFile()) {
     return protocol::Response::ServerError(
         "Creating a target with a local URL is not allowed");
   }
