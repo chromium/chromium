@@ -5,10 +5,12 @@
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_service_impl.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/common/time_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -57,7 +59,8 @@ class ActorLoginPermissionServiceImplTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   ActorLoginPermissionServiceImpl service_{
@@ -83,7 +86,15 @@ TEST_F(ActorLoginPermissionServiceImplTest,
       request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization);
   ASSERT_TRUE(auth_header.has_value());
   EXPECT_EQ("Bearer access_token", *auth_header);
-  EXPECT_EQ("{\"filters\":[]}", network::GetUploadData(request));
+
+  std::string expected_json = base::StringPrintf(
+      R"({
+              "filters": [],
+              "minReadTimestamp": "%s"
+            })",
+      google_apis::util::FormatTimeAsString(base::Time::Now()).c_str());
+  EXPECT_EQ(base::test::ParseJson(expected_json),
+            base::test::ParseJson(network::GetUploadData(request)));
 }
 
 TEST_F(ActorLoginPermissionServiceImplTest, ListAllPermissionsReturnsEmpty) {
@@ -111,7 +122,8 @@ TEST_F(ActorLoginPermissionServiceImplTest,
   EXPECT_EQ(kTestListUrl, request.url.spec());
   EXPECT_EQ("POST", request.method);
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
-  EXPECT_EQ(base::test::ParseJson(R"({
+  std::string expected_json = base::StringPrintf(
+      R"({
               "filters": [
                 {
                   "federatedCredentialPermissionFilter": {
@@ -119,8 +131,11 @@ TEST_F(ActorLoginPermissionServiceImplTest,
                     "rpEmbedderOrigin": "https://embedder.com"
                   }
                 }
-              ]
-            })"),
+              ],
+              "minReadTimestamp": "%s"
+            })",
+      google_apis::util::FormatTimeAsString(base::Time::Now()).c_str());
+  EXPECT_EQ(base::test::ParseJson(expected_json),
             base::test::ParseJson(network::GetUploadData(request)));
 }
 
@@ -142,7 +157,8 @@ TEST_F(ActorLoginPermissionServiceImplTest,
   EXPECT_EQ(kTestListUrl, request.url.spec());
   EXPECT_EQ("POST", request.method);
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
-  EXPECT_EQ(base::test::ParseJson(R"({
+  std::string expected_json = base::StringPrintf(
+      R"({
               "filters": [
                 {
                   "federatedCredentialPermissionFilter": {
@@ -158,8 +174,11 @@ TEST_F(ActorLoginPermissionServiceImplTest,
                     "rpRequesterOrigin": "https://requester2.com"
                   }
                 }
-              ]
-            })"),
+              ],
+              "minReadTimestamp": "%s"
+            })",
+      google_apis::util::FormatTimeAsString(base::Time::Now()).c_str());
+  EXPECT_EQ(base::test::ParseJson(expected_json),
             base::test::ParseJson(network::GetUploadData(request)));
 }
 

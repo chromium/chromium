@@ -63,6 +63,7 @@ source_set("permission_service_impl") {
     "//components/password_manager/core/browser/actor_login:common",
     "//components/signin/public/identity_manager",
     "//google_apis",
+    "//google_apis/common",
   ]
   public_deps = [
     "//base",
@@ -90,6 +91,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/actor_login/test:test_support",
     "//components/password_manager/core/browser/features:password_features",
     "//components/proto_extras:proto_matchers",
+    "//google_apis/common",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
