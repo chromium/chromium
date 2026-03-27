@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
 #include "cc/base/region.h"

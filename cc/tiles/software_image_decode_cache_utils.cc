@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/memory/discardable_memory_allocator.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_flags.h"

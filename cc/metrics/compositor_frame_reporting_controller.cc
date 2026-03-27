@@ -9,7 +9,6 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
