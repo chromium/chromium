@@ -70,8 +70,18 @@ ShapeResult* ShapeForFit(const InlineItem& item,
                          unsigned end_offset,
                          const HarfBuzzShaper& shaper,
                          const Font& font,
-                         const InlineItemSegments* segments) {
-  ShapeOptions options;  // TODO(crbug.com/417306102): Pass correct options.
+                         const InlineItemSegments* segments,
+                         bool is_start_of_paragraph) {
+  ShapeOptions options;
+  if (is_start_of_paragraph) {
+    options.is_line_start = true;
+    const String& text_content = shaper.GetText();
+    options.han_kerning_start =
+        start_offset < text_content.length() &&
+        ShouldTrimStartOfParagraph(
+            font.GetFontDescription().GetTextSpacingTrim()) &&
+        Character::MaybeHanKerningOpen(text_content[start_offset]);
+  }
   if (segments) {
     return segments->ShapeText(&shaper, &font, item.Direction(), start_offset,
                                end_offset, item.Index(), options);
@@ -145,6 +155,7 @@ float ComputeAdditionalPaintTimeScale(const InlineItemsData& items_data,
                                       HarfBuzzShaper& shaper,
                                       ShapeResultSpacing& spacing,
                                       const InlineCursor& line,
+                                      bool is_start_of_paragraph,
                                       float scale,
                                       std::optional<float> limit,
                                       LayoutUnit static_total_size) {
@@ -171,9 +182,10 @@ float ComputeAdditionalPaintTimeScale(const InlineItemsData& items_data,
                  current.TextEndOffset() <= item->EndOffset();
         });
     CHECK_NE(iter, items_data.items.end());
-    ShapeResult* shape_result =
-        ShapeForFit(**iter, current.TextStartOffset(), current.TextEndOffset(),
-                    shaper, *scaled_font, items_data.segments.get());
+    ShapeResult* shape_result = ShapeForFit(
+        **iter, current.TextStartOffset(), current.TextEndOffset(), shaper,
+        *scaled_font, items_data.segments.get(), is_start_of_paragraph);
+    is_start_of_paragraph = false;
     if (spacing.SetSpacing(scaled_desc)) {
       shape_result->ApplySpacing(spacing);
     }
@@ -250,11 +262,14 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
     return ParagraphScale();
   }
   float additional_paint_time_scale = 1.0f;
+  bool is_next_start_of_paragraph = true;
   for (InlineCursor cursor(*box_fragment, *items); cursor;
        cursor.MoveToNextSkippingChildren()) {
     if (!cursor.Current().IsLineBox()) {
       continue;
     }
+    bool is_start_of_paragraph = is_next_start_of_paragraph;
+    is_next_start_of_paragraph = false;
     LayoutUnit remaining_space =
         available_width -
         ToLogicalSize(cursor.Current().Size(), writing_mode).inline_size;
@@ -271,6 +286,10 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
     for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;
          descendants.MoveToNextInlineLeaf()) {
       const auto& current = descendants.Current();
+      if (current.IsLineBreak()) {
+        is_next_start_of_paragraph = true;
+        continue;
+      }
       if (!current.IsText() || !current.TextShapeResult()) {
         continue;
       }
@@ -285,7 +304,8 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
         CHECK_NE(iter, items_data.items.end());
         ShapeResult* nospacing_shape =
             ShapeForFit(**iter, start, end, shaper, *style.GetFont(),
-                        items_data.segments.get());
+                        items_data.segments.get(), is_start_of_paragraph);
+        is_start_of_paragraph = false;
         if (spacing.SetSpacing(
                 PercentageSpacingDescription(style.GetFontDescription()))) {
           nospacing_shape->ApplySpacing(spacing);
@@ -316,7 +336,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
             flexible_total_size_including_letter_spacing;
         additional_paint_time_scale = ComputeAdditionalPaintTimeScale(
             items_data, available_width, epsilon, writing_mode, shaper, spacing,
-            cursor, scale, limit, static_total_size);
+            cursor, is_start_of_paragraph, scale, limit, static_total_size);
       }
     }
   }
@@ -372,9 +392,11 @@ float LineFitter::MeasureScale() {
   for (auto& item : *line_info_.MutableResults()) {
     if (item.item->Type() == InlineItem::kText) {
       if (HasFixedSpacing(item.item->Style()->GetFontDescription())) {
+        // TODO(crbug.com/417306102): Pass correct `is_start_of_paragraph` flag.
         ShapeResult* nospacing_shape = ShapeForFit(
             *item.item, item.StartOffset(), item.EndOffset(), shaper_,
-            *item.item->Style()->GetFont(), items_data_.segments.get());
+            *item.item->Style()->GetFont(), items_data_.segments.get(),
+            /* is_start_of_paragraph */ false);
         if (spacing_.SetSpacing(PercentageSpacingDescription(
                 item.item->Style()->GetFontDescription()))) {
           nospacing_shape->ApplySpacing(spacing_);
@@ -437,9 +459,10 @@ bool LineFitter::FitLine(float scale_factor,
         ScaledFontDescription(font, scale_factor, limit, restricted);
     Font* scaled_font =
         MakeGarbageCollected<Font>(scaled_desc, font.GetFontSelector());
-    ShapeResult* shape_result =
-        ShapeForFit(*item.item, item.StartOffset(), item.EndOffset(), shaper_,
-                    *scaled_font, items_data_.segments.get());
+    // TODO(crbug.com/417306102): Pass correct `is_start_of_paragraph` flag.
+    ShapeResult* shape_result = ShapeForFit(
+        *item.item, item.StartOffset(), item.EndOffset(), shaper_, *scaled_font,
+        items_data_.segments.get(), /* is_start_of_paragraph */ false);
     LayoutUnit size_without_spacing =
         shape_result->SnappedWidth().ClampNegativeToZero();
     if (spacing_.SetSpacing(scaled_desc)) {
