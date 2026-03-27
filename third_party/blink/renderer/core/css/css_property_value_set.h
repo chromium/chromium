@@ -45,6 +45,70 @@ class StyleSheetContents;
 enum class CSSValueID;
 enum class SecureContextMode;
 
+// Handling of the CSS 'all' property:
+//
+// Per the CSS spec, 'all' is a shorthand that expands to nearly all longhand
+// properties. However, expanding it into individual longhands would be
+// expensive in both storage and insertion time, so we instead store 'all' as
+// a single entry alongside regular longhands. (Expansion into actual
+// longhands happens only during cascade resolution, not here.)
+//
+// This choice has the following consequences:
+//
+//   setProperty("all"):
+//     When SetLonghandProperty("all") is called, existing affected longhands
+//     are removed via RemovePropertiesAffectedByAll(), since 'all' overrides
+//     them. This ensures that any property set after 'all' is appended to
+//     the end of the set, preserving the intended order of appearance.
+//     e.g.: setProperty("width", "50px")  -> [width:50px]
+//           setProperty("all", "revert")  -> [all:revert]
+//           setProperty("width", "100px") -> [all:revert, width:100px]
+//
+//   getPropertyValue("all"):
+//     Since 'all' is treated as a longhand, it is not serialized by
+//     StylePropertySerializer::SerializeShorthand(). Instead,
+//     SerializeShorthand() in css_property_value_set.cc checks whether any
+//     affected longhand after 'all' has a different value. If they all have
+//     the same value as 'all', returns 'all's value. Otherwise, returns an
+//     empty string.
+//     e.g.: [all:revert, width:50px, height:100px]
+//             -> getPropertyValue("all") == ""
+//           [width:50px, height:100px, all:revert]
+//             -> getPropertyValue("all") == "revert"
+//           [width:50px, all:revert, height:100px]
+//             -> getPropertyValue("all") == ""
+//
+//   getPropertyValue(shorthand):
+//     Shorthands are handled within StylePropertySerializer and
+//     CSSPropertyValueSetForSerializer by accounting for the 'all' property.
+//     See the comments in
+//     CSSPropertyValueSetForSerializer::IsIndexInPropertySet() for further
+//     details.
+//     e.g.: [all:revert, overflow-x:hidden, overflow-y:auto]
+//             -> getPropertyValue("overflow") == "hidden auto"
+//           [overflow-x:hidden, overflow-y:auto, all:revert]
+//             -> getPropertyValue("overflow") == "revert"
+//           [overflow-x:hidden, all:revert, overflow-y:auto]
+//             -> getPropertyValue("overflow") == ""
+//
+//   getPropertyValue(longhand):
+//     Since 'all' is stored as a single entry instead of expanded into
+//     individual longhands, GetPropertyValue() in css_property_value_set.cc
+//     compares the order of appearance between 'all' and the longhand,
+//     returning the value of whichever appears later. If the longhand has
+//     no entry in the set, 'all's value is returned.
+//     e.g.: [all:revert, width:50px, height:100px]
+//             -> getPropertyValue("width") == "50px"
+//           [width:50px, height:100px, all:revert]
+//             -> getPropertyValue("width") == "revert"
+//           [all:revert, height:100px]
+//             -> getPropertyValue("width") == "revert"
+//
+//   HasAllField bit flag:
+//     A bit flag is used to quickly check for the presence of 'all' without
+//     performing a full search of the property set. It is set to true when
+//     'all' is added to the set and reset to false when the property is
+//     removed or the set is cleared.
 class CORE_EXPORT CSSPropertyValueSet
     : public GarbageCollected<CSSPropertyValueSet> {
   friend class PropertyReference;
@@ -110,6 +174,8 @@ class CORE_EXPORT CSSPropertyValueSet
     return bits_.get<ContainsCursorHandField>();
   }
 
+  bool HasAllProperty() const { return bits_.get<HasAllField>(); }
+
   // Computes a hash of the contents of this property value set
   // (cached after first call). Note that hash equality may have
   // false negatives (there is no guarantee that a.AsText() == b.AsText()
@@ -173,7 +239,7 @@ class CORE_EXPORT CSSPropertyValueSet
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
 
  protected:
-  static constexpr unsigned kMaxArraySize = (1 << 25) - 1;
+  static constexpr unsigned kMaxArraySize = (1 << 24) - 1;
 
   explicit CSSPropertyValueSet(CSSParserMode css_parser_mode)
       : bits_(ArraySizeField::encode(0) |
@@ -202,13 +268,14 @@ class CORE_EXPORT CSSPropertyValueSet
   // instead of C++ bitfields.
   using BitField = ConcurrentlyReadBitField<uint32_t>;
   using ArraySizeField =
-      BitField::DefineFirstValue<uint32_t, 25>;  // Only for immutable sets.
+      BitField::DefineFirstValue<uint32_t, 24>;  // Only for immutable sets.
   using CSSParserModeField = ArraySizeField::DefineNextValue<uint32_t, 4>;
   using IsMutableField = CSSParserModeField::DefineNextValue<bool, 1>;
   using ContainsCursorHandField = IsMutableField::DefineNextValue<bool, 1>;
   using MayHaveLogicalPropertiesField =
       ContainsCursorHandField::DefineNextValue<bool,
                                                1>;  // Only for mutable sets.
+  using HasAllField = MayHaveLogicalPropertiesField::DefineNextValue<bool, 1>;
   BitField bits_;
 
   // EmptyValue() means “not computed yet”. DeletedValue() means “invalid”

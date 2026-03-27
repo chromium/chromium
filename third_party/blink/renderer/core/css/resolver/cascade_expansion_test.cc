@@ -368,11 +368,9 @@ TEST_F(CascadeExpansionTest, InlineAll) {
   const Vector<CSSPropertyID> all = AllProperties();
 
   auto e = ExpansionAt(result, 0);
-  ASSERT_EQ(all.size() + 2, e.size());
+  ASSERT_EQ(all.size() + 1, e.size());
 
-  EXPECT_EQ(CSSPropertyID::kLeft, e[0].name.Id());
-
-  int index = 1;
+  int index = 0;
   for (CSSPropertyID expected : all) {
     EXPECT_EQ(expected, e[index++].name.Id());
   }

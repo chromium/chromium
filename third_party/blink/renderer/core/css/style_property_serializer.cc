@@ -268,7 +268,10 @@ bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
 int StylePropertySerializer::CSSPropertyValueSetForSerializer::
     FindPropertyIndex(const CSSProperty& property) const {
   CSSPropertyID property_id = property.PropertyID();
-  if (!HasExpandedAllProperty()) {
+  if (!need_to_expand_all_) {
+    if (HasAllProperty() && IsCSSPropertyIDWithName(property_id)) {
+      return all_index_;
+    }
     return property_set_->FindPropertyIndex(property_id);
   }
 
