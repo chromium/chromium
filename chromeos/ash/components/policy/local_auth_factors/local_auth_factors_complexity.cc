@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <string_view>
 
-#include "ash/constants/ash_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace policy::local_auth_factors {
@@ -16,6 +14,49 @@ namespace policy::local_auth_factors {
 namespace {
 
 using Complexity = ash::LocalAuthFactorsComplexity;
+
+enum class CharClass { kDigit, kLower, kUpper, kSymbol, kOther };
+
+CharClass GetCharClass(char c) {
+  if (absl::ascii_isdigit(c)) {
+    return CharClass::kDigit;
+  }
+  if (absl::ascii_islower(c)) {
+    return CharClass::kLower;
+  }
+  if (absl::ascii_isupper(c)) {
+    return CharClass::kUpper;
+  }
+  if (absl::ascii_ispunct(c)) {
+    return CharClass::kSymbol;
+  }
+  return CharClass::kOther;
+}
+
+// Returns true if the password contains 5+:
+// - Repeating characters (e.g., "aaaaa", "@@@@@"),
+// - Sequential letters or numbers (e.g., "abcde", "ABCDE", "98765").
+bool ContainsTrivialSequence(std::string_view password) {
+  constexpr int kMinSeq = 5;
+  int inc = 1, dec = 1, same = 1;
+
+  for (size_t i = 1; i < password.length(); i++) {
+    const char cur = password[i], prev = password[i - 1];
+    const bool same_class = GetCharClass(cur) == GetCharClass(prev);
+    const bool is_alphanum = GetCharClass(cur) != CharClass::kSymbol;
+
+    // Increment valid same-class streaks. Symbols can only repeat.
+    inc = (same_class && is_alphanum && cur == prev + 1) ? inc + 1 : 1;
+    dec = (same_class && is_alphanum && cur == prev - 1) ? dec + 1 : 1;
+    same = (same_class && cur == prev) ? same + 1 : 1;
+
+    if (inc >= kMinSeq || dec >= kMinSeq || same >= kMinSeq) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 // Returns true for inputs like "6789", or "6543", or "0000" (but not for inputs
 // like "8901" - wrap around isn't considered).
@@ -55,12 +96,16 @@ bool CheckPasswordComplexity(std::string_view password, Complexity complexity) {
       return password.length() >= 6 && (has_lower || has_upper || has_symbol);
 
     case Complexity::kMedium:
-      // The password must contain at least two different sets of characters.
-      return password.length() >= 8 && different_classes >= 2;
+      // The password must contain at least two different sets of characters and
+      // must not contain trivial sequential or repeating characters.
+      return password.length() >= 8 && different_classes >= 2 &&
+             !ContainsTrivialSequence(password);
 
     case Complexity::kHigh:
-      // The password must contain all four different sets of characters.
-      return password.length() >= 12 && different_classes == 4;
+      // The password must contain all four different sets of characters and
+      // must not contain trivial sequential or repeating characters.
+      return password.length() >= 12 && different_classes == 4 &&
+             !ContainsTrivialSequence(password);
   }
 }
 

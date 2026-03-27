@@ -65,6 +65,43 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
       {"HighVar1", "G00gL3%P@$$wOrd", Complexity::kHigh, true},
       {"HighVar2", "1s~Th1s_L0ng_En0ugH", Complexity::kHigh, true},
       {"HighVar3", "cOmPlExItY-Rul3z!23", Complexity::kHigh, true},
+
+      // --- Repetitions and Sequences ---
+
+      // Identical Characters (Max 4 allowed).
+      {"Medium4IdenticalPass", "aaaa1234", Complexity::kMedium, true},
+      {"Medium5IdenticalFail", "aaaaa123", Complexity::kMedium, false},
+      {"Medium5IdenticalEndFail", "123aaaaa", Complexity::kMedium, false},
+      {"High4IdenticalPass", "aaaaB1!dEfGh", Complexity::kHigh, true},
+      {"High5IdenticalFail", "aaaaaB1!dEfG", Complexity::kHigh, false},
+      {"LowIgnoresIdentical", "aaaaa1", Complexity::kLow, true},
+
+      // Alphabetical / Numerical Sequences (Max 4 allowed).
+      {"Medium4SeqPass", "abcd1234", Complexity::kMedium, true},
+      {"Medium5SeqIncFail", "abcde123", Complexity::kMedium, false},
+      {"Medium5SeqDecFail", "edcba123", Complexity::kMedium, false},
+      {"High4SeqPass", "abcdB1!EfGhI", Complexity::kHigh, true},
+      {"High5SeqIncFail", "abcdeB1!fGhI", Complexity::kHigh, false},
+      {"High5SeqDecFail", "654321abCD!@", Complexity::kHigh, false},
+      {"LowIgnoresSequence", "abcde1", Complexity::kLow, true},
+
+      // Cross-class ASCII sequences.
+      {"MediumCrossClassIncPass", "XYZ[\\123", Complexity::kMedium, true},
+      {"MediumCrossClassDecPass", "{zyxw123", Complexity::kMedium, true},
+      {"MediumCrossClassPunctDigitPass", "-./012ab", Complexity::kMedium, true},
+
+      // Mixed delta sequence (Not a single continuous run).
+      {"MediumMixedDeltaPass", "abcdc123", Complexity::kMedium, true},
+
+      // Symbol sequence should pass, while symbol repetition should fail.
+      {"HighSymbolSequencePass", "aA1#$%&'()*+,-./", Complexity::kHigh, true},
+      {"HighSymbolRepetitionFail", "aA1@@@@@@", Complexity::kHigh, false},
+
+      // Off by one errors at symbol <-> alnum boundaries.
+      // ASCII 0x5D to 0x65: ]^_`abcde
+      {"MediumSymbolLowerBoundaryPass", "]^_`abcd", Complexity::kMedium, true},
+      {"MediumSymbolLowerBoundaryPass", "]^_`abcde", Complexity::kMedium,
+       false},
   };
 
   for (const auto& t : kTestData) {
