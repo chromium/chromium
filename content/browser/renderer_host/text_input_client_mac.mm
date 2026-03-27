@@ -156,6 +156,8 @@ uint32_t TextInputClientMac::GetCharacterIndexAtPoint(
       remaining_timeout = start + wait_timeout - base::LiveTicks::Now();
     }
   }
+  base::UmaHistogramBoolean("TextInputClient.CharacterIndex.TimedOut",
+                            !character_index_.has_value());
 
   // Return a sentinel if no response was received.
   uint32_t index = character_index_.value_or(UINT32_MAX);
@@ -205,6 +207,9 @@ gfx::Rect TextInputClientMac::GetFirstRectForRange(
       remaining_timeout = start + wait_timeout - base::LiveTicks::Now();
     }
   }
+
+  base::UmaHistogramBoolean("TextInputClient.FirstRect.TimedOut",
+                            !first_rect_.has_value());
 
   // `first_rect_` is in (child) frame coordinate and needs to be transformed to
   // the root frame coordinate. If `rfhi` has been deleted, it's too late to do

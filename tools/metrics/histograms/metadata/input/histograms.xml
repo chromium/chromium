@@ -2217,6 +2217,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TextInputClient.CharacterIndex.TimedOut" enum="Boolean"
+    expires_after="2026-08-16">
+  <owner>joenotcharles@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetCharacterIndexAtPoint on a renderer process. If True the call timed out
+    before receiving a response.
+
+    Only recorded on macOS.
+  </summary>
+</histogram>
+
 <histogram name="TextInputClient.CharacterIndex2" units="ms"
     expires_after="2026-08-16">
   <owner>joenotcharles@google.com</owner>
@@ -2227,6 +2240,19 @@ chromium-metrics-reviews@google.com.
     query. The call is effectively synchronous, blocking all other tasks from
     running on the browser thread for that duration. The duration is tracked
     with LiveTicks so doesn't include time when the system is suspended.
+
+    Only recorded on macOS.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.FirstRect.TimedOut" enum="Boolean"
+    expires_after="2026-08-16">
+  <owner>joenotcharles@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetFirstRectForRange on a renderer process. If True the call timed out
+    before receiving a response.
 
     Only recorded on macOS.
   </summary>
