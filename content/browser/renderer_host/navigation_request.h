@@ -2202,6 +2202,12 @@ class CONTENT_EXPORT NavigationRequest
                                                        bool is_first_response);
   void UpdateNavigationHandleTimingsOnCommitSent();
 
+  // Populates information in `navigation_handle_timing_` as early as possible
+  // so that it can be accessed by PageLoadMetricsObservers via
+  // `NavigationRequest::GetNavigationHandleTiming()`.
+  void UpdateNavigationHandleTimingsOnCreated();
+  void UpdateNavigationHandleTimingsOnBeginNavigation();
+
   // Populates information in `navigation_handle_timing_` from the
   // `NavigationTimeline` so that it can be accessed by PageLoadMetricsObservers
   // via `NavigationRequest::GetNavigationHandleTiming()`.

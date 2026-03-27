@@ -2283,6 +2283,8 @@ NavigationRequest::NavigationRequest(
   if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
     confidence_level_ = blink::mojom::ConfidenceLevel::kLow;
   }
+
+  UpdateNavigationHandleTimingsOnCreated();
 }
 
 NavigationRequest::~NavigationRequest() {
@@ -2494,6 +2496,7 @@ void NavigationRequest::BeginNavigation() {
   DCHECK(!loader_);
   DCHECK(!HasRenderFrameHost());
   ScopedCrashKeys crash_keys(*this);
+  UpdateNavigationHandleTimingsOnBeginNavigation();
 
   if (begin_navigation_callback_for_testing_) {
     std::move(begin_navigation_callback_for_testing_).Run();
@@ -7418,6 +7421,41 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnCommitSent() {
       base::TimeTicks::Now();
 
   GetDelegate()->DidUpdateNavigationHandleTiming(this);
+}
+
+void NavigationRequest::UpdateNavigationHandleTimingsOnCreated() {
+  if (!common_params_->input_start.is_null()) {
+    navigation_handle_timing_.user_interaction = common_params_->input_start;
+  }
+
+  // Use `common_params_->actual_navigation_start` if provided by the renderer.
+  // Otherwise, fallback to navigation_start. When called from constructor,
+  // `common_params_->navigation_start` contains the time before any adjustments
+  // by beforeunload handlers.
+  navigation_handle_timing_.actual_navigation_start =
+      !common_params_->actual_navigation_start.is_null()
+          ? common_params_->actual_navigation_start
+          : common_params_->navigation_start;
+}
+
+void NavigationRequest::UpdateNavigationHandleTimingsOnBeginNavigation() {
+  base::TimeDelta phase1_duration;
+  if (!begin_params_->before_unload_dialog_opened.is_null() &&
+      !begin_params_->before_unload_dialog_closed.is_null()) {
+    phase1_duration = begin_params_->before_unload_dialog_closed -
+                      begin_params_->before_unload_dialog_opened;
+  }
+
+  base::TimeDelta phase2_duration;
+  if (!beforeunload_phase2_dialog_opened_time_.is_null() &&
+      !beforeunload_phase2_dialog_closed_time_.is_null()) {
+    phase2_duration = beforeunload_phase2_dialog_closed_time_ -
+                      beforeunload_phase2_dialog_opened_time_;
+  }
+
+  navigation_handle_timing_.before_unload_dialog_duration =
+      std::max(base::TimeDelta(), phase1_duration) +
+      std::max(base::TimeDelta(), phase2_duration);
 }
 
 void NavigationRequest::UpdateSiteInfo(
