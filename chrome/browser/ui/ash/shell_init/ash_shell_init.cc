@@ -12,7 +12,6 @@
 #include "ash/shell_init_params.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui_factory.h"
 #include "chrome/browser/ui/ash/shell_delegate/chrome_shell_delegate.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/context_factory.h"
