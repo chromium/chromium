@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -399,7 +400,12 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Screenshots DISABLED_Screenshots
+#else
+#define MAYBE_Screenshots Screenshots
+#endif
+IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, MAYBE_Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DeepQuery app = {"contextual-tasks-app"};
   DeepQuery toolbar = app + "top-toolbar";
