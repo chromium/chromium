@@ -45,9 +45,4 @@ void RenderFrameObserver::RenderFrameGone() {
   render_frame_ = nullptr;
 }
 
-bool RenderFrameObserver::SetUpDroppedFramesReporting(
-    base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames) {
-  return false;
-}
-
 }  // namespace content

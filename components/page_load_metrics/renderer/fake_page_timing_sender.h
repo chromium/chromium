@@ -183,9 +183,6 @@ class FakePageTimingSender : public PageTimingSender {
           soft_largest_contentful_paint,
       std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override;
 
-  void SetUpDroppedFramesReporting(
-      base::ReadOnlySharedMemoryRegion dropped_frames_memory) override;
-
   void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) override;
 
  private:

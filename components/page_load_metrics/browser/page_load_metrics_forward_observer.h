@@ -132,8 +132,6 @@ class PageLoadMetricsForwardObserver final
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features) override;
-  void SetUpSharedMemoryForDroppedFrames(
-      const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) override;
   void OnResourceDataUseObserved(
       content::RenderFrameHost* rfh,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources) override;

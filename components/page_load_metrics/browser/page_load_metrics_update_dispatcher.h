@@ -161,8 +161,6 @@ class PageLoadMetricsUpdateDispatcher {
         const gfx::Rect& main_frame_viewport_rect) = 0;
     virtual void OnMainFrameAdRectsChanged(
         const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) = 0;
-    virtual void SetUpSharedMemoryForDroppedFrames(
-        base::ReadOnlySharedMemoryRegion dropped_frames_memory) = 0;
   };
 
   // The |client| instance must outlive this object.
@@ -193,10 +191,6 @@ class PageLoadMetricsUpdateDispatcher {
       std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
       internal::PageLoadTrackerPageType page_type);
-
-  void SetUpSharedMemoryForDroppedFrames(
-      content::RenderFrameHost* render_frame_host,
-      base::ReadOnlySharedMemoryRegion dropped_frames_memory);
 
   // This method is only intended to be called for PageLoadFeatures being
   // recorded directly from the browser process. Features coming from the

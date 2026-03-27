@@ -75,7 +75,6 @@
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 #include "cc/metrics/stub_compositor_frame_reporting_controller.h"
 #include "cc/metrics/submit_info.h"
-#include "cc/metrics/ukm_dropped_frames_data.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
@@ -6408,13 +6407,6 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   // case to occur.
   // The source id has already been associated to the URL.
   frame_sorter_.Reset(/*reset_fcp=*/true);
-}
-
-void LayerTreeHostImpl::SetUkmDroppedFramesDestination(
-    base::WritableSharedMemoryMapping ukm_dropped_frames_data) {
-  frame_trackers_.SetUkmDroppedFramesDestination(
-      ukm_dropped_frames_data.GetMemoryAs<UkmDroppedFramesDataShared>());
-  ukm_dropped_frames_mapping_ = std::move(ukm_dropped_frames_data);
 }
 
 void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(

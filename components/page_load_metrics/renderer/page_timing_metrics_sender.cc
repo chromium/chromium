@@ -256,11 +256,6 @@ void PageTimingMetricsSender::UpdateCustomUserTimings(
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::SetUpDroppedFramesReporting(
-    base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames) {
-  sender_->SetUpDroppedFramesReporting(std::move(shared_memory_dropped_frames));
-}
-
 void PageTimingMetricsSender::Update(
     mojom::PageLoadTimingPtr timing,
     const PageTimingMetadataRecorder::MonotonicTiming& monotonic_timing) {

@@ -247,8 +247,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnMainFrameAdRectsChanged(
       const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) override;
-  void SetUpSharedMemoryForDroppedFrames(
-      base::ReadOnlySharedMemoryRegion dropped_frames_memory) override;
 
   // PageLoadMetricsObserverDelegate implementation:
   content::WebContents* GetWebContents() const override;

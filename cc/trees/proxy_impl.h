@@ -101,8 +101,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                               std::unique_ptr<DrawImage> image,
                               bool speculative);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
-  void SetUkmDroppedFramesDestination(
-      base::WritableSharedMemoryMapping ukm_dropped_frames_data);
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
   void DetachInputDelegateAndRenderFrameObserver(

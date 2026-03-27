@@ -280,7 +280,7 @@ void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
   trace_data_.frame_count = adopt_from->trace_data_.frame_count;
 }
 
-int FrameSequenceMetrics::ReportMetrics() {
+void FrameSequenceMetrics::ReportMetrics() {
   // Terminates |trace_data_| for all types of FrameSequenceTracker.
   trace_data_.Terminate(v3_, v4_, GetEffectiveThread());
 
@@ -304,7 +304,6 @@ int FrameSequenceMetrics::ReportMetrics() {
     v4_.frames_checkerboarded = 0u;
     v4_.frames_checkerboarded_need_raster = 0u;
     v4_.frames_checkerboarded_need_record = 0u;
-    return -1;
   }
 
   const auto thread_type = GetEffectiveThread();
@@ -455,9 +454,8 @@ int FrameSequenceMetrics::ReportMetrics() {
     v4_.frames_checkerboarded_need_record = 0u;
 
     // Return PDF4 to write to UKMs.
-    return percent_dropped_v4;
+    return;
   }
-  return -1;
 }
 
 FrameSequenceMetrics::TraceData::TraceData(FrameSequenceMetrics* m)

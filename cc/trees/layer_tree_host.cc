@@ -2090,20 +2090,6 @@ void LayerTreeHost::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
     pending_commit_state()->debug_state.TurnOffHudInfoDisplay();
 }
 
-base::ReadOnlySharedMemoryRegion
-LayerTreeHost::CreateSharedMemoryForDroppedFramesUkm() {
-  DCHECK(IsMainThread());
-  const auto size = sizeof(UkmDroppedFramesDataShared);
-  auto ukm_dropped_frames_mapping =
-      base::ReadOnlySharedMemoryRegion::Create(size);
-  if (!ukm_dropped_frames_mapping.IsValid()) {
-    return {};
-  }
-  proxy_->SetUkmDroppedFramesDestination(
-      std::move(ukm_dropped_frames_mapping.mapping));
-  return std::move(ukm_dropped_frames_mapping.region);
-}
-
 void LayerTreeHost::SetRenderFrameObserver(
     std::unique_ptr<RenderFrameMetadataObserver> observer) {
   DCHECK(IsMainThread());

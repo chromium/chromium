@@ -944,11 +944,6 @@ void SingleThreadProxy::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   // need to record UKM in that case.
 }
 
-void SingleThreadProxy::SetUkmDroppedFramesDestination(
-    base::WritableSharedMemoryMapping ukm_smoothness_data) {
-  DCHECK(task_runner_provider_->IsMainThread());
-}
-
 void SingleThreadProxy::ClearHistory() {
   DCHECK(task_runner_provider_->IsImplThread());
   if (scheduler_on_impl_thread_)

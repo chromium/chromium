@@ -38,9 +38,6 @@ void FakePageTimingSender::SendTiming(
                            soft_largest_contentful_paint);
 }
 
-void FakePageTimingSender::SetUpDroppedFramesReporting(
-    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {}
-
 void FakePageTimingSender::SendCustomUserTiming(
     mojom::CustomUserTimingMarkPtr timing) {}
 

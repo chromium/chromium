@@ -839,9 +839,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetActiveURL(const GURL& url, ukm::SourceId source_id);
 
-  void SetUkmDroppedFramesDestination(
-      base::WritableSharedMemoryMapping ukm_dropped_frames_data);
-
   // Notifies FrameTrackers, impl side callbacks that the compsitor frame
   // was presented.
   void NotifyDidPresentCompositorFrameOnImplThread(
@@ -1195,9 +1192,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       browser_controls_offset_manager_;
 
   std::unique_ptr<PageScaleAnimation> page_scale_animation_;
-
-  base::WritableSharedMemoryMapping ukm_smoothness_mapping_;
-  base::WritableSharedMemoryMapping ukm_dropped_frames_mapping_;
 
   std::unique_ptr<MemoryHistory> memory_history_;
   std::unique_ptr<DebugRectHistory> debug_rect_history_;

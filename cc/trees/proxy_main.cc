@@ -1070,15 +1070,6 @@ void ProxyMain::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
                                 source_id, url));
 }
 
-void ProxyMain::SetUkmDroppedFramesDestination(
-    base::WritableSharedMemoryMapping ukm_dropped_frames_data) {
-  DCHECK(IsMainThread());
-  ImplThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyImpl::SetUkmDroppedFramesDestination,
-                                base::Unretained(proxy_impl_.get()),
-                                std::move(ukm_dropped_frames_data)));
-}
-
 void ProxyMain::SetRenderFrameObserver(
     std::unique_ptr<RenderFrameMetadataObserver> observer) {
   ImplThreadTaskRunner()->PostTask(

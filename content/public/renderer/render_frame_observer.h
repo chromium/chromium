@@ -381,12 +381,6 @@ class CONTENT_EXPORT RenderFrameObserver {
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle);
 
-  // The dropped frames metrics is shared over shared-memory. The
-  // interested observer should invalidate |shared_memory| (by std::move()'ing
-  // it), and return true. All other observers should return false (default).
-  virtual bool SetUpDroppedFramesReporting(
-      base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames);
-
   RenderFrame* render_frame() const;
 
   // This method exists for subclasses of Oilpan objects that need to clean up

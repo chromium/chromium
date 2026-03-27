@@ -584,13 +584,6 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
         frame_widget->UpdateNavigationStateForCompositor(
             web_frame_->GetDocument().GetUkmSourceId(),
             KURL(web_frame_->Client()->LastCommittedUrlForUKM()));
-
-        auto dropped_frames_shmem =
-            frame_widget->CreateSharedMemoryForDroppedFramesUkm();
-        if (dropped_frames_shmem.IsValid()) {
-          web_frame_->Client()->SetUpSharedMemoryForDroppedFrames(
-              std::move(dropped_frames_shmem));
-        }
       }
     }
   }

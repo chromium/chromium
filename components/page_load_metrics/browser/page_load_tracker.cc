@@ -1145,14 +1145,6 @@ void PageLoadTracker::UpdateFeaturesUsage(
   }
 }
 
-void PageLoadTracker::SetUpSharedMemoryForDroppedFrames(
-    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
-  DCHECK(dropped_frames_memory.IsValid());
-  for (auto& observer : observers_) {
-    observer->SetUpSharedMemoryForDroppedFrames(dropped_frames_memory);
-  }
-}
-
 void PageLoadTracker::UpdateResourceDataUse(
     content::RenderFrameHost* rfh,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources) {

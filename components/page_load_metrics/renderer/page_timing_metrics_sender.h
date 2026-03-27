@@ -113,9 +113,6 @@ class PageTimingMetricsSender {
 
   void UpdateCustomUserTimings(mojom::CustomUserTimingMarkPtr);
 
-  void SetUpDroppedFramesReporting(
-      base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames);
-
   void DidObserveSoftLargestContentfulPaint(
       mojom::LargestContentfulPaintTimingPtr lcp);
 

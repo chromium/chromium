@@ -28,8 +28,6 @@ class PageTimingSender {
       std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
       std::vector<mojom::CustomUserTimingMarkPtr> user_timings) = 0;
-  virtual void SetUpDroppedFramesReporting(
-      base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames) = 0;
   virtual void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) = 0;
 };
 

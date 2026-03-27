@@ -111,9 +111,6 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // blink::WebLocalFrameObserver implementation
   void OnFrameDetached() override;
 
-  bool SetUpDroppedFramesReporting(
-      base::ReadOnlySharedMemoryRegion& shared_memory_dropped_frames) override;
-
  protected:
   // The relative and monotonic page load timings.
   struct Timing {
@@ -157,10 +154,6 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // information from ongoing resource requests on the previous page (or right
   // before this page loads in a new renderer).
   std::unique_ptr<PageResourceDataUse> provisional_frame_resource_data_use_;
-
-  // Handle to the shared memory for transporting dropped frame rate related ukm
-  // data.
-  base::ReadOnlySharedMemoryRegion ukm_dropped_frames_data_;
 
   // The main frame intersection rectangle signal received before
   // `page_timing_metrics_sender_` is created. The signal will be send out right

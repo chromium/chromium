@@ -426,7 +426,6 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     RecordTimingMetrics(timing);
   RecordLastSoftNavigation();
   ReportLayoutStability();
-  RecordDroppedFramesMetrics();
   RecordResponsivenessMetrics();
   // Assume that page ends on this method, as the app could be evicted right
   // after.
@@ -506,7 +505,6 @@ void UkmPageLoadMetricsObserver::OnComplete(
     RecordTimingMetrics(timing);
   RecordLastSoftNavigation();
   ReportLayoutStability();
-  RecordDroppedFramesMetrics();
   RecordResponsivenessMetrics();
   RecordPageEndMetrics(&timing, current_time,
                        /* app_entered_background */ false);
@@ -1545,25 +1543,6 @@ void UkmPageLoadMetricsObserver::RecordPageLoadTimestampMetrics(
   builder.SetHourOfDay(exploded.hour);
 }
 
-void UkmPageLoadMetricsObserver::RecordDroppedFramesMetrics() {
-  auto* dropped_frames =
-      ukm_dropped_frames_data_.GetMemoryAs<cc::UkmDroppedFramesDataShared>();
-  if (!dropped_frames) {
-    return;
-  }
-
-  cc::UkmDroppedFramesData dropped_frames_data;
-  bool success = dropped_frames->Read(dropped_frames_data);
-  if (!success) {
-    return;
-  }
-
-  ukm::builders::Graphics_Smoothness_FrameSequence builder(
-      GetDelegate().GetPageUkmSourceId());
-  builder.SetPercentDroppedFrames(dropped_frames_data.percent_dropped_frames);
-  builder.Record(ukm::UkmRecorder::Get());
-}
-
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
     const page_load_metrics::mojom::PageLoadTiming* timing,
     base::TimeTicks page_end_time,
@@ -1758,11 +1737,6 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
                              .GetExperimentalLargestContentfulPaintHandler()
                              .MainFrameTreeNodeId());
   }
-}
-
-void UkmPageLoadMetricsObserver::SetUpSharedMemoryForDroppedFrames(
-    const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) {
-  ukm_dropped_frames_data_ = dropped_frames_memory.Map();
 }
 
 void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(

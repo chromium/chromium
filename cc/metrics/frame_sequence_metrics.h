@@ -121,8 +121,7 @@ class CC_EXPORT FrameSequenceMetrics {
   bool HasEnoughDataForReporting() const;
   bool HasDataLeftForReporting() const;
   // Report related metrics: throughput, checkboarding...
-  // Returns PercentDroppedFrames4.AllSequences metric.
-  int ReportMetrics();
+  void ReportMetrics();
 
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info);

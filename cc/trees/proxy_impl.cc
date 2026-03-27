@@ -989,13 +989,6 @@ void ProxyImpl::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   host_impl_->SetActiveURL(url, source_id);
 }
 
-void ProxyImpl::SetUkmDroppedFramesDestination(
-    base::WritableSharedMemoryMapping ukm_dropped_frames_data) {
-  DCHECK(IsImplThread());
-  host_impl_->SetUkmDroppedFramesDestination(
-      std::move(ukm_dropped_frames_data));
-}
-
 void ProxyImpl::ClearHistory() {
   DCHECK(IsImplThread());
   scheduler_->ClearHistory();

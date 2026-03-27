@@ -63,8 +63,6 @@ class FakeProxy : public Proxy {
           offset_tag_modifications) override {}
   void RequestBeginMainFrameNotExpected(bool new_state) override {}
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override {}
-  void SetUkmDroppedFramesDestination(
-      base::WritableSharedMemoryMapping ukm_dropped_frames_data) override {}
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}
   void CompositeImmediatelyForTest(base::TimeTicks frame_begin_time,

@@ -511,16 +511,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
   client_->UpdateFeaturesUsage(render_frame_host, new_features);
 }
 
-void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForDroppedFrames(
-    content::RenderFrameHost* render_frame_host,
-    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
-  const bool is_main_frame = client_->IsPageMainFrame(render_frame_host);
-  if (is_main_frame) {
-    client_->SetUpSharedMemoryForDroppedFrames(
-        std::move(dropped_frames_memory));
-  }
-}
-
 void PageLoadMetricsUpdateDispatcher::DidFinishSubFrameNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted())

@@ -98,10 +98,6 @@ class CC_EXPORT FrameSequenceTrackerCollection : public FrameSorterObserver {
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info) override;
 
-  // Registers the shared memory location for PDF4 UKMs.
-  void SetUkmDroppedFramesDestination(
-      UkmDroppedFramesDataShared* dropped_frames_data);
-
   ActiveTrackers GetActiveTrackers() const;
   FrameInfo::SmoothThread GetSmoothThreadAtTime(
       base::TimeTicks timestamp) const;

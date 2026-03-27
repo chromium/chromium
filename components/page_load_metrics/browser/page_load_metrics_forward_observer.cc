@@ -324,15 +324,6 @@ void PageLoadMetricsForwardObserver::OnFeaturesUsageObserved(
   parent_observer_->OnFeaturesUsageObserved(rfh, features);
 }
 
-// SetUpSharedMemoryForDroppedFrames is called only for the outermost page.
-void PageLoadMetricsForwardObserver::SetUpSharedMemoryForDroppedFrames(
-    const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) {
-  // TODO(crbug.com/40895492): Investigate whether this should truly be
-  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
-  // they are not all necessarily hit.
-  DUMP_WILL_BE_NOTREACHED();
-}
-
 // PageLoadTracker already aggregates inter-pages data and processes it via
 // PageLoadMetricsUpdateDispatcher to dispatch OnResourceDataUseObserved with
 // the aggregated data. So, we don't need to forward here.
