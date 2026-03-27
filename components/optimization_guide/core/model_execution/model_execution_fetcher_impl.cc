@@ -461,6 +461,42 @@ void AppendHeadersIfNeeded(network::ResourceRequest& request) {
       kOptimizationGuideModelExecutionDebugLogsHeaderKey, "");
 }
 
+// Returns whether model executions for the `feature` require an API key.
+// TODO: crbug.com/496598963 - conservative way to allow optional API key to
+// unblock kFinds to avoid reverts. A followup CL will switch to a more
+// permanent solution.
+bool IsAPIKeyRequiredForFeature(ModelBasedCapabilityKey feature) {
+  switch (feature) {
+    case ModelBasedCapabilityKey::kCompose:
+    case ModelBasedCapabilityKey::kTabOrganization:
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+    case ModelBasedCapabilityKey::kTest:
+    case ModelBasedCapabilityKey::kHistorySearch:
+    case ModelBasedCapabilityKey::kBlingPrototyping:
+    case ModelBasedCapabilityKey::kEnhancedCalendar:
+    case ModelBasedCapabilityKey::kZeroStateSuggestions:
+    case ModelBasedCapabilityKey::kWalletablePassExtraction:
+    case ModelBasedCapabilityKey::kIosSmartTabGrouping:
+    case ModelBasedCapabilityKey::kSkills:
+    case ModelBasedCapabilityKey::kContentAnnotation:
+    case ModelBasedCapabilityKey::kAnnotationReducerOnePResolver:
+    case ModelBasedCapabilityKey::kAnnotationReducerQueryClassifier:
+    case ModelBasedCapabilityKey::kContextualCueing:
+    case ModelBasedCapabilityKey::kFormsClassifications:
+    case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kAmountExtraction:
+      return true;
+    case ModelBasedCapabilityKey::kFinds:
+#if BUILDFLAG(IS_ANDROID)
+      return false;
+#else
+      return true;
+#endif
+  }
+}
+
 // Returns whether model executions for the `feature` require an access token.
 bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
   switch (feature) {
@@ -585,6 +621,11 @@ void ModelExecutionFetcherImpl::OnAccessTokenReceived(
   }
 
   resource_request->url = optimization_guide_service_url_;
+  if (IsAPIKeyRequiredForFeature(feature)) {
+    resource_request->url = net::AppendOrReplaceQueryParameter(
+        resource_request->url, "key",
+        features::GetOptimizationGuideServiceAPIKey());
+  }
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   AppendHeadersIfNeeded(*resource_request);

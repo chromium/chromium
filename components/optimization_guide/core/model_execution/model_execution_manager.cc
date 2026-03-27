@@ -131,10 +131,7 @@ ModelExecutionManager::ModelExecutionManager(
         model_quality_uploader_service)
     : model_quality_uploader_service_(model_quality_uploader_service),
       optimization_guide_logger_(optimization_guide_logger),
-      model_execution_service_url_(net::AppendOrReplaceQueryParameter(
-          switches::GetModelExecutionServiceURL(),
-          "key",
-          features::GetOptimizationGuideServiceAPIKey())),
+      model_execution_service_url_(switches::GetModelExecutionServiceURL()),
       delegate_(std::move(delegate)),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager) {}

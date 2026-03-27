@@ -38,7 +38,7 @@ using base::test::TestMessage;
 namespace {
 
 constexpr char kOptimizationGuideServiceUrl[] =
-    "https://optimization-guide-server.com/?key=foo_key";
+    "https://optimization-guide-server.com/";
 
 TestMessage BuildTestMessage(const std::string& test_message_str) {
   TestMessage test_message;
