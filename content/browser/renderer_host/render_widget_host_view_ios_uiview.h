@@ -17,6 +17,8 @@
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+inline constexpr CGFloat kInputAccessoryToolbarBottomMargin = 8;
+
 @interface RenderWidgetUIView
     : CALayerFrameSinkProvider <BETextInput, UITextInput> {
   base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
@@ -24,6 +26,9 @@
   id<BETextInputDelegate> be_text_input_delegate_;
   BETextInteraction* text_interaction_;
   BOOL _isEditable;
+  UIView* _inputAccessoryContainerView;
+  UIBarButtonItem* _previousAccessoryButton;
+  UIBarButtonItem* _nextAccessoryButton;
   std::u16string _markedText;
   std::optional<input::NativeWebKeyboardEvent> _currentKeyDownEvent;
   std::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;

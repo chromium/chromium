@@ -18,6 +18,8 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_ios.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -980,6 +982,20 @@ void RenderWidgetHostViewIOS::ExecuteEditCommand(const std::string& command) {
     return;
   }
   input_handler->ExecuteEditCommand(command, std::nullopt);
+}
+
+void RenderWidgetHostViewIOS::AdvanceFocusForIME(
+    blink::mojom::FocusType focus_type) {
+  auto* host = GetFocusedWidget();
+  if (!host) {
+    return;
+  }
+  auto* rfh = host->frame_tree()->GetFocusedFrame();
+  if (!rfh) {
+    return;
+  }
+  rfh->current_frame_host()->GetAssociatedLocalFrame()->AdvanceFocusForIME(
+      focus_type);
 }
 
 void RenderWidgetHostViewIOS::SendKeyEvent(

@@ -5,10 +5,13 @@
 #ifndef UI_BASE_IME_TEXT_INPUT_FLAGS_H_
 #define UI_BASE_IME_TEXT_INPUT_FLAGS_H_
 
+#include "build/build_config.h"
+
 namespace ui {
 
 // Intentionally keep in sync with blink::WebTextInputFlags defined in:
 // third_party/blink/public/platform/web_text_input_type.h
+// LINT.IfChange(TextInputFlags)
 enum TextInputFlags {
   TEXT_INPUT_FLAG_NONE = 0,
   TEXT_INPUT_FLAG_AUTOCOMPLETE_ON = 1 << 0,
@@ -21,9 +24,17 @@ enum TextInputFlags {
   TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS = 1 << 7,
   TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS = 1 << 8,
   TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES = 1 << 9,
+// Used to enable/disable the "Previous"/"Next" buttons in the iOS keyboard
+// input accessory toolbar. Android passes these bits as a raw integer to Java
+// and never decodes them via this enum; desktop has no such toolbar UI.
+#if BUILDFLAG(IS_IOS)
+  TEXT_INPUT_FLAG_HAVE_NEXT_FOCUSABLE_ELEMENT = 1 << 10,
+  TEXT_INPUT_FLAG_HAVE_PREVIOUS_FOCUSABLE_ELEMENT = 1 << 11,
+#endif
   TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD = 1 << 12,
   TEXT_INPUT_FLAG_VERTICAL = 1 << 13
 };
+// LINT.ThenChange(//third_party/blink/public/platform/web_text_input_type.h:WebTextInputFlags)
 
 }  // namespace ui
 

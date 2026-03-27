@@ -471,6 +471,8 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
             # App extensions have restricted dependencies and thus can't use the
             # wrappers.
             r'^ios/chrome/\w+_extension/',
+            # content/ cannot depend on ios/chrome/, so use UIKit directly.
+            r'^content/',
         ),
     ),
     BanRule(

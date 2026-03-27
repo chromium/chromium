@@ -4,8 +4,11 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_ios_uiview.h"
 
+#include "base/apple/foundation_util.h"
 #include "testing/platform_test.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/ime/text_input_flags.h"
 
 @interface RenderWidgetUIView (Testing)
 - (BOOL)shouldInsertCharacter:(const blink::WebKeyboardEvent&)webKeyboardEvent;
@@ -348,6 +351,48 @@ TEST_F(RenderWidgetHostViewIOSUIViewTest, DeleteSelectionCommands) {
       EXPECT_EQ(commands[i], test_case.expected_commands[i]);
     }
   }
+}
+
+TEST_F(RenderWidgetHostViewIOSUIViewTest,
+       InputAccessoryButtonsFollowFocusableFlags) {
+  UIView* inputAccessoryView = [uiview_ inputAccessoryView];
+  ASSERT_NE(inputAccessoryView, nil);
+
+  UIToolbar* toolbar =
+      base::apple::ObjCCast<UIToolbar>(inputAccessoryView.subviews.firstObject);
+  ASSERT_NE(toolbar, nil);
+  ASSERT_GE(toolbar.items.count, 2u);
+  EXPECT_EQ(
+      CGRectGetHeight(inputAccessoryView.frame),
+      CGRectGetHeight(toolbar.frame) + kInputAccessoryToolbarBottomMargin);
+
+  UIBarButtonItem* previousButton = toolbar.items[0];
+  UIBarButtonItem* nextButton = toolbar.items[1];
+
+  ui::mojom::TextInputState state;
+  state.type = ui::TextInputType::TEXT_INPUT_TYPE_TEXT;
+  state.mode = ui::TextInputMode::TEXT_INPUT_MODE_TEXT;
+
+  state.flags = 0;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_FALSE(previousButton.enabled);
+  EXPECT_FALSE(nextButton.enabled);
+
+  state.flags = ui::TEXT_INPUT_FLAG_HAVE_PREVIOUS_FOCUSABLE_ELEMENT;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_TRUE(previousButton.enabled);
+  EXPECT_FALSE(nextButton.enabled);
+
+  state.flags = ui::TEXT_INPUT_FLAG_HAVE_NEXT_FOCUSABLE_ELEMENT;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_FALSE(previousButton.enabled);
+  EXPECT_TRUE(nextButton.enabled);
+
+  state.flags = ui::TEXT_INPUT_FLAG_HAVE_PREVIOUS_FOCUSABLE_ELEMENT |
+                ui::TEXT_INPUT_FLAG_HAVE_NEXT_FOCUSABLE_ELEMENT;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_TRUE(previousButton.enabled);
+  EXPECT_TRUE(nextButton.enabled);
 }
 
 }  // namespace content

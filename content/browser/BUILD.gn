@@ -3003,6 +3003,7 @@ source_set("browser") {
     frameworks += [ "IOSurface.framework" ]
     deps += [
       "//build:ios_buildflags",
+      "//components/strings",
       "//ui/accelerated_widget_mac",
     ]
   } else {
