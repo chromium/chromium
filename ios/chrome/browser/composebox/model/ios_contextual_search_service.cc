@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/composebox/model/ios_contextual_search_service.h"
 
-#include "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
+#include "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 
 IOSContextualSearchService::IOSContextualSearchService(
     signin::IdentityManager* identity_manager,

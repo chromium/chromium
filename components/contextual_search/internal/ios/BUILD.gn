@@ -12,9 +12,9 @@ source_set("ios") {
     "composebox_query_controller_ios.mm",
   ]
   deps = [
+    "..:internal",
     "//base",
     "//components/contextual_search:public",
-    "//components/contextual_search/internal",
     "//components/lens",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/gfx",

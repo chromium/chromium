@@ -9,7 +9,7 @@ source_set("internal") {
     "//chrome/browser:*",
     "//chrome/browser/ui/lens:*",
     "//chrome/test:*",
-    "//components/omnibox/composebox/ios:*",
+    "//components/contextual_search/internal/ios:*",
   ]
 
   sources = [

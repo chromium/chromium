@@ -249,10 +249,10 @@ group("location_bar_deps") {
 group("omnibox_deps") {
   visibility = [ ":*" ]
   public_deps = [
+    "//components/contextual_search/internal/ios",
     "//components/omnibox/browser",
     "//components/omnibox/browser:location_bar",
     "//components/omnibox/common",
-    "//components/omnibox/composebox/ios",
     "//ios/chrome/browser/omnibox/coordinator",
     "//ios/chrome/browser/omnibox/coordinator/popup",
     "//ios/chrome/browser/omnibox/model",
@@ -306,9 +306,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/contextual_search:public",
     "//components/contextual_search/internal:test_support",
+    "//components/contextual_search/internal/ios",
     "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
-    "//components/omnibox/composebox/ios",
     "//components/search_engines",
     "//components/search_engines:test_support",
     "//components/signin/public/identity_manager",
