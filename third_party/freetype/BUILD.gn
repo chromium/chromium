@@ -5,7 +5,7 @@
 import("//build/config/cast.gni")
 import("//build/config/freetype/freetype.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//third_party/harfbuzz-ng/harfbuzz.gni")
+import("//third_party/harfbuzz/harfbuzz.gni")
 
 assert(enable_freetype)
 assert(!use_system_freetype, "Not used when using system freetype.")
@@ -157,9 +157,9 @@ component("freetype") {
   }
 
   if (use_system_harfbuzz) {
-    configs += [ "//third_party/harfbuzz-ng:harfbuzz_from_pkgconfig" ]
+    configs += [ "//third_party/harfbuzz:harfbuzz_from_pkgconfig" ]
   } else {
-    configs += [ "//third_party/harfbuzz-ng:harfbuzz_config" ]
+    configs += [ "//third_party/harfbuzz:harfbuzz_config" ]
   }
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]

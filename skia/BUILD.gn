@@ -579,7 +579,7 @@ component("skia") {
     assert(use_blink)
     deps += [
       # Needed for HarfBuzz hb_subet subsetting.
-      "//third_party/harfbuzz-ng",
+      "//third_party/harfbuzz",
       "//third_party/zlib",
     ]
     public += skia_pdf_public

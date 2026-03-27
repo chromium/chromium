@@ -48,7 +48,7 @@ REPLACEMENTS = {
     'flatbuffers': 'third_party/flatbuffers/BUILD.gn',
     'fontconfig': 'third_party/fontconfig/BUILD.gn',
     'freetype': 'build/config/freetype/freetype.gni',
-    'harfbuzz-ng': 'third_party/harfbuzz-ng/harfbuzz.gni',
+    'harfbuzz': 'third_party/harfbuzz/harfbuzz.gni',
     'highway': 'third_party/highway/BUILD.gn',
     'icu': 'third_party/icu/BUILD.gn',
     'jsoncpp': 'third_party/jsoncpp/BUILD.gn',

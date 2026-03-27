@@ -110,8 +110,8 @@ source_set("common") {
 
       # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
       # our own HarfBuzz avoid mixing symbols from system HarfBuzz and
-      # our own through the indirect dependency to harfbuzz-ng here.
-      "//third_party/harfbuzz-ng",
+      # our own through the indirect dependency to harfbuzz here.
+      "//third_party/harfbuzz",
     ]
   }
   if (is_chromeos) {

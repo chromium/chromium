@@ -1,5 +1,5 @@
-Name: harfbuzz-ng
-Short Name: harfbuzz-ng
+Name: harfbuzz
+Short Name: harfbuzz
 URL: http://harfbuzz.org
 Version: 13.2.1-28
 CPEPrefix: cpe:/a:harfbuzz_project:harfbuzz:13.2.1
@@ -12,11 +12,13 @@ License: MIT-Modern-Variant
 License File: src/COPYING
 
 Description:
-This is harfbuzz-ng, a new implementation of harfbuzz with a different
-API from the old one.
+HarfBuzz is a text shaping engine. It primarily supports OpenType, but also
+Apple Advanced Typography. Check “What is HarfBuzz?” chapter in the user manual
+here https://harfbuzz.github.io/what-is-harfbuzz.html for more inforamation on
+what HarfBuzz do and what it doesn’t do.
 
 This copy of harfbuzz is usually updated by running
-    $ third_party/harfbuzz-ng/roll-harfbuzz.sh
+    $ third_party/harfbuzz/roll-harfbuzz.sh
 from your Chromium ./src directory.
 
 This should update your checkout by putting the new upstream HarfBuzz ToT commit

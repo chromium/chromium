@@ -222,7 +222,7 @@ TEST(AutoSpanificationHelperTest, CryptoBufferData) {
 
 // Minimized mock of hb_buffer_get_glyph_infos and
 // hb_buffer_get_glyph_positions defined in
-// //third_party/harfbuzz-ng/src/src/hb-buffer.h
+// //third_party/harfbuzz/src/src/hb-buffer.h
 struct hb_glyph_info_t {};
 struct hb_glyph_position_t {};
 struct hb_buffer_t {

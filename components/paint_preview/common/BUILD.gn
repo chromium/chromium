@@ -40,7 +40,7 @@ source_set("common") {
     "//components/crash/core/common:crash_key",
     "//net",
     "//skia",
-    "//third_party/harfbuzz-ng",
+    "//third_party/harfbuzz",
     "//ui/gfx/geometry",
     "//url",
   ]
@@ -93,7 +93,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/harfbuzz-ng",
+    "//third_party/harfbuzz",
     "//ui/gfx/geometry",
   ]
   if (is_ios) {

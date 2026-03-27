@@ -23,7 +23,7 @@
 ./third_party/spirv-cross/src,Vulkan
 ./third_party/libgav1/src,libgav1
 ./third_party/skia,Skia
-./third_party/harfbuzz-ng/src,harfbuzz
+./third_party/harfbuzz/src,harfbuzz
 ./third_party/libjpeg_turbo,libjpeg
 ./third_party/webrtc,WebRTC
 ./third_party/webdriver/pylib,WebDriver

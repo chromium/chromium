@@ -7,7 +7,7 @@ include_rules = [
   "+device/vr/buildflags/buildflags.h",
   "+gpu/vulkan/buildflags.h",
   "+skia/ext",
-  "+third_party/harfbuzz-ng",
+  "+third_party/harfbuzz",
   "+third_party/skia",
   "+third_party/test_fonts",
   "+ui/base/ozone_buildflags.h",

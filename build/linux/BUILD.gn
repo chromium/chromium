@@ -27,7 +27,7 @@ if (use_system_freetype) {
   pkg_config("freetype_from_pkgconfig") {
     visibility = [
       "//build/config/freetype",
-      "//third_party/harfbuzz-ng:harfbuzz_source",
+      "//third_party/harfbuzz:harfbuzz_source",
     ]
     packages = [ "freetype2" ]
   }

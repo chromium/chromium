@@ -1585,7 +1585,7 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/core/sanitizer:unit_test_support",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/fuzztest",
-    "//third_party/harfbuzz-ng",
+    "//third_party/harfbuzz",
     "//ui/accessibility:ax_base",
     "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_blink",

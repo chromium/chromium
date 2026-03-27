@@ -4,7 +4,7 @@
 
 declare_args() {
   # Blink uses a cutting-edge version of Harfbuzz (version listed in
-  # third_party/harfbuzz-ng/README.chromium); most Linux distros do not contain
+  # third_party/harfbuzz/README.chromium); most Linux distros do not contain
   # a new enough version of the code to work correctly. However, ChromeOS
   # chroots (i.e. real ChromeOS builds for devices) do contain a new enough
   # version of the library, and so this variable exists so that ChromeOS can

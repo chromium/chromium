@@ -5,7 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/freetype/freetype.gni")
-import("//third_party/harfbuzz-ng/harfbuzz.gni")
+import("//third_party/harfbuzz/harfbuzz.gni")
 import("//third_party/libjpeg.gni")
 
 assert(

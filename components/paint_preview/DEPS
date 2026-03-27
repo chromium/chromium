@@ -4,7 +4,7 @@ include_rules = [
   "+components/version_info",
   "+mojo/public/cpp",
   "+skia/ext",
-  "+third_party/harfbuzz-ng/src/src",
+  "+third_party/harfbuzz/src/src",
   "+third_party/skia/include/codec",
   "+third_party/skia/include/core",
   "+third_party/skia/include/encode",

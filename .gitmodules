@@ -217,9 +217,9 @@
 [submodule "third_party/fxdiv/src"]
 	path = third_party/fxdiv/src
 	url = https://chromium.googlesource.com/external/github.com/Maratyszcza/FXdiv
-[submodule "third_party/harfbuzz-ng/src"]
-	path = third_party/harfbuzz-ng/src
-	url = https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz
+[submodule "third_party/harfbuzz/src"]
+       path = third_party/harfbuzz/src
+       url = https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz
 [submodule "third_party/ink/src"]
 	path = third_party/ink/src
 	url = https://chromium.googlesource.com/external/github.com/google/ink
