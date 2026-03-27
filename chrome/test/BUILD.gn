@@ -3663,7 +3663,6 @@ if (!is_android) {
       "../browser/prefetch/prefetch_browsertest.cc",
       "../browser/prefs/tracked/pref_hash_browsertest.cc",
       "../browser/preloading/new_tab_page_preload/new_tab_page_preload_browsertest.cc",
-      "../browser/privacy_sandbox/tpcd_mitigations_browsertest.cc",
       "../browser/profile_resetter/profile_resetter_browsertest.cc",
       "../browser/profiles/host_zoom_map_browsertest.cc",
       "../browser/profiles/incognito_profile_containment_browsertest.cc",
