@@ -20863,7 +20863,6 @@ from previous Chrome versions.
   <int value="10" label="Audio track start failure (NotReadableError)"/>
   <int value="11" label="Video track start failure (NotReadableError)"/>
   <int value="12" label="Not supported (NotSupportedError)"/>
-  <int value="13" label="Failed due to shutdown (AbortError)"/>
   <int value="14" label="KillSwitch on (NotAllowedError)"/>
   <int value="15" label="Permission denied by System (NotAllowedError)"/>
   <int value="16" label="Device in use (NotReadableError)"/>
@@ -20893,6 +20892,34 @@ from previous Chrome versions.
       label="Capture from background page (Mac) (InvalidStateError)"/>
   <int value="39" label="Capture not allowed for long domains (AbortError)"/>
   <int value="40" label="Permission Denied By Controller (NotAllowedError)"/>
+  <int value="41"
+      label="Failed due to Shutdown: Controller Destructor (AbortError)"/>
+  <int value="42" label="Failed due to Shutdown: Request Removed (AbortError)"/>
+  <int value="43" label="Failed due to Shutdown: No Delegate (AbortError)"/>
+  <int value="44"
+      label="Failed due to Shutdown: No Guest Page Holder Delegate
+             (AbortError)"/>
+  <int value="45"
+      label="Failed due to Shutdown: No RFH in Dispatcher (AbortError)"/>
+  <int value="46"
+      label="Failed due to Shutdown: No RFH (Cancelled Request) (AbortError)"/>
+  <int value="47"
+      label="Failed due to Shutdown: No RFH in Controller (AbortError)"/>
+  <int value="48"
+      label="Failed due to Shutdown: No RFH in Handler (AbortError)"/>
+  <int value="49"
+      label="Failed due to Shutdown: No Web View Delegate (AbortError)"/>
+  <int value="50"
+      label="Failed due to Shutdown: Web View Not Attached (AbortError)"/>
+  <int value="51"
+      label="Failed due to Shutdown: User Media Processor Cancel Request
+             (AbortError)"/>
+  <int value="52"
+      label="Failed due to Shutdown: User Media Processor Stop All Processing
+             (AbortError)"/>
+  <int value="53"
+      label="Failed due to Shutdown: Web Contents No Delegate (AbortError)"/>
+  <int value="54" label="Failed due to Shutdown: Other (AbortError)"/>
 </enum>
 
 <enum name="MediaStreamType">

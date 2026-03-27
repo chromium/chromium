@@ -183,10 +183,10 @@ void ControlledFrameMediaAccessHandler::HandleRequest(
   embedder_request.security_origin = embedder_request.url_origin.GetURL();
 
   if (!web_view->embedder_web_contents()->GetDelegate()) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-        std::unique_ptr<content::MediaStreamUI>());
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            blink::mojom::MediaStreamRequestResult::
+                                FAILED_DUE_TO_SHUTDOWN_NO_WEB_VIEW_DELEGATE,
+                            std::unique_ptr<content::MediaStreamUI>());
     return;
   }
   web_view->embedder_web_contents()

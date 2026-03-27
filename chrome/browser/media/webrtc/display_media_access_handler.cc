@@ -185,9 +185,10 @@ void DisplayMediaAccessHandler::HandleRequest(
   RenderFrameHost* const rfh = RenderFrameHost::FromID(
       request.render_process_id, request.render_frame_id);
   if (!rfh || !rfh->IsActive()) {
-    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
-                            MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-                            /*ui=*/nullptr);
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER,
+        /*ui=*/nullptr);
     return;
   }
 

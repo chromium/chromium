@@ -170,10 +170,10 @@ void ChromeWebViewPermissionHelperDelegate::
         const content::MediaStreamRequest& request,
         content::MediaResponseCallback callback) {
   if (!web_view_guest()->attached()) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-        std::unique_ptr<content::MediaStreamUI>());
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            blink::mojom::MediaStreamRequestResult::
+                                FAILED_DUE_TO_SHUTDOWN_WEB_VIEW_NOT_ATTACHED,
+                            std::unique_ptr<content::MediaStreamUI>());
     return;
   }
 

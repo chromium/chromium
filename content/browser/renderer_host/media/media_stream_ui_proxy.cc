@@ -152,11 +152,12 @@ void MediaStreamUIProxy::Core::RequestAccess(
 
   // Tab may have gone away, or has no delegate from which to request access.
   if (!render_delegate) {
-    ProcessAccessRequestResponse(
-        request->render_process_id, request->render_frame_id,
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-        std::unique_ptr<MediaStreamUI>());
+    ProcessAccessRequestResponse(request->render_process_id,
+                                 request->render_frame_id,
+                                 blink::mojom::StreamDevicesSet(),
+                                 blink::mojom::MediaStreamRequestResult::
+                                     FAILED_DUE_TO_SHUTDOWN_NO_DELEGATE,
+                                 std::unique_ptr<MediaStreamUI>());
     return;
   }
 

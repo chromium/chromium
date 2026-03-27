@@ -1285,7 +1285,7 @@ class MediaStreamManager::GenerateStreamsRequest
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     if (generate_streams_callback_) {
       std::move(generate_streams_callback_)
-          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_REQUEST_REMOVED,
                /*label=*/std::string(),
                /*stream_devices_set=*/nullptr,
                /*pan_tilt_zoom_allowed=*/false);
@@ -1392,7 +1392,7 @@ class MediaStreamManager::GetOpenDeviceRequest
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     if (get_open_device_callback_) {
       std::move(get_open_device_callback_)
-          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, nullptr);
+          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_OTHER, nullptr);
     }
   }
 

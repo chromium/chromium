@@ -19,12 +19,12 @@ void RecordMediaDeviceUpdateResponseMetric(
   switch (video_type) {
     case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
       base::UmaHistogramEnumeration(
-          "Media.MediaStreamManager.DesktopVideoDeviceUpdate2", result);
+          "Media.MediaStreamManager.DesktopVideoDeviceUpdate3", result);
       return;
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
       base::UmaHistogramEnumeration(
-          "Media.MediaStreamManager.DisplayVideoDeviceUpdate2", result);
+          "Media.MediaStreamManager.DisplayVideoDeviceUpdate3", result);
       return;
     default:
       return;
@@ -58,7 +58,7 @@ void RecordMediaStreamRequestResponseUKM(
   if (video_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
       request_type == blink::MEDIA_GENERATE_STREAM) {
     ukm::builders::MediaStream_Device(ukm_source_id)
-        .SetVideoCaptureGenerateStreamResult2(static_cast<int64_t>(result))
+        .SetVideoCaptureGenerateStreamResult3(static_cast<int64_t>(result))
         .Record(recorder);
   }
 }

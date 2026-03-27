@@ -152,11 +152,19 @@ void SlimWebViewPermissionHelper::OnMediaPermissionResponse(
                             std::unique_ptr<content::MediaStreamUI>());
     return;
   }
-  if (!guest_->attached() || !guest_->embedder_web_contents()->GetDelegate()) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-        std::unique_ptr<content::MediaStreamUI>());
+  if (!guest_->attached()) {
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            blink::mojom::MediaStreamRequestResult::
+                                FAILED_DUE_TO_SHUTDOWN_WEB_VIEW_NOT_ATTACHED,
+                            std::unique_ptr<content::MediaStreamUI>());
+    return;
+  }
+
+  if (!guest_->embedder_web_contents()->GetDelegate()) {
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            blink::mojom::MediaStreamRequestResult::
+                                FAILED_DUE_TO_SHUTDOWN_NO_WEB_VIEW_DELEGATE,
+                            std::unique_ptr<content::MediaStreamUI>());
     return;
   }
 

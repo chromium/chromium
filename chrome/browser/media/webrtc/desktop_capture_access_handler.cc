@@ -293,7 +293,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
               pending_request->request.render_frame_id))) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+             MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_OTHER,
              /*ui=*/nullptr);
     return;
   }
@@ -431,7 +431,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
   if (!main_frame) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+             MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_OTHER,
              /*ui=*/nullptr);
     return;
   }

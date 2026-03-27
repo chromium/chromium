@@ -866,8 +866,9 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest, WebContentsDestroyed) {
   RequestPermissions(nullptr, request);
   ASSERT_EQ(0, prompt_factory()->TotalRequestCount());
 
-  VerifyResultState(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, false,
-                    false);
+  VerifyResultState(
+      MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_CONTROLLER,
+      false, false);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,

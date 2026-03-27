@@ -5799,25 +5799,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaStreamManager.DesktopVideoDeviceUpdate2"
+<histogram name="Media.MediaStreamManager.DesktopVideoDeviceUpdate3"
     enum="MediaStreamRequestResult" expires_after="2026-10-16">
   <owner>agpalak@chromium.org</owner>
   <owner>tovep@chromium.org</owner>
   <summary>
     Records media stream request responses for desktop-video capture
-    media-device-update requests. The suffix 2 to the histogram name was added
-    when the new enum MediaStreamRequestResult was added.
+    media-device-update requests. The suffix 3 to the histogram name was added
+    when the enum MediaStreamRequestResult was updated with new values.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaStreamManager.DisplayVideoDeviceUpdate2"
+<histogram name="Media.MediaStreamManager.DisplayVideoDeviceUpdate3"
     enum="MediaStreamRequestResult" expires_after="2026-10-16">
   <owner>agpalak@chromium.org</owner>
   <owner>tovep@chromium.org</owner>
   <summary>
     Records media stream request responses for display-video capture
-    media-device-update requests. The suffix 2 to the histogram name was added
-    when the new enum MediaStreamRequestResult was added.
+    media-device-update requests. The suffix 3 to the histogram name was added
+    when the enum MediaStreamRequestResult was updated with new values.
   </summary>
 </histogram>
 

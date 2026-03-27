@@ -91,32 +91,32 @@ void UpdateRequestResult(UserMediaRequest* request,
     case UserMediaRequestType::kUserMedia: {
       if (request->IsGumExtensionRequest()) {
         base::UmaHistogramEnumeration(
-            "WebRTC.UserMediaRequest.GetUserMedia.Extension.Result2", result);
+            "WebRTC.UserMediaRequest.GetUserMedia.Extension.Result3", result);
         return;
       } else {
         if (request->Audio() && !request->Video()) {
           base::UmaHistogramEnumeration(
-              "WebRTC.UserMediaRequest.GetUserMedia.AudioCapture.Result2",
+              "WebRTC.UserMediaRequest.GetUserMedia.AudioCapture.Result3",
               result);
         }
         if (!request->Audio() && request->Video()) {
           base::UmaHistogramEnumeration(
-              "WebRTC.UserMediaRequest.GetUserMedia.VideoCapture.Result2",
+              "WebRTC.UserMediaRequest.GetUserMedia.VideoCapture.Result3",
               result);
         }
         base::UmaHistogramEnumeration(
-            "WebRTC.UserMediaRequest.GetUserMedia.DeviceCapture.Result2",
+            "WebRTC.UserMediaRequest.GetUserMedia.DeviceCapture.Result3",
             result);
         return;
       }
     }
     case UserMediaRequestType::kDisplayMedia:
       base::UmaHistogramEnumeration(
-          "WebRTC.UserMediaRequest.GetDisplayMedia.Result2", result);
+          "WebRTC.UserMediaRequest.GetDisplayMedia.Result3", result);
       return;
     case UserMediaRequestType::kAllScreensMedia:
       base::UmaHistogramEnumeration(
-          "WebRTC.UserMediaRequest.GetAllScreensMedia.Result2", result);
+          "WebRTC.UserMediaRequest.GetAllScreensMedia.Result3", result);
       return;
   }
 }
@@ -307,7 +307,25 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::MULTI_CAPTURE_NOT_SUPPORTED:
     case MediaStreamRequestResult::NOT_SUPPORTED:
       return "Not supported";
-    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_OTHER:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_CONTROLLER_DESTRUCTOR:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_REQUEST_REMOVED:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_NO_DELEGATE:
+    case MediaStreamRequestResult::
+        FAILED_DUE_TO_SHUTDOWN_NO_GUEST_PAGE_HOLDER_DELEGATE:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_DISPATCHER:
+    case MediaStreamRequestResult::
+        FAILED_DUE_TO_SHUTDOWN_NO_RFH_CANCELLED_REQUEST:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_CONTROLLER:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_NO_WEB_VIEW_DELEGATE:
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_WEB_VIEW_NOT_ATTACHED:
+    case MediaStreamRequestResult::
+        FAILED_DUE_TO_SHUTDOWN_USER_MEDIA_PROCESSOR_CANCEL_REQUEST:
+    case MediaStreamRequestResult::
+        FAILED_DUE_TO_SHUTDOWN_USER_MEDIA_PROCESSOR_STOP_ALL_PROCESSING:
+    case MediaStreamRequestResult::
+        FAILED_DUE_TO_SHUTDOWN_WEB_CONTENTS_NO_DELEGATE:
       return "Failed due to shutdown";
     case MediaStreamRequestResult::KILL_SWITCH_ON:
       return "Killswitch on";
@@ -2339,8 +2357,10 @@ bool UserMediaProcessor::CancelRequest(UserMediaRequest* user_media_request) {
         // might cause issues.
         break;
     }
-    UpdateRequestResult(user_media_request,
-                        MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN);
+    UpdateRequestResult(
+        user_media_request,
+        MediaStreamRequestResult::
+            FAILED_DUE_TO_SHUTDOWN_USER_MEDIA_PROCESSOR_CANCEL_REQUEST);
     return true;
   }
   return false;
@@ -2359,7 +2379,8 @@ void UserMediaProcessor::DeleteUserMediaRequest(
 void UserMediaProcessor::StopAllProcessing() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (current_request_info_) {
-    auto result = MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN;
+    auto result = MediaStreamRequestResult::
+        FAILED_DUE_TO_SHUTDOWN_USER_MEDIA_PROCESSOR_STOP_ALL_PROCESSING;
     UpdateRequestResult(current_request_info_->request(), result);
     switch (current_request_info_->state()) {
       case RequestInfo::State::kSentForGeneration:

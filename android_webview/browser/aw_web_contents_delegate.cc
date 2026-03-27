@@ -276,7 +276,7 @@ void AwWebContentsDelegate::RequestMediaAccessPermission(
   if (!aw_contents) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_OTHER,
         nullptr);
     return;
   }

@@ -705,7 +705,8 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithNothing) {
 
   GenerateStreamAndWaitForFailure(
       kPageRequestId, controls,
-      MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN);
+      MediaStreamRequestResult::
+          FAILED_DUE_TO_SHUTDOWN_WEB_CONTENTS_NO_DELEGATE);
 }
 
 TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithAudioAndVideo) {
@@ -876,7 +877,8 @@ TEST_F(MediaStreamDispatcherHostTest, WebContentsNotFocused) {
   base::RunLoop run_loop;
   EXPECT_CALL(*host_, OnStreamGenerationFailure(
                           kPageRequestId,
-                          MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN));
+                          MediaStreamRequestResult::
+                              FAILED_DUE_TO_SHUTDOWN_NO_RFH_CANCELLED_REQUEST));
   host_->OnGenerateStreams(kPageRequestId, controls, run_loop.QuitClosure());
   run_loop.RunUntilIdle();
 }
@@ -1434,7 +1436,7 @@ TEST_P(MediaStreamDispatcherHostActiveRfhTest,
     DeactivateMainRfh();
     GenerateStreamAndWaitForFailure(
         kPageRequestId, controls,
-        MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN);
+        MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_DISPATCHER);
   }
 }
 

@@ -62,10 +62,10 @@ void MediaStreamDevicesController::RequestPermissions(
       request.render_process_id, request.render_frame_id);
   // The RFH may have been destroyed by the time the request is processed.
   if (!rfh) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, false,
-        {}, {});
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            blink::mojom::MediaStreamRequestResult::
+                                FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_CONTROLLER,
+                            false, {}, {});
     return;
   }
 
@@ -184,10 +184,10 @@ void MediaStreamDevicesController::RequestPermissions(
 
 MediaStreamDevicesController::~MediaStreamDevicesController() {
   if (!callback_.is_null()) {
-    std::move(callback_).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, false,
-        {}, {});
+    std::move(callback_).Run(blink::mojom::StreamDevicesSet(),
+                             blink::mojom::MediaStreamRequestResult::
+                                 FAILED_DUE_TO_SHUTDOWN_CONTROLLER_DESTRUCTOR,
+                             false, {}, {});
   }
 }
 
