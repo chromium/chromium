@@ -25,6 +25,7 @@ TEST_DATA_DIR = SCRIPT_DIR.parent / "test_data"
 
 
 class AuditorTest(unittest.TestCase):
+
   def setUp(self):
     build_path = TEST_DATA_DIR / "out" / "Debug"
 
@@ -676,8 +677,8 @@ class AuditorTest(unittest.TestCase):
     grouping_erro_xml_path = \
       TEST_DATA_DIR / "test_required_field_error_grouping.xml"
     exporter = Exporter(get_current_platform())
-    self.assertRaises(ValueError,
-                      lambda: exporter.load_grouping_xml(grouping_erro_xml_path))
+    self.assertRaises(
+        ValueError, lambda: exporter.load_grouping_xml(grouping_erro_xml_path))
 
   def test_annotations_xml_differences(self):
     """Tests if annotations.xml changes are correctly reported."""
@@ -914,6 +915,7 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
     errors = self.auditor.run_all_checks(path_filter, True,
                                          Exporter.GROUPING_XML_PATH)
     self.assertFalse(errors)
+
 
 if __name__ == "__main__":
   unittest.main()

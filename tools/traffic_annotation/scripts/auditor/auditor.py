@@ -109,6 +109,7 @@ after discussions on the right group.
 -->
 """
 
+
 class Annotation:
   """An annotation in code, typically extracted from C++.
 
@@ -229,8 +230,9 @@ class Annotation:
 
     return annotation
 
-  def create_complete_annotation(self, completing_annotation: "Annotation"
-                                 ) -> Tuple["Annotation", List[AuditorError]]:
+  def create_complete_annotation(
+      self, completing_annotation: "Annotation"
+  ) -> Tuple["Annotation", List[AuditorError]]:
     """Combines |self| partial annotation with a completing/branched_completing
     annotation and returns the combined complete annotation."""
     if not self.is_completable_with(completing_annotation):
@@ -282,8 +284,8 @@ class Annotation:
       combination.proto.semantics.destination = (
           other.proto.semantics.destination)
     elif (other.proto.semantics.destination != Destination.UNSPECIFIED
-          and other.proto.semantics.destination !=
-          combination.proto.semantics.destination):
+          and other.proto.semantics.destination
+          != combination.proto.semantics.destination):
       return combination, [
           AuditorError(
               ErrorType.MERGE_FAILED,
@@ -334,9 +336,8 @@ class Annotation:
     """Tells if the annotation requires two ids. All annotations have a unique
     id, but partial annotations also require a completing id, and branched
     completing annotations require a group id."""
-    return (self.type in [
-        Annotation.Type.PARTIAL, Annotation.Type.BRANCHED_COMPLETING
-    ])
+    return (self.type
+            in [Annotation.Type.PARTIAL, Annotation.Type.BRANCHED_COMPLETING])
 
   def is_completable_with(self, other) -> bool:
     """Checks to see if this annotation can be completed with the |other|
@@ -401,8 +402,8 @@ class Annotation:
                                                     as_utf8=False)
     return util.compute_hash_value(source_free_proto)
 
-  def deserialize(self, serialized_annotation: extractor.Annotation
-                  ) -> List[AuditorError]:
+  def deserialize(
+      self, serialized_annotation: extractor.Annotation) -> List[AuditorError]:
     """Deserializes an instance from extractor.Annotation."""
     file_path = Path(serialized_annotation.file_path)
     if file_path.is_absolute():
@@ -913,16 +914,19 @@ class ArchivedAnnotation:
         "{}={}".format(f, repr(getattr(self, f)))
         for f in ArchivedAnnotation.FIELDS))
 
+
 @dataclass
 class Sender:
   name: str
   annotations: List[UniqueId]
+
 
 @dataclass
 class Group:
   name: str
   hidden: bool
   senders: List[Sender]
+
 
 class Exporter:
   """Handles loading and saving ArchivedAnnotations in annotations.xml."""
@@ -994,13 +998,11 @@ class Exporter:
 
   def load_grouping_xml(self, grouping_path: str) -> None:
     """Loads grouping from grouping.xml into self.grouping_archive."""
-    logger.info("Parsing {}.".format(
-        grouping_path.relative_to(SRC_DIR)))
+    logger.info("Parsing {}.".format(grouping_path.relative_to(SRC_DIR)))
 
     self.grouping_archive = []
     GROUPING_FIELDS = ["id", "sender_name", "group_name"]
     GROUPING_REQUIRED_FIELDS = ["id"]
-
 
     tree = ElementTree.parse(grouping_path)
     root = tree.getroot()
@@ -1028,29 +1030,26 @@ class Exporter:
           kwargs["sender_name"] = sender_name
           kwargs["group_name"] = group_name
           self.compare_field_check(GROUPING_FIELDS, kwargs,
-                                    traffic_annotation_item)
+                                   traffic_annotation_item)
 
           sender.annotations.append(unique_id)
           self.grouping_id_sender[unique_id] = sender
 
   def required_field_check(self, REQUIRED_FIELDS: List[str],
-                           kwargs: Dict[str, any],
-                           item: Any):
+                           kwargs: Dict[str, any], item: Any):
     # Check that all required attribs are present.
     for field in REQUIRED_FIELDS:
       if field not in kwargs:
-        raise ValueError(
-            "Missing attribute '{}' in xml: {}".format(
-                field, ElementTree.tostring(item, "unicode")))
+        raise ValueError("Missing attribute '{}' in xml: {}".format(
+            field, ElementTree.tostring(item, "unicode")))
 
-  def compare_field_check(self, FIELDS: List[str],
-                           kwargs: Dict[str, any],
-                           item: Any):
+  def compare_field_check(self, FIELDS: List[str], kwargs: Dict[str, any],
+                          item: Any):
     # Check for unknown attribs. and raise the error message to more readable.
     unknown_fields = kwargs.keys() - set(FIELDS)
     for field in unknown_fields:
-      raise ValueError("Invalid attribute '{}' in xml: {}"
-        .format(field, ElementTree.tostring(item, "unicode")))
+      raise ValueError("Invalid attribute '{}' in xml: {}".format(
+          field, ElementTree.tostring(item, "unicode")))
 
   def update_annotations(self, annotations: List[Annotation],
                          reserved_ids: List[UniqueId]) -> List[AuditorError]:
@@ -1131,8 +1130,7 @@ class Exporter:
 
     return self.check_archived_annotations()
 
-  def update_grouping(self,
-                      annotations: List[Annotation],
+  def update_grouping(self, annotations: List[Annotation],
                       reserved_ids: List[UniqueId]) -> List[AuditorError]:
     """Updates self.grouping_archive with the extracted annotations."""
     assert self.grouping_archive
@@ -1542,8 +1540,8 @@ class Auditor:
         filtered_errors.append(error)
     return filtered_errors
 
-  def parse_extractor_output(self, all_annotations: List[extractor.Annotation]
-                             ) -> List[AuditorError]:
+  def parse_extractor_output(
+      self, all_annotations: List[extractor.Annotation]) -> List[AuditorError]:
     """Parses the output of extractor.extract_annotations()."""
     all_errors = []
 
@@ -1649,7 +1647,8 @@ class Auditor:
 
     return all_errors
 
-  def _get_grouping_xml_ids(self, grouping_xml_path=Exporter.GROUPING_XML_PATH
+  def _get_grouping_xml_ids(self,
+                            grouping_xml_path=Exporter.GROUPING_XML_PATH
                             ) -> Set[UniqueId]:
     logger.info("Parsing {}.".format(grouping_xml_path.relative_to(SRC_DIR)))
 
@@ -1712,8 +1711,7 @@ class Auditor:
         self.extracted_annotations.append(
             Annotation.load_from_archive(archived))
 
-  def run_all_checks(self, path_filters: List[str],
-                     report_xml_updates: bool,
+  def run_all_checks(self, path_filters: List[str], report_xml_updates: bool,
                      grouping_path: str) -> List[AuditorError]:
     """Performs all checks on extracted annotations, and writes annotations.xml.
 
@@ -1762,8 +1760,8 @@ class Auditor:
 
       grouping_updates = self.exporter.get_required_updates_grouping()
       if grouping_updates:
-        errors.append(AuditorError(ErrorType.GROUPING_XML_UPDATE,
-                                   grouping_updates))
+        errors.append(
+            AuditorError(ErrorType.GROUPING_XML_UPDATE, grouping_updates))
 
     return errors
 
@@ -1878,9 +1876,11 @@ class AuditorUI:
             'pyproto/chrome/browser/privacy/traffic_annotation_pb2.py'))
     return src_proto_mtime > build_proto_mtime
 
+
 def is_cog() -> bool:
   """Returns true if the script is running inside a Cog workspace."""
   return SRC_DIR.as_posix().startswith('/google/cog/cloud')
+
 
 if __name__ == "__main__":
   args_parser = argparse.ArgumentParser(
