@@ -13,10 +13,12 @@ import android.view.View;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -26,12 +28,17 @@ import org.chromium.ui.base.WindowAndroid;
 public class TabBottomSheetWebUi {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
+    private final ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     private ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
 
-    TabBottomSheetWebUi(Context context, WindowAndroid windowAndroid) {
+    TabBottomSheetWebUi(
+            Context context,
+            WindowAndroid windowAndroid,
+            ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
         mContext = context;
         mWindowAndroid = windowAndroid;
+        mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         resetThinWebView();
     }
 
@@ -51,11 +58,14 @@ public class TabBottomSheetWebUi {
                     mWindowAndroid,
                     WebContents.createDefaultInternalsHolder());
             contentView.setWebContents(mWebContents);
+            ThinWebViewContextMenuItemDelegate itemDelegate =
+                    new ThinWebViewContextMenuItemDelegate(mWebContents);
+            mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
             mThinWebView.attachWebContents(
                     mWebContents,
                     contentView,
                     /* delegate= */ null,
-                    /* contextMenuPopulatorFactory= */ null,
+                    mContextMenuPopulatorFactory,
                     /* selectionDropdownMenuDelegate= */ null);
         } else {
             resetThinWebView();
