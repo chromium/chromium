@@ -154,6 +154,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kIgnoreDuplicateNavs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInitialWebUI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                           kInitialWebUIUseSeparateProcess);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                          kInitialWebUIHighStreamPriority);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInitialWebUISyncNavStartToCommit);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
                                           kIgnoreDuplicateNavsOrigins);

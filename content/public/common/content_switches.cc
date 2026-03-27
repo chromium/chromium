@@ -718,6 +718,9 @@ const char kTargetDeviceScaleForTesting[] = "target-device-scale-for-testing";
 // Type of the current test harness ("browser" or "ui" or "gpu").
 const char kTestType[]                      = "test-type";
 
+// Indicates that this RenderProcess is hosting a Top Chrome WebUI.
+const char kTopChromeWebUI[] = "top-chrome-webui";
+
 // Enable support for touch event feature detection.
 const char kTouchEventFeatureDetection[] = "touch-events";
 

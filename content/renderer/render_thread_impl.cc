@@ -86,6 +86,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/browser_exposed_renderer_interfaces.h"
@@ -93,6 +94,7 @@
 #include "content/renderer/media/media_factory.h"
 #include "content/renderer/media/render_media_client.h"
 #include "content/renderer/net_info_helper.h"
+#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_process_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/service_worker_context_client.h"
@@ -1062,10 +1064,18 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
     return nullptr;
   }
 
+  // Use kGpuStreamPriorityUI for Initial WebUI, otherwise Default.
+  gpu::SchedulingPriority stream_priority =
+      (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+       features::kInitialWebUIHighStreamPriority.Get() &&
+       base::CommandLine::ForCurrentProcess()->HasSwitch(
+           switches::kTopChromeWebUI))
+          ? kGpuStreamPriorityUI
+          : kGpuStreamPriorityDefault;
+
   shared_main_thread_contexts_ =
       viz::ContextProviderCommandBuffer::CreateForRaster(
-          std::move(gpu_channel_host), kGpuStreamIdDefault,
-          kGpuStreamPriorityDefault,
+          std::move(gpu_channel_host), kGpuStreamIdDefault, stream_priority,
           GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
                "RendererMainThread"),
           /*automatic_flushes=*/true, /*support_locking=*/false,

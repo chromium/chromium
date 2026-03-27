@@ -3583,6 +3583,10 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   command_line->AppendSwitchASCII(switches::kProcessType,
                                   switches::kRendererProcess);
 
+  if (IsForTopChromeWebUI()) {
+    command_line->AppendSwitch(switches::kTopChromeWebUI);
+  }
+
   // Call this as early as possible so that --extension-process will show early
   // in process listings. See https://crbug.com/1211558 for details.
   GetContentClient()->browser()->AppendExtraCommandLineSwitches(
