@@ -11,6 +11,9 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -27,7 +30,7 @@ using SampleCallback = base::RepeatingCallback<void(gfx::ScopedInUseIOSurface,
                                                     std::optional<gfx::Rect>,
                                                     std::optional<float>,
                                                     bool)>;
-using ErrorCallback = base::RepeatingClosure;
+using ErrorCallback = base::RepeatingCallback<void(NSError*)>;
 
 namespace {
 API_AVAILABLE(macos(12.3))
@@ -220,7 +223,7 @@ API_AVAILABLE(macos(12.3))
 }
 
 - (void)stream:(SCStream*)stream didStopWithError:(NSError*)error {
-  _errorCallback.Run();
+  _errorCallback.Run(error);
 }
 
 + (SCStreamConfiguration*)streamConfigurationWithFrameSize:(gfx::Size)frameSize
@@ -523,7 +526,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
         visible_rect.value_or(gfx::Rect(actual_capture_format_.frame_size)),
         content_size, scale_factor);
   }
-  void OnStreamError() {
+  void OnStreamError(NSError* _Nullable error) {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
 
     if (is_resetting_ || (fullscreen_module_ &&
@@ -538,8 +541,12 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       }
       OnStart();
     } else {
+      std::string error_string =
+          base::StrCat({"Stream delegate called didStopWithError: ",
+                        base::SysNSStringToUTF8([error domain]), ": ",
+                        base::NumberToString([error code])});
       client()->OnError(media::VideoCaptureError::kScreenCaptureKitStreamError,
-                        FROM_HERE, "Stream delegate called didStopWithError");
+                        FROM_HERE, error_string);
     }
   }
   void OnUpdateContentFilterCompleted(NSError* _Nullable error) {

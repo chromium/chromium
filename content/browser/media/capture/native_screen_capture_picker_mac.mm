@@ -29,6 +29,7 @@
 BASE_FEATURE(kAllowChangingSelectedContent, base::FEATURE_ENABLED_BY_DEFAULT);
 
 using Source = webrtc::DesktopCapturer::Source;
+using PickerErrorCallback = base::RepeatingCallback<void(NSError*)>;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -86,17 +87,16 @@ API_AVAILABLE(macos(14.0))
 @implementation PickerObserver {
   base::RepeatingCallback<void(SCContentFilter*, SCStream*)> _pickerCallback;
   base::RepeatingCallback<void(SCStream*)> _cancelCallback;
-  base::RepeatingCallback<void(NSError*)> _errorCallback;
+  PickerErrorCallback _errorCallback;
 }
 
-- (instancetype)
-    initWithPickerCallback:
-        (base::RepeatingCallback<void(SCContentFilter*, SCStream*)>)
-            pickerCallback
-            cancelCallback:
-                (base::RepeatingCallback<void(SCStream*)>)cancelCallback
-             errorCallback:
-                 (base::RepeatingCallback<void(NSError*)>)errorCallback {
+- (instancetype)initWithPickerCallback:
+                    (base::RepeatingCallback<void(SCContentFilter*, SCStream*)>)
+                        pickerCallback
+                        cancelCallback:
+                            (base::RepeatingCallback<void(SCStream*)>)
+                                cancelCallback
+                         errorCallback:(PickerErrorCallback)errorCallback {
   if ((self = [super init])) {
     _pickerCallback = std::move(pickerCallback);
     _cancelCallback = std::move(cancelCallback);
@@ -135,7 +135,6 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
   using PickerUpdateCallback =
       base::RepeatingCallback<void(SCContentFilter*, SCStream*)>;
   using PickerCancelCallback = base::RepeatingCallback<void(SCStream*)>;
-  using PickerErrorCallback = base::RepeatingCallback<void(NSError*)>;
 
   NativeScreenCapturePickerMac();
   ~NativeScreenCapturePickerMac() override = default;
