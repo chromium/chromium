@@ -11,6 +11,7 @@ const GetExtensionAPIDefinitionsForTest =
     requireNative('apiDefinitions').GetExtensionAPIDefinitionsForTest;
 const GetAPIFeatures = requireNative('test_features').GetAPIFeatures;
 const userGestures = requireNative('user_gestures');
+const logging = requireNative('logging');
 
 const GetModuleSystem = requireNative('v8_context').GetModuleSystem;
 
@@ -290,14 +291,13 @@ apiBridge.registerCustomHook(function(api) {
 
   // Helper function for boolean asserts. Compares |test| to |expected|.
   function assertBool(test, expected, message) {
+    logging.CHECK(typeof expected === 'boolean');
+    if (typeof test !== 'boolean') {
+      chromeTest.fail(
+          `API Test Error in ${testName(currentTest)}: ` +
+          'assertTrue and assertFalse require a boolean condition.');
+    }
     if (test !== expected) {
-      if (typeof test == 'string') {
-        if (message) {
-          message = `${test}\n${message}`;
-        } else {
-          message = test;
-        }
-      }
       chromeTest.fail(message);
     }
   }

@@ -136,13 +136,15 @@ for value checking. This means that `checkDeepEq(undefined, null) === true`.
 ### Assertions
 The `chrome.test API` provides a number of basic assertion methods.
 
-#### assertTrue(condition, message?)
-Asserts that the given condition is true, printing out the optional error
-message if it is not.
+#### assertTrue/assertFalse(condition, message?)
 
-#### assertFalse(condition, message?)
-Asserts that the given condition is false, printing out the optional error
-message if it is not.
+```js
+chrome.test.assertTrue(/* boolean */ condition, /* optional string */ message );
+chrome.test.assertFalse(/* boolean */ condition, /* optional string */ message );
+```
+
+Asserts that the given condition strictly evaluates to the boolean `true` (or
+`false`), printing out the optional error message if it is not.
 
 #### assertEq/assertNe(expected, actual, message?)
 Asserts that the provided value matches (or doesn't match) the expected value

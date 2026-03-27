@@ -113,14 +113,14 @@ chrome.test.succeed = function(message) {};
 chrome.test.getModuleSystem = function(context) {};
 
 /**
- * @param {(string|boolean)} test
+ * @param {boolean} test
  * @param {string=} message
  * @see https://developer.chrome.com/extensions/test#method-assertTrue
  */
 chrome.test.assertTrue = function(test, message) {};
 
 /**
- * @param {(string|boolean)} test
+ * @param {boolean} test
  * @param {string=} message
  * @see https://developer.chrome.com/extensions/test#method-assertFalse
  */

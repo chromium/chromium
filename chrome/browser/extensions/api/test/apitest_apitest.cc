@@ -203,6 +203,33 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AssertNe_Failure_Object) {
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
 
+// Verifies that assertTrue fails when passed a non-boolean.
+IN_PROC_BROWSER_TEST_F(TestAPITest, AssertTrue_TypeCheck) {
+  ResultCatcher result_catcher;
+  constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           function assertTrueTypeCheck() {
+             chrome.test.assertTrue(1);
+           }
+         ]);)";
+  ASSERT_TRUE(LoadExtensionWithScript(kBackgroundJs));
+  EXPECT_FALSE(result_catcher.GetNextResult());
+  EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
+}
+
+// Verifies that assertFalse fails when passed a non-boolean.
+IN_PROC_BROWSER_TEST_F(TestAPITest, AssertFalse_TypeCheck) {
+  ResultCatcher result_catcher;
+  constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           function assertFalseTypeCheck() {
+             chrome.test.assertFalse(0);
+           }
+         ]);)";
+  ASSERT_TRUE(LoadExtensionWithScript(kBackgroundJs));
+  EXPECT_FALSE(result_catcher.GetNextResult());
+  EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
+}
 // Exercises chrome.test.assertNe() in failure cases (i.e., the passed values
 // are equal). We can only test one case at a time since otherwise we'd be
 // unable to determine which part of the test failed (since "failure" here is

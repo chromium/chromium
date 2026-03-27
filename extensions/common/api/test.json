@@ -196,10 +196,7 @@
         "parameters": [
           {
             "name": "test",
-            "choices": [
-              {"type": "string"},
-              {"type": "boolean"}
-            ]
+            "type": "boolean"
           },
           {"type": "string", "name": "message", "optional": true}
         ]
@@ -211,10 +208,7 @@
         "parameters": [
           {
             "name": "test",
-            "choices": [
-              {"type": "string"},
-              {"type": "boolean"}
-            ]
+            "type": "boolean"
           },
           {"type": "string", "name": "message", "optional": true}
         ]
