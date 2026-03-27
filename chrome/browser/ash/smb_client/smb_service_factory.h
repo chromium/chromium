@@ -55,9 +55,11 @@ class SmbServiceFactory : public ProfileKeyedServiceFactory,
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 
+  // TODO(crbug.com/496461349): remove when the SmbServiceFactory is no
+  // longer outliving the SessionManager it observes.
   base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_manager_observation_{this};
+                          session_manager::SessionManagerObserver>::
+      LeakedDanglingUntriaged session_manager_observation_{this};
 };
 
 }  // namespace ash::smb_client
