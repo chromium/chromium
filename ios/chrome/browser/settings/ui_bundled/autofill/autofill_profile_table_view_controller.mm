@@ -429,7 +429,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   if (instance.record_type() ==
       autofill::EntityInstance::RecordType::kServerWallet) {
     item.isServerWalletItem = YES;
-    // TODO(crbug.com/480934103): handled in upcoming CLs
+    item.trailingText = l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_TEXT);
   }
 
   item.icon = DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol,
