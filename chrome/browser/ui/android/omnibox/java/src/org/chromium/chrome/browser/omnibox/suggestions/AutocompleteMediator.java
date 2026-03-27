@@ -1047,12 +1047,9 @@ class AutocompleteMediator
         if (!isInInputSession()) return;
         if (mShouldPreventOmniboxAutocomplete) return;
 
-        if (mAutocompleteInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()
-                && TextUtils.equals(mAutocompleteInput.getUserText(), textWithoutAutocomplete)) {
+        if (mAutocompleteInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()) {
             return;
         }
-        // User started typing.
-        mAutocompleteInput.setSuppressAutomaticSuggestionsUntilUserStartsTyping(false);
 
         // Always re-set the list's final state when we're about to request new suggestions.
         // This avoids a problem, where the property does not get an explicit update that the list
@@ -1166,7 +1163,11 @@ class AutocompleteMediator
     private void onKeywordModeEntered(@Nullable SiteSearchData siteSearchData) {
         if (!isInInputSession()) return;
 
-        if (mIgnoreOmniboxItemSelection) return;
+        // If explicitly requested to exit keyword mode (siteSearchData == null),
+        // we should only do so if we are actively moving focus (mIgnoreOmniboxItemSelection is
+        // false).
+        // Otherwise, it might be the chip losing focus because the user started typing.
+        if (mIgnoreOmniboxItemSelection && siteSearchData == null) return;
         mIgnoreOmniboxItemSelection = true;
 
         // Prevent clearing the text from triggering a new autocomplete request.
