@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -48,16 +49,23 @@ void SendTabToSelfPageHandler::SendTabToDevice(
     const std::string& target_device_guid,
     const GURL& url,
     const std::string& title,
-    PageContext page_context,
     base::OnceCallback<void(SendTabToSelfResult)> result_callback) {
   PendingRequest request;
   request.target_device_guid = target_device_guid;
   request.url = url;
   request.title = title;
-  request.page_context = std::move(page_context);
   request.result_callback = std::move(result_callback);
 
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition)) {
+  const bool is_sharing_current_page =
+      url == web_contents()->GetLastCommittedURL();
+
+  if (is_sharing_current_page &&
+      base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+    request.page_context = ExtractFormFieldsFromWebContents(web_contents());
+  }
+
+  if (!is_sharing_current_page ||
+      !base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition)) {
     SendFinalizedRequest(std::move(request), std::nullopt);
     return;
   }

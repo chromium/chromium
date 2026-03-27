@@ -33,27 +33,14 @@ public class SendTabToSelfAndroidBridge {
      * @param targetDeviceSyncCacheGuid The GUID of the target device.
      * @param url The URL being shared.
      * @param title The title of the page being shared.
-     * @param pageContext The page context being shared.
      */
     public static void sendTabToDevice(
             @Nullable WebContents webContents,
             String targetDeviceSyncCacheGuid,
             String url,
-            String title,
-            @Nullable PageContext pageContext) {
+            String title) {
         SendTabToSelfAndroidBridgeJni.get()
-                .sendTabToDevice(webContents, targetDeviceSyncCacheGuid, url, title, pageContext);
-    }
-
-    /**
-     * Extracts PageContext from the given WebContents.
-     *
-     * @param webContents WebContents to extract PageContext from.
-     * @return The extracted PageContext, or null if it couldn't be extracted.
-     */
-    public static @Nullable PageContext createPageContext(@Nullable WebContents webContents) {
-        if (webContents == null) return null;
-        return SendTabToSelfAndroidBridgeJni.get().createPageContext(webContents);
+                .sendTabToDevice(webContents, targetDeviceSyncCacheGuid, url, title);
     }
 
     /**
@@ -105,11 +92,7 @@ public class SendTabToSelfAndroidBridge {
                 @Nullable WebContents webContents,
                 String targetDeviceSyncCacheGuid,
                 String url,
-                String title,
-                @JniType("PageContext") @Nullable PageContext pageContext);
-
-        @JniType("PageContext")
-        @Nullable PageContext createPageContext(@Nullable WebContents webContents);
+                String title);
 
         void deleteEntry(@JniType("Profile*") Profile profile, String guid);
 

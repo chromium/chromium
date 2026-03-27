@@ -120,7 +120,6 @@ public class SendTabToSelfCoordinatorTest {
                                     windowAndroid,
                                     HTTP_URL.getSpec(),
                                     "Page",
-                                    /* pageContext= */ null,
                                     BottomSheetControllerProvider.from(windowAndroid),
                                     ProfileManager.getLastUsedRegularProfile(),
                                     mDeviceLockActivityLauncher,

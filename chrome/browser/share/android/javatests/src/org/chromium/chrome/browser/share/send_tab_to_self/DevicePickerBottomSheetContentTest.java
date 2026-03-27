@@ -58,7 +58,6 @@ public class DevicePickerBottomSheetContentTest {
     private AccountInfo mAccountInfo;
 
     private Activity mContext;
-    private PageContext mPageContext;
     private List<TargetDeviceInfo> mDevices;
 
     @Before
@@ -82,7 +81,6 @@ public class DevicePickerBottomSheetContentTest {
 
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
 
-        mPageContext = new PageContext(new byte[] {1});
         mDevices = Arrays.asList(new TargetDeviceInfo("Device", "guid", FormFactor.DESKTOP, 0L));
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -96,7 +94,6 @@ public class DevicePickerBottomSheetContentTest {
                         mContext,
                         "https://example.com/",
                         "Title",
-                        mPageContext,
                         mBottomSheetController,
                         mDevices,
                         mProfile,
@@ -105,11 +102,7 @@ public class DevicePickerBottomSheetContentTest {
 
         verify(mNativeMock)
                 .sendTabToDevice(
-                        eq(mWebContents),
-                        eq("guid"),
-                        eq("https://example.com/"),
-                        eq("Title"),
-                        eq(mPageContext));
+                        eq(mWebContents), eq("guid"), eq("https://example.com/"), eq("Title"));
         verify(mBottomSheetController).hideContent(content, true);
     }
 }

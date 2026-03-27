@@ -63,9 +63,9 @@ public class SendTabToSelfCoordinator
         private final Profile mProfile;
 
         /**
-         * Note there's no need for a notion for a failure callback because in that case the
-         * account picker bottom sheet was closed and there's nothing left to do (simply don't
-         * show any other bottom sheet).
+         * Note there's no need for a notion for a failure callback because in that case the account
+         * picker bottom sheet was closed and there's nothing left to do (simply don't show any
+         * other bottom sheet).
          */
         public TargetDeviceListWaiter(
                 BottomSheetController bottomSheetController,
@@ -168,7 +168,6 @@ public class SendTabToSelfCoordinator
     private final @Nullable WindowAndroid mWindowAndroid;
     private final String mUrl;
     private final String mTitle;
-    private final @Nullable PageContext mPageContext;
     private final BottomSheetController mBottomSheetController;
     private final Profile mProfile;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
@@ -186,7 +185,6 @@ public class SendTabToSelfCoordinator
             @Nullable WindowAndroid windowAndroid,
             String url,
             String title,
-            @Nullable PageContext pageContext,
             BottomSheetController bottomSheetController,
             Profile profile,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
@@ -200,7 +198,6 @@ public class SendTabToSelfCoordinator
         mWindowAndroid = windowAndroid;
         mUrl = url;
         mTitle = title;
-        mPageContext = pageContext;
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
@@ -232,7 +229,6 @@ public class SendTabToSelfCoordinator
                                 mContext,
                                 mUrl,
                                 mTitle,
-                                mPageContext,
                                 mBottomSheetController,
                                 targetDevices,
                                 mProfile,

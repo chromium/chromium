@@ -52,7 +52,6 @@ class SendTabToSelfPageHandler
   void SendTabToDevice(const std::string& target_device_guid,
                        const GURL& url,
                        const std::string& title,
-                       PageContext page_context,
                        base::OnceCallback<void(SendTabToSelfResult)>
                            result_callback = base::NullCallback());
 

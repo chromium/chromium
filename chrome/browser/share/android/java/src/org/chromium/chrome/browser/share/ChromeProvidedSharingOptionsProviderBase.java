@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
-import org.chromium.chrome.browser.share.send_tab_to_self.PageContext;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -446,20 +445,12 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setFeatureNameForMetrics(USER_ACTION_SEND_TAB_TO_SELF_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
-                            Tab tab = mTabProvider.get();
-                            PageContext pageContext =
-                                    (tab != null && TextUtils.equals(mUrl, tab.getUrl().getSpec()))
-                                            ? SendTabToSelfAndroidBridge.createPageContext(
-                                                    tab.getWebContents())
-                                            :
-                                            /* pageContext= */ null;
                             SendTabToSelfCoordinator sttsCoordinator =
                                     new SendTabToSelfCoordinator(
                                             mActivity,
                                             mWindowAndroid,
                                             mUrl,
                                             mShareParams.getTitle(),
-                                            pageContext,
                                             mBottomSheetController,
                                             mProfile,
                                             mDeviceLockActivityLauncher,

@@ -6,19 +6,14 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
-#include "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/page_context.h"
-#include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -27,7 +22,6 @@
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/PageContext_jni.h"
 #include "chrome/android/chrome_jni_headers/SendTabToSelfAndroidBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/TargetDeviceInfo_jni.h"
 
@@ -35,47 +29,6 @@ using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
-
-namespace jni_zero {
-
-template <>
-send_tab_to_self::PageContext FromJniType<send_tab_to_self::PageContext>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_page_context) {
-  if (j_page_context.is_null()) {
-    return send_tab_to_self::PageContext();
-  }
-
-  ScopedJavaLocalRef<jbyteArray> j_bytes =
-      Java_PageContext_getSerializedProto(env, j_page_context);
-  std::string serialized_proto;
-  base::android::JavaByteArrayToString(env, j_bytes, &serialized_proto);
-
-  sync_pb::PageContext pb_page_context;
-  if (!pb_page_context.ParseFromString(serialized_proto)) {
-    return send_tab_to_self::PageContext();
-  }
-
-  return send_tab_to_self::PageContextFromProto(pb_page_context);
-}
-
-template <>
-ScopedJavaLocalRef<jobject> ToJniType<send_tab_to_self::PageContext>(
-    JNIEnv* env,
-    const send_tab_to_self::PageContext& page_context) {
-  sync_pb::PageContext pb_page_context =
-      send_tab_to_self::PageContextToProto(page_context);
-  std::string serialized_proto;
-  if (!pb_page_context.SerializeToString(&serialized_proto)) {
-    return nullptr;
-  }
-
-  ScopedJavaLocalRef<jbyteArray> j_bytes =
-      base::android::ToJavaByteArray(env, serialized_proto);
-  return Java_PageContext_Constructor(env, j_bytes);
-}
-
-}  // namespace jni_zero
 
 // The delegate to fetch SendTabToSelf information and persist new
 // SendTabToSelf entries. The functions are called by the SendTabToSelf Java
@@ -107,8 +60,7 @@ static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
     const JavaRef<jobject>& j_web_contents,
     const JavaRef<jstring>& j_target_device_sync_cache_guid,
     const JavaRef<jstring>& j_url,
-    const JavaRef<jstring>& j_title,
-    PageContext page_context) {
+    const JavaRef<jstring>& j_title) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   if (!web_contents) {
@@ -121,24 +73,7 @@ static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
   const std::string title = ConvertJavaStringToUTF8(env, j_title);
 
   SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
-      ->SendTabToDevice(target_device_sync_cache_guid, GURL(url), title,
-                        std::move(page_context));
-}
-
-static PageContext JNI_SendTabToSelfAndroidBridge_CreatePageContext(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_web_contents) {
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
-    return PageContext();
-  }
-
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  if (!web_contents) {
-    return PageContext();
-  }
-
-  return ExtractFormFieldsFromWebContents(web_contents);
+      ->SendTabToDevice(target_device_sync_cache_guid, GURL(url), title);
 }
 
 // Deletes the entry associated with the passed in GUID.

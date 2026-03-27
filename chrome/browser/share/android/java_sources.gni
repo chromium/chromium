@@ -64,7 +64,6 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NoTargetDeviceBottomSheetContent.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationSharedPrefManager.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/PageContext.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfMetricsRecorder.java",

@@ -18,55 +18,58 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 
 import java.util.List;
 
 /** Tests for SendTabToSelfAndroidBridge */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SendTabToSelfAndroidBridgeTest {
+    private static final String URL = "https://www.google.com";
+    private static final String TITLE = "Google";
+    private static final String TARGET_DEVICE_SYNC_CACHE_GUID = "device_guid";
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock SendTabToSelfAndroidBridge.Natives mNativeMock;
-    @Mock Profile mProfile;
-    @Mock WebContents mWebContents;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private static final String GUID = "randomguid";
-    private static final String URL = "http://www.tanyastacos.com";
-    private static final String TITLE = "Come try Tanya's famous tacos";
-    private static final String TARGET_DEVICE_SYNC_CACHE_GUID = "randomguid2";
+    @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
+    @Mock private Profile mProfile;
+    private WebContents mWebContents;
 
     @Before
     public void setUp() {
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
+        mWebContents = new MockWebContents();
     }
 
     @Test
     @SmallTest
     public void testSendTabToDevice() {
-        PageContext context = new PageContext(new byte[0]);
         SendTabToSelfAndroidBridge.sendTabToDevice(
-                mWebContents, TARGET_DEVICE_SYNC_CACHE_GUID, URL, TITLE, context);
+                mWebContents, TARGET_DEVICE_SYNC_CACHE_GUID, URL, TITLE);
         verify(mNativeMock)
                 .sendTabToDevice(
-                        eq(mWebContents),
-                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
-                        eq(URL),
-                        eq(TITLE),
-                        eq(context));
+                        eq(mWebContents), eq(TARGET_DEVICE_SYNC_CACHE_GUID), eq(URL), eq(TITLE));
     }
 
     @Test
     @SmallTest
-    public void testCreatePageContext() {
-        SendTabToSelfAndroidBridge.createPageContext(mWebContents);
-        verify(mNativeMock).createPageContext(eq(mWebContents));
+    public void testDeleteEntry() {
+        String guid = "guid";
+        SendTabToSelfAndroidBridge.deleteEntry(mProfile, guid);
+        verify(mNativeMock).deleteEntry(eq(mProfile), eq(guid));
+    }
+
+    @Test
+    @SmallTest
+    public void testDismissEntry() {
+        String guid = "guid";
+        SendTabToSelfAndroidBridge.dismissEntry(mProfile, guid);
+        verify(mNativeMock).dismissEntry(eq(mProfile), eq(guid));
     }
 
     @Test
@@ -90,22 +93,15 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Test
     @SmallTest
-    public void testDismissEntry() {
-        SendTabToSelfAndroidBridge.dismissEntry(mProfile, GUID);
-        verify(mNativeMock).dismissEntry(eq(mProfile), eq(GUID));
-    }
-
-    @Test
-    @SmallTest
-    public void testDeleteEntry() {
-        SendTabToSelfAndroidBridge.deleteEntry(mProfile, GUID);
-        verify(mNativeMock).deleteEntry(eq(mProfile), eq(GUID));
-    }
-
-    @Test
-    @SmallTest
     public void testUpdateActiveWebContents() {
         SendTabToSelfAndroidBridge.updateActiveWebContents(mWebContents);
         verify(mNativeMock).updateActiveWebContents(eq(mWebContents));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetEntryPointDisplayReason() {
+        SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, URL);
+        verify(mNativeMock).getEntryPointDisplayReason(eq(mProfile), eq(URL));
     }
 }

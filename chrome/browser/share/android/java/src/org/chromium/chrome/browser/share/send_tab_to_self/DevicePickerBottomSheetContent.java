@@ -42,21 +42,14 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
     private final Profile mProfile;
     private final String mUrl;
     private final String mTitle;
-    private final @Nullable PageContext mPageContext;
     private final Supplier<@Nullable Tab> mTabProvider;
 
-    private enum CaptureState {
-        IDLE,
-        FINISHED
-    }
-
-    private CaptureState mCaptureState = CaptureState.IDLE;
+    private boolean mIsActionStarted;
 
     public DevicePickerBottomSheetContent(
             Context context,
             String url,
             String title,
-            @Nullable PageContext pageContext,
             BottomSheetController controller,
             List<TargetDeviceInfo> targetDevices,
             Profile profile,
@@ -67,7 +60,6 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         mAdapter = new DevicePickerBottomSheetAdapter(targetDevices);
         mUrl = url;
         mTitle = title;
-        mPageContext = pageContext;
         mTabProvider = tabProvider;
 
         createToolbarView();
@@ -162,8 +154,8 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         // Only process the click once to avoid multiple entries being sent if the user
         // taps multiple items quickly.
-        if (mCaptureState != CaptureState.IDLE) return;
-        mCaptureState = CaptureState.FINISHED;
+        if (mIsActionStarted) return;
+        mIsActionStarted = true;
 
         mController.hideContent(this, true);
 
@@ -171,14 +163,13 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         TargetDeviceInfo targetDeviceInfo = mAdapter.getItem(position);
 
         String toastMessage =
-                mContext.getResources()
-                        .getString(R.string.send_tab_to_self_toast, targetDeviceInfo.deviceName);
+                mContext.getString(R.string.send_tab_to_self_toast, targetDeviceInfo.deviceName);
         Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
 
         Tab tab = mTabProvider.get();
         WebContents webContents = (tab != null) ? tab.getWebContents() : null;
 
         SendTabToSelfAndroidBridge.sendTabToDevice(
-                webContents, targetDeviceInfo.cacheGuid, mUrl, mTitle, mPageContext);
+                webContents, targetDeviceInfo.cacheGuid, mUrl, mTitle);
     }
 }

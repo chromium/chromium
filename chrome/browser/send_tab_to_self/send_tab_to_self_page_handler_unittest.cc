@@ -37,6 +37,8 @@ namespace send_tab_to_self {
 
 namespace {
 
+constexpr char kExampleUrl[] = "https://www.example.com";
+
 using base::test::ScopedFeatureList;
 using base::test::TestFuture;
 using testing::_;
@@ -159,7 +161,7 @@ class SendTabToSelfPageHandlerTest : public ChromeRenderViewHostTestHarness {
               std::make_unique<TestSendTabToSelfSyncService>(&model_));
         }));
 
-    NavigateAndCommit(GURL("https://www.example.com"));
+    NavigateAndCommit(GURL(kExampleUrl));
 
     // Override the interface provider to return our mock.
     content::RenderFrameHost* main_frame =
@@ -195,11 +197,11 @@ class SendTabToSelfPageHandlerTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(SendTabToSelfPageHandlerTest,
        ShouldAddEntryWithScrollPositionWhenGenerationSucceeds) {
-  auto* handler =
+  SendTabToSelfPageHandler* handler =
       SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
   handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
 
-  const GURL url("https://www.example.com");
+  const GURL url(kExampleUrl);
   const std::string title = "Title";
   const std::string device_id = "device_id";
 
@@ -215,7 +217,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Initiate the send to device action. This will trigger an asynchronous
   // Mojo call to the renderer to generate the scroll position context.
-  handler->SendTabToDevice(device_id, url, title, PageContext());
+  handler->SendTabToDevice(device_id, url, title);
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -229,11 +231,11 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
 TEST_F(SendTabToSelfPageHandlerTest,
        ShouldAddEntryWithoutScrollPositionWhenBrowserTimesOut) {
-  const GURL url("https://www.example.com");
+  const GURL url(kExampleUrl);
   const std::string title = "Title";
   const std::string device_id = "device_id";
 
-  auto* handler =
+  SendTabToSelfPageHandler* handler =
       SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
   handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
 
@@ -247,7 +249,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
       });
 
   // Initiate the send to device action.
-  handler->SendTabToDevice(device_id, url, title, PageContext());
+  handler->SendTabToDevice(device_id, url, title);
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -266,11 +268,11 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
 TEST_F(SendTabToSelfPageHandlerTest,
        ShouldAddEntryWithoutScrollPositionWhenRendererTimesOut) {
-  const GURL url("https://www.example.com");
+  const GURL url(kExampleUrl);
   const std::string title = "Title";
   const std::string device_id = "device_id";
 
-  auto* handler =
+  SendTabToSelfPageHandler* handler =
       SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
   handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
 
@@ -284,7 +286,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
       });
 
   // Initiate the send to device action.
-  handler->SendTabToDevice(device_id, url, title, PageContext());
+  handler->SendTabToDevice(device_id, url, title);
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -300,11 +302,11 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
 TEST_F(SendTabToSelfPageHandlerTest,
        ShouldAddEntryWithoutScrollPositionWhenPageNavigatesDuringGeneration) {
-  const GURL url("https://www.example.com");
+  const GURL url(kExampleUrl);
   const std::string title = "Title";
   const std::string device_id = "device_id";
 
-  auto* handler =
+  SendTabToSelfPageHandler* handler =
       SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
   handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
 
@@ -318,7 +320,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
       });
 
   // Initiate the send to device action.
-  handler->SendTabToDevice(device_id, url, title, PageContext());
+  handler->SendTabToDevice(device_id, url, title);
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -337,11 +339,11 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
 TEST_F(SendTabToSelfPageHandlerTest,
        ShouldNotAddEntryWhenWebContentsIsDestroyedDuringGeneration) {
-  const GURL url("https://www.example.com");
+  const GURL url(kExampleUrl);
   const std::string title = "Title";
   const std::string device_id = "device_id";
 
-  auto* handler =
+  SendTabToSelfPageHandler* handler =
       SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
   handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
 
@@ -350,7 +352,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
   EXPECT_CALL(model_, AddEntry(_, _, _, _)).Times(0);
 
   // Initiate the send to device action.
-  handler->SendTabToDevice(device_id, url, title, PageContext());
+  handler->SendTabToDevice(device_id, url, title);
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -368,11 +370,11 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
 TEST_F(SendTabToSelfPageHandlerTest,
        ShouldInvokeErrorCallbackWhenModelIsNotReady) {
-  const GURL url("https://www.example.com");
+  const GURL url(kExampleUrl);
   const std::string title = "Title";
   const std::string device_id = "device_id";
 
-  auto* handler =
+  SendTabToSelfPageHandler* handler =
       SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
   handler->SetSelectorGenerationTimeoutForTesting(base::Milliseconds(200));
 
@@ -381,8 +383,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Initiate the send to device action, providing a result callback.
   TestFuture<SendTabToSelfResult> future;
-  handler->SendTabToDevice(device_id, url, title, PageContext(),
-                           future.GetCallback());
+  handler->SendTabToDevice(device_id, url, title, future.GetCallback());
 
   // Verify the callback is invoked immediately with kFailure, bypassing the
   // entire generation flow.
@@ -390,7 +391,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
 }
 
 TEST_F(SendTabToSelfPageHandlerTest, ShouldInvokeCallbackOnSuccess) {
-  const GURL url("https://www.example.com");
+  const GURL url(kExampleUrl);
   const std::string title = "Title";
   const std::string device_id = "device_id";
 
@@ -402,8 +403,7 @@ TEST_F(SendTabToSelfPageHandlerTest, ShouldInvokeCallbackOnSuccess) {
 
   // Initiate the send to device action, providing a result callback.
   TestFuture<SendTabToSelfResult> future;
-  handler->SendTabToDevice(device_id, url, title, PageContext(),
-                           future.GetCallback());
+  handler->SendTabToDevice(device_id, url, title, future.GetCallback());
 
   // Fast-forward to skip selector generation (since it's not the focus of
   // this test).
@@ -412,6 +412,37 @@ TEST_F(SendTabToSelfPageHandlerTest, ShouldInvokeCallbackOnSuccess) {
 
   // Verify the callback is invoked with kSuccess.
   EXPECT_EQ(SendTabToSelfResult::kSuccess, future.Get());
+}
+
+TEST_F(SendTabToSelfPageHandlerTest,
+       ShouldAddEntryWithoutContextWhenSharingLink) {
+  // This is different from the current page URL.
+  const GURL link_url("https://www.other.com");
+  const std::string title = "Title";
+  const std::string device_id = "device_id";
+
+  SendTabToSelfPageHandler* handler =
+      SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
+
+  // Prepare the model to capture the entry.
+  TestFuture<PageContext> future;
+  EXPECT_CALL(model_, AddEntry(Eq(link_url), Eq(title), Eq(device_id), _))
+      .WillOnce([&future](const GURL&, const std::string&, const std::string&,
+                          const PageContext& context) {
+        future.SetValue(context);
+        return nullptr;
+      });
+
+  // We don't expect any Mojo calls to the renderer since this is link sharing.
+  EXPECT_CALL(mock_receiver_, RequestSelector(_)).Times(0);
+
+  // Initiate the send to device action for a DIFFERENT URL than the current
+  // page (which is `kExampleUrl`).
+  handler->SendTabToDevice(device_id, link_url, title);
+
+  // Verify the model received the entry but without any context.
+  EXPECT_TRUE(future.Get().scroll_position.text_fragment.text_start.empty());
+  EXPECT_TRUE(future.Get().form_field_info.fields.empty());
 }
 
 }  // namespace
