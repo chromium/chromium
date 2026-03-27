@@ -10,6 +10,7 @@ import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.net.Network;
 import android.os.Build;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.BidirectionalStream;
+import org.chromium.net.ConnectivityManagerWrapper;
 import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
@@ -64,10 +66,14 @@ public class AdaptiveBidirectionalStreamTest {
     private TestLogger mTestLogger;
 
     private SocketDroppingPacketHandler mDroppingPacketHandler;
+    private CronetAdaptiveRequestContext mAdaptiveRequestContext;
+    private ConnectivityManagerWrapper mConnectivityManagerWrapper;
+    private Network mDefaultNetwork;
 
     @ChannelHandler.Sharable
     private static final class SocketDroppingPacketHandler extends ChannelInboundHandlerAdapter {
         private boolean mDropFirstRemoteAddress;
+        private boolean mDropAllRemoteAddresses;
         private SocketAddress mDroppedRemoteAddress;
 
         @Override
@@ -75,9 +81,10 @@ public class AdaptiveBidirectionalStreamTest {
             if (mDropFirstRemoteAddress && mDroppedRemoteAddress == null) {
                 mDroppedRemoteAddress = ctx.channel().remoteAddress();
             }
-            if (mDroppedRemoteAddress != null
-                    && mDroppedRemoteAddress == ctx.channel().remoteAddress()) {
-                Log.i(TAG, "Dropping packet for socket " + msg);
+            if (mDropAllRemoteAddresses
+                    || (mDroppedRemoteAddress != null
+                            && mDroppedRemoteAddress == ctx.channel().remoteAddress())) {
+                Log.i(TAG, "Dropping packet for socket " + ctx.channel().remoteAddress());
                 return;
             }
             ctx.fireChannelRead(msg);
@@ -89,22 +96,47 @@ public class AdaptiveBidirectionalStreamTest {
     public void setUp() throws Exception {
         mTestLogger = mLoggerTestRule.mTestLogger;
         mDroppingPacketHandler = new SocketDroppingPacketHandler();
+
+        ExperimentalCronetEngine.Builder builder =
+                (ExperimentalCronetEngine.Builder)
+                        new NativeCronetProvider(mTestRule.getTestFramework().getContext())
+                                .createBuilder();
         // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            mTestRule
-                    .getTestFramework()
-                    .applyEngineBuilderPatch(
-                            (builder) ->
-                                    CronetTestUtil.setMockCertVerifierForTesting(
-                                            builder, QuicTestServer.createMockCertVerifier()));
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
         }
-        mCronetEngine = mTestRule.getTestFramework().startEngine();
+        mCronetEngine = (ExperimentalCronetEngine) builder.build();
         assertThat(
                         Http2TestServer.startHttp2TestServer(
                                 new Http2TestServer.ServerStartOptions(
                                                 mTestRule.getTestFramework().getContext())
                                         .setPreTlsPacketHandler(mDroppingPacketHandler)))
                 .isTrue();
+
+        mAdaptiveRequestContext = ((CronetUrlRequestContext) mCronetEngine).mAdaptiveRequestContext;
+        mConnectivityManagerWrapper =
+                new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());
+        mDefaultNetwork = mConnectivityManagerWrapper.getDefaultNetwork();
+
+        // Setup a ConnectivityManagerWrapper that returns an alternative network.
+        ConnectivityManagerWrapper mockWrapper =
+                new ConnectivityManagerWrapper() {
+                    @Override
+                    public Network getDefaultNetwork() {
+                        // With null default network, the default network actually becomes
+                        // our alternative network.
+                        // This is perfect for the purpose of this test.
+                        return null;
+                    }
+
+                    @Override
+                    public Network[] getAllNetworks(Network ignoreNetwork) {
+                        // Return default as the alternative network.
+                        return new Network[] {mDefaultNetwork};
+                    }
+                };
+        mAdaptiveRequestContext.setConnectivityManagerWrapperForTest(mockWrapper);
     }
 
     @After
@@ -123,7 +155,8 @@ public class AdaptiveBidirectionalStreamTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
                         value = "/echostream")
             })
-    public void postViaBidirectionalStreamAdaptiveHost_success() throws Exception {
+    public void postViaBidirectionalStreamWithFallbackSet_successOnPrimaryNetwork()
+            throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
@@ -155,12 +188,12 @@ public class AdaptiveBidirectionalStreamTest {
             })
     @Test
     @SmallTest
-    public void tlsConnectionFailsNoFallback_throwsConnectionTimeoutError() throws Exception {
+    public void tlsConnectionFailsAllNetworks_throwsConnectionTimeoutError() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
-        // Drop packet for first socket we find.
-        mDroppingPacketHandler.mDropFirstRemoteAddress = true;
+        // All packets being dropped for all network. We can't save this.
+        mDroppingPacketHandler.mDropAllRemoteAddresses = true;
         String url = Http2TestServer.getEchoStreamUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         // Create stream.
@@ -179,6 +212,7 @@ public class AdaptiveBidirectionalStreamTest {
         assertThat(networkException.getErrorCode()).isEqualTo(NetworkException.ERROR_TIMED_OUT);
     }
 
+    // TODO(b/474048542): Move this to CronetAdaptiveRequestContextTest.
     @Test
     @SmallTest
     @IgnoreFor(
@@ -218,6 +252,7 @@ public class AdaptiveBidirectionalStreamTest {
         assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("")).isFalse();
     }
 
+    // TODO(b/474048542): Move this to CronetAdaptiveRequestContextTest.
     @Test
     @SmallTest
     @IgnoreFor(
@@ -243,5 +278,44 @@ public class AdaptiveBidirectionalStreamTest {
                 .isFalse();
         assertThat(adaptiveRequestContext.isAdaptiveNetworkUrl("https://otherhost/echostream"))
                 .isFalse();
+    }
+
+    @Flags(
+            stringFlags = {
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME,
+                        value = "https://localhost"),
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
+                        value = "/echostream")
+            })
+    @Test
+    @SmallTest
+    public void postViaBidirectionalStreamWithFallbackSet_successOnFallbackNetwork()
+            throws Exception {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+
+        // Drop packet for first socket we find.
+        mDroppingPacketHandler.mDropFirstRemoteAddress = true;
+        String url = Http2TestServer.getEchoStreamUrl();
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        callback.addWriteData("Test String".getBytes());
+
+        // Create stream.
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .build();
+        stream.start();
+        callback.blockForDone();
+
+        // The request should succeed because it fell back to the "alternative" network.
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo("Test String");
+        // Memorize the fallback network.
+        assertThat(mAdaptiveRequestContext.getFallbackNetworkHandle(url))
+                .isEqualTo(mDefaultNetwork.getNetworkHandle());
     }
 }

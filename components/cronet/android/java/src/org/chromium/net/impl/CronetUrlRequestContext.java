@@ -186,7 +186,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     private List<VersionSafeProxyCallback> mProxyCallbacks;
 
-    private final CronetAdaptiveRequestContext mAdaptiveRequestContext;
+    @VisibleForTesting final CronetAdaptiveRequestContext mAdaptiveRequestContext;
 
     long getLogId() {
         return mLogId;
@@ -536,14 +536,23 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
         synchronized (mLock) {
             checkHaveAdapter();
+            boolean isAdaptiveNetworkUrl = mAdaptiveRequestContext.isAdaptiveNetworkUrl(url);
+            // TODO(crbug.com/474048542): Look at the memorized fallback network and use that.
+            Long fallbackNetworkHandle =
+                    isAdaptiveNetworkUrl
+                            ? mAdaptiveRequestContext.computeAlternativeNetworkHandle()
+                            : null;
+
+            // Only use adaptive stream if we have a fallback network handle.
             CronetAdaptiveNetworkBidirectionalStream adaptiveStream =
-                    mAdaptiveRequestContext.isAdaptiveNetworkUrl(url)
+                    isAdaptiveNetworkUrl && fallbackNetworkHandle != null
                             ? new CronetAdaptiveNetworkBidirectionalStream(
                                     callback,
                                     mAdaptiveRequestContext.getOrCreateScheduledExecutor(),
                                     mAdaptiveRequestContext,
                                     url)
                             : null;
+
             CronetBidirectionalStream stream =
                     new CronetBidirectionalStream(
                             this,
@@ -561,7 +570,23 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                             trafficStatsUid,
                             networkHandle);
             if (adaptiveStream != null) {
-                // TODO(crbug.com/474048542): Compute fallback network and set it here.
+                CronetBidirectionalStream fallbackStream =
+                        new CronetBidirectionalStream(
+                                this,
+                                url,
+                                priority,
+                                adaptiveStream.getCallback(),
+                                executor,
+                                httpMethod,
+                                requestHeaders,
+                                delayRequestHeadersUntilFirstFlush,
+                                requestAnnotations,
+                                trafficStatsTagSet,
+                                trafficStatsTag,
+                                trafficStatsUidSet,
+                                trafficStatsUid,
+                                fallbackNetworkHandle);
+                adaptiveStream.setFallbackStream(fallbackStream);
                 adaptiveStream.setPrimaryStream(stream);
                 return adaptiveStream;
             }
