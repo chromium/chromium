@@ -225,24 +225,23 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
         return new PrefetchOperationCallback() {
             @Override
             public void onResult(@PrefetchOperationStatusCode int resultCode) {
+                String[] supportedFeatures;
                 try {
-                    String[] supportedFeatures = operationCallback.getSupportedFeatures();
-                    if (BoundaryInterfaceReflectionUtil.containsFeature(
-                            supportedFeatures, Features.PREFETCH_WITH_CALLBACK_RESULT_V1)) {
-                        mapResult(operationCallback, resultCode);
-                    } else {
-                        operationCallback.onSuccess();
-                    }
-                } catch (RuntimeException e) {
-                    if (e.getCause() != null && e.getCause() instanceof NoSuchMethodException) {
-                        // PrefetchOperationCallbackBoundaryInterface did not originally implement
-                        // FeatureFlagHolderBoundaryInterface, so it is possible that the call to
-                        // `getSupportedFeatures` will fail.
-                        // This means that we should call the old `onSuccess` method instead.
-                        operationCallback.onSuccess();
-                    } else {
-                        throw e;
-                    }
+                    supportedFeatures = operationCallback.getSupportedFeatures();
+                } catch (IllegalArgumentException e) {
+                    // PrefetchOperationCallbackBoundaryInterface did not originally implement
+                    // FeatureFlagHolderBoundaryInterface, so it is possible that the call to
+                    // `getSupportedFeatures` will fail with IllegalArgumentException in
+                    // Method#invoke.
+                    // This means that we should call the old `onSuccess` method instead.
+                    operationCallback.onSuccess();
+                    return;
+                }
+                if (BoundaryInterfaceReflectionUtil.containsFeature(
+                        supportedFeatures, Features.PREFETCH_WITH_CALLBACK_RESULT_V1)) {
+                    mapResult(operationCallback, resultCode);
+                } else {
+                    operationCallback.onSuccess();
                 }
             }
 
