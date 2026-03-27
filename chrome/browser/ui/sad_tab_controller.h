@@ -34,7 +34,6 @@ class SadTabController : public SadTab {
 
  private:
   views::ViewTracker view_tracker_;
-  views::ViewTracker contents_view_tracker_;
   std::unique_ptr<SadTabView> owned_sad_tab_view_;
   base::WeakPtrFactory<SadTabController> weak_factory_{this};
 };

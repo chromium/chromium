@@ -62,20 +62,20 @@ SadTabController::~SadTabController() {
 
 void SadTabController::ReinstallInWebView() {
   std::unique_ptr<SadTabView> sad_tab_view;
-  if (contents_view_tracker_) {
-    ContentsWebView* contents_view =
-        views::AsViewClass<ContentsWebView>(contents_view_tracker_.view());
-    if (view_tracker_) {
-      sad_tab_view =
-          owned_sad_tab_view_
-              ? std::move(owned_sad_tab_view_)
-              : contents_view->DetachCrashedOverlayView<SadTabView>();
-    }
-    contents_view_tracker_.SetView(nullptr);
+  if (owned_sad_tab_view_) {
+    sad_tab_view = std::move(owned_sad_tab_view_);
+  } else if (view_tracker_) {
+    // If the controller doesn't own the SadTabView, get ownership from its
+    // parent.
+    auto* parent = view_tracker_.view()->parent();
+    sad_tab_view = views::AsViewClass<views::WebView>(parent)
+                       ->DetachCrashedOverlayView<SadTabView>();
+    CHECK(sad_tab_view);
   }
 
   ContentsWebView* contents_view = FindContentsWebView(web_contents());
   if (!contents_view) {
+    owned_sad_tab_view_ = std::move(sad_tab_view);
     return;
   }
 
@@ -100,7 +100,6 @@ void SadTabController::ReinstallInWebView() {
             controller->owned_sad_tab_view_.swap(sad_tab_view);
           },
           weak_factory_.GetWeakPtr()));
-  contents_view_tracker_.SetView(contents_view);
 }
 
 void SadTabController::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
