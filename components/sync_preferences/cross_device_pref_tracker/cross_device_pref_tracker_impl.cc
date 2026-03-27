@@ -572,10 +572,12 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
 
   is_sync_configured_for_writes_ = IsSyncConfiguredForWrites();
 
+  is_profile_prefs_syncing_ = profile_pref_service_->IsSyncing();
+
   service_status_ = ComputeServiceStatus(
       device_info_sync_service_->GetDeviceInfoTracker(),
       is_local_device_info_ready_, is_sync_configured_for_writes_,
-      profile_pref_service_->IsSyncing());
+      is_profile_prefs_syncing_);
 
   // Initialize `DeviceInfoTracker` observation and cache known GUIDs.
   if (syncer::DeviceInfoTracker* tracker =
@@ -663,7 +665,7 @@ std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
 
   LogTrackerServiceAvailability(
       device_info_tracker, is_local_device_info_ready_,
-      is_sync_configured_for_writes_, profile_pref_service_->IsSyncing());
+      is_sync_configured_for_writes_, is_profile_prefs_syncing_);
 
   // Use `ResolveCrossDevicePrefName()` to allow either tracked or cross-device
   // pref names as input.
@@ -698,7 +700,7 @@ CrossDevicePrefTrackerImpl::GetMostRecentValue(
 
   LogTrackerServiceAvailability(
       device_info_tracker, is_local_device_info_ready_,
-      is_sync_configured_for_writes_, profile_pref_service_->IsSyncing());
+      is_sync_configured_for_writes_, is_profile_prefs_syncing_);
 
   // Use `ResolveCrossDevicePrefName()` to allow either tracked or cross-device
   // pref names as input.
@@ -1213,7 +1215,7 @@ void CrossDevicePrefTrackerImpl::UpdateServiceStatus() {
   ServiceStatus new_status = ComputeServiceStatus(
       device_info_sync_service_->GetDeviceInfoTracker(),
       is_local_device_info_ready_, is_sync_configured_for_writes_,
-      profile_pref_service_->IsSyncing());
+      is_profile_prefs_syncing_);
 
   if (new_status == service_status_) {
     return;
@@ -1233,6 +1235,7 @@ void CrossDevicePrefTrackerImpl::UpdateServiceStatus() {
 }
 
 void CrossDevicePrefTrackerImpl::OnIsSyncingChanged() {
+  is_profile_prefs_syncing_ = profile_pref_service_->IsSyncing();
   UpdateServiceStatus();
 }
 

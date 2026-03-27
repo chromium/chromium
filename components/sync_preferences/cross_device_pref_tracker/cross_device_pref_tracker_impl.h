@@ -255,6 +255,10 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // detect transitions from unconfigured to configured and trigger refreshes.
   bool is_sync_configured_for_writes_ = false;
 
+  // Tracks whether the profile preferences are currently syncing. Cached to
+  // avoid expensive calls to `PrefServiceSyncable::IsSyncing()`.
+  bool is_profile_prefs_syncing_ = false;
+
   // The current service status.
   ServiceStatus service_status_ = ServiceStatus::kSyncNotConfigured;
 
