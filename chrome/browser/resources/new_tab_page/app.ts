@@ -1328,6 +1328,23 @@ export class AppElement extends AppElementBase {
   }
 
   private onWindowClick_(e: Event) {
+    if (this.ntpRealboxNextEnabled_) {
+      const searchbox = this.shadowRoot.querySelector('ntp-searchbox');
+      const actionChips = this.shadowRoot.querySelector('ntp-action-chips');
+      const helpBubble =
+          searchbox ? searchbox.shadowRoot.querySelector('help-bubble') : null;
+      if (helpBubble) {
+        const isClickOnBubble = e.composedPath().includes(helpBubble);
+        const isClickOnSearchbox =
+            searchbox && e.composedPath().includes(searchbox);
+        const isClickOnActionChips =
+            actionChips && e.composedPath().includes(actionChips);
+        if (!isClickOnBubble && (isClickOnSearchbox || isClickOnActionChips)) {
+          this.hideHelpBubble(CONTEXTUAL_ENTRYPOINT_ELEMENT_ID);
+        }
+      }
+    }
+
     if (e.composedPath() && e.composedPath()[0] === $$(this, '#content')) {
       recordClick(NtpElement.BACKGROUND);
       return;
@@ -1398,9 +1415,13 @@ export class AppElement extends AppElementBase {
     this.realboxHadSecondarySide = e.detail.value;
   }
 
-  protected onSearchboxContainerFocusin_() {
+  protected onSearchboxContainerFocusin_(e: FocusEvent) {
     if (this.ntpRealboxNextEnabled_) {
-      this.containerFocused_ = true;
+      const isHelpBubble = e.composedPath().some(
+          el => (el as HTMLElement)?.tagName === 'HELP-BUBBLE');
+      if (!isHelpBubble) {
+        this.containerFocused_ = true;
+      }
     }
   }
 
