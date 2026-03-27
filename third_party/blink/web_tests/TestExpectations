@@ -9732,6 +9732,11 @@ crbug.com/477241796 http/tests/devtools/elements/styles-1/add-new-rule-keyboard.
 crbug.com/477241796 http/tests/devtools/elements/styles-3/styles-disable-then-change.js [ Failure Pass ]
 crbug.com/477241796 http/tests/devtools/elements/styles-4/styles-update-links-2.js [ Failure Pass ]
 
+# Temporary disabled while we roll new DevTools version https://crrev.com/c/7693774
+http/tests/devtools/profiler/heap-snapshot-event-listeners.js [ Failure Pass ]
+http/tests/devtools/profiler/heap-snapshot-inspect-dom-wrapper.js [ Failure Pass ]
+http/tests/devtools/profiler/heap-snapshot-loader.js [ Failure Pass ]
+
 # Intentionally slow SVG test became slower with Rust for SVG parsing.
 crbug.com/466303347 [ Win ] http/tests/misc/object-embedding-svg-delayed-size-negotiation-2.htm [ Pass Timeout ]
 crbug.com/466303347 [ Linux ] http/tests/misc/object-embedding-svg-delayed-size-negotiation-2.htm [ Pass Timeout ]

@@ -24,7 +24,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     var panel = Profiler.HeapProfilerPanel.HeapProfilerPanel.instance();
     panel.reset();
 
-    var profileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
+    var profileType = Profiler.HeapProfilerPanel.HeapProfilerPanel.registry.heapSnapshotProfileType;
 
     TestRunner.override(TestRunner.HeapProfilerAgent, 'invoke_takeHeapSnapshot', takeHeapSnapshotMock);
     function takeHeapSnapshotMock(reportProgress) {

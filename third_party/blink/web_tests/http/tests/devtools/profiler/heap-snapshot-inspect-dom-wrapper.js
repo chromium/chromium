@@ -16,7 +16,7 @@ import * as Profiler from 'devtools/panels/profiler/profiler.js';
       document.body.fieldOnDomWrapper = 2012;
   `);
 
-  var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
+  var heapProfileType = Profiler.HeapProfilerPanel.HeapProfilerPanel.registry.heapSnapshotProfileType;
   heapProfileType.addEventListener(Profiler.HeapSnapshotView.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
   TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
   heapProfileType.takeHeapSnapshot();
