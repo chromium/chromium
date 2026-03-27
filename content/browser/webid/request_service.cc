@@ -11,6 +11,7 @@
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -1372,6 +1373,13 @@ void RequestService::NotifyAutofillSuggestionAccepted(
   // approved_clients array). We should figure out how to reconcile these two
   // modes.
   auto get_info_it = token_request_get_infos_.find(idp);
+  if (get_info_it == token_request_get_infos_.end()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(token_received_callback_for_autofill_),
+                       false));
+    return;
+  }
 
   // TODO(crbug.com/412640661): Currently, in order to skip the account chooser
   // and go straight to the disclosure UI, we have to call ShowLoadingDialog()

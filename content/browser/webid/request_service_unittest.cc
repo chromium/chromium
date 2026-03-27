@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -8881,6 +8882,39 @@ TEST_F(RequestServiceTest, DisconnectDeniedByPermissionsPolicy) {
 
   EXPECT_EQ("identity-credentials-get permissions policy not enabled",
             bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(RequestServiceTest, NotifyAutofillSuggestionAcceptedWithUnknownIdp) {
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(kConfigurationValid);
+
+  dialog_controller->SetState(&dialog_controller_state_);
+  federated_auth_request_impl_->SetDialogControllerForTests(
+      std::move(dialog_controller));
+
+  // Call NotifyAutofillSuggestionAccepted with an IDP that is not in
+  // token_request_get_infos_.
+  GURL unknown_idp("https://unknownidp.example/");
+  std::optional<bool> callback_result;
+  base::RunLoop run_loop;
+  RequestService::OnFederatedTokenReceivedCallback callback = base::BindOnce(
+      [](std::optional<bool>* callback_result, base::OnceClosure quit_closure,
+         bool accepted) {
+        *callback_result = accepted;
+        std::move(quit_closure).Run();
+      },
+      &callback_result, run_loop.QuitClosure());
+
+  // This should return early and not crash.
+  federated_auth_request_impl_->NotifyAutofillSuggestionAccepted(
+      unknown_idp, "account_id", /*show_modal=*/true, std::move(callback));
+
+  run_loop.Run();
+
+  // Verify that the loading dialog was not shown.
+  EXPECT_FALSE(dialog_controller_state_.did_show_loading_dialog);
+  // Verify that the callback was called with false.
+  EXPECT_EQ(callback_result, false);
 }
 
 }  // namespace content::webid
