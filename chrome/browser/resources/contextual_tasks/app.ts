@@ -29,7 +29,6 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {ComposeboxPosition, IconType} from './contextual_tasks.mojom-webui.js';
@@ -694,6 +693,9 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.isFrameLoading = true;
     const wasAiPage = this.isAiPage_;
     const wasZeroState = this.isZeroState_;
+
+    this.composebox_?.setToolFromUrl(ev.url);
+
     const {isAiPage} = await this.browserProxy_.handler.isAiPage(ev.url);
     const {isZeroState} = await this.browserProxy_.handler.isZeroState(ev.url);
 

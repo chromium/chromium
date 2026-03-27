@@ -62,6 +62,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .enableCarouselScrolling="${true}"
           .isFollowupQuery="${!this.isZeroState}"
           .enableFileHint="${this.enableFileHint_}"
+          .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
           @result-changed="${this.onSuggestionsResultChanged_}"
           @open-image-upload="${this.onOpenImageUpload_}"
           @open-file-upload="${this.onOpenFileUpload_}"

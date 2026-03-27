@@ -23,6 +23,11 @@
   padding-top: 6px;
 }
 
+#toolEnabledButton.unremovable {
+  cursor: default;
+  opacity: 0.3;
+}
+
 #toolEnabledButton:focus {
   outline-offset: -2px;
 }
@@ -48,12 +53,12 @@
   opacity: 0;
 }
 
-#toolEnabledButton:hover .close-icon,
-#toolEnabledButton:focus .close-icon {
+#toolEnabledButton:not(.unremovable):hover .close-icon,
+#toolEnabledButton:not(.unremovable):focus .close-icon {
   opacity: 1;
 }
 
-#toolEnabledButton:hover .tool-icon,
-#toolEnabledButton:focus .tool-icon {
+#toolEnabledButton:not(.unremovable):hover .tool-icon,
+#toolEnabledButton:not(.unremovable):focus .tool-icon {
   opacity: 0;
 }

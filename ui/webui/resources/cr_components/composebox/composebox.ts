@@ -172,6 +172,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      inToolMode_: {
+        type: Boolean,
+        reflect: true,
+      },
+      isCanvasQuerySubmitted: {
+        type: Boolean,
+      },
       /**
        * Feature flag for New Tab Page Realbox Next.
        */
@@ -279,6 +286,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   protected accessor showContextMenuDescription_: boolean =
       this.contextMenuDescriptionEnabled_;
   protected accessor isOmniboxInCompactMode_: boolean = false;
+  protected inVoiceSearchMode_: boolean = false;
+  protected accessor inToolMode_: boolean = false;
+  accessor isCanvasQuerySubmitted: boolean = false;
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
   protected pendingAutomaticActiveTabUrl_: string = '';

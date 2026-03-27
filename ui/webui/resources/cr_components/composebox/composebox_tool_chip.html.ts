@@ -9,13 +9,18 @@ import type {ComposeboxToolChipElement} from './composebox_tool_chip.js';
 export function getHtml(this: ComposeboxToolChipElement) {
   // clang-format off
   return html`
-<cr-button id="toolEnabledButton" class="upload-icon no-overlap"
+<cr-button id="toolEnabledButton"
+  class="upload-icon no-overlap ${this.isCanvasActive_ ? 'unremovable' : ''}"
   aria-label="${
-      this.i18n('removeToolChipAriaLabel', this.getToolChipLabel_())}"
+      this.isCanvasActive_ ?
+          this.getToolChipLabel_() :
+          this.i18n('removeToolChipAriaLabel', this.getToolChipLabel_())}"
+  ?noink="${this.isCanvasActive_}"
   @click="${this.onClick_}">
   <div class="icon-container" slot="prefix-icon">
     <cr-icon class="tool-icon" .icon="${this.getIcon_()}"></cr-icon>
-    <cr-icon class="close-icon" icon="cr:close"></cr-icon>
+    ${this.isCanvasActive_ ? '' :
+        html`<cr-icon class="close-icon" icon="cr:close"></cr-icon>`}
   </div>
   <div part="tool-chip-label">${this.getToolChipLabel_()}</div>
 </cr-button>`;
