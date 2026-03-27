@@ -1350,8 +1350,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataHistoryRemoverBrowserTest,
                        PRE_StorageRemovedFromDisk) {
   // Checking leveldb content fails in most cases. See
   // https://crbug.com/1238325.
-  ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
-                                           /*check_leveldb_content=*/false));
+  CheckUserDirectoryForString(kLocalHost, {},
+                              /*check_leveldb_content=*/false);
   ASSERT_EQ(0, GetSiteDataCount());
   ExpectTotalModelCount(0);
 
@@ -1403,11 +1403,9 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataHistoryRemoverBrowserTest,
             "[0-9]{6}",
 #endif
         };
-        int found = CheckUserDirectoryForString(
-            kLocalHost, ignore_file_patterns,
-            /*check_leveldb_content=*/true, /*strict_checking=*/true,
-            user_data_dir);
-        EXPECT_EQ(0, found) << "A non-ignored file contains the hostname.";
+        CheckUserDirectoryForString(kLocalHost, ignore_file_patterns,
+                                    /*check_leveldb_content=*/true,
+                                    /*strict_checking=*/true, user_data_dir);
       },
       g_browser_process->profile_manager()->user_data_dir());
 }

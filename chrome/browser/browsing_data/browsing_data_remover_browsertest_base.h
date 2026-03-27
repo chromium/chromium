@@ -78,7 +78,7 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
 
  protected:
   // Searches the user data directory for files that contain `hostname` in the
-  // filename or as part of the content. Returns the number of files that
+  // filename or as part of the content. Fails if there are such files that
   // do not match any regex in `ignore_file_patterns`.
   // If `check_leveldb_content` is true, also tries to open LevelDB files and
   // look for the `hostname` inside them. If LevelDB files are locked and cannot
@@ -89,7 +89,7 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
   // user data directory of the current browser process. (Alternatively, this
   // can be specified explicitly since the browser process may no longer exist
   // by the time this is called.)
-  static bool CheckUserDirectoryForString(
+  static void CheckUserDirectoryForString(
       const std::string& hostname,
       const std::vector<std::string>& ignore_file_patterns,
       bool check_leveldb_content,

@@ -499,8 +499,8 @@ const std::vector<std::string> kStorageTypes{
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
                        StorageDoesntWriteToDisk) {
   // Checking leveldb content fails in most cases. See https://crbug.com/1238325
-  ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
-                                           /*check_leveldb_content=*/false));
+  CheckUserDirectoryForString(kLocalHost, {},
+                              /*check_leveldb_content=*/false);
   ASSERT_EQ(0, GetSiteDataCount());
   ExpectTotalModelCount(GetBrowser(), 0);
 
@@ -523,9 +523,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   // TODO(crbug.com/40577815): Add more datatypes for testing. E.g.
   // notifications, payment handler, content settings, autofill, ...?
 
-  int found = CheckUserDirectoryForString(kLocalHost, {},
-                                          /*check_leveldb_content=*/false);
-  EXPECT_EQ(0, found) << "A file contains the hostname.";
+  CheckUserDirectoryForString(kLocalHost, {},
+                              /*check_leveldb_content=*/false);
 
   EXPECT_EQ(0, GetSiteDataCount(GetActiveWebContents(GetRegularBrowser())));
   ExpectTotalModelCount(GetRegularBrowser(), 0);

@@ -263,7 +263,7 @@ Profile* BrowsingDataRemoverBrowserTestBase::GetProfile() {
 }
 
 // static
-bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
+void BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
     const std::string& hostname,
     const std::vector<std::string>& ignore_file_patterns,
     bool check_leveldb_content,
@@ -276,7 +276,6 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
   base::FileEnumerator enumerator(
       user_data_dir, true /* recursive */,
       base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-  int found = 0;
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     // Remove |user_data_dir| part from path.
@@ -302,8 +301,8 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
 
     // Check file name.
     if (file.find(hostname) != std::string::npos) {
-      found++;
-      LOG(WARNING) << "Found file name: " << file;
+      ADD_FAILURE() << "Found file name: " << file << " containing "
+                    << hostname;
     }
 
     // Check leveldb content.
@@ -342,8 +341,7 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
           std::string entry =
               it->key().ToString() + ":" + it->value().ToString();
           if (entry.find(hostname) != std::string::npos) {
-            LOG(WARNING) << "Found leveldb entry: " << file << " " << entry;
-            found++;
+            ADD_FAILURE() << "Found leveldb entry: " << file << " " << entry;
           }
         }
       } else {
@@ -376,16 +374,14 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
     }
     size_t pos = content.find(hostname);
     if (pos != std::string::npos) {
-      found++;
       // Print surrounding text of the match.
       std::string partial_content = content.substr(
           pos < 30 ? 0 : pos - 30,
           std::min(content.size() - 1, pos + hostname.size() + 30));
-      LOG(WARNING) << "Found file content: " << file << "\n"
-                   << partial_content << "\n" << found;
+      ADD_FAILURE() << "Found file content: " << file << "\n"
+                    << "  which had partial_content: " << partial_content;
     }
   }
-  return found;
 }
 
 std::unique_ptr<BrowsingDataModel>
