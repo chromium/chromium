@@ -172,3 +172,21 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
   agent->RemoveObserver(&observer1);
   agent->RemoveObserver(&observer2);
 }
+
+// Tests that the disabled counter increments and decrements correctly.
+TEST_F(FullscreenBrowserAgentTest, DisabledCounter) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+  EXPECT_EQ(0u, agent->disabled_count());
+  agent->IncrementDisabledCounter(PassKey());
+  EXPECT_EQ(1u, agent->disabled_count());
+  agent->IncrementDisabledCounter(PassKey());
+  EXPECT_EQ(2u, agent->disabled_count());
+  agent->DecrementDisabledCounter(PassKey());
+  EXPECT_EQ(1u, agent->disabled_count());
+  agent->DecrementDisabledCounter(PassKey());
+  EXPECT_EQ(0u, agent->disabled_count());
+  agent->DecrementDisabledCounter(PassKey());  // Should not go below zero.
+  EXPECT_EQ(0u, agent->disabled_count());
+}

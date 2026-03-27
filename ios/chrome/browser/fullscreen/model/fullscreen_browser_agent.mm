@@ -60,8 +60,25 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
   }
 }
 
-void FullscreenBrowserAgent::ForceExitFullscreenWithoutAnimation(PassKey) {
-  // TODO(crbug.com/490126971): Force exit without animation.
+void FullscreenBrowserAgent::EnterFullscreen(PassKey, bool animated) {
+  // TODO(crbug.com/496220121): Enter fullscreen.
+}
+
+void FullscreenBrowserAgent::ExitFullscreen(PassKey, bool animated) {
+  // TODO(crbug.com/496220121): Exit fullscreen.
+}
+
+void FullscreenBrowserAgent::IncrementDisabledCounter(PassKey pass_key) {
+  disabled_count_++;
+  if (disabled_count_ == 1) {
+    ExitFullscreen(pass_key, /*animated=*/true);
+  }
+}
+
+void FullscreenBrowserAgent::DecrementDisabledCounter(PassKey) {
+  if (disabled_count_ > 0) {
+    disabled_count_--;
+  }
 }
 
 void FullscreenBrowserAgent::InvalidateInsetRange(PassKey) {

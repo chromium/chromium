@@ -34,6 +34,7 @@ source_set("commands") {
     "enterprise_commands.h",
     "file_upload_panel_commands.h",
     "find_in_page_commands.h",
+    "fullscreen_commands.h",
     "generate_qr_code_command.h",
     "generate_qr_code_command.mm",
     "google_one_commands.h",

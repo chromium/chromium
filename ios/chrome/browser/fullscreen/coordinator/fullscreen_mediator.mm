@@ -219,6 +219,24 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
   // TODO(crbug.com/491845727): Implement zoom lock logic.
 }
 
+#pragma mark - FullscreenCommands
+
+- (void)enterFullscreenWithAnimation:(BOOL)animated {
+  _browserAgent->EnterFullscreen(PassKey(), animated);
+}
+
+- (void)exitFullscreenWithAnimation:(BOOL)animated {
+  _browserAgent->ExitFullscreen(PassKey(), animated);
+}
+
+- (void)disableFullscreen {
+  _browserAgent->IncrementDisabledCounter(PassKey());
+}
+
+- (void)reenableFullscreen {
+  _browserAgent->DecrementDisabledCounter(PassKey());
+}
+
 #pragma mark - System Notifications
 
 - (void)voiceOverStatusDidChange {
@@ -227,11 +245,11 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
 }
 
 - (void)applicationDidEnterBackground {
-  _browserAgent->ForceExitFullscreenWithoutAnimation(PassKey());
+  [self exitFullscreenWithAnimation:NO];
 }
 
 - (void)applicationWillEnterForeground {
-  _browserAgent->ForceExitFullscreenWithoutAnimation(PassKey());
+  [self exitFullscreenWithAnimation:NO];
 }
 
 @end

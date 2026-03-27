@@ -50,9 +50,19 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // Incrementally changes the fullscreen progress based on a drag or scroll.
   void IncrementalScroll(CGFloat amount, PassKey);
 
-  // Instantly exits fullscreen, notifying observers of the update.
-  // Generally used to reset the UI from system events like backgrounding.
-  void ForceExitFullscreenWithoutAnimation(PassKey);
+  // Enters or exits fullscreen mode.
+  void EnterFullscreen(PassKey, bool animated);
+  void ExitFullscreen(PassKey, bool animated);
+
+  // Increments the disabled counter. If the counter becomes 1, it exits
+  // fullscreen mode.
+  void IncrementDisabledCounter(PassKey);
+
+  // Decrements the disabled counter.
+  void DecrementDisabledCounter(PassKey);
+
+  // Returns the disabled counter.
+  size_t disabled_count() const { return disabled_count_; }
 
   // Invalidates the current inset ranges and recalculates them by notifying
   // observers.
@@ -64,6 +74,9 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   explicit FullscreenBrowserAgent(Browser* browser);
 
   base::ObserverList<FullscreenBrowserAgentObserver, true> observers_;
+
+  // The number of features currently disabling fullscreen.
+  size_t disabled_count_ = 0;
 
   // The min and max insets.
   UIEdgeInsets min_insets_ = UIEdgeInsetsZero;

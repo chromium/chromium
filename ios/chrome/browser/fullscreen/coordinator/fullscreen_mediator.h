@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+
 class FullscreenBrowserAgent;
 class WebStateList;
 
 // The mediator for the fullscreen feature.
-@interface FullscreenMediator : NSObject
+@interface FullscreenMediator : NSObject <FullscreenCommands>
 
 // Initializer for the mediator.
 - (instancetype)initWithBrowserAgent:(FullscreenBrowserAgent*)browserAgent
