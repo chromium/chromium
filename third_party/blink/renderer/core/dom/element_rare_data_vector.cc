@@ -613,21 +613,23 @@ ElementRareDataVector::GetScrollMarkerGroupContainerData() const {
 
 ElementRareDataVector* ElementRareDataVector::CacheCSSPseudoElement(
     PseudoId pseudo_id,
+    const AtomicString& pseudo_argument,
     CSSPseudoElement& pseudo_element) {
   auto [data, vec] =
       EnsureField<CSSPseudoElementsCacheData>(FieldId::kCSSPseudoElementData);
-  data.get().CacheCSSPseudoElement(pseudo_id, pseudo_element);
+  data.get().CacheCSSPseudoElement(pseudo_id, pseudo_argument, pseudo_element);
   return vec;
 }
 
 CSSPseudoElement* ElementRareDataVector::GetCSSPseudoElement(
-    PseudoId pseudo_id) const {
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) const {
   auto* data = static_cast<CSSPseudoElementsCacheData*>(
       GetField(FieldId::kCSSPseudoElementData));
   if (!data) {
     return {};
   }
-  return data->GetCSSPseudoElement(pseudo_id);
+  return data->GetCSSPseudoElement(pseudo_id, pseudo_argument);
 }
 
 AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()

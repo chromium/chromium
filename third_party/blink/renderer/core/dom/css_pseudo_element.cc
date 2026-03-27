@@ -30,21 +30,61 @@ bool CSSPseudoElement::IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id) {
       return true;
     case kPseudoIdBackdrop:
       return RuntimeEnabledFeatures::CSSPseudoElementBackdropEnabled();
+    case kPseudoIdViewTransition:
+    case kPseudoIdViewTransitionGroup:
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew:
+      return RuntimeEnabledFeatures::CSSPseudoElementViewTransitionsEnabled();
     default:
       return false;
   }
 }
 
+namespace {
+
+PseudoId GetViewTransitionPseudoParentId(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdViewTransitionGroup:
+      return kPseudoIdViewTransition;
+    case kPseudoIdViewTransitionImagePair:
+      return kPseudoIdViewTransitionGroup;
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew:
+      return kPseudoIdViewTransitionImagePair;
+    default:
+      return kPseudoIdNone;
+  }
+}
+
+}  // namespace
+
+// static
+std::pair<PseudoId, AtomicString> CSSPseudoElement::GetViewTransitionParent(
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) {
+  PseudoId parent_id = GetViewTransitionPseudoParentId(pseudo_id);
+  if (parent_id == kPseudoIdNone) {
+    return {kPseudoIdNone, g_null_atom};
+  }
+  return {parent_id, (parent_id == kPseudoIdViewTransition) ? g_null_atom
+                                                            : pseudo_argument};
+}
+
 CSSPseudoElement::CSSPseudoElement(Element& originating_element,
-                                   PseudoId pseudo_id)
+                                   PseudoId pseudo_id,
+                                   const AtomicString& pseudo_argument)
     : pseudo_id_(pseudo_id),
+      pseudo_argument_(pseudo_argument),
       element_(originating_element),
       parent_(MakeGarbageCollected<V8UnionCSSPseudoElementOrElement>(
           &originating_element)) {}
 
 CSSPseudoElement::CSSPseudoElement(CSSPseudoElement& originating_pseudo_element,
-                                   PseudoId pseudo_id)
+                                   PseudoId pseudo_id,
+                                   const AtomicString& pseudo_argument)
     : pseudo_id_(pseudo_id),
+      pseudo_argument_(pseudo_argument),
       element_(originating_pseudo_element.element_),
       parent_(MakeGarbageCollected<V8UnionCSSPseudoElementOrElement>(
           &originating_pseudo_element)) {}
@@ -53,8 +93,8 @@ String CSSPseudoElement::type() const {
   return PseudoElementTagName(pseudo_id_).ToString();
 }
 
-PseudoId CSSPseudoElement::ConvertTypeToSupportedPseudoId(
-    const AtomicString& type) {
+std::pair<PseudoId, AtomicString>
+CSSPseudoElement::ConvertTypeToSupportedPseudoId(const AtomicString& type) {
   HeapVector<CSSSelector> arena;
   CSSParserTokenStream stream(type);
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
@@ -64,10 +104,24 @@ PseudoId CSSPseudoElement::ConvertTypeToSupportedPseudoId(
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
       /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
   if (vector.size() != 1) {
-    return kPseudoIdInvalid;
+    return {kPseudoIdInvalid, g_null_atom};
   }
   const CSSSelector& selector = vector.front();
-  return CSSSelector::GetPseudoId(selector.GetPseudoType());
+  PseudoId pseudo_id = CSSSelector::GetPseudoId(selector.GetPseudoType());
+
+  AtomicString argument;
+  if (IsTransitionPseudoElement(pseudo_id) &&
+      pseudo_id != kPseudoIdViewTransition) {
+    if (selector.IdentList().size() != 1 ||
+        selector.IdentList()[0] == CSSSelector::UniversalSelectorAtom()) {
+      return {kPseudoIdInvalid, g_null_atom};
+    }
+    argument = selector.IdentList()[0];
+  } else {
+    argument = selector.Argument();
+  }
+
+  return {pseudo_id, argument};
 }
 
 // static
@@ -105,27 +159,46 @@ CSSPseudoElement* CSSPseudoElement::From(PseudoElement* pseudo_element) {
   return css_pseudo;
 }
 
-CSSPseudoElement* CSSPseudoElement::pseudo(PseudoId pseudo_id) {
+CSSPseudoElement* CSSPseudoElement::pseudo(
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) {
   if (!IsSupportedTypeForCSSPseudoElement(pseudo_id)) {
     return nullptr;
   }
+
+  // View transition pseudo-elements enforce a strict hierarchy.
+  // A CSSPseudoElement proxy can only create or return its direct children.
+  // For example, `::view-transition` can create `::view-transition-group`,
+  // but it cannot create `::view-transition-image-pair` directly.
+  if (IsTransitionPseudoElement(pseudo_id)) {
+    auto [expected_parent_id, expected_parent_arg] =
+        GetViewTransitionParent(pseudo_id, pseudo_argument);
+
+    if (pseudo_id_ != expected_parent_id ||
+        pseudo_argument_ != expected_parent_arg) {
+      return nullptr;
+    }
+  }
+
   if (!css_pseudo_elements_data_) {
     css_pseudo_elements_data_ =
         MakeGarbageCollected<CSSPseudoElementsCacheData>();
   }
   if (CSSPseudoElement* existing =
-          css_pseudo_elements_data_->GetCSSPseudoElement(pseudo_id)) {
+          css_pseudo_elements_data_->GetCSSPseudoElement(pseudo_id,
+                                                         pseudo_argument)) {
     return existing;
   }
   auto* css_pseudo_element =
-      MakeGarbageCollected<CSSPseudoElement>(*this, pseudo_id);
-  css_pseudo_elements_data_->CacheCSSPseudoElement(pseudo_id,
+      MakeGarbageCollected<CSSPseudoElement>(*this, pseudo_id, pseudo_argument);
+  css_pseudo_elements_data_->CacheCSSPseudoElement(pseudo_id, pseudo_argument,
                                                    *css_pseudo_element);
   return css_pseudo_element;
 }
 
 CSSPseudoElement* CSSPseudoElement::pseudo(const AtomicString& type) {
-  return pseudo(ConvertTypeToSupportedPseudoId(type));
+  auto [pseudo_id, pseudo_argument] = ConvertTypeToSupportedPseudoId(type);
+  return pseudo(pseudo_id, pseudo_argument);
 }
 
 namespace {
@@ -133,7 +206,8 @@ namespace {
 // Helper to get the PseudoElement from the originating element hierarchy.
 PseudoElement* GetPseudoElementForCSSPseudoElement(
     const V8UnionCSSPseudoElementOrElement* parent,
-    PseudoId pseudo_id) {
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) {
   CHECK(parent);
 
   // Walk up the chain from the current parent to the ultimate originating
@@ -152,6 +226,16 @@ PseudoElement* GetPseudoElementForCSSPseudoElement(
     return nullptr;
   }
   Element* base_element = current_parent->GetAsElement();
+
+  // Although the CSSPseudoElement proxy for view transitions reflects a
+  // hierarchical tree structure (e.g. ::view-transition-group's parent is
+  // ::view-transition), the underlying PseudoElement instances are accessed
+  // directly from the originating Element using GetStyledPseudoElement,
+  // rather than by traversing down a nested chain of PseudoElements.
+  if (IsTransitionPseudoElement(pseudo_id)) {
+    return DynamicTo<PseudoElement>(
+        base_element->GetStyledPseudoElement(pseudo_id, pseudo_argument));
+  }
 
   // CSSPseudoElement is a proxy representation of PseudoElement. To resolve a
   // nested PseudoElement from a CSSPseudoElement received from JS, we first
@@ -176,7 +260,7 @@ PseudoElement* GetPseudoElementForCSSPseudoElement(
     current_owner = next_pseudo;
   }
 
-  return current_owner->GetPseudoElement(pseudo_id);
+  return current_owner->GetPseudoElement(pseudo_id, pseudo_argument);
 }
 
 }  // namespace
@@ -187,8 +271,8 @@ LayoutObject* CSSPseudoElement::GetLayoutObject() const {
   element_->GetDocument().EnsurePaintLocationDataValidForNode(
       element_, DocumentUpdateReason::kJavaScript);
 
-  PseudoElement* pseudo_element =
-      GetPseudoElementForCSSPseudoElement(parent_, pseudo_id_);
+  PseudoElement* pseudo_element = GetPseudoElementForCSSPseudoElement(
+      parent_, pseudo_id_, pseudo_argument_);
   if (!pseudo_element) {
     return nullptr;
   }
@@ -249,17 +333,21 @@ void CSSPseudoElement::Trace(Visitor* v) const {
 
 void CSSPseudoElementsCacheData::CacheCSSPseudoElement(
     PseudoId pseudo_id,
+    const AtomicString& pseudo_argument,
     CSSPseudoElement& pseudo_element) {
-  auto it = pseudo_elements_map_.find(pseudo_id);
+  PseudoElementCacheKey key(pseudo_id, pseudo_argument);
+  auto it = pseudo_elements_map_.find(key);
   if (it != pseudo_elements_map_.end()) {
     return;
   }
-  pseudo_elements_map_.insert(pseudo_id, pseudo_element);
+  pseudo_elements_map_.insert(key, &pseudo_element);
 }
 
 CSSPseudoElement* CSSPseudoElementsCacheData::GetCSSPseudoElement(
-    PseudoId pseudo_id) {
-  auto it = pseudo_elements_map_.find(pseudo_id);
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) {
+  PseudoElementCacheKey key(pseudo_id, pseudo_argument);
+  auto it = pseudo_elements_map_.find(key);
   if (it == pseudo_elements_map_.end()) {
     return nullptr;
   }

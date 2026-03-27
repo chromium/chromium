@@ -1723,6 +1723,11 @@
       status: "stable",
     },
     {
+      name: "CSSPseudoElementViewTransitions",
+      depends_on: ["CSSPseudoElementInterface"],
+      status: "test",
+    },
+    {
       // Enables the :has-slotted pseudo-selector.
       // https://chromestatus.com/feature/5134941143433216
       name: "CSSPseudoHasSlotted",

@@ -10519,34 +10519,66 @@ PseudoElement* Element::GetPseudoElement(
 }
 
 CSSPseudoElement* Element::pseudo(const AtomicString& type) {
-  PseudoId pseudo_id = CSSPseudoElement::ConvertTypeToSupportedPseudoId(type);
-  return EnsureCSSPseudoElement(pseudo_id);
+  auto [pseudo_id, pseudo_argument] =
+      CSSPseudoElement::ConvertTypeToSupportedPseudoId(type);
+  return EnsureCSSPseudoElement(pseudo_id, pseudo_argument);
 }
 
-CSSPseudoElement* Element::EnsureCSSPseudoElement(PseudoId pseudo_id) {
+CSSPseudoElement* Element::EnsureCSSPseudoElement(
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) {
   DCHECK(RuntimeEnabledFeatures::CSSPseudoElementInterfaceEnabled());
   if (!CSSPseudoElement::IsSupportedTypeForCSSPseudoElement(pseudo_id)) {
     return nullptr;
   }
+
+  // View transition pseudo-elements are nested (e.g., ::view-transition-group
+  // is a child of ::view-transition). To ensure the proxy chain matches this
+  // hierarchy, we recursively ensure the parent proxy exists.
+  auto [parent_pseudo_id, parent_argument] =
+      CSSPseudoElement::GetViewTransitionParent(pseudo_id, pseudo_argument);
+  if (parent_pseudo_id != kPseudoIdNone) {
+    CSSPseudoElement* parent =
+        EnsureCSSPseudoElement(parent_pseudo_id, parent_argument);
+    if (!parent) {
+      return nullptr;
+    }
+    // `parent->pseudo()` will either return an existing proxy from the
+    // parent's cache or create a new one.
+    return parent->pseudo(pseudo_id, pseudo_argument);
+  }
+
   EnsureRareData();
   if (CSSPseudoElement* css_pseudo_element =
-          RareData()->GetCSSPseudoElement(pseudo_id)) {
+          RareData()->GetCSSPseudoElement(pseudo_id, pseudo_argument)) {
     return css_pseudo_element;
   }
   auto* css_pseudo_element =
-      MakeGarbageCollected<CSSPseudoElement>(*this, pseudo_id);
-  data_ = RareData()->CacheCSSPseudoElement(pseudo_id, *css_pseudo_element);
+      MakeGarbageCollected<CSSPseudoElement>(*this, pseudo_id, pseudo_argument);
+  data_ = RareData()->CacheCSSPseudoElement(pseudo_id, pseudo_argument,
+                                            *css_pseudo_element);
   return css_pseudo_element;
 }
 
 void Element::CacheCSSPseudoElement(PseudoId pseudo_id,
+                                    const AtomicString& pseudo_argument,
                                     CSSPseudoElement& pseudo_element) {
-  data_ = EnsureRareData().CacheCSSPseudoElement(pseudo_id, pseudo_element);
+  data_ = EnsureRareData().CacheCSSPseudoElement(pseudo_id, pseudo_argument,
+                                                 pseudo_element);
 }
 
-CSSPseudoElement* Element::GetCSSPseudoElement(PseudoId pseudo_id) const {
+// Note: This method only checks ElementRareData, which caches top-level
+// pseudo-elements (like ::before, ::after, ::view-transition). It does not
+// resolve or return nested pseudo-elements (like view transition sub-elements:
+// ::view-transition-group, etc.) which are cached on their parent
+// pseudo-element.
+// To resolve nested pseudo-elements, use EnsureCSSPseudoElement() which
+// recursively builds the proxy chain and fetches them from their parent.
+CSSPseudoElement* Element::GetCSSPseudoElement(
+    PseudoId pseudo_id,
+    const AtomicString& pseudo_argument) const {
   if (ElementRareDataVector* data = RareData()) {
-    return data->GetCSSPseudoElement(pseudo_id);
+    return data->GetCSSPseudoElement(pseudo_id, pseudo_argument);
   }
   return nullptr;
 }

@@ -1485,9 +1485,17 @@ class CORE_EXPORT Element : public ContainerNode {
   CSSPseudoElement* pseudo(const AtomicString& type);
 
   // Used to cache CSSPseudoElement objects.
-  CSSPseudoElement* EnsureCSSPseudoElement(PseudoId);
-  void CacheCSSPseudoElement(PseudoId, CSSPseudoElement&);
-  CSSPseudoElement* GetCSSPseudoElement(PseudoId) const;
+  CSSPseudoElement* EnsureCSSPseudoElement(
+      PseudoId,
+      const AtomicString& pseudo_argument = g_null_atom);
+  void CacheCSSPseudoElement(PseudoId, const AtomicString&, CSSPseudoElement&);
+  // Returns a cached CSSPseudoElement object. This does not resolve
+  // nested pseudo-elements (like view transition sub-elements) and
+  // will return nullptr for them. Callers like EnsureCSSPseudoElement
+  // are responsible for handling nested pseudo-elements.
+  CSSPseudoElement* GetCSSPseudoElement(
+      PseudoId,
+      const AtomicString& pseudo_argument = g_null_atom) const;
 
   // Returns true if this element contains any ::scroll-button or
   // ::scroll-marker-group pseudos.

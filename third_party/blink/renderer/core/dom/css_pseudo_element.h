@@ -34,17 +34,35 @@ class CSSPseudoElement final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CSSPseudoElement(Element& originating_element, PseudoId pseudo_id);
+  CSSPseudoElement(Element& originating_element,
+                   PseudoId pseudo_id,
+                   const AtomicString& pseudo_argument = g_null_atom);
 
   CSSPseudoElement(CSSPseudoElement& originating_pseudo_element,
-                   PseudoId pseudo_id);
+                   PseudoId pseudo_id,
+                   const AtomicString& pseudo_argument = g_null_atom);
 
   // Parses the `type` to determine the PseudoId and if it's a currently
-  // supported pseudo-element.
-  static PseudoId ConvertTypeToSupportedPseudoId(const AtomicString& type);
+  // supported pseudo-element. Optionally extracts the pseudo_argument.
+  static std::pair<PseudoId, AtomicString> ConvertTypeToSupportedPseudoId(
+      const AtomicString& type);
   // Returns true if the `pseudo_id` is a supported pseudo-element type
   // for CSSPseudoElement interface.
   static bool IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id);
+
+  // Returns the parent view transition pseudo-element type and argument for a
+  // given view transition pseudo-element type and argument.
+  // View transitions follow a specific hierarchy:
+  // ::view-transition
+  //  └─ ::view-transition-group(name)
+  //      └─ ::view-transition-image-pair(name)
+  //          ├─ ::view-transition-old(name)
+  //          └─ ::view-transition-new(name)
+  // Returns {kPseudoIdNone, g_null_atom} if it has no parent pseudo-element.
+  // This is used by Element to recursively build the proxy chain.
+  static std::pair<PseudoId, AtomicString> GetViewTransitionParent(
+      PseudoId pseudo_id,
+      const AtomicString& pseudo_argument);
 
   // IDL interface.
   // The type attribute is a string representing the type of the pseudo-element.
@@ -63,7 +81,8 @@ class CSSPseudoElement final : public ScriptWrappable {
   // sub-pseudo-element could exist and would be valid, and null otherwise.
   CSSPseudoElement* pseudo(const AtomicString& type);
   // PseudoId-based overload: avoids string parsing, for internal use.
-  CSSPseudoElement* pseudo(PseudoId pseudo_id);
+  CSSPseudoElement* pseudo(PseudoId pseudo_id,
+                           const AtomicString& pseudo_argument = g_null_atom);
 
   // Returns the CSSPseudoElement proxy chain for the given PseudoElement,
   // creating it if necessary. Handles nested pseudos (e.g. ::after::marker)
@@ -87,6 +106,7 @@ class CSSPseudoElement final : public ScriptWrappable {
       const ConvertCoordinateOptions* options) const;
 
   PseudoId GetPseudoId() const { return pseudo_id_; }
+  const AtomicString& GetPseudoArgument() const { return pseudo_argument_; }
 
   LayoutObject* GetLayoutObject() const;
 
@@ -94,9 +114,47 @@ class CSSPseudoElement final : public ScriptWrappable {
 
  private:
   PseudoId pseudo_id_;
+  AtomicString pseudo_argument_;
   Member<Element> element_;
   Member<V8UnionCSSPseudoElementOrElement> parent_;
   Member<CSSPseudoElementsCacheData> css_pseudo_elements_data_;
+};
+
+// PseudoElementCacheKey is used to uniquely identify a CSSPseudoElement proxy
+// for a given originating element. It combines the pseudo-type and the
+// optional argument (used for view transitions).
+struct PseudoElementCacheKey {
+  PseudoId pseudo_id;
+  AtomicString pseudo_argument;
+
+  PseudoElementCacheKey() : pseudo_id(kPseudoIdNone) {}
+  PseudoElementCacheKey(PseudoId id, const AtomicString& arg)
+      : pseudo_id(id), pseudo_argument(arg) {}
+
+  bool operator==(const PseudoElementCacheKey& other) const {
+    return pseudo_id == other.pseudo_id &&
+           pseudo_argument == other.pseudo_argument;
+  }
+};
+
+template <>
+struct HashTraits<PseudoElementCacheKey>
+    : SimpleClassHashTraits<PseudoElementCacheKey> {
+  static unsigned GetHash(const PseudoElementCacheKey& key) {
+    unsigned arg_hash =
+        key.pseudo_argument.IsNull() ? 0 : key.pseudo_argument.Hash();
+    return HashInts(key.pseudo_id, arg_hash);
+  }
+  static const bool kEmptyValueIsZero = false;
+  static bool IsEmptyValue(const PseudoElementCacheKey& key) {
+    return key.pseudo_id == kPseudoIdNone;
+  }
+  static void ConstructDeletedValue(PseudoElementCacheKey& slot) {
+    HashTraits<AtomicString>::ConstructDeletedValue(slot.pseudo_argument);
+  }
+  static bool IsDeletedValue(const PseudoElementCacheKey& key) {
+    return HashTraits<AtomicString>::IsDeletedValue(key.pseudo_argument);
+  }
 };
 
 // The cache of CSSPseudoElement objects for a Element(lives on
@@ -105,14 +163,15 @@ class CSSPseudoElementsCacheData
     : public GarbageCollected<CSSPseudoElementsCacheData>,
       public ElementRareDataField {
  public:
-  void CacheCSSPseudoElement(PseudoId, CSSPseudoElement&);
+  void CacheCSSPseudoElement(PseudoId, const AtomicString&, CSSPseudoElement&);
 
-  CSSPseudoElement* GetCSSPseudoElement(PseudoId);
+  CSSPseudoElement* GetCSSPseudoElement(PseudoId, const AtomicString&);
 
   void Trace(Visitor* v) const final;
 
  private:
-  HeapHashMap<PseudoId, WeakMember<CSSPseudoElement>> pseudo_elements_map_;
+  HeapHashMap<PseudoElementCacheKey, WeakMember<CSSPseudoElement>>
+      pseudo_elements_map_;
 };
 
 }  // namespace blink

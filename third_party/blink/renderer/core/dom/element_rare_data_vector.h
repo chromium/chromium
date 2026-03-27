@@ -390,9 +390,9 @@ class CORE_EXPORT ElementRareDataVector final
       ScrollMarkerGroupData*);
   ScrollMarkerGroupData* GetScrollMarkerGroupContainerData() const;
 
-  [[nodiscard]] ElementRareDataVector* CacheCSSPseudoElement(PseudoId,
-                                                             CSSPseudoElement&);
-  CSSPseudoElement* GetCSSPseudoElement(PseudoId) const;
+  [[nodiscard]] ElementRareDataVector*
+  CacheCSSPseudoElement(PseudoId, const AtomicString&, CSSPseudoElement&);
+  CSSPseudoElement* GetCSSPseudoElement(PseudoId, const AtomicString&) const;
 
   ExplicitlySetAttrElementsMap* GetExplicitlySetElementsForAttr() const;
   std::pair<std::reference_wrapper<ExplicitlySetAttrElementsMap>,
