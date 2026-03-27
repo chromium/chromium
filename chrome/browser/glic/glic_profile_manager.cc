@@ -357,7 +357,7 @@ void GlicProfileManager::ForceConnectionTypeForTesting(
 }
 
 bool GlicProfileManager::IsUnderMemoryPressure() const {
-  return memory_pressure_level() != base::MEMORY_PRESSURE_LEVEL_NONE;
+  return memory_pressure_level() == base::MEMORY_PRESSURE_LEVEL_CRITICAL;
 }
 
 void GlicProfileManager::CanPreloadForProfile(Profile* profile,

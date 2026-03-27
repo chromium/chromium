@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   ResetPrewarming();
   base::RunLoop run_loop;
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE, run_loop.QuitClosure());
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kUnderMemoryPressure);
