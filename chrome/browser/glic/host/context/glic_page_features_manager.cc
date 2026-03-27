@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -116,6 +117,11 @@ void GlicPageFeaturesManager::RunCheck() {
 
 void GlicPageFeaturesManager::OnCheckResult(base::Value result) {
   if (result.is_bool() && result.GetBool()) {
+    base::UmaHistogramEnumeration(
+        "Glic.YoutubeSummarizeVideoZSS.Events",
+        check_count_ == 0
+            ? YoutubeSummarizeVideoZSS::kButtonFoundOnFirstCheck
+            : YoutubeSummarizeVideoZSS::kButtonFoundOnSecondCheck);
     if (!std::ranges::contains(
             cached_features_,
             mojom::LightweightPageFeature::kYtAskButtonPresent)) {
@@ -125,6 +131,10 @@ void GlicPageFeaturesManager::OnCheckResult(base::Value result) {
   } else if (check_count_ < kMaxRetries) {
     check_count_++;
     ScheduleCheck();
+  } else {
+    base::UmaHistogramEnumeration(
+        "Glic.YoutubeSummarizeVideoZSS.Events",
+        YoutubeSummarizeVideoZSS::kButtonNotFoundAfterAllChecks);
   }
 }
 

@@ -40,6 +40,15 @@ class GlicPageFeaturesManager : public content::WebContentsObserver {
   static constexpr base::TimeDelta kCheckDelay = base::Seconds(3);
   static constexpr int kMaxRetries = 1;
 
+  // LINT.IfChange(YoutubeSummarizeVideoZSS)
+  enum class YoutubeSummarizeVideoZSS {
+    kButtonFoundOnFirstCheck = 0,
+    kButtonFoundOnSecondCheck = 1,
+    kButtonNotFoundAfterAllChecks = 2,
+    kMaxValue = kButtonNotFoundAfterAllChecks,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicYoutubeSummarizeVideoZSS)
+
   explicit GlicPageFeaturesManager(tabs::TabInterface* tab);
   ~GlicPageFeaturesManager() override;
 
