@@ -59,7 +59,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
  protected:
   // Implements `SidePanelUIBase`:
-  void Show(const UniqueKey& entry,
+  void Show(const UniqueKey& key,
             std::optional<SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;
   void PopulateSidePanel(

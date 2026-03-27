@@ -9,8 +9,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/internal/android/jni_headers/SidePanelCoordinatorAndroidImpl_jni.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -80,14 +83,25 @@ void SidePanelCoordinatorAndroid::DisableAnimationsForTesting() {
 
 void SidePanelCoordinatorAndroid::SetNoDelaysForTesting(  // IN-TEST
     bool no_delays_for_testing) {
-  // TODO(crbug.com/494000480): Implement this.
+  for (auto type : SidePanelEntry::PanelTypes::All()) {
+    waiter(type)->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
+  }
 }
 
 void SidePanelCoordinatorAndroid::Show(
-    const UniqueKey& entry,
+    const UniqueKey& key,
     std::optional<SidePanelOpenTrigger> open_trigger,
     bool suppress_animations) {
-  // TODO(crbug.com/493931047): Implement this.
+  SidePanelEntry* entry = GetEntryForUniqueKey(key);
+  if (!entry) {
+    return;
+  }
+
+  waiter(entry->type())
+      ->WaitForEntry(
+          entry, base::BindOnce(&SidePanelCoordinatorAndroid::PopulateSidePanel,
+                                base::Unretained(this), suppress_animations,
+                                key, open_trigger));
 }
 
 void SidePanelCoordinatorAndroid::PopulateSidePanel(
@@ -96,7 +110,8 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
     std::optional<SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<SidePanelNativeView> content_view) {
-  // TODO(crbug.com/494001968): Implement this.
+  SetCurrentKey(entry->type(), unique_key);
+  entry->OnEntryShown();
 }
 
 void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(

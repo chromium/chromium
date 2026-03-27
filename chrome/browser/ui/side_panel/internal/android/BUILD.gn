@@ -94,6 +94,7 @@ source_set("browser_tests") {
   deps = [
     ":android",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/android",
