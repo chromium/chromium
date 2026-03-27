@@ -192,7 +192,7 @@ class CustomFrameView : public ash::FrameViewAsh {
 
     if (GetFrameEnabled()) {
       CHECK_EQ(rounded_corners->upper_left(), rounded_corners->upper_right());
-      header_view_->SetHeaderCornerRadius(rounded_corners->upper_left());
+      GetHeaderView()->SetHeaderCornerRadius(rounded_corners->upper_left());
     }
 
     GetWidget()->client_view()->UpdateWindowRoundedCorners(

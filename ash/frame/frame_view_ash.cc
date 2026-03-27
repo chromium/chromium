@@ -19,9 +19,10 @@
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/default_highlight_border_overlay_delegate.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
-#include "chromeos/ui/frame/frame_view_chromeos.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -56,6 +57,9 @@ using ::chromeos::kTrackDefaultFrameColors;
 using ::chromeos::WindowStateType;
 
 DEFINE_UI_CLASS_PROPERTY_KEY(FrameViewAsh*, kFrameViewAshKey, nullptr)
+
+////////////////////////////////////////////////////////////////////////////////
+// FrameViewAshImmersiveHelper:
 
 // This helper enables and disables immersive mode in response to state such as
 // tablet mode and fullscreen changing. For legacy reasons, it's only
@@ -150,11 +154,84 @@ class FrameViewAshImmersiveHelper : public WindowStateObserver,
   display::ScopedDisplayObserver display_observer_{this};
 };
 
+//////////////////////////////////////////////////
+/////////////////////////////////
+// FrameViewAsh::OverlayView:
+
+// View which takes up the entire widget and contains the HeaderView. HeaderView
+// is a child of OverlayView to avoid creating a larger texture than necessary
+// when painting the HeaderView to its own layer.
+class FrameViewAsh::OverlayView : public views::View,
+                                  public views::ViewTargeterDelegate {
+  METADATA_HEADER(OverlayView, views::View)
+
+ public:
+  explicit OverlayView(chromeos::HeaderView* header_view)
+      : header_view_(header_view) {
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+  }
+  OverlayView(const OverlayView&) = delete;
+  OverlayView& operator=(const OverlayView&) = delete;
+  ~OverlayView() override = default;
+
+  // views::View:
+  void Layout(PassKey) override {
+    // Layout |header_view_| because layout affects the result of
+    // GetPreferredOnScreenHeight().
+    header_view_->DeprecatedLayoutImmediately();
+
+    int onscreen_height = header_view_->GetPreferredOnScreenHeight();
+    int height = header_view_->GetPreferredHeight();
+    if (onscreen_height == 0 || !GetVisible()) {
+      header_view_->SetVisible(false);
+      // Make sure the correct width is set even when immersive is enabled, but
+      // never revealed yet.
+      header_view_->SetBounds(0, 0, width(), height);
+    } else {
+      header_view_->SetBounds(0, onscreen_height - height, width(), height);
+      header_view_->SetVisible(true);
+    }
+  }
+
+ private:
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    DCHECK_EQ(target, this);
+    // Grab events in the header view. Return false for other events so that
+    // they can be handled by the client view.
+    return header_view_->HitTestRect(rect);
+  }
+
+  raw_ptr<chromeos::HeaderView> header_view_;
+};
+
+BEGIN_METADATA(FrameViewAsh, OverlayView)
+END_METADATA
+
+////////////////////////////////////////////////////////////////////////////////
+// FrameViewAsh:
+
 FrameViewAsh::FrameViewAsh(views::Widget* widget)
-    : chromeos::FrameViewChromeOS(widget),
+    : views::NativeFrameView(widget),
       frame_context_menu_controller_(
           std::make_unique<chromeos::FrameContextMenuController>(widget,
                                                                  this)) {
+  DCHECK(widget_);
+
+  auto header_view = std::make_unique<chromeos::HeaderView>(widget_, this);
+
+  auto overlay_view = std::make_unique<OverlayView>(header_view.get());
+  header_view_ = overlay_view->AddChildView(std::move(header_view));
+  header_view_->Init();
+  overlay_view_ = overlay_view.get();
+
+  // |header_view_| is set as the non client view's overlay view so that it can
+  // overlay the web contents in immersive fullscreen.
+  widget_->non_client_view()->SetOverlayView(overlay_view.release());
+
+  UpdateDefaultFrameColors();
+
   header_view_->set_immersive_mode_changed_callback(base::BindRepeating(
       &FrameViewAsh::InvalidateLayout, weak_factory_.GetWeakPtr(),
       // This will always be on a fresh call stack, never mid-layout so the
@@ -268,6 +345,10 @@ SkColor FrameViewAsh::GetInactiveFrameColorForTest() const {
   return widget_->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
 }
 
+chromeos::HeaderView* FrameViewAsh::GetHeaderView() {
+  return header_view_;
+}
+
 void FrameViewAsh::SetFrameEnabled(bool enabled) {
   if (enabled == frame_enabled_)
     return;
@@ -312,6 +393,16 @@ void FrameViewAsh::SetFrameOverlapped(bool overlapped) {
   InvalidateLayout();
 }
 
+int FrameViewAsh::NonClientTopBorderHeight() const {
+  // The frame should not occupy the window area when it's in fullscreen,
+  // not visible or disabled.
+  if (widget_->IsFullscreen() || !GetFrameEnabled() ||
+      header_view_->in_immersive_mode()) {
+    return 0;
+  }
+  return header_view_->GetPreferredHeight();
+}
+
 void FrameViewAsh::SetToggleResizeLockMenuCallback(
     base::RepeatingCallback<void()> callback) {
   toggle_resize_lock_menu_callback_ = std::move(callback);
@@ -319,6 +410,85 @@ void FrameViewAsh::SetToggleResizeLockMenuCallback(
 
 void FrameViewAsh::ClearToggleResizeLockMenuCallback() {
   toggle_resize_lock_menu_callback_.Reset();
+}
+
+gfx::Rect FrameViewAsh::GetBoundsForClientView() const {
+  gfx::Rect client_bounds = bounds();
+  client_bounds.Inset(gfx::Insets::TLBR(NonClientTopBorderHeight(), 0, 0, 0));
+  return client_bounds;
+}
+
+gfx::Rect FrameViewAsh::GetWindowBoundsForClientBounds(
+    const gfx::Rect& client_bounds) const {
+  gfx::Rect window_bounds = client_bounds;
+  window_bounds.Inset(gfx::Insets::TLBR(-NonClientTopBorderHeight(), 0, 0, 0));
+  return window_bounds;
+}
+
+int FrameViewAsh::NonClientHitTest(const gfx::Point& point) {
+  return chromeos::FrameBorderNonClientHitTest(this, point,
+                                               non_client_hit_test_callback_);
+}
+
+void FrameViewAsh::GetWindowMask(const gfx::Size& size, SkPath* window_mask) {
+  // No window masks in Aura.
+}
+
+void FrameViewAsh::ResetWindowControls() {
+  header_view_->ResetWindowControls();
+}
+
+void FrameViewAsh::UpdateWindowTitle() {
+  header_view_->SchedulePaintForTitle();
+}
+
+void FrameViewAsh::SizeConstraintsChanged() {
+  header_view_->UpdateCaptionButtons();
+}
+
+views::View::Views FrameViewAsh::GetChildrenInZOrder() {
+  return header_view_->GetFrameHeader()->GetAdjustedChildrenInZOrder(this);
+}
+
+void FrameViewAsh::Layout(PassKey) {
+  LayoutSuperclass<views::FrameView>(this);
+  if (!GetFrameEnabled()) {
+    return;
+  }
+  aura::Window* frame_window = widget_->GetNativeWindow();
+  frame_window->SetProperty(aura::client::kTopViewInset,
+                            NonClientTopBorderHeight());
+}
+
+gfx::Size FrameViewAsh::GetMinimumSize() const {
+  if (!GetFrameEnabled()) {
+    return gfx::Size();
+  }
+
+  gfx::Size min_client_view_size(widget_->client_view()->GetMinimumSize());
+  return gfx::Size(
+      std::max(header_view_->GetMinimumWidth(), min_client_view_size.width()),
+      NonClientTopBorderHeight() + min_client_view_size.height());
+}
+
+gfx::Size FrameViewAsh::GetMaximumSize() const {
+  gfx::Size max_client_size(widget_->client_view()->GetMaximumSize());
+  int width = 0;
+  int height = 0;
+
+  if (max_client_size.width() > 0) {
+    width = std::max(header_view_->GetMinimumWidth(), max_client_size.width());
+  }
+  if (max_client_size.height() > 0) {
+    height = NonClientTopBorderHeight() + max_client_size.height();
+  }
+
+  return gfx::Size(width, height);
+}
+
+void FrameViewAsh::OnThemeChanged() {
+  views::NativeFrameView::OnThemeChanged();
+  UpdateDefaultFrameColors();
 }
 
 void FrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
@@ -346,6 +516,21 @@ void FrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
 
 void FrameViewAsh::OnWindowDestroying(aura::Window* window) {
   window_observation_.Reset();
+}
+
+void FrameViewAsh::OnDisplayTabletStateChanged(display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+    case display::TabletState::kInClamshellMode:
+      // Without this, Layout is not guaranteed to be called when the tablet
+      // state changes. Layout must be called so that the header view can hide
+      // or unhide as appropriate.
+      InvalidateLayout();
+      break;
+  }
 }
 
 void FrameViewAsh::UpdateWindowRoundedCorners() {
@@ -401,6 +586,24 @@ void FrameViewAsh::AddedToWidget() {
       std::make_unique<chromeos::DefaultHighlightBorderOverlayDelegate>());
 }
 
+bool FrameViewAsh::DoesIntersectRect(const views::View* target,
+                                     const gfx::Rect& rect) const {
+  DCHECK_EQ(target, this);
+
+  // Give the OverlayView the first chance to handle events.
+  if (frame_enabled_ && overlay_view_->HitTestRect(rect)) {
+    return false;
+  }
+
+  // Handle the event if it's within the bounds of the ClientView.
+  gfx::RectF rect_in_client_view_coords_f(rect);
+  View::ConvertRectToTarget(this, widget_->client_view(),
+                            &rect_in_client_view_coords_f);
+  gfx::Rect rect_in_client_view_coords =
+      gfx::ToEnclosingRect(rect_in_client_view_coords_f);
+  return widget_->client_view()->HitTestRect(rect_in_client_view_coords);
+}
+
 chromeos::FrameCaptionButtonContainerView*
 FrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
   return header_view_->caption_button_container();
@@ -417,6 +620,11 @@ void FrameViewAsh::UpdateDefaultFrameColors() {
 
   frame_window->SetProperty(kFrameActiveColorKey, dialog_title_bar_color);
   frame_window->SetProperty(kFrameInactiveColorKey, dialog_title_bar_color);
+}
+
+void FrameViewAsh::PaintAsActiveChanged() {
+  header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
+  widget_->non_client_view()->DeprecatedLayoutImmediately();
 }
 
 BEGIN_METADATA(FrameViewAsh)

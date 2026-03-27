@@ -8,15 +8,23 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ui/frame/frame_context_menu_controller.h"
-#include "chromeos/ui/frame/frame_view_chromeos.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/display_observer.h"
+#include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/native_frame_view.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace chromeos {
 class FrameCaptionButtonContainerView;
@@ -36,12 +44,13 @@ class FrameViewAshImmersiveHelper;
 // client view takes up the entire widget and the window header is an overlay.
 // The window header overlay slides onscreen when the user hovers the mouse at
 // the top of the screen. See also views::DefaultFrameView and
-// BrowserFrameViewAsh.
+// BrowserFrameViewChromeOS.
 class ASH_EXPORT FrameViewAsh
-    : public chromeos::FrameViewChromeOS,
+    : public views::NativeFrameView,
       public chromeos::FrameContextMenuController::Delegate,
-      public aura::WindowObserver {
-  METADATA_HEADER(FrameViewAsh, chromeos::FrameViewChromeOS)
+      public aura::WindowObserver,
+      public display::DisplayObserver {
+  METADATA_HEADER(FrameViewAsh, views::NativeFrameView)
 
  public:
   // |control_immersive| controls whether ImmersiveFullscreenController is
@@ -94,10 +103,16 @@ class ASH_EXPORT FrameViewAsh
 
   views::Widget* widget() { return widget_; }
 
+  // Get the view of the header.
+  chromeos::HeaderView* GetHeaderView();
+
   bool GetFrameEnabled() const { return frame_enabled_; }
   bool GetFrameOverlapped() const { return frame_overlapped_; }
   void SetFrameEnabled(bool enabled);
   void SetFrameOverlapped(bool overlapped);
+
+  // Height from top of window to top of client area.
+  int NonClientTopBorderHeight() const;
 
   // Sets the callback to toggle the ARC++ resize-lock menu for this container
   // if applicable, which will be invoked via the keyboard shortcut.
@@ -106,7 +121,20 @@ class ASH_EXPORT FrameViewAsh
   base::RepeatingCallback<void()> GetToggleResizeLockMenuCallback() const;
   void ClearToggleResizeLockMenuCallback();
 
-  // views::FrameView:
+  // views::NativeFrameView:
+  gfx::Rect GetBoundsForClientView() const override;
+  gfx::Rect GetWindowBoundsForClientBounds(
+      const gfx::Rect& client_bounds) const override;
+  int NonClientHitTest(const gfx::Point& point) override;
+  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
+  void ResetWindowControls() override;
+  void UpdateWindowTitle() override;
+  void SizeConstraintsChanged() override;
+  views::View::Views GetChildrenInZOrder() override;
+  void Layout(PassKey) override;
+  gfx::Size GetMinimumSize() const override;
+  gfx::Size GetMaximumSize() const override;
+  void OnThemeChanged() override;
   void UpdateWindowRoundedCorners() override;
 
   // aura::WindowObserver:
@@ -115,12 +143,17 @@ class ASH_EXPORT FrameViewAsh
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
+
  protected:
+  class OverlayView;
+
   // views::View:
   void OnDidSchedulePaint(const gfx::Rect& r) override;
   void AddedToWidget() override;
-
-  bool frame_overlapped_ = false;
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override;
 
  private:
   friend class TestWidgetConstraintsDelegate;
@@ -132,7 +165,19 @@ class ASH_EXPORT FrameViewAsh
   GetFrameCaptionButtonContainerViewForTest();
 
   // Updates the windows default frame colors if necessary.
-  void UpdateDefaultFrameColors() override;
+  void UpdateDefaultFrameColors();
+
+  // Called when |widget_|'s "paint as active" state has changed.
+  void PaintAsActiveChanged();
+
+  // View which contains the title and window controls.
+  raw_ptr<chromeos::HeaderView> header_view_ = nullptr;
+
+  raw_ptr<OverlayView> overlay_view_ = nullptr;
+
+  bool frame_enabled_ = true;
+
+  bool frame_overlapped_ = false;
 
   // Generates a nine patch layer painted with a highlight border.
   std::unique_ptr<HighlightBorderOverlay> highlight_border_overlay_;
@@ -147,6 +192,13 @@ class ASH_EXPORT FrameViewAsh
       window_observation_{this};
 
   base::RepeatingCallback<void()> toggle_resize_lock_menu_callback_;
+
+  base::CallbackListSubscription paint_as_active_subscription_ =
+      widget_->RegisterPaintAsActiveChangedCallback(
+          base::BindRepeating(&FrameViewAsh::PaintAsActiveChanged,
+                              base::Unretained(this)));
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<FrameViewAsh> weak_factory_{this};
 };
