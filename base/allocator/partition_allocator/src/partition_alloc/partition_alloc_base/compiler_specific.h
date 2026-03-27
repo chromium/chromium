@@ -529,10 +529,4 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // `-Wunsafe-buffer-usage`.
 #define PA_UNSAFE_TODO(...) PA_UNSAFE_BUFFERS(__VA_ARGS__)
 
-#if PA_HAS_ATTRIBUTE(enable_if)
-#define PA_ENABLE_IF_ATTR(cond, msg) __attribute__((enable_if(cond, msg)))
-#else
-#define PA_ENABLE_IF_ATTR(cond, msg)
-#endif
-
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPILER_SPECIFIC_H_
