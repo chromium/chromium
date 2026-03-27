@@ -798,6 +798,7 @@ const CGFloat kTopDynamicIslandInset = 24;
   _urlLoadingBrowserAgent = nullptr;
   _tabUsageRecorderBrowserAgent = nullptr;
   _snapshotBrowserAgent = nullptr;
+  _fullscreenBrowserAgentObserverBridge = nullptr;
 }
 
 #pragma mark - UIAccessibilityAction
@@ -1666,6 +1667,22 @@ const CGFloat kTopDynamicIslandInset = 24;
   return 0;
 }
 
+// The top inset.
+- (CGFloat)topInset {
+  CGFloat topInset = self.rootSafeAreaInsets.top;
+
+  // On iOS 26, the safe area layout guide doesn't automatically adjust for the
+  // control setting island's dimensions.
+  // If the app is windowed, the dynamic island is not included in the
+  // status bar. In that case, `topInset` should be updated.
+  CGFloat topInsetWithCornerAdaptation = [self topInsetWithCornerAdaptation];
+  if (topInsetWithCornerAdaptation - topInset > 0) {
+    topInset =
+        fmax(topInset, topInsetWithCornerAdaptation - kTopDynamicIslandInset);
+  }
+  return topInset;
+}
+
 // Helper method for dismissing view controller with `completion` block.
 - (void)viewControllerDismissedWithCompletion:(void (^)())completion {
   self.dismissingModal = NO;
@@ -1869,9 +1886,13 @@ const CGFloat kTopDynamicIslandInset = 24;
 - (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
   CHECK(IsFullscreenRefactoringEnabled());
 
-  CGFloat primaryToolbarHeight = [self primaryToolbarHeightWithInset];
-  agent->AddObscuredInsetRange(UIRectEdgeTop, [self collapsedTopToolbarHeight],
-                               primaryToolbarHeight + self.topToolbarInset);
+  // Top obscured range: safe area top (with dynamic island adaptation) and
+  // primary toolbar, but excluding the tab strip.
+  CGFloat topInset = [self topInset];
+  CGFloat min =
+      topInset + self.toolbarCoordinator.collapsedPrimaryToolbarHeight;
+  CGFloat max = topInset + self.toolbarCoordinator.expandedPrimaryToolbarHeight;
+  agent->AddObscuredInsetRange(UIRectEdgeTop, min, max);
 
   CGFloat secondaryToolbarHeight = [self secondaryToolbarHeightWithInset];
   agent->AddObscuredInsetRange(UIRectEdgeBottom,
@@ -1884,19 +1905,8 @@ const CGFloat kTopDynamicIslandInset = 24;
 // The minimum amount by which the top toolbar overlaps the browser content
 // area.
 - (CGFloat)collapsedTopToolbarHeight {
-  CGFloat topInset = self.rootSafeAreaInsets.top;
-
-  // On iOS 26, the safe area layout guide doesn't automatically adjust for the
-  // control setting island's dimensions.
-  // If the app is windowed, the dynamic island is not included in the
-  // status bar. In that case, `topInset` should be updated.
-  CGFloat topInsetWithCornerAdaptation = [self topInsetWithCornerAdaptation];
-  if (topInsetWithCornerAdaptation - topInset > 0) {
-    topInset =
-        fmax(topInset, topInsetWithCornerAdaptation - kTopDynamicIslandInset);
-  }
-
-  return topInset + self.toolbarCoordinator.collapsedPrimaryToolbarHeight;
+  return
+      [self topInset] + self.toolbarCoordinator.collapsedPrimaryToolbarHeight;
 }
 
 // The minimum amount by which the bottom toolbar overlaps the browser content

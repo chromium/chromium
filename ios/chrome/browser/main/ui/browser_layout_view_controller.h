@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_context_provider.h"
 
@@ -20,7 +21,9 @@
 // containing view controller handles forwarding calls to the BVC instance where
 // needed.
 @interface BrowserLayoutViewController
-    : UIViewController <FullscreenUIElement, TabGridTransitionContextProvider>
+    : UIViewController <FullscreenBrowserAgentObserving,
+                        FullscreenUIElement,
+                        TabGridTransitionContextProvider>
 
 // The safe area provider.
 @property(nonatomic, weak) SafeAreaProvider* safeAreaProvider;

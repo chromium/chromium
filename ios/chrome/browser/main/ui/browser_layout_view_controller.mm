@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
@@ -24,9 +25,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
-
-@interface BrowserLayoutViewController () <FullscreenUIElement>
-@end
 
 @implementation BrowserLayoutViewController {
   // Observer for the fullscreen controller.
@@ -197,6 +195,16 @@
     [self updateForFullscreenProgress:finalProgress];
     [self.view layoutIfNeeded];
   }];
+}
+
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
+  CHECK(IsFullscreenRefactoringEnabled());
+  if (CanShowTabStrip(self)) {
+    agent->AddObscuredInsetRange(UIRectEdgeTop, 0,
+                                 TabStripCollectionViewConstants.height);
+  }
 }
 
 #pragma mark - Private
