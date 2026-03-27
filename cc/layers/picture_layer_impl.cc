@@ -1014,12 +1014,13 @@ void PictureLayerImpl::GetContentsResourceId(
       << content_rect.ToString();
 
   auto resource_id_opt = iter->GetResourceId();
-  if (!resource_id_opt) {
+  auto resource_size_opt = iter->GetResourceSize();
+  if (!resource_id_opt || !resource_size_opt) {
     return;
   }
 
   *resource_id = *resource_id_opt;
-  *resource_size = iter->draw_info().resource_size();
+  *resource_size = *resource_size_opt;
   // |resource_uv_size| represents the range of UV coordinates that map to the
   // content being drawn. Typically, we draw to the entire texture, so these
   // coordinates are (1.0f, 1.0f). However, if we are rasterizing to an

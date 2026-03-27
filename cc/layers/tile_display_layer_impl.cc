@@ -231,12 +231,13 @@ void TileDisplayLayerImpl::GetContentsResourceId(
       << content_rect.ToString();
 
   auto resource_id_opt = iter->GetResourceId();
-  if (!resource_id_opt) {
+  auto resource_size_opt = iter->GetResourceSize();
+  if (!resource_id_opt || !resource_size_opt) {
     return;
   }
 
   *resource_id = *resource_id_opt;
-  *resource_size = iter->resource()->resource_size;
+  *resource_size = *resource_size_opt;
   gfx::SizeF requested_tile_size =
       gfx::SizeF(iter.CurrentTiling()->tile_size());
   *resource_uv_size =

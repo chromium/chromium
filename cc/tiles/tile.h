@@ -70,6 +70,13 @@ class CC_EXPORT Tile {
     return std::nullopt;
   }
 
+  std::optional<gfx::Size> GetResourceSize() const {
+    if (IsReadyToDraw() && draw_info().mode() == TileDrawInfo::RESOURCE_MODE) {
+      return draw_info().resource_size();
+    }
+    return std::nullopt;
+  }
+
   std::optional<SkColor4f> GetSolidColor() const {
     if (draw_info().mode() == TileDrawInfo::SOLID_COLOR_MODE) {
       return draw_info().solid_color();

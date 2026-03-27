@@ -104,6 +104,13 @@ class CC_EXPORT TileDisplayLayerTile {
     return std::nullopt;
   }
 
+  std::optional<gfx::Size> GetResourceSize() const {
+    if (auto res = resource()) {
+      return res->resource_size;
+    }
+    return std::nullopt;
+  }
+
  private:
   const raw_ref<TileDisplayLayerImpl> layer_;
   TileDisplayLayerTileContents contents_;
