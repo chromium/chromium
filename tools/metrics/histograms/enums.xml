@@ -14291,6 +14291,7 @@ from previous Chrome versions.
   <int value="89934221" label="MediaAppPhotosIntegrationImage:disabled"/>
   <int value="90551098" label="UseWallpaperStagingUrl:enabled"/>
   <int value="90673685" label="cast-mirroring-target-playout-delay"/>
+  <int value="91502414" label="VerticalTabsExpandOnHover:disabled"/>
   <int value="91508297" label="ArcAttestation:enabled"/>
   <int value="91780047" label="TabGroupsSaveUIUpdate:disabled"/>
   <int value="91916443" label="ManagedConfiguration:disabled"/>
@@ -19206,6 +19207,7 @@ from previous Chrome versions.
   <int value="1730094138" label="enable-md-storage-manager"/>
   <int value="1730236697" label="force-device-scale-factor"/>
   <int value="1730416578" label="NTPCondensedLayout:enabled"/>
+  <int value="1730698651" label="VerticalTabsExpandOnHover:enabled"/>
   <int value="1731522433" label="enable-offer-store-unmasked-wallet-cards"/>
   <int value="1731612996" label="CrostiniFiles:disabled"/>
   <int value="1731642759" label="CrOSLateBootPermissiveUsbPassthrough:enabled"/>

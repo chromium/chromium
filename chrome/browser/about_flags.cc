@@ -7002,6 +7002,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVerticalTabsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kVerticalTabs)},
 
+    {"vertical-tabs-expand-on-hover",
+     flag_descriptions::kVerticalTabsExpandOnHoverName,
+     flag_descriptions::kVerticalTabsExpandOnHoverDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(tabs::kVerticalTabsExpandOnHover)},
+
     {"side-panel-flyover-animation",
      flag_descriptions::kSidePanelFlyoverAnimationName,
      flag_descriptions::kSidePanelFlyoverAnimationDescription,

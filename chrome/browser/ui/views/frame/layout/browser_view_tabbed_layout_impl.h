@@ -96,12 +96,16 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
 
   // Describes how to render the top of the vertical tab strip.
   struct VerticalTabStripAnimation {
+    // Is the vertical tab strip animating?
+    bool is_animating = false;
     // The y-value of the top of the tab strip.
     int top_offset = 0;
-    // The relative size of the top outside corner.
-    double top_outside_corner_percent = 0.0;
-    // The relative size of the top inside corner.
-    double top_inside_corner_percent = 0.0;
+    // The relative size of the top corner.
+    double top_corner = 0.0;
+    // The relative size of the bottom corner.
+    double bottom_corner = 0.0;
+    // How much of the expand-on-hover is shown.
+    double expand_on_hover = 0.0;
   };
   VerticalTabStripAnimation CalculateVerticalTabStripAnimation(
       const BrowserLayoutParams& params) const;

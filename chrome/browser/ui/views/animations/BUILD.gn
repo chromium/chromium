@@ -8,6 +8,8 @@ source_set("animations") {
   sources = [
     "side_panel_animations.cc",
     "side_panel_animations.h",
+    "tab_strip_animations.cc",
+    "tab_strip_animations.h",
   ]
 
   public_deps = [

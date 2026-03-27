@@ -3998,6 +3998,11 @@ inline constexpr char kVerticalTabsName[] = "Vertical Tabs";
 inline constexpr char kVerticalTabsDescription[] =
     "Enables an option for showing tabs to the side.";
 
+inline constexpr char kVerticalTabsExpandOnHoverName[] =
+    "Vertical Tabs Expand On Hover";
+inline constexpr char kVerticalTabsExpandOnHoverDescription[] =
+    "Vertical tabs (when enabled and collapsed) will expand on mouse hover.";
+
 inline constexpr char kSidePanelFlyoverAnimationName[] =
     "Side Panel Flyover Animation";
 inline constexpr char kSidePanelFlyoverAnimationDescription[] =

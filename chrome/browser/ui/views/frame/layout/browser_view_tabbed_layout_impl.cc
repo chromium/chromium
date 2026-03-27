@@ -13,9 +13,11 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/custom_floating_corner.h"
@@ -354,44 +356,76 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
 BrowserViewTabbedLayoutImpl::VerticalTabStripAnimation
 BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
     const BrowserLayoutParams& params) const {
-  static constexpr double kFirstBreakpoint = 0.25;
-  static constexpr double kSecondBreakpoint = 0.75;
   int leading_exclusion_height =
       GetCollapsedVerticalTabStripRelativeTop(params);
   VerticalTabStripAnimation animation;
 
-  // Default is to display the top outside corner.
-  animation.top_outside_corner_percent = 1.0;
+  const auto* const controller = BrowserAnimationController::From(browser());
+  const auto motion =
+      controller->GetCurrentMotion(TabStripAnimations::kVerticalTabStrip);
+  animation.is_animating = static_cast<bool>(motion);
 
-  // Only need to do additional animation if animating downward.
-  if (leading_exclusion_height == 0) {
-    return animation;
+  double top_corner_collapsed_state = 1.0;
+  if (leading_exclusion_height > 0) {
+    const bool bookmarks_visible = delegate().IsBookmarkBarVisible();
+    const auto* const toolbar_height_side_panel =
+        views().toolbar_height_side_panel.get();
+    const bool has_leading_side_panel =
+        toolbar_height_side_panel && toolbar_height_side_panel->GetVisible() &&
+        toolbar_height_side_panel->IsRightAligned() == base::i18n::IsRTL();
+    top_corner_collapsed_state =
+        has_leading_side_panel || bookmarks_visible ? -1.0 : 0.0;
   }
-  const auto animation_percent =
-      views().vertical_tab_strip_region_view->GetCollapseAnimationPercent();
-  if (animation_percent.has_value()) {
-    if (animation_percent > kSecondBreakpoint) {
-      const double amount =
-          (*animation_percent - kSecondBreakpoint) / (1 - kSecondBreakpoint);
-      animation.top_outside_corner_percent = amount;
+
+  // Default is to display the top outside corner.
+  const bool hovering =
+      views().vertical_tab_strip_region_view->is_expanded_on_hover();
+  const bool is_collapsed = delegate().IsVerticalTabStripCollapsed();
+  animation.top_offset = is_collapsed ? leading_exclusion_height : 0;
+  animation.expand_on_hover = hovering ? 1.0 : 0.0;
+  animation.top_corner =
+      hovering ? -1.0 : (is_collapsed ? top_corner_collapsed_state : 1.0);
+  animation.bottom_corner = hovering ? -1.0 : 1.0;
+
+  if (animation.is_animating) {
+    animation.top_corner = *controller->GetCurrentValue(
+        TabStripAnimations::kVerticalTabStrip, TabStripAnimations::kTopCorner);
+    if (motion == TabStripAnimations::kExpand ||
+        motion == TabStripAnimations::kCollapse) {
+      // For expand and collapse, the target is an outside corner, so don't dip
+      // below the minimum.
+      animation.top_corner =
+          std::max(animation.top_corner, top_corner_collapsed_state);
     } else {
-      animation.top_outside_corner_percent = 0.0;
-      animation.top_inside_corner_percent =
-          1.0 - *animation_percent / kSecondBreakpoint;
-      if (animation_percent < kFirstBreakpoint) {
-        animation.top_offset = leading_exclusion_height;
-      } else {
-        animation.top_offset = base::ClampRound(
-            leading_exclusion_height *
-            (1.0 - (*animation_percent - kFirstBreakpoint) /
-                       (kSecondBreakpoint - kFirstBreakpoint)));
-      }
+      // For hover expand and collapse, the target is an inside corner, so don't
+      // bump above the maximum.
+      animation.top_corner =
+          std::min(animation.top_corner, top_corner_collapsed_state);
     }
-  } else if (delegate().IsVerticalTabStripCollapsed()) {
-    animation.top_inside_corner_percent = 1.0;
-    animation.top_outside_corner_percent = 0.0;
-    animation.top_offset = leading_exclusion_height;
+    animation.bottom_corner =
+        controller
+            ->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
+                              TabStripAnimations::kBottomCorner)
+            .value_or(animation.bottom_corner);
+    if (const auto top =
+            controller->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
+                                        TabStripAnimations::kTabStripTop)) {
+      animation.top_offset =
+          base::ClampRound(leading_exclusion_height * top.value());
+    }
+    animation.expand_on_hover =
+        controller
+            ->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
+                              TabStripAnimations::kTabStripHoverWidth)
+            .value_or(0.0);
   }
+
+  // Once the top pulls away from the top of the browser, we cannot have an
+  // external corner.
+  if (animation.top_offset > 0) {
+    animation.top_corner = std::min(0.0, animation.top_corner);
+  }
+
   return animation;
 }
 
@@ -465,15 +499,19 @@ BrowserViewTabbedLayoutImpl::GetVerticalTabStripCollapsedState() const {
   if (!views().vertical_tab_strip_region_view) {
     return VerticalTabStripCollapsedState::kExpanded;
   }
-  const auto percent =
-      views().vertical_tab_strip_region_view->GetCollapseAnimationPercent();
-  const bool is_collapsed = delegate().IsVerticalTabStripCollapsed();
-  if (is_collapsed) {
-    return percent ? VerticalTabStripCollapsedState::kCollapsing
-                   : VerticalTabStripCollapsedState::kCollapsed;
+  const auto motion =
+      BrowserAnimationController::From(browser())->GetCurrentMotion(
+          TabStripAnimations::kVerticalTabStrip);
+  if (motion == TabStripAnimations::kCollapse) {
+    return VerticalTabStripCollapsedState::kCollapsing;
   }
-  return percent ? VerticalTabStripCollapsedState::kExpanding
-                 : VerticalTabStripCollapsedState::kExpanded;
+  if (motion == TabStripAnimations::kExpand) {
+    return VerticalTabStripCollapsedState::kExpanding;
+  }
+  if (delegate().IsVerticalTabStripCollapsed()) {
+    return VerticalTabStripCollapsedState::kCollapsed;
+  }
+  return VerticalTabStripCollapsedState::kExpanded;
 }
 
 int BrowserViewTabbedLayoutImpl::GetCollapsedVerticalTabStripRelativeTop(
@@ -630,9 +668,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       const int vertical_tab_strip_hover_width =
           (tabs::kVerticalTabStripDefaultUncollapsedWidth -
            horizontal_layout.vertical_tab_strip_width) *
-          views()
-              .vertical_tab_strip_region_view
-              ->GetExpandOnHoverAnimationPercent();
+          vertical_tab_strip_animation.expand_on_hover;
 
       vertical_tab_strip_bounds =
           gfx::Rect(params.visual_client_area.x(),
@@ -651,7 +687,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                              /*leading=*/true);
 
       // Let the vertical tab strip animate out over the content.
-      if (views().vertical_tab_strip_region_view->is_animating()) {
+      if (vertical_tab_strip_animation.is_animating) {
         clip_content_for_animation = true;
         unclipped_contents_region.Inset(gfx::Insets::TLBR(
             0, VerticalTabStripRegionView::kCollapsedWidth, 0, 0));
@@ -670,15 +706,14 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                    views().browser_view)) {
     gfx::Rect corner_bounds;
     const bool top_corner_visible =
-        vertical_tab_strip_animation.top_outside_corner_percent > 0.0;
+        vertical_tab_strip_animation.top_corner > 0.0;
 
     // The top corner is drawn when the tabstrip goes all the way to the top.
     if (top_corner_visible) {
       auto preferred =
           views().vertical_tab_strip_top_corner->GetPreferredSize();
       preferred.set_width(base::ClampCeil(
-          preferred.width() *
-          vertical_tab_strip_animation.top_outside_corner_percent));
+          preferred.width() * vertical_tab_strip_animation.top_corner));
       corner_bounds = gfx::Rect(params.visual_client_area.origin(), preferred);
       corner_bounds.Outset(
           gfx::Outsets::TLBR(0, views::Separator::kThickness, 0, 0));
@@ -691,9 +726,13 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   if (IsParentedTo(views().vertical_tab_strip_bottom_corner,
                    views().browser_view)) {
     gfx::Rect corner_bounds;
-    if (tab_strip_type == TabStripType::kVertical) {
-      const auto preferred =
+    const bool bottom_corner_visible =
+        vertical_tab_strip_animation.bottom_corner > 0.0;
+    if (bottom_corner_visible) {
+      auto preferred =
           views().vertical_tab_strip_bottom_corner->GetPreferredSize();
+      preferred.set_width(base::ClampCeil(
+          preferred.width() * vertical_tab_strip_animation.bottom_corner));
       corner_bounds =
           gfx::Rect(params.visual_client_area.x(),
                     params.visual_client_area.bottom() - preferred.height(),
@@ -702,7 +741,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
           gfx::Outsets::TLBR(0, views::Separator::kThickness, 0, 0));
     }
     layout.AddChild(views().vertical_tab_strip_bottom_corner, corner_bounds,
-                    tab_strip_type == TabStripType::kVertical);
+                    bottom_corner_visible);
   }
 
   // TODO(crbug.com/469425263): Ensure correct layout calculations for the
@@ -1240,21 +1279,25 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     }
     // When the vertical tabs are below the toolbar but next to the bookmarks
     // bar, draw a curved corner.
-    if (animation.top_inside_corner_percent > 0.0) {
-      const auto* const toolbar_height_side_panel =
-          views().toolbar_height_side_panel.get();
-      const bool has_leading_side_panel =
-          toolbar_height_side_panel &&
-          toolbar_height_side_panel->GetVisible() &&
-          toolbar_height_side_panel->IsRightAligned() == base::i18n::IsRTL();
-      if (delegate().IsBookmarkBarVisible() || has_leading_side_panel) {
-        vertical_tabs_corners.upper_trailing.type =
-            CustomCornersBackground::CornerType::kRoundedWithBackground;
-        vertical_tabs_corners.upper_trailing.radius =
-            base::ClampRound(vertical_tabs_background->default_radius() *
-                             animation.top_inside_corner_percent);
-      }
+    if (animation.top_corner < 0.0) {
+      vertical_tabs_corners.upper_trailing.type =
+          views().vertical_tab_strip_region_view->is_expanded_on_hover()
+              ? CustomCornersBackground::CornerType::kRounded
+              : CustomCornersBackground::CornerType::kRoundedWithBackground;
+      vertical_tabs_corners.upper_trailing.radius = base::ClampRound(
+          vertical_tabs_background->default_radius() * -animation.top_corner);
     }
+
+    // When the vertical tabs are expanded for hover, it may have a concave
+    // corner.
+    if (animation.bottom_corner < 0.0) {
+      vertical_tabs_corners.lower_trailing.type =
+          CustomCornersBackground::CornerType::kRounded;
+      vertical_tabs_corners.lower_trailing.radius =
+          base::ClampRound(vertical_tabs_background->default_radius() *
+                           -animation.bottom_corner);
+    }
+
     vertical_tabs_background->SetCorners(vertical_tabs_corners);
 
     // When the projects panel is animating open or closed and does not appear
@@ -1286,8 +1329,12 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     vertical_tabs_outline.color = kColorVerticalTabStripShadow;
     vertical_tabs_outline.trailing = true;
     // Top edge is drawn if the layout is below the top of the parent.
-    if (views().vertical_tab_strip_region_view->y() > 0) {
+    if (animation.expand_on_hover ||
+        views().vertical_tab_strip_region_view->y() > 0) {
       vertical_tabs_outline.top = true;
+    }
+    if (animation.expand_on_hover) {
+      vertical_tabs_outline.bottom = true;
     }
     vertical_tabs_background->SetOutline(vertical_tabs_outline);
   }

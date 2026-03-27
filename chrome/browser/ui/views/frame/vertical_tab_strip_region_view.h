@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -19,8 +20,6 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/animation/animation_delegate.h"
-#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
@@ -49,8 +48,7 @@ class FlexLayout;
 // Container for the vertical tabstrip and the other views sharing space with
 // it, excluding the caption buttons.
 class VerticalTabStripRegionView final : public TabStripRegionView,
-                                         public views::ResizeAreaDelegate,
-                                         public gfx::AnimationDelegate {
+                                         public views::ResizeAreaDelegate {
   METADATA_HEADER(VerticalTabStripRegionView, TabStripRegionView)
 
  public:
@@ -79,8 +77,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   VerticalPinnedTabContainerView* GetPinnedTabsContainer();
   VerticalUnpinnedTabContainerView* GetUnpinnedTabsContainer();
 
-  bool is_animating() { return resize_animation_.is_animating(); }
-
   VerticalTabStripTopContainer* GetTopContainer() {
     return top_button_container_;
   }
@@ -92,12 +88,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   VerticalTabStripController* GetVerticalTabStripController() {
     return tab_strip_controller_.get();
   }
-
-  // Gets the percentage of the current collapse or un-collapse animation, or
-  // null if none.
-  std::optional<double> GetCollapseAnimationPercent() const;
-
-  double GetExpandOnHoverAnimationPercent() const;
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
@@ -162,14 +152,12 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 
-  // gfx::AnimationDelegate:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
-  void AnimationCanceled(const gfx::Animation* animation) override;
-
   views::Separator* tabs_separator_for_testing() {
     return tab_strip_view_->GetTabsSeparator();
   }
+
+  bool is_expanded_on_hover() const { return is_expanded_on_hover_; }
+
   views::ResizeArea* resize_area_for_testing() { return resize_area_; }
   RootTabCollectionNode* root_node_for_testing() { return root_node_.get(); }
   tabs::VerticalTabStripState target_collapse_state_for_testing() {
@@ -210,6 +198,12 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   void UpdateColors();
 
+  void OnAnimationProgressed(const BrowserAnimationController* controller,
+                             BrowserAnimationUpdate status);
+
+  // Get whether the collapse/expand animation is running.
+  bool IsAnimatingSize() const;
+
   bool IsFrameActive() const;
 
   // Returns the bounds within which tabs can be dragged in the vertical tab
@@ -222,7 +216,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void OnChildMoved();
 
   void UpdateExpandOnHoverState();
-  void ExpandOnHover();
+  void AnimateExpandOnHover(bool expand);
 
   void SetLinkDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
   gfx::Rect GetLinkDropBounds(const BrowserRootView::DropIndex& drop_index,
@@ -275,6 +269,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   std::optional<base::CallbackListSubscription> on_child_moved_subscription_;
   std::optional<base::CallbackListSubscription>
       on_active_tab_changed_subscription_;
+  std::optional<base::CallbackListSubscription>
+      on_animation_update_subscription_;
 
   // The width of the vertical tabstrip at the beginning of the current resize
   // operation. Is std::nullopt when not resizing.
@@ -288,12 +284,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // which case this is the source of truth only if we are in a drag operation.
   tabs::VerticalTabStripState target_collapse_state_;
 
-  // Animation for collapsing (GetCurrentValue() -> 0) and expanding
-  // (GetCurrentValue() -> 1).
-  gfx::SlideAnimation resize_animation_;
-  gfx::SlideAnimation expand_on_hover_animation_;
-
   base::OneShotTimer expand_on_hover_timer_;
+  bool is_expanded_on_hover_ = false;
 
   // Used to track the time needed to create a new tab from the new tab button.
   std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;

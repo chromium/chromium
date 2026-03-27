@@ -172,10 +172,6 @@ class BrowserViewLayout : public views::LayoutManager {
   virtual gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const = 0;
   virtual gfx::Size GetMaximumDialogSize() const = 0;
 
-  // Returns the current pref for vertical tabs by accessing the vertical
-  // tab strip state controller
-  bool ShouldDisplayVerticalTabs() const;
-
   // Updates bubbles, dialogs, and infobars.
   // Must be called *after* contents pane is laid out.
   void UpdateBubbles();

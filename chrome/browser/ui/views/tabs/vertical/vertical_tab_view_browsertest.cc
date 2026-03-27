@@ -12,6 +12,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -845,7 +847,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDecorateOnCollapse) {
   VerticalTabStripRegionView* const region_view =
       browser()->GetBrowserView().vertical_tab_strip_region_view_for_testing();
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !region_view->is_animating() &&
+    return !BrowserAnimationController::From(browser())->IsAnimating(
+               TabStripAnimations::kVerticalTabStrip) &&
            region_view->width() <= VerticalTabStripRegionView::kCollapsedWidth;
   }));
 
