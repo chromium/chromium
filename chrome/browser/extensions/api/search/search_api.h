@@ -20,9 +20,6 @@ class SearchQueryFunction : public ExtensionFunction {
  private:
   ~SearchQueryFunction() override = default;
   ResponseAction Run() override;
-
-  // Called after navigate is initiated.
-  void OnNavigate();
 };
 
 }  // namespace extensions

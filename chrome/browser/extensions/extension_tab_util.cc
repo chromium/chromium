@@ -998,32 +998,19 @@ GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
 }
 
 void ExtensionTabUtil::NavigateToURL(WindowOpenDisposition disposition,
-                                     content::WebContents* source_contents,
-                                     const GURL& url,
-                                     base::OnceClosure done_callback) {
+                                     content::WebContents* web_contents,
+                                     const GURL& url) {
   BrowserWindowInterface* browser =
-      source_contents
-          ? browser_window_util::GetBrowserForTabContents(*source_contents)
+      web_contents
+          ? browser_window_util::GetBrowserForTabContents(*web_contents)
           : nullptr;
-  auto params = std::make_unique<NavigateParams>(browser, url,
-                                                 ui::PAGE_TRANSITION_FROM_API);
-  params->disposition = disposition;
-  params->window_action = NavigateParams::WindowAction::kShowWindow;
-  if (source_contents) {
-    params->source_contents = source_contents;
+  NavigateParams params(browser, url, ui::PAGE_TRANSITION_FROM_API);
+  params.disposition = disposition;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
+  if (web_contents) {
+    params.source_contents = web_contents;
   }
-  // Navigation on desktop Android can be asynchronous, in particular if it
-  // creates a new window. Ensure `params` stays alive by transferring
-  // ownership to the navigate callback below. Cache the pointer first, as the
-  // call to release() will set `params` to null.
-  NavigateParams* raw_params = params.get();
-  auto callback = base::BindOnce(
-      [](NavigateParams* params, base::OnceClosure done_callback,
-         base::WeakPtr<content::NavigationHandle> handle) {
-        std::move(done_callback).Run();
-      },
-      base::Owned(params.release()), std::move(done_callback));
-  Navigate(raw_params, std::move(callback));
+  Navigate(&params);
 }
 
 bool ExtensionTabUtil::IsKillURL(const GURL& url) {

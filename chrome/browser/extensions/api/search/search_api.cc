@@ -159,29 +159,24 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
           ui::PageTransition::PAGE_TRANSITION_FROM_API,
           /*extra_headers=*/std::string());
       break;
-
     case Disposition::kNewTab:
-      ExtensionTabUtil::NavigateToURL(
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          /*source_contents=*/web_contents, url,
-          // Binding `this` is safe because it is ref-counted.
-          base::BindOnce(&SearchQueryFunction::OnNavigate, this));
-      return RespondLater();  // Responds in OnNavigate().
-
+      ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      web_contents, url);
+      break;
     case Disposition::kNewWindow:
-      ExtensionTabUtil::NavigateToURL(
-          WindowOpenDisposition::NEW_WINDOW,
-          /*source_contents=*/web_contents, url,
-          // Binding `this` is safe because it is ref-counted.
-          base::BindOnce(&SearchQueryFunction::OnNavigate, this));
-      return RespondLater();  // Responds in OnNavigate().
+      // TODO(crbug.com/477944342): Desktop Android does not yet support
+      // navigating to a new window with an existing web contents.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
+                                      web_contents, url);
+#else
+      ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      web_contents, url);
+#endif
+      break;
   }
 
   return RespondNow(NoArguments());
-}
-
-void SearchQueryFunction::OnNavigate() {
-  Respond(NoArguments());
 }
 
 }  // namespace extensions
