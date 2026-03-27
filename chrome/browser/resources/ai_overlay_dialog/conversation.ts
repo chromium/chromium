@@ -4,9 +4,9 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {PageCallbackRouter} from './ai_overlay_dialog.mojom-webui.js';
-import type {ApiConfig, ApiSessionDelegate} from './api_session.js';
+import type {PageCallbackRouter, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
 import {ApiSession} from './api_session.js';
+import type {ApiConfig, ApiSessionDelegate, Tool, ToolCall} from './api_session.js';
 import type {PageContext} from './page_context_manager.js';
 import {PageContextManager} from './page_context_manager.js';
 import {buildSystemInstruction} from './persona.js';
@@ -46,21 +46,26 @@ interface UiDelegate {
  */
 export class Conversation implements ApiSessionDelegate {
   private readonly uiDelegate: UiDelegate;
+  private readonly pageHandler: PageHandlerRemote;
   private readonly pageContextManager: PageContextManager =
       new PageContextManager(() => this.didUpdatePageContent());
   private readonly config: ConversationConfig;
 
   private session: ApiSession|null = null;
+  private toolDefinitions: Tool[] = [];
   private state: State = State.STOPPED;
   private currentInput: string = '';
   private currentOutput: string = '';
+  private mockAudioEndTime: number = 0;
 
   constructor(
       config: ConversationConfig, uiDelegate: UiDelegate,
-      router: PageCallbackRouter, initialPageContext?: PageContext) {
+      pageHandler: PageHandlerRemote, router: PageCallbackRouter,
+      initialPageContext?: PageContext) {
     console.info(`Conversation with ${config.persona.name}, config`, config);
     this.config = config;
     this.uiDelegate = uiDelegate;
+    this.pageHandler = pageHandler;
 
     if (initialPageContext) {
       this.pageContextManager.didChangePage(
@@ -151,9 +156,52 @@ export class Conversation implements ApiSessionDelegate {
    * Connects to the server and establishes a new session, moves the
    * conversation into a live state once the connection is ready.
    */
-  start() {
-    assert(!this.connected);
+  async start() {
+    const {toolDefinitionsJson} = await this.pageHandler.getToolDefinitions();
+    this.toolDefinitions = JSON.parse(toolDefinitionsJson);
+
     this.createNewApiSession();
+  }
+
+  async onToolCall(toolCall: ToolCall) {
+    const functionCalls = toolCall.functionCalls;
+    const responses = [];
+
+    for (const call of functionCalls) {
+      const {name, args, id} = call;
+      let result: any = {success: false};
+
+      try {
+        const jsonArgs = JSON.stringify(args);
+        const {jsonResult} = await this.pageHandler.executeTool(name, jsonArgs);
+        result = JSON.parse(jsonResult);
+      } catch (e) {
+        console.error(`Error executing tool ${name}:`, e);
+      }
+
+      responses.push({
+        name,
+        response: result,
+        id,
+      });
+    }
+
+    this.session?.sendToolResponse(responses);
+
+    // TODO(gklassen): Add a separate object that receives events like
+    // `audio ended, audio started, tool call, etc` and is responsible for
+    // tracking durations and logging out metrics.
+    if (this.mockAudioEndTime > 0) {
+      const latency = performance.now() - this.mockAudioEndTime;
+      console.info(
+          `[Conversation] Time between end of mock audio and tool call ` +
+          `completion: ${latency.toFixed(2)}ms`);
+      this.mockAudioEndTime = 0;
+    }
+  }
+
+  markMockAudioEndTime(time: number) {
+    this.mockAudioEndTime = time;
   }
 
   /**
@@ -187,8 +235,8 @@ export class Conversation implements ApiSessionDelegate {
 
     console.info('System Instruction', systemInstruction);
 
-    this.session =
-        new ApiSession(systemInstruction, this.config.api_config, this);
+    this.session = new ApiSession(
+        systemInstruction, this.config.api_config, this.toolDefinitions, this);
     this.session.connect();
   }
 

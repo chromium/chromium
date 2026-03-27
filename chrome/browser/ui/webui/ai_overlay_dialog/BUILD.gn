@@ -11,10 +11,23 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 }
 
+action("generate_tool_definitions") {
+  script = "//chrome/browser/resources/ai_overlay_dialog/generate_tool_definitions.py"
+  sources = [ "ai_overlay_dialog_tools.h" ]
+  outputs = [ "$target_gen_dir/generated_tool_definitions.h" ]
+  args = [
+    "--in-file",
+    rebase_path(sources[0], root_build_dir),
+    "--out-file",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
 source_set("ai_overlay_dialog") {
   sources = [
     "ai_overlay_dialog_page_handler.cc",
     "ai_overlay_dialog_page_handler.h",
+    "ai_overlay_dialog_tools.h",
     "ai_overlay_dialog_untrusted_ui.cc",
     "ai_overlay_dialog_untrusted_ui.h",
     "markdown_builder.cc",
@@ -22,19 +35,27 @@ source_set("ai_overlay_dialog") {
     "page_context_monitor.cc",
     "page_context_monitor.h",
   ]
+  sources += get_target_outputs(":generate_tool_definitions")
   public_deps = [ ":mojo_bindings" ]
   deps = [
+    ":generate_tool_definitions",
+    "//chrome/browser:browser_process",
     "//chrome/browser/glic",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ai_overlay_dialog:resources",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content",
+    "//components/search_engines",
+    "//components/sessions",
     "//components/tabs:public",
     "//content/public/browser",
     "//ui/webui",

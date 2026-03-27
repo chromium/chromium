@@ -18,6 +18,12 @@ interface PageHandler {
   // This is used during development to provide precanned audio data that can
   // be sent on devices without a microphone.
   GetMockAudioData() => (string? json_data);
+
+  // Retrieves the built-in tool definitions as a JSON string.
+  GetToolDefinitions() => (string tool_definitions_json);
+
+  // Executes a tool by name with JSON arguments. Returns the result as JSON.
+  ExecuteTool(string name, string json_args) => (string json_result);
 };
 
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.

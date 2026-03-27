@@ -7,6 +7,33 @@ const kLogWebSocketMessages = false;
 /**
  * API session WebSocket protocol types.
  */
+
+export interface FunctionDeclaration {
+  name: string;
+  description?: string;
+  parameters?: any;
+}
+
+export interface Tool {
+  functionDeclarations?: FunctionDeclaration[];
+}
+
+export interface FunctionCall {
+  id: string;
+  name: string;
+  args: any;
+}
+
+export interface ToolCall {
+  functionCalls: FunctionCall[];
+}
+
+export interface FunctionResponse {
+  id: string;
+  name: string;
+  response: any;
+}
+
 interface SetupMessage {
   setup: {
     model: string,
@@ -23,6 +50,7 @@ interface SetupMessage {
     systemInstruction?: {
       parts: Array<{text: string}>,
     },
+    tools?: Tool[],
     inputAudioTranscription?: {},
     outputAudioTranscription?: {},
   };
@@ -58,6 +86,7 @@ interface ServerContentMessage {
     },
   };
   setupComplete?: {};
+  toolCall?: ToolCall;
 }
 
 export interface ApiConfig {
@@ -72,6 +101,7 @@ export interface ApiSessionDelegate {
   onTurnComplete(): void;
   interrupt(): void;
   onConnectionChanged(connected: boolean): void;
+  onToolCall(toolCall: ToolCall): void;
 }
 
 function log(msg: string, ...args: any[]) {
@@ -85,16 +115,18 @@ function log(msg: string, ...args: any[]) {
 export class ApiSession {
   private readonly systemInstruction: string;
   private readonly config: ApiConfig;
+  private readonly toolDefinitions: Tool[];
 
   private ws: WebSocket|null = null;
 
   private delegate: ApiSessionDelegate;
 
   constructor(
-      systemInstruction: string, config: ApiConfig,
+      systemInstruction: string, config: ApiConfig, toolDefinitions: Tool[],
       delegate: ApiSessionDelegate) {
     this.systemInstruction = systemInstruction;
     this.config = config;
+    this.toolDefinitions = toolDefinitions;
     this.delegate = delegate;
   }
 
@@ -171,11 +203,12 @@ export class ApiSession {
             text: this.systemInstruction,
           }],
         },
+        tools: this.toolDefinitions,
         inputAudioTranscription: {},
         outputAudioTranscription: {},
       },
     };
-    log('Sending Setup Message:', JSON.stringify(setup, null, 2));
+    log('Sending Setup Message', setup);
     this.ws?.send(JSON.stringify(setup));
   }
 
@@ -191,10 +224,30 @@ export class ApiSession {
     this.ws?.send(JSON.stringify(msg));
   }
 
+  sendToolResponse(responses: FunctionResponse[]) {
+    const msg = {
+      toolResponse: {
+        functionResponses: responses.map(response => ({
+                                           id: response.id,
+                                           name: response.name,
+                                           response: response.response,
+                                         })),
+      },
+    };
+    log('Sending Tool Response', msg);
+    this.ws?.send(JSON.stringify(msg));
+  }
+
   private handleMessage(msg: ServerContentMessage) {
     if (msg.setupComplete) {
       log('SetupComplete');
       this.delegate.onConnectionChanged(true);
+      return;
+    }
+
+    if (msg.toolCall) {
+      log('Received toolCall', msg.toolCall);
+      this.delegate.onToolCall(msg.toolCall);
       return;
     }
 

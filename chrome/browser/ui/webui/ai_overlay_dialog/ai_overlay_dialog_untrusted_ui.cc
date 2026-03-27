@@ -94,12 +94,13 @@ WEB_UI_CONTROLLER_TYPE_IMPL(AiOverlayDialogUntrustedUI)
 void AiOverlayDialogUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver,
     mojo::PendingRemote<ai_overlay_dialog::mojom::Page> remote) {
-  page_handler_ = std::make_unique<AiOverlayDialogPageHandler>(
-      std::move(receiver), std::move(remote));
-
   BrowserWindowInterface* bwi =
       webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
   CHECK(bwi);
+
+  page_handler_ = std::make_unique<AiOverlayDialogPageHandler>(
+      std::move(receiver), std::move(remote), bwi);
+
   page_context_monitor_ =
       std::make_unique<PageContextMonitor>(*bwi, *page_handler_);
 }

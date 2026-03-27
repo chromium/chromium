@@ -249,7 +249,9 @@ export class AppElement extends CrLitElement {
         bytes[i] = binaryString.charCodeAt(i);
       }
       const blob = new Blob([bytes], {type: 'audio/wav'});
-      this.blobCapturer.send(blob);
+      this.blobCapturer.send(blob).then(() => {
+        this.conversation?.markMockAudioEndTime(performance.now());
+      });
     } catch (e) {
       log('Failed to inject audio:', e);
     }
@@ -418,7 +420,7 @@ export class AppElement extends CrLitElement {
               this.onConversationStateChanged(state, oldState),
           onResponse: (audioData) => this.onAudioOutput(audioData),
         },
-        this.pageCallbackRouter, this.initialPageContext);
+        this.pageHandler, this.pageCallbackRouter, this.initialPageContext);
 
     // The conversation should only ever be created once.
     assert(this.unregisterPageContextListeners);
