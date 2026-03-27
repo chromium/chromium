@@ -501,10 +501,6 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   codec_context_->get_buffer2 = GetVideoBufferImpl;
   codec_context_->flags |= AV_CODEC_FLAG_COPY_OPAQUE;
 
-  if (decode_nalus_) {
-    codec_context_->flags2 |= AV_CODEC_FLAG2_CHUNKS;
-  }
-
   // Timebase must be at most 1us because of web-facing APIs with
   // microsecond-level precision such as VideoFrame.timestamp.
   codec_context_->pkt_timebase = AVRational{1, 1000000};

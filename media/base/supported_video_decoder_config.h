@@ -15,12 +15,6 @@
 
 namespace media {
 
-// The min and max resolution used by SW decoders (dav1d, libgav1, libvpx and
-// ffmpeg for example) when queried about decoding capabilities. For now match
-// the supported resolutions of HW decoders.
-constexpr gfx::Size kDefaultSwDecodeSizeMin(8, 8);
-constexpr gfx::Size kDefaultSwDecodeSizeMax(8192, 8192);
-
 // Specification of a range of configurations that are supported by a video
 // decoder.  Also provides the ability to check if a VideoDecoderConfig matches
 // the supported range.

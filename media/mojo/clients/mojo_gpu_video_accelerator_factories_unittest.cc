@@ -71,6 +71,9 @@ constexpr gfx::Size kCodedSize(320, 240);
 constexpr gfx::Rect kVisibleRect(320, 240);
 constexpr gfx::Size kNaturalSize(320, 240);
 
+constexpr gfx::Size kMinDecoderTestSize(8, 8);
+constexpr gfx::Size kMaxDecoderTestSize(8192, 8192);
+
 constexpr auto kGpuStreamPriorityDefault = gpu::SchedulingPriority::kNormal;
 constexpr int kGpuStreamIdDefault = 0;
 
@@ -78,8 +81,8 @@ const media::SupportedVideoDecoderConfig kH264MaxSupportedVideoDecoderConfig =
     media::SupportedVideoDecoderConfig(
         media::VideoCodecProfile::H264PROFILE_MIN,
         media::VideoCodecProfile::H264PROFILE_MAX,
-        media::kDefaultSwDecodeSizeMin,
-        media::kDefaultSwDecodeSizeMax,
+        kMinDecoderTestSize,
+        kMaxDecoderTestSize,
         true,
         false);
 
@@ -112,8 +115,8 @@ const media::SupportedVideoDecoderConfig kH265MaxSupportedVideoDecoderConfig =
     media::SupportedVideoDecoderConfig(
         media::VideoCodecProfile::HEVCPROFILE_MIN,
         media::VideoCodecProfile::HEVCPROFILE_MAX,
-        media::kDefaultSwDecodeSizeMin,
-        media::kDefaultSwDecodeSizeMax,
+        kMinDecoderTestSize,
+        kMaxDecoderTestSize,
         true,
         false);
 #endif

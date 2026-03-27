@@ -39,10 +39,6 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
 
   ~FFmpegVideoDecoder() override;
 
-  // Allow decoding of individual NALU. Entire frames are required by default.
-  // Disables low-latency mode. Must be called before Initialize().
-  void set_decode_nalus(bool decode_nalus) { decode_nalus_ = decode_nalus; }
-
   // VideoDecoder implementation.
   VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
@@ -92,8 +88,6 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
   VideoDecoderConfig config_;
 
   scoped_refptr<FrameBufferPool> frame_pool_;
-
-  bool decode_nalus_ = false;
 
   bool force_allocation_error_ = false;
 

@@ -25,8 +25,6 @@ namespace media {
 
 class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
  public:
-  static SupportedVideoDecoderConfigs SupportedConfigs();
-
   explicit Dav1dVideoDecoder(
       std::unique_ptr<MediaLog> media_log,
       OffloadState offload_state = OffloadState::kNormal);

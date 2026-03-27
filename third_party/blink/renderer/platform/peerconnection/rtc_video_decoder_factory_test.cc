@@ -24,13 +24,14 @@ using ::testing::UnorderedElementsAre;
 namespace blink {
 
 namespace {
+
 #if BUILDFLAG(RTC_USE_H265)
 const media::SupportedVideoDecoderConfig kH265MaxSupportedVideoDecoderConfig =
     media::SupportedVideoDecoderConfig(
         media::VideoCodecProfile::HEVCPROFILE_MAIN,
         media::VideoCodecProfile::HEVCPROFILE_MAIN10,
-        media::kDefaultSwDecodeSizeMin,
-        media::kDefaultSwDecodeSizeMax,
+        gfx::Size(8, 8),
+        gfx::Size(8192, 8192),
         true,
         false);
 #endif  // BUILDFLAG(RTC_USE_H265)

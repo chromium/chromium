@@ -29,8 +29,6 @@ namespace media {
 // [1] http://wiki.webmproject.org/alpha-channel
 class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
  public:
-  static SupportedVideoDecoderConfigs SupportedConfigs();
-
   explicit VpxVideoDecoder(OffloadState offload_state = OffloadState::kNormal);
 
   VpxVideoDecoder(const VpxVideoDecoder&) = delete;
