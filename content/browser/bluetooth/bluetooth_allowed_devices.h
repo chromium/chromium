@@ -5,20 +5,15 @@
 #ifndef CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_ALLOWED_DEVICES_H_
 #define CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_ALLOWED_DEVICES_H_
 
-#include <memory>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "content/common/content_export.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
-#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
-
-namespace device {
-class BluetoothUUID;
-}
+#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 
 namespace content {
 
@@ -30,20 +25,22 @@ namespace content {
 class CONTENT_EXPORT BluetoothAllowedDevices final {
  public:
   BluetoothAllowedDevices();
-  BluetoothAllowedDevices(const BluetoothAllowedDevices& other);
+  BluetoothAllowedDevices(const BluetoothAllowedDevices&) = delete;
+  BluetoothAllowedDevices& operator=(const BluetoothAllowedDevices&) = delete;
+  BluetoothAllowedDevices(BluetoothAllowedDevices&&);
+  BluetoothAllowedDevices& operator=(BluetoothAllowedDevices&&);
   ~BluetoothAllowedDevices();
 
   // Adds the Bluetooth Device with |device_address| to the map of allowed
   // devices. Generates and returns a new random device ID so that devices
   // IDs can not be compared between sites.
-  const blink::WebBluetoothDeviceId& AddDevice(
+  blink::WebBluetoothDeviceId AddDevice(
       const std::string& device_address,
       const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options);
 
   // Same as the above version of |AddDevice| but does not add any services to
   // the device id -> services map.
-  const blink::WebBluetoothDeviceId& AddDevice(
-      const std::string& device_address);
+  blink::WebBluetoothDeviceId AddDevice(const std::string& device_address);
 
   // Removes the Bluetooth Device with |device_address| from the map of allowed
   // devices.
@@ -52,12 +49,12 @@ class CONTENT_EXPORT BluetoothAllowedDevices final {
   // Returns the Bluetooth Device's id if it has been added previously with
   // |AddDevice|.
   const blink::WebBluetoothDeviceId* GetDeviceId(
-      const std::string& device_address);
+      const std::string& device_address) const;
 
   // For |device_id|, returns the Bluetooth device's address. If there is no
   // such |device_id|, returns an empty string.
   const std::string& GetDeviceAddress(
-      const blink::WebBluetoothDeviceId& device_id);
+      const blink::WebBluetoothDeviceId& device_id) const;
 
   // Returns true if access has previously been granted to at least one
   // service.
@@ -79,47 +76,35 @@ class CONTENT_EXPORT BluetoothAllowedDevices final {
       const blink::WebBluetoothDeviceId& device_id) const;
 
  private:
-  typedef std::unordered_map<std::string, blink::WebBluetoothDeviceId>
-      DeviceAddressToIdMap;
-  typedef std::unordered_map<blink::WebBluetoothDeviceId,
-                             std::string,
-                             blink::WebBluetoothDeviceIdHash>
-      DeviceIdToAddressMap;
-  typedef std::unordered_map<
-      blink::WebBluetoothDeviceId,
-      std::unordered_set<device::BluetoothUUID, device::BluetoothUUIDHash>,
-      blink::WebBluetoothDeviceIdHash>
-      DeviceIdToServicesMap;
-  typedef std::unordered_map<blink::WebBluetoothDeviceId,
-                             bool,
-                             blink::WebBluetoothDeviceIdHash>
-      DeviceIdToConnectableMap;
-  using DeviceIdToManufacturerDataMap =
-      std::unordered_map<blink::WebBluetoothDeviceId,
-                         base::flat_set<uint16_t>,
-                         blink::WebBluetoothDeviceIdHash>;
+  struct DeviceMetadata {
+    explicit DeviceMetadata(const std::string& device_address);
+    DeviceMetadata(const DeviceMetadata&) = delete;
+    DeviceMetadata& operator=(const DeviceMetadata&) = delete;
+    DeviceMetadata(DeviceMetadata&&);
+    DeviceMetadata& operator=(DeviceMetadata&&);
+    ~DeviceMetadata();
 
-  // Returns an id guaranteed to be unique for the map. The id is randomly
-  // generated so that an origin can't guess the id used in another origin.
-  blink::WebBluetoothDeviceId GenerateUniqueDeviceId();
-  void AddUnionOfServicesTo(
-      const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options,
-      std::unordered_set<device::BluetoothUUID, device::BluetoothUUIDHash>*
-          unionOfServices);
-  void AddManufacturerDataTo(
-      const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options,
-      base::flat_set<uint16_t>* manufacturer_codes);
+    std::string device_address;
+    base::flat_set<device::BluetoothUUID> allowed_services;
+    base::flat_set<uint16_t> allowed_manufacturers;
+    bool is_connectable = false;
+  };
+
+  using AddDeviceResult =
+      std::pair<blink::WebBluetoothDeviceId, DeviceMetadata&>;
+
+  using DeviceAddressToIdMap =
+      absl::flat_hash_map<std::string, blink::WebBluetoothDeviceId>;
+
+  using DeviceIdToMetadataMap =
+      absl::flat_hash_map<blink::WebBluetoothDeviceId,
+                          DeviceMetadata,
+                          blink::WebBluetoothDeviceIdHash>;
+
+  AddDeviceResult AddDeviceInternal(const std::string& device_address);
 
   DeviceAddressToIdMap device_address_to_id_map_;
-  DeviceIdToAddressMap device_id_to_address_map_;
-  DeviceIdToServicesMap device_id_to_services_map_;
-  DeviceIdToManufacturerDataMap device_id_to_manufacturers_map_;
-  DeviceIdToConnectableMap device_id_to_connectable_map_;
-
-  // Keep track of all device_ids in the map.
-  std::unordered_set<blink::WebBluetoothDeviceId,
-                     blink::WebBluetoothDeviceIdHash>
-      device_id_set_;
+  DeviceIdToMetadataMap device_id_to_metadata_map_;
 };
 
 }  //  namespace content

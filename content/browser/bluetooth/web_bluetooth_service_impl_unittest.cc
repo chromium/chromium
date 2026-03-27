@@ -673,7 +673,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
   }
 
   void RegisterTestCharacteristic() {
-    auto& battery_device_id = AddTestDevice(battery_device_bundle());
+    const auto battery_device_id = AddTestDevice(battery_device_bundle());
 
     auto& device = battery_device_bundle_->device();
     device.SetGattServicesDiscoveryComplete(true);
@@ -723,7 +723,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     return *heart_rate_device_bundle_;
   }
 
-  const blink::WebBluetoothDeviceId& AddTestDevice(
+  blink::WebBluetoothDeviceId AddTestDevice(
       FakeBluetoothDeviceBundle& device_bundle) {
     auto device_options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
     device_options->accept_all_devices = true;
@@ -1085,7 +1085,7 @@ TEST_F(WebBluetoothServiceImplTest, DeferredStartNotifySession) {
 }
 
 TEST_F(WebBluetoothServiceImplTest, DeviceGattServicesDiscoveryTimeout) {
-  auto& battery_device_id = AddTestDevice(battery_device_bundle());
+  const auto battery_device_id = AddTestDevice(battery_device_bundle());
 
   auto& device = battery_device_bundle_->device();
   device.SetGattServicesDiscoveryComplete(false);
@@ -1104,7 +1104,7 @@ TEST_F(WebBluetoothServiceImplTest, DeviceGattServicesDiscoveryTimeout) {
 }
 
 TEST_F(WebBluetoothServiceImplTest, DeviceDisconnected) {
-  auto& battery_device_id = AddTestDevice(battery_device_bundle());
+  const auto battery_device_id = AddTestDevice(battery_device_bundle());
 
   auto& device = battery_device_bundle_->device();
   device.SetConnected(false);
@@ -1152,8 +1152,8 @@ TEST_F(WebBluetoothServiceImplTest, TwoWatchAdvertisementsReqSuccess) {
   TestFuture<WebBluetoothResult> future1;
   TestFuture<WebBluetoothResult> future2;
 
-  auto& battry_device_id = AddTestDevice(battery_device_bundle());
-  auto& heart_rate_device_id = AddTestDevice(heart_rate_device_bundle());
+  const auto battry_device_id = AddTestDevice(battery_device_bundle());
+  const auto heart_rate_device_id = AddTestDevice(heart_rate_device_bundle());
 
   mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
       client_remote1;
@@ -1186,8 +1186,8 @@ TEST_F(WebBluetoothServiceImplTest, TwoWatchAdvertisementsReqFail) {
   TestFuture<WebBluetoothResult> future1;
   TestFuture<WebBluetoothResult> future2;
 
-  auto& battry_device_id = AddTestDevice(battery_device_bundle());
-  auto& heart_rate_device_id = AddTestDevice(heart_rate_device_bundle());
+  const auto battry_device_id = AddTestDevice(battery_device_bundle());
+  const auto heart_rate_device_id = AddTestDevice(heart_rate_device_bundle());
 
   mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
       client_remote1;
@@ -1219,7 +1219,7 @@ TEST_F(WebBluetoothServiceImplTest,
       device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
 
   TestFuture<WebBluetoothResult> future1;
-  auto& battry_device_id = AddTestDevice(battery_device_bundle());
+  const auto battry_device_id = AddTestDevice(battery_device_bundle());
   mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
       client_remote1;
   battery_device_bundle().advertisement_client().BindReceiver(
@@ -1231,7 +1231,7 @@ TEST_F(WebBluetoothServiceImplTest,
   // When second watchAdvertisements request comes in and there is an active
   // discovery session, it should get SUCCESS result directly.
   TestFuture<WebBluetoothResult> future2;
-  auto& heart_rate_device_id = AddTestDevice(heart_rate_device_bundle());
+  const auto heart_rate_device_id = AddTestDevice(heart_rate_device_bundle());
   mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
       client_remote2;
   heart_rate_device_bundle().advertisement_client().BindReceiver(

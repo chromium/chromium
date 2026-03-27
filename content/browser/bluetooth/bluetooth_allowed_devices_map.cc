@@ -20,12 +20,7 @@ BluetoothAllowedDevicesMap::GetOrCreateAllowedDevices(
   // "Unique" Origins generate the same key in maps, therefore are not
   // supported.
   CHECK(!origin.opaque()) << " origin: " << origin;
-  auto iter = origin_to_allowed_devices_map_.find(origin);
-  if (iter == origin_to_allowed_devices_map_.end()) {
-    iter = origin_to_allowed_devices_map_.insert(
-        iter, std::make_pair(origin, content::BluetoothAllowedDevices()));
-  }
-  return iter->second;
+  return origin_to_allowed_devices_map_.try_emplace(origin).first->second;
 }
 
 void BluetoothAllowedDevicesMap::Clear() {
