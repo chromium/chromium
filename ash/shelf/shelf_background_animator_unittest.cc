@@ -92,7 +92,7 @@ class ShelfBackgroundAnimatorTestApi {
   ShelfBackgroundAnimatorTestApi& operator=(
       const ShelfBackgroundAnimatorTestApi&) = delete;
 
-  ~ShelfBackgroundAnimatorTestApi() = default;
+  ~ShelfBackgroundAnimatorTestApi() { animator_ = nullptr; }
 
   ShelfBackgroundType previous_background_type() const {
     return animator_->previous_background_type_;
@@ -106,7 +106,7 @@ class ShelfBackgroundAnimatorTestApi {
 
  private:
   // The instance to provide internal access to.
-  raw_ptr<ShelfBackgroundAnimator, DanglingUntriaged> animator_;
+  raw_ptr<ShelfBackgroundAnimator> animator_;
 };
 
 class ShelfBackgroundAnimatorTest : public AshTestBase {
@@ -121,6 +121,12 @@ class ShelfBackgroundAnimatorTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override;
+
+  void TearDown() override {
+    animator_ = nullptr;
+    test_api_.reset();
+    AshTestBase::TearDown();
+  }
 
  protected:
   // Convenience wrapper for |animator_|'s PaintBackground().
@@ -137,7 +143,7 @@ class ShelfBackgroundAnimatorTest : public AshTestBase {
   TestShelfBackgroundObserver observer_;
 
   // Test target.
-  raw_ptr<ShelfBackgroundAnimator, DanglingUntriaged> animator_;
+  raw_ptr<ShelfBackgroundAnimator> animator_;
 
   // Provides internal access to |animator_|.
   std::unique_ptr<ShelfBackgroundAnimatorTestApi> test_api_;
