@@ -59,10 +59,6 @@
 
 namespace glic {
 
-// Enables sending bitmaps across glic for favicons instead of converting to
-// PNG.
-BASE_FEATURE(kGlicBitmapsEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Sets the maximum number of in-flight requests to the guest.
 BASE_FEATURE(kGlicMaxInFlightRequests, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
@@ -323,8 +319,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean(
       "glicWebContentsWarming",
       base::FeatureList::IsEnabled(features::kGlicWebContentsWarming));
-  source->AddBoolean("glicBitmapsEnabled",
-                     base::FeatureList::IsEnabled(kGlicBitmapsEnabled));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

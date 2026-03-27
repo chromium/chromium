@@ -119,7 +119,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         sendResponsesForAllRequests:
             loadTimeData.getBoolean('sendResponsesForAllRequests'),
         hostCapabilities: hostCapabilitiesToClient(hostCapabilities),
-        rgbaToBmp: loadTimeData.getBoolean('glicBitmapsEnabled'),
       }),
     };
   }

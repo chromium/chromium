@@ -11,10 +11,8 @@ import {replaceProperties} from './../conversions.js';
 import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
 import type {PostMessageRequestSender, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
 import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, InvokeOptionsPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './../request_types.js';
-import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, ImageAlphaType, ImageColorType, newTransferableException, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './../request_types.js';
+import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, newTransferableException, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './../request_types.js';
 import {rgbaImageToBmpBlob} from './image_utils.js';
-
-let enableRgbaToBmp = false;
 
 // Web client side of the Glic API.
 // Communicates with the Chrome-WebUI-side in glic_api_host.ts
@@ -331,7 +329,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
         let promise: Promise<Blob>|undefined;
         iconsGetter.set(id, () => {
           if (!promise) {
-            promise = rgbaImageToBlob(image);
+            promise = Promise.resolve(rgbaImageToBlob(image));
           }
           return promise;
         });
@@ -341,7 +339,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
             const getIcon = iconsGetter.get(credential.sourceSiteOrApp);
             const accountPicture = credential.accountPicture;
             const getAccountPicture = accountPicture ?
-                () => rgbaImageToBlob(accountPicture) :
+                () => Promise.resolve(rgbaImageToBlob(accountPicture)) :
                 undefined;
             return {
               ...credential,
@@ -474,7 +472,9 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
               ...formFillingRequest,
               suggestions: formFillingRequest.suggestions.map(suggestion => {
                 const icon = suggestion.icon;
-                const getIcon = icon ? () => rgbaImageToBlob(icon) : undefined;
+                const getIcon = icon ?
+                    () => Promise.resolve(rgbaImageToBlob(icon)) :
+                    undefined;
                 return {...suggestion, getIcon};
               }),
             })),
@@ -626,7 +626,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const response = await this.sender.requestWithResponse(
         'glicBrowserWebClientCreated', undefined);
     const state = response.initialState;
-    enableRgbaToBmp = state.rgbaToBmp;
     this.router.setLoggingEnabled(state.loggingEnabled);
     this.sender.setMaxInFlightRequests(state.maxInFlightRequests);
     this.sender.sendResponsesForAllRequests = state.sendResponsesForAllRequests;
@@ -1150,9 +1149,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       throw new Error('getUserProfileInfo failed');
     }
     const {avatarIcon} = profileInfo;
-    return replaceProperties(
-        profileInfo,
-        {avatarIcon: async () => avatarIcon && rgbaImageToBlob(avatarIcon)});
+    return replaceProperties(profileInfo, {
+      avatarIcon: async () =>
+          avatarIcon && Promise.resolve(rgbaImageToBlob(avatarIcon)),
+    });
   }
 
   private async fetchUserProfileCached(): Promise<UserProfileInfo> {
@@ -1179,18 +1179,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
               blobPromise = Promise.resolve(undefined);
               return blobPromise;
             }
-
-            blobPromise = rgbaImageToBlob(profileInfo.avatarIcon)
-                              .then((blob) => {
-                                // Clear memory after conversion
-                                profileInfo.avatarIcon = undefined;
-                                return blob;
-                              })
-                              .catch((e) => {
-                                console.error('Avatar conversion failed:', e);
-                                return undefined;
-                              });
-
+            const newBlob = rgbaImageToBlob(profileInfo.avatarIcon);
+            // Clear memory after conversion
+            profileInfo.avatarIcon = undefined;
+            blobPromise = Promise.resolve(newBlob);
             return blobPromise;
           },
         });
@@ -1738,53 +1730,8 @@ class GetTabByIdObservable extends ObservableValueImpl<TabData> {
 
 // Converts an RgbaImage into a Blob through the canvas API. Output is a PNG or
 // BMP.
-async function rgbaImageToBlob(image: RgbaImage): Promise<Blob> {
-  if (enableRgbaToBmp) {
-    return rgbaImageToBmpBlob(image);
-  }
-  const canvas = document.createElement('canvas');
-  canvas.width = image.width;
-  canvas.height = image.height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw Error('getContext error');
-  }
-  if (image.colorType !== ImageColorType.BGRA) {
-    throw Error('unsupported colorType');
-  }
-  // Note that for either alphaType, we swap bytes from BGRA to RGBA order.
-  const pixelData = new Uint8ClampedArray(image.dataRGBA.slice(0));
-  if (image.alphaType === ImageAlphaType.PREMUL) {
-    for (let i = 0; i + 3 < pixelData.length; i += 4) {
-      const alphaInt = pixelData[i + 3]!;
-      if (alphaInt === 0) {
-        // Don't divide by zero. In this case, RGB should already be zero, so
-        // there's no purpose in swapping bytes.
-        continue;
-      }
-      const alpha = alphaInt / 255.0;
-      const [B, G, R] = [pixelData[i]!, pixelData[i + 1]!, pixelData[i + 2]!];
-      pixelData[i] = R / alpha;
-      pixelData[i + 1] = G / alpha;
-      pixelData[i + 2] = B / alpha;
-    }
-  } else {
-    for (let i = 0; i + 3 < pixelData.length; i += 4) {
-      const [B, R] = [pixelData[i]!, pixelData[i + 2]!];
-      pixelData[i] = R;
-      pixelData[i + 2] = B;
-    }
-  }
-
-  ctx.putImageData(new ImageData(pixelData, image.width, image.height), 0, 0);
-  return new Promise((resolve) => {
-    canvas.toBlob((result) => {
-      if (!result) {
-        throw Error('toBlob failed');
-      }
-      resolve(result);
-    });
-  });
+function rgbaImageToBlob(image: RgbaImage): Blob {
+  return rgbaImageToBmpBlob(image);
 }
 
 function convertTabDataFromPrivate(data: TabDataPrivate): TabData;
@@ -1799,7 +1746,7 @@ function convertTabDataFromPrivate(data: TabDataPrivate|undefined): TabData|
   const dataFavicon = data.favicon;
   async function getFavicon() {
     if (dataFavicon && !faviconResult) {
-      faviconResult = rgbaImageToBlob(dataFavicon);
+      faviconResult = Promise.resolve(rgbaImageToBlob(dataFavicon));
       return faviconResult;
     }
     return faviconResult;

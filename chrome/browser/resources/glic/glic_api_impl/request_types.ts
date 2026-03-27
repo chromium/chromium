@@ -1096,7 +1096,6 @@ export type WebClientInitialStatePrivate =
       enableZeroStateSuggestions: boolean,
       enableCachedGetUserProfileInfo: boolean,
       hostCapabilities: HostCapability[],
-      rgbaToBmp: boolean,
     }>;
 
 // TabData format for postMessage transport.

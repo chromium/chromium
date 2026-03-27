@@ -110,8 +110,8 @@ class BitmapHeaderGenerator {
 const bitmapHeaderGenerator = new BitmapHeaderGenerator();
 
 // Converts an RgbaImage into a Blob. Output is a BMP.
-export async function rgbaImageToBmpBlob(image: RgbaImage): Promise<Blob> {
-  const result = Promise.resolve(new Blob(
+export function rgbaImageToBmpBlob(image: RgbaImage): Blob {
+  return new Blob(
       [
         // Note: A negative height indicates the pixel data's first row is at
         // the top of the image instead of the bottom.
@@ -120,7 +120,5 @@ export async function rgbaImageToBmpBlob(image: RgbaImage): Promise<Blob> {
       ],
       {
         type: 'image/bmp',
-      }));
-
-  return result;
+      });
 }
