@@ -356,15 +356,20 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
+// TODO(crbug.com/493362471): Deflake and reenable it.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, DISABLED_Basic) {
   BasicPixelTest(browser(), "Basic");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, IncognitoBasic) {
+// TODO(crbug.com/493362471): Deflake and reenable it.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       DISABLED_IncognitoBasic) {
   BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
+// TODO(crbug.com/493362471): Deflake and reenable it.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       DISABLED_Accessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
