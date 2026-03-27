@@ -17,9 +17,7 @@ ScopedRasterTimer::ScopedRasterTimer(
     : raster_interface_(raster_interface), host_(host) {
   // Subsample the RasterTimer metrics to reduce overhead.
   constexpr float kRasterMetricProbability = 0.01;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::MetricsSubSampler, metrics_subsampler,
-                                  ());
-  if (!metrics_subsampler.ShouldSample(kRasterMetricProbability) &&
+  if (!base::ShouldRecordSubsampledMetric(kRasterMetricProbability) &&
       !always_measure_for_testing) {
     return;
   }
