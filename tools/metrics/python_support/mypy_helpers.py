@@ -7,6 +7,7 @@ import os
 import pathlib
 import re
 import platform
+import sys
 
 import shutil
 import subprocess
@@ -149,6 +150,7 @@ def run_mypy(stub_dir: pathlib.Path, dir_to_check: str) -> List[str]:
                           env=env,
                           cwd=_SRC_ROOT,
                           capture_output=True,
+                          shell=sys.platform == 'win32',
                           text=True)
 
   output = result.stdout + result.stderr
