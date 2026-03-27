@@ -311,20 +311,44 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
     // 'internal' metrics as these may be recorded for debugging purposes, and
     // abandonment-related metrics, which are expected to be recorded for all
     // kinds of navigations.
-    size_t total_pageload_histograms =
-        histogram_tester_->GetTotalCountsForPrefix("PageLoad.").size();
-    size_t total_internal_histograms =
-        histogram_tester_->GetTotalCountsForPrefix("PageLoad.Internal.").size();
-    size_t total_abandon_histograms =
-        histogram_tester_
-            ->GetTotalCountsForPrefix(
-                internal::kAbandonedPageLoadMetricsHistogramPrefix)
-            .size();
-    DCHECK_GE(total_pageload_histograms,
-              total_internal_histograms + total_abandon_histograms);
-    return total_pageload_histograms - total_internal_histograms -
-               total_abandon_histograms ==
-           0;
+    size_t total_pageload_histograms = 0;
+
+    // We filter out WebUI and NonTabWebUI metrics because the browser may load
+    // background WebUIs (e.g., side panels, hidden WebUIs) during test
+    // execution independent of the explicit test navigations. These background
+    // loads shouldn't fail tests that assert no standard page load metrics are
+    // recorded. Examples of such metrics include:
+    //  - PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI
+    //  - PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI
+    auto is_webui_metric = [](const std::string& name) {
+      static constexpr const char* kWebUIPrefixes[] = {
+          "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI",
+          "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI",
+          "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI",
+          ("PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
+           "NonTabWebUI"),
+      };
+      for (const char* prefix : kWebUIPrefixes) {
+        if (base::StartsWith(name, prefix, base::CompareCase::SENSITIVE)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    for (const auto& entry :
+         histogram_tester_->GetTotalCountsForPrefix("PageLoad.")) {
+      if (!base::StartsWith(entry.first, "PageLoad.Internal.",
+                            base::CompareCase::SENSITIVE) &&
+          !base::StartsWith(entry.first,
+                            internal::kAbandonedPageLoadMetricsHistogramPrefix,
+                            base::CompareCase::SENSITIVE) &&
+          !is_webui_metric(entry.first)) {
+        LOG(INFO) << "UNEXPECTED METRIC: " << entry.first;
+        total_pageload_histograms++;
+      }
+    }
+    return total_pageload_histograms == 0;
   }
 
   std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter(
