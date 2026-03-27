@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.Context;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
@@ -25,12 +26,14 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.DelegateContext;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationResult;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -59,7 +62,7 @@ public class SendTabToSelfCoordinator
             implements SyncService.SyncStateChangedListener {
         private final BottomSheetController mBottomSheetController;
         private final String mUrl;
-        private final Runnable mGotDeviceListCallback;
+        private final Callback<@PostSigninOperationResult Integer> mOnComplete;
         private final Profile mProfile;
 
         /**
@@ -70,11 +73,11 @@ public class SendTabToSelfCoordinator
         public TargetDeviceListWaiter(
                 BottomSheetController bottomSheetController,
                 String url,
-                Runnable gotDeviceListCallback,
+                Callback<@PostSigninOperationResult Integer> onComplete,
                 Profile profile) {
             mBottomSheetController = bottomSheetController;
             mUrl = url;
-            mGotDeviceListCallback = gotDeviceListCallback;
+            mOnComplete = onComplete;
             mProfile = profile;
 
             assumeNonNull(SyncServiceFactory.getForProfile(mProfile))
@@ -96,15 +99,8 @@ public class SendTabToSelfCoordinator
 
         @Override
         public void onSheetClosed(int reason) {
-            if (!SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
-                // The account picker doesn't dismiss itself, so this must mean the user did.
-                destroy();
-            }
-            // If isActivitylessSigninAllEntryPointEnabled is true, the lifecycle of the
-            // BottomSheetSigninAndHistorySyncCoordinator is managed by itself, so we don't need to
-            // call destroy() here.
-            // TODO(crbug.com/493227836): re-evaluate if this check is still necessary after
-            // implementing runPostSigninAction.
+            // The account picker doesn't dismiss itself, so this must mean the user did.
+            destroy();
         }
 
         private void notifyAndDestroyIfDone() {
@@ -123,11 +119,14 @@ public class SendTabToSelfCoordinator
             }
 
             destroy();
-            mGotDeviceListCallback.run();
+            mOnComplete.onResult(PostSigninOperationResult.SUCCESS);
         }
     }
 
-    /** Performs sign-in for the promo shown to signed-out users. */
+    /**
+     * Performs sign-in for the promo shown to signed-out users. TODO(crbug.com/448227402): Remove
+     * this class after migration to the activity-less sign-in flow is complete.
+     */
     private static class SendTabToSelfAccountPickerDelegate implements AccountPickerDelegate {
         private final Runnable mOnSignInCompleteCallback;
 
@@ -177,7 +176,6 @@ public class SendTabToSelfCoordinator
     private final ActivityResultTracker mActivityResultTracker;
     private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final SnackbarManager mSnackbarManager;
-    // TODO(crbug.com/469772349): Remove @Nullable after activity-less sign-in launch.
     private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
 
     public SendTabToSelfCoordinator(
@@ -319,19 +317,31 @@ public class SendTabToSelfCoordinator
 
     /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
     @Override
+    public void runPostSigninAction(
+            CoreAccountInfo signedInAccount,
+            @Nullable DelegateContext delegateContext,
+            Callback<@PostSigninOperationResult Integer> onComplete) {
+        assert SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled();
+        new TargetDeviceListWaiter(mBottomSheetController, mUrl, onComplete, mProfile);
+    }
+
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
+    @Override
     public void onFlowComplete(SigninAndHistorySyncCoordinator.Result result) {
         assert SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled();
         if (result.hasSignedIn) {
-            // TODO(crbug.com/493227836): this should be called in runPostSigninAction instead of
-            // onFlowComplete
-            new TargetDeviceListWaiter(
-                    mBottomSheetController, mUrl, this::onTargetDeviceListReady, mProfile);
+            show();
+        }
+        if (mSigninCoordinator != null) {
+            mSigninCoordinator.destroy();
+            mSigninCoordinator = null;
         }
     }
 
     private void onSignInComplete() {
+        assert !SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled();
         new TargetDeviceListWaiter(
-                mBottomSheetController, mUrl, this::onTargetDeviceListReady, mProfile);
+                mBottomSheetController, mUrl, (result) -> onTargetDeviceListReady(), mProfile);
     }
 
     private void onTargetDeviceListReady() {
