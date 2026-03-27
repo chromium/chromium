@@ -83,6 +83,7 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Auto Sign-in Toast"/>
   <int value="31" label="Filter Suggestion"/>
   <int value="32" label="Filter Suggestion Recent"/>
+  <int value="33" label="Saved Skill without Invoke Button"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

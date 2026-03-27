@@ -342,7 +342,11 @@ void ToastService::RegisterToasts(
                                      ->InvokeLastSavedSkill();
                                },
                                base::Unretained(browser_window_interface)))
-          .AddGlobalScoped()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kSkillSavedWithoutInvokeButton,
+      ToastSpecification::Builder(kCheckIcon, IDS_SKILL_SAVED_TOAST_BODY)
           .Build());
 
   toast_registry_->RegisterToast(

@@ -44,9 +44,12 @@ SkillsUiWindowController* SkillsUiWindowController::From(
   return Get(browser_window_interface->GetUnownedUserDataHost());
 }
 
-void SkillsUiWindowController::OnSkillSaved(std::string_view skill_id) {
+void SkillsUiWindowController::OnSkillSaved(std::string_view skill_id,
+                                            bool hide_toast_button) {
   last_saved_skill_id_ = skill_id;
-  ToastParams params(ToastId::kSkillSaved);
+  ToastId toast_id = hide_toast_button ? ToastId::kSkillSavedWithoutInvokeButton
+                                       : ToastId::kSkillSaved;
+  ToastParams params(toast_id);
   ShowSkillToast(std::move(params));
 }
 
