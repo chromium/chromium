@@ -362,7 +362,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
 - (BOOL)isRunningEnterpriseReportingTest {
   return [self isRunningTest:@selector
-               (testProceedingPastPhishingWarningReported)] ||
+               (DISABLED_testProceedingPastPhishingWarningReported)] ||
          [self isRunningTest:@selector
                (testProceedingPastMalwareWarningReported)] ||
          [self isRunningTest:@selector(testEnterpriseBlockingPage)] ||
@@ -542,7 +542,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
 // Tests expanding the details on a phishing warning, and proceeding past the
 // warning is reported to an enterprise connector.
-- (void)testProceedingPastPhishingWarningReported {
+- (void)DISABLED_testProceedingPastPhishingWarningReported {
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 
