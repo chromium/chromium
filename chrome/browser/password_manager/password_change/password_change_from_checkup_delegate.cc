@@ -60,18 +60,8 @@ bool IsSameOrigin(const std::u16string& credential_source_site_or_app,
       .IsSameOriginWith(url::Origin::Create(credential_target_url));
 }
 
-std::string GetFallbackPromptToReachForm(std::string_view domain,
-                                         std::string_view username) {
-  return base::StrCat(
-      {"I want to change my password for ", domain,
-       ". Please help me complete the password change flow starting from "
-       "this current page. You can login using ",
-       username,
-       ". The task is finished when the change password form is visible."});
-}
-
-std::string GetReachChangeFormPrompt(const std::string& domain,
-                                     const std::string& username) {
+std::string GetReachFormPrompt(const std::string& domain,
+                               const std::string& username) {
 #if defined(IDR_APC_PROMPTS_JSON)
   std::string json_data =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -101,6 +91,38 @@ std::string GetReachChangeFormPrompt(const std::string& domain,
   base::ReplaceSubstringsAfterOffset(&final_prompt, 0, "{username}", username);
 
   return final_prompt;
+
+#else
+  return std::string();
+#endif
+}
+
+std::string GetPostSubmissionPrompt() {
+#if defined(IDR_APC_PROMPTS_JSON)
+  std::string json_data =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_APC_PROMPTS_JSON);
+
+  if (json_data.empty()) {
+    return std::string();
+  }
+
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_RFC);
+
+  if (!parsed_json.has_value() || !parsed_json->is_dict()) {
+    return std::string();
+  }
+
+  const std::string* system_prompt =
+      parsed_json->GetDict().FindStringByDottedPath(
+          "prompts.verify_password_change_submission.system_prompt");
+
+  if (!system_prompt) {
+    return std::string();
+  }
+
+  return *system_prompt;
 
 #else
   return std::string();
@@ -181,55 +203,8 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   username_ = credential.username;
   current_password_ = credential.password;
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetReachChangeFormPrompt, std::move(site_domain),
-                     base::UTF16ToUTF8(username_)),
-      base::BindOnce(&PasswordChangeFromCheckupDelegate::OnPromptReady,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PasswordChangeFromCheckupDelegate::AutoSelectCredential(
-    const std::vector<actor_login::Credential>& credentials,
-    actor::ToolDelegate::CredentialSelectedCallback callback) {
-  if (!actuation_web_contents_) {
-    std::move(callback).Run(
-        actor::webui::mojom::SelectCredentialDialogResponse::New());
-    return;
-  }
-
-  for (const auto& cred : credentials) {
-    // Discard credentials that are not passwords.
-    if (cred.type != actor_login::CredentialType::kPassword ||
-        cred.username != username_) {
-      continue;
-    }
-
-    if (IsSameOrigin(cred.source_site_or_app, credential_url_)) {
-      auto response =
-          actor::webui::mojom::SelectCredentialDialogResponse::New();
-      response->selected_credential_id = cred.id.value();
-      response->permission_duration =
-          actor::webui::mojom::UserGrantedPermissionDuration::kOneTime;
-      std::move(callback).Run(std::move(response));
-      return;
-    }
-  }
-
-  std::move(callback).Run(
-      actor::webui::mojom::SelectCredentialDialogResponse::New());
-}
-
-void PasswordChangeFromCheckupDelegate::OnPromptReady(std::string prompt) {
-  if (prompt.empty()) {
-    std::string site_domain(credential_url_.host());
-    prompt =
-        GetFallbackPromptToReachForm(site_domain, base::UTF16ToUTF8(username_));
-  }
-
-  if (prompt.empty() || !originator_) {
-    return;
-  }
+  std::string reach_form_prompt =
+      GetReachFormPrompt(site_domain, base::UTF16ToUTF8(username_));
 
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(originator_.get());
@@ -256,7 +231,7 @@ void PasswordChangeFromCheckupDelegate::OnPromptReady(std::string prompt) {
   }
 
   glic::GlicInvokeOptions options(glic::mojom::InvocationSource::kSharedTab);
-  options.prompts.push_back(std::move(prompt));
+  options.prompts.push_back(std::move(reach_form_prompt));
   options.additional_context = glic::mojom::AdditionalContext::New();
 
   sessions::SessionTabHelper* session_tab_helper =
@@ -288,6 +263,37 @@ void PasswordChangeFromCheckupDelegate::OnPromptReady(std::string prompt) {
             &PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged,
             base::Unretained(this)));
   }
+}
+
+void PasswordChangeFromCheckupDelegate::AutoSelectCredential(
+    const std::vector<actor_login::Credential>& credentials,
+    actor::ToolDelegate::CredentialSelectedCallback callback) {
+  if (!actuation_web_contents_) {
+    std::move(callback).Run(
+        actor::webui::mojom::SelectCredentialDialogResponse::New());
+    return;
+  }
+
+  for (const auto& cred : credentials) {
+    // Discard credentials that are not passwords.
+    if (cred.type != actor_login::CredentialType::kPassword ||
+        cred.username != username_) {
+      continue;
+    }
+
+    if (IsSameOrigin(cred.source_site_or_app, credential_url_)) {
+      auto response =
+          actor::webui::mojom::SelectCredentialDialogResponse::New();
+      response->selected_credential_id = cred.id.value();
+      response->permission_duration =
+          actor::webui::mojom::UserGrantedPermissionDuration::kOneTime;
+      std::move(callback).Run(std::move(response));
+      return;
+    }
+  }
+
+  std::move(callback).Run(
+      actor::webui::mojom::SelectCredentialDialogResponse::New());
 }
 
 glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
@@ -406,13 +412,13 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
   verification_task_created_ = false;
 
   glic::GlicInvokeOptions options(glic::mojom::InvocationSource::kSharedTab);
-  // TODO(crbug.com/485620841): Read this from internal.
-  options.prompts.push_back(
-      "I just filled and submitted a change password form in order to change "
-      "my password. Tell me if this was successful or not, if it was not "
-      "successful and there are extra steps needed, complete the extra steps "
-      "in my behalf.");
+  std::string post_submission_prompt = GetPostSubmissionPrompt();
 
+  if (post_submission_prompt.empty()) {
+    return;
+  }
+
+  options.prompts.push_back(std::move(post_submission_prompt));
   options.additional_context = glic::mojom::AdditionalContext::New();
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(

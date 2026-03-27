@@ -44,10 +44,6 @@ class PasswordChangeFromCheckupDelegate {
       base::WeakPtr<content::WebContents> web_contents);
 
 #if defined(UNIT_TEST)
-  bool HasActorTaskSubscriptionForTesting() const {
-    return !!actor_task_state_subscription_;
-  }
-
   std::optional<actor::ActorTask::State> GetFindFormTaskState() const {
     return find_form_task_state_;
   }
@@ -58,8 +54,6 @@ class PasswordChangeFromCheckupDelegate {
   void AutoSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
       actor::ToolDelegate::CredentialSelectedCallback callback);
-
-  void OnPromptReady(std::string prompt);
 
   glic::GlicKeyedService* GetGlicService();
 
