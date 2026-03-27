@@ -27,6 +27,9 @@ macro_rules! fixed_impl {
             /// Representation of 1.0.
             pub const ONE: Self = Self(1 << $fract_bits);
 
+            /// Representation of -1.0.
+            pub const NEG_ONE: Self = Self((!0 << $fract_bits) as $ty);
+
             const INT_MASK: $ty = !0 << $fract_bits;
             const ROUND: $ty = 1 << ($fract_bits - 1);
             const FRACT_BITS: usize = $fract_bits;
