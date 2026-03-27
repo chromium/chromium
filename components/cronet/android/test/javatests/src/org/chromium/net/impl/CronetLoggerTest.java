@@ -19,6 +19,7 @@ import androidx.test.filters.SmallTest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.build.BuildConfig;
 import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
@@ -241,6 +243,17 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testCronetEngineBuilderInitializedLoggedFromApi() {
+        // This test is disabled in AOSP for two reasons:
+        //
+        // 1. CronetEngine.Builder(..) is not part of the exposed API surface in AOSP.
+        //    The HttpEngine creation path explicitly uses NativeCronetEngineBuilderImpl instead:
+        //    http://ac/external/cronet/android/java/src/android/net/http/HttpEngine.java?l=149-150
+        //
+        // 2. CronetEngine.Builder(...) prioritizes HttpEngine over Cronet because the
+        //    HttpEngine version is always more recent. This causes the test to fail because
+        //    HttpEngine does not expose the required testing-specific APIs.
+        //    Ref: http://b/495755401
+        Assume.assumeFalse(BuildConfig.CRONET_FOR_AOSP_BUILD);
         assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
         // The test framework bypasses the logic in CronetEngine.Builder, so we have to call it
         // directly. We want to use the test framework context though for things like

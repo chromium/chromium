@@ -2213,7 +2213,9 @@ public class CronetUrlRequestContextTest {
         mTestRule.getTestFramework().startEngine();
         // Verify CronetEngine.Builder config is passed down accurately to native code.
         ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
+                (ExperimentalCronetEngine.Builder)
+                        new NativeCronetProvider(mTestRule.getTestFramework().getContext())
+                                .createBuilder();
         builder.enableHttp2(false);
         builder.enableQuic(true);
         builder.addQuicHint("example.com", 12, 34);
@@ -2239,7 +2241,9 @@ public class CronetUrlRequestContextTest {
         mTestRule.getTestFramework().startEngine();
         // Verify CronetEngine.Builder config is passed down accurately to native code.
         ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
+                (ExperimentalCronetEngine.Builder)
+                        new NativeCronetProvider(mTestRule.getTestFramework().getContext())
+                                .createBuilder();
         builder.enableHttp2(false);
         // QUIC is on by default. Disabling it here to make sure the built config can correctly
         // reflect the change.

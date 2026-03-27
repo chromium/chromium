@@ -15,6 +15,7 @@ import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.impl.NativeCronetProvider;
 
 /**
  * A wrapper class on top of the native net::UploadDataStream. This class is used in tests to drive
@@ -37,7 +38,11 @@ public final class TestUploadDataStreamHandler {
     private String mData = "";
 
     public TestUploadDataStreamHandler(Context context, final long uploadDataStream) {
-        mCronetEngine = new CronetEngine.Builder(context).build();
+        // The native handler requires a CronetEngine to access its network thread.
+        // We use NativeCronetProvider to ensure a native implementation because
+        // HttpEngine does not expose testing-specific APIs like getUrlRequestContextAdapter(),
+        // which is required for the JNI call below.
+        mCronetEngine = new NativeCronetProvider(context).createBuilder().build();
         CronetUrlRequestContext requestContext = (CronetUrlRequestContext) mCronetEngine;
         mTestUploadDataStreamHandler =
                 TestUploadDataStreamHandlerJni.get()

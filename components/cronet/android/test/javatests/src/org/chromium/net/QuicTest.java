@@ -30,6 +30,7 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.TestLogger;
 
 import java.io.File;
@@ -155,7 +156,9 @@ public class QuicTest {
 
         // Make another request using a new context but with no QUIC hints.
         ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
+                (ExperimentalCronetEngine.Builder)
+                        new NativeCronetProvider(mTestRule.getTestFramework().getContext())
+                                .createBuilder();
         builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1000 * 1024);
         builder.enableQuic(true);
