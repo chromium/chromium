@@ -122,7 +122,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -364,10 +363,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               features::kSensorsAllowAskBlockPermissionModel));
 
-  html_source->AddBoolean("enableHashPrefixRealTimeLookups",
-                          safe_browsing::hash_realtime_utils::
-                              IsHashRealTimeLookupEligibleInSession());
-
   html_source->AddBoolean(
       "enableKeyboardLockPrompt",
       base::FeatureList::IsEnabled(permissions::features::kKeyboardLockPrompt));
@@ -411,26 +406,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           download_bubble_controlled_by_pref);
 
   html_source->AddBoolean(
-      "extendedReportingRemovePrefDependency",
-      base::FeatureList::IsEnabled(
-          safe_browsing::kExtendedReportingRemovePrefDependency));
-
-  html_source->AddBoolean(
-      "hashPrefixRealTimeLookupsSamplePing",
-      base::FeatureList::IsEnabled(
-          safe_browsing::kHashPrefixRealTimeLookupsSamplePing));
-
-  html_source->AddBoolean(
       "shouldShowPayOverTimeSettings",
       autofill::ContentAutofillClient::FromWebContents(web_ui->GetWebContents())
           ->GetPaymentsAutofillClient()
           ->GetPaymentsDataManager()
           .ShouldShowBnplSettings());
-
-  html_source->AddBoolean("enableBlockV8OptimizerOnUnfamiliarSites",
-                          base::FeatureList::IsEnabled(
-                              content_settings::features::
-                                  kBlockV8OptimizerOnUnfamiliarSitesSetting));
 
   html_source->AddBoolean("enableYourSavedInfoSettingsPage",
                           base::FeatureList::IsEnabled(
