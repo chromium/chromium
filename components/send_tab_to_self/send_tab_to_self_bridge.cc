@@ -498,7 +498,7 @@ bool SendTabToSelfBridge::HasValidTargetDevice() {
 std::vector<TargetDeviceInfo>
 SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   TRACE_EVENT0("ui", "SendTabToSelfBridge::GetTargetDeviceInfoSortedList");
-  if (!device_info_tracker_->IsSyncing()) {
+  if (!IsReady() || !device_info_tracker_->IsSyncing()) {
     return {};
   }
 
