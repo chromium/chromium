@@ -59,7 +59,6 @@ class MockActorLoginService : public actor_login::ActorLoginService {
       base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       actor_login::LoginStatusResultOrErrorReply callback,
-      actor_login::LoginStatusResultCallback federated_login_callback,
       base::WeakPtr<actor_login::ActionSequenceDelegate>
           action_sequence_delegate) override;
 

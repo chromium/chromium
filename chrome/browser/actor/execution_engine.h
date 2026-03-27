@@ -204,11 +204,11 @@ class ExecutionEngine : public ToolDelegate,
   void EnqueueFollowupAction(std::unique_ptr<ToolRequest> action) override;
   base::WeakPtr<actor_login::ActionSequenceDelegate> GetActionSequenceDelegate()
       override;
-  base::WeakPtr<ToolDelegate> GetAsWeakPtrForCurrentActions() override;
 
   // actor_login::ActionSequenceDelegate:
   base::CallbackListSubscription RegisterActionSequenceEnded(
       base::OnceCallback<void(bool /*success*/)> callback) override;
+  void OnFederatedLoginOutcome(actor_login::LoginStatusResult result) override;
 
   void AddWritableMainframeOrigins(
       const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);

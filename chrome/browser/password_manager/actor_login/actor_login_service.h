@@ -39,11 +39,6 @@ class ActorLoginService {
   // used to log both `GetCredentials` and `AttemptLogin`.
   // The `done_callback` will be invoked with a `base::expected` containing
   // either a `LoginStatusResult` or an `ActorLoginError`.
-  // The possibly null `federated_login_outcome_callback` is used to signal the
-  // result of a federated login attempt that may still be ongoing by the time
-  // AttemptLogin completes and invokes `done_callback`.
-  // TODO(crbug.com/495745319): Now that we're passing a delegate interface,
-  // this callback could be replaced with a method on the interface.
   // The `action_sequence_delegate` allows for communicating outcomes of a login
   // when additional steps are involved after AttemptLogin has completed.
   virtual void AttemptLogin(
@@ -53,7 +48,6 @@ class ActorLoginService {
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       LoginStatusResultOrErrorReply done_callback,
-      LoginStatusResultCallback federated_login_outcome_callback,
       base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) = 0;
 };
 

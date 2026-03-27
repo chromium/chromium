@@ -77,7 +77,6 @@ void ActorLoginServiceImpl::AttemptLogin(
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     LoginStatusResultOrErrorReply done_callback,
-    LoginStatusResultCallback federated_login_outcome_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) {
   CHECK(tab);
 
@@ -99,7 +98,6 @@ void ActorLoginServiceImpl::AttemptLogin(
       credential, should_store_permission, mqls_logger,
       attempt_login_tool_start_time,
       base::BindOnce(&OnAttemptLoginResult, std::move(done_callback)),
-      std::move(federated_login_outcome_callback),
       std::move(action_sequence_delegate));
 }
 

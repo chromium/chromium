@@ -39,6 +39,7 @@
 #include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/actor/safety_list_manager.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/tools/attempt_login_tool.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -1240,13 +1241,19 @@ ExecutionEngine::GetActionSequenceDelegate() {
   return actions_weak_ptr_factory_.GetWeakPtr();
 }
 
-base::WeakPtr<ToolDelegate> ExecutionEngine::GetAsWeakPtrForCurrentActions() {
-  return actions_weak_ptr_factory_.GetWeakPtr();
-}
-
 base::CallbackListSubscription ExecutionEngine::RegisterActionSequenceEnded(
     base::OnceCallback<void(bool)> callback) {
   return action_sequence_ended_callbacks_.Add(std::move(callback));
+}
+
+void ExecutionEngine::OnFederatedLoginOutcome(
+    actor_login::LoginStatusResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojom::ActionResultCode code =
+      AttemptLoginTool::LoginResultToActorResult(result);
+  if (!IsOk(code)) {
+    FailCurrentTool(code);
+  }
 }
 
 void ExecutionEngine::AddWritableMainframeOrigins(

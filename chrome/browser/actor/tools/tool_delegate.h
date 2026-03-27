@@ -137,8 +137,6 @@ class ToolDelegate {
 
   virtual base::WeakPtr<actor_login::ActionSequenceDelegate>
   GetActionSequenceDelegate() = 0;
-
-  virtual base::WeakPtr<ToolDelegate> GetAsWeakPtrForCurrentActions() = 0;
 };
 
 }  // namespace actor

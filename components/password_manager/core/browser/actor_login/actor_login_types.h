@@ -240,6 +240,9 @@ class ActionSequenceDelegate {
   // along with whether it was successful.
   virtual base::CallbackListSubscription RegisterActionSequenceEnded(
       base::OnceCallback<void(bool /* success */)> callback) = 0;
+
+  // Reports the outcome of a federated login attempt.
+  virtual void OnFederatedLoginOutcome(LoginStatusResult result) = 0;
 };
 
 }  // namespace actor_login

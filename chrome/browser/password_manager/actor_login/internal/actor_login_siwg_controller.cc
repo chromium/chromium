@@ -80,7 +80,7 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     bool should_store_permission,
     ActorLoginPermissionService& permission_service,
     LoginStatusResultOrErrorReply on_finished_callback,
-    LoginStatusResultCallback federated_login_outcome_callback)
+    base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate)
     : ActorLoginSiwgController(
           web_contents,
           credential,
@@ -88,7 +88,7 @@ ActorLoginSiwgController::ActorLoginSiwgController(
           should_store_permission,
           permission_service,
           std::move(on_finished_callback),
-          std::move(federated_login_outcome_callback)) {}
+          std::move(action_sequence_delegate)) {}
 
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
@@ -97,12 +97,11 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     bool should_store_permission,
     ActorLoginPermissionService& permission_service,
     LoginStatusResultOrErrorReply on_finished_callback,
-    LoginStatusResultCallback federated_login_outcome_callback)
+    base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate)
     : content::WebContentsObserver(web_contents),
       get_page_content_provider_(std::move(get_page_content_provider)),
       on_finished_callback_(std::move(on_finished_callback)),
-      federated_login_outcome_callback_(
-          std::move(federated_login_outcome_callback)),
+      action_sequence_delegate_(std::move(action_sequence_delegate)),
       credential_(credential),
       should_store_permission_(should_store_permission),
       permission_service_(permission_service) {}
@@ -179,8 +178,8 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
   }
 
   LoginStatusResult status = FromFederatedLoginResult(result);
-  if (federated_login_outcome_callback_) {
-    std::move(federated_login_outcome_callback_).Run(status);
+  if (action_sequence_delegate_) {
+    action_sequence_delegate_->OnFederatedLoginOutcome(status);
   }
   if (on_finished_callback_) {
     std::move(on_finished_callback_).Run(status);

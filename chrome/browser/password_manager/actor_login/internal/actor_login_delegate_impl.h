@@ -63,7 +63,6 @@ class ActorLoginDelegateImpl
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       LoginStatusResultOrErrorReply done_callback,
-      LoginStatusResultCallback federated_login_outcome_callback,
       base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) override;
 
  private:

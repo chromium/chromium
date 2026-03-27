@@ -174,7 +174,6 @@ void ActorLoginDelegateImpl::AttemptLogin(
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     LoginStatusResultOrErrorReply done_callback,
-    LoginStatusResultCallback federated_login_outcome_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) {
   CHECK(done_callback);
 
@@ -242,7 +241,7 @@ void ActorLoginDelegateImpl::AttemptLogin(
         base::BindPostTaskToCurrentDefault(
             base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                            weak_ptr_factory_.GetWeakPtr())),
-        std::move(federated_login_outcome_callback));
+        action_sequence_delegate_);
     siwg_controller_->StartFederatedLogin(std::move(metrics_helper_));
     return;
   }
