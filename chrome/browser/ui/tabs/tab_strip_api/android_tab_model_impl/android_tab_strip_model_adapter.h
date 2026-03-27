@@ -11,7 +11,17 @@
 
 namespace tabs_api {
 
-// A boring adapter impl that just gives up on everything. Maybe even itself.
+// Adapter for Android's TabModel.
+// Note that since Android doesn't have the concept of window, a "window" is
+// synonymous with the TabModel's session id. A "-" identifier denotes the
+// TabModel associated with the current adapter. For example:
+//
+//   window/-/tabstrip/*/tabs/...
+//
+// would fetch tab resources in the context of the current adapter. Also note
+// that the adapter may only fetch resources for a single TabModel, this means
+// that callers may choose to pass in "-" or the actual session id. When
+// possible, clients should pass in the actual session id to prevent ambiguity.
 class AndroidTabStripModelAdapter : public TabStripModelAdapter {
  public:
   explicit AndroidTabStripModelAdapter(TabModel* model);

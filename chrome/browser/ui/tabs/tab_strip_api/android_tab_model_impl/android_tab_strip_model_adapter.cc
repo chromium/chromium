@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
 
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/tabs/public/tab_collection.h"
 
 namespace tabs_api {
@@ -60,28 +61,30 @@ void AndroidTabStripModelAdapter::MoveCollection(const NodeId& id,
 
 mojom::ContainerPtr AndroidTabStripModelAdapter::GetTabStripTopology(
     tabs::TabCollection::Handle root) const {
-  // Simulate a single tab in a single tab strip in a single window.
-  // TODO(crbug.com/494284032): Remove.
   auto window_container = mojom::Container::New();
   auto window_data = mojom::Window::New();
 
-  window_data->id = NodeId::FromWindowId("-");
+  window_data->id =
+      NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id()));
   window_container->data = mojom::Data::NewWindow(std::move(window_data));
 
   auto tab_strip = tabs_api::mojom::Container::New();
   auto tab_strip_data = mojom::TabStrip::New();
+  // TODO(crbug.com/494284032): How do I access the TabCollection outside of
+  // JNI?
   tab_strip_data->id =
       tabs_api::NodeId(tabs_api::NodeId::Type::kCollection, "-");
   tab_strip->data = mojom::Data::NewTabStrip(std::move(tab_strip_data));
 
-  auto tab = tabs_api::mojom::Container::New();
-  auto tab_data = mojom::Tab::New();
-  tab_data->id = tabs_api::NodeId(tabs_api::NodeId::Type::kContent, "1337");
-  tab->data = mojom::Data::NewTab(std::move(tab_data));
+  for (auto* tab_interface : model_->GetAllTabs()) {
+    auto tab = tabs_api::mojom::Container::New();
+    auto tab_data = mojom::Tab::New();
+    tab_data->id = tabs_api::NodeId::FromTabHandle(tab_interface->GetHandle());
+    tab->data = mojom::Data::NewTab(std::move(tab_data));
+    tab_strip->children.emplace_back(std::move(tab));
+  }
 
-  tab_strip->children.emplace_back(std::move(tab));
   window_container->children.emplace_back(std::move(tab_strip));
-
   return window_container;
 }
 
