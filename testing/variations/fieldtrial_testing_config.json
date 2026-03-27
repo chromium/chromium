@@ -8685,6 +8685,26 @@
             ]
         }
     ],
+    "DsePreload2": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DsePreload2",
+                        "PrefetchPrerenderIntegration"
+                    ]
+                }
+            ]
+        }
+    ],
     "DumpOnOOBFontDataServiceCache": [
         {
             "platforms": [
@@ -12106,10 +12126,6 @@
                     "enable_features": [
                         "HttpCacheNoVarySearch",
                         "SearchPrefetchWithNoVarySearchDiskCache"
-                    ],
-                    "disable_features": [
-                        "DsePreload2",
-                        "PrefetchPrerenderIntegration"
                     ]
                 }
             ]
