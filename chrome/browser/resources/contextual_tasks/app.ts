@@ -1218,7 +1218,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     await this.onThreadFrameLoadAbort(event);
   }
 
-  setIsZeroStateForTesting(isZeroState: boolean) {
+  setIsZeroStateForTesting(isZeroState: boolean|undefined) {
     this.isZeroState_ = isZeroState;
   }
 

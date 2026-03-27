@@ -17,7 +17,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {InputState, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -317,6 +317,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     return this.isSidePanel;
   }
 
+  get inputState() {
+    return this.inputState_;
+  }
+
   protected getInputPlaceholder_() {
     return this.isOverlayOpenForAimVisualSearch &&
             !this.$.composebox.hasFiles() ?
@@ -464,12 +468,24 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     return this.$.composebox;
   }
 
+  setActiveTool(toolMode: ToolMode) {
+    this.searchboxHandler_.setActiveToolMode(toolMode);
+  }
+
   get isComposeboxFocusedForTesting() {
     return this.isComposeboxFocused_;
   }
 
   get composeboxHeightForTesting() {
     return this.composeboxHeight_;
+  }
+
+  get selectedMatchIndexForTesting() {
+    return this.selectedMatchIndex_;
+  }
+
+  set zeroStateSuggestionsForTesting(val: AutocompleteResult) {
+    this.zeroStateSuggestions_ = val;
   }
 
   get resizeObserverForTesting() {
