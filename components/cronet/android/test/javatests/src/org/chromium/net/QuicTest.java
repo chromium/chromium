@@ -80,7 +80,8 @@ public class QuicTest {
                             // for any connection type, this ensures that the pref is written to.
                             JSONObject nqeParams =
                                     new JSONObject()
-                                            .put("force_effective_connection_type", "Slow-2G");
+                                            .put("force_effective_connection_type", "Slow-2G")
+                                            .put("throughput_min_transfer_size_kilobytes", "1");
 
                             // TODO(mgersh): Enable connection migration once it works, see
                             // http://crbug.com/634910
