@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Disabled because otherwise it is incorrectly also applied to Lit properties,
-// since Lit and Polymer coexist in this file.
-/* eslint-disable @webui-eslint/polymer-property-class-member */
-
-// Disabled because otherwise it is incorrectly also applied to Polymer
-// properties, since Lit and Polymer coexist in this file.
-/* eslint-disable @webui-eslint/lit-property-accessor */
-
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';

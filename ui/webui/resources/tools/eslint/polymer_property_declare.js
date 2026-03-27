@@ -4,7 +4,7 @@
 
 import {ESLintUtils} from '../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 
-import {POLYMER_IMPORT_REGEX} from './query_utils.js';
+import {isPolymerElementSubclass} from './query_utils.js';
 
 export const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs({
   name: 'polymer-property-declare',
@@ -38,10 +38,14 @@ export const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs({
     let currentClass = null;       // TSESTree.ClassDeclaration|null
 
     return {
-      [`ImportDeclaration[source.value=/${POLYMER_IMPORT_REGEX}/]`](node) {
-        isPolymerElement = true;
-      },
       'ClassDeclaration'(node) {
+        isPolymerElement =
+            isPolymerElementSubclass(node, context.sourceCode.ast);
+
+        if (!isPolymerElement) {
+          return;
+        }
+
         polymerProperties = new Set();
         currentClass = node;
       },

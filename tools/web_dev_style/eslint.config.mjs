@@ -6,7 +6,6 @@ import eslintPluginLit from '../../third_party/node/node_modules/eslint-plugin-l
 import stylistic from '../../third_party/node/node_modules/@stylistic/eslint-plugin/dist/index.js';
 import typescriptEslint from '../../third_party/node/node_modules/@typescript-eslint/eslint-plugin/dist/index.js';
 import tsParser from '../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js';
-import webUiEslint from '../../ui/webui/resources/tools/webui_eslint_plugin.js';
 
 const noRestrictedSyntaxCases = [
   {
@@ -234,13 +233,6 @@ export default [
     plugins: {
       '@typescript-eslint': typescriptEslint,
       '@stylistic': stylistic,
-
-      // Need to register the WebUI plugin even though it is not used in the
-      // configuration below, to prevent errors like
-      // "Definition for rule XYZ was not found  @webui-eslint/XYZ"
-      // when encountering 'eslint-disable-next-line' comments referencing rules
-      // defined in the `webUiEslint` plugin.
-      '@webui-eslint': webUiEslint,
     },
 
     languageOptions: {

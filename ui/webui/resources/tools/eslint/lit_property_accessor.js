@@ -4,7 +4,7 @@
 
 import {ESLintUtils} from '../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 
-import {LIT_IMPORT_REGEX} from './query_utils.js';
+import {isCrLitElementSubclass} from './query_utils.js';
 
 export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
   name: 'lit-property-accessor',
@@ -38,10 +38,13 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
     let currentClass = null;   // TSESTree.ClassDeclaration|null
 
     return {
-      [`ImportDeclaration[source.value=/${LIT_IMPORT_REGEX}/]`](node) {
-        isLitElement = true;
-      },
       'ClassDeclaration'(node) {
+        isLitElement = isCrLitElementSubclass(node, context.sourceCode.ast);
+
+        if (!isLitElement) {
+          return;
+        }
+
         litProperties = new Set();
         currentClass = node;
       },

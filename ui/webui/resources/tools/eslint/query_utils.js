@@ -11,20 +11,14 @@ import esquery from '../../../../../third_party/node/node_modules/esquery/dist/e
 // https://github.com/eslint/eslint/issues/16555,
 // https://eslint.org/docs/latest/extend/selectors#known-issues
 // where forward slashes are not properly escaped in regular expressions
-// appearing in AST selectors.
-export const POLYMER_IMPORT_REGEX = [
-  'resources',
-  'polymer',
-  'v3_0',
-  'polymer',
-  'polymer_bundled.min.js$',
-].join('\\u002F');
-
 export const LIT_IMPORT_REGEX =
     ['resources', 'lit', 'v3_0', 'lit.rollup.js$'].join('\\u002F');
 
 export const CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR =
     'CallExpression[callee.name=/Mixin(Lit)?$/][arguments.0.name="CrLitElement"]';
+
+export const POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR =
+    'CallExpression[callee.name=/Mixin(Polymer)?$/][arguments.0.name="PolymerElement"]';
 
 export function isCrLitElementSubclass(node, programNode) {
   assert.ok(node.type === 'ClassDeclaration');
@@ -52,6 +46,40 @@ export function isCrLitElementSubclass(node, programNode) {
   if (node.superClass.type === 'CallExpression') {
     // Case3: 'MyElement extends SomeMixin(SomeOtherMixin(CrLitElement)) {...}'
     const selector = esquery.parse(CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR);
+    const matchingNodes = esquery.match(node.superClass, selector);
+    return matchingNodes.length > 0;
+  }
+
+  return false;
+}
+
+export function isPolymerElementSubclass(node, programNode) {
+  assert.ok(node.type === 'ClassDeclaration');
+
+  if (!node.superClass) {
+    return false;
+  }
+
+  if (node.superClass.type === 'Identifier') {
+    if (node.superClass.name === 'PolymerElement') {
+      // Case1: 'MyElement extends PolymerElement {...}'
+      return true;
+    }
+
+    // Case2:
+    // const MyElementBase = SomeMixin(PolymerElement);
+    // MyElement extends MyElementBase {...}'
+    const baseClassSelector = esquery.parse(
+        `Program > VariableDeclaration > VariableDeclarator[id.name="${
+            node.superClass.name}"] ${POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR}`);
+    const matchingNodes = esquery.match(programNode, baseClassSelector);
+    return matchingNodes.length > 0;
+  }
+
+  if (node.superClass.type === 'CallExpression') {
+    // Case3: 'MyElement extends
+    // SomeMixin(SomeOtherMixin(PolymerElement)) {...}'
+    const selector = esquery.parse(POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR);
     const matchingNodes = esquery.match(node.superClass, selector);
     return matchingNodes.length > 0;
   }
