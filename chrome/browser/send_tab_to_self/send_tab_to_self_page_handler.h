@@ -83,10 +83,24 @@ class SendTabToSelfPageHandler
 
   void SelectorGeneratedForRequest(
       base::Token request_token,
-      bool is_browser_timeout,
       const std::string& selector,
       shared_highlighting::LinkGenerationError error,
-      shared_highlighting::LinkGenerationReadyStatus /*ready_status*/);
+      shared_highlighting::LinkGenerationReadyStatus ready_status);
+
+  void SelectorGenerationTimedOutForRequest(base::Token request_token);
+
+  void CancelPendingRequest(base::Token request_token);
+
+  void RequestScrollPositionSelectorAndSendRequest(base::Token request_token,
+                                                   PendingRequest request);
+
+  std::pair<ScrollPositionGenerationOutcome, ScrollPosition>
+  ProcessSelectorGenerationResult(
+      const PendingRequest& request,
+      const std::string& selector,
+      shared_highlighting::LinkGenerationError error);
+
+  void MaybeExtractFormFields(PendingRequest& request);
 
   void SendFinalizedRequest(
       PendingRequest request,
