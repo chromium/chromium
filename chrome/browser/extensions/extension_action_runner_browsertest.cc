@@ -171,11 +171,6 @@ const Extension* ExtensionActionRunnerBrowserTest::CreateExtension(
 
   TestExtensionDir dir;
   dir.WriteManifest(manifest);
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  // TODO(crbug.com/371432155): kBackgroundScriptSource uses chrome.tabs, which
-  // isn't supported yet.
-  CHECK_EQ(injection_type, CONTENT_SCRIPT);
-#endif
   dir.WriteFile(FILE_PATH_LITERAL("script.js"), injection_type == CONTENT_SCRIPT
                                                     ? kContentScriptSource
                                                     : kBackgroundScriptSource);
@@ -260,9 +255,6 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
   EXPECT_FALSE(runner->WantsToRun(extension));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported. chrome.tabs is used by the EXECUTE_SCRIPT test extension.
 class ExtensionActionRunnerBrowserTestWithContextType
     : public ExtensionActionRunnerBrowserTest,
       public testing::WithParamInterface<ContextType> {
@@ -301,7 +293,6 @@ IN_PROC_BROWSER_TEST_P(
   RunActiveScriptsTest("execute_scripts_explicit_hosts", EXPLICIT_HOSTS,
                        EXECUTE_SCRIPT, WITHHOLD_PERMISSIONS, REQUIRES_CONSENT);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(
     ExtensionActionRunnerBrowserTest,
