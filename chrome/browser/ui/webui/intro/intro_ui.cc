@@ -29,6 +29,18 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
+namespace {
+int GetBackupCardDescriptionId(bool is_first_run_desktop_refresh_enabled) {
+  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
+    return IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION;
+  }
+
+  return is_first_run_desktop_refresh_enabled
+             ? IDS_UNO_FRE_REFRESH_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS
+             : IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS;
+}
+}  // namespace
+
 IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   auto* profile = Profile::FromWebUI(web_ui);
 
@@ -93,9 +105,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   source->AddLocalizedString("pageTitle", title_id);
   source->AddLocalizedString(
       "backupCardDescription",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS
-          : IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION);
+      GetBackupCardDescriptionId(is_first_run_desktop_refresh_enabled));
   source->AddLocalizedString(
       "declineSignInButtonTitle",
       base::FeatureList::IsEnabled(
