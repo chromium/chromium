@@ -85,6 +85,8 @@
         <option name="exclude-filter" value="org.chromium.net.impl.CronetLoggerTest#testCronetEngineBuilderInitializedLoggedFromImplIfApiIsTooOld" />
         <!-- b/345344485 -->
         <option name="exclude-filter" value="org.chromium.net.impl.CronetLoggerTest#testCronetEngineInfoCreation" />
+        <!-- b/496870046 -->
+        <option name="exclude-filter" value="org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStreamTest" />
         <option name="hidden-api-checks" value="false"/>
         <option name="isolated-storage" value="false"/>
         <option name="orchestrator" value="true"/>
