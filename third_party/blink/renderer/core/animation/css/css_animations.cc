@@ -520,7 +520,8 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     const AtomicString& name,
     TimingFunction* default_timing_function,
     EffectModel::CompositeOperation composite,
-    size_t animation_index) {
+    size_t animation_index,
+    const TreeScope* name_tree_scope) {
   // The algorithm for constructing string keyframes for a CSS animation is
   // covered in the following spec:
   // https://drafts.csswg.org/css-animations-2/#keyframes
@@ -543,7 +544,8 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   //    existing animation matching name is canceled.
 
   StyleResolver::FindKeyframesRuleResult find_result =
-      resolver->FindKeyframesRule(&element, &animating_element, name);
+      resolver->FindKeyframesRule(&element, &animating_element, name,
+                                  name_tree_scope);
   const StyleRuleKeyframes* keyframes_rule = find_result.rule;
   DCHECK(keyframes_rule);
 
@@ -1862,17 +1864,22 @@ void CSSAnimations::CalculateAnimationUpdate(
   if (animation_data &&
       (style_builder.Display() != EDisplay::kNone ||
        (old_style && old_style->Display() != EDisplay::kNone))) {
-    const Vector<AtomicString>& name_list = animation_data->NameList();
+    const HeapVector<Member<const ScopedCSSName>>& name_list =
+        animation_data->NameList();
     for (wtf_size_t i = 0; i < name_list.size(); ++i) {
-      AtomicString name = name_list[i];
-      if (name == CSSAnimationData::InitialName())
+      const ScopedCSSName* scoped_name = name_list[i];
+      if (!scoped_name) {
         continue;
+      }
+      const AtomicString& name = scoped_name->GetName();
+      const TreeScope* name_tree_scope = scoped_name->GetTreeScope();
 
       // Find n where this is the nth occurrence of this animation name.
       wtf_size_t name_index = 0;
       for (wtf_size_t j = 0; j < i; j++) {
-        if (name_list[j] == name)
+        if (name_list[j] && name_list[j]->GetName() == name) {
           name_index++;
+        }
       }
 
       const bool is_paused =
@@ -1888,7 +1895,10 @@ void CSSAnimations::CalculateAnimationUpdate(
       timing.timing_function = Timing().timing_function;
 
       StyleRuleKeyframes* keyframes_rule =
-          resolver->FindKeyframesRule(&element, &animating_element, name).rule;
+          resolver
+              ->FindKeyframesRule(&element, &animating_element, name,
+                                  name_tree_scope)
+              .rule;
       if (!keyframes_rule)
         continue;  // Cancel the animation if there's no style rule for it.
 
@@ -2001,7 +2011,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                   CreateKeyframeEffectModel(
                       resolver, element, animating_element, writing_direction,
                       parent_style, name, keyframe_timing_function.get(),
-                      composite, i),
+                      composite, i, name_tree_scope),
                   timing, animation_proxy),
               specified_timing, keyframes_rule, timeline,
               animation_data->PlayStateList(), range_start, range_end,
@@ -2028,7 +2038,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                 CreateKeyframeEffectModel(resolver, element, animating_element,
                                           writing_direction, parent_style, name,
                                           keyframe_timing_function.get(),
-                                          composite, i),
+                                          composite, i, name_tree_scope),
                 timing, animation_proxy),
             specified_timing, keyframes_rule, timeline,
             animation_data->PlayStateList(), range_start, range_end,

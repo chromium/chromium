@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/css/css_timing_data.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/core/style/style_name_or_keyword.h"
 #include "third_party/blink/renderer/core/style/style_timeline.h"
 #include "third_party/blink/renderer/core/style/style_trigger_attachment.h"
@@ -27,11 +29,13 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   explicit CSSAnimationData(const CSSAnimationData&);
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(name_list_);
     visitor->Trace(timeline_trigger_name_list_);
     visitor->Trace(trigger_attachments_list_);
     CSSTimingData::Trace(visitor);
   }
 
+  bool NamesMatch(const CSSAnimationData& other) const;
   bool AnimationsMatchForStyleRecalc(const CSSAnimationData& other) const;
   bool operator==(const CSSAnimationData& other) const {
     return AnimationsMatchForStyleRecalc(other);
@@ -42,7 +46,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Timing ConvertToTiming(size_t index) const;
   const StyleTimeline& GetTimeline(size_t index) const;
 
-  const Vector<AtomicString>& NameList() const { return name_list_; }
+  const HeapVector<Member<const ScopedCSSName>>& NameList() const {
+    return name_list_;
+  }
   const Vector<StyleTimeline>& TimelineList() const { return timeline_list_; }
 
   const Vector<double>& IterationCountList() const {
@@ -106,7 +112,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return composition_list_[index];
   }
 
-  Vector<AtomicString>& NameList() { return name_list_; }
+  HeapVector<Member<const ScopedCSSName>>& NameList() { return name_list_; }
   Vector<StyleTimeline>& TimelineList() { return timeline_list_; }
   Vector<double>& IterationCountList() { return iteration_count_list_; }
   Vector<Timing::PlaybackDirection>& DirectionList() { return direction_list_; }
@@ -159,7 +165,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   }
 
   static std::optional<double> InitialDuration();
-  static const AtomicString& InitialName();
+  static const ScopedCSSName* InitialName() { return nullptr; }
+  static const AtomicString& InitialNameString() { return g_null_atom; }
   static const StyleTimeline& InitialTimeline();
   static Timing::PlaybackDirection InitialDirection() {
     return Timing::PlaybackDirection::NORMAL;
@@ -200,7 +207,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
                                          const CSSAnimationData* new_data);
 
  private:
-  Vector<AtomicString> name_list_;
+  HeapVector<Member<const ScopedCSSName>> name_list_;
   Vector<StyleTimeline> timeline_list_;
   Vector<std::optional<TimelineOffset>> range_start_list_;
   Vector<std::optional<TimelineOffset>> range_end_list_;

@@ -1002,7 +1002,6 @@
       valid_for_keyframe: false,
     },
     {
-      // TODO(futhark): Set the TreeScope on CSSAnimationData.
       name: "animation-name",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",

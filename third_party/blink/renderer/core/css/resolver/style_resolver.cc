@@ -2665,11 +2665,23 @@ void StyleResolver::ApplyAnchorData(StyleResolverState& state) {
 StyleResolver::FindKeyframesRuleResult StyleResolver::FindKeyframesRule(
     const Element* element,
     const Element* animating_element,
-    const AtomicString& animation_name) {
+    const AtomicString& animation_name,
+    const TreeScope* name_tree_scope) {
   HeapVector<Member<ScopedStyleResolver>, 8> resolvers;
-  CollectScopedResolversForHostedShadowTrees(*element, resolvers);
-  if (ScopedStyleResolver* scoped_resolver = ScopedResolverFor(*element)) {
-    resolvers.push_back(scoped_resolver);
+
+  if (name_tree_scope) {
+    // When a specific tree scope is provided (e.g. from a ::part() rule),
+    // look up @keyframes in that scope rather than the element's.
+    if (ScopedStyleResolver* resolver =
+            name_tree_scope->GetScopedStyleResolver()) {
+      resolvers.push_back(resolver);
+    }
+  }
+  if (resolvers.empty()) {
+    CollectScopedResolversForHostedShadowTrees(*element, resolvers);
+    if (ScopedStyleResolver* scoped_resolver = ScopedResolverFor(*element)) {
+      resolvers.push_back(scoped_resolver);
+    }
   }
 
   for (auto& resolver : resolvers) {

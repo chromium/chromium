@@ -2913,7 +2913,9 @@ CSSValue* ComputedStyleUtils::ValueForAnimationNameList(
     const ComputedStyle& style) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   if (animation_data) {
-    for (AtomicString name : animation_data->NameList()) {
+    for (const auto& scoped_name : animation_data->NameList()) {
+      AtomicString name = scoped_name ? scoped_name->GetName()
+                                      : CSSAnimationData::InitialNameString();
       list->Append(*ValueForAnimationName(name));
     }
   } else {

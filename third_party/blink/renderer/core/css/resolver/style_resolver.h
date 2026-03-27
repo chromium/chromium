@@ -177,7 +177,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   };
   FindKeyframesRuleResult FindKeyframesRule(const Element*,
                                             const Element* animating_element,
-                                            const AtomicString& animation_name);
+                                            const AtomicString& animation_name,
+                                            const TreeScope* name_tree_scope);
 
   // These methods will give back the set of rules that matched for a given
   // element (or a pseudo-element).

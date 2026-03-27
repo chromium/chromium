@@ -2206,13 +2206,16 @@ InspectorCSSAgent::AnimationsForNode(Element* element,
   StyleResolver& style_resolver = document.GetStyleResolver();
   for (wtf_size_t i = 0;
        animation_data && i < animation_data->NameList().size(); ++i) {
-    AtomicString animation_name(animation_data->NameList()[i]);
-    if (animation_name == CSSAnimationData::InitialName())
+    const ScopedCSSName* scoped_name = animation_data->NameList()[i];
+    if (!scoped_name) {
       continue;
+    }
+    AtomicString animation_name(scoped_name->GetName());
 
     StyleRuleKeyframes* keyframes_rule =
         style_resolver
-            .FindKeyframesRule(element, animating_element, animation_name)
+            .FindKeyframesRule(element, animating_element, animation_name,
+                               scoped_name->GetTreeScope())
             .rule;
     if (!keyframes_rule) {
       continue;

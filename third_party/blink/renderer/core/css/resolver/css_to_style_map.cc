@@ -310,13 +310,19 @@ double CSSToStyleMap::MapAnimationIterationCount(StyleResolverState& state,
       state.CssToLengthConversionData());
 }
 
-AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
-                                             const CSSValue& value) {
+const ScopedCSSName* CSSToStyleMap::MapAnimationName(StyleResolverState& state,
+                                                     const CSSValue& value) {
   if (auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value)) {
-    return AtomicString(custom_ident_value->Value());
+    state.SetHasTreeScopedReference();
+    return MakeGarbageCollected<ScopedCSSName>(
+        AtomicString(custom_ident_value->Value()),
+        custom_ident_value->GetTreeScope());
   }
   if (auto* string_value = DynamicTo<CSSStringValue>(value)) {
-    return AtomicString(string_value->Value());
+    state.SetHasTreeScopedReference();
+    return MakeGarbageCollected<ScopedCSSName>(
+        AtomicString(string_value->Value()),
+        &state.GetDocument().GetTreeScope());
   }
   DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
   return CSSAnimationData::InitialName();
