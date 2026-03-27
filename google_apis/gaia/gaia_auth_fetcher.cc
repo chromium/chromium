@@ -194,7 +194,6 @@ GaiaAuthFetcher::GaiaAuthFetcher(
     : url_loader_factory_(url_loader_factory),
       consumer_(consumer),
       source_(source.ToString()),
-      oauth2_token_gurl_(GaiaUrls::GetInstance()->oauth2_token_url()),
       oauth2_revoke_gurl_(GaiaUrls::GetInstance()->oauth2_revoke_url()),
       oauth_multilogin_gurl_(GaiaUrls::GetInstance()->oauth_multilogin_url()),
       list_accounts_gurl_(
@@ -206,6 +205,11 @@ GaiaAuthFetcher::GaiaAuthFetcher(
       reauth_api_url_(GaiaUrls::GetInstance()->reauth_api_url()) {}
 
 GaiaAuthFetcher::~GaiaAuthFetcher() = default;
+
+const GURL& GaiaAuthFetcher::GetOAuth2TokenUrl(bool mtls_token_binding) const {
+  return mtls_token_binding ? GaiaUrls::GetInstance()->mtls_oauth2_token_url()
+                            : GaiaUrls::GetInstance()->oauth2_token_url();
+}
 
 bool GaiaAuthFetcher::HasPendingFetch() {
   return fetch_pending_;
@@ -379,17 +383,19 @@ void GaiaAuthFetcher::StartRevokeOAuth2Token(const std::string& auth_token) {
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchange(
     const std::string& auth_code,
     const std::string& binding_registration_token,
-    const UserAgentHeadersParam& user_agent_headers) {
+    const UserAgentHeadersParam& user_agent_headers,
+    bool mtls_token_binding) {
   StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
       auth_code, /*device_id=*/std::string(), binding_registration_token,
-      user_agent_headers);
+      user_agent_headers, mtls_token_binding);
 }
 
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
     const std::string& auth_code,
     const std::string& device_id,
     const std::string& binding_registration_token,
-    const UserAgentHeadersParam& user_agent_headers) {
+    const UserAgentHeadersParam& user_agent_headers,
+    bool mtls_token_binding) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
   VLOG(1) << "Starting OAuth token pair fetch";
@@ -435,8 +441,8 @@ void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
           }
         })");
   CreateAndStartGaiaFetcher(
-      request_body_, kFormEncodedContentType,
-      headers, oauth2_token_gurl_,
+      request_body_, kFormEncodedContentType, headers,
+      GetOAuth2TokenUrl(mtls_token_binding),
       google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
 }
 
@@ -884,7 +890,8 @@ void GaiaAuthFetcher::DispatchFetchedRequest(const GURL& url,
                                              const std::string& data,
                                              net::Error net_error,
                                              int response_code) {
-  if (url == oauth2_token_gurl_) {
+  if (url == GetOAuth2TokenUrl(/*mtls_token_binding=*/false) ||
+      url == GetOAuth2TokenUrl(/*mtls_token_binding=*/true)) {
     OnOAuth2TokenPairFetched(data, net_error, response_code);
   } else if (IsMultiloginUrl(url)) {
     OnOAuthMultiloginFetched(data, net_error, response_code);

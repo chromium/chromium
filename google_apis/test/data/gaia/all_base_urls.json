@@ -12,8 +12,14 @@
     "google_apis_origin_url": {
       "url": "https://www.exampleapis.com"
     },
+    "oauth2_mtls_origin_url": {
+      "url": "https://mtls.exampleapis.com"
+    },
     "oauth_account_manager_origin_url": {
       "url": "https://oauthaccountmanager.exampleapis.com"
+    },
+    "oauth_account_manager_mtls_origin_url": {
+      "url": "https://mtls.oauthaccountmanager.exampleapis.com"
     },
     "account_capabilities_origin_url": {
       "url": "https://accountcapabilities.exampleapis.com"

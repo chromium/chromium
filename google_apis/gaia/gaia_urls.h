@@ -60,7 +60,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const std::string& oauth2_chrome_client_id() const;
   const std::string& oauth2_chrome_client_secret() const;
   const GURL& oauth2_token_url() const;
+  const GURL& mtls_oauth2_token_url() const;
   const GURL& oauth2_issue_token_url() const;
+  const GURL& mtls_oauth2_issue_token_url() const;
   const GURL& oauth2_token_info_url() const;
   const GURL& oauth2_revoke_url() const;
   const GURL& reauth_api_url() const;
@@ -100,7 +102,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
 
   GURL lso_origin_url_;
   GURL google_apis_origin_url_;
+  GURL oauth2_mtls_origin_url_;
   GURL oauth_account_manager_origin_url_;
+  GURL oauth_account_manager_mtls_origin_url_;
   GURL account_capabilities_origin_url_;
   GURL classroom_api_origin_url_;
   GURL tasks_api_origin_url_;
@@ -130,7 +134,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL get_check_connection_info_url_;
 
   GURL oauth2_token_url_;
+  GURL mtls_oauth2_token_url_;
   GURL oauth2_issue_token_url_;
+  GURL mtls_oauth2_issue_token_url_;
   GURL oauth2_token_info_url_;
   GURL oauth2_revoke_url_;
 

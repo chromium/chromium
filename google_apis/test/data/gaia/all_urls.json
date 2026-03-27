@@ -93,8 +93,14 @@
     "oauth2_token_url": {
       "url": "https://www.exampleapis.com/oauth2/v4/token"
     },
+    "mtls_oauth2_token_url": {
+      "url": "https://mtls.exampleapis.com/token"
+    },
     "oauth2_issue_token_url": {
       "url": "https://oauthaccountmanager.exampleapis.com/v1/issuetoken"
+    },
+    "mtls_oauth2_issue_token_url": {
+      "url": "https://mtls.oauthaccountmanager.exampleapis.com/v1/issuetoken"
     },
     "oauth2_token_info_url": {
       "url": "https://www.exampleapis.com/oauth2/v2/tokeninfo"

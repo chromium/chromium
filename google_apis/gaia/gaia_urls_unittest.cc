@@ -127,8 +127,12 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
             "https://accounts.google.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
             "https://www.googleapis.com/oauth2/v4/token");
+  EXPECT_EQ(gaia_urls()->mtls_oauth2_token_url().spec(),
+            "https://oauth2.mtls.googleapis.com/token");
   EXPECT_EQ(gaia_urls()->oauth2_issue_token_url().spec(),
             "https://oauthaccountmanager.googleapis.com/v1/issuetoken");
+  EXPECT_EQ(gaia_urls()->mtls_oauth2_issue_token_url().spec(),
+            "https://oauthaccountmanager.mtls.googleapis.com/v1/issuetoken");
   EXPECT_EQ(gaia_urls()->oauth2_token_info_url().spec(),
             "https://www.googleapis.com/oauth2/v2/tokeninfo");
   EXPECT_EQ(gaia_urls()->oauth2_revoke_url().spec(),
@@ -316,8 +320,12 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
             "https://accounts.example.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
             "https://www.exampleapis.com/oauth2/v4/token");
+  EXPECT_EQ(gaia_urls()->mtls_oauth2_token_url().spec(),
+            "https://mtls.exampleapis.com/token");
   EXPECT_EQ(gaia_urls()->oauth2_issue_token_url().spec(),
             "https://oauthaccountmanager.exampleapis.com/v1/issuetoken");
+  EXPECT_EQ(gaia_urls()->mtls_oauth2_issue_token_url().spec(),
+            "https://mtls.oauthaccountmanager.exampleapis.com/v1/issuetoken");
   EXPECT_EQ(gaia_urls()->oauth2_token_info_url().spec(),
             "https://www.exampleapis.com/oauth2/v2/tokeninfo");
   EXPECT_EQ(gaia_urls()->oauth2_revoke_url().spec(),
@@ -388,8 +396,12 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://accounts.example.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
             "https://www.exampleapis.com/oauth2/v4/token");
+  EXPECT_EQ(gaia_urls()->mtls_oauth2_token_url().spec(),
+            "https://mtls.exampleapis.com/token");
   EXPECT_EQ(gaia_urls()->oauth2_issue_token_url().spec(),
             "https://oauthaccountmanager.exampleapis.com/v1/issuetoken");
+  EXPECT_EQ(gaia_urls()->mtls_oauth2_issue_token_url().spec(),
+            "https://mtls.oauthaccountmanager.exampleapis.com/v1/issuetoken");
   EXPECT_EQ(gaia_urls()->oauth2_token_info_url().spec(),
             "https://www.exampleapis.com/oauth2/v2/tokeninfo");
   EXPECT_EQ(gaia_urls()->oauth2_revoke_url().spec(),

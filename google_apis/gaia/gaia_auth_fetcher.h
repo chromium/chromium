@@ -130,7 +130,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   void StartAuthCodeForOAuth2TokenExchange(
       const std::string& auth_code,
       const std::string& binding_registration_token = std::string(),
-      const UserAgentHeadersParam& user_agent_headers = {});
+      const UserAgentHeadersParam& user_agent_headers = {},
+      bool mtls_token_binding = false);
 
   // Start a request to exchange the authorization code for an OAuthLogin-scoped
   // oauth2 token.
@@ -146,7 +147,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
       const std::string& auth_code,
       const std::string& device_id,
       const std::string& binding_registration_token = std::string(),
-      const UserAgentHeadersParam& user_agent_headers = {});
+      const UserAgentHeadersParam& user_agent_headers = {},
+      bool mtls_token_binding = false);
 
   // Starts a request to get the cookie for list of accounts.
   void StartOAuthMultilogin(
@@ -281,11 +283,12 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   static GoogleServiceAuthError GenerateAuthError(const std::string& data,
                                                   net::Error net_error);
 
+  const GURL& GetOAuth2TokenUrl(bool mtls_token_binding) const;
+
   // These fields are common to GaiaAuthFetcher, same every request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<GaiaAuthConsumer> consumer_;
   std::string source_;
-  const GURL oauth2_token_gurl_;
   const GURL oauth2_revoke_gurl_;
   const GURL oauth_multilogin_gurl_;
   const GURL list_accounts_gurl_;

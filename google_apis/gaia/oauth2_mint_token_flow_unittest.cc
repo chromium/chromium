@@ -21,6 +21,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_response.h"
@@ -420,6 +421,9 @@ class MockMintTokenFlow : public OAuth2MintTokenFlow {
   net::HttpRequestHeaders CreateApiCallHeaders() override {
     return OAuth2MintTokenFlow::CreateApiCallHeaders();
   }
+  GURL CreateApiCallUrl() override {
+    return OAuth2MintTokenFlow::CreateApiCallUrl();
+  }
 };
 
 }  // namespace
@@ -471,12 +475,13 @@ class OAuth2MintTokenFlowTest : public testing::Test {
             kVersion, kChannel, device_id, selected_user_id, consent_result));
   }
 
-  void CreateClientFlow(const std::string& bound_oauth_token) {
+  void CreateClientFlow(const std::string& bound_oauth_token,
+                        bool use_mtls_endpoints = false) {
     const std::string_view kDeviceId = "test_device_id";
     flow_ = std::make_unique<MockMintTokenFlow>(
         &delegate_, OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
                         kClientId, kScopes, kVersion, kChannel, kDeviceId,
-                        bound_oauth_token));
+                        bound_oauth_token, use_mtls_endpoints));
   }
 
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
@@ -647,6 +652,18 @@ TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyClientAccessTokenFlow) {
       "&device_id=test_device_id"
       "&device_type=chrome");
   EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest,
+       CreateApiCallUrlReturnsMtlsEndpointWhenParameterIsSet) {
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  EXPECT_EQ(flow_->CreateApiCallUrl(),
+            GaiaUrls::GetInstance()->oauth2_issue_token_url());
+
+  CreateClientFlow(/*bound_oauth_token=*/std::string(),
+                   /*use_mtls_endpoints=*/true);
+  EXPECT_EQ(flow_->CreateApiCallUrl(),
+            GaiaUrls::GetInstance()->mtls_oauth2_issue_token_url());
 }
 
 TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValue) {

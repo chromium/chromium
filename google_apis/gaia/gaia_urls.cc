@@ -28,8 +28,11 @@ namespace {
 const char kDefaultGoogleUrl[] = "http://google.com";
 const char kDefaultGaiaUrl[] = "https://accounts.google.com";
 const char kDefaultGoogleApisBaseUrl[] = "https://www.googleapis.com";
+const char kDefaultOAuth2MtlsBaseUrl[] = "https://oauth2.mtls.googleapis.com";
 const char kDefaultOAuthAccountManagerBaseUrl[] =
     "https://oauthaccountmanager.googleapis.com";
+const char kDefaultOAuthAccountManagerMtlsBaseUrl[] =
+    "https://oauthaccountmanager.mtls.googleapis.com";
 const char kDefaultAccountCapabilitiesBaseUrl[] =
     "https://accountcapabilities-pa.googleapis.com";
 constexpr char kDefaultClassroomApiBaseUrl[] =
@@ -105,6 +108,9 @@ const char kOAuth2TokenUrlSuffix[] = "oauth2/v4/token";
 const char kOAuth2TokenInfoUrlSuffix[] = "oauth2/v2/tokeninfo";
 const char kOAuthUserInfoUrlSuffix[] = "oauth2/v1/userinfo";
 const char kReAuthApiUrlSuffix[] = "reauth/v1beta/users/";
+
+// API calls from oauth2.mtls.googleapis.com
+const char kMtlsOAuth2TokenUrlSuffix[] = "token";
 
 // API calls from oauthaccountmanager.googleapis.com
 const char kOAuth2IssueTokenUrlSuffix[] = "v1/issuetoken";
@@ -317,8 +323,16 @@ const GURL& GaiaUrls::oauth2_token_url() const {
   return oauth2_token_url_;
 }
 
+const GURL& GaiaUrls::mtls_oauth2_token_url() const {
+  return mtls_oauth2_token_url_;
+}
+
 const GURL& GaiaUrls::oauth2_issue_token_url() const {
   return oauth2_issue_token_url_;
+}
+
+const GURL& GaiaUrls::mtls_oauth2_issue_token_url() const {
+  return mtls_oauth2_issue_token_url_;
 }
 
 const GURL& GaiaUrls::oauth2_token_info_url() const {
@@ -401,9 +415,16 @@ void GaiaUrls::InitializeDefault() {
   SetDefaultURLIfInvalid(&lso_origin_url_, switches::kLsoUrl, kDefaultGaiaUrl);
   SetDefaultURLIfInvalid(&google_apis_origin_url_, switches::kGoogleApisUrl,
                          kDefaultGoogleApisBaseUrl);
+  if (!oauth2_mtls_origin_url_.is_valid()) {
+    oauth2_mtls_origin_url_ = GURL(kDefaultOAuth2MtlsBaseUrl);
+  }
   SetDefaultURLIfInvalid(&oauth_account_manager_origin_url_,
                          switches::kOAuthAccountManagerUrl,
                          kDefaultOAuthAccountManagerBaseUrl);
+  if (!oauth_account_manager_mtls_origin_url_.is_valid()) {
+    oauth_account_manager_mtls_origin_url_ =
+        GURL(kDefaultOAuthAccountManagerMtlsBaseUrl);
+  }
   if (!account_capabilities_origin_url_.is_valid()) {
     account_capabilities_origin_url_ = GURL(kDefaultAccountCapabilitiesBaseUrl);
   }
@@ -482,6 +503,15 @@ void GaiaUrls::InitializeDefault() {
                       oauth_account_manager_origin_url_,
                       kOAuth2IssueTokenUrlSuffix);
 
+  // URLs from |google_apis_mtls_origin_url_|.
+  ResolveURLIfInvalid(&mtls_oauth2_token_url_, oauth2_mtls_origin_url_,
+                      kMtlsOAuth2TokenUrlSuffix);
+
+  // URLs from |oauth_account_manager_mtls_origin_url_|.
+  ResolveURLIfInvalid(&mtls_oauth2_issue_token_url_,
+                      oauth_account_manager_mtls_origin_url_,
+                      kOAuth2IssueTokenUrlSuffix);
+
   // URLs from |account_capabilities_origin_url_|.
   ResolveURLIfInvalid(&account_capabilities_batch_get_url_,
                       account_capabilities_origin_url_,
@@ -506,7 +536,10 @@ void GaiaUrls::InitializeFromConfig() {
 
   config->GetURLIfExists(URL_KEY_AND_PTR(lso_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(google_apis_origin_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_mtls_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_account_manager_origin_url));
+  config->GetURLIfExists(
+      URL_KEY_AND_PTR(oauth_account_manager_mtls_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(classroom_api_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(tasks_api_origin_url));
@@ -539,7 +572,9 @@ void GaiaUrls::InitializeFromConfig() {
       URL_KEY_AND_PTR(account_capabilities_get_all_visible_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(get_check_connection_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(mtls_oauth2_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_issue_token_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(mtls_oauth2_issue_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_revoke_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_api_url));

@@ -303,7 +303,8 @@ OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
     std::string_view version,
     std::string_view channel,
     std::string_view device_id,
-    std::string_view bound_oauth_token) {
+    std::string_view bound_oauth_token,
+    bool use_mtls_endpoints) {
   Parameters parameters;
   parameters.client_id = client_id;
   parameters.scopes = std::vector<std::string>(scopes.begin(), scopes.end());
@@ -312,6 +313,7 @@ OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
   parameters.channel = channel;
   parameters.device_id = device_id;
   parameters.bound_oauth_token = bound_oauth_token;
+  parameters.use_mtls_endpoints = use_mtls_endpoints;
   return parameters;
 }
 
@@ -366,7 +368,9 @@ void OAuth2MintTokenFlow::ReportFailure(
 }
 
 GURL OAuth2MintTokenFlow::CreateApiCallUrl() {
-  return GaiaUrls::GetInstance()->oauth2_issue_token_url();
+  return parameters_.use_mtls_endpoints
+             ? GaiaUrls::GetInstance()->mtls_oauth2_issue_token_url()
+             : GaiaUrls::GetInstance()->oauth2_issue_token_url();
 }
 
 net::HttpRequestHeaders OAuth2MintTokenFlow::CreateApiCallHeaders() {
