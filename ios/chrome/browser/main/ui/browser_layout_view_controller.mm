@@ -128,7 +128,6 @@
 - (void)updateCurrentBVCLayoutInsets {
   CGFloat topInset = 0;
   if (CanShowTabStrip(self)) {
-    CHECK(self.safeAreaProvider);
     topInset = self.safeAreaProvider.safeArea.top;
 
     if (self.tabStripViewController) {
@@ -172,7 +171,6 @@
   // Update frame directly for synchronous layout.
   // We don't rely on constraints here to avoid fighting with the layout system
   // during safe area transitions.
-  CHECK(self.safeAreaProvider);
   CGFloat topInset = self.safeAreaProvider.safeArea.top;
   CGRect frame = _tabStripViewController.view.frame;
   frame.origin.y = topInset - offset;
@@ -309,7 +307,6 @@
   [_tabStripViewController didMoveToParentViewController:self];
 
   // Set default frame to ensure valid initial position.
-  CHECK(self.safeAreaProvider);
   CGFloat topInset = self.safeAreaProvider.safeArea.top;
   CGRect frame = self.view.bounds;
   frame.origin.y = topInset;
