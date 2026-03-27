@@ -57,13 +57,6 @@ void FakeLocalFrameHost::SetVirtualKeyboardMode(
 void FakeLocalFrameHost::VisibilityChanged(
     mojom::blink::FrameVisibility visibility) {}
 
-void FakeLocalFrameHost::DidChangeThemeColor(
-    std::optional<::SkColor> theme_color) {}
-
-void FakeLocalFrameHost::DidChangeBackgroundColor(
-    const SkColor4f& background_color,
-    bool color_adjust) {}
-
 void FakeLocalFrameHost::DidFailLoadWithError(const ::blink::KURL& url,
                                               int32_t error_code) {}
 

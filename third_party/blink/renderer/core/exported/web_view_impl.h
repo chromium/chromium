@@ -589,6 +589,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Tells the browser that another page has accessed the DOM of the initial
   // empty document of a main frame.
   void DidAccessInitialMainDocument();
+  void DidChangeThemeColor(std::optional<SkColor> theme_color);
+  void DidChangeBackgroundColor(SkColor4f background_color, bool color_adjust);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Additional Windowing Controls API.

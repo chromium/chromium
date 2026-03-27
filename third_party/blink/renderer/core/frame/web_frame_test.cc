@@ -7278,18 +7278,16 @@ TEST_F(WebFrameTest, SpellcheckResultsSavedInDocument) {
             document->Markers().Markers()[0]->GetType());
 }
 
-class TestAccessInitialDocumentLocalFrameHost
-    : public mojom::blink::LocalMainFrameHost {
+class FakeMainLocalFrameHost : public mojom::blink::LocalMainFrameHost {
  public:
-  TestAccessInitialDocumentLocalFrameHost() = default;
-  ~TestAccessInitialDocumentLocalFrameHost() override = default;
+  FakeMainLocalFrameHost() = default;
+  ~FakeMainLocalFrameHost() override = default;
 
   void Init(blink::AssociatedInterfaceProvider* provider) {
     provider->OverrideBinderForTesting(
         mojom::blink::LocalMainFrameHost::Name_,
-        BindRepeating(
-            &TestAccessInitialDocumentLocalFrameHost::BindFrameHostReceiver,
-            Unretained(this)));
+        BindRepeating(&FakeMainLocalFrameHost::BindFrameHostReceiver,
+                      Unretained(this)));
   }
 
   // LocalMainFrameHost:
@@ -7315,12 +7313,30 @@ class TestAccessInitialDocumentLocalFrameHost
   void SetResizable(bool resizable) override {}
 #endif
   void DidFirstVisuallyNonEmptyPaint() override {}
-  void DidAccessInitialMainDocument() override {
-    ++did_access_initial_main_document_;
-  }
+  void DidAccessInitialMainDocument() override {}
+  void DidChangeThemeColor(std::optional<::SkColor> theme_color) override {}
+  void DidChangeBackgroundColor(const SkColor4f& background_color,
+                                bool color_adjust) override {}
   void DraggableRegionsChanged(
       Vector<mojom::blink::DraggableRegionPtr> regions) override {}
   void OnFirstContentfulPaint(base::TimeDelta duration) override {}
+
+ private:
+  void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrameHost>(
+            std::move(handle)));
+  }
+
+  mojo::AssociatedReceiver<mojom::blink::LocalMainFrameHost> receiver_{this};
+};
+
+class TestAccessInitialDocumentLocalFrameHost : public FakeMainLocalFrameHost {
+ public:
+  // LocalMainFrameHost:
+  void DidAccessInitialMainDocument() override {
+    ++did_access_initial_main_document_;
+  }
 
   // !!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!
   // If the actual counts in the tests below increase, this could be an
@@ -7329,14 +7345,6 @@ class TestAccessInitialDocumentLocalFrameHost
   // Please do not simply increment the expected counts in the below tests
   // without understanding what's causing the increased count.
   int did_access_initial_main_document_ = 0;
-
- private:
-  void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(
-        mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrameHost>(
-            std::move(handle)));
-  }
-  mojo::AssociatedReceiver<mojom::blink::LocalMainFrameHost> receiver_{this};
 };
 
 TEST_F(WebFrameTest, DidAccessInitialMainDocumentBody) {
@@ -9207,17 +9215,17 @@ TEST_F(WebFrameTest, PrintingBasic)
   frame->PrintEnd();
 }
 
-class ThemeColorTestLocalFrameHost : public FakeLocalFrameHost {
+class ThemeColorTestLocalMainFrameHost : public FakeMainLocalFrameHost {
  public:
-  ThemeColorTestLocalFrameHost() = default;
-  ~ThemeColorTestLocalFrameHost() override = default;
+  ThemeColorTestLocalMainFrameHost() = default;
+  ~ThemeColorTestLocalMainFrameHost() override = default;
 
   void Reset() { did_notify_ = false; }
 
   bool DidNotify() const { return did_notify_; }
 
  private:
-  // FakeLocalFrameHost:
+  // LocalMainFrameHost:
   void DidChangeThemeColor(std::optional<::SkColor> theme_color) override {
     did_notify_ = true;
   }
@@ -9227,7 +9235,7 @@ class ThemeColorTestLocalFrameHost : public FakeLocalFrameHost {
 
 TEST_F(WebFrameTest, ThemeColor) {
   RegisterMockedHttpURLLoad("theme_color_test.html");
-  ThemeColorTestLocalFrameHost host;
+  ThemeColorTestLocalMainFrameHost host;
   frame_test_helpers::TestWebFrameClient client;
   host.Init(client.GetRemoteNavigationAssociatedInterfaces());
   frame_test_helpers::WebViewHelper web_view_helper;

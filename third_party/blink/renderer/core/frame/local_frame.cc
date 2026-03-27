@@ -1474,14 +1474,14 @@ void LocalFrame::DidChangeThemeColor(bool update_theme_color_cache) {
   if (color)
     sk_color = color->Rgb();
 
-  GetLocalFrameHostRemote().DidChangeThemeColor(sk_color);
+  GetPage()->GetChromeClient().DidChangeThemeColor(sk_color);
 }
 
 void LocalFrame::DidChangeBackgroundColor(SkColor4f background_color,
                                           bool color_adjust) {
   DCHECK(!Tree().Parent());
-  GetLocalFrameHostRemote().DidChangeBackgroundColor(background_color,
-                                                     color_adjust);
+  GetPage()->GetChromeClient().DidChangeBackgroundColor(background_color,
+                                                        color_adjust);
 }
 
 LocalFrame& LocalFrame::LocalFrameRoot() const {

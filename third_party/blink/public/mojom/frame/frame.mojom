@@ -327,17 +327,6 @@ interface LocalFrameHost {
   // frame owner assigns a display: none style.
   VisibilityChanged(blink.mojom.FrameVisibility visibility);
 
-  // Notifies the browser that the associated frame has changed theme color.
-  // This will only be called on main-frames only. |theme_color| is optional
-  // and indicates if a theme color has been specified or not, e.g. removal
-  // of a theme color meta tag will generate a null value.
-  DidChangeThemeColor(skia.mojom.SkColor? theme_color);
-
-  // Notifies the browser that the associated frame has changed its computed CSS
-  // background color. This will be called on main-frames only.
-  // |color_adjust| is true if the background is forced by color adjustments.
-  DidChangeBackgroundColor(skia.mojom.SkColor4f background_color, bool color_adjust);
-
   // Sent when the renderer fails to load with |error_code| which means a net
   // error code.
   DidFailLoadWithError(url.mojom.Url url, int32 error_code);
@@ -1411,6 +1400,18 @@ interface LocalMainFrameHost {
   // document of a main frame. After this, it is no longer safe to show a
   // pending navigation's URL, because a URL spoof is possible.
   DidAccessInitialMainDocument();
+
+  // Notifies the browser that the associated frame has changed theme color.
+  // |theme_color| is optional and indicates if a theme color has been
+  // specified or not, e.g. removal of a theme color meta tag will generate
+  // a null value.
+  DidChangeThemeColor(skia.mojom.SkColor? theme_color);
+
+  // Notifies the browser that the associated frame has changed its computed CSS
+  // background color. |color_adjust| is true if the background is forced by
+  // color adjustments.
+  DidChangeBackgroundColor(
+      skia.mojom.SkColor4f background_color, bool color_adjust);
 
   // Request browser to maximize window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ

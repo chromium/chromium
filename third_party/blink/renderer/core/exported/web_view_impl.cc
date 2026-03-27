@@ -3126,6 +3126,20 @@ void WebViewImpl::DidAccessInitialMainDocument() {
   local_main_frame_host_remote_->DidAccessInitialMainDocument();
 }
 
+void WebViewImpl::DidChangeThemeColor(std::optional<SkColor> theme_color) {
+  // This is only called for main frames, so the remote must be bound.
+  CHECK(local_main_frame_host_remote_);
+  local_main_frame_host_remote_->DidChangeThemeColor(theme_color);
+}
+
+void WebViewImpl::DidChangeBackgroundColor(SkColor4f background_color,
+                                           bool color_adjust) {
+  // This is only called for main frames, so the remote must be bound.
+  CHECK(local_main_frame_host_remote_);
+  local_main_frame_host_remote_->DidChangeBackgroundColor(background_color,
+                                                          color_adjust);
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // TODO(https://crbug.com/40946306): Add timeouts to the callbacks and consider
 // queuing requests instead of rejecting them.

@@ -287,6 +287,17 @@ void ChromeClientImpl::DidAccessInitialMainDocument() {
   web_view_->DidAccessInitialMainDocument();
 }
 
+void ChromeClientImpl::DidChangeThemeColor(std::optional<SkColor> theme_color) {
+  DCHECK(web_view_);
+  web_view_->DidChangeThemeColor(theme_color);
+}
+
+void ChromeClientImpl::DidChangeBackgroundColor(SkColor4f background_color,
+                                                bool color_adjust) {
+  DCHECK(web_view_);
+  web_view_->DidChangeBackgroundColor(background_color, color_adjust);
+}
+
 void ChromeClientImpl::FocusPage() {
   DCHECK(web_view_);
   web_view_->Focus();

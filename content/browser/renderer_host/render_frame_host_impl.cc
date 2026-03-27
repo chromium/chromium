@@ -8239,6 +8239,19 @@ void RenderFrameHostImpl::DidAccessInitialMainDocument() {
   frame_tree_->DidAccessInitialMainDocument();
 }
 
+void RenderFrameHostImpl::DidChangeThemeColor(
+    std::optional<SkColor> theme_color) {
+  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
+  GetPage().OnThemeColorChanged(theme_color);
+}
+
+void RenderFrameHostImpl::DidChangeBackgroundColor(
+    const SkColor4f& background_color,
+    bool color_adjust) {
+  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
+  GetPage().DidChangeBackgroundColor(background_color, color_adjust);
+}
+
 void RenderFrameHostImpl::DidChangeName(const std::string& name,
                                         const std::string& unique_name) {
   // Frame name updates used to occur in the FrameTreeNode; however, as they
@@ -8593,21 +8606,6 @@ void RenderFrameHostImpl::VisibilityChanged(
   visibility_ = visibility;
   delegate_->OnFrameVisibilityChanged(this, visibility_);
   GetAssociatedLocalFrame()->OnFrameVisibilityChanged(visibility);
-}
-
-void RenderFrameHostImpl::DidChangeThemeColor(
-    std::optional<SkColor> theme_color) {
-  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
-  CHECK(is_main_frame());
-  GetPage().OnThemeColorChanged(theme_color);
-}
-
-void RenderFrameHostImpl::DidChangeBackgroundColor(
-    const SkColor4f& background_color,
-    bool color_adjust) {
-  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
-  CHECK(is_main_frame());
-  GetPage().DidChangeBackgroundColor(background_color, color_adjust);
 }
 
 void RenderFrameHostImpl::SetCommitCallbackInterceptorForTesting(

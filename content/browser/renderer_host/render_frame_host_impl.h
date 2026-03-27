@@ -2481,9 +2481,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetNeedsOcclusionTracking(bool needs_tracking) override;
   void SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) override;
   void VisibilityChanged(blink::mojom::FrameVisibility) override;
-  void DidChangeThemeColor(std::optional<SkColor> theme_color) override;
-  void DidChangeBackgroundColor(const SkColor4f& background_color,
-                                bool color_adjust) override;
   void DidFailLoadWithError(const GURL& url, int32_t error_code) override;
   void DidFocusFrame() override;
   void DidCallFocus() override;
@@ -2682,6 +2679,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      SetWindowRectCallback callback) override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void DidAccessInitialMainDocument() override;
+  void DidChangeThemeColor(std::optional<SkColor> theme_color) override;
+  void DidChangeBackgroundColor(const SkColor4f& background_color,
+                                bool color_adjust) override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void Minimize() override;
   void Maximize() override;

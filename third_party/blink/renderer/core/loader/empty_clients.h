@@ -109,6 +109,9 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
 #endif
   gfx::Rect RootWindowRect(LocalFrame&) override { return gfx::Rect(); }
   void DidAccessInitialMainDocument() override {}
+  void DidChangeThemeColor(std::optional<SkColor> theme_color) override {}
+  void DidChangeBackgroundColor(SkColor4f background_color,
+                                bool color_adjust) override {}
   void FocusPage() override {}
   void DidFocusPage() override {}
   bool CanTakeFocus(mojom::blink::FocusType) override { return false; }
