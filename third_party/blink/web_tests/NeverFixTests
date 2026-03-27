@@ -1707,6 +1707,8 @@ crbug.com/1430215 [ Mac ] external/wpt/dom/events/scrolling/overscroll-deltas.ht
 
 ######## End Unload Deprecation
 
+# Internal VT tests are not compatible with mpa serialization.
+crbug.com/40241779 virtual/view-transition-mpa-serialization/wpt_internal/view-transition/* [ Skip ]
 # View transitions cross document tests naturally exercise mpa serialization.
 crbug.com/40241779 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
 # View transitions cross document tests don't need to test wide gamut, since that's covered by same doc tests.
