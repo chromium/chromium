@@ -313,7 +313,11 @@ void EventListenerMap::RemoveActiveServiceWorkerListenersForExtension(
              EventListener* listener) {
             return listener->extension_id() == worker_id.extension_id &&
                    listener->is_for_service_worker() && !listener->IsLazy() &&
-                   listener->process()->GetID() == worker_id.render_process_id;
+                   listener->service_worker_version_id() ==
+                       worker_id.version_id &&
+                   listener->process()->GetID() ==
+                       worker_id.render_process_id &&
+                   listener->worker_thread_id() == worker_id.thread_id;
           },
           worker_id));
 }

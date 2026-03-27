@@ -336,6 +336,33 @@ TEST_F(EventListenerMapTest, TestRemovingByListenerForExtensionServiceWorker) {
       &CreateEventListenerForExtensionServiceWorker, kExt1Id));
 }
 
+TEST_F(EventListenerMapTest,
+       TestRemoveActiveServiceWorkerListenersForExtension) {
+  content::BrowserContext* browser_context = process_->GetBrowserContext();
+  const GURL scope = Extension::GetBaseURLFromExtensionId(kExt1Id);
+
+  // Add listener for worker 1.
+  listeners_->AddListener(EventListener::ForExtensionServiceWorker(
+      kEvent1Name, kExt1Id, process_.get(), browser_context, scope,
+      /*service_worker_version_id=*/100, /*worker_thread_id=*/1, std::nullopt));
+
+  // Add listener for worker 2 in the same process and extension.
+  listeners_->AddListener(EventListener::ForExtensionServiceWorker(
+      kEvent2Name, kExt1Id, process_.get(), browser_context, scope,
+      /*service_worker_version_id=*/101, /*worker_thread_id=*/2, std::nullopt));
+
+  WorkerId worker_id1{kExt1Id, process_->GetID(), 100, 1};
+
+  // Remove active listeners for worker 1.
+  listeners_->RemoveActiveServiceWorkerListenersForExtension(worker_id1);
+
+  // The listener for worker 1 should be gone.
+  EXPECT_FALSE(listeners_->HasListenerForExtension(kExt1Id, kEvent1Name));
+
+  // The listener for worker 2 should remain.
+  EXPECT_TRUE(listeners_->HasListenerForExtension(kExt1Id, kEvent2Name));
+}
+
 TEST_P(EventListenerMapWithContextTest, TestLazyDoubleAddIsUndoneByRemove) {
   const bool is_for_service_worker = GetParam();
   listeners_->AddListener(CreateLazyListener(
