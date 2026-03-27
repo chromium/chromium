@@ -144,6 +144,10 @@ std::vector<const char*> GetDisabledToggles(
   // regressions are investigated.
   disabled_toggles.push_back("vulkan_use_dynamic_rendering");
 
+  if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
+    disabled_toggles.push_back("enable_spirv_validation");
+  }
+
   return disabled_toggles;
 }
 
