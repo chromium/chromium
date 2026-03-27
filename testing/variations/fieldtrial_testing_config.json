@@ -8640,8 +8640,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DsePreload2",
-                        "PrefetchPrerenderIntegration"
+                        "DsePreload2"
                     ]
                 }
             ]
@@ -17895,6 +17894,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NewTabPageTriggerForPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrefetchPrerenderIntegration": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrefetchPrerenderIntegration"
                     ]
                 }
             ]
