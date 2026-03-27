@@ -2647,24 +2647,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Glic.Turn.ResponseStartTime.WithContext" units="ms"
+<histogram name="Glic.Turn.ResponseStartTime.{TabContext}" units="ms"
     expires_after="2026-10-16">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
     Records the time from when the user submitted input until a response starts
-    being presented to the user, for turns where context was requested.
-  </summary>
-</histogram>
+    being presented to the user, for turns where {TabContext} (*). This is
+    reported for all web client modes (text or audio).
 
-<histogram name="Glic.Turn.ResponseStartTime.WithoutContext" units="ms"
-    expires_after="2026-10-16">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the time from when the user submitted input until a response starts
-    being presented to the user, for turns where context was not requested.
+    (*) Chrome knows if tab context was requested by the web client and the
+    internal state of tabs' sharing status, but it cannot know for certain if
+    tab context was or was not actually attached to requests by the web client.
   </summary>
+  <token key="TabContext">
+    <variant name="WithContext"
+        summary="tab context was likely used in the request"/>
+    <variant name="WithoutContext"
+        summary="tab context was likely NOT used in the request"/>
+  </token>
 </histogram>
 
 <histogram name="Glic.Turn.ResponseStopTime.{Cause}" units="ms"
