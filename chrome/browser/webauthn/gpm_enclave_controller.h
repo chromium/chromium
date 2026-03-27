@@ -221,12 +221,13 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   void OnUVCapabilityKnown(bool can_create_uv_keys);
 
-  // Returns the level of support for user verification on this system.
-  EnclaveManager::PlatformUvSupport GetPlatformUvSupport();
-
   // Called when the EnclaveManager has finished loading its state from the
   // disk.
   void OnEnclaveLoaded();
+
+  // Starts downloading the state of the account from the security domain
+  // service.
+  void DownloadAccountState();
 
   // Called when the account state has finished downloading.
   void OnAccountStateDownloaded(
@@ -360,9 +361,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   std::optional<bool> is_active_;
 
-  // Whether the system can make UV keys. Assumed to be false until set shortly
-  // after construction.
-  bool can_make_uv_keys_ = false;
+  // Whether the system can make UV keys.
+  std::optional<bool> can_make_uv_keys_;
 
   // have_added_device_ is set to true if the local device was added to the
   // security domain during this transaction. In this case, the security domain
