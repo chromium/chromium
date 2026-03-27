@@ -108,7 +108,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                             {} /* answers */, {} /* authority_records */,
                             {} /* additional records */, query);
   std::string out =
-      base::HexEncode(response.io_buffer()->data(), response.io_buffer_size());
+      base::HexEncode(response.io_buffer()->first(response.io_buffer_size()));
 
   return 0;
 }

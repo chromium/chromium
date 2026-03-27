@@ -108,22 +108,21 @@ uint32_t ToWinTransportsMask(
 std::optional<AuthenticatorMakeCredentialResponse>
 ToAuthenticatorMakeCredentialResponse(
     const WEBAUTHN_CREDENTIAL_ATTESTATION& credential_attestation) {
-  auto authenticator_data = AuthenticatorData::DecodeAuthenticatorData(
-      base::span<const uint8_t>(credential_attestation.pbAuthenticatorData,
-                                credential_attestation.cbAuthenticatorData));
+  const auto authenticator_data_span =
+      ToAuthenticatorDataSpan(credential_attestation);
+  auto authenticator_data =
+      AuthenticatorData::DecodeAuthenticatorData(authenticator_data_span);
   if (!authenticator_data) {
     DLOG(ERROR) << "DecodeAuthenticatorData failed: "
-                << base::HexEncode(credential_attestation.pbAuthenticatorData,
-                                   credential_attestation.cbAuthenticatorData);
+                << base::HexEncode(authenticator_data_span);
     return std::nullopt;
   }
-  std::optional<cbor::Value> cbor_attestation_statement = cbor::Reader::Read(
-      base::span<const uint8_t>(credential_attestation.pbAttestation,
-                                credential_attestation.cbAttestation));
+  const auto attestation_span = ToAttestationSpan(credential_attestation);
+  std::optional<cbor::Value> cbor_attestation_statement =
+      cbor::Reader::Read(attestation_span);
   if (!cbor_attestation_statement || !cbor_attestation_statement->is_map()) {
     DLOG(ERROR) << "CBOR decoding attestation statement failed: "
-                << base::HexEncode(credential_attestation.pbAttestation,
-                                   credential_attestation.cbAttestation);
+                << base::HexEncode(attestation_span);
     return std::nullopt;
   }
 
@@ -176,13 +175,12 @@ std::optional<AuthenticatorGetAssertionResponse>
 ToAuthenticatorGetAssertionResponse(
     const WEBAUTHN_ASSERTION& assertion,
     const CtapGetAssertionOptions& request_options) {
+  const auto authenticator_data_span = ToAuthenticatorDataSpan(assertion);
   auto authenticator_data =
-      AuthenticatorData::DecodeAuthenticatorData(base::span<const uint8_t>(
-          assertion.pbAuthenticatorData, assertion.cbAuthenticatorData));
+      AuthenticatorData::DecodeAuthenticatorData(authenticator_data_span);
   if (!authenticator_data) {
     DLOG(ERROR) << "DecodeAuthenticatorData failed: "
-                << base::HexEncode(assertion.pbAuthenticatorData,
-                                   assertion.cbAuthenticatorData);
+                << base::HexEncode(authenticator_data_span);
     return std::nullopt;
   }
   std::optional<FidoTransportProtocol> transport_used =

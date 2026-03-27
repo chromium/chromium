@@ -8,6 +8,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -474,8 +475,7 @@ TEST_F(DiscoveryNetworkListWinTest, GetDiscoveryNetworkInfoList) {
   ASSERT_EQ(network_info_list.size(), 2u);
 
   EXPECT_EQ(network_info_list[0].name, kWiredAdapterName);
-  EXPECT_EQ(network_info_list[0].network_id,
-            base::HexEncode(kWiredMacAddress, std::size(kWiredMacAddress)));
+  EXPECT_EQ(network_info_list[0].network_id, base::HexEncode(kWiredMacAddress));
 
   EXPECT_EQ(network_info_list[1].name, kWifiAdapterName);
   EXPECT_EQ(network_info_list[1].network_id, kWifiSsid);
@@ -549,11 +549,11 @@ TEST_F(DiscoveryNetworkListWinTest,
 
   EXPECT_EQ(network_info_list[0].name, kWiredAdapterName);
   EXPECT_EQ(network_info_list[0].network_id,
-            base::HexEncode(kWiredMacAddress, std::size(kWiredMacAddress)));
+            base::HexEncode(base::span(kWiredMacAddress)));
 
   EXPECT_EQ(network_info_list[1].name, kWifiAdapterName);
   EXPECT_EQ(network_info_list[1].network_id,
-            base::HexEncode(kWifiMacAddress, std::size(kWifiMacAddress)));
+            base::HexEncode(base::span(kWifiMacAddress)));
 }
 
 TEST_F(DiscoveryNetworkListWinTest,

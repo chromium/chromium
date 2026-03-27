@@ -116,8 +116,6 @@ BASE_EXPORT bool StringToDouble(std::u16string_view input, double* output);
 //   std::numeric_limits<size_t>::max() / 2
 BASE_EXPORT std::string HexEncode(base::span<const uint8_t> bytes);
 BASE_EXPORT std::string HexEncode(std::string_view chars);
-// TODO(crbug.com/40284755): The pointer-based overload should be removed.
-BASE_EXPORT std::string HexEncode(const void* bytes, size_t size);
 
 // Behaves like the above, but returns the hex string in lower case.
 BASE_EXPORT std::string HexEncodeLower(base::span<const uint8_t> bytes);

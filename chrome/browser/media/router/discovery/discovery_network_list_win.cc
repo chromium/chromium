@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/hstring_reference.h"
@@ -530,9 +531,11 @@ std::vector<DiscoveryNetworkInfo> GetDiscoveryNetworkInfoList() {
         continue;
       }
     }
-    network_ids.emplace_back(
-        name, base::HexEncode(current_adapter->PhysicalAddress,
-                              current_adapter->PhysicalAddressLength));
+    const auto mac_bytes =
+        base::as_byte_span(base::span(current_adapter->PhysicalAddress));
+    const size_t mac_len =
+        static_cast<size_t>(current_adapter->PhysicalAddressLength);
+    network_ids.emplace_back(name, base::HexEncode(mac_bytes.first(mac_len)));
   }
 
   StableSortDiscoveryNetworkInfo(network_ids.begin(), network_ids.end());
