@@ -216,9 +216,9 @@ GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
 mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::proto::Skill& skill) {
-  return mojom::SkillPreview::New(skill.id(), skill.name(), skill.icon(),
-                                  mojom::SkillSource::kFirstParty,
-                                  skill.description());
+  return mojom::SkillPreview::New(
+      skill.id(), skill.name(), skill.icon(), mojom::SkillSource::kFirstParty,
+      skill.description(), /*image_url=*/std::nullopt);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1375,6 +1375,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     // directly in skills::Skill..
     skills::Skill skill(request->id, request->name, request->icon,
                         request->prompt, request->description,
+                        /*image_url=*/GURL(),
                         skills::GlicMojomToSyncPbSkillSource(request->source));
     host().skills_manager().LaunchSkillsDialog(
         profile_, std::move(skill), skills::mojom::SkillsDialogType::kAdd,

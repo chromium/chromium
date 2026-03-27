@@ -41,6 +41,7 @@ suite('UserSkillsPage', function() {
       icon: '',
       prompt: '',
       description: '',
+      imageUrl: '',
       source: SkillSource.kUserCreated,
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},

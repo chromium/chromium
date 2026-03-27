@@ -42,6 +42,7 @@ suite('DiscoverSkillsPage', function() {
       icon: '',
       prompt: '',
       description: '',
+      imageUrl: '',
       source: SkillSource.kFirstParty,
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},

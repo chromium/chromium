@@ -289,6 +289,7 @@ void SkillsServiceImpl::Handle1pSkillsMap(
     for (const auto& [id, proto_skill] : first_party_skills_map_) {
       Skill skill(id, proto_skill.name(), proto_skill.icon(),
                   proto_skill.prompt(), proto_skill.description(),
+                  GURL(proto_skill.image_url()),
                   sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
       first_party_skill_objects_map_.insert({id, std::move(skill)});
     }

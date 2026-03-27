@@ -30,6 +30,7 @@ std::string CreateValidSkillsListString() {
   skill->set_category("Test Category");
   skill->set_prompt("Test prompt.");
   skill->set_id("test-id");
+  skill->set_image_url("https://example.com/some-image.png");
 
   return skills_list.SerializeAsString();
 }
@@ -90,6 +91,7 @@ TEST_F(SkillsDownloaderTest, ReturnsValidSkills) {
   auto it = result_map->find("test-id");
   ASSERT_NE(it, result_map->end());
   EXPECT_EQ(it->second.name(), "/test-skill");
+  EXPECT_EQ(it->second.image_url(), "https://example.com/some-image.png");
 
   histogram_tester_.ExpectUniqueSample(
       "Skills.Downloader.FirstParty.FetchResult", SkillsFetchResult::kSuccess,

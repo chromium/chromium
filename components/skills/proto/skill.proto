@@ -27,6 +27,11 @@ message Skill {
 
   // A user-facing short description of the Skill.
   optional string description = 6;
+
+  // The image to use when rendering this Skill. The number here should match
+  // exactly with the proto defined in
+  // google3/chrome/breve/cacao/boq/skills/config/skill.proto.
+  optional string image_url = 8;
 }
 
 // Contains a list of Skills received from the server.
