@@ -1266,7 +1266,7 @@ BASE_FEATURE(kAccessibilityMeterEventsOnAndroid,
 // particular this will be used to determine whether or not a node is clickable
 // or not.
 BASE_FEATURE(kAccessibilityRequestLayoutBasedActions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When this feature is enabled, the accessibility tree will be requested to
 // signal content changed events next to a boolean value that will determine if
