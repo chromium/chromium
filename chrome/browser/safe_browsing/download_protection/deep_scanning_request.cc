@@ -55,6 +55,12 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using DeepScanTrigger = DownloadItemWarningData::DeepScanTrigger;
 
 namespace safe_browsing {
@@ -746,6 +752,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   }
 
   bool should_show_force_save_dialog = false;
+  content::WebContents* force_save_web_contents = web_contents();
   // Handle force save to cloud if the feature is enabled.
   if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE ||
       download_result == DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE) {
@@ -756,8 +763,22 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
 
     if (!base::FeatureList::IsEnabled(force_save_to_cloud_feature)) {
       download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
-    } else if (web_contents()) {
+    } else {
       should_show_force_save_dialog = true;
+
+      // `web_contents()` may be nullptr in several cases, if the tab owning
+      // the download was opened by a download link, a restored page, or an
+      // external application. For those cases, download to drive directly.
+      if (force_save_web_contents == nullptr) {
+#if !BUILDFLAG(IS_ANDROID)
+        Browser* browser = chrome::FindLastActiveWithProfile(
+            Profile::FromBrowserContext(metadata_->GetBrowserContext()));
+        if (browser) {
+          force_save_web_contents =
+              browser->tab_strip_model()->GetActiveWebContents();
+        }
+#endif
+      }
     }
   }
 
@@ -783,36 +804,31 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     metadata_->AddScanResultMetadata(file_metadata);
   }
 
-  if (should_show_force_save_dialog) {
-    // `web_contents()` may be nullptr in several cases, if the tab owning
-    // the download was opened by a download link, a restored page, or an
-    // external application. For those cases, download to drive directly.
-
+  if (should_show_force_save_dialog && force_save_web_contents) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     // ProcessEnterpriseDownloadResult will run via
     // dialog callback.
-    base::OnceClosure keep_closure = base::BindOnce(
-        &DeepScanningRequest::ProcessEnterpriseDownloadResult,
-        weak_ptr_factory_.GetWeakPtr(), download_result);
-    base::OnceClosure discard_closure = base::BindOnce(
-        &DeepScanningRequest::ProcessEnterpriseDownloadResult,
-        weak_ptr_factory_.GetWeakPtr(),
-        DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
+    base::OnceClosure keep_closure =
+        base::BindOnce(&DeepScanningRequest::ProcessEnterpriseDownloadResult,
+                       weak_ptr_factory_.GetWeakPtr(), download_result);
+    base::OnceClosure discard_closure =
+        base::BindOnce(&DeepScanningRequest::ProcessEnterpriseDownloadResult,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
 
     new enterprise_connectors::ContentAnalysisDialogController(
         std::make_unique<
             enterprise_connectors::ContentAnalysisDownloadsDelegate>(
             metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe(), u"",
-            GURL(), false, std::move(keep_closure),
-            std::move(discard_closure), nullptr,
+            GURL(), false, std::move(keep_closure), std::move(discard_closure),
+            nullptr,
             enterprise_connectors::ContentAnalysisResponse::Result::
                 TriggeredRule::CustomRuleMessage()),
         true,  // Downloads are always cloud-based for now.
-        web_contents(),
+        force_save_web_contents,
         enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
         /* file_count */ 1,
-        enterprise_connectors::FinalContentAnalysisResult::
-            FORCE_SAVE_TO_CLOUD,
+        enterprise_connectors::FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD,
         nullptr);
     return;
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
