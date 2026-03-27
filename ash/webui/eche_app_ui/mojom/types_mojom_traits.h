@@ -16,8 +16,8 @@ struct EnumTraits<ash::eche_app::mojom::ScreenBacklightState,
                   ash::ScreenBacklightState> {
   static ash::eche_app::mojom::ScreenBacklightState ToMojom(
       ash::ScreenBacklightState input);
-  static bool FromMojom(ash::eche_app::mojom::ScreenBacklightState input,
-                        ash::ScreenBacklightState* output);
+  static ash::ScreenBacklightState FromMojom(
+      ash::eche_app::mojom::ScreenBacklightState input);
 };
 
 }  // namespace mojo

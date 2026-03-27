@@ -5,6 +5,7 @@
 #include "ash/webui/common/mojom/sea_pen_mojom_traits.h"
 
 #include "ash/webui/common/mojom/sea_pen.mojom-shared.h"
+#include "base/notreached.h"
 #include "components/manta/manta_status.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
@@ -42,39 +43,31 @@ EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::ToMojom(
   }
 }
 
-bool EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
-    MojomMantaStatusCode input,
-    manta::MantaStatusCode* output) {
+manta::MantaStatusCode
+EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
+    MojomMantaStatusCode input) {
   switch (input) {
     case MojomMantaStatusCode::kOk:
-      *output = manta::MantaStatusCode::kOk;
-      return true;
+      return manta::MantaStatusCode::kOk;
     case MojomMantaStatusCode::kResourceExhausted:
-      *output = manta::MantaStatusCode::kResourceExhausted;
-      return true;
+      return manta::MantaStatusCode::kResourceExhausted;
     case MojomMantaStatusCode::kNoInternetConnection:
-      *output = manta::MantaStatusCode::kNoInternetConnection;
-      return true;
+      return manta::MantaStatusCode::kNoInternetConnection;
     case MojomMantaStatusCode::kUnsupportedLanguage:
-      *output = manta::MantaStatusCode::kUnsupportedLanguage;
-      return true;
+      return manta::MantaStatusCode::kUnsupportedLanguage;
     case MojomMantaStatusCode::kBlockedOutputs:
-      *output = manta::MantaStatusCode::kBlockedOutputs;
-      return true;
+      return manta::MantaStatusCode::kBlockedOutputs;
     case MojomMantaStatusCode::kPerUserQuotaExceeded:
-      *output = manta::MantaStatusCode::kPerUserQuotaExceeded;
-      return true;
+      return manta::MantaStatusCode::kPerUserQuotaExceeded;
     case MojomMantaStatusCode::kGenericError:
     case MojomMantaStatusCode::kInvalidInput:
     case MojomMantaStatusCode::kBackendFailure:
     case MojomMantaStatusCode::kMalformedResponse:
     case MojomMantaStatusCode::kRestrictedCountry:
     case MojomMantaStatusCode::kNoIdentityManager:
-      *output = manta::MantaStatusCode::kGenericError;
-      return true;
+      return manta::MantaStatusCode::kGenericError;
     case MojomMantaStatusCode::kImageHasPerson:
-      *output = manta::MantaStatusCode::kImageHasPerson;
-      return true;
+      return manta::MantaStatusCode::kImageHasPerson;
   }
   NOTREACHED();
 }

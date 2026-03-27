@@ -17,8 +17,7 @@ struct EnumTraits<ash::personalization_app::mojom::MantaStatusCode,
   using MojomMantaStatusCode =
       ::ash::personalization_app::mojom::MantaStatusCode;
   static MojomMantaStatusCode ToMojom(manta::MantaStatusCode input);
-  static bool FromMojom(MojomMantaStatusCode input,
-                        manta::MantaStatusCode* output);
+  static manta::MantaStatusCode FromMojom(MojomMantaStatusCode input);
 };
 
 }  // namespace mojo

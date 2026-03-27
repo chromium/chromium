@@ -164,19 +164,15 @@ MojomColorMode EnumTraits<MojomColorMode, ProtoColorMode>::ToMojom(
 }
 
 // static
-bool EnumTraits<MojomColorMode, ProtoColorMode>::FromMojom(
-    MojomColorMode input,
-    ProtoColorMode* out) {
+ProtoColorMode EnumTraits<MojomColorMode, ProtoColorMode>::FromMojom(
+    MojomColorMode input) {
   switch (input) {
     case MojomColorMode::kBlackAndWhite:
-      *out = ProtoColorMode::MODE_LINEART;
-      return true;
+      return ProtoColorMode::MODE_LINEART;
     case MojomColorMode::kGrayscale:
-      *out = ProtoColorMode::MODE_GRAYSCALE;
-      return true;
+      return ProtoColorMode::MODE_GRAYSCALE;
     case MojomColorMode::kColor:
-      *out = ProtoColorMode::MODE_COLOR;
-      return true;
+      return ProtoColorMode::MODE_COLOR;
   }
   NOTREACHED();
 }
@@ -202,25 +198,19 @@ MojomSourceType EnumTraits<MojomSourceType, ProtoSourceType>::ToMojom(
 }
 
 // static
-bool EnumTraits<MojomSourceType, ProtoSourceType>::FromMojom(
-    MojomSourceType input,
-    ProtoSourceType* out) {
+ProtoSourceType EnumTraits<MojomSourceType, ProtoSourceType>::FromMojom(
+    MojomSourceType input) {
   switch (input) {
     case MojomSourceType::kFlatbed:
-      *out = ProtoSourceType::SOURCE_PLATEN;
-      return true;
+      return ProtoSourceType::SOURCE_PLATEN;
     case MojomSourceType::kAdfSimplex:
-      *out = ProtoSourceType::SOURCE_ADF_SIMPLEX;
-      return true;
+      return ProtoSourceType::SOURCE_ADF_SIMPLEX;
     case MojomSourceType::kAdfDuplex:
-      *out = ProtoSourceType::SOURCE_ADF_DUPLEX;
-      return true;
+      return ProtoSourceType::SOURCE_ADF_DUPLEX;
     case MojomSourceType::kDefault:
-      *out = ProtoSourceType::SOURCE_DEFAULT;
-      return true;
+      return ProtoSourceType::SOURCE_DEFAULT;
     case MojomSourceType::kUnknown:
-      *out = ProtoSourceType::SOURCE_UNSPECIFIED;
-      return true;
+      return ProtoSourceType::SOURCE_UNSPECIFIED;
   }
   NOTREACHED();
 }
@@ -240,19 +230,16 @@ MojomFileType EnumTraits<MojomFileType, ProtoImageFormat>::ToMojom(
 }
 
 // static
-bool EnumTraits<MojomFileType, ProtoImageFormat>::FromMojom(
-    MojomFileType input,
-    ProtoImageFormat* out) {
+ProtoImageFormat EnumTraits<MojomFileType, ProtoImageFormat>::FromMojom(
+    MojomFileType input) {
   switch (input) {
     case MojomFileType::kPng:
-      *out = ProtoImageFormat::IMAGE_FORMAT_PNG;
-      return true;
+      return ProtoImageFormat::IMAGE_FORMAT_PNG;
     // PDF images request JPEG data from lorgnette, then
     // convert the returned JPEG data to PDF.
     case MojomFileType::kPdf:  // FALLTHROUGH
     case MojomFileType::kJpg:
-      *out = ProtoImageFormat::IMAGE_FORMAT_JPEG;
-      return true;
+      return ProtoImageFormat::IMAGE_FORMAT_JPEG;
   }
   NOTREACHED();
 }
@@ -283,31 +270,24 @@ MojomScanResult EnumTraits<MojomScanResult, ProtoScanFailureMode>::ToMojom(
 }
 
 // static
-bool EnumTraits<MojomScanResult, ProtoScanFailureMode>::FromMojom(
-    MojomScanResult input,
-    ProtoScanFailureMode* output) {
+ProtoScanFailureMode
+EnumTraits<MojomScanResult, ProtoScanFailureMode>::FromMojom(
+    MojomScanResult input) {
   switch (input) {
     case MojomScanResult::kSuccess:
-      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE;
-      return true;
+      return ProtoScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE;
     case MojomScanResult::kUnknownError:
-      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN;
-      return true;
+      return ProtoScanFailureMode::SCAN_FAILURE_MODE_UNKNOWN;
     case MojomScanResult::kDeviceBusy:
-      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY;
-      return true;
+      return ProtoScanFailureMode::SCAN_FAILURE_MODE_DEVICE_BUSY;
     case MojomScanResult::kAdfJammed:
-      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_JAMMED;
-      return true;
+      return ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_JAMMED;
     case MojomScanResult::kAdfEmpty:
-      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_EMPTY;
-      return true;
+      return ProtoScanFailureMode::SCAN_FAILURE_MODE_ADF_EMPTY;
     case MojomScanResult::kFlatbedOpen:
-      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_FLATBED_OPEN;
-      return true;
+      return ProtoScanFailureMode::SCAN_FAILURE_MODE_FLATBED_OPEN;
     case MojomScanResult::kIoError:
-      *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_IO_ERROR;
-      return true;
+      return ProtoScanFailureMode::SCAN_FAILURE_MODE_IO_ERROR;
   }
   NOTREACHED();
 }
@@ -349,17 +329,12 @@ lorgnette::ScanSettings
 StructTraits<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::ToMojom(
     const mojo_ipc::ScanSettingsPtr& mojo_settings) {
   lorgnette::ScanSettings lorgnette_settings;
-  lorgnette::ColorMode lorgnette_color_mode;
-  lorgnette::ImageFormat lorgnette_image_format;
-
-  if (mojo::EnumTraits<mojo_ipc::ColorMode, lorgnette::ColorMode>::FromMojom(
-          mojo_settings->color_mode, &lorgnette_color_mode)) {
-    lorgnette_settings.set_color_mode(lorgnette_color_mode);
-  }
-  if (mojo::EnumTraits<mojo_ipc::FileType, lorgnette::ImageFormat>::FromMojom(
-          mojo_settings->file_type, &lorgnette_image_format)) {
-    lorgnette_settings.set_image_format(lorgnette_image_format);
-  }
+  lorgnette_settings.set_color_mode(
+      mojo::EnumTraits<mojo_ipc::ColorMode, lorgnette::ColorMode>::FromMojom(
+          mojo_settings->color_mode));
+  lorgnette_settings.set_image_format(
+      mojo::EnumTraits<mojo_ipc::FileType, lorgnette::ImageFormat>::FromMojom(
+          mojo_settings->file_type));
 
   lorgnette_settings.set_source_name(mojo_settings->source_name);
   lorgnette_settings.set_resolution(mojo_settings->resolution_dpi);

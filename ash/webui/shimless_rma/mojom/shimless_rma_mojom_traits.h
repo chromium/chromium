@@ -25,8 +25,8 @@ struct EnumTraits<ash::shimless_rma::mojom::RmadErrorCode,
   static ash::shimless_rma::mojom::RmadErrorCode ToMojom(
       rmad::RmadErrorCode key_status);
 
-  static bool FromMojom(ash::shimless_rma::mojom::RmadErrorCode input,
-                        rmad::RmadErrorCode* out);
+  static rmad::RmadErrorCode FromMojom(
+      ash::shimless_rma::mojom::RmadErrorCode input);
 };
 
 template <>
@@ -35,8 +35,8 @@ struct EnumTraits<ash::shimless_rma::mojom::ComponentType,
   static ash::shimless_rma::mojom::ComponentType ToMojom(
       rmad::RmadComponent key_status);
 
-  static bool FromMojom(ash::shimless_rma::mojom::ComponentType input,
-                        rmad::RmadComponent* out);
+  static rmad::RmadComponent FromMojom(
+      ash::shimless_rma::mojom::ComponentType input);
 };
 
 template <>
@@ -47,9 +47,8 @@ struct EnumTraits<
       rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus
           key_status);
 
-  static bool FromMojom(
-      ash::shimless_rma::mojom::ComponentRepairStatus input,
-      rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus* out);
+  static rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus
+  FromMojom(ash::shimless_rma::mojom::ComponentRepairStatus input);
 };
 
 template <>
@@ -58,8 +57,8 @@ struct EnumTraits<ash::shimless_rma::mojom::OsUpdateOperation,
   static ash::shimless_rma::mojom::OsUpdateOperation ToMojom(
       update_engine::Operation operation);
 
-  static bool FromMojom(ash::shimless_rma::mojom::OsUpdateOperation input,
-                        update_engine::Operation* out);
+  static update_engine::Operation FromMojom(
+      ash::shimless_rma::mojom::OsUpdateOperation input);
 };
 
 template <>
@@ -68,8 +67,8 @@ struct EnumTraits<ash::shimless_rma::mojom::UpdateErrorCode,
   static ash::shimless_rma::mojom::UpdateErrorCode ToMojom(
       update_engine::ErrorCode error_code);
 
-  static bool FromMojom(ash::shimless_rma::mojom::UpdateErrorCode input,
-                        update_engine::ErrorCode* out);
+  static update_engine::ErrorCode FromMojom(
+      ash::shimless_rma::mojom::UpdateErrorCode input);
 };
 
 template <>
@@ -78,9 +77,8 @@ struct EnumTraits<ash::shimless_rma::mojom::WriteProtectDisableCompleteAction,
   static ash::shimless_rma::mojom::WriteProtectDisableCompleteAction ToMojom(
       rmad::WriteProtectDisableCompleteState::Action action);
 
-  static bool FromMojom(
-      ash::shimless_rma::mojom::WriteProtectDisableCompleteAction input,
-      rmad::WriteProtectDisableCompleteState::Action* out);
+  static rmad::WriteProtectDisableCompleteState::Action FromMojom(
+      ash::shimless_rma::mojom::WriteProtectDisableCompleteAction input);
 };
 
 template <>
@@ -89,8 +87,8 @@ struct EnumTraits<ash::shimless_rma::mojom::ProvisioningStatus,
   static ash::shimless_rma::mojom::ProvisioningStatus ToMojom(
       rmad::ProvisionStatus::Status key_status);
 
-  static bool FromMojom(ash::shimless_rma::mojom::ProvisioningStatus input,
-                        rmad::ProvisionStatus::Status* out);
+  static rmad::ProvisionStatus::Status FromMojom(
+      ash::shimless_rma::mojom::ProvisioningStatus input);
 };
 
 template <>
@@ -99,8 +97,8 @@ struct EnumTraits<ash::shimless_rma::mojom::ProvisioningError,
   static ash::shimless_rma::mojom::ProvisioningError ToMojom(
       rmad::ProvisionStatus::Error error);
 
-  static bool FromMojom(ash::shimless_rma::mojom::ProvisioningError input,
-                        rmad::ProvisionStatus::Error* out);
+  static rmad::ProvisionStatus::Error FromMojom(
+      ash::shimless_rma::mojom::ProvisioningError input);
 };
 
 template <>
@@ -130,9 +128,8 @@ struct EnumTraits<ash::shimless_rma::mojom::CalibrationSetupInstruction,
   static ash::shimless_rma::mojom::CalibrationSetupInstruction ToMojom(
       rmad::CalibrationSetupInstruction key_status);
 
-  static bool FromMojom(
-      ash::shimless_rma::mojom::CalibrationSetupInstruction input,
-      rmad::CalibrationSetupInstruction* out);
+  static rmad::CalibrationSetupInstruction FromMojom(
+      ash::shimless_rma::mojom::CalibrationSetupInstruction input);
 };
 
 template <>
@@ -141,9 +138,8 @@ struct EnumTraits<ash::shimless_rma::mojom::CalibrationOverallStatus,
   static ash::shimless_rma::mojom::CalibrationOverallStatus ToMojom(
       rmad::CalibrationOverallStatus key_status);
 
-  static bool FromMojom(
-      ash::shimless_rma::mojom::CalibrationOverallStatus input,
-      rmad::CalibrationOverallStatus* out);
+  static rmad::CalibrationOverallStatus FromMojom(
+      ash::shimless_rma::mojom::CalibrationOverallStatus input);
 };
 
 template <>
@@ -152,9 +148,8 @@ struct EnumTraits<ash::shimless_rma::mojom::CalibrationStatus,
   static ash::shimless_rma::mojom::CalibrationStatus ToMojom(
       rmad::CalibrationComponentStatus_CalibrationStatus key_status);
 
-  static bool FromMojom(
-      ash::shimless_rma::mojom::CalibrationStatus input,
-      rmad::CalibrationComponentStatus_CalibrationStatus* out);
+  static rmad::CalibrationComponentStatus_CalibrationStatus FromMojom(
+      ash::shimless_rma::mojom::CalibrationStatus input);
 };
 
 template <>
@@ -163,8 +158,8 @@ struct EnumTraits<ash::shimless_rma::mojom::FinalizationStatus,
   static ash::shimless_rma::mojom::FinalizationStatus ToMojom(
       rmad::FinalizeStatus_Status key_status);
 
-  static bool FromMojom(ash::shimless_rma::mojom::FinalizationStatus input,
-                        rmad::FinalizeStatus_Status* out);
+  static rmad::FinalizeStatus_Status FromMojom(
+      ash::shimless_rma::mojom::FinalizationStatus input);
 };
 
 template <>
@@ -173,8 +168,8 @@ struct EnumTraits<ash::shimless_rma::mojom::FinalizationError,
   static ash::shimless_rma::mojom::FinalizationError ToMojom(
       rmad::FinalizeStatus::Error error);
 
-  static bool FromMojom(ash::shimless_rma::mojom::FinalizationError input,
-                        rmad::FinalizeStatus::Error* out);
+  static rmad::FinalizeStatus::Error FromMojom(
+      ash::shimless_rma::mojom::FinalizationError input);
 };
 
 template <>
@@ -206,8 +201,8 @@ struct EnumTraits<ash::shimless_rma::mojom::UpdateRoFirmwareStatus,
   static ash::shimless_rma::mojom::UpdateRoFirmwareStatus ToMojom(
       rmad::UpdateRoFirmwareStatus status);
 
-  static bool FromMojom(ash::shimless_rma::mojom::UpdateRoFirmwareStatus input,
-                        rmad::UpdateRoFirmwareStatus* out);
+  static rmad::UpdateRoFirmwareStatus FromMojom(
+      ash::shimless_rma::mojom::UpdateRoFirmwareStatus input);
 };
 
 template <>
@@ -216,8 +211,8 @@ struct EnumTraits<ash::shimless_rma::mojom::ShutdownMethod,
   static ash::shimless_rma::mojom::ShutdownMethod ToMojom(
       rmad::RepairCompleteState::ShutdownMethod shutdown_method);
 
-  static bool FromMojom(ash::shimless_rma::mojom::ShutdownMethod input,
-                        rmad::RepairCompleteState::ShutdownMethod* out);
+  static rmad::RepairCompleteState::ShutdownMethod FromMojom(
+      ash::shimless_rma::mojom::ShutdownMethod input);
 };
 
 template <>
@@ -226,8 +221,8 @@ struct EnumTraits<ash::shimless_rma::mojom::FeatureLevel,
   static ash::shimless_rma::mojom::FeatureLevel ToMojom(
       rmad::UpdateDeviceInfoState::FeatureLevel feature_level);
 
-  static bool FromMojom(ash::shimless_rma::mojom::FeatureLevel input,
-                        rmad::UpdateDeviceInfoState::FeatureLevel* out);
+  static rmad::UpdateDeviceInfoState::FeatureLevel FromMojom(
+      ash::shimless_rma::mojom::FeatureLevel input);
 };
 
 }  // namespace mojo

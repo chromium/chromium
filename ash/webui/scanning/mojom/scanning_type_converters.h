@@ -16,24 +16,22 @@ template <>
 struct EnumTraits<ash::scanning::mojom::ColorMode, lorgnette::ColorMode> {
   static ash::scanning::mojom::ColorMode ToMojom(
       lorgnette::ColorMode color_mode);
-  static bool FromMojom(ash::scanning::mojom::ColorMode input,
-                        lorgnette::ColorMode* out);
+  static lorgnette::ColorMode FromMojom(ash::scanning::mojom::ColorMode input);
 };
 
 template <>
 struct EnumTraits<ash::scanning::mojom::SourceType, lorgnette::SourceType> {
   static ash::scanning::mojom::SourceType ToMojom(
       lorgnette::SourceType source_type);
-  static bool FromMojom(ash::scanning::mojom::SourceType input,
-                        lorgnette::SourceType* out);
+  static lorgnette::SourceType FromMojom(
+      ash::scanning::mojom::SourceType input);
 };
 
 template <>
 struct EnumTraits<ash::scanning::mojom::FileType, lorgnette::ImageFormat> {
   static ash::scanning::mojom::FileType ToMojom(
       lorgnette::ImageFormat image_format);
-  static bool FromMojom(ash::scanning::mojom::FileType input,
-                        lorgnette::ImageFormat* out);
+  static lorgnette::ImageFormat FromMojom(ash::scanning::mojom::FileType input);
 };
 
 template <>
@@ -41,8 +39,8 @@ struct EnumTraits<ash::scanning::mojom::ScanResult,
                   lorgnette::ScanFailureMode> {
   static ash::scanning::mojom::ScanResult ToMojom(
       lorgnette::ScanFailureMode lorgnette_failure_mode);
-  static bool FromMojom(ash::scanning::mojom::ScanResult input,
-                        lorgnette::ScanFailureMode* out);
+  static lorgnette::ScanFailureMode FromMojom(
+      ash::scanning::mojom::ScanResult input);
 };
 
 template <>

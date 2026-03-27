@@ -24,22 +24,19 @@ EnumTraits<MojomNewScreencastPreconditionState,
   NOTREACHED();
 }
 
-bool EnumTraits<MojomNewScreencastPreconditionState,
-                ash::NewScreencastPreconditionState>::
-    FromMojom(MojomNewScreencastPreconditionState input,
-              ash::NewScreencastPreconditionState* out) {
+ash::NewScreencastPreconditionState
+EnumTraits<MojomNewScreencastPreconditionState,
+           ash::NewScreencastPreconditionState>::
+    FromMojom(MojomNewScreencastPreconditionState input) {
   switch (input) {
     case MojomNewScreencastPreconditionState::kEnabled:
-      *out = ash::NewScreencastPreconditionState::kEnabled;
-      return true;
+      return ash::NewScreencastPreconditionState::kEnabled;
     case MojomNewScreencastPreconditionState::kDisabled:
-      *out = ash::NewScreencastPreconditionState::kDisabled;
-      return true;
+      return ash::NewScreencastPreconditionState::kDisabled;
     case MojomNewScreencastPreconditionState::kHidden:
-      *out = ash::NewScreencastPreconditionState::kHidden;
-      return true;
+      return ash::NewScreencastPreconditionState::kHidden;
   }
-  return false;
+  NOTREACHED();
 }
 
 MojomNewScreencastPreconditionReason
@@ -91,67 +88,52 @@ EnumTraits<MojomNewScreencastPreconditionReason,
   NOTREACHED();
 }
 
-bool EnumTraits<MojomNewScreencastPreconditionReason,
-                ash::NewScreencastPreconditionReason>::
-    FromMojom(MojomNewScreencastPreconditionReason input,
-              ash::NewScreencastPreconditionReason* out) {
+ash::NewScreencastPreconditionReason
+EnumTraits<MojomNewScreencastPreconditionReason,
+           ash::NewScreencastPreconditionReason>::
+    FromMojom(MojomNewScreencastPreconditionReason input) {
   switch (input) {
     case MojomNewScreencastPreconditionReason::
         kSodaInstallationErrorUnspecifiedError:
-      *out = ash::NewScreencastPreconditionReason::
+      return ash::NewScreencastPreconditionReason::
           kSodaInstallationErrorUnspecified;
-      return true;
     case MojomNewScreencastPreconditionReason::kOnDeviceRecognitionNotSupported:
-      *out = ash::NewScreencastPreconditionReason::
+      return ash::NewScreencastPreconditionReason::
           kOnDeviceSpeechRecognitionNotSupported;
-      return true;
     case MojomNewScreencastPreconditionReason::kUserLocaleNotSupported:
-      *out = ash::NewScreencastPreconditionReason::kUserLocaleNotSupported;
-      return true;
+      return ash::NewScreencastPreconditionReason::kUserLocaleNotSupported;
     case MojomNewScreencastPreconditionReason::kInProjectorSession:
-      *out = ash::NewScreencastPreconditionReason::kInProjectorSession;
-      return true;
+      return ash::NewScreencastPreconditionReason::kInProjectorSession;
     case MojomNewScreencastPreconditionReason::kScreenRecordingInProgress:
-      *out = ash::NewScreencastPreconditionReason::kScreenRecordingInProgress;
-      return true;
+      return ash::NewScreencastPreconditionReason::kScreenRecordingInProgress;
     case MojomNewScreencastPreconditionReason::kSodaDownloadInProgress:
-      *out = ash::NewScreencastPreconditionReason::kSodaDownloadInProgress;
-      return true;
+      return ash::NewScreencastPreconditionReason::kSodaDownloadInProgress;
     case MojomNewScreencastPreconditionReason::kOutOfDiskSpace:
-      *out = ash::NewScreencastPreconditionReason::kOutOfDiskSpace;
-      return true;
+      return ash::NewScreencastPreconditionReason::kOutOfDiskSpace;
     case MojomNewScreencastPreconditionReason::kNoMic:
-      *out = ash::NewScreencastPreconditionReason::kNoMic;
-      return true;
+      return ash::NewScreencastPreconditionReason::kNoMic;
     case MojomNewScreencastPreconditionReason::kDriveFSUnMounted:
-      *out = ash::NewScreencastPreconditionReason::kDriveFsUnmounted;
-      return true;
+      return ash::NewScreencastPreconditionReason::kDriveFsUnmounted;
     case MojomNewScreencastPreconditionReason::kDriveFSMountFailed:
-      *out = ash::NewScreencastPreconditionReason::kDriveFsMountFailed;
-      return true;
+      return ash::NewScreencastPreconditionReason::kDriveFsMountFailed;
     case MojomNewScreencastPreconditionReason::kOthers:
-      *out = ash::NewScreencastPreconditionReason::kOthers;
-      return true;
+      return ash::NewScreencastPreconditionReason::kOthers;
     case MojomNewScreencastPreconditionReason::
         kSodaInstallationErrorNeedsReboot:
-      *out = ash::NewScreencastPreconditionReason::
+      return ash::NewScreencastPreconditionReason::
           kSodaInstallationErrorNeedsReboot;
-      return true;
     case MojomNewScreencastPreconditionReason::kAudioCaptureDisabledByPolicy:
-      *out =
-          ash::NewScreencastPreconditionReason::kAudioCaptureDisabledByPolicy;
-      return true;
+      return ash::NewScreencastPreconditionReason::
+          kAudioCaptureDisabledByPolicy;
     case MojomNewScreencastPreconditionReason::kEnabledBySoda:
-      *out = ash::NewScreencastPreconditionReason::kEnabledBySoda;
-      return true;
+      return ash::NewScreencastPreconditionReason::kEnabledBySoda;
     case MojomNewScreencastPreconditionReason::
         kEnabledByServerSideSpeechRecognition:
-      *out = ash::NewScreencastPreconditionReason::
+      return ash::NewScreencastPreconditionReason::
           kEnabledByServerSideSpeechRecognition;
-      return true;
   }
 
-  return false;
+  NOTREACHED();
 }
 
 ash::NewScreencastPreconditionState StructTraits<

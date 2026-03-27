@@ -20,8 +20,8 @@ struct EnumTraits<diagnostics_mojom::SecurityType,
   static diagnostics_mojom::SecurityType ToMojom(
       network_config_mojom::SecurityType input);
 
-  static bool FromMojom(diagnostics_mojom::SecurityType input,
-                        network_config_mojom::SecurityType* output);
+  static network_config_mojom::SecurityType FromMojom(
+      diagnostics_mojom::SecurityType input);
 };
 
 template <>
@@ -30,8 +30,8 @@ struct EnumTraits<diagnostics_mojom::AuthenticationType,
   static diagnostics_mojom::AuthenticationType ToMojom(
       network_config_mojom::AuthenticationType input);
 
-  static bool FromMojom(diagnostics_mojom::AuthenticationType input,
-                        network_config_mojom::AuthenticationType* output);
+  static network_config_mojom::AuthenticationType FromMojom(
+      diagnostics_mojom::AuthenticationType input);
 };
 
 }  // namespace mojo

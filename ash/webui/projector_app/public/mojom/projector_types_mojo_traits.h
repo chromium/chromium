@@ -27,8 +27,8 @@ struct EnumTraits<MojomNewScreencastPreconditionState,
                   ash::NewScreencastPreconditionState> {
   static MojomNewScreencastPreconditionState ToMojom(
       ash::NewScreencastPreconditionState input);
-  static bool FromMojom(MojomNewScreencastPreconditionState input,
-                        ash::NewScreencastPreconditionState* out);
+  static ash::NewScreencastPreconditionState FromMojom(
+      MojomNewScreencastPreconditionState input);
 };
 
 template <>
@@ -36,8 +36,8 @@ struct EnumTraits<MojomNewScreencastPreconditionReason,
                   ash::NewScreencastPreconditionReason> {
   static MojomNewScreencastPreconditionReason ToMojom(
       ash::NewScreencastPreconditionReason input);
-  static bool FromMojom(MojomNewScreencastPreconditionReason input,
-                        ash::NewScreencastPreconditionReason* out);
+  static ash::NewScreencastPreconditionReason FromMojom(
+      MojomNewScreencastPreconditionReason input);
 };
 
 template <>

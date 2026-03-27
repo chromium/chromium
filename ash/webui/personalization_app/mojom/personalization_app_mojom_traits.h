@@ -31,8 +31,7 @@ struct EnumTraits<ash::personalization_app::mojom::WallpaperLayout,
   using MojomWallpaperLayout =
       ::ash::personalization_app::mojom::WallpaperLayout;
   static MojomWallpaperLayout ToMojom(ash::WallpaperLayout input);
-  static bool FromMojom(MojomWallpaperLayout input,
-                        ash::WallpaperLayout* output);
+  static ash::WallpaperLayout FromMojom(MojomWallpaperLayout input);
 };
 
 template <>
@@ -40,7 +39,7 @@ struct EnumTraits<ash::personalization_app::mojom::WallpaperType,
                   ash::WallpaperType> {
   using MojomWallpaperType = ::ash::personalization_app::mojom::WallpaperType;
   static MojomWallpaperType ToMojom(ash::WallpaperType input);
-  static bool FromMojom(MojomWallpaperType input, ash::WallpaperType* output);
+  static ash::WallpaperType FromMojom(MojomWallpaperType input);
 };
 
 template <>
@@ -49,8 +48,7 @@ struct EnumTraits<ash::personalization_app::mojom::OnlineImageType,
   using MojomOnlineImageType =
       ::ash::personalization_app::mojom::OnlineImageType;
   static MojomOnlineImageType ToMojom(::backdrop::Image::ImageType input);
-  static bool FromMojom(MojomOnlineImageType input,
-                        ::backdrop::Image::ImageType* output);
+  static ::backdrop::Image::ImageType FromMojom(MojomOnlineImageType input);
 };
 
 template <>
@@ -132,8 +130,7 @@ struct EnumTraits<ash::personalization_app::mojom::TemperatureUnit,
   using MojomTemperatureUnit =
       ::ash::personalization_app::mojom::TemperatureUnit;
   static MojomTemperatureUnit ToMojom(ash::AmbientModeTemperatureUnit input);
-  static bool FromMojom(MojomTemperatureUnit input,
-                        ash::AmbientModeTemperatureUnit* output);
+  static ash::AmbientModeTemperatureUnit FromMojom(MojomTemperatureUnit input);
 };
 
 template <>
@@ -142,8 +139,7 @@ struct EnumTraits<ash::personalization_app::mojom::AmbientUiVisibility,
   using MojomAmbientUiVisibility =
       ::ash::personalization_app::mojom::AmbientUiVisibility;
   static MojomAmbientUiVisibility ToMojom(ash::AmbientUiVisibility input);
-  static bool FromMojom(MojomAmbientUiVisibility input,
-                        ash::AmbientUiVisibility* output);
+  static ash::AmbientUiVisibility FromMojom(MojomAmbientUiVisibility input);
 };
 
 template <>

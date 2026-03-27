@@ -38,8 +38,8 @@ void TestFromMojom(const base::fixed_flat_map<MojoEnum, SourceEnum, N>& enums) {
 
   for (auto enum_pair : enums) {
     SourceEnum mojo_to_source;
-    EXPECT_TRUE((mojo::EnumTraits<MojoEnum, SourceEnum>::FromMojom(
-        enum_pair.first, &mojo_to_source)));
+    mojo_to_source =
+        mojo::EnumTraits<MojoEnum, SourceEnum>::FromMojom(enum_pair.first);
     EXPECT_EQ(mojo_to_source, enum_pair.second)
         << "enum " << enum_pair.first << " != " << enum_pair.second;
   }

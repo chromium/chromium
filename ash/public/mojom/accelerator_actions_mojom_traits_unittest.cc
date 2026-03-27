@@ -34,8 +34,9 @@ void TestMojoToAcceleratorAction(
     const base::fixed_flat_map<MojoEnum, AcceleratorActionEnum, N>& enums) {
   for (auto enum_pair : enums) {
     AcceleratorActionEnum mojo_to_accelerator_action_enum;
-    EXPECT_TRUE((mojo::EnumTraits<MojoEnum, AcceleratorActionEnum>::FromMojom(
-        enum_pair.first, &mojo_to_accelerator_action_enum)));
+    mojo_to_accelerator_action_enum =
+        mojo::EnumTraits<MojoEnum, AcceleratorActionEnum>::FromMojom(
+            enum_pair.first);
     EXPECT_EQ(mojo_to_accelerator_action_enum, enum_pair.second)
         << "enum " << enum_pair.first << " != " << enum_pair.second;
   }

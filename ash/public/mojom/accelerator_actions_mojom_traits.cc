@@ -367,526 +367,354 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
-    ash::mojom::AcceleratorAction input,
-    ash::AcceleratorAction* out) {
+ash::AcceleratorAction
+EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
+    ash::mojom::AcceleratorAction input) {
   switch (input) {
     case mojom_accelerator_action::kAccessibilityAction:
-      *out = ash::AcceleratorAction::kAccessibilityAction;
-      return true;
+      return ash::AcceleratorAction::kAccessibilityAction;
     case mojom_accelerator_action::kBrightnessDown:
-      *out = ash::AcceleratorAction::kBrightnessDown;
-      return true;
+      return ash::AcceleratorAction::kBrightnessDown;
     case mojom_accelerator_action::kBrightnessUp:
-      *out = ash::AcceleratorAction::kBrightnessUp;
-      return true;
+      return ash::AcceleratorAction::kBrightnessUp;
     case mojom_accelerator_action::kCycleBackwardMru:
-      *out = ash::AcceleratorAction::kCycleBackwardMru;
-      return true;
+      return ash::AcceleratorAction::kCycleBackwardMru;
     case mojom_accelerator_action::kCycleForwardMru:
-      *out = ash::AcceleratorAction::kCycleForwardMru;
-      return true;
+      return ash::AcceleratorAction::kCycleForwardMru;
     case mojom_accelerator_action::kCycleSameAppWindowsBackward:
-      *out = ash::AcceleratorAction::kCycleSameAppWindowsBackward;
-      return true;
+      return ash::AcceleratorAction::kCycleSameAppWindowsBackward;
     case mojom_accelerator_action::kCycleSameAppWindowsForward:
-      *out = ash::AcceleratorAction::kCycleSameAppWindowsForward;
-      return true;
+      return ash::AcceleratorAction::kCycleSameAppWindowsForward;
     case mojom_accelerator_action::kDesksActivateDeskLeft:
-      *out = ash::AcceleratorAction::kDesksActivateDeskLeft;
-      return true;
+      return ash::AcceleratorAction::kDesksActivateDeskLeft;
     case mojom_accelerator_action::kDesksActivateDeskRight:
-      *out = ash::AcceleratorAction::kDesksActivateDeskRight;
-      return true;
+      return ash::AcceleratorAction::kDesksActivateDeskRight;
     case mojom_accelerator_action::kDesksMoveActiveItemLeft:
-      *out = ash::AcceleratorAction::kDesksMoveActiveItemLeft;
-      return true;
+      return ash::AcceleratorAction::kDesksMoveActiveItemLeft;
     case mojom_accelerator_action::kDesksMoveActiveItemRight:
-      *out = ash::AcceleratorAction::kDesksMoveActiveItemRight;
-      return true;
+      return ash::AcceleratorAction::kDesksMoveActiveItemRight;
     case mojom_accelerator_action::kDesksNewDesk:
-      *out = ash::AcceleratorAction::kDesksNewDesk;
-      return true;
+      return ash::AcceleratorAction::kDesksNewDesk;
     case mojom_accelerator_action::kDesksRemoveCurrentDesk:
-      *out = ash::AcceleratorAction::kDesksRemoveCurrentDesk;
-      return true;
+      return ash::AcceleratorAction::kDesksRemoveCurrentDesk;
     case mojom_accelerator_action::kDesksActivate0:
-      *out = ash::AcceleratorAction::kDesksActivate0;
-      return true;
+      return ash::AcceleratorAction::kDesksActivate0;
     case mojom_accelerator_action::kDesksActivate1:
-      *out = ash::AcceleratorAction::kDesksActivate1;
-      return true;
+      return ash::AcceleratorAction::kDesksActivate1;
     case mojom_accelerator_action::kDesksActivate2:
-      *out = ash::AcceleratorAction::kDesksActivate2;
-      return true;
+      return ash::AcceleratorAction::kDesksActivate2;
     case mojom_accelerator_action::kDesksActivate3:
-      *out = ash::AcceleratorAction::kDesksActivate3;
-      return true;
+      return ash::AcceleratorAction::kDesksActivate3;
     case mojom_accelerator_action::kDesksActivate4:
-      *out = ash::AcceleratorAction::kDesksActivate4;
-      return true;
+      return ash::AcceleratorAction::kDesksActivate4;
     case mojom_accelerator_action::kDesksActivate5:
-      *out = ash::AcceleratorAction::kDesksActivate5;
-      return true;
+      return ash::AcceleratorAction::kDesksActivate5;
     case mojom_accelerator_action::kDesksActivate6:
-      *out = ash::AcceleratorAction::kDesksActivate6;
-      return true;
+      return ash::AcceleratorAction::kDesksActivate6;
     case mojom_accelerator_action::kDesksActivate7:
-      *out = ash::AcceleratorAction::kDesksActivate7;
-      return true;
+      return ash::AcceleratorAction::kDesksActivate7;
     case mojom_accelerator_action::kDesksToggleAssignToAllDesks:
-      *out = ash::AcceleratorAction::kDesksToggleAssignToAllDesks;
-      return true;
+      return ash::AcceleratorAction::kDesksToggleAssignToAllDesks;
     case mojom_accelerator_action::kDisableCapsLock:
-      *out = ash::AcceleratorAction::kDisableCapsLock;
-      return true;
+      return ash::AcceleratorAction::kDisableCapsLock;
     case mojom_accelerator_action::kEnableSelectToSpeak:
-      *out = ash::AcceleratorAction::kEnableSelectToSpeak;
-      return true;
+      return ash::AcceleratorAction::kEnableSelectToSpeak;
     case mojom_accelerator_action::kEnableOrToggleDictation:
-      *out = ash::AcceleratorAction::kEnableOrToggleDictation;
-      return true;
+      return ash::AcceleratorAction::kEnableOrToggleDictation;
     case mojom_accelerator_action::kExit:
-      *out = ash::AcceleratorAction::kExit;
-      return true;
+      return ash::AcceleratorAction::kExit;
     case mojom_accelerator_action::kFocusCameraPreview:
-      *out = ash::AcceleratorAction::kFocusCameraPreview;
-      return true;
+      return ash::AcceleratorAction::kFocusCameraPreview;
     case mojom_accelerator_action::kFocusNextPane:
-      *out = ash::AcceleratorAction::kFocusNextPane;
-      return true;
+      return ash::AcceleratorAction::kFocusNextPane;
     case mojom_accelerator_action::kFocusPreviousPane:
-      *out = ash::AcceleratorAction::kFocusPreviousPane;
-      return true;
+      return ash::AcceleratorAction::kFocusPreviousPane;
     case mojom_accelerator_action::kFocusShelf:
-      *out = ash::AcceleratorAction::kFocusShelf;
-      return true;
+      return ash::AcceleratorAction::kFocusShelf;
     case mojom_accelerator_action::kFocusPip:
-      *out = ash::AcceleratorAction::kFocusPip;
-      return true;
+      return ash::AcceleratorAction::kFocusPip;
     case mojom_accelerator_action::kKeyboardBacklightToggle:
-      *out = ash::AcceleratorAction::kKeyboardBacklightToggle;
-      return true;
+      return ash::AcceleratorAction::kKeyboardBacklightToggle;
     case mojom_accelerator_action::kKeyboardBrightnessDown:
-      *out = ash::AcceleratorAction::kKeyboardBrightnessDown;
-      return true;
+      return ash::AcceleratorAction::kKeyboardBrightnessDown;
     case mojom_accelerator_action::kKeyboardBrightnessUp:
-      *out = ash::AcceleratorAction::kKeyboardBrightnessUp;
-      return true;
+      return ash::AcceleratorAction::kKeyboardBrightnessUp;
     case mojom_accelerator_action::kLaunchApp0:
-      *out = ash::AcceleratorAction::kLaunchApp0;
-      return true;
+      return ash::AcceleratorAction::kLaunchApp0;
     case mojom_accelerator_action::kLaunchApp1:
-      *out = ash::AcceleratorAction::kLaunchApp1;
-      return true;
+      return ash::AcceleratorAction::kLaunchApp1;
     case mojom_accelerator_action::kLaunchApp2:
-      *out = ash::AcceleratorAction::kLaunchApp2;
-      return true;
+      return ash::AcceleratorAction::kLaunchApp2;
     case mojom_accelerator_action::kLaunchApp3:
-      *out = ash::AcceleratorAction::kLaunchApp3;
-      return true;
+      return ash::AcceleratorAction::kLaunchApp3;
     case mojom_accelerator_action::kLaunchApp4:
-      *out = ash::AcceleratorAction::kLaunchApp4;
-      return true;
+      return ash::AcceleratorAction::kLaunchApp4;
     case mojom_accelerator_action::kLaunchApp5:
-      *out = ash::AcceleratorAction::kLaunchApp5;
-      return true;
+      return ash::AcceleratorAction::kLaunchApp5;
     case mojom_accelerator_action::kLaunchApp6:
-      *out = ash::AcceleratorAction::kLaunchApp6;
-      return true;
+      return ash::AcceleratorAction::kLaunchApp6;
     case mojom_accelerator_action::kLaunchApp7:
-      *out = ash::AcceleratorAction::kLaunchApp7;
-      return true;
+      return ash::AcceleratorAction::kLaunchApp7;
     case mojom_accelerator_action::kLaunchLastApp:
-      *out = ash::AcceleratorAction::kLaunchLastApp;
-      return true;
+      return ash::AcceleratorAction::kLaunchLastApp;
     case mojom_accelerator_action::kLockPressed:
-      *out = ash::AcceleratorAction::kLockPressed;
-      return true;
+      return ash::AcceleratorAction::kLockPressed;
     case mojom_accelerator_action::kLockReleased:
-      *out = ash::AcceleratorAction::kLockReleased;
-      return true;
+      return ash::AcceleratorAction::kLockReleased;
     case mojom_accelerator_action::kLockScreen:
-      *out = ash::AcceleratorAction::kLockScreen;
-      return true;
+      return ash::AcceleratorAction::kLockScreen;
     case mojom_accelerator_action::kMagnifierZoomIn:
-      *out = ash::AcceleratorAction::kMagnifierZoomIn;
-      return true;
+      return ash::AcceleratorAction::kMagnifierZoomIn;
     case mojom_accelerator_action::kMagnifierZoomOut:
-      *out = ash::AcceleratorAction::kMagnifierZoomOut;
-      return true;
+      return ash::AcceleratorAction::kMagnifierZoomOut;
     case mojom_accelerator_action::kMediaFastForward:
-      *out = ash::AcceleratorAction::kMediaFastForward;
-      return true;
+      return ash::AcceleratorAction::kMediaFastForward;
     case mojom_accelerator_action::kMediaNextTrack:
-      *out = ash::AcceleratorAction::kMediaNextTrack;
-      return true;
+      return ash::AcceleratorAction::kMediaNextTrack;
     case mojom_accelerator_action::kMediaPause:
-      *out = ash::AcceleratorAction::kMediaPause;
-      return true;
+      return ash::AcceleratorAction::kMediaPause;
     case mojom_accelerator_action::kMediaPlay:
-      *out = ash::AcceleratorAction::kMediaPlay;
-      return true;
+      return ash::AcceleratorAction::kMediaPlay;
     case mojom_accelerator_action::kMediaPlayPause:
-      *out = ash::AcceleratorAction::kMediaPlayPause;
-      return true;
+      return ash::AcceleratorAction::kMediaPlayPause;
     case mojom_accelerator_action::kMediaPrevTrack:
-      *out = ash::AcceleratorAction::kMediaPrevTrack;
-      return true;
+      return ash::AcceleratorAction::kMediaPrevTrack;
     case mojom_accelerator_action::kMediaRewind:
-      *out = ash::AcceleratorAction::kMediaRewind;
-      return true;
+      return ash::AcceleratorAction::kMediaRewind;
     case mojom_accelerator_action::kMediaStop:
-      *out = ash::AcceleratorAction::kMediaStop;
-      return true;
+      return ash::AcceleratorAction::kMediaStop;
     case mojom_accelerator_action::kMicrophoneMuteToggle:
-      *out = ash::AcceleratorAction::kMicrophoneMuteToggle;
-      return true;
+      return ash::AcceleratorAction::kMicrophoneMuteToggle;
     case mojom_accelerator_action::kMoveActiveWindowBetweenDisplays:
-      *out = ash::AcceleratorAction::kMoveActiveWindowBetweenDisplays;
-      return true;
+      return ash::AcceleratorAction::kMoveActiveWindowBetweenDisplays;
     case mojom_accelerator_action::kNewIncognitoWindow:
-      *out = ash::AcceleratorAction::kNewIncognitoWindow;
-      return true;
+      return ash::AcceleratorAction::kNewIncognitoWindow;
     case mojom_accelerator_action::kNewTab:
-      *out = ash::AcceleratorAction::kNewTab;
-      return true;
+      return ash::AcceleratorAction::kNewTab;
     case mojom_accelerator_action::kNewWindow:
-      *out = ash::AcceleratorAction::kNewWindow;
-      return true;
+      return ash::AcceleratorAction::kNewWindow;
     case mojom_accelerator_action::kOpenCalculator:
-      *out = ash::AcceleratorAction::kOpenCalculator;
-      return true;
+      return ash::AcceleratorAction::kOpenCalculator;
     case mojom_accelerator_action::kOpenCrosh:
-      *out = ash::AcceleratorAction::kOpenCrosh;
-      return true;
+      return ash::AcceleratorAction::kOpenCrosh;
     case mojom_accelerator_action::kOpenDiagnostics:
-      *out = ash::AcceleratorAction::kOpenDiagnostics;
-      return true;
+      return ash::AcceleratorAction::kOpenDiagnostics;
     case mojom_accelerator_action::kOpenFeedbackPage:
-      *out = ash::AcceleratorAction::kOpenFeedbackPage;
-      return true;
+      return ash::AcceleratorAction::kOpenFeedbackPage;
     case mojom_accelerator_action::kOpenFileManager:
-      *out = ash::AcceleratorAction::kOpenFileManager;
-      return true;
+      return ash::AcceleratorAction::kOpenFileManager;
     case mojom_accelerator_action::kOpenGetHelp:
-      *out = ash::AcceleratorAction::kOpenGetHelp;
-      return true;
+      return ash::AcceleratorAction::kOpenGetHelp;
     case mojom_accelerator_action::kPasteClipboardHistoryPlainText:
-      *out = ash::AcceleratorAction::kPasteClipboardHistoryPlainText;
-      return true;
+      return ash::AcceleratorAction::kPasteClipboardHistoryPlainText;
     case mojom_accelerator_action::kPowerPressed:
-      *out = ash::AcceleratorAction::kPowerPressed;
-      return true;
+      return ash::AcceleratorAction::kPowerPressed;
     case mojom_accelerator_action::kPowerReleased:
-      *out = ash::AcceleratorAction::kPowerReleased;
-      return true;
+      return ash::AcceleratorAction::kPowerReleased;
     case mojom_accelerator_action::kPrintUiHierarchies:
-      *out = ash::AcceleratorAction::kPrintUiHierarchies;
-      return true;
+      return ash::AcceleratorAction::kPrintUiHierarchies;
     case mojom_accelerator_action::kPrivacyScreenToggle:
-      *out = ash::AcceleratorAction::kPrivacyScreenToggle;
-      return true;
+      return ash::AcceleratorAction::kPrivacyScreenToggle;
     case mojom_accelerator_action::kRestoreTab:
-      *out = ash::AcceleratorAction::kRestoreTab;
-      return true;
+      return ash::AcceleratorAction::kRestoreTab;
     case mojom_accelerator_action::kRotateScreen:
-      *out = ash::AcceleratorAction::kRotateScreen;
-      return true;
+      return ash::AcceleratorAction::kRotateScreen;
     case mojom_accelerator_action::kRotateWindow:
-      *out = ash::AcceleratorAction::kRotateWindow;
-      return true;
+      return ash::AcceleratorAction::kRotateWindow;
     case mojom_accelerator_action::kScaleUiDown:
-      *out = ash::AcceleratorAction::kScaleUiDown;
-      return true;
+      return ash::AcceleratorAction::kScaleUiDown;
     case mojom_accelerator_action::kScaleUiReset:
-      *out = ash::AcceleratorAction::kScaleUiReset;
-      return true;
+      return ash::AcceleratorAction::kScaleUiReset;
     case mojom_accelerator_action::kScaleUiUp:
-      *out = ash::AcceleratorAction::kScaleUiUp;
-      return true;
+      return ash::AcceleratorAction::kScaleUiUp;
     case mojom_accelerator_action::kShowEmojiPicker:
-      *out = ash::AcceleratorAction::kShowEmojiPicker;
-      return true;
+      return ash::AcceleratorAction::kShowEmojiPicker;
     case mojom_accelerator_action::kToggleImeMenuBubble:
-      *out = ash::AcceleratorAction::kToggleImeMenuBubble;
-      return true;
+      return ash::AcceleratorAction::kToggleImeMenuBubble;
     case mojom_accelerator_action::kToggleQuickInsert:
-      *out = ash::AcceleratorAction::kToggleQuickInsert;
-      return true;
+      return ash::AcceleratorAction::kToggleQuickInsert;
     case mojom_accelerator_action::kShowShortcutViewer:
-      *out = ash::AcceleratorAction::kShowShortcutViewer;
-      return true;
+      return ash::AcceleratorAction::kShowShortcutViewer;
     case mojom_accelerator_action::kToggleStylusTools:
-      *out = ash::AcceleratorAction::kToggleStylusTools;
-      return true;
+      return ash::AcceleratorAction::kToggleStylusTools;
     case mojom_accelerator_action::kShowTaskManager:
-      *out = ash::AcceleratorAction::kShowTaskManager;
-      return true;
+      return ash::AcceleratorAction::kShowTaskManager;
     case mojom_accelerator_action::kStartAssistant:
-      *out = ash::AcceleratorAction::kStartAssistant;
-      return true;
+      return ash::AcceleratorAction::kStartAssistant;
     case mojom_accelerator_action::kStopScreenRecording:
-      *out = ash::AcceleratorAction::kStopScreenRecording;
-      return true;
+      return ash::AcceleratorAction::kStopScreenRecording;
     case mojom_accelerator_action::kSuspend:
-      *out = ash::AcceleratorAction::kSuspend;
-      return true;
+      return ash::AcceleratorAction::kSuspend;
     case mojom_accelerator_action::kSwapPrimaryDisplay:
-      *out = ash::AcceleratorAction::kSwapPrimaryDisplay;
-      return true;
+      return ash::AcceleratorAction::kSwapPrimaryDisplay;
     case mojom_accelerator_action::kSwitchIme:
-      *out = ash::AcceleratorAction::kSwitchIme;
-      return true;
+      return ash::AcceleratorAction::kSwitchIme;
     case mojom_accelerator_action::kSwitchToLastUsedIme:
-      *out = ash::AcceleratorAction::kSwitchToLastUsedIme;
-      return true;
+      return ash::AcceleratorAction::kSwitchToLastUsedIme;
     case mojom_accelerator_action::kSwitchToNextIme:
-      *out = ash::AcceleratorAction::kSwitchToNextIme;
-      return true;
+      return ash::AcceleratorAction::kSwitchToNextIme;
     case mojom_accelerator_action::kSwitchToNextUser:
-      *out = ash::AcceleratorAction::kSwitchToNextUser;
-      return true;
+      return ash::AcceleratorAction::kSwitchToNextUser;
     case mojom_accelerator_action::kSwitchToPreviousUser:
-      *out = ash::AcceleratorAction::kSwitchToPreviousUser;
-      return true;
+      return ash::AcceleratorAction::kSwitchToPreviousUser;
     case mojom_accelerator_action::kTakePartialScreenshot:
-      *out = ash::AcceleratorAction::kTakePartialScreenshot;
-      return true;
+      return ash::AcceleratorAction::kTakePartialScreenshot;
     case mojom_accelerator_action::kTakeScreenshot:
-      *out = ash::AcceleratorAction::kTakeScreenshot;
-      return true;
+      return ash::AcceleratorAction::kTakeScreenshot;
     case mojom_accelerator_action::kTakeWindowScreenshot:
-      *out = ash::AcceleratorAction::kTakeWindowScreenshot;
-      return true;
+      return ash::AcceleratorAction::kTakeWindowScreenshot;
     case mojom_accelerator_action::kTilingWindowResizeDown:
-      *out = ash::AcceleratorAction::kTilingWindowResizeDown;
-      return true;
+      return ash::AcceleratorAction::kTilingWindowResizeDown;
     case mojom_accelerator_action::kTilingWindowResizeLeft:
-      *out = ash::AcceleratorAction::kTilingWindowResizeLeft;
-      return true;
+      return ash::AcceleratorAction::kTilingWindowResizeLeft;
     case mojom_accelerator_action::kTilingWindowResizeRight:
-      *out = ash::AcceleratorAction::kTilingWindowResizeRight;
-      return true;
+      return ash::AcceleratorAction::kTilingWindowResizeRight;
     case mojom_accelerator_action::kTilingWindowResizeUp:
-      *out = ash::AcceleratorAction::kTilingWindowResizeUp;
-      return true;
+      return ash::AcceleratorAction::kTilingWindowResizeUp;
     case mojom_accelerator_action::kToggleAppList:
-      *out = ash::AcceleratorAction::kToggleAppList;
-      return true;
+      return ash::AcceleratorAction::kToggleAppList;
     case mojom_accelerator_action::kToggleCalendar:
-      *out = ash::AcceleratorAction::kToggleCalendar;
-      return true;
+      return ash::AcceleratorAction::kToggleCalendar;
     case mojom_accelerator_action::kToggleCapsLock:
-      *out = ash::AcceleratorAction::kToggleCapsLock;
-      return true;
+      return ash::AcceleratorAction::kToggleCapsLock;
     case mojom_accelerator_action::kToggleClipboardHistory:
-      *out = ash::AcceleratorAction::kToggleClipboardHistory;
-      return true;
+      return ash::AcceleratorAction::kToggleClipboardHistory;
     case mojom_accelerator_action::kToggleDockedMagnifier:
-      *out = ash::AcceleratorAction::kToggleDockedMagnifier;
-      return true;
+      return ash::AcceleratorAction::kToggleDockedMagnifier;
     case mojom_accelerator_action::kToggleFloating:
-      *out = ash::AcceleratorAction::kToggleFloating;
-      return true;
+      return ash::AcceleratorAction::kToggleFloating;
     case mojom_accelerator_action::kToggleFullscreen:
-      *out = ash::AcceleratorAction::kToggleFullscreen;
-      return true;
+      return ash::AcceleratorAction::kToggleFullscreen;
     case mojom_accelerator_action::kToggleFullscreenMagnifier:
-      *out = ash::AcceleratorAction::kToggleFullscreenMagnifier;
-      return true;
+      return ash::AcceleratorAction::kToggleFullscreenMagnifier;
     case mojom_accelerator_action::kToggleGameDashboard:
-      *out = ash::AcceleratorAction::kToggleGameDashboard;
-      return true;
+      return ash::AcceleratorAction::kToggleGameDashboard;
     case mojom_accelerator_action::kToggleHighContrast:
-      *out = ash::AcceleratorAction::kToggleHighContrast;
-      return true;
+      return ash::AcceleratorAction::kToggleHighContrast;
     case mojom_accelerator_action::kToggleMaximized:
-      *out = ash::AcceleratorAction::kToggleMaximized;
-      return true;
+      return ash::AcceleratorAction::kToggleMaximized;
     case mojom_accelerator_action::kToggleMessageCenterBubble:
-      *out = ash::AcceleratorAction::kToggleMessageCenterBubble;
-      return true;
+      return ash::AcceleratorAction::kToggleMessageCenterBubble;
     case mojom_accelerator_action::kToggleMirrorMode:
-      *out = ash::AcceleratorAction::kToggleMirrorMode;
-      return true;
+      return ash::AcceleratorAction::kToggleMirrorMode;
     case mojom_accelerator_action::kToggleMouseKeys:
-      *out = ash::AcceleratorAction::kToggleMouseKeys;
-      return true;
+      return ash::AcceleratorAction::kToggleMouseKeys;
     case mojom_accelerator_action::kToggleMultitaskMenu:
-      *out = ash::AcceleratorAction::kToggleMultitaskMenu;
-      return true;
+      return ash::AcceleratorAction::kToggleMultitaskMenu;
     case mojom_accelerator_action::kToggleOverview:
-      *out = ash::AcceleratorAction::kToggleOverview;
-      return true;
+      return ash::AcceleratorAction::kToggleOverview;
     case mojom_accelerator_action::kToggleProjectorMarker:
-      *out = ash::AcceleratorAction::kToggleProjectorMarker;
-      return true;
+      return ash::AcceleratorAction::kToggleProjectorMarker;
     case mojom_accelerator_action::kToggleResizeLockMenu:
-      *out = ash::AcceleratorAction::kToggleResizeLockMenu;
-      return true;
+      return ash::AcceleratorAction::kToggleResizeLockMenu;
     case mojom_accelerator_action::kToggleSnapGroup:
-      *out = ash::AcceleratorAction::kToggleSnapGroup;
-      return true;
+      return ash::AcceleratorAction::kToggleSnapGroup;
     case mojom_accelerator_action::kToggleSnapGroupWindowsMinimizeAndRestore:
-      *out = ash::AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore;
-      return true;
+      return ash::AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore;
     case mojom_accelerator_action::kToggleSpokenFeedback:
-      *out = ash::AcceleratorAction::kToggleSpokenFeedback;
-      return true;
+      return ash::AcceleratorAction::kToggleSpokenFeedback;
     case mojom_accelerator_action::kToggleSystemTrayBubble:
-      *out = ash::AcceleratorAction::kToggleSystemTrayBubble;
-      return true;
+      return ash::AcceleratorAction::kToggleSystemTrayBubble;
     case mojom_accelerator_action::kToggleWifi:
-      *out = ash::AcceleratorAction::kToggleWifi;
-      return true;
+      return ash::AcceleratorAction::kToggleWifi;
     case mojom_accelerator_action::kTouchHudClear:
-      *out = ash::AcceleratorAction::kTouchHudClear;
-      return true;
+      return ash::AcceleratorAction::kTouchHudClear;
     case mojom_accelerator_action::kTouchHudModeChange:
-      *out = ash::AcceleratorAction::kTouchHudModeChange;
-      return true;
+      return ash::AcceleratorAction::kTouchHudModeChange;
     case mojom_accelerator_action::kTouchFingerprintSensor1:
-      *out = ash::AcceleratorAction::kTouchFingerprintSensor1;
-      return true;
+      return ash::AcceleratorAction::kTouchFingerprintSensor1;
     case mojom_accelerator_action::kTouchFingerprintSensor2:
-      *out = ash::AcceleratorAction::kTouchFingerprintSensor2;
-      return true;
+      return ash::AcceleratorAction::kTouchFingerprintSensor2;
     case mojom_accelerator_action::kTouchFingerprintSensor3:
-      *out = ash::AcceleratorAction::kTouchFingerprintSensor3;
-      return true;
+      return ash::AcceleratorAction::kTouchFingerprintSensor3;
     case mojom_accelerator_action::kUnpin:
-      *out = ash::AcceleratorAction::kUnpin;
-      return true;
+      return ash::AcceleratorAction::kUnpin;
     case mojom_accelerator_action::kVolumeDown:
-      *out = ash::AcceleratorAction::kVolumeDown;
-      return true;
+      return ash::AcceleratorAction::kVolumeDown;
     case mojom_accelerator_action::kVolumeMute:
-      *out = ash::AcceleratorAction::kVolumeMute;
-      return true;
+      return ash::AcceleratorAction::kVolumeMute;
     case mojom_accelerator_action::kVolumeMuteToggle:
-      *out = ash::AcceleratorAction::kVolumeMuteToggle;
-      return true;
+      return ash::AcceleratorAction::kVolumeMuteToggle;
     case mojom_accelerator_action::kVolumeUp:
-      *out = ash::AcceleratorAction::kVolumeUp;
-      return true;
+      return ash::AcceleratorAction::kVolumeUp;
     case mojom_accelerator_action::kWindowCycleSnapLeft:
-      *out = ash::AcceleratorAction::kWindowCycleSnapLeft;
-      return true;
+      return ash::AcceleratorAction::kWindowCycleSnapLeft;
     case mojom_accelerator_action::kWindowCycleSnapRight:
-      *out = ash::AcceleratorAction::kWindowCycleSnapRight;
-      return true;
+      return ash::AcceleratorAction::kWindowCycleSnapRight;
     case mojom_accelerator_action::kWindowMinimize:
-      *out = ash::AcceleratorAction::kWindowMinimize;
-      return true;
+      return ash::AcceleratorAction::kWindowMinimize;
     case mojom_accelerator_action::kMinimizeTopWindowOnBack:
-      *out = ash::AcceleratorAction::kMinimizeTopWindowOnBack;
-      return true;
+      return ash::AcceleratorAction::kMinimizeTopWindowOnBack;
     case mojom_accelerator_action::kResizePipWindow:
-      *out = ash::AcceleratorAction::kResizePipWindow;
-      return true;
+      return ash::AcceleratorAction::kResizePipWindow;
     case mojom_accelerator_action::kToggleGeminiApp:
-      *out = ash::AcceleratorAction::kToggleGeminiApp;
-      return true;
+      return ash::AcceleratorAction::kToggleGeminiApp;
     case mojom_accelerator_action::kToggleDoNotDisturb:
-      *out = ash::AcceleratorAction::kToggleDoNotDisturb;
-      return true;
+      return ash::AcceleratorAction::kToggleDoNotDisturb;
     case mojom_accelerator_action::kToggleCameraAllowed:
-      *out = ash::AcceleratorAction::kToggleCameraAllowed;
-      return true;
+      return ash::AcceleratorAction::kToggleCameraAllowed;
     case mojom_accelerator_action::kStartSunfishSession:
-      *out = ash::AcceleratorAction::kStartSunfishSession;
-      return true;
+      return ash::AcceleratorAction::kStartSunfishSession;
     case mojom_accelerator_action::kDebugClearUseKMeansPref:
-      *out = ash::AcceleratorAction::kDebugClearUseKMeansPref;
-      return true;
+      return ash::AcceleratorAction::kDebugClearUseKMeansPref;
     case mojom_accelerator_action::kDebugKeyboardBacklightToggle:
-      *out = ash::AcceleratorAction::kDebugKeyboardBacklightToggle;
-      return true;
+      return ash::AcceleratorAction::kDebugKeyboardBacklightToggle;
     case mojom_accelerator_action::kDebugMicrophoneMuteToggle:
-      *out = ash::AcceleratorAction::kDebugMicrophoneMuteToggle;
-      return true;
+      return ash::AcceleratorAction::kDebugMicrophoneMuteToggle;
     case mojom_accelerator_action::kDebugPrintLayerHierarchy:
-      *out = ash::AcceleratorAction::kDebugPrintLayerHierarchy;
-      return true;
+      return ash::AcceleratorAction::kDebugPrintLayerHierarchy;
     case mojom_accelerator_action::kDebugPrintViewHierarchy:
-      *out = ash::AcceleratorAction::kDebugPrintViewHierarchy;
-      return true;
+      return ash::AcceleratorAction::kDebugPrintViewHierarchy;
     case mojom_accelerator_action::kDebugPrintWindowHierarchy:
-      *out = ash::AcceleratorAction::kDebugPrintWindowHierarchy;
-      return true;
+      return ash::AcceleratorAction::kDebugPrintWindowHierarchy;
     case mojom_accelerator_action::kDebugShowInformedRestore:
-      *out = ash::AcceleratorAction::kDebugShowInformedRestore;
-      return true;
+      return ash::AcceleratorAction::kDebugShowInformedRestore;
     case mojom_accelerator_action::kDebugShowToast:
-      *out = ash::AcceleratorAction::kDebugShowToast;
-      return true;
+      return ash::AcceleratorAction::kDebugShowToast;
     case mojom_accelerator_action::kDebugShowSystemNudge:
-      *out = ash::AcceleratorAction::kDebugShowSystemNudge;
-      return true;
+      return ash::AcceleratorAction::kDebugShowSystemNudge;
     case mojom_accelerator_action::kDebugShowTestWindow:
-      *out = ash::AcceleratorAction::kDebugShowTestWindow;
-      return true;
+      return ash::AcceleratorAction::kDebugShowTestWindow;
     case mojom_accelerator_action::kDebugStartSunfishSession:
-      *out = ash::AcceleratorAction::kDebugStartSunfishSession;
-      return true;
+      return ash::AcceleratorAction::kDebugStartSunfishSession;
     case mojom_accelerator_action::kDebugSystemUiStyleViewer:
-      *out = ash::AcceleratorAction::kDebugSystemUiStyleViewer;
-      return true;
+      return ash::AcceleratorAction::kDebugSystemUiStyleViewer;
     case mojom_accelerator_action::kDebugToggleDarkMode:
-      *out = ash::AcceleratorAction::kDebugToggleDarkMode;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleDarkMode;
     case mojom_accelerator_action::kDebugToggleDynamicColor:
-      *out = ash::AcceleratorAction::kDebugToggleDynamicColor;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleDynamicColor;
     case mojom_accelerator_action::kDebugToggleFocusModeState:
-      *out = ash::AcceleratorAction::kDebugToggleFocusModeState;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleFocusModeState;
     case mojom_accelerator_action::kDebugTogglePowerButtonMenu:
-      *out = ash::AcceleratorAction::kDebugTogglePowerButtonMenu;
-      return true;
+      return ash::AcceleratorAction::kDebugTogglePowerButtonMenu;
     case mojom_accelerator_action::kDebugToggleShowDebugBorders:
-      *out = ash::AcceleratorAction::kDebugToggleShowDebugBorders;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleShowDebugBorders;
     case mojom_accelerator_action::kDebugToggleShowFpsCounter:
-      *out = ash::AcceleratorAction::kDebugToggleShowFpsCounter;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleShowFpsCounter;
     case mojom_accelerator_action::kDebugToggleShowPaintRects:
-      *out = ash::AcceleratorAction::kDebugToggleShowPaintRects;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleShowPaintRects;
     case mojom_accelerator_action::kDebugToggleTouchPad:
-      *out = ash::AcceleratorAction::kDebugToggleTouchPad;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleTouchPad;
     case mojom_accelerator_action::kDebugToggleTouchScreen:
-      *out = ash::AcceleratorAction::kDebugToggleTouchScreen;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleTouchScreen;
     case mojom_accelerator_action::kDebugToggleTabletMode:
-      *out = ash::AcceleratorAction::kDebugToggleTabletMode;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleTabletMode;
     case mojom_accelerator_action::kDebugToggleVideoConferenceCameraTrayIcon:
-      *out = ash::AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon;
     case mojom_accelerator_action::kDebugToggleWallpaperMode:
-      *out = ash::AcceleratorAction::kDebugToggleWallpaperMode;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleWallpaperMode;
     case mojom_accelerator_action::kDebugTriggerCrash:
-      *out = ash::AcceleratorAction::kDebugTriggerCrash;
-      return true;
+      return ash::AcceleratorAction::kDebugTriggerCrash;
     case mojom_accelerator_action::kDebugToggleHudDisplay:
-      *out = ash::AcceleratorAction::kDebugToggleHudDisplay;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleHudDisplay;
     case mojom_accelerator_action::kDebugToggleVirtualTrackpad:
-      *out = ash::AcceleratorAction::kDebugToggleVirtualTrackpad;
-      return true;
+      return ash::AcceleratorAction::kDebugToggleVirtualTrackpad;
     case mojom_accelerator_action::kDevAddRemoveDisplay:
-      *out = ash::AcceleratorAction::kDevAddRemoveDisplay;
-      return true;
+      return ash::AcceleratorAction::kDevAddRemoveDisplay;
     case mojom_accelerator_action::kDevToggleAppList:
-      *out = ash::AcceleratorAction::kDevToggleAppList;
-      return true;
+      return ash::AcceleratorAction::kDevToggleAppList;
     case mojom_accelerator_action::kDevToggleUnifiedDesktop:
-      *out = ash::AcceleratorAction::kDevToggleUnifiedDesktop;
-      return true;
+      return ash::AcceleratorAction::kDevToggleUnifiedDesktop;
   }
   NOTREACHED();
 }

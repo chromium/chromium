@@ -51,22 +51,18 @@ EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::ToMojom(
   }
 }
 
-bool EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::FromMojom(
-    MojomWallpaperLayout input,
-    ash::WallpaperLayout* output) {
+ash::WallpaperLayout
+EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::FromMojom(
+    MojomWallpaperLayout input) {
   switch (input) {
     case MojomWallpaperLayout::kCenter:
-      *output = ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER;
-      return true;
+      return ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER;
     case MojomWallpaperLayout::kCenterCropped:
-      *output = ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED;
-      return true;
+      return ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED;
     case MojomWallpaperLayout::kStretch:
-      *output = ash::WallpaperLayout::WALLPAPER_LAYOUT_STRETCH;
-      return true;
+      return ash::WallpaperLayout::WALLPAPER_LAYOUT_STRETCH;
     case MojomWallpaperLayout::kTile:
-      *output = ash::WallpaperLayout::WALLPAPER_LAYOUT_TILE;
-      return true;
+      return ash::WallpaperLayout::WALLPAPER_LAYOUT_TILE;
   }
   NOTREACHED();
 }
@@ -103,46 +99,34 @@ MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
   }
 }
 
-bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
-    MojomWallpaperType input,
-    ash::WallpaperType* output) {
+ash::WallpaperType
+EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
+    MojomWallpaperType input) {
   switch (input) {
     case MojomWallpaperType::kDaily:
-      *output = ash::WallpaperType::kDaily;
-      return true;
+      return ash::WallpaperType::kDaily;
     case MojomWallpaperType::kCustomized:
-      *output = ash::WallpaperType::kCustomized;
-      return true;
+      return ash::WallpaperType::kCustomized;
     case MojomWallpaperType::kDefault:
-      *output = ash::WallpaperType::kDefault;
-      return true;
+      return ash::WallpaperType::kDefault;
     case MojomWallpaperType::kOnline:
-      *output = ash::WallpaperType::kOnline;
-      return true;
+      return ash::WallpaperType::kOnline;
     case MojomWallpaperType::kPolicy:
-      *output = ash::WallpaperType::kPolicy;
-      return true;
+      return ash::WallpaperType::kPolicy;
     case MojomWallpaperType::kThirdParty:
-      *output = ash::WallpaperType::kThirdParty;
-      return true;
+      return ash::WallpaperType::kThirdParty;
     case MojomWallpaperType::kDevice:
-      *output = ash::WallpaperType::kDevice;
-      return true;
+      return ash::WallpaperType::kDevice;
     case MojomWallpaperType::kOneShot:
-      *output = ash::WallpaperType::kOneShot;
-      return true;
+      return ash::WallpaperType::kOneShot;
     case MojomWallpaperType::kDailyGooglePhotos:
-      *output = ash::WallpaperType::kDailyGooglePhotos;
-      return true;
+      return ash::WallpaperType::kDailyGooglePhotos;
     case MojomWallpaperType::kOnceGooglePhotos:
-      *output = ash::WallpaperType::kOnceGooglePhotos;
-      return true;
+      return ash::WallpaperType::kOnceGooglePhotos;
     case MojomWallpaperType::kOobe:
-      *output = ash::WallpaperType::kOobe;
-      return true;
+      return ash::WallpaperType::kOobe;
     case MojomWallpaperType::kSeaPen:
-      *output = ash::WallpaperType::kSeaPen;
-      return true;
+      return ash::WallpaperType::kSeaPen;
   }
   NOTREACHED();
 }
@@ -166,28 +150,22 @@ EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::ToMojom(
   }
 }
 
-bool EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::FromMojom(
-    MojomOnlineImageType input,
-    ::backdrop::Image::ImageType* output) {
+::backdrop::Image::ImageType
+EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::FromMojom(
+    MojomOnlineImageType input) {
   switch (input) {
     case MojomOnlineImageType::kUnknown:
-      *output = ::backdrop::Image::IMAGE_TYPE_UNKNOWN;
-      return true;
+      return ::backdrop::Image::IMAGE_TYPE_UNKNOWN;
     case MojomOnlineImageType::kLight:
-      *output = ::backdrop::Image::IMAGE_TYPE_LIGHT_MODE;
-      return true;
+      return ::backdrop::Image::IMAGE_TYPE_LIGHT_MODE;
     case MojomOnlineImageType::kDark:
-      *output = ::backdrop::Image::IMAGE_TYPE_DARK_MODE;
-      return true;
+      return ::backdrop::Image::IMAGE_TYPE_DARK_MODE;
     case MojomOnlineImageType::kMorning:
-      *output = ::backdrop::Image::IMAGE_TYPE_MORNING_MODE;
-      return true;
+      return ::backdrop::Image::IMAGE_TYPE_MORNING_MODE;
     case MojomOnlineImageType::kLateAfternoon:
-      *output = ::backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE;
-      return true;
+      return ::backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE;
     case MojomOnlineImageType::kPreview:
-      *output = ::backdrop::Image::IMAGE_TYPE_PREVIEW_MODE;
-      return true;
+      return ::backdrop::Image::IMAGE_TYPE_PREVIEW_MODE;
   }
   NOTREACHED();
 }
@@ -379,16 +357,14 @@ EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::ToMojom(
   }
 }
 
-bool EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::
-    FromMojom(MojomTemperatureUnit input,
-              ash::AmbientModeTemperatureUnit* output) {
+ash::AmbientModeTemperatureUnit
+EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::FromMojom(
+    MojomTemperatureUnit input) {
   switch (input) {
     case MojomTemperatureUnit::kFahrenheit:
-      *output = ash::AmbientModeTemperatureUnit::kFahrenheit;
-      return true;
+      return ash::AmbientModeTemperatureUnit::kFahrenheit;
     case MojomTemperatureUnit::kCelsius:
-      *output = ash::AmbientModeTemperatureUnit::kCelsius;
-      return true;
+      return ash::AmbientModeTemperatureUnit::kCelsius;
   }
   NOTREACHED();
 }
@@ -408,22 +384,18 @@ EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::ToMojom(
   }
 }
 
-bool EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::FromMojom(
-    MojomAmbientUiVisibility input,
-    ash::AmbientUiVisibility* output) {
+ash::AmbientUiVisibility
+EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::FromMojom(
+    MojomAmbientUiVisibility input) {
   switch (input) {
     case MojomAmbientUiVisibility::kShouldShow:
-      *output = ash::AmbientUiVisibility::kShouldShow;
-      return true;
+      return ash::AmbientUiVisibility::kShouldShow;
     case MojomAmbientUiVisibility::kPreview:
-      *output = ash::AmbientUiVisibility::kPreview;
-      return true;
+      return ash::AmbientUiVisibility::kPreview;
     case MojomAmbientUiVisibility::kHidden:
-      *output = ash::AmbientUiVisibility::kHidden;
-      return true;
+      return ash::AmbientUiVisibility::kHidden;
     case MojomAmbientUiVisibility::kClosed:
-      *output = ash::AmbientUiVisibility::kClosed;
-      return true;
+      return ash::AmbientUiVisibility::kClosed;
   }
   NOTREACHED();
 }

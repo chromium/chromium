@@ -15,7 +15,7 @@ template <>
 struct EnumTraits<ash::mojom::VKey, ::ui::KeyboardCode> {
   static ash::mojom::VKey ToMojom(::ui::KeyboardCode);
 
-  static bool FromMojom(::ash::mojom::VKey input, ::ui::KeyboardCode* out);
+  static ::ui::KeyboardCode FromMojom(::ash::mojom::VKey input);
 };
 
 }  // namespace mojo

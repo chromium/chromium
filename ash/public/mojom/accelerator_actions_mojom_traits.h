@@ -15,8 +15,8 @@ template <>
 struct EnumTraits<ash::mojom::AcceleratorAction, ::ash::AcceleratorAction> {
   static ash::mojom::AcceleratorAction ToMojom(::ash::AcceleratorAction);
 
-  static bool FromMojom(::ash::mojom::AcceleratorAction input,
-                        ::ash::AcceleratorAction* out);
+  static ::ash::AcceleratorAction FromMojom(
+      ::ash::mojom::AcceleratorAction input);
 };
 
 }  // namespace mojo

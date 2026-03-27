@@ -43,8 +43,8 @@ void TestMojoToProto(
 
   for (auto enum_pair : enums) {
     ProtoEnum mojo_to_proto;
-    EXPECT_TRUE((mojo::EnumTraits<MojoEnum, ProtoEnum>::FromMojom(
-        enum_pair.first, &mojo_to_proto)));
+    mojo_to_proto =
+        mojo::EnumTraits<MojoEnum, ProtoEnum>::FromMojom(enum_pair.first);
     EXPECT_EQ(mojo_to_proto, enum_pair.second)
         << "enum " << enum_pair.first << " != " << enum_pair.second;
   }
