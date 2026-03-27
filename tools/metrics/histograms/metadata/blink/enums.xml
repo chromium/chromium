@@ -6495,6 +6495,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5854" label="ResourceTimingWorkerFinalSourceType"/>
   <int value="5855" label="NoVarySearchWithBooleanParams"/>
   <int value="5856" label="DataUrlWorkerBroadcastChannel"/>
+  <int value="5857" label="NoscriptMarkupWithScriptingDisabledTemplate"/>
+  <int value="5858" label="NoscriptMarkupWithScriptingDisabledIframeSandbox"/>
+  <int value="5859" label="NoscriptMarkupWithScriptingDisabledXHR"/>
+  <int value="5860" label="NoscriptMarkupWithScriptingDisabledDOMParser"/>
+  <int value="5861"
+      label="NoscriptMarkupWithScriptingDisabledNoBrowsingContext"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

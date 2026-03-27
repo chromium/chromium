@@ -156,6 +156,7 @@ class HTMLToken {
     copy->doctype_data_ = std::move(doctype_data_);
     copy->type_ = type_;
     copy->self_closing_ = self_closing_;
+    copy->has_entity_ = has_entity_;
     // Reset to uninitialized.
     Clear();
     return copy;
@@ -166,6 +167,7 @@ class HTMLToken {
       return;
 
     type_ = kUninitialized;
+    has_entity_ = false;
     data_.clear();
     processing_instruction_target_.reset();
     if (current_attribute_) {
@@ -381,6 +383,9 @@ class HTMLToken {
     processing_instruction_target_->AddChar(character);
   }
 
+  bool HasEntity() const { return has_entity_; }
+  void SetHasEntity() { has_entity_ = true; }
+
   /* Comment Tokens */
 
   const DataVector& Comment() const {
@@ -427,6 +432,9 @@ class HTMLToken {
   std::optional<DataVector> processing_instruction_target_;
 
   TokenType type_ = kUninitialized;
+
+  // True if this token contains an entity reference.
+  bool has_entity_ = false;
 
   // For StartTag and EndTag
   bool self_closing_;

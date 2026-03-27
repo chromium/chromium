@@ -202,8 +202,12 @@ class CORE_EXPORT AtomicHTMLToken {
     return doctype_data_->system_identifier_;
   }
 
+  bool HasEntity() const { return has_entity_; }
+
   explicit AtomicHTMLToken(HTMLToken& token)
-      : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
+      : type_(token.GetType()),
+        name_(HTMLTokenNameFromToken(token)),
+        has_entity_(token.HasEntity()) {
     switch (type_) {
       case HTMLToken::kUninitialized:
         NOTREACHED();
@@ -325,6 +329,9 @@ class CORE_EXPORT AtomicHTMLToken {
   bool self_closing_ = false;
 
   bool duplicate_attribute_ = false;
+
+  // True if this token contains an entity reference.
+  bool has_entity_ = false;
 
   Vector<Attribute, kAttributePrealloc> attributes_;
 };

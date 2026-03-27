@@ -437,6 +437,38 @@ void HTMLTreeBuilder::ConstructTree(AtomicHTMLToken* token) {
 }
 
 void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
+  if (!options_.scripting_flag && tree_.OpenElements() &&
+      tree_.OpenElements()->Topmost(HTMLTag::kNoscript)) {
+    bool is_markup = token->GetType() == HTMLToken::kStartTag ||
+                     token->GetType() == HTMLToken::kComment ||
+                     (token->GetType() == HTMLToken::kEndTag &&
+                      token->GetHTMLTag() != HTMLTag::kNoscript) ||
+                     token->HasEntity();
+    if (is_markup) {
+      Document* document = parser_->GetDocument();
+      if (IsParsingFragment() && fragment_context_.ContextElement()->HasTagName(
+                                     html_names::kTemplateTag)) {
+        UseCounter::Count(
+            document, WebFeature::kNoscriptMarkupWithScriptingDisabledTemplate);
+      } else if (document->IsDOMParserDocument()) {
+        UseCounter::Count(
+            document,
+            WebFeature::kNoscriptMarkupWithScriptingDisabledDOMParser);
+      } else if (document->IsXHRDocument()) {
+        UseCounter::Count(document,
+                          WebFeature::kNoscriptMarkupWithScriptingDisabledXHR);
+      } else if (document->GetFrame() != nullptr) {
+        UseCounter::Count(
+            document,
+            WebFeature::kNoscriptMarkupWithScriptingDisabledIframeSandbox);
+      } else {
+        UseCounter::Count(
+            document,
+            WebFeature::kNoscriptMarkupWithScriptingDisabledNoBrowsingContext);
+      }
+    }
+  }
+
   if (token->GetType() == HTMLToken::kCharacter) {
     ProcessCharacter(token);
     return;

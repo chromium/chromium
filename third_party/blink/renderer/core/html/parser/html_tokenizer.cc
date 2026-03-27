@@ -179,6 +179,7 @@ inline bool HTMLTokenizer::ProcessEntity(SegmentedString& source) {
     DCHECK(decoded_entity.IsEmpty());
     BufferCharacter('&');
   } else {
+    token_.SetHasEntity();
     for (unsigned i = 0; i < decoded_entity.length; ++i)
       BufferCharacter(decoded_entity.data[i]);
   }
@@ -1055,8 +1056,10 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         DCHECK(decoded_entity.IsEmpty());
         token_.AppendToAttributeValue('&');
       } else {
-        for (unsigned i = 0; i < decoded_entity.length; ++i)
+        token_.SetHasEntity();
+        for (unsigned i = 0; i < decoded_entity.length; ++i) {
           token_.AppendToAttributeValue(decoded_entity.data[i]);
+        }
       }
       // We're supposed to switch back to the attribute value state that
       // we were in when we were switched into this state. Rather than

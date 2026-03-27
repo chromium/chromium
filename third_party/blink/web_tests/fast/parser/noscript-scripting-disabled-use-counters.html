@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/460581850">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<script>
+// IDs from web_feature.mojom
+const kNoscriptMarkupWithScriptingDisabledTemplate = 5857;
+const kNoscriptMarkupWithScriptingDisabledIframeSandbox = 5858;
+const kNoscriptMarkupWithScriptingDisabledXHR = 5859;
+const kNoscriptMarkupWithScriptingDisabledDOMParser = 5860;
+const kNoscriptMarkupWithScriptingDisabledNoBrowsingContext = 5861;
+
+const kAllFeatures = [
+  kNoscriptMarkupWithScriptingDisabledTemplate,
+  kNoscriptMarkupWithScriptingDisabledIframeSandbox,
+  kNoscriptMarkupWithScriptingDisabledXHR,
+  kNoscriptMarkupWithScriptingDisabledDOMParser,
+  kNoscriptMarkupWithScriptingDisabledNoBrowsingContext
+];
+
+function isUseCounted(doc, feature) {
+  return window.internals.isUseCounted(doc, feature);
+}
+
+function clearAllFeatures(doc) {
+  for (let feature of kAllFeatures) {
+    window.internals.clearUseCounter(doc, feature);
+  }
+}
+
+function assertOnlyExpectedFeature(doc, expected_feature) {
+  for (let feature of kAllFeatures) {
+    if (feature === expected_feature) {
+      assert_true(isUseCounted(doc, feature), "Feature " + feature + " should be counted");
+    } else {
+      assert_false(isUseCounted(doc, feature), "Feature " + feature + " should not be counted");
+    }
+  }
+}
+
+function assertNoFeatures(doc) {
+  for (let feature of kAllFeatures) {
+    assert_false(isUseCounted(doc, feature), "Feature " + feature + " should not be counted");
+  }
+}
+
+
+function getDescription(input) {
+  if (input.startsWith('</')) return 'end tag';
+  if (input.startsWith('<')) return 'start tag';
+  if (input.startsWith('&')) return 'entity ' + input;
+  return 'unknown';
+}
+
+// Things that should be counted.
+const variations = [
+  '<p>',
+  '</p>',
+  '&auml;',
+  '&lt;',
+  '&#38;',
+  '&OElig;'
+];
+
+for (const input of variations) {
+  test((t) => {
+    clearAllFeatures(document);
+    let doc = document.implementation.createHTMLDocument();
+
+    let template = doc.createElement('template');
+    template.innerHTML = "<noscript>hello</noscript>";
+    assertNoFeatures(document);
+
+    template.innerHTML = "<noscript>" + input + "</noscript>";
+    assertOnlyExpectedFeature(document, kNoscriptMarkupWithScriptingDisabledTemplate);
+  }, 'Template contents with ' + getDescription(input));
+
+  promise_test(async (t) => {
+    clearAllFeatures(document);
+    let iframe = document.createElement('iframe');
+    iframe.sandbox = "allow-same-origin"; // No scripts allowed, but same origin so we can read document
+    iframe.srcdoc = "<noscript>hello</noscript>";
+    t.add_cleanup(() => iframe.remove());
+    document.body.appendChild(iframe);
+    await new Promise(r => { iframe.onload = r; });
+    let doc = iframe.contentDocument;
+    assertNoFeatures(doc);
+
+    iframe.srcdoc = "<noscript>" + input + "</noscript>";
+    await new Promise(r => { iframe.onload = r; });
+    doc = iframe.contentDocument;
+    assertOnlyExpectedFeature(doc, kNoscriptMarkupWithScriptingDisabledIframeSandbox);
+  }, 'Sandboxed iframe with ' + getDescription(input));
+
+  promise_test(async (t) => {
+    clearAllFeatures(document);
+    let req = new XMLHttpRequest();
+    req.open('GET', 'data:text/html,<noscript>hello</noscript>');
+    req.responseType = 'document';
+    req.send();
+    await new Promise(r => { req.onload = r; });
+    assertNoFeatures(document);
+
+    let req2 = new XMLHttpRequest();
+    req2.open('GET', 'data:text/html,<noscript>' + encodeURIComponent(input) + '</noscript>');
+    req2.responseType = 'document';
+    req2.send();
+    await new Promise(r => { req2.onload = r; });
+
+    assertOnlyExpectedFeature(document, kNoscriptMarkupWithScriptingDisabledXHR);
+  }, 'XMLHttpRequest with ' + getDescription(input));
+
+  test((t) => {
+    clearAllFeatures(document);
+    let parser = new DOMParser();
+    let parsedDoc = parser.parseFromString("<noscript>hello</noscript>", "text/html");
+    assertNoFeatures(document);
+
+    parsedDoc = parser.parseFromString("<noscript>" + input + "</noscript>", "text/html");
+    assertOnlyExpectedFeature(document, kNoscriptMarkupWithScriptingDisabledDOMParser);
+  }, 'DOMParser with ' + getDescription(input));
+
+  test((t) => {
+    clearAllFeatures(document);
+    let doc = document.implementation.createHTMLDocument();
+    doc.body.innerHTML = "<noscript>hello</noscript>";
+    assertNoFeatures(document);
+
+    doc.body.innerHTML = "<noscript>" + input + "</noscript>";
+    // Use counter propagates to the execution context's document
+    assertOnlyExpectedFeature(document, kNoscriptMarkupWithScriptingDisabledNoBrowsingContext);
+  }, 'Other documents without a browsing context with ' + getDescription(input));
+}
+</script>

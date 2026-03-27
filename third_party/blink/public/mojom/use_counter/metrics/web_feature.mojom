@@ -5171,6 +5171,11 @@ enum WebFeature {
   kResourceTimingWorkerFinalSourceType = 5854,
   kNoVarySearchWithBooleanParams = 5855,
   kDataUrlWorkerBroadcastChannel = 5856,
+  kNoscriptMarkupWithScriptingDisabledTemplate = 5857,
+  kNoscriptMarkupWithScriptingDisabledIframeSandbox = 5858,
+  kNoscriptMarkupWithScriptingDisabledXHR = 5859,
+  kNoscriptMarkupWithScriptingDisabledDOMParser = 5860,
+  kNoscriptMarkupWithScriptingDisabledNoBrowsingContext = 5861,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

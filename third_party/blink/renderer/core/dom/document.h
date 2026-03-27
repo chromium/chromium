@@ -648,6 +648,10 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsFrameSet() const;
 
   bool IsSrcdocDocument() const { return is_srcdoc_document_; }
+  bool IsDOMParserDocument() const { return is_dom_parser_document_; }
+  void SetIsDOMParserDocument(bool is) { is_dom_parser_document_ = is; }
+  bool IsXHRDocument() const { return is_xhr_document_; }
+  void SetIsXHRDocument(bool is) { is_xhr_document_ = is; }
   bool IsMobileDocument() const { return is_mobile_document_; }
 
   StyleResolver& GetStyleResolver() const;
@@ -2923,6 +2927,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool is_xr_overlay_ = false;
   bool saw_elements_in_known_namespaces_ = false;
   bool is_srcdoc_document_;
+  bool is_dom_parser_document_ = false;
+  bool is_xhr_document_ = false;
   bool is_mobile_document_ = false;
 
   Member<LayoutView> layout_view_;

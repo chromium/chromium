@@ -336,6 +336,7 @@ void XMLHttpRequest::InitResponseDocument() {
     response_document_ = MakeGarbageCollected<XMLDocument>(init);
 
   // FIXME: Set Last-Modified.
+  response_document_->SetIsXHRDocument(true);
   response_document_->SetMimeType(GetResponseMIMEType());
 }
 

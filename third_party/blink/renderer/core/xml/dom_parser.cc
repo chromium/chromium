@@ -42,6 +42,7 @@ Document* DOMParser::ParseFromStringWithoutTrustedTypes(
                       .WithAgent(*window_->GetAgent())
                       .CreateDocument();
   doc->setAllowDeclarativeShadowRoots(false);
+  doc->SetIsDOMParserDocument(true);
   doc->SetContentFromDOMParser(str);
   doc->SetMimeType(type.AsAtomicString());
 

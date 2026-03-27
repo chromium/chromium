@@ -35,4 +35,18 @@ TEST(AtomicHTMLTokenTest, EmptyAttributeValueFromHTMLToken) {
   EXPECT_FALSE(attribute_d);
 }
 
+TEST(AtomicHTMLTokenTest, HasEntity) {
+  test::TaskEnvironment task_environment;
+  HTMLToken token1;
+  token1.EnsureIsCharacterToken();
+  AtomicHTMLToken atoken1(token1);
+  EXPECT_FALSE(atoken1.HasEntity());
+
+  HTMLToken token2;
+  token2.EnsureIsCharacterToken();
+  token2.SetHasEntity();
+  AtomicHTMLToken atoken2(token2);
+  EXPECT_TRUE(atoken2.HasEntity());
+}
+
 }  // namespace blink
