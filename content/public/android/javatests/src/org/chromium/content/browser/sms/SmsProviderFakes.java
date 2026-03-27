@@ -29,7 +29,7 @@ class SmsProviderFakes {
 
     /** Fakes com.google.android.gms.auth.api.phone.SmsRetrieverClient. */
     static class FakeSmsRetrieverClient extends Wrappers.SmsRetrieverClientWrapper {
-        @CalledByNative("FakeSmsRetrieverClient")
+        @CalledByNative
         private static FakeSmsRetrieverClient create() {
             Log.v(TAG, "FakeSmsRetrieverClient.create");
             return new FakeSmsRetrieverClient();
@@ -39,7 +39,7 @@ class SmsProviderFakes {
             super(null, null);
         }
 
-        @CalledByNative("FakeSmsRetrieverClient")
+        @CalledByNative
         private void triggerVerificationSms(String sms) {
             Intent intent = new Intent(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION);
             Bundle bundle = new Bundle();
@@ -54,7 +54,7 @@ class SmsProviderFakes {
             receiver.onReceive(context, intent);
         }
 
-        @CalledByNative("FakeSmsRetrieverClient")
+        @CalledByNative
         private void triggerUserConsentSms(String sms) {
             Intent intent = new Intent(SmsRetriever.SMS_RETRIEVED_ACTION);
             Bundle bundle = new Bundle();
@@ -76,7 +76,7 @@ class SmsProviderFakes {
             }
         }
 
-        @CalledByNative("FakeSmsRetrieverClient")
+        @CalledByNative
         private void triggerVerificationTimeout() {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
@@ -90,7 +90,7 @@ class SmsProviderFakes {
             receiver.onReceive(context, intent);
         }
 
-        @CalledByNative("FakeSmsRetrieverClient")
+        @CalledByNative
         private void triggerUserConsentTimeout() {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
@@ -104,7 +104,7 @@ class SmsProviderFakes {
             receiver.onReceive(context, intent);
         }
 
-        @CalledByNative("FakeSmsRetrieverClient")
+        @CalledByNative
         private void triggerUserDeniesPermission(boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
@@ -113,7 +113,7 @@ class SmsProviderFakes {
             receiver.onPermissionDone(Activity.RESULT_CANCELED, isLocalRequest);
         }
 
-        @CalledByNative("FakeSmsRetrieverClient")
+        @CalledByNative
         private void triggerUserGrantsPermission(boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
@@ -129,7 +129,7 @@ class SmsProviderFakes {
             receiver.onPermissionDone(Activity.RESULT_OK, isLocalRequest);
         }
 
-        @CalledByNative("FakeSmsRetrieverClient")
+        @CalledByNative
         private void triggerFailure(String type, boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;

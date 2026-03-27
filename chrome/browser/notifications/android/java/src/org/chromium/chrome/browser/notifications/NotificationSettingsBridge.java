@@ -70,22 +70,22 @@ public class NotificationSettingsBridge {
             mStatus = status;
         }
 
-        @CalledByNative("SiteChannel")
+        @CalledByNative
         public long getTimestamp() {
             return mTimestamp;
         }
 
-        @CalledByNative("SiteChannel")
+        @CalledByNative
         public @JniType("std::string") String getOrigin() {
             return mOrigin;
         }
 
-        @CalledByNative("SiteChannel")
+        @CalledByNative
         public @NotificationChannelStatus int getStatus() {
             return mStatus;
         }
 
-        @CalledByNative("SiteChannel")
+        @CalledByNative
         public @JniType("std::string") String getId() {
             return mId;
         }

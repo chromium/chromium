@@ -60,17 +60,17 @@ class CodecProfileLevelList {
             mLevel = level;
         }
 
-        @CalledByNative("CodecProfileLevelAdapter")
+        @CalledByNative
         public int getCodec() {
             return mCodec;
         }
 
-        @CalledByNative("CodecProfileLevelAdapter")
+        @CalledByNative
         public int getProfile() {
             return mProfile;
         }
 
-        @CalledByNative("CodecProfileLevelAdapter")
+        @CalledByNative
         public int getLevel() {
             return mLevel;
         }

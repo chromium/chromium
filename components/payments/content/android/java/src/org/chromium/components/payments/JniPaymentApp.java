@@ -66,7 +66,7 @@ public class JniPaymentApp extends PaymentApp {
         private final String mLabel;
         private final Bitmap mIcon;
 
-        @CalledByNative("PaymentEntityLogoImpl")
+        @CalledByNative
         PaymentEntityLogoImpl(
                 @JniType("std::u16string") String label, @JniType("const SkBitmap*") Bitmap icon) {
             mLabel = label;

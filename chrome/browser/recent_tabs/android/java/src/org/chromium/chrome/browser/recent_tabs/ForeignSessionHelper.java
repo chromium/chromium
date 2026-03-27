@@ -43,7 +43,7 @@ public class ForeignSessionHelper {
          * It's a good place to call {@link ForeignSessionHelper#getForeignSessions()} to get the
          * updated information.
          */
-        @CalledByNative("ForeignSessionCallback")
+        @CalledByNative
         void onUpdated();
     }
 

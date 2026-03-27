@@ -32,7 +32,7 @@ public class TrackerImpl implements Tracker {
      * The C++ counterpart is DisplayLockHandleAndroid.
      */
     static class DisplayLockHandleAndroid implements DisplayLockHandle {
-        @CalledByNative("DisplayLockHandleAndroid")
+        @CalledByNative
         private static DisplayLockHandleAndroid create(long nativePtr) {
             return new DisplayLockHandleAndroid(nativePtr);
         }
@@ -43,7 +43,7 @@ public class TrackerImpl implements Tracker {
             mNativePtr = nativePtr;
         }
 
-        @CalledByNative("DisplayLockHandleAndroid")
+        @CalledByNative
         private void clearNativePtr() {
             mNativePtr = 0;
         }

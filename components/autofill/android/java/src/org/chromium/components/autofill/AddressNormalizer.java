@@ -23,7 +23,7 @@ public class AddressNormalizer {
          *
          * @param profile The profile with the normalized address.
          */
-        @CalledByNative("NormalizedAddressRequestDelegate")
+        @CalledByNative
         void onAddressNormalized(AutofillProfile profile);
 
         /**
@@ -31,7 +31,7 @@ public class AddressNormalizer {
          *
          * @param profile The non normalized profile.
          */
-        @CalledByNative("NormalizedAddressRequestDelegate")
+        @CalledByNative
         void onCouldNotNormalize(AutofillProfile profile);
     }
 

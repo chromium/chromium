@@ -28,7 +28,7 @@ public final class BrowsingDataBridge {
 
     /** Interface for a class that is listening to clear browser data events. */
     public interface OnClearBrowsingDataListener {
-        @CalledByNative("OnClearBrowsingDataListener")
+        @CalledByNative
         void onBrowsingDataCleared();
     }
 
@@ -47,7 +47,7 @@ public final class BrowsingDataBridge {
          * @param dialogDisabled If the important dialog has been ignored too many times and should
          *     not be shown.
          */
-        @CalledByNative("ImportantSitesCallback")
+        @CalledByNative
         void onImportantRegisterableDomainsReady(
                 @JniType("std::vector<std::string>") String[] domains,
                 @JniType("std::vector<std::string>") String[] exampleOrigins,
@@ -64,7 +64,7 @@ public final class BrowsingDataBridge {
          * Called by the web history service when it discovers that other forms of browsing history
          * exist.
          */
-        @CalledByNative("OtherFormsOfBrowsingHistoryListener")
+        @CalledByNative
         void enableDialogAboutOtherFormsOfBrowsingHistory();
     }
 

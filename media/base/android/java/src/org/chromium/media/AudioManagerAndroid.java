@@ -89,22 +89,22 @@ class AudioManagerAndroid {
             mSampleRates = sampleRates;
         }
 
-        @CalledByNative("AudioDevice")
+        @CalledByNative
         private int id() {
             return mId;
         }
 
-        @CalledByNative("AudioDevice")
+        @CalledByNative
         private @JniType("std::optional<std::string>") @Nullable String name() {
             return mName;
         }
 
-        @CalledByNative("AudioDevice")
+        @CalledByNative
         private int type() {
             return mType;
         }
 
-        @CalledByNative("AudioDevice")
+        @CalledByNative
         private @JniType("std::vector<int>") int[] sampleRates() {
             return mSampleRates;
         }

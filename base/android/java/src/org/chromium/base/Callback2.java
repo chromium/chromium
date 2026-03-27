@@ -22,7 +22,7 @@ public interface Callback2<T1 extends @Nullable Object, T2 extends @Nullable Obj
     void onResult(T1 result1, T2 result2);
 
     abstract class JniHelper {
-        @CalledByNative("JniHelper")
+        @CalledByNative
         static void onResultFromNative(Callback2<Object, Object> callback, Object r1, Object r2) {
             callback.onResult(r1, r2);
         }

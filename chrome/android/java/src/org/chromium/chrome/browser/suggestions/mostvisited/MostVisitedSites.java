@@ -49,13 +49,13 @@ public interface MostVisitedSites extends CustomLinkOperations {
         /**
          * @return True if homepage tile should be shown.
          */
-        @CalledByNative("HomepageClient")
+        @CalledByNative
         boolean isHomepageTileEnabled();
 
         /**
          * @return The raw URL of the currently set home page.
          */
-        @CalledByNative("HomepageClient")
+        @CalledByNative
         @Nullable String getHomepageUrl();
     }
 

@@ -44,7 +44,7 @@ public class ExtensionActionsBridge implements Destroyable {
         public final String actionId;
 
         @VisibleForTesting
-        @CalledByNative("HandleKeyEventResult")
+        @CalledByNative
         public HandleKeyEventResult(boolean handled, @JniType("std::string") String actionId) {
             this.handled = handled;
             this.actionId = actionId;

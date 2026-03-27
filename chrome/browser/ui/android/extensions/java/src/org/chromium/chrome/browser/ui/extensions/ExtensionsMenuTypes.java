@@ -42,7 +42,7 @@ public class ExtensionsMenuTypes {
         public final boolean isOn;
         public final @Nullable Bitmap icon;
 
-        @CalledByNative("ControlState")
+        @CalledByNative
         public ControlState(
                 @Status int status,
                 @JniType("std::u16string") String text,
@@ -69,7 +69,7 @@ public class ExtensionsMenuTypes {
 
         // TODO(crbug.com/471016915): add is enterprise boolean.
 
-        @CalledByNative("MenuEntryState")
+        @CalledByNative
         public MenuEntryState(
                 @JniType("std::string") String id,
                 ControlState actionButton,
@@ -90,7 +90,7 @@ public class ExtensionsMenuTypes {
         public final boolean hasTooltip;
         public final ControlState toggle;
 
-        @CalledByNative("SiteSettingsState")
+        @CalledByNative
         public SiteSettingsState(
                 @JniType("std::u16string") String label, boolean hasTooltip, ControlState toggle) {
             this.label = label;
@@ -118,7 +118,7 @@ public class ExtensionsMenuTypes {
         public final String extensionName;
         public final @Nullable Bitmap extensionIcon;
 
-        @CalledByNative("HostAccessRequest")
+        @CalledByNative
         public HostAccessRequest(
                 @JniType("std::string") String extensionId,
                 @JniType("std::u16string") String extensionName,

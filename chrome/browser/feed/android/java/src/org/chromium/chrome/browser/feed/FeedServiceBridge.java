@@ -140,7 +140,7 @@ public final class FeedServiceBridge {
          * Called to signal whether unread content is available. Called once after the observer is
          * initialized, and after that, called each time unread content status changes.
          */
-        @CalledByNative("UnreadContentObserver")
+        @CalledByNative
         public void hasUnreadContentChanged(boolean hasUnreadContent) {}
     }
 

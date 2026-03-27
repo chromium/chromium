@@ -37,7 +37,7 @@ class MediaDrmStorageBridge {
         // Key type of session. It can be any value. Caller should check it before actual using it.
         private final int mKeyType;
 
-        @CalledByNative("PersistentInfo")
+        @CalledByNative
         private static PersistentInfo create(
                 byte[] emeId, byte[] keySetId, String mime, int keyType) {
             return new PersistentInfo(emeId, keySetId, mime, keyType);
@@ -50,22 +50,22 @@ class MediaDrmStorageBridge {
             mKeyType = keyType;
         }
 
-        @CalledByNative("PersistentInfo")
+        @CalledByNative
         byte[] emeId() {
             return mEmeId;
         }
 
-        @CalledByNative("PersistentInfo")
+        @CalledByNative
         byte[] keySetId() {
             return mKeySetId;
         }
 
-        @CalledByNative("PersistentInfo")
+        @CalledByNative
         String mimeType() {
             return mMimeType;
         }
 
-        @CalledByNative("PersistentInfo")
+        @CalledByNative
         int keyType() {
             return mKeyType;
         }

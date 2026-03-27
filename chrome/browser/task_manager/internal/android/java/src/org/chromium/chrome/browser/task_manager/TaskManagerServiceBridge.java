@@ -31,7 +31,7 @@ public class TaskManagerServiceBridge {
          */
         public final boolean hasDuplicates;
 
-        @CalledByNative("GpuMemoryUsage")
+        @CalledByNative
         GpuMemoryUsage(long bytes, boolean hasDuplicates) {
             this.bytes = bytes;
             this.hasDuplicates = hasDuplicates;

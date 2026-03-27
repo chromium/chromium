@@ -49,22 +49,22 @@ public interface Callback<T extends @Nullable Object> {
 
     // TODO(agrieve): Wrapper can be removed once min_supported_sdk_version >= 24.
     abstract class Helper {
-        @CalledByNative("Helper")
+        @CalledByNative
         static void onObjectResultFromNative(Callback<Object> callback, Object result) {
             callback.onResult(result);
         }
 
-        @CalledByNative("Helper")
+        @CalledByNative
         static void onBooleanResultFromNative(Callback<Boolean> callback, boolean result) {
             callback.onResult(result);
         }
 
-        @CalledByNative("Helper")
+        @CalledByNative
         static void onIntResultFromNative(Callback<Integer> callback, int result) {
             callback.onResult(result);
         }
 
-        @CalledByNative("Helper")
+        @CalledByNative
         static void onLongResultFromNative(Callback<Long> callback, long result) {
             callback.onResult(result);
         }

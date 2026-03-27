@@ -25,7 +25,7 @@ public class PaymentManifestParser {
          * @param webAppManifestUris  The URLs of the default applications in the parsed manifest.
          * @param supportedOrigins    The URLs for the supported origins in the parsed manifest.
          */
-        @CalledByNative("ManifestParseCallback")
+        @CalledByNative
         void onPaymentMethodManifestParseSuccess(
                 GURL[] webAppManifestUris, GURL[] supportedOrigins);
 
@@ -34,11 +34,11 @@ public class PaymentManifestParser {
          *
          * @param manifest The successfully parsed web app manifest.
          */
-        @CalledByNative("ManifestParseCallback")
+        @CalledByNative
         void onWebAppManifestParseSuccess(WebAppManifestSection[] manifest);
 
         /** Called on failed parse of a payment method manifest. */
-        @CalledByNative("ManifestParseCallback")
+        @CalledByNative
         void onManifestParseFailure();
     }
 

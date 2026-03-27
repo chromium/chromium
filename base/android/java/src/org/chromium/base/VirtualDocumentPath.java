@@ -35,13 +35,13 @@ class VirtualDocumentPath {
             this.created = created;
         }
 
-        @CalledByNative("CreateOrOpenResult")
+        @CalledByNative
         @JniType("std::string")
         String getContentUriString() {
             return this.contentUri.toString();
         }
 
-        @CalledByNative("CreateOrOpenResult")
+        @CalledByNative
         boolean getCreated() {
             return this.created;
         }

@@ -24,7 +24,7 @@ public class WebPaymentsWebDataService {
          *     payment method manifest. May also contain "*" to indicate that all origins are
          *     supported.
          */
-        @CalledByNative("WebPaymentsWebDataServiceCallback")
+        @CalledByNative
         void onPaymentMethodManifestFetched(String[] appIdentifiers);
 
         /**
@@ -32,7 +32,7 @@ public class WebPaymentsWebDataService {
          *
          * @param manifest The web app manifest sections.
          */
-        @CalledByNative("WebPaymentsWebDataServiceCallback")
+        @CalledByNative
         void onPaymentWebAppManifestFetched(WebAppManifestSection[] manifest);
     }
 

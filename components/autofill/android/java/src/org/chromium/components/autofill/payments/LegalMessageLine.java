@@ -38,7 +38,7 @@ public class LegalMessageLine {
          * @param end The ending exclusive index of the link position in the text.
          * @param url The URL of the link.
          */
-        @CalledByNative("Link")
+        @CalledByNative
         public Link(int start, int end, String url) {
             this.start = start;
             this.end = end;

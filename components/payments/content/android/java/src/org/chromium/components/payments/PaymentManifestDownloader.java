@@ -33,7 +33,7 @@ public class PaymentManifestDownloader {
          * followed.
          * @param content The successfully downloaded payment method manifest.
          */
-        @CalledByNative("ManifestDownloadCallback")
+        @CalledByNative
         void onPaymentMethodManifestDownloadSuccess(
                 GURL paymentMethodManifestUrl, Origin paymentMethodManifestOrigin, String content);
 
@@ -42,7 +42,7 @@ public class PaymentManifestDownloader {
          *
          * @param content The successfully downloaded web app manifest.
          */
-        @CalledByNative("ManifestDownloadCallback")
+        @CalledByNative
         void onWebAppManifestDownloadSuccess(String content);
 
         /**
@@ -50,7 +50,7 @@ public class PaymentManifestDownloader {
          *
          * @param errorMessage The error message, which could be empty or null.
          */
-        @CalledByNative("ManifestDownloadCallback")
+        @CalledByNative
         void onManifestDownloadFailure(String errorMessage);
     }
 

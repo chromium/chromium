@@ -82,7 +82,7 @@ public class WebFeedBridge {
         /** Favicon URL for the Web Feed, if one is provided. */
         public final GURL faviconUrl;
 
-        @CalledByNative("WebFeedMetadata")
+        @CalledByNative
         public WebFeedMetadata(
                 byte[] id,
                 @JniType("std::string") String title,
@@ -192,7 +192,7 @@ public class WebFeedBridge {
         /** The metadata from the followed Web Feed. `null` if the operation was not successful. */
         public final @Nullable WebFeedMetadata metadata;
 
-        @CalledByNative("FollowResults")
+        @CalledByNative
         public FollowResults(
                 @WebFeedSubscriptionRequestStatus int requestStatus, WebFeedMetadata metadata) {
             this.requestStatus = requestStatus;
@@ -202,7 +202,7 @@ public class WebFeedBridge {
 
     /** Container for results from an Unfollow request. */
     public static class UnfollowResults {
-        @CalledByNative("UnfollowResults")
+        @CalledByNative
         public UnfollowResults(@WebFeedSubscriptionRequestStatus int requestStatus) {
             this.requestStatus = requestStatus;
         }
@@ -213,7 +213,7 @@ public class WebFeedBridge {
 
     /** Container for results from an QueryWebFeed request. */
     public static class QueryResult {
-        @CalledByNative("QueryResult")
+        @CalledByNative
         public QueryResult(
                 @JniType("std::string") String webFeedId,
                 @JniType("std::string") String title,
@@ -313,12 +313,12 @@ public class WebFeedBridge {
             mTab = tab;
         }
 
-        @CalledByNative("WebFeedPageInformation")
+        @CalledByNative
         @Nullable GURL getUrl() {
             return mUrl;
         }
 
-        @CalledByNative("WebFeedPageInformation")
+        @CalledByNative
         @Nullable Tab getTab() {
             return mTab;
         }

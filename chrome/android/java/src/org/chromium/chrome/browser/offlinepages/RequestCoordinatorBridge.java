@@ -58,7 +58,7 @@ public class RequestCoordinatorBridge {
             mCallback = callback;
         }
 
-        @CalledByNative("RequestsRemovedCallback")
+        @CalledByNative
         public void onResult(long[] resultIds, int[] resultCodes) {
             assert resultIds.length == resultCodes.length;
 

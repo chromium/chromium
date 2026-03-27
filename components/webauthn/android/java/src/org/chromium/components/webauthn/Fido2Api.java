@@ -1487,7 +1487,7 @@ public final class Fido2Api {
     /** AttestationObjectParts groups together the return values of |parseAttestationObject|. */
     public static final class AttestationObjectParts {
         @Initializer
-        @CalledByNative("AttestationObjectParts")
+        @CalledByNative
         void setAll(
                 byte[] authenticatorData,
                 byte[] spki,

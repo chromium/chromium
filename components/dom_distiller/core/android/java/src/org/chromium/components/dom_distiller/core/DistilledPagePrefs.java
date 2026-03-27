@@ -45,24 +45,24 @@ public class DistilledPagePrefs {
             mDistilledPagePrefsObserver = observer;
         }
 
-        @CalledByNative("DistilledPagePrefsObserverWrapper")
+        @CalledByNative
         private void onChangeFontFamily(int fontFamily) {
             FontFamily.validate(fontFamily);
             mDistilledPagePrefsObserver.onChangeFontFamily(fontFamily);
         }
 
-        @CalledByNative("DistilledPagePrefsObserverWrapper")
+        @CalledByNative
         private void onChangeTheme(int theme) {
             Theme.validate(theme);
             mDistilledPagePrefsObserver.onChangeTheme(theme);
         }
 
-        @CalledByNative("DistilledPagePrefsObserverWrapper")
+        @CalledByNative
         private void onChangeFontScaling(float scaling) {
             mDistilledPagePrefsObserver.onChangeFontScaling(scaling);
         }
 
-        @CalledByNative("DistilledPagePrefsObserverWrapper")
+        @CalledByNative
         private void onChangeLinksEnabled(boolean enabled) {
             mDistilledPagePrefsObserver.onChangeLinksEnabled(enabled);
         }

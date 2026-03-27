@@ -78,27 +78,27 @@ public class SafeBrowsingReferringAppBridge {
             mReferringWebApkManifestId = referringWebApkManifestId;
         }
 
-        @CalledByNative("ReferringAppInfo")
+        @CalledByNative
         public @ReferringAppSource int getSource() {
             return mReferringAppSource;
         }
 
-        @CalledByNative("ReferringAppInfo")
+        @CalledByNative
         public @JniType("std::string") String getName() {
             return mReferringAppName;
         }
 
-        @CalledByNative("ReferringAppInfo")
+        @CalledByNative
         public @JniType("std::string") String getTargetUrl() {
             return mTargetUrl;
         }
 
-        @CalledByNative("ReferringAppInfo")
+        @CalledByNative
         public @JniType("std::string") String getReferringWebApkStartUrl() {
             return mReferringWebApkStartUrl;
         }
 
-        @CalledByNative("ReferringAppInfo")
+        @CalledByNative
         public @JniType("std::string") String getReferringWebApkManifestId() {
             return mReferringWebApkManifestId;
         }

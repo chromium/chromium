@@ -190,12 +190,12 @@ class MediaCodecBridge {
             mIndex = index;
         }
 
-        @CalledByNative("DequeueInputResult")
+        @CalledByNative
         private int status() {
             return mStatus;
         }
 
-        @CalledByNative("DequeueInputResult")
+        @CalledByNative
         private int index() {
             return mIndex;
         }
@@ -212,17 +212,17 @@ class MediaCodecBridge {
             assert (mBlock == null && mBuffer == null) || (mBlock != null && mBuffer != null);
         }
 
-        @CalledByNative("ObtainBlockResult")
+        @CalledByNative
         private MediaCodec.@Nullable LinearBlock block() {
             return mBlock;
         }
 
-        @CalledByNative("ObtainBlockResult")
+        @CalledByNative
         private @Nullable ByteBuffer buffer() {
             return mBuffer;
         }
 
-        @CalledByNative("ObtainBlockResult")
+        @CalledByNative
         @SuppressLint("NewApi")
         private void recycle() {
             if (mBlock != null) {
@@ -260,32 +260,32 @@ class MediaCodecBridge {
             mNumBytes = numBytes;
         }
 
-        @CalledByNative("DequeueOutputResult")
+        @CalledByNative
         private int status() {
             return mStatus;
         }
 
-        @CalledByNative("DequeueOutputResult")
+        @CalledByNative
         private int index() {
             return mIndex;
         }
 
-        @CalledByNative("DequeueOutputResult")
+        @CalledByNative
         private int flags() {
             return mFlags;
         }
 
-        @CalledByNative("DequeueOutputResult")
+        @CalledByNative
         private int offset() {
             return mOffset;
         }
 
-        @CalledByNative("DequeueOutputResult")
+        @CalledByNative
         private long presentationTimeMicroseconds() {
             return mPresentationTimeMicroseconds;
         }
 
-        @CalledByNative("DequeueOutputResult")
+        @CalledByNative
         private int numBytes() {
             return mNumBytes;
         }
@@ -306,43 +306,43 @@ class MediaCodecBridge {
                     && mFormat.containsKey(KEY_CROP_TOP);
         }
 
-        @CalledByNative("MediaFormatWrapper")
+        @CalledByNative
         private int width() {
             return formatHasCropValues()
                     ? mFormat.getInteger(KEY_CROP_RIGHT) - mFormat.getInteger(KEY_CROP_LEFT) + 1
                     : mFormat.getInteger(MediaFormat.KEY_WIDTH);
         }
 
-        @CalledByNative("MediaFormatWrapper")
+        @CalledByNative
         private int height() {
             return formatHasCropValues()
                     ? mFormat.getInteger(KEY_CROP_BOTTOM) - mFormat.getInteger(KEY_CROP_TOP) + 1
                     : mFormat.getInteger(MediaFormat.KEY_HEIGHT);
         }
 
-        @CalledByNative("MediaFormatWrapper")
+        @CalledByNative
         private int sampleRate() {
             return mFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         }
 
-        @CalledByNative("MediaFormatWrapper")
+        @CalledByNative
         private int channelCount() {
             return mFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
         }
 
-        @CalledByNative("MediaFormatWrapper")
+        @CalledByNative
         private int colorStandard() {
             if (!mFormat.containsKey(MediaFormat.KEY_COLOR_STANDARD)) return -1;
             return mFormat.getInteger(MediaFormat.KEY_COLOR_STANDARD);
         }
 
-        @CalledByNative("MediaFormatWrapper")
+        @CalledByNative
         private int colorRange() {
             if (!mFormat.containsKey(MediaFormat.KEY_COLOR_RANGE)) return -1;
             return mFormat.getInteger(MediaFormat.KEY_COLOR_RANGE);
         }
 
-        @CalledByNative("MediaFormatWrapper")
+        @CalledByNative
         private int colorTransfer() {
             if (!mFormat.containsKey(MediaFormat.KEY_COLOR_TRANSFER)) return -1;
             return mFormat.getInteger(MediaFormat.KEY_COLOR_TRANSFER);

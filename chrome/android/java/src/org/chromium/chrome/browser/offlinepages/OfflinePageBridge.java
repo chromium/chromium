@@ -97,7 +97,7 @@ public class OfflinePageBridge {
          * @see OfflinePageBridge#savePage(WebContents, ClientId, OfflinePageOrigin,
          *     SavePageCallback)
          */
-        @CalledByNative("SavePageCallback")
+        @CalledByNative
         void onSavePageDone(int savePageResult, @JniType("std::string") String url, long offlineId);
     }
 

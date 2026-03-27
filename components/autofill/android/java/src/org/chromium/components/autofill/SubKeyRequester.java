@@ -27,7 +27,7 @@ public class SubKeyRequester {
          * @param subKeysCodes The subkeys' codes.
          * @param subKeysNames The subkeys' names.
          */
-        @CalledByNative("GetSubKeysRequestDelegate")
+        @CalledByNative
         void onSubKeysReceived(String[] subKeysCodes, String[] subKeysNames);
     }
 

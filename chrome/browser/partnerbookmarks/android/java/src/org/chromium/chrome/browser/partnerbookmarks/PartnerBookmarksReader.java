@@ -86,10 +86,10 @@ public class PartnerBookmarksReader {
      * from cache or server.
      */
     interface FetchFaviconCallback {
-        @CalledByNative("FetchFaviconCallback")
+        @CalledByNative
         void onFaviconFetched(@FaviconFetchResult int result);
 
-        @CalledByNative("FetchFaviconCallback")
+        @CalledByNative
         void onFaviconFetch();
     }
 

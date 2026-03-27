@@ -113,7 +113,7 @@ public class PersonalDataManager implements Destroyable {
         private final String mCardNameForAutofillDisplay;
         private final String mObfuscatedLastFourDigits;
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public static CreditCard create(
                 @JniType("std::string") String guid,
                 @JniType("std::string") String origin,
@@ -278,22 +278,22 @@ public class PersonalDataManager implements Destroyable {
                     /* serverId= */ "");
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::string") String getGUID() {
             return mGUID;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::string") String getOrigin() {
             return mOrigin;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::u16string") String getName() {
             return mName;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::u16string") String getNumber() {
             return mNumber;
         }
@@ -302,12 +302,12 @@ public class PersonalDataManager implements Destroyable {
             return mNetworkAndLastFourDigits;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::u16string") String getMonth() {
             return mMonth;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::u16string") String getYear() {
             return mYear;
         }
@@ -326,17 +326,17 @@ public class PersonalDataManager implements Destroyable {
                     context.getString(R.string.autofill_settings_page_cvc_saved_label));
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public boolean getIsLocal() {
             return mIsLocal;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public boolean getIsVirtual() {
             return mIsVirtual;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::string") String getBasicCardIssuerNetwork() {
             return mBasicCardIssuerNetwork;
         }
@@ -345,17 +345,17 @@ public class PersonalDataManager implements Destroyable {
             return mIssuerIconDrawableId;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::string") String getBillingAddressId() {
             return mBillingAddressId;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::string") String getServerId() {
             return mServerId;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public long getInstrumentId() {
             return mInstrumentId;
         }
@@ -364,42 +364,42 @@ public class PersonalDataManager implements Destroyable {
             return mCardLabel;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::u16string") String getNickname() {
             return mNickname;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @Nullable GURL getCardArtUrl() {
             return mCardArtUrl;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @VirtualCardEnrollmentState int getVirtualCardEnrollmentState() {
             return mVirtualCardEnrollmentState;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::u16string") String getProductDescription() {
             return mProductDescription;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @JniType("std::u16string") String getCvc() {
             return mCvc;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public String getIssuerId() {
             return mIssuerId;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public String getBenefitSource() {
             return mBenefitSource;
         }
 
-        @CalledByNative("CreditCard")
+        @CalledByNative
         public @Nullable GURL getProductTermsUrl() {
             return mProductTermsUrl;
         }
@@ -513,7 +513,7 @@ public class PersonalDataManager implements Destroyable {
         // Creates an Iban instance that is not stored on a server nor locally,
         // yet. This Iban has type IbanRecordType.UNKNOWN and has neither a
         // Guid nor an instrumentId.
-        @CalledByNative("Iban")
+        @CalledByNative
         public static Iban createEphemeral(
                 @JniType("std::u16string") String label,
                 @JniType("std::u16string") String nickname,
@@ -526,7 +526,7 @@ public class PersonalDataManager implements Destroyable {
                     .build();
         }
 
-        @CalledByNative("Iban")
+        @CalledByNative
         public static Iban createLocal(
                 @JniType("std::string") String guid,
                 @JniType("std::u16string") String label,
@@ -541,7 +541,7 @@ public class PersonalDataManager implements Destroyable {
                     .build();
         }
 
-        @CalledByNative("Iban")
+        @CalledByNative
         public static Iban createServer(
                 long instrumentId,
                 @JniType("std::u16string") String label,
@@ -556,13 +556,13 @@ public class PersonalDataManager implements Destroyable {
                     .build();
         }
 
-        @CalledByNative("Iban")
+        @CalledByNative
         public @Nullable @JniType("std::string") String getGuid() {
             assert mRecordType != IbanRecordType.SERVER_IBAN;
             return mGuid;
         }
 
-        @CalledByNative("Iban")
+        @CalledByNative
         public long getInstrumentId() {
             assert mInstrumentId != null;
             assert mRecordType == IbanRecordType.SERVER_IBAN;
@@ -573,17 +573,17 @@ public class PersonalDataManager implements Destroyable {
             return mLabel;
         }
 
-        @CalledByNative("Iban")
+        @CalledByNative
         public @JniType("std::u16string") String getNickname() {
             return mNickname;
         }
 
-        @CalledByNative("Iban")
+        @CalledByNative
         public @IbanRecordType int getRecordType() {
             return mRecordType;
         }
 
-        @CalledByNative("Iban")
+        @CalledByNative
         public @Nullable @JniType("std::u16string") String getValue() {
             return mValue;
         }

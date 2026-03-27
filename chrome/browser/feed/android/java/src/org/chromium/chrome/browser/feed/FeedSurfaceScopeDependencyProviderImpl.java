@@ -37,7 +37,7 @@ public class FeedSurfaceScopeDependencyProviderImpl
         public String[] headerNameAndValues;
         public byte @Nullable [] rawData;
 
-        @CalledByNative("NetworkResponse")
+        @CalledByNative
         public NetworkResponse(
                 boolean success,
                 int statusCode,

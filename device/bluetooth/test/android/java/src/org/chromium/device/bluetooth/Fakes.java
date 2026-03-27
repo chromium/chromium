@@ -141,7 +141,7 @@ class Fakes {
         final long mNativeBluetoothTestAndroid;
 
         /** Creates a FakeBluetoothAdapter. */
-        @CalledByNative("FakeBluetoothAdapter")
+        @CalledByNative
         public static FakeBluetoothAdapter create(long nativeBluetoothTestAndroid) {
             Log.v(TAG, "FakeBluetoothAdapter created.");
             return new FakeBluetoothAdapter(nativeBluetoothTestAndroid);
@@ -158,7 +158,7 @@ class Fakes {
             mFakeScanner = new FakeBluetoothLeScanner();
         }
 
-        @CalledByNative("FakeBluetoothAdapter")
+        @CalledByNative
         public void setFakePermission(boolean enabled) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 mFakeContext.setBluetoothPermission(enabled);
@@ -167,13 +167,13 @@ class Fakes {
             }
         }
 
-        @CalledByNative("FakeBluetoothAdapter")
+        @CalledByNative
         public void setEnabledTransport(int enabledTransport) {
             mEnabledDeviceTransport = enabledTransport;
         }
 
         /** Creates and discovers a new device. */
-        @CalledByNative("FakeBluetoothAdapter")
+        @CalledByNative
         public void simulateLowEnergyDevice(int deviceOrdinal) {
             if (mFakeScanner == null) {
                 return;
@@ -371,7 +371,7 @@ class Fakes {
             }
         }
 
-        @CalledByNative("FakeBluetoothAdapter")
+        @CalledByNative
         public @JniType("std::string") String simulatePairedClassicDevice(
                 int deviceOrdinal, boolean notifyCallback) {
             final FakeBluetoothDevice device;
@@ -424,7 +424,7 @@ class Fakes {
             return device.getAddress();
         }
 
-        @CalledByNative("FakeBluetoothAdapter")
+        @CalledByNative
         public void unpairDevice(@JniType("std::string") String address) {
             FakeBluetoothDevice removedDevice = null;
             Iterator pairedDeviceIterator = mFakePairedDevices.iterator();
@@ -443,14 +443,14 @@ class Fakes {
             }
         }
 
-        @CalledByNative("FakeBluetoothAdapter")
+        @CalledByNative
         public void forceIllegalStateException() {
             if (mFakeScanner != null) {
                 mFakeScanner.forceIllegalStateException();
             }
         }
 
-        @CalledByNative("FakeBluetoothAdapter")
+        @CalledByNative
         public void failCurrentLeScan(int errorCode) {
             mFakeScanner.mScanCallback.onScanFailed(errorCode);
             mFakeScanner.mScanCallback = null;
@@ -765,14 +765,14 @@ class Fakes {
         }
 
         // Implements BluetoothTestAndroid::RememberDeviceForSubsequentAction.
-        @CalledByNative("FakeBluetoothDevice")
+        @CalledByNative
         private static void rememberDeviceForSubsequentAction(ChromeBluetoothDevice chromeDevice) {
             sRememberedDevice = (FakeBluetoothDevice) chromeDevice.mDevice;
         }
 
         // Create a call to onConnectionStateChange on the |chrome_device| using parameters
         // |status| & |connected|.
-        @CalledByNative("FakeBluetoothDevice")
+        @CalledByNative
         private static void connectionStateChange(
                 ChromeBluetoothDevice chromeDevice, int status, boolean connected) {
             FakeBluetoothDevice fakeDevice = (FakeBluetoothDevice) chromeDevice.mDevice;
@@ -783,7 +783,7 @@ class Fakes {
                             : android.bluetooth.BluetoothProfile.STATE_DISCONNECTED);
         }
 
-        @CalledByNative("FakeBluetoothDevice")
+        @CalledByNative
         private static void aclConnectionStateChange(
                 ChromeBluetoothDevice chromeDevice, int transport, boolean connected) {
             FakeBluetoothDevice fakeDevice = (FakeBluetoothDevice) chromeDevice.mDevice;
@@ -795,7 +795,7 @@ class Fakes {
 
         // Create a call to onServicesDiscovered on the |chrome_device| using parameter
         // |status|.
-        @CalledByNative("FakeBluetoothDevice")
+        @CalledByNative
         private static void servicesDiscovered(
                 ChromeBluetoothDevice chromeDevice, int status, String uuidsSpaceDelimited) {
             if (chromeDevice == null && sRememberedDevice == null) {
@@ -825,7 +825,7 @@ class Fakes {
             fakeDevice.mGattCallback.onServicesDiscovered(status);
         }
 
-        @CalledByNative("FakeBluetoothDevice")
+        @CalledByNative
         private static void failNextServiceConnection(
                 ChromeBluetoothDevice chromeDevice, @JniType("std::string") String message) {
             FakeBluetoothDevice device = (FakeBluetoothDevice) chromeDevice.mDevice;
@@ -1046,7 +1046,7 @@ class Fakes {
         }
 
         // Create a characteristic and add it to this service.
-        @CalledByNative("FakeBluetoothGattService")
+        @CalledByNative
         private static void addCharacteristic(
                 ChromeBluetoothRemoteGattService chromeService, String uuidString, int properties) {
             FakeBluetoothGattService fakeService =
@@ -1108,7 +1108,7 @@ class Fakes {
         }
 
         // Simulate a characteristic value notified as changed.
-        @CalledByNative("FakeBluetoothGattCharacteristic")
+        @CalledByNative
         private static void valueChanged(
                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic, byte[] value) {
             if (chromeCharacteristic == null && sRememberedCharacteristic == null) {
@@ -1128,7 +1128,7 @@ class Fakes {
         }
 
         // Implements BluetoothTestAndroid::RememberCharacteristicForSubsequentAction.
-        @CalledByNative("FakeBluetoothGattCharacteristic")
+        @CalledByNative
         private static void rememberCharacteristicForSubsequentAction(
                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic) {
             sRememberedCharacteristic =
@@ -1136,7 +1136,7 @@ class Fakes {
         }
 
         // Simulate a value being read from a characteristic.
-        @CalledByNative("FakeBluetoothGattCharacteristic")
+        @CalledByNative
         private static void valueRead(
                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic,
                 int status,
@@ -1158,7 +1158,7 @@ class Fakes {
         }
 
         // Simulate a value being written to a characteristic.
-        @CalledByNative("FakeBluetoothGattCharacteristic")
+        @CalledByNative
         private static void valueWrite(
                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic, int status) {
             if (chromeCharacteristic == null && sRememberedCharacteristic == null) {
@@ -1177,7 +1177,7 @@ class Fakes {
         }
 
         // Cause subsequent notification of a characteristic to fail synchronously.
-        @CalledByNative("FakeBluetoothGattCharacteristic")
+        @CalledByNative
         private static void setCharacteristicNotificationWillFailSynchronouslyOnce(
                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic) {
             FakeBluetoothGattCharacteristic fakeCharacteristic =
@@ -1192,7 +1192,7 @@ class Fakes {
         }
 
         // Cause subsequent value read of a characteristic to fail synchronously.
-        @CalledByNative("FakeBluetoothGattCharacteristic")
+        @CalledByNative
         private static void setReadCharacteristicWillFailSynchronouslyOnce(
                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic) {
             FakeBluetoothGattCharacteristic fakeCharacteristic =
@@ -1203,7 +1203,7 @@ class Fakes {
         }
 
         // Cause subsequent value write of a characteristic to fail synchronously.
-        @CalledByNative("FakeBluetoothGattCharacteristic")
+        @CalledByNative
         private static void setWriteCharacteristicWillFailSynchronouslyOnce(
                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic) {
             FakeBluetoothGattCharacteristic fakeCharacteristic =
@@ -1218,7 +1218,7 @@ class Fakes {
         }
 
         // Create a descriptor and add it to this characteristic.
-        @CalledByNative("FakeBluetoothGattCharacteristic")
+        @CalledByNative
         private static void addDescriptor(
                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic, String uuidString) {
             FakeBluetoothGattCharacteristic fakeCharacteristic =
@@ -1285,14 +1285,14 @@ class Fakes {
         }
 
         // Implements BluetoothTestAndroid::RememberDescriptorForSubsequentAction.
-        @CalledByNative("FakeBluetoothGattDescriptor")
+        @CalledByNative
         private static void rememberDescriptorForSubsequentAction(
                 ChromeBluetoothRemoteGattDescriptor chromeDescriptor) {
             sRememberedDescriptor = (FakeBluetoothGattDescriptor) chromeDescriptor.mDescriptor;
         }
 
         // Simulate a value being read from a descriptor.
-        @CalledByNative("FakeBluetoothGattDescriptor")
+        @CalledByNative
         private static void valueRead(
                 ChromeBluetoothRemoteGattDescriptor chromeDescriptor, int status, byte[] value) {
             if (chromeDescriptor == null && sRememberedDescriptor == null) {
@@ -1310,7 +1310,7 @@ class Fakes {
         }
 
         // Simulate a value being written to a descriptor.
-        @CalledByNative("FakeBluetoothGattDescriptor")
+        @CalledByNative
         private static void valueWrite(
                 ChromeBluetoothRemoteGattDescriptor chromeDescriptor, int status) {
             if (chromeDescriptor == null && sRememberedDescriptor == null) {
@@ -1327,7 +1327,7 @@ class Fakes {
         }
 
         // Cause subsequent value read of a descriptor to fail synchronously.
-        @CalledByNative("FakeBluetoothGattDescriptor")
+        @CalledByNative
         private static void setReadDescriptorWillFailSynchronouslyOnce(
                 ChromeBluetoothRemoteGattDescriptor chromeDescriptor) {
             FakeBluetoothGattDescriptor fakeDescriptor =
@@ -1343,7 +1343,7 @@ class Fakes {
         }
 
         // Cause subsequent value write of a descriptor to fail synchronously.
-        @CalledByNative("FakeBluetoothGattDescriptor")
+        @CalledByNative
         private static void setWriteDescriptorWillFailSynchronouslyOnce(
                 ChromeBluetoothRemoteGattDescriptor chromeDescriptor) {
             FakeBluetoothGattDescriptor fakeDescriptor =
@@ -1400,7 +1400,7 @@ class Fakes {
         }
 
         // Simulates an IOException.
-        @CalledByNative("FakeBluetoothSocket")
+        @CalledByNative
         private static void setNextOperationExceptionMessage(
                 ChromeBluetoothSocket chromeSocket, @JniType("std::string") String message) {
             FakeBluetoothSocket fakeSocket = (FakeBluetoothSocket) chromeSocket.mSocket;
@@ -1408,7 +1408,7 @@ class Fakes {
         }
 
         // Simulates received data.
-        @CalledByNative("FakeBluetoothSocket")
+        @CalledByNative
         private static void setReceivedBytes(ChromeBluetoothSocket chromeSocket, byte[] buffer) {
             assert buffer.length <= BUFFER_SIZE;
             FakeBluetoothSocket fakeSocket = (FakeBluetoothSocket) chromeSocket.mSocket;
@@ -1416,7 +1416,7 @@ class Fakes {
         }
 
         // Obtains sent data.
-        @CalledByNative("FakeBluetoothSocket")
+        @CalledByNative
         private static byte[] getSentBytes(ChromeBluetoothSocket chromeSocket) {
             FakeBluetoothSocket fakeSocket = (FakeBluetoothSocket) chromeSocket.mSocket;
             return fakeSocket.mOutputStream.toByteArray();

@@ -32,7 +32,7 @@ public class WebApkSyncService {
 
     /** Called with update result. */
     public interface PwaRestorableListCallback {
-        @CalledByNative("PwaRestorableListCallback")
+        @CalledByNative
         void onRestorableAppsAvailable(
                 boolean success, String[] appIds, String[] appNames, List<Bitmap> icons);
     }

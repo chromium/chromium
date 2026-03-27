@@ -128,7 +128,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     /** Called with update result. */
     public interface WebApkUpdateCallback {
-        @CalledByNative("WebApkUpdateCallback")
+        @CalledByNative
         void onResultFromNative(@WebApkInstallResult int result, boolean relaxUpdates);
     }
 

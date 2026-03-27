@@ -225,12 +225,12 @@ public class MediaDrmBridge {
             mStatusCode = statusCode;
         }
 
-        @CalledByNative("KeyStatus")
+        @CalledByNative
         private byte[] getKeyId() {
             return mKeyId;
         }
 
-        @CalledByNative("KeyStatus")
+        @CalledByNative
         private int getStatusCode() {
             return mStatusCode;
         }

@@ -44,7 +44,7 @@ public class FaviconHelper {
          * @param image Favicon image.
          * @param iconUrl Favicon image's icon url.
          */
-        @CalledByNative("FaviconImageCallback")
+        @CalledByNative
         void onFaviconAvailable(Bitmap image, @JniType("GURL") GURL iconUrl);
     }
 

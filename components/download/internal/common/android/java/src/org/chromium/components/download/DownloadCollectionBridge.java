@@ -69,12 +69,12 @@ public class DownloadCollectionBridge {
             mDisplayName = displayName;
         }
 
-        @CalledByNative("DisplayNameInfo")
+        @CalledByNative
         private @JniType("std::string") String getDownloadUri() {
             return mUri;
         }
 
-        @CalledByNative("DisplayNameInfo")
+        @CalledByNative
         private @JniType("std::string") String getDisplayName() {
             return mDisplayName;
         }

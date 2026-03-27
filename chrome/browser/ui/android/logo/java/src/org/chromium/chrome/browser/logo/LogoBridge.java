@@ -52,7 +52,7 @@ public class LogoBridge {
          * @param logo The search provider's logo.
          * @param fromCache Whether the logo was loaded from the cache.
          */
-        @CalledByNative("LogoObserver")
+        @CalledByNative
         void onLogoAvailable(Logo logo, boolean fromCache);
     }
 
