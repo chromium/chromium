@@ -96,7 +96,6 @@ CompressedValue& CompressedValue::operator=(CompressedValue&&) = default;
 CompressedValue::~CompressedValue() = default;
 
 CompressedValue Compress(std::vector<uint8_t> uncompressed) {
-  constexpr base::ByteSize kMinimumCompressionSize(64);
   constexpr float kMinimumCompressionRatio = 0.8f;
 
   if (uncompressed.size() < kMinimumCompressionSize.InBytes()) {

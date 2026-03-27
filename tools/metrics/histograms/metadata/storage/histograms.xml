@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CompressionState">
+  <variant name="Compressed"
+      summary="Compressing achieved the minimum ratio (value was stored
+               compressed)"/>
+  <variant name="Uncompressed"
+      summary="Compressing did not achieve the minimum ratio (value was
+               stored uncompressed)"/>
+</variants>
+
 <variants name="DomStorageBackingStoreLifetime">
   <variant name="InMemory" summary="in-memory database"/>
   <variant name="OnDisk" summary="on-disk database"/>
@@ -873,14 +882,6 @@ chromium-metrics-reviews@google.com.
     enough to be stored compressed. This is NOT logged for values where
     compression was not even attempted.
   </summary>
-  <token key="CompressionState">
-    <variant name="Compressed"
-        summary="Compressing achieved the minimum ratio (value was stored
-                 compressed)"/>
-    <variant name="Uncompressed"
-        summary="Compressing did not achieve the minimum ratio (value was
-                 stored uncompressed)"/>
-  </token>
 </histogram>
 
 <histogram name="IndexedDB.SQLite.SpecificEvent.{Mode}"
@@ -1365,6 +1366,35 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     A Clear-Site-Data response header was seen with the given values.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.DomStorage.Compression.PrecompressionValueSize.{CompressionState}"
+    units="bytes" expires_after="2027-03-24">
+  <owner>fergal@chromium.org</owner>
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The size of the input value, before compression, when writing a key-value
+    pair in the DomStorage SQLite backend. Split by whether the value was
+    compressible enough to be stored compressed. Only logged for values at or
+    above the minimum compression threshold.
+  </summary>
+</histogram>
+
+<histogram name="Storage.DomStorage.Compression.Ratio" units="%"
+    expires_after="2027-03-24">
+  <owner>fergal@chromium.org</owner>
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The compression ratio achieved when writing a value in the DomStorage SQLite
+    backend. Calculated as [compressed size] / [original size] * 100. Depending
+    on this ratio, the value may or may not be stored in its compressed form.
+    Only logged for values at or above the minimum compression threshold.
   </summary>
 </histogram>
 

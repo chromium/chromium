@@ -4,6 +4,7 @@
 
 #include "components/services/storage/dom_storage/sqlite/map_entries_table.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_macros.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
@@ -101,7 +102,24 @@ DbStatus MapEntriesTable::UpdateMap(
   for (const auto& entry : map_update.entries_to_add) {
     insert_statement.BindBlob(1, std::move(entry.key));
 
+    const size_t original_size = entry.value.size();
     CompressedValue compressed = Compress(std::move(entry.value));
+
+    // Record compression histograms only when compression was attempted
+    // (value >= kMinimumCompressionSize).
+    if (original_size >= kMinimumCompressionSize.InBytes()) {
+      base::UmaHistogramPercentage(
+          "Storage.DomStorage.Compression.Ratio",
+          static_cast<int>(100.0 * compressed.data.size() / original_size));
+      base::UmaHistogramCounts10M(
+          compressed.type != CompressionType::kUncompressed
+              ? "Storage.DomStorage.Compression.PrecompressionValueSize."
+                "Compressed"
+              : "Storage.DomStorage.Compression.PrecompressionValueSize."
+                "Uncompressed",
+          original_size);
+    }
+
     insert_statement.BindInt(2, static_cast<int>(compressed.type));
     insert_statement.BindBlob(3, std::move(compressed.data));
 
