@@ -85,52 +85,52 @@
   </message>
 
   <!-- chrome://skills/dialog -->
-  <message name="IDS_SKILLS_DIALOG_ADD_SKILL_HEADER" desc="Header for the add skill dialog" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_ADD_SKILL_HEADER" desc="Header for the add skill dialog">
     Add skill
   </message>
-  <message name="IDS_SKILLS_DIALOG_EDIT_SKILL_HEADER" desc="Header for the edit skill dialog" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_EDIT_SKILL_HEADER" desc="Header for the edit skill dialog">
     Edit skill
   </message>
-  <message name="IDS_SKILLS_DIALOG_DESCRIPTION" desc="Description of what a skill is" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_DESCRIPTION" desc="Description of what a skill is">
     Skills allow you to easily reuse prompts for repetitive tasks
   </message>
-  <message name="IDS_SKILLS_DIALOG_NAME_LABEL" desc="Label for the skill name input" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_NAME_LABEL" desc="Label for the skill name input">
     Name
   </message>
-  <message name="IDS_SKILLS_DIALOG_NAME_PLACEHOLDER" desc="A placeholder for the skill name input" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_NAME_PLACEHOLDER" desc="A placeholder for the skill name input">
     Give your skill a name
   </message>
-  <message name="IDS_SKILLS_DIALOG_CHOOSE_ICON_TOOLTIP" desc="Tooltip text to choose an icon for the skill" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_CHOOSE_ICON_TOOLTIP" desc="Tooltip text to choose an icon for the skill">
     Choose icon
   </message>
-  <message name="IDS_SKILLS_DIALOG_INSTRUCTIONS_LABEL" desc="Label for the skill instructions input" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_INSTRUCTIONS_LABEL" desc="Label for the skill instructions input">
     Instructions
   </message>
-  <message name="IDS_SKILLS_DIALOG_INSTRUCTIONS_PLACEHOLDER" desc="A placeholder for the skill instructions input" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_INSTRUCTIONS_PLACEHOLDER" desc="A placeholder for the skill instructions input">
     Example: Simplify this concept for a child who is 8 years old. Use simple language and an analogy they would understand. Keep the total explanation concise, under 150 words.
   </message>
-  <message name="IDS_SKILLS_DIALOG_UNDO_TOOLTIP" desc="Tooltip text to undo skill refinement" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_UNDO_TOOLTIP" desc="Tooltip text to undo skill refinement">
     Undo
   </message>
-  <message name="IDS_SKILLS_DIALOG_REDO_TOOLTIP" desc="Tooltip text to redo skill refinement" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_REDO_TOOLTIP" desc="Tooltip text to redo skill refinement">
     Redo
   </message>
-  <message name="IDS_SKILLS_DIALOG_REFINE_TOOLTIP" desc="Tooltip text to refine a skill" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_REFINE_TOOLTIP" desc="Tooltip text to refine a skill">
     Improve with Gemini
   </message>
-  <message name="IDS_SKILLS_DIALOG_REFINE_ERROR" desc="Error message for skill refinement" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_REFINE_ERROR" desc="Error message for skill refinement">
     Something went wrong
   </message>
-  <message name="IDS_SKILLS_DIALOG_CHAR_LIMIT_ERROR" desc="Error message for exceeding the max character limit on the instructions field" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_CHAR_LIMIT_ERROR" desc="Error message for exceeding the max character limit on the instructions field">
     <ph name="MAX_CHARS">$1<ex>20,000</ex></ph> character limit reached
   </message>
-  <message name="IDS_SKILLS_DIALOG_ACCOUNT_INFO" desc="Text for account info in the skills dialog" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_ACCOUNT_INFO" desc="Text for account info in the skills dialog">
     Your skills get saved to your Google Account,
   </message>
-  <message name="IDS_SKILLS_DIALOG_SAVE_ERROR" desc="Error message for saving a skill" translateable="false">
+  <message name="IDS_SKILLS_DIALOG_SAVE_ERROR" desc="Error message for saving a skill">
     Unable to save. Try again
   </message>
-  <message name="IDS_SKILLS_EMOJI_PICKER_SEARCH_PLACEHOLDER" desc="Placeholder text for the search bar in the emoji picker." translateable="false">
+  <message name="IDS_SKILLS_EMOJI_PICKER_SEARCH_PLACEHOLDER" desc="Placeholder text for the search bar in the emoji picker.">
     Search
   </message>
   <message name="IDS_SKILLS_EMOJI_PICKER_ARIA_LABEL" desc="Aria label for the emoji picker." translateable="false">
