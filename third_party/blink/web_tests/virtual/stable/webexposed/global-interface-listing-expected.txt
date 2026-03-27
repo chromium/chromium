@@ -6778,6 +6778,7 @@ interface PaymentMethodChangeEvent : PaymentRequestUpdateEvent
     getter methodName
     method constructor
 interface PaymentRequest : EventTarget
+    static method getSecurePaymentConfirmationCapabilities
     static method securePaymentConfirmationAvailability
     attribute @@toStringTag
     getter id
