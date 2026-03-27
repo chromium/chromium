@@ -20,7 +20,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -5089,11 +5088,12 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
   }
   ink_stroke_data_.erase(it);
 
-  bool page_still_has_strokes =
+  bool page_still_has_shapes_or_strokes =
+      pages_with_loaded_v2_ink_shapes_.contains(page_index) ||
       std::ranges::any_of(ink_stroke_data_, [page_index](const auto& it) {
         return it.second.page_index == page_index;
       });
-  if (!page_still_has_strokes) {
+  if (!page_still_has_shapes_or_strokes) {
     stroked_pages_unload_preventers_.erase(page_index);
   }
 }
@@ -5123,12 +5123,6 @@ std::map<InkModeledShapeId, ink::PartitionedMesh>
 PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
   CHECK(PageIndexInBounds(page_index));
 
-#if DCHECK_IS_ON()
-  const bool inserted =
-      pages_with_loaded_v2_ink_paths_.insert(page_index).second;
-  CHECK(inserted);
-#endif  // DCHECK_IS_ON()
-
   std::map<InkModeledShapeId, ink::PartitionedMesh> page_shape_map;
 
   PDFiumPage* page = pages_[page_index].get();
@@ -5148,9 +5142,12 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
   // page unloads and reloads, then the loaded V2 Ink path will no longer match
   // the PDF object, and any updates to the Ink path will not be visible in the
   // PDF.
+  // Also remember the associated page has loaded shapes, so DiscardStroke()
+  // will know not to erase the `stroked_pages_unload_preventers_` entry.
   if (!page_shape_map.empty()) {
     stroked_pages_unload_preventers_.insert(
         {page_index, PDFiumPage::ScopedUnloadPreventer(page)});
+    pages_with_loaded_v2_ink_shapes_.insert(page_index);
   }
 
   return page_shape_map;
