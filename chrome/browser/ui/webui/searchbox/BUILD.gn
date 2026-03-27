@@ -100,6 +100,7 @@ source_set("searchbox_test_utils") {
   sources = [
     "contextual_searchbox_test_utils.cc",
     "contextual_searchbox_test_utils.h",
+    "searchbox_interactive_test_mixin.h",
     "searchbox_test_utils.cc",
     "searchbox_test_utils.h",
   ]

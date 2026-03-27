@@ -13,6 +13,7 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
@@ -77,6 +78,7 @@ std::string GetModelSelector(omnibox::ModelMode model) {
 }
 
 const DeepQuery kRealbox = {"ntp-app", "ntp-searchbox", "#inputWrapper"};
+const DeepQuery kRealboxInput = {"ntp-app", "ntp-searchbox", "#input"};
 const DeepQuery kContextualEntrypoint = {"ntp-app", "ntp-searchbox", "#context",
                                          "#entrypointButton", "#entrypoint"};
 const DeepQuery kSearchboxContextMenuDialog = {
@@ -249,7 +251,8 @@ std::unique_ptr<KeyedService> BuildMockContextualSearchServiceInstance(
 }  // namespace
 
 class NtpRealboxUiTestBase
-    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
+    : public SearchboxInteractiveTestMixin<
+          WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
   NtpRealboxUiTestBase() = default;
   ~NtpRealboxUiTestBase() override = default;
@@ -558,6 +561,53 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
                 .spec();
           },
           testing::StartsWith("https://www.google.com/search?q=test")));
+}
+
+class NtpRealboxSubmitInteractiveTest
+    : public NtpRealboxInteractiveTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool ClickMatch() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, NtpRealboxSubmitInteractiveTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(NtpRealboxSubmitInteractiveTest,
+                       SubmittingInputNavigatesToSearch) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!ClickMatch()) {
+    // TODO(crbug.com/496928186): Re-enable after de-flaking.
+    GTEST_SKIP() << "Flaky on ChromeOS";
+  }
+#endif
+  const DeepQuery kRealboxMatch = {"ntp-app", "ntp-searchbox",
+                                   "cr-searchbox-dropdown",
+                                   "cr-searchbox-match", "#suggestion"};
+
+  RunTestSequence(
+      // Wait for the realbox to render on the NTP.
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      // Seed at least two history results to ensure the dropdown is visible in
+      // multiline mode and to prevent flakiness.
+      // The most recently seeded result appears first in the dropdown.
+      SeedSearchboxResult("aimode"), SeedSearchboxResult("a"),
+      // Type into the realbox and wait for a verbatim match to appear.
+      ClickElement(kNtpElementId, kRealboxInput),
+      SendKeyPress(kNtpElementId, ui::VKEY_A),
+      WaitForVerbatimMatch(kNtpElementId, kRealboxMatch, "a"),
+      // Click the match or press enter depending on the test parameter.
+      // JS `KeyboardEvent` is used instead of `SendKeyPress` to avoid flakiness
+      // caused by OS-level focus races and IME composition bugs.
+      If([&]() { return ClickMatch(); },
+         Then(ClickElement(kNtpElementId, kRealboxMatch)),
+         Else(ExecuteJsAt(
+             kNtpElementId, kRealboxInput,
+             "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', { "
+             "key:'Enter', bubbles: true, cancelable: true, composed: true "
+             "})); }"))),
+      // Ensure google search occurs.
+      WaitForGoogleSearch(kNtpElementId, "a"));
 }
 
 struct NtpRealboxToolInteractiveTestParams {
