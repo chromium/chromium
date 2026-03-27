@@ -57,7 +57,8 @@ TabData TabData::FromTabInterface(tabs::TabInterface* tab_interface) {
   tab_data.should_render_loading_title =
       tab_ui_helper->ShouldRenderLoadingTitle();
   tab_data.should_themify_favicon = tab_ui_helper->ShouldThemifyFavicon();
-  tab_data.should_display_favicon = tab_ui_helper->ShouldDisplayFavicon();
+  tab_data.should_display_favicon =
+      tab_interface->IsPinned() || tab_ui_helper->ShouldDisplayFavicon();
   tab_data.is_monochrome_favicon = tab_ui_helper->IsMonochromeFavicon();
   tab_data.favicon = tab_ui_helper->GetFavicon();
   tab_data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
