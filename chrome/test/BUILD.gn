@@ -2563,6 +2563,7 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
       "//chrome/browser/background",
+      "//chrome/browser/background:browser_tests",
       "//chrome/browser/background:test_support",
       "//chrome/browser/background/glic",
       "//chrome/browser/background_fetch:browser_tests",
@@ -7016,7 +7017,6 @@ test("unit_tests") {
     "//chrome/browser/autocomplete",
     "//chrome/browser/autocomplete:unit_tests",
     "//chrome/browser/autofill",
-    "//chrome/browser/background:unit_tests",
     "//chrome/browser/background/glic:unit_tests",
     "//chrome/browser/background_fetch:unit_tests",
     "//chrome/browser/background_sync:unit_tests",
@@ -7599,6 +7599,7 @@ test("unit_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/background:unit_tests",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",
       "//chrome/browser/webapps/installable:unit_tests",

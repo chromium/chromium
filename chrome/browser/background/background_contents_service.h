@@ -247,9 +247,6 @@ class BackgroundContentsService
   // Delay (in ms) before restarting a force-installed extension that crashed.
   static int restart_delay_in_ms_;
 
-  // Sets the restart delay to zero for testing.
-  bool zero_restart_delay_for_test_ = false;
-
   raw_ptr<Profile, FlakyDanglingUntriaged> profile_;
 
   base::ObserverList<BackgroundContentsServiceObserver> observers_;

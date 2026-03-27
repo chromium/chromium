@@ -65,23 +65,6 @@ source_set("impl") {
   }
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = []
-
-  if (enable_background_contents) {
-    sources += [ "background_contents_service_unittest.cc" ]
-  }
-
-  deps = [
-    ":background",
-    "//base",
-    "//chrome/browser/ui",
-    "//chrome/test:test_support",
-    "//testing/gmock",
-  ]
-}
-
 if (!is_android) {
   source_set("test_support") {
     testonly = true
@@ -97,5 +80,42 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gtest",
     ]
+  }
+
+  if (enable_background_contents) {
+    source_set("browser_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+      sources = [ "background_contents_service_browsertest.cc" ]
+      deps = [
+        ":background",
+        "//base",
+        "//chrome/browser:browser_process",
+        "//chrome/browser/notifications",
+        "//chrome/browser/profiles",
+        "//chrome/browser/ui",
+        "//chrome/common:constants",
+        "//chrome/test:test_support",
+        "//components/prefs",
+        "//content/test:test_support",
+      ]
+    }
+
+    source_set("unit_tests") {
+      testonly = true
+      sources = [ "background_contents_service_unittest.cc" ]
+      deps = [
+        ":background",
+        "//base",
+        "//chrome/browser/profiles",
+        "//chrome/browser/ui",
+        "//chrome/common:constants",
+        "//chrome/test:test_support",
+        "//components/prefs",
+        "//content/test:test_support",
+        "//testing/gmock",
+        "//testing/gtest",
+      ]
+    }
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,24 +10,22 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest_handlers/icons_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
 class MockBackgroundContents : public BackgroundContents {
@@ -77,11 +75,20 @@ class BackgroundContentsServiceTest : public testing::Test {
   ~BackgroundContentsServiceTest() override = default;
 
   void SetUp() override {
+    testing::Test::SetUp();
     BackgroundContentsService::DisableCloseBalloonForTesting(true);
+    profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
+    profile_ = profile_manager_->CreateTestingProfile("default");
   }
 
   void TearDown() override {
+    profile_ = nullptr;
+    profile_manager_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
     BackgroundContentsService::DisableCloseBalloonForTesting(false);
+    testing::Test::TearDown();
   }
 
   const base::DictValue& GetPrefs(Profile* profile) {
@@ -105,124 +112,73 @@ class BackgroundContentsServiceTest : public testing::Test {
     return contents_ptr;
   }
 
- private:
-  content::BrowserTaskEnvironment task_environment_;
-};
-
-class BackgroundContentsServiceNotificationTest
-    : public BrowserWithTestWindowTest {
- public:
-  BackgroundContentsServiceNotificationTest() = default;
-
-  BackgroundContentsServiceNotificationTest(
-      const BackgroundContentsServiceNotificationTest&) = delete;
-  BackgroundContentsServiceNotificationTest& operator=(
-      const BackgroundContentsServiceNotificationTest&) = delete;
-
-  ~BackgroundContentsServiceNotificationTest() override = default;
-
-  // Overridden from testing::Test
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    display_service_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
-    background_service_ =
-        std::make_unique<BackgroundContentsService>(profile());
-  }
-
-  void TearDown() override {
-    background_service_.reset();
-    BrowserWithTestWindowTest::TearDown();
-  }
-
  protected:
-  // Creates crash notification for the specified extension and returns
-  // the created one.
-  const message_center::Notification CreateCrashNotification(
-      scoped_refptr<extensions::Extension> extension) {
-    std::string notification_id = BackgroundContentsService::
-        GetNotificationDelegateIdForExtensionForTesting(extension->id());
-    background_service_->ShowBalloonForTesting(extension.get());
-    base::RunLoop run_loop;
-    display_service_->SetNotificationAddedClosure(run_loop.QuitClosure());
-    run_loop.Run();
-    display_service_->SetNotificationAddedClosure(base::RepeatingClosure());
-    return *display_service_->GetNotification(notification_id);
-  }
-
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  std::unique_ptr<BackgroundContentsService> background_service_;
-
-  bool HasIcons(scoped_refptr<extensions::Extension> extension) {
-    return !extensions::IconsInfo::GetIcons(extension.get()).empty();
-  }
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
+  raw_ptr<TestingProfileManager> profile_manager_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(BackgroundContentsServiceTest, Create) {
   // Check for creation and leaks.
-  TestingProfile profile;
-  BackgroundContentsService service(&profile);
+  BackgroundContentsService service(profile_);
 }
 
 TEST_F(BackgroundContentsServiceTest, BackgroundContentsUrlAdded) {
-  TestingProfile profile;
-  BackgroundContentsService service(&profile);
+  BackgroundContentsService service(profile_);
 
   GURL orig_url;
   GURL url("http://a/");
   GURL url2("http://a/");
   {
-    std::unique_ptr<MockBackgroundContents> owned_contents(
-        new MockBackgroundContents(&service));
-    EXPECT_EQ(0U, GetPrefs(&profile).size());
+    auto owned_contents = std::make_unique<MockBackgroundContents>(&service);
+    EXPECT_EQ(0U, GetPrefs(profile_).size());
     auto* contents = AddToService(std::move(owned_contents));
 
     contents->Navigate(url);
-    EXPECT_EQ(1U, GetPrefs(&profile).size());
-    EXPECT_EQ(url.spec(), GetPrefURLForApp(&profile, contents->appid()));
+    EXPECT_EQ(1U, GetPrefs(profile_).size());
+    EXPECT_EQ(url.spec(), GetPrefURLForApp(profile_, contents->appid()));
 
     // Navigate the contents to a new url, should not change url.
     contents->Navigate(url2);
-    EXPECT_EQ(1U, GetPrefs(&profile).size());
-    EXPECT_EQ(url.spec(), GetPrefURLForApp(&profile, contents->appid()));
+    EXPECT_EQ(1U, GetPrefs(profile_).size());
+    EXPECT_EQ(url.spec(), GetPrefURLForApp(profile_, contents->appid()));
   }
   // Contents are deleted, url should persist.
-  EXPECT_EQ(1U, GetPrefs(&profile).size());
+  EXPECT_EQ(1U, GetPrefs(profile_).size());
 }
 
 TEST_F(BackgroundContentsServiceTest, BackgroundContentsUrlAddedAndClosed) {
-  TestingProfile profile;
-  BackgroundContentsService service(&profile);
+  BackgroundContentsService service(profile_);
 
   GURL url("http://a/");
   auto owned_contents = std::make_unique<MockBackgroundContents>(&service);
-  EXPECT_EQ(0U, GetPrefs(&profile).size());
+  EXPECT_EQ(0U, GetPrefs(profile_).size());
   auto* contents = AddToService(std::move(owned_contents));
   contents->Navigate(url);
-  EXPECT_EQ(1U, GetPrefs(&profile).size());
-  EXPECT_EQ(url.spec(), GetPrefURLForApp(&profile, contents->appid()));
+  EXPECT_EQ(1U, GetPrefs(profile_).size());
+  EXPECT_EQ(url.spec(), GetPrefURLForApp(profile_, contents->appid()));
 
   // Fake a window closed by script.
-  contents->MockClose(&profile);
-  EXPECT_EQ(0U, GetPrefs(&profile).size());
+  contents->MockClose(profile_);
+  EXPECT_EQ(0U, GetPrefs(profile_).size());
 }
 
 // Test what happens if a BackgroundContents shuts down (say, due to a renderer
 // crash) then is restarted. Should not persist URL twice.
 TEST_F(BackgroundContentsServiceTest, RestartBackgroundContents) {
-  TestingProfile profile;
-  BackgroundContentsService service(&profile);
+  BackgroundContentsService service(profile_);
 
   GURL url("http://a/");
   {
     MockBackgroundContents* contents = AddToService(
         std::make_unique<MockBackgroundContents>(&service, "appid"));
     contents->Navigate(url);
-    EXPECT_EQ(1U, GetPrefs(&profile).size());
-    EXPECT_EQ(url.spec(), GetPrefURLForApp(&profile, contents->appid()));
+    EXPECT_EQ(1U, GetPrefs(profile_).size());
+    EXPECT_EQ(url.spec(), GetPrefURLForApp(profile_, contents->appid()));
   }
   // Contents deleted, url should be persisted.
-  EXPECT_EQ(1U, GetPrefs(&profile).size());
+  EXPECT_EQ(1U, GetPrefs(profile_).size());
 
   {
     // Reopen the BackgroundContents to the same URL, we should not register the
@@ -230,7 +186,7 @@ TEST_F(BackgroundContentsServiceTest, RestartBackgroundContents) {
     MockBackgroundContents* contents = AddToService(
         std::make_unique<MockBackgroundContents>(&service, "appid"));
     contents->Navigate(url);
-    EXPECT_EQ(1U, GetPrefs(&profile).size());
+    EXPECT_EQ(1U, GetPrefs(profile_).size());
   }
 }
 
@@ -238,8 +194,7 @@ TEST_F(BackgroundContentsServiceTest, RestartBackgroundContents) {
 // between a BackgroundContents and its parent extension, including
 // unregistering the BC when the extension is uninstalled.
 TEST_F(BackgroundContentsServiceTest, TestApplicationIDLinkage) {
-  TestingProfile profile;
-  BackgroundContentsService service(&profile);
+  BackgroundContentsService service(profile_);
 
   EXPECT_EQ(nullptr, service.GetAppBackgroundContents("appid"));
   MockBackgroundContents* contents =
@@ -248,103 +203,44 @@ TEST_F(BackgroundContentsServiceTest, TestApplicationIDLinkage) {
       std::make_unique<MockBackgroundContents>(&service, "appid2"));
   EXPECT_EQ(contents, service.GetAppBackgroundContents(contents->appid()));
   EXPECT_EQ(contents2, service.GetAppBackgroundContents(contents2->appid()));
-  EXPECT_EQ(0U, GetPrefs(&profile).size());
+  EXPECT_EQ(0U, GetPrefs(profile_).size());
 
   // Navigate the contents, then make sure the one associated with the extension
   // is unregistered.
   GURL url("http://a/");
   GURL url2("http://b/");
   contents->Navigate(url);
-  EXPECT_EQ(1U, GetPrefs(&profile).size());
+  EXPECT_EQ(1U, GetPrefs(profile_).size());
   contents2->Navigate(url2);
-  EXPECT_EQ(2U, GetPrefs(&profile).size());
+  EXPECT_EQ(2U, GetPrefs(profile_).size());
   service.ShutdownAssociatedBackgroundContents("appid");
   EXPECT_FALSE(service.IsTracked(contents));
   EXPECT_EQ(nullptr, service.GetAppBackgroundContents("appid"));
-  EXPECT_EQ(1U, GetPrefs(&profile).size());
-  EXPECT_EQ(url2.spec(), GetPrefURLForApp(&profile, contents2->appid()));
+  EXPECT_EQ(1U, GetPrefs(profile_).size());
+  EXPECT_EQ(url2.spec(), GetPrefURLForApp(profile_, contents2->appid()));
 }
 
 // Regression test for crash. See http://crbug.com/477597409
 TEST_F(BackgroundContentsServiceTest, RestartForceInstalledExtensionOnCrash) {
-  auto profile = std::make_unique<TestingProfile>();
-  auto service = std::make_unique<BackgroundContentsService>(profile.get());
-
-  // Set the extension restart delay to 0 so we can use RunUntilIdle() below.
-  service->zero_restart_delay_for_test_ = true;
+  auto service = std::make_unique<BackgroundContentsService>(profile_);
 
   // Create a trivial extension.
-  scoped_refptr<extensions::Extension> extension =
-      extension_test_util::LoadManifest("app", "manifest.json");
+  scoped_refptr<extensions::Extension> extension;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    extension = extension_test_util::LoadManifest("app", "manifest.json");
+  }
   ASSERT_TRUE(extension.get());
 
-  // Calling restart will post a task.
+  // Calling restart will post a task (with a 3 second delay).
   service->RestartForceInstalledExtensionOnCrash(extension.get());
 
   // Before the task runs, delete the service (which in production is owned by
-  // the profile) and the profile.
+  // the profile).
   service.reset();
-  profile.reset();
 
-  // Wait for the restart extension task to run.
-  base::RunLoop().RunUntilIdle();
+  // Fast forward the task environment by 3 seconds so the restart task runs.
+  task_environment_.FastForwardBy(base::Seconds(3));
 
   // No crash.
-}
-
-TEST_F(BackgroundContentsServiceNotificationTest, TestShowBalloon) {
-  scoped_refptr<extensions::Extension> extension =
-      extension_test_util::LoadManifest("image_loading_tracker", "app.json");
-  ASSERT_TRUE(extension.get());
-  ASSERT_TRUE(HasIcons(extension));
-
-  const message_center::Notification notification =
-      CreateCrashNotification(extension);
-  EXPECT_FALSE(notification.icon().IsEmpty());
-}
-
-TEST_F(BackgroundContentsServiceNotificationTest, TestShowBalloonShutdown) {
-  scoped_refptr<extensions::Extension> extension =
-      extension_test_util::LoadManifest("image_loading_tracker", "app.json");
-  ASSERT_TRUE(extension.get());
-  ASSERT_TRUE(HasIcons(extension));
-
-  std::string notification_id = BackgroundContentsService::
-      GetNotificationDelegateIdForExtensionForTesting(extension->id());
-
-  static_cast<TestingBrowserProcess*>(g_browser_process)->SetShuttingDown(true);
-  background_service_->ShowBalloonForTesting(extension.get());
-  base::RunLoop().RunUntilIdle();
-  static_cast<TestingBrowserProcess*>(g_browser_process)
-      ->SetShuttingDown(false);
-
-  EXPECT_FALSE(display_service_->GetNotification(notification_id));
-}
-
-// Verify if a test notification can show the default extension icon for
-// a crash notification for an extension without icon.
-TEST_F(BackgroundContentsServiceNotificationTest, TestShowBalloonNoIcon) {
-  // Extension manifest file with no 'icon' field.
-  scoped_refptr<extensions::Extension> extension =
-      extension_test_util::LoadManifest("app", "manifest.json");
-  ASSERT_TRUE(extension.get());
-  ASSERT_FALSE(HasIcons(extension));
-
-  const message_center::Notification notification =
-      CreateCrashNotification(extension);
-  EXPECT_FALSE(notification.icon().IsEmpty());
-}
-
-TEST_F(BackgroundContentsServiceNotificationTest, TestShowTwoBalloons) {
-  TestingProfile profile;
-  scoped_refptr<extensions::Extension> extension =
-      extension_test_util::LoadManifest("app", "manifest.json");
-  ASSERT_TRUE(extension.get());
-  CreateCrashNotification(extension);
-  CreateCrashNotification(extension);
-
-  ASSERT_EQ(1u, display_service_
-                    ->GetDisplayedNotificationsForType(
-                        NotificationHandler::Type::TRANSIENT)
-                    .size());
 }
