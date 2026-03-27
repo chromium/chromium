@@ -862,9 +862,9 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
 
       if (auto it = tool_for_command_id_.find(id);
           it != tool_for_command_id_.end()) {
-        UpdateSearchboxContext(
-            /*tab_info=*/std::nullopt,
-            /*tool_mode=*/it->second);
+        if (composebox_handler) {
+          composebox_handler->SetActiveToolMode(it->second);
+        }
         base::UmaHistogramEnumeration(sliced_prefix,
                                       CommandIdToEnum(it->first));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
@@ -906,25 +906,28 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
             /*was_ai_mode_open=*/is_aim_popup_open);
         break;
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
-        UpdateSearchboxContext(
-            /*tab_info=*/std::nullopt,
-            /*tool_mode=*/omnibox::TOOL_MODE_IMAGE_GEN);
+        if (composebox_handler) {
+          composebox_handler->SetActiveToolMode(
+              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+        }
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
-        UpdateSearchboxContext(
-            /*tab_info=*/std::nullopt,
-            /*tool_mode=*/omnibox::TOOL_MODE_DEEP_SEARCH);
+        if (composebox_handler) {
+          composebox_handler->SetActiveToolMode(
+              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+        }
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
         break;
       case IDC_OMNIBOX_CONTEXT_CANVAS:
-        UpdateSearchboxContext(
-            /*tab_info=*/std::nullopt,
-            /*tool_mode=*/omnibox::TOOL_MODE_CANVAS);
+        if (composebox_handler) {
+          composebox_handler->SetActiveToolMode(
+              omnibox::ToolMode::TOOL_MODE_CANVAS);
+        }
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);

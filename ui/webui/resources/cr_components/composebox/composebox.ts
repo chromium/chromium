@@ -508,6 +508,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    if (changedProperties.has('inputState')) {
+      const oldInputState = changedProperties.get('inputState') as InputState | undefined;
+      if (this.inputState?.activeTool !== oldInputState?.activeTool) {
+        this.focusInput();
+      }
+    }
 
     if (changedProperties.has('state') && this.state) {
       this.updateState_(this.state);
@@ -1598,19 +1604,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         } else if (attachment.tabAttachment) {
           this.addTabFromAttachment_(attachment.tabAttachment);
         }
-      }
-
-      switch (context.toolMode) {
-        case ToolMode.kDeepSearch:
-          this.handleToolModeUpdate_(ToolMode.kDeepSearch);
-          break;
-        case ToolMode.kImageGen:
-          this.handleToolModeUpdate_(ToolMode.kImageGen);
-          break;
-        case ToolMode.kCanvas:
-          this.handleToolModeUpdate_(ToolMode.kCanvas);
-          break;
-        default:
       }
     }
     // Query for ZPS even if there's no context.

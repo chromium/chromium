@@ -7,6 +7,7 @@ import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from '
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -1443,51 +1444,28 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     assertEquals('Tab Title', files[0]!.name);
   });
 
-  test('addSearchContext sets tool modes correctly', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
+  test('inputState synchronizes all tool modes from backend', async () => {
     testSupport.createComposeboxElement(testProxy);
-    testProxy.element.searchboxNextEnabled = true;
-
     await microtasksFinished();
+    const toolModes = [
+      ComposeboxToolMode.kDeepSearch,
+      ComposeboxToolMode.kImageGen,
+      ComposeboxToolMode.kCanvas,
+    ];
 
-    const deepSearchContext = {
-      input: '',
-      files: [],
-      attachments: [],
-      toolMode: ToolMode.kDeepSearch,
-    };
-    testProxy.element.addSearchContext(deepSearchContext);
-    await microtasksFinished();
-    let activeTool =
-        await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ToolMode.kDeepSearch, activeTool);
-    testProxy.searchboxHandler.resetResolver('setActiveToolMode');
+    for (const toolMode of toolModes) {
+      const testInputState = {
+        ...new testSupport.MockInputState(),
+        activeTool: toolMode,
+      };
+      testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+          testInputState);
+      await testProxy.element.updateComplete;
+      await microtasksFinished();
 
-    const imageContext = {
-      input: '',
-      files: [],
-      attachments: [],
-      toolMode: ToolMode.kImageGen,
-    };
-    testProxy.element.addSearchContext(imageContext);
-    await microtasksFinished();
-    activeTool =
-        await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ToolMode.kImageGen, activeTool);
-    testProxy.searchboxHandler.resetResolver('setActiveToolMode');
-
-    const canvasContext = {
-      input: '',
-      files: [],
-      attachments: [],
-      toolMode: ToolMode.kCanvas,
-    };
-    testProxy.element.addSearchContext(canvasContext);
-    await microtasksFinished();
-    activeTool =
-        await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ToolMode.kCanvas, activeTool);
-    testProxy.searchboxHandler.resetResolver('setActiveToolMode');
+      assertTrue(!!testProxy.element.inputState);
+      assertEquals(toolMode, testProxy.element.inputState.activeTool);
+    }
   });
 
   test(

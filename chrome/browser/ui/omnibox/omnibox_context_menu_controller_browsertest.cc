@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
+#include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
@@ -28,6 +30,8 @@
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -160,30 +164,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   // Test Add File.
   controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_ADD_FILE, 0);
   EXPECT_EQ(2, file_selector.open_file_upload_dialog_calls());
-
-  auto* omnibox_controller =
-      OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
-          ->get_omnibox_controller();
-
-  // Test Deep Search.
-  controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH, 0);
-  EXPECT_EQ(OmniboxPopupState::kAim,
-            omnibox_controller->popup_state_manager()->popup_state());
-  auto context = searchbox_context_data->TakePendingContext();
-  ASSERT_TRUE(context);
-  EXPECT_EQ(context->mode, omnibox::TOOL_MODE_DEEP_SEARCH);
-  searchbox_context_data->SetPendingContext(std::move(context));
-
-  omnibox_controller->popup_state_manager()->SetPopupState(
-      OmniboxPopupState::kClassic);
-
-  // Test Create Image.
-  controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES, 0);
-  EXPECT_EQ(OmniboxPopupState::kAim,
-            omnibox_controller->popup_state_manager()->popup_state());
-  context = searchbox_context_data->TakePendingContext();
-  ASSERT_TRUE(context);
-  EXPECT_EQ(context->mode, omnibox::TOOL_MODE_IMAGE_GEN);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
@@ -338,4 +318,42 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.AimEntrypoint.ClassicPopup.ContextualElement.Clicked",
       OmniboxContextMenuController::ContextType::kCanvas, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       ExecuteCommandSetsToolMode) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+  OmniboxContextMenuController controller(&file_selector, GetWebContents());
+
+  auto* web_ui = GetWebContents()->GetWebUI();
+  ASSERT_TRUE(web_ui) << "WebContents must have a WebUI";
+
+  auto* web_ui_controller = web_ui->GetController();
+  ASSERT_TRUE(web_ui_controller) << "WebUI must have a Controller";
+
+  auto* popup_ui = web_ui_controller->GetAs<OmniboxPopupUI>();
+  ASSERT_TRUE(popup_ui) << "Controller must cast to OmniboxPopupUI";
+
+  auto* composebox_handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(composebox_handler)
+      << "Composebox handler must be initialized for this test!";
+
+  auto* input_state_model = composebox_handler->input_state_model();
+  ASSERT_TRUE(input_state_model) << "Input state model must exist!";
+
+  controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH, 0);
+  EXPECT_EQ(omnibox::TOOL_MODE_DEEP_SEARCH,
+            input_state_model->GetInputState().active_tool);
+
+  controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES, 0);
+  EXPECT_EQ(omnibox::TOOL_MODE_IMAGE_GEN,
+            input_state_model->GetInputState().active_tool);
+
+  controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_CANVAS, 0);
+  EXPECT_EQ(omnibox::TOOL_MODE_CANVAS,
+            input_state_model->GetInputState().active_tool);
 }

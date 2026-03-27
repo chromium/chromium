@@ -283,6 +283,7 @@ if (!is_android) {
       "//chrome/browser/ui/omnibox:test_support",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/contextual_search/internal:test_support",
