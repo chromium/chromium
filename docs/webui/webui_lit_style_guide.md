@@ -157,7 +157,7 @@ export function getHtml(this: MyElement) {
 **Do:**
 ```ts
 // my_element.ts
-protected accessor isVisible = false;
+protected accessor isVisible_ = false;
 
 // my_element.html.ts
 export function getHtml(this: MyElement) {
