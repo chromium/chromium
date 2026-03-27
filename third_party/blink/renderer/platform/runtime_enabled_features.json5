@@ -1313,6 +1313,7 @@
     {
       name: "ContainerTiming",
       origin_trial_feature_name: "ContainerTiming",
+      origin_trial_allows_third_party: true,
       status: "experimental",
     },
     {
