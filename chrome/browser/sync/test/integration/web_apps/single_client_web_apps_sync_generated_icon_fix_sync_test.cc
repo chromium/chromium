@@ -6,13 +6,13 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
-#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/web_apps/web_apps_sync_test_base.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
-#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -107,15 +107,11 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   void TriggerManifestUpdateAndAwaitCompletion(const webapps::AppId& app_id,
                                                GURL update_url) {
     clock_->SetNow(base::Time::Now());
-    base::test::TestFuture<void> future;
-    // TODO(http://crbug.com/452053908): This is no longer needed after we move
-    // waiting for page load to the update command.
-    provider(0).manifest_update_manager().SetLoadFinishedCallbackForTesting(
-        future.GetCallback());
     Browser* app_browser =
         LaunchWebAppBrowserAndWait(GetProfile(/*index=*/0), app_id);
     CHECK(app_browser);
-    EXPECT_TRUE(future.Wait());
+    test::WaitForLoadCompleteAndMaybeManifestSeen(
+        *app_browser->tab_strip_model()->GetActiveWebContents());
     provider(0).command_manager().AwaitAllCommandsCompleteForTesting();
   }
 

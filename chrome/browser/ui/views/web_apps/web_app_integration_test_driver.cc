@@ -102,7 +102,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
-#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -4261,29 +4260,11 @@ void WebAppIntegrationTestDriver::AfterStateCheckAction() {
 void WebAppIntegrationTestDriver::AwaitManifestUpdateStartedPostNavigation(
     content::WebContents* web_contents) {
   CHECK(provider());
-
-  // Wait till pending manifest update processes have finished loading the page
-  // to start the manifest update.
-  ManifestUpdateManager& manifest_update_manager =
-      provider()->manifest_update_manager();
-  WebAppCommandManager& command_manager = provider()->command_manager();
-  // TODO(crbug.com/40873503): Figure out a better way of streamlining
-  //  the waiting instead of doing it separately for manifest updates
-  //  and commands. This fails WebAppIntegrationTestDriver::CloseCustomToolbar()
-  //  because DidFinishLoad() is not triggered for a backwards navigation, thus
-  //  a manifest update is triggered but is stuck.
-  while (manifest_update_manager.HasUpdatesPendingLoadFinishForTesting()) {
-    base::RunLoop loop_for_load_finish;
-    manifest_update_manager.SetLoadFinishedCallbackForTesting(
-        loop_for_load_finish.QuitClosure());
-    loop_for_load_finish.Run();
-  }
   test::WaitForLoadCompleteAndMaybeManifestSeen(*web_contents);
-
   // Wait till all manifest silent update command has completed. This will
   // either cause an update to happen, or the pending update to be stored on
   // the web app.
-  command_manager.AwaitAllCommandsCompleteForTesting();
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 }
 
 webapps::AppId GetAppIdForIsolatedSite(Site site) {
@@ -4680,8 +4661,6 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
     return nullptr;
   }
   Browser* browser = LaunchWebAppBrowserAndWait(profile(), app_state->id);
-  provider()->manifest_update_manager().ResetManifestThrottleForTesting(
-      GetAppIdBySiteMode(site));
   return browser;
 }
 

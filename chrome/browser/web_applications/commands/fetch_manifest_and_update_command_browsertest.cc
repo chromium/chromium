@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
-#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -84,15 +83,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
       "/web_apps/migration/migrate_to/update_trigger_no_update.html");
 
   base::HistogramTester histogram_tester;
-
-  base::test::TestFuture<void> manifest_seen_future;
-  provider().manifest_update_manager().SetLoadFinishedCallbackForTesting(
-      manifest_seen_future.GetCallback());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_b_url));
-
-  EXPECT_TRUE(manifest_seen_future.Wait());
-
+  test::WaitForLoadCompleteAndMaybeManifestSeen(
+      *app_browser->tab_strip_model()->GetActiveWebContents());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   // We expect success (no update detected, as App A hasn't changed).
@@ -115,15 +108,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
       "/web_apps/migration/migrate_to/update_trigger_with_update.html");
 
   base::HistogramTester histogram_tester;
-
-  base::test::TestFuture<void> manifest_seen_future;
-  provider().manifest_update_manager().SetLoadFinishedCallbackForTesting(
-      manifest_seen_future.GetCallback());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_b_url));
-
-  EXPECT_TRUE(manifest_seen_future.Wait());
-
+  test::WaitForLoadCompleteAndMaybeManifestSeen(
+      *app_browser->tab_strip_model()->GetActiveWebContents());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   // We expect success. Since force_trusted_silent_update is false, the identity

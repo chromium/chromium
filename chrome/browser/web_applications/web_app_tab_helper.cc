@@ -244,9 +244,6 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
               &WebAppTabHelper::OnManifestSpecifiedOnPrimaryPage,
               weak_factory_.GetWeakPtr()));
 
-  provider_->manifest_update_manager().MaybeUpdate(
-      page.GetMainDocument().GetLastCommittedURL(), app_id_, web_contents());
-
   ReinstallPlaceholderAppIfNecessary(
       page.GetMainDocument().GetLastCommittedURL());
 
