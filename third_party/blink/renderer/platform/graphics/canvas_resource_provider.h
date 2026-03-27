@@ -410,11 +410,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsGpuContextLost() const override;
   base::ByteSize EstimatedSizeInBytes() const override;
 
-  // Use Snapshot() for capturing a frame that is intended to be displayed via
-  // the compositor. Cases that are destined to be transferred via a
-  // TransferableResource should call ProduceCanvasResource() instead.
-  virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) = 0;
-
   bool IsValid() const override;
 
   sk_sp<SkSurface> CreateSkSurface() const override;
@@ -429,10 +424,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // (in cases where the resource is scanned out directly) and irregular frame
   // rate.
   bool IsSingleBuffered() const;
-
-  scoped_refptr<CanvasResource> ProduceCanvasResource() {
-    return ProduceCanvasResource(FlushReason::kOther);
-  }
 
   // WebGraphicsContext3DProvider::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -569,9 +560,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                                       Delegate*);
   ~Canvas2DResourceProviderSharedImage() override = default;
 
+  virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
+
   // CanvasResourceProvider:
-  using CanvasResourceProviderSharedImage::ProduceCanvasResource;
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   void RasterRecord(cc::PaintRecord last_recording) override;
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
@@ -677,9 +668,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       Delegate*);
   ~CanvasNon2DResourceProviderSharedImage() override = default;
 
+  scoped_refptr<CanvasResource> ProduceCanvasResource();
+
   // CanvasResourceProvider:
-  using CanvasResourceProviderSharedImage::ProduceCanvasResource;
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;

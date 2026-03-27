@@ -297,9 +297,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
-std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvas2DResourceProvider(
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-        context_provider_wrapper) {
+std::unique_ptr<Canvas2DResourceProviderSharedImage>
+MakeCanvas2DResourceProvider(base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+                                 context_provider_wrapper) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
@@ -312,7 +312,7 @@ std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvas2DResourceProvider(
 }
 
 scoped_refptr<CanvasResource> UpdateResource(
-    CanvasResourceProviderSharedImage* provider) {
+    Canvas2DResourceProviderSharedImage* provider) {
   provider->ProduceCanvasResource(FlushReason::kOther);
   // Resource updated after draw.
   provider->Canvas().clear(SkColors::kWhite);
@@ -338,7 +338,7 @@ TEST_F(CanvasResourceProviderTest,
       gfx::Size(10, 10), color_params,
       SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags);
 
-  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
+  auto resource = provider->ProduceCanvasResource();
   auto old_compositor_read_sync_token = GetSyncToken(resource.get());
 
   // NOTE: Need to ensure that this SyncToken's release count is greater than
@@ -391,13 +391,14 @@ TEST_F(CanvasResourceProviderTest,
 #endif
 
   // Same resource and sync token if we query again without updating.
-  auto resource = provider->ProduceCanvasResource(FlushReason::kOther);
+  auto resource = provider->ProduceCanvasResource();
   auto sync_token = GetSyncToken(resource.get());
   ASSERT_TRUE(resource);
-  EXPECT_EQ(resource, provider->ProduceCanvasResource(FlushReason::kOther));
+  EXPECT_EQ(resource, provider->ProduceCanvasResource());
   EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
 
-  auto new_resource = UpdateResource(provider.get());
+  provider->Canvas().clear(SkColors::kWhite);
+  auto new_resource = provider->ProduceCanvasResource();
   EXPECT_NE(resource, new_resource);
   EXPECT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   auto* resource_ptr = resource.get();
@@ -405,7 +406,7 @@ TEST_F(CanvasResourceProviderTest,
   EnsureResourceRecycled(provider.get(), std::move(resource));
 
   provider->Canvas().clear(SkColors::kBlack);
-  auto resource_again = provider->ProduceCanvasResource(FlushReason::kOther);
+  auto resource_again = provider->ProduceCanvasResource();
   EXPECT_EQ(resource_ptr, resource_again);
   EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
 }
@@ -700,7 +701,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   // Modify the canvas to trigger OnFlushForImage
   src_provider->Canvas().clear(SkColors::kWhite);
   // So that all the cached draws are executed
-  src_provider->ProduceCanvasResource(FlushReason::kOther);
+  src_provider->ProduceCanvasResource();
 
   // The paint canvas may have moved
   MemoryManagedPaintCanvas& new_dst_canvas = dst_provider->Canvas();

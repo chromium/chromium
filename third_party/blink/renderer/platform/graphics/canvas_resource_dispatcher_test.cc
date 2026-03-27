@@ -87,7 +87,7 @@ class CanvasResourceDispatcherTest
  public:
   scoped_refptr<CanvasResource> DispatchOneFrame() {
     scoped_refptr<CanvasResource> canvas_resource =
-        resource_provider_->ProduceCanvasResource(FlushReason::kOther);
+        resource_provider_->ProduceCanvasResource();
     auto canvas_resource_extra = canvas_resource;
     dispatcher_->DispatchFrame(std::move(canvas_resource), SkIRect::MakeEmpty(),
                                /*is_opaque=*/false);
@@ -146,7 +146,7 @@ class CanvasResourceDispatcherTest
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<MockCanvasResourceDispatcher> dispatcher_;
-  std::unique_ptr<CanvasResourceProviderSharedImage> resource_provider_;
+  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider_;
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider_;
 };

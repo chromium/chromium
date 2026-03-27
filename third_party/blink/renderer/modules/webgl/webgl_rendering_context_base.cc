@@ -1646,8 +1646,7 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
       PaintRenderingResultsToResourceProvider(kBackBuffer);
   if (resource_provider && resource_provider_has_content_for_frame_push_) {
     submitted_frame = Host()->PushFrame(
-        resource_provider->ProduceCanvasResource(FlushReason::kOther),
-        dirty_rect_for_commit_);
+        resource_provider->ProduceCanvasResource(), dirty_rect_for_commit_);
     resource_provider_has_content_for_frame_push_ = false;
     dirty_rect_for_commit_.setEmpty();
   }
@@ -1941,7 +1940,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 
   auto* resource_provider =
       PaintRenderingResultsToResourceProvider(source_buffer);
-  return resource_provider ? resource_provider->ProduceCanvasResource(reason)
+  return resource_provider ? resource_provider->ProduceCanvasResource()
                            : nullptr;
 }
 

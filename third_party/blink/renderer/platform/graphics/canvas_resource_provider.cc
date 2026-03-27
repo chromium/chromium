@@ -930,8 +930,7 @@ Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
 }
 
 scoped_refptr<CanvasResource>
-CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource(
-    FlushReason reason) {
+CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource() {
   TRACE_EVENT0("blink",
                "CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource");
   if (is_software_) {

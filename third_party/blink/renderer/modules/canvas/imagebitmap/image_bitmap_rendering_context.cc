@@ -235,8 +235,7 @@ bool ImageBitmapRenderingContext::PushFrame() {
       image->PaintImageForCurrentFrame(), 0, 0, SkSamplingOptions(),
       &paint_flags);
   scoped_refptr<CanvasResource> resource =
-      resource_provider_for_offscreen_canvas_->ProduceCanvasResource(
-          FlushReason::kOther);
+      resource_provider_for_offscreen_canvas_->ProduceCanvasResource();
   Host()->PushFrame(std::move(resource), dirty_rect_for_commit_);
   dirty_rect_for_commit_.setEmpty();
   return true;
