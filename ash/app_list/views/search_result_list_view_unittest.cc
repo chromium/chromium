@@ -83,7 +83,9 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   void TearDown() override {
     default_view_.reset();
     answer_card_view_.reset();
-    widget_->CloseNow();
+    auto* widget = widget_.get();
+    widget_ = nullptr;
+    widget->CloseNow();
     views::test::WidgetTest::TearDown();
   }
 
@@ -300,7 +302,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> default_view_;
   std::unique_ptr<SearchResultListView> answer_card_view_;
-  raw_ptr<views::Widget, DanglingUntriaged> widget_;
+  raw_ptr<views::Widget> widget_;
 };
 
 TEST_F(SearchResultListViewTest, SpokenFeedback) {
