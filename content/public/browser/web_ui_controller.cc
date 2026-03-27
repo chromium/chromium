@@ -25,6 +25,11 @@ WebUIController::Type WebUIController::GetType() {
   return nullptr;
 }
 
+WebUIController::DisplayDisposition WebUIController::GetDisplayDisposition()
+    const {
+  return DisplayDisposition::kRegularPage;
+}
+
 WebUIController::TrustPolicy WebUIController::GetTrustPolicy() {
   return TrustPolicy::kTrusted;
 }

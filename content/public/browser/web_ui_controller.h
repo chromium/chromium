@@ -37,8 +37,18 @@ class CONTENT_EXPORT WebUIController {
     kUntrusted,
   };
 
+  enum class DisplayDisposition {
+    kRegularPage,
+    kUIElement,
+  };
+
   explicit WebUIController(WebUI* web_ui);
   virtual ~WebUIController();
+
+  // Returns the intended context for this WebUI. By default, WebUIs are regular
+  // pages (e.g. settings, history). Some WebUIs are intended to be rendered as
+  // UI elements embedded within the browser interface.
+  virtual DisplayDisposition GetDisplayDisposition() const;
 
   // Allows the controller to override handling all messages from the page.
   // Return true if the message handling was overridden.

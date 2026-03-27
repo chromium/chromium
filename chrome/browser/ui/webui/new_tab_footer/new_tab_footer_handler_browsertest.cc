@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller_test_support.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -134,4 +136,35 @@ IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, ShowContextMenu) {
   handler().ShowContextMenu(gfx::Point());
 
   EXPECT_TRUE(embedder().context_menu_shown());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, TargetTypeIsNotPage) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabFooterURL)));
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  content::WebContents* footer_contents = web_contents();
+
+  scoped_refptr<content::DevToolsAgentHost> agent_host =
+      content::DevToolsAgentHost::GetOrCreateFor(footer_contents);
+  EXPECT_NE(content::DevToolsAgentHost::kTypePage, agent_host->GetType());
+  EXPECT_EQ(content::DevToolsAgentHost::kTypeBrowserUI, agent_host->GetType());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, TabTargetIsNotCreated) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabFooterURL)));
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::DevToolsAgentHost::List agent_hosts =
+      content::DevToolsAgentHost::GetOrCreateAll();
+
+  int tab_targets_for_footer = 0;
+  for (const auto& agent_host : agent_hosts) {
+    if (agent_host->GetType() == content::DevToolsAgentHost::kTypeTab &&
+        agent_host->GetURL().host() == chrome::kChromeUINewTabFooterHost) {
+      tab_targets_for_footer++;
+    }
+  }
+
+  EXPECT_EQ(0, tab_targets_for_footer);
 }

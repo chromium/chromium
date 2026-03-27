@@ -33,3 +33,8 @@ void TopChromeWebUIController::WebUIPrimaryPageChanged(content::Page& page) {
 }
 
 TopChromeWebUIController::~TopChromeWebUIController() = default;
+
+content::WebUIController::DisplayDisposition
+TopChromeWebUIController::GetDisplayDisposition() const {
+  return content::WebUIController::DisplayDisposition::kUIElement;
+}

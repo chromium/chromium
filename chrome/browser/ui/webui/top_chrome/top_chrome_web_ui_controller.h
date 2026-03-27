@@ -40,6 +40,9 @@ class TopChromeWebUIController : public ui::MojoWebUIController {
   TopChromeWebUIController& operator=(const TopChromeWebUIController&) = delete;
   ~TopChromeWebUIController() override;
 
+  content::WebUIController::DisplayDisposition GetDisplayDisposition()
+      const override;
+
   // ui::MojoWebUIController overrides:
   void WebUIPrimaryPageChanged(content::Page& page) override;
 

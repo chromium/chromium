@@ -7,6 +7,9 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 
 namespace webui_browser {
 
@@ -15,8 +18,18 @@ bool IsWebUIBrowserEnabled() {
 }
 
 bool IsBrowserUIWebContents(content::WebContents* web_contents) {
-  return IsWebUIBrowserEnabled() &&
-         WebUIBrowserWindow::FromWebShellWebContents(web_contents);
+  if (IsWebUIBrowserEnabled() &&
+      WebUIBrowserWindow::FromWebShellWebContents(web_contents)) {
+    return true;
+  }
+
+  if (web_contents->GetWebUI() && web_contents->GetWebUI()->GetController() &&
+      web_contents->GetWebUI()->GetController()->GetDisplayDisposition() ==
+          content::WebUIController::DisplayDisposition::kUIElement) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace webui_browser
