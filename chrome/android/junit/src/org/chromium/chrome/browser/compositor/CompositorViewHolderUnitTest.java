@@ -1320,6 +1320,44 @@ public class CompositorViewHolderUnitTest {
         doTestSideUiSpecsChanged_updateMargins(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.COMPOSITOR_VIEW_HOLDER_OBSCURING)
+    public void testDispatchTouchEvent_BlockedWhenObscured() {
+        mCompositorViewHolder.updateObscured(true, false);
+        boolean handled = mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
+        assertTrue("Event should be consumed when obscured", handled);
+        verify(mLayoutManager, never())
+                .onInterceptMotionEvent(any(), anyBoolean(), eq(EventType.TOUCH));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.COMPOSITOR_VIEW_HOLDER_OBSCURING)
+    public void testDispatchGenericMotionEvent_BlockedWhenObscured() {
+        mCompositorViewHolder.updateObscured(true, false);
+        boolean handled =
+                mCompositorViewHolder.dispatchGenericMotionEvent(
+                        MOTION_ACTION_BUTTON_RELEASE_MOUSE);
+        assertTrue("Event should be consumed when obscured", handled);
+        verify(mLayoutManager, never()).dispatchGenericMotionEvent(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.COMPOSITOR_VIEW_HOLDER_OBSCURING)
+    public void testDispatchHoverEvent_BlockedWhenObscured() {
+        mCompositorViewHolder.updateObscured(true, false);
+        boolean handled = mCompositorViewHolder.dispatchHoverEvent(MOTION_ACTION_HOVER_ENTER);
+        assertTrue("Event should be consumed when obscured", handled);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.COMPOSITOR_VIEW_HOLDER_OBSCURING)
+    public void testDispatchTouchEvent_NotBlockedWhenNotObscured() {
+        mCompositorViewHolder.updateObscured(false, false);
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
+        verify(mLayoutManager, times(1))
+                .onInterceptMotionEvent(any(), anyBoolean(), eq(EventType.TOUCH));
+    }
+
     private void doTestSideUiSpecsChanged_updateMargins(
             int expectedStartMargin, int expectedEndMargin) {
         // Notify content changed.
