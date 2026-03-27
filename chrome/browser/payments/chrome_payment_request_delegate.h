@@ -11,8 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/payments/webapps/twa_package_helper.h"
 #include "components/payments/content/content_payment_request_delegate.h"
-#include "components/payments/content/secure_payment_confirmation_controller.h"
-#include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
@@ -23,6 +21,8 @@ namespace payments {
 
 class PaymentRequestDialog;
 class PaymentUIObserver;
+class SecurePaymentConfirmationController;
+class SecurePaymentConfirmationNoCreds;
 
 class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
  public:

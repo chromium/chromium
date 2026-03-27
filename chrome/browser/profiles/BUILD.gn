@@ -425,6 +425,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
     "//chrome/browser/password_manager/factories",
+    "//chrome/browser/payments",
     "//chrome/browser/payments/browser_binding:browser_bound_key_deleter",
     "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db",

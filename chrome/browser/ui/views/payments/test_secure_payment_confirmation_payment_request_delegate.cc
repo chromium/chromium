@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 
 #include "base/functional/callback_helpers.h"
+#include "components/payments/content/secure_payment_confirmation_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
