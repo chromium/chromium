@@ -2587,16 +2587,12 @@ TEST_F(BnplManagerTest, OnIssuerAccepted_TriggersExtractionAfterTermsNotSeen) {
       std::make_pair(1'000'000, "USD"));
 }
 
-TEST_F(BnplManagerTest,
-       OnIssuerAccepted_AiAmountExtractionTermsNotSeen_ShowProgressSuggestion) {
+TEST_F(BnplManagerTest, OnIssuerAccepted_ShowProgressSuggestion) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list
       .InitWithFeatures(/*enabled_features=*/
-                        {features::kAutofillEnableAiBasedAmountExtraction,
-                         features::kAutofillEnablePayNowPayLaterTabs},
+                        {features::kAutofillEnablePayNowPayLaterTabs},
                         /*disabled_features=*/{});
-  autofill_client().GetPrefs()->SetBoolean(
-      prefs::kAutofillAmountExtractionAiTermsSeen, false);
   base::MockRepeatingCallback<void(std::vector<Suggestion>,
                                    AutofillSuggestionTriggerSource)>
       mock_update_suggestions_callback;
@@ -2616,8 +2612,6 @@ TEST_F(BnplManagerTest,
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
 
-  EXPECT_CALL(*mock_amount_extraction_manager_,
-              TriggerCheckoutAmountExtractionWithAi());
   EXPECT_CALL(
       mock_update_suggestions_callback,
       Run(ElementsAre(

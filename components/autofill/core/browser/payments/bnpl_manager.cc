@@ -212,6 +212,11 @@ void BnplManager::OnUserDecisionToUseBnpl(
 void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
   ongoing_flow_state_->issuer = std::move(issuer);
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    ShowProgressUiForPayLaterTab();
+  }
+
   // When an issuer is accepted but no checkout amount is present, call
   // server-side AI to extract the amount.
   if (base::FeatureList::IsEnabled(
@@ -219,10 +224,6 @@ void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
       !ongoing_flow_state_->final_checkout_amount) {
     browser_autofill_manager_->GetAmountExtractionManager()
         .TriggerCheckoutAmountExtractionWithAi();
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnablePayNowPayLaterTabs)) {
-      ShowProgressUiForPayLaterTab();
-    }
     return;
   }
 
