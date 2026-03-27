@@ -154,8 +154,9 @@ struct OverflowMenuActionRow: View {
     } else {
       Button(
         action: {
-          metricsHandler?.popupMenuTookAction()
+          metricsHandler?.popupMenuTriggerElement()
           metricsHandler?.popupMenuUserSelectedAction()
+          metricsHandler?.popupMenuDidTriggerAction(action.actionType)
           action.handler()
         },
         label: {

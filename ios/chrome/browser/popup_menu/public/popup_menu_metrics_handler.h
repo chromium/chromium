@@ -16,8 +16,12 @@
 // the new popup menu. The old one doesn't have a horizontal scroll.
 - (void)popupMenuScrolledHorizontally;
 
-// Called when the user takes an action in the popup menu.
-- (void)popupMenuTookAction;
+// Called when the user trigger an element (action or destination) in the popup
+// menu.
+- (void)popupMenuTriggerElement;
+
+// Called when the user takes an action
+- (void)popupMenuDidTriggerAction:(NSInteger)actionType;
 
 // Called when the user uses an Action (an element from the vertical list).
 - (void)popupMenuUserSelectedAction;

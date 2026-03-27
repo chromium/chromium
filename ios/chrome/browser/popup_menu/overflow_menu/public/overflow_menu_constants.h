@@ -75,8 +75,8 @@ std::optional<ActionType> ActionTypeForStringName(std::string action);
 std::string StringNameForActionType(ActionType action);
 
 // Ingests overflow_menu::Destination `destination` and records the
-// corresponding UMA action.
-void RecordUmaActionForDestination(Destination destination);
+// corresponding UMA action based on whether it is the NTP or not.
+void RecordUmaActionForDestination(Destination destination, bool on_ntp);
 
 // `kNewDestinationsInsertionIndex` represents the index new destinations are
 // inserted into the current ranking.

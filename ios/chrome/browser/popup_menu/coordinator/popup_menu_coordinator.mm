@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_help_coordinator.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_mediator.h"
@@ -125,6 +126,10 @@ using base::UserMetricsAction;
   // Stores whether certain events occurred during an overflow menu session for
   // logs.
   OverflowMenuVisitedEvent _event;
+
+  // When the user is taking an action (and not a destination), this is storing
+  // the type of action taken.
+  std::optional<overflow_menu::ActionType> _actionTriggered;
 }
 
 @synthesize UIUpdater = _UIUpdater;
@@ -449,6 +454,19 @@ using base::UserMetricsAction;
     self.overflowMenuUserScrolledToEndOfActions = NO;
   }
 
+  if (_actionTriggered) {
+    IOSOverflowMenuAction UMAAction =
+        HistogramActionFromActionType(_actionTriggered.value());
+    base::UmaHistogramEnumeration("IOS.OverflowMenu.ActionTriggered",
+                                  UMAAction);
+    if (IsVisibleURLNewTabPage(
+            self.browser->GetWebStateList()->GetActiveWebState())) {
+      base::UmaHistogramEnumeration("IOS.OverflowMenu.ActionTriggeredOnNTP",
+                                    UMAAction);
+    }
+    _actionTriggered.reset();
+  }
+
   if (self.overflowMenuMediator) {
     [self.baseViewController dismissViewControllerAnimated:animated
                                                 completion:nil];
@@ -588,8 +606,12 @@ using base::UserMetricsAction;
   _event.Put(OverflowMenuVisitedEventFields::kUserScrolledHorizontally);
 }
 
-- (void)popupMenuTookAction {
+- (void)popupMenuTriggerElement {
   self.toolsMenuUserTookAction = YES;
+}
+
+- (void)popupMenuDidTriggerAction:(NSInteger)actionType {
+  _actionTriggered = static_cast<overflow_menu::ActionType>(actionType);
 }
 
 - (void)popupMenuUserSelectedAction {
