@@ -5,6 +5,7 @@
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 
 #include "base/check.h"
@@ -30,21 +31,21 @@ std::optional<int>
 MemoryCoordinatorPolicyManager::GroupState::SetMemoryLimitForPolicy(
     MemoryCoordinatorPolicy* policy,
     int percentage) {
-  requested_limits_[policy] = percentage;
-  int new_limit = RecomputeMemoryLimit();
-  if (new_limit == current_limit_) {
-    return std::nullopt;
-  }
-  current_limit_ = new_limit;
-  return new_limit;
-}
+  CHECK_GE(percentage, 0);
 
-std::optional<int>
-MemoryCoordinatorPolicyManager::GroupState::ClearMemoryLimitForPolicy(
-    MemoryCoordinatorPolicy* policy) {
-  if (requested_limits_.erase(policy) == 0) {
-    return std::nullopt;
+  // A 100% limit has no effect on the aggregate limit. We clear the policy's
+  // request to keep the map small.
+  if (percentage == base::MemoryConsumer::kDefaultMemoryLimit) {
+    // If the policy wasn't already registered, clearing it is a no-op.
+    if (requested_limits_.erase(policy) == 0) {
+      return std::nullopt;
+    }
+  } else {
+    requested_limits_[policy] = percentage;
   }
+
+  // Recompute the aggregate limit across all policies. If the result is the
+  // same as the current limit, no update is needed.
   int new_limit = RecomputeMemoryLimit();
   if (new_limit == current_limit_) {
     return std::nullopt;
@@ -54,12 +55,14 @@ MemoryCoordinatorPolicyManager::GroupState::ClearMemoryLimitForPolicy(
 }
 
 int MemoryCoordinatorPolicyManager::GroupState::RecomputeMemoryLimit() const {
-  // If no policies specify a limit, the default limit is used.
-  int min_limit = base::MemoryConsumer::kDefaultMemoryLimit;
+  // The aggregate limit is the product of all policy limits.
+  // For example, if policy A requests 80% and policy B requests 50%, the
+  // aggregate limit is 40% (0.8 * 0.5 = 0.4).
+  double result = base::MemoryConsumer::kDefaultMemoryLimit;
   for (auto const& [policy, limit] : requested_limits_) {
-    min_limit = std::min(min_limit, limit);
+    result *= limit / 100.0;
   }
-  return min_limit;
+  return std::nearbyint(result);
 }
 
 // MemoryCoordinatorPolicyManager::HostState -----------------------------------
@@ -126,14 +129,14 @@ void MemoryCoordinatorPolicyManager::RemovePolicy(
   CHECK_EQ(removed, 1u);
 
   // When a policy is removed, its requested limits are cleared from all
-  // consumer groups and aggregate limits are recomputed to ensure the
-  // remaining policies are correctly applied.
+  // consumer groups.
   for (auto const& [child_id, host_state] : hosts_) {
     std::vector<MemoryConsumerUpdate> updates;
     updates.reserve(host_state->groups.size());
     for (auto const& [consumer_id, group_state] : host_state->groups) {
-      if (std::optional<int> new_limit =
-              group_state->ClearMemoryLimitForPolicy(policy)) {
+      // Setting the default limit clears the policy's requested limit.
+      if (std::optional<int> new_limit = group_state->SetMemoryLimitForPolicy(
+              policy, base::MemoryConsumer::kDefaultMemoryLimit)) {
         updates.push_back({consumer_id, *new_limit, /*release_memory=*/false});
       }
     }

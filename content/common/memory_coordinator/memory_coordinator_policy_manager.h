@@ -37,8 +37,7 @@ struct GlobalMemoryConsumerUpdate {
 };
 
 // Manages memory coordinator policies and aggregates their memory limit
-// requests for consumer groups, ensuring the most restrictive (lowest) limit is
-// always applied.
+// requests for consumer groups by multiplying them together.
 class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     : public MemoryConsumerGroupController {
  public:
@@ -151,15 +150,11 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
                ProcessType process_type);
     ~GroupState();
 
-    // Updates the limit requested by `policy`. Returns the new aggregate limit
-    // if it changed, or std::nullopt otherwise.
+    // Updates the limit requested by `policy`. If `percentage` is 100, the
+    // policy's limit is cleared. Returns the new aggregate limit if it changed,
+    // or std::nullopt otherwise.
     std::optional<int> SetMemoryLimitForPolicy(MemoryCoordinatorPolicy* policy,
                                                int percentage);
-
-    // Removes the limit requested by `policy`. Returns the new aggregate limit
-    // if it changed, or std::nullopt otherwise.
-    std::optional<int> ClearMemoryLimitForPolicy(
-        MemoryCoordinatorPolicy* policy);
 
     const std::string& consumer_name() const { return consumer_name_; }
     std::optional<base::MemoryConsumerTraits> traits() const { return traits_; }
