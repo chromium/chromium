@@ -2733,6 +2733,8 @@ bool WebRequestEventRouter::ListenerMatchesRequest(
         listener.id.web_view_instance_id != request.web_view_instance_id) {
       return false;
     }
+  } else if (listener.id.web_view_instance_id != 0) {
+    return false;
   }
 
   // Filter requests from other extensions / apps. This does not work for

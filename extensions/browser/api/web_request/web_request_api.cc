@@ -501,6 +501,13 @@ void WebRequestAPI::OnListenerAdded(const EventListenerInfo& details) {
                                      "Missing webview permission.");
       return;
     }
+
+    if (!event_name.starts_with("webViewInternal.")) {
+      AddMessageToConsoleForListener(details,
+                                     blink::mojom::ConsoleMessageLevel::kError,
+                                     "Invalid event name for webview.");
+      return;
+    }
   } else {
     auto has_blocking_permission = [&extension, &event_name]() {
       DCHECK(extension);
@@ -1229,6 +1236,10 @@ WebRequestInternalAddEventListenerFunction::Run() {
     if (extension && !extension->permissions_data()->HasAPIPermission(
                          mojom::APIPermissionID::kWebView)) {
       return RespondNow(Error("Missing webview permission."));
+    }
+
+    if (!event_name.starts_with("webViewInternal.")) {
+      return RespondNow(Error("Invalid event name for webview."));
     }
   } else {
     auto has_blocking_permission = [&extension, &event_name]() {

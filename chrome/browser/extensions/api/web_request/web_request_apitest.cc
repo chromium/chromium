@@ -93,6 +93,7 @@
 #include "content/public/test/web_transport_simple_test_server.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/event_router.h"
@@ -8693,6 +8694,48 @@ IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
   RunSecurityInfoTest("broken", /*use_web_socket=*/true,
                       GetWebSocketServer().GetCertificate(),
                       GetWebSocketServer().GetURL("/echo-with-no-extension"));
+}
+
+// Regression test for https://crbug.com/496279876.
+// Tests that an extension renderer cannot bypass the webRequestBlocking
+// permission check by registering a listener for a general browser traffic
+// event while supplying a non-zero `web_view_instance_id`.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, InvalidWebViewInstanceId) {
+  // Setup an extension that has <webview> privileges but explicitly lacks
+  // the "webRequestBlocking" permission to simulate the bug's scenario.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("webview_extension")
+          .AddAPIPermissions({"webview", "webRequest"})
+          .AddHostPermission("<all_urls>")
+          .Build();
+  ASSERT_TRUE(extension);
+
+  auto function =
+      base::MakeRefCounted<WebRequestInternalAddEventListenerFunction>();
+  function->set_extension(extension.get());
+  function->set_has_callback(true);
+
+  // Arguments for webRequestInternal.addEventListener:
+  //   0. `callback`: not used here.
+  //   1. `filter`: the RequestFilter dictionary.
+  //   2. `extraInfoSpec`: use "blocking" option to require the permission.
+  //   3. `eventName`: the base event name.
+  //   4. `subEventName`: uniquely identifies the listener.
+  //   5. `webViewInstanceId`: a non-zero integer representing a webview.
+  std::string args = R"([
+    {},
+    {"urls": ["<all_urls>"]},
+    ["blocking"],
+    "webRequest.onBeforeRequest",
+    "webRequest.onBeforeRequest/s1",
+    1
+  ])";
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile());
+
+  // Supplying a non-zero `web_view_instance_id` for a general webRequest event
+  // should be immediately caught by the prefix validation.
+  EXPECT_EQ("Invalid event name for webview.", error);
 }
 
 // This test verifies that various types of network requests (defined in
