@@ -92,6 +92,7 @@ static_library("app_mode") {
     "//components/webapps/common",
     "//extensions/browser",
     "//extensions/browser:cws_item_service_proto",
+    "//extensions/browser:webstore_installer",
     "//extensions/common",
     "//net",
     "//ui/base",

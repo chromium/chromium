@@ -464,8 +464,6 @@ source_set("extensions") {
     "user_script_listener.h",
     "webstore_data_fetcher.cc",
     "webstore_data_fetcher.h",
-    "webstore_data_fetcher_delegate.cc",
-    "webstore_data_fetcher_delegate.h",
     "webstore_install_helper.cc",
     "webstore_install_helper.h",
     "webstore_reinstaller.cc",

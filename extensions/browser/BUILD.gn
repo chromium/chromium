@@ -871,12 +871,15 @@ source_set("crx_installer") {
 }
 source_set("webstore_installer") {
   sources = [
+    "webstore_data_fetcher_delegate.cc",
+    "webstore_data_fetcher_delegate.h",
     "webstore_installer.cc",
     "webstore_installer.h",
   ]
   deps = [
     ":browser_sources",
     ":crx_installer",
+    ":cws_item_service_proto",
     "//base",
     "//components/download/public/common:public",
     "//components/update_client",
