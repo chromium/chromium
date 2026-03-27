@@ -102,6 +102,11 @@ const char kGenAILocalFoundationalModelEnterprisePolicySettings[] =
 // A boolean pref for the on-device GenAI foundational model user settings.
 const char kOnDeviceAiUserSettingsEnabled[] =
     "optimization_guide.on_device_foundational_model_user_settings";
+
+// A dictionary pref that tracks the state of assets managed by the manifest.
+const char kManifestAssetLedger[] =
+    "optimization_guide.model_execution.manifest_asset_ledger";
+
 }  // namespace localstate
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -122,6 +127,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       localstate::kGenAILocalFoundationalModelEnterprisePolicySettings, 0);
   registry->RegisterBooleanPref(localstate::kOnDeviceAiUserSettingsEnabled,
                                 true);
+  registry->RegisterDictionaryPref(localstate::kManifestAssetLedger);
 }
 
 void PruneOldUsagePrefs(PrefService* local_state) {

@@ -50,6 +50,12 @@ class TestManifestAssetManagerComponentState final {
     free_disk_space_ = free_space_bytes;
   }
 
+  void SetDeferRegistrationCallbacks(bool defer) {
+    defer_registration_callbacks_ = defer;
+  }
+  void RunPendingRegistrations();
+
+  void ClearRegistered() { registered_components_.clear(); }
   // Simulates the component updater finishing a download/install
   void SimulateComponentReady(const std::string& public_key,
                               const base::Version& version,
@@ -78,6 +84,9 @@ class TestManifestAssetManagerComponentState final {
   base::flat_set<std::string> foreground_updates_requested_;
   base::flat_set<std::string> background_updates_requested_;
   base::flat_set<std::string> already_installed_components_;
+
+  bool defer_registration_callbacks_ = false;
+  std::vector<base::OnceClosure> pending_registrations_;
 
   // Track the managers to simulate callbacks from the component updater, keyed
   // by public key.

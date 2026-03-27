@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/byte_count.h"
 #include "base/containers/flat_map.h"
@@ -137,6 +138,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
           disk_space_free);
     }
 
+    // TODO(crbug.com/489511499): Migrate this check to ManifestMonitor.
     bool IsRunningOutOfDiskSpace() const {
       return features::IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
           disk_space_free);
@@ -152,13 +154,21 @@ class ManifestAssetManager : public UsageTracker::Observer {
   struct ComponentRegistrationCriteria {
     // True if the asset is part of the recipe for a requested use case.
     bool required_by_active_use_case = false;
-    // TODO(crbug.com/489511499): Add criteria for retention and
-    // obsolete/orphaned components.
+    // True if the asset is already installing or registered with the component
+    // updater previously, and the installation may or may not be complete.
+    bool is_already_installing = false;
+    // True if the asset is not in the current manifest.
+    bool is_obsolete = false;
+    // True if the asset's last registration timestamp is no longer within the
+    // retention period.
+    bool out_of_retention = false;
 
     bool ShouldUninstall(
         const GlobalRegistrationCriteria& global_criteria) const {
-      return global_criteria.IsRunningOutOfDiskSpace() ||
-             !global_criteria.IsModelAllowed();
+      return is_already_installing &&
+             (is_obsolete || out_of_retention ||
+              global_criteria.IsRunningOutOfDiskSpace() ||
+              !global_criteria.IsModelAllowed());
     }
 
     std::optional<InstallMode> GetInstallMode(
@@ -187,7 +197,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
     // Persistent state (saved to prefs)
     std::string asset_id;  // Associated asset ID from manifest.
     std::string requested_version;
-    // TODO(crbug.com/489511499): Add last_eligible_time to track retention.
+    base::Time last_eligible_time = base::Time::Min();
 
     // Transient state (in memory)
     ComponentState state = ComponentState::kNotRegistered;
@@ -195,7 +205,40 @@ class ManifestAssetManager : public UsageTracker::Observer {
     std::optional<base::Version> version;
   };
 
-  // TODO(crbug.com/489511499): Add AssetLedger to persist component contexts.
+  // A ledger that handles saving and loading persistent component contexts to
+  // prefs.
+  class AssetLedger {
+   public:
+    explicit AssetLedger(PrefService* local_state);
+    ~AssetLedger();
+
+    // Loads all persistent contexts from prefs, used in initialization.
+    void Load();
+
+    const base::flat_map<std::string, ComponentContext>& contexts() const {
+      return component_contexts_;
+    }
+    base::flat_map<std::string, ComponentContext>& GetMutableContexts() {
+      return component_contexts_;
+    }
+
+    const ComponentContext* GetContext(const std::string& public_key) const;
+    ComponentContext* GetContext(const std::string& public_key);
+    ComponentContext* GetOrCreateContext(const std::string& public_key);
+
+    // Flush the contexts for the given public keys to prefs.
+    void SaveContexts(const std::vector<std::string>& public_keys);
+    // Removes the context for the given public key from the in memory map and
+    // prefs.
+    void RemoveContext(const std::string& public_key);
+
+   private:
+    ComponentContext* GetContextImpl(const std::string& public_key,
+                                     bool create_if_missing);
+
+    raw_ptr<PrefService> local_state_;
+    base::flat_map<std::string, ComponentContext> component_contexts_;
+  };
 
   // UsageTracker::Observer:
   void OnDeviceEligibleUseCaseUsed(const std::string& use_case_name,
@@ -228,7 +271,8 @@ class ManifestAssetManager : public UsageTracker::Observer {
       std::optional<base::ByteCount> disk_space_free) const;
   ComponentRegistrationCriteria ComputeComponentRegistrationCriteria(
       const ComponentContext& context,
-      bool required_by_active_use_case) const;
+      bool required_by_active_use_case,
+      bool is_obsolete) const;
 
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   Manifest manifest_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -242,8 +286,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
   // Tracks the state of all components known to the manager. Keyed by the
   // component public key hex and computed for the union of components in the
   // manifest and persisted contexts.
-  base::flat_map<std::string, ComponentContext> component_contexts_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  AssetLedger ledger_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Tracks the registration criteria for all components. Keyed by the
   // component public key hex and computed for the union of components in the

@@ -36,11 +36,19 @@ class TestManifestAssetManagerComponentState::DelegateImpl
       const std::string& target_version,
       base::WeakPtr<ManifestAssetManager> manager) override {
     bool is_already_installed = false;
-    if (state_) {
-      state_->registered_components_.insert(public_key_hex);
-      state_->managers_[public_key_hex] = manager;
-      is_already_installed =
-          state_->already_installed_components_.contains(public_key_hex);
+    if (!state_) {
+      // Test fixture destroyed, do nothing.
+      return;
+    }
+    state_->registered_components_.insert(public_key_hex);
+    state_->managers_[public_key_hex] = manager;
+    is_already_installed =
+        state_->already_installed_components_.contains(public_key_hex);
+    if (state_->defer_registration_callbacks_) {
+      state_->pending_registrations_.push_back(
+          base::BindOnce(&ManifestAssetManager::InstallerRegistered, manager,
+                         public_key_hex, target_version, is_already_installed));
+      return;
     }
     manager->InstallerRegistered(public_key_hex, target_version,
                                  is_already_installed);
@@ -96,33 +104,41 @@ TestManifestAssetManagerComponentState::CreateDelegate() {
   return std::make_unique<DelegateImpl>(weak_ptr_factory_.GetWeakPtr());
 }
 
+void TestManifestAssetManagerComponentState::RunPendingRegistrations() {
+  auto pending = std::move(pending_registrations_);
+  pending_registrations_.clear();
+  for (auto& cb : pending) {
+    std::move(cb).Run();
+  }
+}
+
 bool TestManifestAssetManagerComponentState::IsRegistered(
-    const std::string& public_key) const {
-  return registered_components_.contains(public_key);
+    const std::string& public_key_hex) const {
+  return registered_components_.contains(public_key_hex);
 }
 
 bool TestManifestAssetManagerComponentState::WasUninstallRequested(
-    const std::string& public_key) const {
-  return uninstalled_components_.contains(public_key);
+    const std::string& public_key_hex) const {
+  return uninstalled_components_.contains(public_key_hex);
 }
 
 bool TestManifestAssetManagerComponentState::WasOnDemandUpdateRequested(
-    const std::string& public_key) const {
-  return foreground_updates_requested_.contains(public_key);
+    const std::string& public_key_hex) const {
+  return foreground_updates_requested_.contains(public_key_hex);
 }
 
 bool TestManifestAssetManagerComponentState::WasBackgroundUpdateRequested(
-    const std::string& public_key) const {
-  return background_updates_requested_.contains(public_key);
+    const std::string& public_key_hex) const {
+  return background_updates_requested_.contains(public_key_hex);
 }
 
 void TestManifestAssetManagerComponentState::SimulateComponentReady(
-    const std::string& public_key,
+    const std::string& public_key_hex,
     const base::Version& version,
     const base::FilePath& install_dir) {
-  auto it = managers_.find(public_key);
+  auto it = managers_.find(public_key_hex);
   if (it != managers_.end() && it->second) {
-    it->second->OnAssetReady(public_key, version, install_dir);
+    it->second->OnAssetReady(public_key_hex, version, install_dir);
   }
 }
 
