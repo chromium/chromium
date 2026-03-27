@@ -95,6 +95,9 @@ component("features") {
     "//third_party/metrics_proto",
     "//ui/base",
   ]
+  if (is_android) {
+    deps += [ "//components/version_info/android:channel_getter" ]
+  }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_OPTIMIZATION_GUIDE_FEATURES_IMPL" ]
 }

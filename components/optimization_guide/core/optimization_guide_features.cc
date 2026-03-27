@@ -35,8 +35,11 @@
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace optimization_guide {
-namespace features {
+#if BUILDFLAG(IS_ANDROID)
+#include "components/version_info/android/channel_getter.h"
+#endif
+
+namespace optimization_guide::features {
 
 namespace {
 
@@ -220,7 +223,11 @@ std::string GetOptimizationGuideServiceAPIKey() {
         switches::kOptimizationGuideServiceAPIKey);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  return google_apis::GetAPIKey(version_info::android::GetChannel());
+#else
   return google_apis::GetAPIKey();
+#endif
 }
 
 GURL GetOptimizationGuideServiceGetModelsURL() {
@@ -636,5 +643,4 @@ std::optional<base::TimeDelta> GetMainFrameGetAIPageContentTimeout() {
   return kGetAIPageContentMainFrameTimeoutParam.Get();
 }
 
-}  // namespace features
-}  // namespace optimization_guide
+}  // namespace optimization_guide::features
