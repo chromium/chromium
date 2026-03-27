@@ -29,9 +29,14 @@ import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -49,6 +54,8 @@ public class ActorPictureInPictureController
     private final ComponentActivity mActivity;
     private final Supplier<Profile> mProfileSupplier;
     private final Supplier<ViewGroup> mRootViewSupplier;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Runnable mHideTabSwitcherCallback;
     private final BasicPictureInPicture mPipDelegate;
     private @Nullable ActorKeyedService mActorService;
     private boolean mInActorPiP;
@@ -58,14 +65,20 @@ public class ActorPictureInPictureController
      * @param activity The ComponentActivity.
      * @param profileSupplier The supplier for the current Profile.
      * @param rootViewSupplier The supplier for the root view.
+     * @param tabModelSelectorSupplier The supplier for the TabModelSelector.
+     * @param hideTabSwitcherCallback Callback to exit the tab switcher.
      */
     public ActorPictureInPictureController(
             ComponentActivity activity,
             Supplier<Profile> profileSupplier,
-            Supplier<ViewGroup> rootViewSupplier) {
+            Supplier<ViewGroup> rootViewSupplier,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Runnable hideTabSwitcherCallback) {
         mActivity = activity;
         mProfileSupplier = profileSupplier;
         mRootViewSupplier = rootViewSupplier;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mHideTabSwitcherCallback = hideTabSwitcherCallback;
         // Initialize the AndroidX PiP delegate.
         // Activity extends ComponentActivity, so this is valid.
         mPipDelegate = new BasicPictureInPicture(activity);
@@ -80,6 +93,26 @@ public class ActorPictureInPictureController
         ActorKeyedService service = maybeGetActorService();
         if (service == null) return false;
         return service.getActiveTasksCount() > 0;
+    }
+
+    /**
+     * Returns the ID of a tab recently acted upon by the current active task. Currently, Actor
+     * tasks are limited to a single tab per action, so this method returns the only available ID.
+     * If multiple tabs are present, an arbitrary ID from the set is returned.
+     */
+    public int getActiveTaskLastActedTabId() {
+        // TODO(crbug.com/496226553): Update this to identify the specific active tab
+        // if ActorTask begins supporting multi-tab actions.
+        maybeGetActorService();
+        if (mActorService == null) return Tab.INVALID_TAB_ID;
+
+        ActorTask task = mActorService.getCurrentActiveTask();
+        if (task == null) return Tab.INVALID_TAB_ID;
+
+        Set<Integer> tabIds = task.getLastActedTabs();
+
+        // Assume that there is only one tab ID in the set returned by task.getLastActedTabs().
+        return !tabIds.isEmpty() ? tabIds.iterator().next() : Tab.INVALID_TAB_ID;
     }
 
     /** Lazily retrieves the ActorKeyedService and registers this observer. */
@@ -222,17 +255,36 @@ public class ActorPictureInPictureController
             showOverlay();
             checkAndExitPipIfFinished();
         } else if (event == PictureInPictureDelegate.Event.EXITED) {
-            mInActorPiP = false;
-            hideOverlay();
-            updatePipState();
+            exitPictureInPicture();
         }
     }
 
     /** Expose to Activity to guarantee UI reset during framework exits. */
     public void onFrameworkExitedPictureInPicture() {
+        exitPictureInPicture();
+    }
+
+    private void exitPictureInPicture() {
+        if (!mInActorPiP) return;
+
         mInActorPiP = false;
+        maybeSelectActingTabOnExpand();
         hideOverlay();
         updatePipState();
+    }
+
+    private void maybeSelectActingTabOnExpand() {
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector == null) return;
+
+        int tabId = getActiveTaskLastActedTabId();
+        Tab tab = (tabId != Tab.INVALID_TAB_ID) ? selector.getTabById(tabId) : null;
+
+        if (tab != null) {
+            mHideTabSwitcherCallback.run();
+            selector.selectModel(tab.isIncognitoBranded());
+            TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
+        }
     }
 
     /** Called when the Activity is destroyed. */
@@ -290,5 +342,10 @@ public class ActorPictureInPictureController
 
     void setOverlayCoordinatorForTesting(ActorPictureInPictureOverlayCoordinator coordinator) {
         mPipOverlayCoordinator = coordinator;
+    }
+
+    @VisibleForTesting
+    public void setInActorPiPForTesting(boolean inPiP) {
+        mInActorPiP = inPiP;
     }
 }

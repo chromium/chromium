@@ -133,6 +133,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFactory;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
@@ -1381,13 +1382,23 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return mFullscreenVideoPictureInPictureController;
     }
 
-    private @Nullable ActorPictureInPictureController maybeCreateActorPipController() {
+    @VisibleForTesting
+    public void exitOverviewModeOnActorPiPExpand() {
+        if (isInOverviewMode() && mLayoutManagerSupplier.get() != null) {
+            mLayoutManagerSupplier.get().showLayout(LayoutType.BROWSING, /* animate= */ false);
+        }
+    }
+
+    @VisibleForTesting
+    public @Nullable ActorPictureInPictureController maybeCreateActorPipController() {
         if (mActorPipController == null && ChromeFeatureList.sGlic.isEnabled()) {
             mActorPipController =
                     new ActorPictureInPictureController(
                             this,
                             () -> mTabModelProfileSupplier.get(),
-                            () -> findViewById(android.R.id.content));
+                            () -> findViewById(android.R.id.content),
+                            getTabModelSelectorSupplier(),
+                            this::exitOverviewModeOnActorPiPExpand);
         }
         return mActorPipController;
     }
@@ -2434,10 +2445,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     /**
-     * @return An {@link MonotonicObservableSupplier} that will supply the {@link LayoutManagerImpl} when it
-     *     is ready.
+     * Returns the {@link MonotonicObservableSupplier} that will supply the {@link
+     * LayoutManagerImpl} when it is ready.
      */
-    public final MonotonicObservableSupplier<LayoutManagerImpl> getLayoutManagerSupplier() {
+    public MonotonicObservableSupplier<LayoutManagerImpl> getLayoutManagerSupplier() {
         return mLayoutManagerSupplier;
     }
 

@@ -41,7 +41,10 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -55,6 +58,7 @@ public class ActorPictureInPictureControllerTest {
     @Mock private ActorKeyedServiceFactory.Natives mActorKeyedServiceFactoryJni;
     @Mock private ActorPictureInPictureOverlayCoordinator mMockCoordinator;
     @Mock private ProfileResolver.Natives mProfileResolverJni;
+    @Mock private TabModelSelector mTabModelSelector;
 
     private ComponentActivity mActivity;
     private Supplier<Profile> mProfileSupplier;
@@ -79,7 +83,9 @@ public class ActorPictureInPictureControllerTest {
                 new ActorPictureInPictureController(
                         mActivity,
                         mProfileSupplier,
-                        () -> mActivity.findViewById(android.R.id.content));
+                        () -> mActivity.findViewById(android.R.id.content),
+                        () -> mTabModelSelector,
+                        () -> {});
         mController.setOverlayCoordinatorForTesting(mMockCoordinator);
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverJni);
@@ -129,7 +135,30 @@ public class ActorPictureInPictureControllerTest {
     }
 
     @Test
+    public void testOnPictureInPictureEvent_Exited_HidesOverview() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
+        mController =
+                new ActorPictureInPictureController(
+                        mActivity,
+                        mProfileSupplier,
+                        () -> mActivity.findViewById(android.R.id.content),
+                        () -> mTabModelSelector,
+                        mockHideTabSwitcher);
+
+        ActorTask mockTask = createMockActorTask(101, "Task", ActorTaskState.ACTING);
+        when(mockTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        Tab mockTab = mock(Tab.class);
+        when(mTabModelSelector.getTabById(1)).thenReturn(mockTab);
+
+        mController.setInActorPiPForTesting(true);
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
+
+        verify(mockHideTabSwitcher).run();
+    }
+
+    @Test
     public void testOnPictureInPictureEvent_Exited_HidesOverlay() {
+        mController.setInActorPiPForTesting(true);
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
         verify(mMockCoordinator).setVisibility(false);
     }
@@ -236,5 +265,26 @@ public class ActorPictureInPictureControllerTest {
         assertEquals(1, actions.size());
         assertEquals(
                 mActivity.getString(R.string.actor_pip_paused_status), actions.get(0).getTitle());
+    }
+
+    @Test
+    public void testGetActiveTaskLastActedTabId() {
+        // Case 1: Service is null
+        ActorKeyedServiceFactory.setForTesting(null);
+        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActedTabId());
+        ActorKeyedServiceFactory.setForTesting(mActorService);
+
+        // Case 2: No active task
+        when(mActorService.getCurrentActiveTask()).thenReturn(null);
+        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActedTabId());
+
+        // Case 3: Task has no last acted tabs
+        ActorTask mockTask = createMockActorTask(101, "Task", ActorTaskState.ACTING);
+        when(mockTask.getLastActedTabs()).thenReturn(Collections.emptySet());
+        assertEquals(Tab.INVALID_TAB_ID, mController.getActiveTaskLastActedTabId());
+
+        // Case 4: Task has last acted tabs
+        when(mockTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        assertEquals(1, mController.getActiveTaskLastActedTabId());
     }
 }
