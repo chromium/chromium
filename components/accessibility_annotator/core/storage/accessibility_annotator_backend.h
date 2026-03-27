@@ -7,45 +7,35 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "base/containers/lru_cache.h"
-#include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/threading/sequence_bound.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
-#include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
-#include "components/history/core/browser/history_service_observer.h"
+#include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/data_type_store.h"
 #include "url/gurl.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
-class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
-namespace history {
-class DeletionInfo;
-class HistoryService;
-struct VisitedURLInfo;
-}  // namespace history
+namespace sync_pb {
+class AccessibilityAnnotationSpecifics;
+}
 
 namespace accessibility_annotator {
 
-class AccessibilityAnnotatorDatabase;
+class AccessibilityAnnotationSyncBridge;
 
-class AccessibilityAnnotatorBackend
-    : public KeyedService,
-      public AccessibilityAnnotationSyncBridge::Observer,
-      public history::HistoryServiceObserver {
+class AccessibilityAnnotatorBackend : public KeyedService {
  public:
   struct ContentAnnotationsData {
-    ContentAnnotationsData();
-    ~ContentAnnotationsData();
-    ContentAnnotationsData(ContentAnnotationsData&& other);
-    ContentAnnotationsData& operator=(ContentAnnotationsData&& other);
+    ContentAnnotationsData() = default;
+    ~ContentAnnotationsData() = default;
+    ContentAnnotationsData(ContentAnnotationsData&& other) = default;
+    ContentAnnotationsData& operator=(ContentAnnotationsData&& other) = default;
 
     ContentAnnotationsData(const ContentAnnotationsData&) = delete;
     ContentAnnotationsData& operator=(const ContentAnnotationsData&) = delete;
@@ -54,77 +44,42 @@ class AccessibilityAnnotatorBackend
     base::DictValue annotations;
   };
 
-  AccessibilityAnnotatorBackend(
-      history::HistoryService* history_service,
-      syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
-      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      const base::FilePath& db_path);
+  ~AccessibilityAnnotatorBackend() override = default;
 
-  ~AccessibilityAnnotatorBackend() override;
-
-  AccessibilityAnnotatorBackend(const AccessibilityAnnotatorBackend&) = delete;
-  AccessibilityAnnotatorBackend& operator=(
-      const AccessibilityAnnotatorBackend&) = delete;
-
-  // KeyedService implementation.
-  void Shutdown() override;
-
-  // Initializes the database at the given path. Must be called before any other
-  // methods.
-  void Init();
+  // Initializes the database. Must be called before any other methods.
+  virtual void Init() = 0;
 
   // Returns DataTypeControllerDelegate for the accessibility annotation
   // datatype.
-  base::WeakPtr<syncer::DataTypeControllerDelegate>
-  GetAccessibilityAnnotationControllerDelegate();
-
-  // AccessibilityAnnotationSyncBridge::Observer implementation.
-  void OnAccessibilityAnnotationChanged() override;
-  void OnAccessibilityAnnotationSyncBridgeLoaded() override;
-
-  // history::HistoryServiceObserver implementation.
-  void OnURLVisited(history::HistoryService* history_service,
-                    const history::VisitedURLInfo& visited_url_info) override;
-  void OnHistoryDeletions(history::HistoryService* history_service,
-                          const history::DeletionInfo& deletion_info) override;
-  void OnHistoryServiceLoaded(
-      history::HistoryService* history_service) override;
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetAccessibilityAnnotationControllerDelegate() = 0;
 
   // Reads from Content Annotations cache.
-  base::optional_ref<const ContentAnnotationsData>
-  GetContentAnnotationsCacheData(const GURL& url) const;
+  virtual base::optional_ref<const ContentAnnotationsData>
+  GetContentAnnotationsCacheData(const GURL& url) const = 0;
 
   // Writes to Content Annotations cache.
-  void SetContentAnnotationsCacheData(const GURL& url,
-                                      std::string page_title,
-                                      base::DictValue annotations);
+  virtual void SetContentAnnotationsCacheData(const GURL& url,
+                                              std::string page_title,
+                                              base::DictValue annotations) = 0;
 
   // Pulls cache data into a base::Value for use in the debug UI.
-  base::Value GetDebugUICacheData() const;
+  virtual base::Value GetDebugUICacheData() const = 0;
+
+  // Returns sync annotations from the sync bridge that match the given entity
+  // types.
+  virtual void GetSyncAnnotationsByTypes(
+      EntityTypeEnumSet types,
+      base::OnceCallback<
+          void(std::vector<sync_pb::AccessibilityAnnotationSpecifics>)>
+          callback) = 0;
 
   // Returns `accessibility_annotation_sync_bridge_`.
   // TODO(crbug.com/489492084): This is currently used by
   // `DirectServerEntityProvider` to directly observe the sync bridge. Remove
   // this method once `DirectServerEntityProvider` is deprecated and removed.
-  AccessibilityAnnotationSyncBridge* accessibility_annotation_sync_bridge();
-
- private:
-  const base::FilePath db_path_;
-  base::SequenceBound<AccessibilityAnnotatorDatabase> db_;
-  std::unique_ptr<AccessibilityAnnotationSyncBridge>
-      accessibility_annotation_sync_bridge_;
-
-  // Stores annotations keyed by the URL they are associated with. The cache
-  // size is `kContentAnnotatorMaxCacheAnnotations`. When the cache is full, the
-  // least recently used entry is evicted.
-  base::LRUCache<GURL, ContentAnnotationsData> content_annotations_cache_;
-
-  base::ScopedObservation<AccessibilityAnnotationSyncBridge,
-                          AccessibilityAnnotationSyncBridge::Observer>
-      sync_bridge_observation_{this};
-  base::ScopedObservation<history::HistoryService,
-                          history::HistoryServiceObserver>
-      history_service_observation_{this};
+  virtual AccessibilityAnnotationSyncBridge*
+  accessibility_annotation_sync_bridge() = 0;
 };
 
 }  // namespace accessibility_annotator

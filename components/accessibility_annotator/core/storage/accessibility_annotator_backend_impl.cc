@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 
 #include "base/containers/map_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notimplemented.h"
@@ -17,26 +18,13 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 
 namespace accessibility_annotator {
 
-AccessibilityAnnotatorBackend::ContentAnnotationsData::
-    ContentAnnotationsData() = default;
-
-AccessibilityAnnotatorBackend::ContentAnnotationsData::
-    ~ContentAnnotationsData() = default;
-
-AccessibilityAnnotatorBackend::ContentAnnotationsData::ContentAnnotationsData(
-    ContentAnnotationsData&& other) = default;
-
-AccessibilityAnnotatorBackend::ContentAnnotationsData&
-AccessibilityAnnotatorBackend::ContentAnnotationsData::operator=(
-    ContentAnnotationsData&& other) = default;
-
-AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
+AccessibilityAnnotatorBackendImpl::AccessibilityAnnotatorBackendImpl(
     history::HistoryService* history_service,
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
-    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     const base::FilePath& db_path)
     : db_path_(db_path),
       db_(base::ThreadPool::CreateSequencedTaskRunnerForResource(
@@ -44,22 +32,26 @@ AccessibilityAnnotatorBackend::AccessibilityAnnotatorBackend(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           db_path_)),
       content_annotations_cache_(kContentAnnotatorMaxCacheAnnotations.Get()) {
+  auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+      syncer::ACCESSIBILITY_ANNOTATION,
+      /*dump_stack=*/base::DoNothing());
   accessibility_annotation_sync_bridge_ =
       std::make_unique<AccessibilityAnnotationSyncBridge>(
-          std::move(change_processor), data_type_store_factory);
+          std::move(processor), data_type_store_factory);
   sync_bridge_observation_.Observe(accessibility_annotation_sync_bridge_.get());
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
 }
 
-AccessibilityAnnotatorBackend::~AccessibilityAnnotatorBackend() = default;
+AccessibilityAnnotatorBackendImpl::~AccessibilityAnnotatorBackendImpl() =
+    default;
 
-void AccessibilityAnnotatorBackend::Shutdown() {
+void AccessibilityAnnotatorBackendImpl::Shutdown() {
   history_service_observation_.Reset();
 }
 
-void AccessibilityAnnotatorBackend::Init() {
+void AccessibilityAnnotatorBackendImpl::Init() {
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::Init)
       .WithArgs(db_path_)
       .Then(base::BindOnce([](bool status) {
@@ -73,40 +65,41 @@ void AccessibilityAnnotatorBackend::Init() {
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
-AccessibilityAnnotatorBackend::GetAccessibilityAnnotationControllerDelegate() {
+AccessibilityAnnotatorBackendImpl::
+    GetAccessibilityAnnotationControllerDelegate() {
   return accessibility_annotation_sync_bridge_->change_processor()
       ->GetControllerDelegate();
 }
 
-void AccessibilityAnnotatorBackend::OnAccessibilityAnnotationChanged() {
+void AccessibilityAnnotatorBackendImpl::OnAccessibilityAnnotationChanged() {
   // TODO(crbug.com/486856790): Implement logic to handle changed annotations.
 }
 
-void AccessibilityAnnotatorBackend::
+void AccessibilityAnnotatorBackendImpl::
     OnAccessibilityAnnotationSyncBridgeLoaded() {
   // TODO(crbug.com/486856790): Implement logic to handle sync bridge loaded.
 }
 
-void AccessibilityAnnotatorBackend::OnURLVisited(
+void AccessibilityAnnotatorBackendImpl::OnURLVisited(
     history::HistoryService* history_service,
     const history::VisitedURLInfo& visited_url_info) {
   // TODO(crbug.com/489690454): Ingest new visit for intent clustering.
 }
 
-void AccessibilityAnnotatorBackend::OnHistoryDeletions(
+void AccessibilityAnnotatorBackendImpl::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   // TODO(crbug.com/489690454): Purge associated intents/clusters from the
   // persistent SQLite database.
 }
 
-void AccessibilityAnnotatorBackend::OnHistoryServiceLoaded(
+void AccessibilityAnnotatorBackendImpl::OnHistoryServiceLoaded(
     history::HistoryService* history_service) {
   // TODO(crbug.com/489690454): Query the history service for historical data.
 }
 
 base::optional_ref<const AccessibilityAnnotatorBackend::ContentAnnotationsData>
-AccessibilityAnnotatorBackend::GetContentAnnotationsCacheData(
+AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
     const GURL& url) const {
   auto it = content_annotations_cache_.Peek(url);
   if (it != content_annotations_cache_.end()) {
@@ -115,7 +108,7 @@ AccessibilityAnnotatorBackend::GetContentAnnotationsCacheData(
   return std::nullopt;
 }
 
-void AccessibilityAnnotatorBackend::SetContentAnnotationsCacheData(
+void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
     const GURL& url,
     std::string page_title,
     base::DictValue annotations) {
@@ -126,7 +119,7 @@ void AccessibilityAnnotatorBackend::SetContentAnnotationsCacheData(
   content_annotations_cache_.Put(url, std::move(data));
 }
 
-base::Value AccessibilityAnnotatorBackend::GetDebugUICacheData() const {
+base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
   base::ListValue result;
   for (const std::pair<GURL, ContentAnnotationsData>& item :
        content_annotations_cache_) {
@@ -139,8 +132,16 @@ base::Value AccessibilityAnnotatorBackend::GetDebugUICacheData() const {
   return base::Value(std::move(result));
 }
 
+void AccessibilityAnnotatorBackendImpl::GetSyncAnnotationsByTypes(
+    EntityTypeEnumSet types,
+    base::OnceCallback<void(
+        std::vector<sync_pb::AccessibilityAnnotationSpecifics>)> callback) {
+  std::move(callback).Run(
+      accessibility_annotation_sync_bridge_->GetAnnotationsByTypes(types));
+}
+
 AccessibilityAnnotationSyncBridge*
-AccessibilityAnnotatorBackend::accessibility_annotation_sync_bridge() {
+AccessibilityAnnotatorBackendImpl::accessibility_annotation_sync_bridge() {
   return accessibility_annotation_sync_bridge_.get();
 }
 

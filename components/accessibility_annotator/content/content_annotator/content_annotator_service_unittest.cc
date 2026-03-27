@@ -19,7 +19,7 @@
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -38,7 +38,6 @@
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/sync/test/data_type_store_test_util.h"
-#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -165,10 +164,9 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
         &page_content_extraction_service_.value());
 
     accessibility_annotator_backend_ =
-        std::make_unique<AccessibilityAnnotatorBackend>(
+        std::make_unique<AccessibilityAnnotatorBackendImpl>(
             /*history_service=*/nullptr,
             syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-            std::make_unique<syncer::MockDataTypeLocalChangeProcessor>(),
             temp_dir_.GetPath().Append(
                 FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
 

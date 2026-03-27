@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
-
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/types/optional_ref.h"
+#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/sync/test/data_type_store_test_util.h"
-#include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -27,17 +26,16 @@ class AccessibilityAnnotatorBackendTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    backend_ = std::make_unique<AccessibilityAnnotatorBackend>(
+    backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
         /*history_service=*/nullptr,
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-        std::make_unique<syncer::MockDataTypeLocalChangeProcessor>(),
         temp_dir_.GetPath().AppendASCII("TestDB"));
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<AccessibilityAnnotatorBackend> backend_;
+  std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend_;
 };
 
 TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {

@@ -6,8 +6,9 @@ source_set("storage") {
   sources = [
     "accessibility_annotation_sync_bridge.cc",
     "accessibility_annotation_sync_bridge.h",
-    "accessibility_annotator_backend.cc",
     "accessibility_annotator_backend.h",
+    "accessibility_annotator_backend_impl.cc",
+    "accessibility_annotator_backend_impl.h",
     "accessibility_annotator_database.cc",
     "accessibility_annotator_database.h",
     "intent_table.cc",
@@ -26,6 +27,23 @@ source_set("storage") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_accessibility_annotator_backend.cc",
+    "test_accessibility_annotator_backend.h",
+  ]
+
+  deps = [
+    ":storage",
+    "//base",
+    "//components/accessibility_annotator/core/data_models",
+    "//components/sync:test_support",
+    "//components/version_info",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -38,6 +56,7 @@ source_set("unit_tests") {
 
   deps = [
     ":storage",
+    ":test_support",
     "//base/test:test_support",
     "//components/sync:test_support",
     "//components/sync/model",

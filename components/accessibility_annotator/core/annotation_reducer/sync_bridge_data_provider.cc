@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type_util.h"
@@ -23,23 +24,25 @@ SyncBridgeDataProvider::~SyncBridgeDataProvider() = default;
 void SyncBridgeDataProvider::RetrieveAll(
     QueryIntentType type,
     base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {
-  AccessibilityAnnotationSyncBridge* bridge =
-      backend_->accessibility_annotation_sync_bridge();
-  if (!bridge) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  EntityTypeEnumSet types = GetEntityTypesForQueryIntentType(type);
-  std::vector<MemorySearchResult> results;
-  for (const sync_pb::AccessibilityAnnotationSpecifics& specifics :
-       bridge->GetAnnotationsByTypes(types)) {
-    std::optional<Entity> entity = CreateEntityFromSpecifics(specifics);
-    if (entity.has_value()) {
-      results.push_back(CreateResultFromEntity(type, *entity));
-    }
-  }
-  std::move(callback).Run(std::move(results));
+  backend_->GetSyncAnnotationsByTypes(
+      GetEntityTypesForQueryIntentType(type),
+      base::BindOnce(
+          [](QueryIntentType type,
+             base::OnceCallback<void(std::vector<MemorySearchResult>)> callback,
+             std::vector<sync_pb::AccessibilityAnnotationSpecifics>
+                 annotations) {
+            std::vector<MemorySearchResult> results;
+            for (const sync_pb::AccessibilityAnnotationSpecifics& specifics :
+                 annotations) {
+              std::optional<Entity> entity =
+                  CreateEntityFromSpecifics(specifics);
+              if (entity.has_value()) {
+                results.push_back(CreateResultFromEntity(type, *entity));
+              }
+            }
+            std::move(callback).Run(std::move(results));
+          },
+          type, std::move(callback)));
 }
 
 }  // namespace accessibility_annotator

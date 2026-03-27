@@ -32,7 +32,6 @@ source_set("impl") {
     "//chrome/browser/autofill",
     "//chrome/browser/history",
     "//chrome/browser/sync",
-    "//chrome/common:channel_info",
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/core/annotation_reducer",

@@ -12,13 +12,13 @@
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/accessibility_annotator/core/logging/accessibility_annotator_internals.mojom.h"
-#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/sync/test/data_type_store_test_util.h"
-#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content_annotator_internals {
@@ -54,12 +54,11 @@ class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
                 [](base::FilePath path, content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
                   return std::make_unique<
-                      accessibility_annotator::AccessibilityAnnotatorBackend>(
+                      accessibility_annotator::
+                          AccessibilityAnnotatorBackendImpl>(
                       /*history_service=*/nullptr,
                       syncer::DataTypeStoreTestUtil::
                           FactoryForInMemoryStoreForTest(),
-                      std::make_unique<
-                          syncer::MockDataTypeLocalChangeProcessor>(),
                       path.Append(
                           FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
                 },

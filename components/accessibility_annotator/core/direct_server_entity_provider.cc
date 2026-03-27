@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "components/accessibility_annotator/core/data_models/entity_converter.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 
@@ -36,23 +37,22 @@ void DirectServerEntityProvider::RemoveObserver(
 void DirectServerEntityProvider::GetEntities(
     EntityTypeEnumSet types,
     base::OnceCallback<void(std::vector<Entity>)> callback) {
-  auto* bridge = backend_->accessibility_annotation_sync_bridge();
-  if (!bridge) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  std::vector<sync_pb::AccessibilityAnnotationSpecifics> annotations =
-      bridge->GetAnnotationsByTypes(types);
-  std::vector<Entity> entities;
-  entities.reserve(annotations.size());
-  for (const auto& specifics : annotations) {
-    if (std::optional<Entity> entity = CreateEntityFromSpecifics(specifics)) {
-      entities.push_back(std::move(*entity));
-    }
-  }
-
-  std::move(callback).Run(std::move(entities));
+  backend_->GetSyncAnnotationsByTypes(
+      types, base::BindOnce(
+                 [](base::OnceCallback<void(std::vector<Entity>)> callback,
+                    std::vector<sync_pb::AccessibilityAnnotationSpecifics>
+                        annotations) {
+                   std::vector<Entity> entities;
+                   entities.reserve(annotations.size());
+                   for (const auto& specifics : annotations) {
+                     if (std::optional<Entity> entity =
+                             CreateEntityFromSpecifics(specifics)) {
+                       entities.push_back(std::move(*entity));
+                     }
+                   }
+                   std::move(callback).Run(std::move(entities));
+                 },
+                 std::move(callback)));
 }
 
 void DirectServerEntityProvider::OnAccessibilityAnnotationSyncBridgeLoaded() {
