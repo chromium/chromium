@@ -61,6 +61,12 @@ class CORE_EXPORT CSSGapDecorationUtils {
   static typename GapDataList<T>::GapDataVector GetExpandedGapDataList(
       const GapDataList<T>& gap_data_list);
 
+  // Expands a GapDataList<int> (rule widths) into a Vector<int> of exactly
+  // `gap_count` values, fully resolving all repeaters (including auto
+  // repeaters) based on the known number of gaps.
+  static Vector<int> GetExpandedWidths(const GapDataList<int>& gap_data_list,
+                                       wtf_size_t gap_count);
+
   static CSSValueList* GetExpandedCSSValueListForGapData(
       const CSSValueList& list,
       const StyleResolverState& state);
@@ -80,6 +86,18 @@ class CORE_EXPORT CSSGapDecorationUtils {
       const ComputedStyle& style,
       GapGeometry::ContainerType container_type,
       GridTrackSizingDirection direction);
+
+  // Determines if the segment at `intersection_index` within the gap at
+  // `gap_index` is visible based on `rule_visibility`.
+  static bool IsRuleSegmentVisible(GridTrackSizingDirection track_direction,
+                                   wtf_size_t gap_index,
+                                   wtf_size_t intersection_index,
+                                   RuleVisibilityItems rule_visibility,
+                                   const GapGeometry& gap_geometry);
+
+  // Returns true if any inset property in the given direction uses
+  // `overlap-join`.
+  static bool HasOverlapJoin(const ComputedStyle& style, bool is_column_gap);
 };
 
 }  // namespace blink

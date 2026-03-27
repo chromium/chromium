@@ -198,6 +198,17 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                           bool is_main_gap,
                           const Vector<GapIntersection>& intersections) const;
 
+  // Returns the cross-direction decoration width at the given intersection,
+  // used by `overlap-join` to determine how far the decoration should extend.
+  // Edge intersections border the container and have no crossing decoration, so
+  // they return 0.
+  LayoutUnit GetCrossDecorationWidthForIntersection(
+      wtf_size_t gap_index,
+      wtf_size_t intersection_index,
+      bool is_main_gap,
+      const Vector<GapIntersection>& intersections,
+      const Vector<int>& cross_decoration_widths) const;
+
   // Returns the base width used to resolve percentage inset values at the
   // intersection located at `intersection_index`. Edge intersections return 0.
   // For most interior intersections, this is the cross width at that point (via
@@ -274,7 +285,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                              const Vector<GapIntersection>& intersections,
                              bool is_column_gap,
                              bool is_main,
-                             LayoutUnit cross_width) const;
+                             bool has_joining_decoration,
+                             LayoutUnit cross_gap_width,
+                             LayoutUnit cross_decoration_width) const;
 
   LayoutUnit ComputeInsetStart(const ComputedStyle& style,
                                wtf_size_t gap_index,
@@ -282,7 +295,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                const Vector<GapIntersection>& intersections,
                                bool is_column_gap,
                                bool is_main,
-                               LayoutUnit cross_width) const;
+                               bool has_joining_decoration,
+                               LayoutUnit cross_gap_width,
+                               LayoutUnit cross_decoration_width) const;
 
  private:
   // Returns a list of intersection offsets for a main gap at `gap_index`. This
@@ -346,6 +361,17 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LayoutUnit ComputeEndOffsetForFlexCrossGap(wtf_size_t cross_gap_index,
                                              GridTrackSizingDirection direction,
                                              bool cross_gap_is_at_end) const;
+
+  // For `overlap-join`, computes the inset so the main-direction decoration
+  // extends to meet the far edge of the cross-direction decoration at each
+  // interior intersection. When `has_joining_decoration` is false (e.g. at edge
+  // intersections or when the adjacent segment is not visible), the inset is 0.
+  // At interior intersections the inset is negative, pulling the endpoint
+  // outward to the far edge of the cross decoration width.
+  LayoutUnit ComputeOverlapJoinInset(bool has_joining_decoration,
+                                     bool is_main,
+                                     LayoutUnit cross_gap_width,
+                                     LayoutUnit cross_decoration_width) const;
 
   // In flex it refers to the gap between flex items, and in grid it
   // refers to the column gutter size.

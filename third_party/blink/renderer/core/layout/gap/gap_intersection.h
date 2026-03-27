@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -43,6 +44,10 @@ struct ExtraIntersectionState {
   // Marks the open/close boundaries of overlap windows. `kNone` when the
   // intersection is not part of an overlap window.
   OverlapWindowState overlap_state = OverlapWindowState::kNone;
+
+  // For flex cross gap intersections, the index of the associated main gap.
+  // Absent (`std::nullopt`) for edge intersections that border the container.
+  std::optional<wtf_size_t> main_gap_index;
 };
 
 // Stores the offset of a gap intersection, along with optional
@@ -102,6 +107,22 @@ class CORE_EXPORT GapIntersection {
   void ResetOverlapState() {
     CHECK(extra_state_.has_value());
     extra_state_->overlap_state = OverlapWindowState::kNone;
+  }
+
+  bool HasMainGapIndex() const {
+    return extra_state_.has_value() && extra_state_->main_gap_index.has_value();
+  }
+
+  wtf_size_t GetMainGapIndex() const {
+    CHECK(HasMainGapIndex());
+    return extra_state_->main_gap_index.value();
+  }
+
+  void SetMainGapIndex(wtf_size_t index) {
+    if (!extra_state_.has_value()) {
+      extra_state_.emplace();
+    }
+    extra_state_->main_gap_index = index;
   }
 
  private:

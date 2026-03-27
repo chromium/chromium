@@ -70,21 +70,27 @@ LayoutUnit GapGeometry::ComputeInsetEnd(
     const Vector<GapIntersection>& intersections,
     bool is_column_gap,
     bool is_main,
-    LayoutUnit cross_width) const {
-  // Outset values are used to offset the end points of gap decorations.
+    bool has_joining_decoration,
+    LayoutUnit cross_gap_width,
+    LayoutUnit cross_decoration_width) const {
+  // Inset values are used to offset the end points of gap decorations.
   // Percentage values are resolved against the crossing gap width of the
   // intersection point.
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
-  if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
-                         is_main, intersections)) {
-    return ValueForLength(is_column_gap ? style.ColumnRuleEdgeInsetEnd()
-                                        : style.RowRuleEdgeInsetEnd(),
-                          cross_width);
-  } else {
-    return ValueForLength(is_column_gap ? style.ColumnRuleInteriorInsetEnd()
-                                        : style.RowRuleInteriorInsetEnd(),
-                          cross_width);
+  const bool is_edge =
+      IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
+                         is_main, intersections);
+  const Length& inset =
+      is_edge ? (is_column_gap ? style.ColumnRuleEdgeInsetEnd()
+                               : style.RowRuleEdgeInsetEnd())
+              : (is_column_gap ? style.ColumnRuleInteriorInsetEnd()
+                               : style.RowRuleInteriorInsetEnd());
+
+  if (inset.IsOverlapJoin()) {
+    return ComputeOverlapJoinInset(has_joining_decoration, is_main,
+                                   cross_gap_width, cross_decoration_width);
   }
+  return ValueForLength(inset, cross_gap_width);
 }
 
 LayoutUnit GapGeometry::ComputeInsetStart(
@@ -94,21 +100,49 @@ LayoutUnit GapGeometry::ComputeInsetStart(
     const Vector<GapIntersection>& intersections,
     bool is_column_gap,
     bool is_main,
-    LayoutUnit cross_width) const {
-  // Outset values are used to offset the end points of gap decorations.
+    bool has_joining_decoration,
+    LayoutUnit cross_gap_width,
+    LayoutUnit cross_decoration_width) const {
+  // Inset values are used to offset the end points of gap decorations.
   // Percentage values are resolved against the crossing gap width of the
   // intersection point.
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
-  if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
-                         is_main, intersections)) {
-    return ValueForLength(is_column_gap ? style.ColumnRuleEdgeInsetStart()
-                                        : style.RowRuleEdgeInsetStart(),
-                          cross_width);
-  } else {
-    return ValueForLength(is_column_gap ? style.ColumnRuleInteriorInsetStart()
-                                        : style.RowRuleInteriorInsetStart(),
-                          cross_width);
+  const bool is_edge =
+      IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
+                         is_main, intersections);
+  const Length& inset =
+      is_edge ? (is_column_gap ? style.ColumnRuleEdgeInsetStart()
+                               : style.RowRuleEdgeInsetStart())
+              : (is_column_gap ? style.ColumnRuleInteriorInsetStart()
+                               : style.RowRuleInteriorInsetStart());
+
+  if (inset.IsOverlapJoin()) {
+    return ComputeOverlapJoinInset(has_joining_decoration, is_main,
+                                   cross_gap_width, cross_decoration_width);
   }
+  return ValueForLength(inset, cross_gap_width);
+}
+
+LayoutUnit GapGeometry::ComputeOverlapJoinInset(
+    bool has_joining_decoration,
+    bool is_main,
+    LayoutUnit cross_gap_width,
+    LayoutUnit cross_decoration_width) const {
+  if (!has_joining_decoration) {
+    return LayoutUnit();
+  }
+
+  // For flex and multicol main-direction gaps, main gaps don't overlap with
+  // the cross gap, so resolve as -50% of the cross gap width.
+  if (is_main && (GetContainerType() == ContainerType::kFlex ||
+                  GetContainerType() == ContainerType::kMultiColumn)) {
+    return -cross_gap_width / 2;
+  }
+
+  // For grid and flex/multicol cross-direction gaps, cross gaps can overlap
+  // with main gap(s), so extend by half the cross gap width plus half the cross
+  // decoration width.
+  return (-cross_gap_width / 2) - (cross_decoration_width / 2);
 }
 
 void GapGeometry::SetContentInlineOffsets(LayoutUnit start_offset,
@@ -425,6 +459,10 @@ void GapGeometry::GenerateCrossIntersectionListForFlex(
   // 2. Its computed end offset (either a main gap or the container's
   // content-end edge)
   //
+  // Each intersection carries an optional `main_gap_index` that identifies its
+  // associated main gap. Edge intersections bordering the container remain
+  // `std::nullopt`.
+  //
   // See third_party/blink/renderer/core/layout/gap/README.md for more.
   intersections.ReserveInitialCapacity(2);
   CrossGap cross_gap = GetCrossGaps()[gap_index];
@@ -435,6 +473,38 @@ void GapGeometry::GenerateCrossIntersectionListForFlex(
   LayoutUnit end_offset_for_flex_cross_gap = ComputeEndOffsetForFlexCrossGap(
       gap_index, direction, cross_gap.EndsAtEdge());
   intersections.push_back(GapIntersection(end_offset_for_flex_cross_gap));
+
+  // Each flex cross gap intersection needs to know which main gap it borders
+  // so that `overlap-join` can look up the correct cross-direction decoration
+  // width. Edge intersections (those bordering the container edge) have no
+  // associated main gap and remain unset. For middle cross gaps, the start
+  // intersection borders the main gap that precedes the current flex line,
+  // while the end intersection borders the main gap that follows it. When the
+  // cross gap touches the last flex line, the start intersection references
+  // the final main gap.
+  const CrossGap::EdgeIntersectionState edge_state =
+      cross_gap.GetEdgeIntersectionState();
+
+  // Set `main_gap_index` for the start of the cross gap. For flex, there are
+  // always 2 intersections for each cross gap, one at the start and one at the
+  // end.
+  const bool is_start_edge =
+      edge_state == CrossGap::EdgeIntersectionState::kStart ||
+      edge_state == CrossGap::EdgeIntersectionState::kBoth;
+  if (!is_start_edge) {
+    intersections[0].SetMainGapIndex(
+        edge_state == CrossGap::EdgeIntersectionState::kEnd
+            ? GetMainGaps().size() - 1
+            : main_gap_running_index_ - 1);
+  }
+
+  // Set `main_gap_index` for the end of the cross gap.
+  const bool is_end_edge =
+      edge_state == CrossGap::EdgeIntersectionState::kEnd ||
+      edge_state == CrossGap::EdgeIntersectionState::kBoth;
+  if (!is_end_edge && main_gap_running_index_ != kNotFound) {
+    intersections[1].SetMainGapIndex(main_gap_running_index_);
+  }
 }
 
 void GapGeometry::GenerateCrossIntersectionListForMulticol(
@@ -566,6 +636,30 @@ bool GapGeometry::IsEdgeIntersection(
   }
 
   return false;
+}
+
+LayoutUnit GapGeometry::GetCrossDecorationWidthForIntersection(
+    wtf_size_t gap_index,
+    wtf_size_t intersection_index,
+    bool is_main_gap,
+    const Vector<GapIntersection>& intersections,
+    const Vector<int>& cross_decoration_widths) const {
+  if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
+                         is_main_gap, intersections)) {
+    return LayoutUnit();
+  }
+
+  const GapIntersection& intersection = intersections[intersection_index];
+
+  // For flex cross gaps, the intersection carries the associated main gap
+  // index directly, since cross gaps don't map 1:1 to main gaps by position.
+  if (intersection.HasMainGapIndex()) {
+    return LayoutUnit(cross_decoration_widths[intersection.GetMainGapIndex()]);
+  }
+
+  // For grid and multicol, interior intersection `i` corresponds to cross gap
+  // `i - 1`.
+  return LayoutUnit(cross_decoration_widths[intersection_index - 1]);
 }
 
 LayoutUnit GapGeometry::GetMaxInsetWidth(
