@@ -220,16 +220,22 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   auto iter =
       Cover(content_rect, max_contents_scale, GetIdealContentsScaleKey());
 
-  // We cannot do anything if the mask resource was not provided.
-  if (!iter || !*iter || !iter->resource()) {
+  // Mask resource not ready yet.
+  if (!iter || !*iter) {
     return;
   }
 
+  // Masks only supported if they fit on exactly one tile.
   DCHECK(iter.geometry_rect() == content_rect)
       << "iter rect " << iter.geometry_rect().ToString() << " content rect "
       << content_rect.ToString();
 
-  *resource_id = iter->resource()->resource_id;
+  auto resource_id_opt = iter->GetResourceId();
+  if (!resource_id_opt) {
+    return;
+  }
+
+  *resource_id = *resource_id_opt;
   *resource_size = iter->resource()->resource_size;
   gfx::SizeF requested_tile_size =
       gfx::SizeF(iter.CurrentTiling()->tile_size());

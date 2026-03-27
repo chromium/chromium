@@ -1013,14 +1013,13 @@ void PictureLayerImpl::GetContentsResourceId(
       << "iter rect " << iter.geometry_rect().ToString() << " content rect "
       << content_rect.ToString();
 
-  const TileDrawInfo& draw_info = iter->draw_info();
-  if (!draw_info.IsReadyToDraw() ||
-      draw_info.mode() != TileDrawInfo::RESOURCE_MODE) {
+  auto resource_id_opt = iter->GetResourceId();
+  if (!resource_id_opt) {
     return;
   }
 
-  *resource_id = draw_info.resource_id_for_export();
-  *resource_size = draw_info.resource_size();
+  *resource_id = *resource_id_opt;
+  *resource_size = iter->draw_info().resource_size();
   // |resource_uv_size| represents the range of UV coordinates that map to the
   // content being drawn. Typically, we draw to the entire texture, so these
   // coordinates are (1.0f, 1.0f). However, if we are rasterizing to an
@@ -1028,11 +1027,11 @@ void PictureLayerImpl::GetContentsResourceId(
   // texture being used.
   gfx::SizeF requested_tile_size =
       gfx::SizeF(iter->tiling()->tiling_data()->tiling_rect().size());
-  DCHECK_LE(requested_tile_size.width(), draw_info.resource_size().width());
-  DCHECK_LE(requested_tile_size.height(), draw_info.resource_size().height());
-  *resource_uv_size = gfx::SizeF(
-      requested_tile_size.width() / draw_info.resource_size().width(),
-      requested_tile_size.height() / draw_info.resource_size().height());
+  DCHECK_LE(requested_tile_size.width(), resource_size->width());
+  DCHECK_LE(requested_tile_size.height(), resource_size->height());
+  *resource_uv_size =
+      gfx::SizeF(requested_tile_size.width() / resource_size->width(),
+                 requested_tile_size.height() / resource_size->height());
 }
 
 void PictureLayerImpl::UpdateDirectlyCompositedImageFromRasterSource() {
