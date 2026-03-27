@@ -34,6 +34,8 @@ class DnsServerIterator;
 class DohDnsServerIterator;
 class HostCache;
 class HostResolverCache;
+class HttpResponseInfo;
+struct LoadTimingInternalInfo;
 class URLRequestContext;
 
 // Represents various states of the DoH auto-upgrade process.
@@ -165,11 +167,13 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   // Record the session source and connection info for a DoH attempt. Noop if
   // `session` is not the current session.
-  void RecordDohSessionStatus(size_t server_index,
-                              const DnsHTTPAttempt::DnsHttpAttemptInfo& info,
-                              base::TimeDelta rtt,
-                              int rv,
-                              const DnsSession* session);
+  void RecordDohSessionStatus(
+      size_t server_index,
+      const HttpResponseInfo& response_info,
+      const LoadTimingInternalInfo& internal_load_timing,
+      base::TimeDelta rtt,
+      int rv,
+      const DnsSession* session);
 
   // Return the period the next query should run before fallback to next
   // attempt. (Not actually a "timeout" because queries are not typically

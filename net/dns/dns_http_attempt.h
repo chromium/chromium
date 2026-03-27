@@ -40,13 +40,6 @@ class ResolveContext;
 class NET_EXPORT_PRIVATE DnsHTTPAttempt : public DnsAttempt,
                                           public URLRequest::Delegate {
  public:
-  // Information about an HTTP attempt.
-  struct DnsHttpAttemptInfo {
-    // Whether the request used an existing H2/H3 session.
-    std::optional<SessionSource> session_source;
-    // The coarse-grained protocol used to fetch the response.
-    HttpConnectionInfoCoarse connection_info;
-  };
 
   DnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
                  DnsSession* session,

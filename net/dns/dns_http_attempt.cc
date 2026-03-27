@@ -329,15 +329,8 @@ void DnsHTTPAttempt::StartAsync() {
 
 void DnsHTTPAttempt::ResponseCompleted(int net_error) {
   DCHECK(request_);
-  DnsHttpAttemptInfo attempt_info;
-  attempt_info.session_source =
-      request_->GetLoadTimingInternalInfo().session_source;
-  attempt_info.connection_info =
-      HttpConnectionInfoToCoarse(request_->response_info().connection_info);
-
-  request_.reset();
-
   int rv = CompleteResponse(net_error);
+
   // Skip DoH probe requests here since those are most likely to incur the cost
   // of establishing the encrypted tunnel to the DoH server and also don't have
   // an impact on page load time. Also ignore requests that aren't made in
@@ -346,9 +339,12 @@ void DnsHTTPAttempt::ResponseCompleted(int net_error) {
   if (!is_probe_ && resolve_context_ && session_ &&
       session_->config().secure_dns_mode == SecureDnsMode::kAutomatic) {
     resolve_context_->RecordDohSessionStatus(
-        server_index(), attempt_info, base::TimeTicks::Now() - start_time_, rv,
-        session_.get());
+        server_index(), request_->response_info(),
+        request_->GetLoadTimingInternalInfo(),
+        base::TimeTicks::Now() - start_time_, rv, session_.get());
   }
+
+  request_.reset();
   session_.reset();
   std::move(callback_).Run(rv);
 }

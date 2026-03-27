@@ -23,6 +23,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
@@ -41,6 +42,7 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/http/http_response_info.h"
 #include "net/socket/socket_test_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
@@ -1616,12 +1618,15 @@ TEST_F(ResolveContextTest, RecordDohSessionStatus) {
 
   base::HistogramTester histogram_tester;
 
-  DnsHTTPAttempt::DnsHttpAttemptInfo info;
-  info.session_source = SessionSource::kNew;
-  info.connection_info = HttpConnectionInfoCoarse::kHTTP2;
+  HttpResponseInfo response_info;
+  response_info.connection_info = HttpConnectionInfo::kHTTP2;
 
-  context.RecordDohSessionStatus(/*server_index=*/0u, info,
-                                 base::Milliseconds(100), OK, session.get());
+  LoadTimingInternalInfo load_timing;
+  load_timing.session_source = SessionSource::kNew;
+
+  context.RecordDohSessionStatus(/*server_index=*/0u, response_info,
+                                 load_timing, base::Milliseconds(100), OK,
+                                 session.get());
 
   histogram_tester.ExpectBucketCount(
       "Net.DNS.DnsTransaction.Other.Http2.SessionSource", SessionSource::kNew,
@@ -1630,11 +1635,11 @@ TEST_F(ResolveContextTest, RecordDohSessionStatus) {
       "Net.DNS.DnsTransaction.Other.Http2.New.SuccessTime",
       base::Milliseconds(100), 1);
 
-  info.session_source = SessionSource::kExisting;
-  info.connection_info = HttpConnectionInfoCoarse::kQUIC;
-  context.RecordDohSessionStatus(/*server_index=*/0u, info,
-                                 base::Milliseconds(50), ERR_FAILED,
-                                 session.get());
+  response_info.connection_info = HttpConnectionInfo::kQUIC_RFC_V1;
+  load_timing.session_source = SessionSource::kExisting;
+  context.RecordDohSessionStatus(/*server_index=*/0u, response_info,
+                                 load_timing, base::Milliseconds(50),
+                                 ERR_FAILED, session.get());
 
   histogram_tester.ExpectBucketCount(
       "Net.DNS.DnsTransaction.Other.Http3.SessionSource",
