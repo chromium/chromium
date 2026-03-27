@@ -23797,24 +23797,6 @@
             ]
         }
     ],
-    "WebAuthnOpportunisticRetrieval": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebAuthnOpportunisticRetrieval"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebContentsDiscard": [
         {
             "platforms": [
