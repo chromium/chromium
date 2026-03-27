@@ -157,6 +157,7 @@
 <translation id="1099070179078143183">为提供诈骗检测等功能，Chrome 可使用直接在您设备上运行的 AI 模型，而无需将您的数据发送到 Google 服务器。如果关闭此设置，这些功能可能无法正常运行。<ph name="BEGIN_LINK" />详细了解设备端 AI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">从“<ph name="DEVICE_NAME" />”复制的图片</translation>
 <translation id="1100504063505580045">当前图标</translation>
+<translation id="1101267749138963680">正在检查安全性…</translation>
 <translation id="1102759278139578486">无法下载主要节点标注文件。请稍后再试。</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">您将立即失去对此标签页分组的访问权限，并且该分组将从您的所有设备中删除</translation>
@@ -2894,6 +2895,7 @@
 <translation id="2979893796619951531">排除网站</translation>
 <translation id="2979966855249721010">系统可能会根据您的兴趣向您显示应用推荐、提示等</translation>
 <translation id="2981113813906970160">显示大号鼠标光标</translation>
+<translation id="2981728693230031897">使用 Gemini 总结此页面</translation>
 <translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
 <translation id="2983311431122838216">在 Google 搜索中的 AI 模式下提问</translation>
 <translation id="2983373101216420412">保护套的电池电量为 <ph name="PERCENTAGE" />%。</translation>
@@ -6019,6 +6021,7 @@
 <translation id="5183344263225877832">重置所有 HID 设备权限？</translation>
 <translation id="5184063094292164363">JavaScript 控制台(&amp;J)</translation>
 <translation id="5184209580557088469">已有票据使用此用户名</translation>
+<translation id="5184329579814168207">在 Chrome 中打开</translation>
 <translation id="5184662919967270437">正在更新设备</translation>
 <translation id="5185386675596372454">由于最新版的“<ph name="EXTENSION_NAME" />”需要更多权限，因此已将其停用。</translation>
 <translation id="5185500136143151980">未连接到互联网</translation>
@@ -6871,7 +6874,6 @@
 <translation id="5804241973901381774">权限</translation>
 <translation id="5804259315582798390">未能启用本地数据恢复功能</translation>
 <translation id="5805268472388605531">按住键盘按键即可查看重音符号和特殊字符</translation>
-<translation id="5805697420284793859">窗口管理器</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />，按 Enter 键即可删除文件</translation>
 <translation id="5806447147478173900">显示的网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（默认）</translation>
@@ -7030,7 +7032,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 处于离线状态</translation>
 <translation id="5911030830365207728">Google 翻译</translation>
 <translation id="5911497236110691522">若要切换到下一种输入法，请按 <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">快捷键查看器</translation>
 <translation id="5911545422157959623">在访客模式下无法使用书签</translation>
 <translation id="5914016309240354769">自然</translation>
 <translation id="5914724413750400082">模数（<ph name="MODULUS_NUM_BITS" />位）：
@@ -8168,7 +8169,6 @@
 <translation id="6723839827191551955">控制您正在投放的媒体</translation>
 <translation id="6723839937902243910">电源</translation>
 <translation id="6723946439672043591">选择其他资料</translation>
-<translation id="6725073593266469338">界面服务</translation>
 <translation id="6725206449694821596">互联网打印协议 (IPP)</translation>
 <translation id="6725970970008349185">每页显示的候选字词数</translation>
 <translation id="672609503628871915">了解一下新变化</translation>
@@ -10274,7 +10274,6 @@
 <translation id="8184288427634747179">改用“<ph name="AVATAR_NAME" />”</translation>
 <translation id="8184318863960255706">更多信息</translation>
 <translation id="8184472985242519288">均匀</translation>
-<translation id="8185614942934189676">邮箱已自动验证</translation>
 <translation id="8186013737729037962">详细了解由企业注册的设备</translation>
 <translation id="8186047833733689201">已打开变音符号菜单。按向左键、向右键或数字键可浏览，按 Enter 键可插入。</translation>
 <translation id="8186609076106987817">服务器找不到该文件。</translation>
@@ -10640,7 +10639,6 @@
 <translation id="8428634594422941299">知道了</translation>
 <translation id="84297032718407999">您将在 <ph name="LOGOUT_TIME_LEFT" />后退出登录</translation>
 <translation id="8429928917752180743">“<ph name="EXTENSION_NAME" />”的更多选项</translation>
-<translation id="8431190899827883166">显示点按操作反馈</translation>
 <translation id="843173223122814223">利用 AI 创建背景</translation>
 <translation id="8431977087510901105">光标设置已重置</translation>
 <translation id="8434109185104929038">阅读角</translation>

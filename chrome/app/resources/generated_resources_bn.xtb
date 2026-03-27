@@ -6047,6 +6047,7 @@
 <translation id="5183344263225877832">সব HID ডিভাইসের অনুমতি রিসেট করবেন?</translation>
 <translation id="5184063094292164363">&amp;JavaScript কনসোল</translation>
 <translation id="5184209580557088469">এই ইউজারনেমের একটি টিকিট আগে থেকেই আছে</translation>
+<translation id="5184329579814168207">Chrome এ খুলুন</translation>
 <translation id="5184662919967270437">আপনার ডিভাইস আপডেট করা হচ্ছে</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />"-এর নতুনতম ভার্সনটি বন্ধ হয়েছে কারণ এটির আরও বেশি অনুমতির প্রয়োজন৷</translation>
 <translation id="5185500136143151980">ইন্টারনেট কানেকশন নেই</translation>
@@ -6903,7 +6904,6 @@
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="5804259315582798390">স্থানীয় ডেটা রিকভারি চালু করা যায়নি</translation>
 <translation id="5805268472388605531">অ্যাকসেন্ট চিহ্ন এবং বিশেষ অক্ষর দেখতে কীবোর্ড কী প্রেস করে ধরে থাকুন</translation>
-<translation id="5805697420284793859">উইন্ডো ম্যানেজার</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> ফাইল মুছে ফেলতে Enter প্রেস করুন</translation>
 <translation id="5806447147478173900">দেখানো সাইটগুলি মোট যতটা স্টোরেজ ব্যবহার করেছে: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">০° (ডিফল্ট)</translation>
@@ -7062,7 +7062,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> এখন অফলাইন</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">পরের ইনপুট পদ্ধতিতে পরিবর্তন করতে, <ph name="KEY_CODES" />প্রেস করুন</translation>
-<translation id="5911533659001334206">শর্টকাট ভিউয়ার</translation>
 <translation id="5911545422157959623">অতিথি মোডে বুকমার্ক উপলভ্য নয়</translation>
 <translation id="5914016309240354769">নেচার</translation>
 <translation id="5914724413750400082">মডিউলস (<ph name="MODULUS_NUM_BITS" /> বিট):
@@ -8203,7 +8202,6 @@
 <translation id="6723839827191551955">আপনার কাস্ট করা মিডিয়াকে নিয়ন্ত্রণ করুন</translation>
 <translation id="6723839937902243910">পাওয়ার</translation>
 <translation id="6723946439672043591">অন্য প্রোফাইল বেছে নিন</translation>
-<translation id="6725073593266469338">UI পরিষেবা</translation>
 <translation id="6725206449694821596">ইন্টারনেট প্রিন্ট প্রোটোকল (IPP)</translation>
 <translation id="6725970970008349185">পৃষ্ঠা প্রতি প্রদর্শিত প্রার্থীর সংখ্যা</translation>
 <translation id="672609503628871915">নতুন কী আছে দেখুন</translation>
@@ -10309,7 +10307,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> এ পাল্টান</translation>
 <translation id="8184318863960255706">আরও তথ্য</translation>
 <translation id="8184472985242519288">সব জায়গায় একরকম</translation>
-<translation id="8185614942934189676">ইমেল অটোমেটিক যাচাই করা হয়েছে</translation>
 <translation id="8186013737729037962">এন্টারপ্রাইজের জন্য এনরোল করা ডিভাইস সম্পর্কে আরও জানুন</translation>
 <translation id="8186047833733689201">'অ্যাক্সেন্ট মার্ক' মেনু খোলা আছে। নেভিগেট করার জন্য বাঁদিকের তীর চিহ্ন, ডানদিকের তীর চিহ্ন অথবা নাম্বার 'কী' প্রেস করুন এবং ইনসার্ট করার জন্য Enter প্রেস করুন।</translation>
 <translation id="8186609076106987817">সার্ভার ফাইলটি খুঁজে পায়নি৷</translation>
@@ -10675,7 +10672,6 @@
 <translation id="8428634594422941299">বুঝেছি</translation>
 <translation id="84297032718407999">আপনি <ph name="LOGOUT_TIME_LEFT" />-এ সাইন-আউট হয়ে যাবেন</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" />-এর জন্য আরও বিকল্প</translation>
-<translation id="8431190899827883166">ট্যাপগুলি দেখুন</translation>
 <translation id="843173223122814223">AI-এর সাহায্যে ব্যাকগ্রাউন্ড তৈরি করুন</translation>
 <translation id="8431977087510901105">কার্সর সেটিংস রিসেট করা হয়েছে</translation>
 <translation id="8434109185104929038">রিডিং নুক</translation>

@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Wähle die Konten aus, die du in eine andere App exportieren möchtest.</translation>
 <translation id="1506061864768559482">Suchmaschine</translation>
 <translation id="1506063256525392513">Dadurch kannst du Fotos aufnehmen und hochladen und QR-Codes scannen</translation>
+<translation id="1506733063065214205">MLS-Client in RCS</translation>
 <translation id="1508263560970797965">Im Inkognitomodus fortfahren</translation>
 <translation id="1509486075633541495">Auf der Website anmelden</translation>
 <translation id="1513858653616922153">Passwort löschen</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Gruppe freigeben</translation>
 <translation id="2673508731173059946">Kopierten Link aufrufen</translation>
 <translation id="2679659833697380">Deine Informationen werden auf deinem Gerät gespeichert</translation>
+<translation id="2681572445246787428">Dokumentsignierung</translation>
 <translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
 <translation id="2691653761409724435">Nicht offline verfügbar</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="4302061870579014542">Positionieren</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
+<translation id="4306349443295056740">OCSP-Signierung</translation>
 <translation id="4309403553630140242">Für weitere Informationen doppeltippen</translation>
 <translation id="4310738531374808763">Startseite anpassen</translation>
 <translation id="4320848494125124980">Zuletzt verwendet</translation>
 <translation id="4322394346347055525">Andere Tabs schließen</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Benachrichtigungen aktivieren</translation>
 <translation id="4326912346867677256">Tippe auf „Passwort verwenden“, um dich sicher anzumelden.</translation>
 <translation id="4327017157997423717">Preis beobachten für <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">Um auf all deinen Geräten auf deine Lesezeichen zugreifen zu können, musst du in den Einstellungen die Option „Lesezeichen“ aktivieren.</translation>
 <translation id="4746926359847517643">Du kannst sie jederzeit im Verlauf wiederherstellen.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} Karte importiert}other{{count} Karten importiert}}</translation>
+<translation id="4749924365937394956">Serverauthentifizierung</translation>
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
 <translation id="4752348350801431746">„Sicherheitscheck“-Benachrichtigungen deaktivieren…</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -1390,12 +1395,14 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="598634819525651074">Bereich</translation>
 <translation id="5988097621740394599">Du siehst Preisnachlässe auf deinen Tabs.</translation>
 <translation id="5988851877894965432">URLs in Chrome öffnen</translation>
+<translation id="599343768974649785">Nicht jugendfreie Texte</translation>
 <translation id="6006672969046233841">Neuer Tab</translation>
 <translation id="6011308810877101166">Suchvorschläge verbessern</translation>
 <translation id="6012140227487808125">Wird verschlüsselt…</translation>
 <translation id="6027619584715411062">Melde dich an, um deine Lesezeichen, Passwörter und mehr auf allen deinen Geräten abrufen zu können.</translation>
 <translation id="6027945736510816438">Meintest du <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">neue Funktion</translation>
+<translation id="6037458223703682108">Digitale Signatur</translation>
 <translation id="6038823991892265570">Google-Speicherplatz verwalten</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -1539,6 +1546,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6476800141292307438">Die Seite wird in die Sprache <ph name="LANGUAGE" /> übersetzt. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="647867789226964031">Passwörter ändern</translation>
+<translation id="6480363549849064919">Clientauthentifizierung</translation>
 <translation id="6494931198667773526">Ende</translation>
 <translation id="6503077044568424649">Meistbesucht</translation>
 <translation id="6503763061813913607">„Sicherheitscheck“-Benachrichtigungen</translation>
@@ -1584,6 +1592,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6619015782482868078">Aquamarinfarbenes Design</translation>
 <translation id="6620279676667515405">Abbrechen</translation>
 <translation id="6625830436658400045">Deine Synchronisierungseinstellungen werden auf Grundlage deiner letzten Sicherung wiederhergestellt. In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du auswählen, was synchronisiert werden soll.</translation>
+<translation id="6626281667717553020">CPS-URI</translation>
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
 <translation id="6629759408545977279">Von: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Dank zusätzlicher Schutzmaßnahmen kannst du dich besser vor Onlinebedrohungen schützen.</translation>
@@ -2148,6 +2157,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8614671330774943747">Zum Tab-Wechsler</translation>
 <translation id="862367213447108001">Pop-ups auf dieser Website immer anzeigen</translation>
 <translation id="8625706492572042370">Startbildschirm bearbeiten</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Gesperrte Inkognitotabs</translation>
 <translation id="8633025649649592204">Letzte Aktivität</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
@@ -2334,6 +2344,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="942624946817804130">Exportieren</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="94870150074703282">Gruppe löschen?</translation>
+<translation id="951090530321144895">Zertifizierungsstellen</translation>
 <translation id="952704832371081537">Abbrechen</translation>
 <translation id="95332591904104970">Verbundene Apps</translation>
 <translation id="954667170699278022">Leseliste</translation>

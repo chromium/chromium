@@ -917,6 +917,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2400600116338235695">Darf nachfragen, wenn sie eine Verbindung mit seriellen Ports herstellen möchte</translation>
 <translation id="2403474027143565107">Genau</translation>
 <translation id="240450251994300576">Logo der sekundären Kopfzeile</translation>
+<translation id="2404715426538856682">Kredit- und Debitkarten · IBANs · Kundenkarten</translation>
 <translation id="2404884497378469141">Versuche noch einmal, deine Dateien zu kopieren</translation>
 <translation id="2413155254802890957">Alt</translation>
 <translation id="2413528052993050574">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wurde möglicherweise widerrufen. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
@@ -2166,6 +2167,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4340810192899866471">Aus JSON importieren</translation>
 <translation id="4340982228985273705">Dieser Computer wird nicht als von einem Unternehmen verwaltet erkannt, sodass nur Erweiterungen, die im Chrome Web Store gehostet sind, automatisch durch die Richtlinie installiert werden können. Die Update-URL des Chrome Web Store lautet "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Freizeitparks</translation>
+<translation id="4346670990181948854">Reiseinformationen · Fahrzeuge</translation>
 <translation id="4348834659292907206">Die Verbindung zu <ph name="SITE" /> ist nicht sicher</translation>
 <translation id="4349365535725594680">Vertrauliche Inhalte können nicht freigegeben werden</translation>
 <translation id="4349810866125026513">Trotzdem hochladen</translation>
@@ -2954,6 +2956,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5596939519753369075">2 × 3,5 Zoll</translation>
 <translation id="5597254438174353289">Blau 3</translation>
+<translation id="5600044805561809264">Während du im Internet surfst, kannst du ganz einfach Fragen zu den Tabs stellen, die du gerade teilst.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> oder <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Verwaltung wird nicht unterstützt.</translation>
 <translation id="5605249000617390290">Weitere Informationen zum Preis-Tracking</translation>
@@ -3048,6 +3051,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5752519522101347518">Website zur Bankbestätigung wird geladen</translation>
 <translation id="5753570386948603678">Aus Verlauf löschen</translation>
 <translation id="5759751709240058861">Kamera verwenden und bewegen</translation>
+<translation id="5762131895127128324">Führerscheine · Personalausweise · Reisepässe</translation>
 <translation id="5763042198335101085">Gib eine gültige E-Mail-Adresse ein</translation>
 <translation id="5764725887548570807">Ungültiges Quellenformat.</translation>
 <translation id="5764920692828389743">An <ph name="EMAIL_ADDRESS" /> senden</translation>
@@ -3985,6 +3989,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7220786058474068424">Verarbeitung läuft</translation>
 <translation id="7221855153210829124">Benachrichtigungen anzeigen</translation>
 <translation id="722454870747268814">Neuer Inkognitotab</translation>
+<translation id="7225676267118764980">Autofill-Anbieter und andere Einstellungen ändern</translation>
 <translation id="7226892411756387078">Nur-Text</translation>
 <translation id="7227293336683593977">Preisentwicklung</translation>
 <translation id="7228306718910595403">Status „EU-qualifiziert“</translation>

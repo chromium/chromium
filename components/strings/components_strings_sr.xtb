@@ -763,6 +763,7 @@
 <translation id="2188375229972301266">Вишеструко бушење на дну</translation>
 <translation id="218940509700321686">Вредности раздвојене зарезима</translation>
 <translation id="2190094353033916816">Ове смернице имају различите вредности које се примењују на нивоу уређаја и корисника. Смернице функционишу како треба.</translation>
+<translation id="219061769324072544">Кредитна,картица,дебитна</translation>
 <translation id="2191980191135734720">Откључајте екран у следећем кораку, обично помоћу отиска прста. Можете и да <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Шта треба имати у виду</translation>
 <translation id="2195729137168608510">Заштита е-поште</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3134859781443140237">Локална мрежа</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Претражите ставку <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{None}=1{подаци за пријављивање за 1 налог}one{подаци за пријављивање за # налог}few{подаци за пријављивање за # налога}other{подаци за пријављивање за # налога}}</translation>
+<translation id="3139503241401248626">Да бисте омогућили ова подешавања и користили информације са Google налога, идите у подешавања услуга аутоматског попуњавања.</translation>
 <translation id="3140646734028448730">Пословне услуге</translation>
 <translation id="3141093262818886744">Ипак отвори</translation>
 <translation id="3141337053413339205">Пређите на ову картицу</translation>
@@ -2300,6 +2302,7 @@
 <translation id="4594403342090139922">&amp;Опозови брисање</translation>
 <translation id="4598556348158889687">Управљање меморијским простором</translation>
 <translation id="459914240367517409">Веб-дизајн и програмирање</translation>
+<translation id="4599572944836204718">Плаћајте брже помоћу Google Pay-а уз сачувану картицу. Детаљи о картици се шифрују у Google новчанику.</translation>
 <translation id="4602465984861132303">Куглање</translation>
 <translation id="4603727370377253901">Резервације летова</translation>
 <translation id="4607608436550361748">Прикажи Chrome савете</translation>
@@ -2589,6 +2592,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, притисните Tab да бисте видели још пречица за претрагу које су доступне после овог предлога за претрагу</translation>
 <translation id="5052488928733955073">Проблем при попуњавању информација. Проверите везу.</translation>
 <translation id="5052517576853118371">Активне теме</translation>
+<translation id="5053116470141135293">Број виртуелне картице ће бити попуњен приликом плаћања овом картицом ради заштите стварних података. Управљајте у Google новчанику. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Да бисте послали овај фајл помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}one{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}few{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}other{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}}</translation>
 <translation id="5056587122125565772">Направи слику</translation>
 <translation id="505757197798929356">Наведите разлог за отварање (обавезно)</translation>
@@ -2958,6 +2962,7 @@
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5596939519753369075">2×3,5 in</translation>
 <translation id="5597254438174353289">Плава 3</translation>
+<translation id="5600044805561809264">Док прегледате можете лако да постављате питања о картицама које делите.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> или <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Управљање није подржано</translation>
 <translation id="5605249000617390290">Сазнајте више о праћењу цена</translation>
@@ -3363,6 +3368,7 @@
 <translation id="6250932670816326647">Производи за купање и негу тела</translation>
 <translation id="6251906504834538140">{0,plural, =1{Премештање фајла је блокирано}one{Премештање <ph name="FILE_COUNT" /> фајла је блокирано}few{Премештање <ph name="FILE_COUNT" /> фајла је блокирано}other{Премештање <ph name="FILE_COUNT" /> фајлова је блокирано}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали фајловима које сте преузели у Chrome-у</translation>
+<translation id="6253380015872250643">Сачувајте картицу у Google новчанику</translation>
 <translation id="6254436959401408446">Нема довољно меморије за отварање ове странице</translation>
 <translation id="625463612687472648">Опозови дозволу</translation>
 <translation id="6259156558325130047">&amp;Понови промену редоследа</translation>
@@ -4260,6 +4266,7 @@
 <translation id="7615932826417658001">Додајте идентификациони документ</translation>
 <translation id="7616390733770379387">Приказују се насумичним редоследом.</translation>
 <translation id="7616645509853975347">Администратор је укључио Chrome Enterprise Connectors у прегледачу. Ови прикључци имају приступ неким вашим подацима.</translation>
+<translation id="7616747402308801775">Ова картица се чува у Google новчанику да бисте могли да је користите у свим Google услугама.</translation>
 <translation id="7617825962482469577">Коверта C7/C6</translation>
 <translation id="7618270539713451657">Борилачке вештине</translation>
 <translation id="7619838219691048931">Последњи лист</translation>
@@ -4582,6 +4589,7 @@
 <translation id="8120720167840853945">Ове смернице не контролишу подразумевано понашање других смерница.</translation>
 <translation id="8127301229239896662">Софтвер „<ph name="SOFTWARE_NAME" />“ није правилно инсталиран на рачунару или мрежи. Затражите од ИТ администратора да реши овај проблем.</translation>
 <translation id="8130113808541743942">Преместите у…</translation>
+<translation id="813024282736408069">Укључите виртуелну картицу за аутоматско попуњавање</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8133495915926741232">Одаберите широке категорије тема које могу да се користе за персонализацију огласа. Ако искључите ширу категорију, блокираћете и сродне теме. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Запошљавање и избор кадрова</translation>

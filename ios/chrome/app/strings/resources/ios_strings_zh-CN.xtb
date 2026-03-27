@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">选择要导出到其他应用的账号。</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1506063256525392513">这样您就能拍摄并上传照片，还能扫描二维码</translation>
+<translation id="1506733063065214205">RCS MLS 客户端</translation>
 <translation id="1508263560970797965">继续使用无痕模式</translation>
 <translation id="1509486075633541495">登录网站</translation>
 <translation id="1513858653616922153">删除密码</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">共享分组</translation>
 <translation id="2673508731173059946">访问复制的链接</translation>
 <translation id="2679659833697380">您的信息会保存到您的设备上</translation>
+<translation id="2681572445246787428">文档签名</translation>
 <translation id="2688535388040882469">横幅</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{向分组中添加标签页}other{向分组中添加标签页}}</translation>
 <translation id="4302061870579014542">设置位置</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
+<translation id="4306349443295056740">OCSP 签名</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
 <translation id="4310738531374808763">自定义首页</translation>
 <translation id="4320848494125124980">最近用过</translation>
 <translation id="4322394346347055525">关闭其他标签页</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">开启通知</translation>
 <translation id="4326912346867677256">点按“使用密码”安全登录。</translation>
 <translation id="4327017157997423717">跟踪<ph name="PRODUCT_NAME" />的价格，<ph name="PRICE" />，<ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">若要将书签同步到所有设备上，请在设置中开启“书签”。</translation>
 <translation id="4746926359847517643">您随时可以从历史记录中重新打开这些标签页。</translation>
 <translation id="4749529195026091676">{count,plural, =1{已导入 {count} 张卡}other{已导入 {count} 张卡}}</translation>
+<translation id="4749924365937394956">服务器身份验证</translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
 <translation id="4752348350801431746">关闭安全检查通知…</translation>
 <translation id="4759238208242260848">下载内容</translation>
@@ -1390,12 +1395,14 @@
 <translation id="598634819525651074">面积</translation>
 <translation id="5988097621740394599">查看您打开的标签页上的降价商品。</translation>
 <translation id="5988851877894965432">在 Chrome 中打开网址</translation>
+<translation id="599343768974649785">明确文本</translation>
 <translation id="6006672969046233841">打开新的标签页</translation>
 <translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6012140227487808125">正在加密…</translation>
 <translation id="6027619584715411062">登录后即可在任何设备上使用您的书签、密码等信息。</translation>
 <translation id="6027945736510816438">您是想访问 <ph name="WEBSITE" /> 吧？</translation>
 <translation id="6032845897905314562">新功能</translation>
+<translation id="6037458223703682108">数字签名</translation>
 <translation id="6038823991892265570">管理 Google 存储空间</translation>
 <translation id="6039429417015973673">标题：<ph name="TITLE" />；发布者：<ph name="PUBLISHER_INFORMATION" />；发布日期：<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -1539,6 +1546,7 @@
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
 <translation id="647867789226964031">建议更改密码</translation>
+<translation id="6480363549849064919">客户端身份验证</translation>
 <translation id="6494931198667773526">结束日期</translation>
 <translation id="6503077044568424649">常去网站</translation>
 <translation id="6503763061813913607">安全检查通知</translation>
@@ -1584,6 +1592,7 @@
 <translation id="6619015782482868078">湖水绿色主题</translation>
 <translation id="6620279676667515405">取消</translation>
 <translation id="6625830436658400045">系统将根据上次备份来恢复您的同步设置。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6629759408545977279">下载触发者：<ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">再添一层安全保障，防范在线威胁。</translation>
@@ -2148,6 +2157,7 @@
 <translation id="8614671330774943747">打开标签页切换器</translation>
 <translation id="862367213447108001">始终允许此网站显示弹出式窗口</translation>
 <translation id="8625706492572042370">修改主屏幕</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">锁定无痕式标签页</translation>
 <translation id="8633025649649592204">近期活动</translation>
 <translation id="8636825310635137004">要访问您从其他设备打开的标签页，请开启同步功能。</translation>
@@ -2334,6 +2344,7 @@
 <translation id="942624946817804130">导出</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="94870150074703282">要删除分组吗？</translation>
+<translation id="951090530321144895">CA 证书颁发者</translation>
 <translation id="952704832371081537">取消</translation>
 <translation id="95332591904104970">关联的应用</translation>
 <translation id="954667170699278022">阅读清单</translation>

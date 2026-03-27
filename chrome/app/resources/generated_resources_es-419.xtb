@@ -157,6 +157,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1099070179078143183">Para potenciar funciones como la detección de estafas, Chrome puede usar modelos de IA que se ejecutan directamente en tu dispositivo sin enviar tus datos a los servidores de Google. Si desactivas esta opción, es posible que estas funciones no tengan un comportamiento adecuado. <ph name="BEGIN_LINK" />Más información sobre la IA integrada en el dispositivo<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Imagen copiada de <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Ícono actual</translation>
+<translation id="1101267749138963680">Verificando la seguridad…</translation>
 <translation id="1102759278139578486">No se pueden descargar los archivos de anotaciones de nodos principales. Vuelve a intentarlo más tarde.</translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Perderás de inmediato el acceso a este grupo de pestañas y se borrará de todos tus dispositivos</translation>
@@ -2899,6 +2900,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2979893796619951531">Excluir sitio</translation>
 <translation id="2979966855249721010">Según tus intereses, es posible que veas recomendaciones de apps, sugerencias y mucho más</translation>
 <translation id="2981113813906970160">Mostrar cursor del mouse grande</translation>
+<translation id="2981728693230031897">Resumir esta página con Gemini</translation>
 <translation id="2983102365694924129">Según tu actividad en un sitio. Esta configuración está desactivada.</translation>
 <translation id="2983311431122838216">Preguntarle al Modo IA en la Búsqueda de Google</translation>
 <translation id="2983373101216420412">Nivel de batería de la funda <ph name="PERCENTAGE" />%.</translation>
@@ -6028,6 +6030,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5183344263225877832">¿Quieres restablecer todos los permisos de dispositivos HID?</translation>
 <translation id="5184063094292164363">&amp;Consola de JavaScript</translation>
 <translation id="5184209580557088469">Ya existe un ticket para este nombre de usuario</translation>
+<translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5184662919967270437">Actualizando tu dispositivo</translation>
 <translation id="5185386675596372454">Se ha desactivado la versión más reciente de "<ph name="EXTENSION_NAME" />" porque requiere más permisos.</translation>
 <translation id="5185500136143151980">No hay conexión a Internet</translation>
@@ -6883,7 +6886,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">No se pudo habilitar la recuperación de datos locales</translation>
 <translation id="5805268472388605531">Mantén presionadas las teclas para ver acentos y caracteres especiales</translation>
-<translation id="5805697420284793859">Administrador de ventanas</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> presiona Intro para borrar el archivo</translation>
 <translation id="5806447147478173900">Almacenamiento total que usan los sitios que se muestran: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (predeterminado)</translation>
@@ -7042,7 +7044,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está sin conexión</translation>
 <translation id="5911030830365207728">Google Traductor</translation>
 <translation id="5911497236110691522">Para cambiar al siguiente método de entrada, presiona <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Visualizador de combinaciones de teclas</translation>
 <translation id="5911545422157959623">Los favoritos no están disponibles en el modo de invitado</translation>
 <translation id="5914016309240354769">Naturaleza</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
@@ -8181,7 +8182,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6723839827191551955">Controla el contenido multimedia que transmites.</translation>
 <translation id="6723839937902243910">Alimentación</translation>
 <translation id="6723946439672043591">Elegir otro perfil</translation>
-<translation id="6725073593266469338">Servicio de IU</translation>
 <translation id="6725206449694821596">Protocolo de impresión por Internet (IPP)</translation>
 <translation id="6725970970008349185">Cantidad de candidatos para mostrar por página</translation>
 <translation id="672609503628871915">Novedades</translation>
@@ -10287,7 +10287,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8184288427634747179">Cambiar a <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Más información</translation>
 <translation id="8184472985242519288">Uniforme</translation>
-<translation id="8185614942934189676">El correo electrónico se verificó automáticamente</translation>
 <translation id="8186013737729037962">Más información sobre los dispositivos con inscripción empresarial</translation>
 <translation id="8186047833733689201">Se abrió el menú de tildes. Presiona las teclas de número, flecha hacia la izquierda o flecha hacia la derecha para navegar; presiona Intro para insertarlas.</translation>
 <translation id="8186609076106987817">El servidor no pudo encontrar el archivo.</translation>
@@ -10653,7 +10652,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8428634594422941299">Entendido</translation>
 <translation id="84297032718407999">Saldrás de la cuenta en <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Más opciones para <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Mostrar presiones</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
 <translation id="8431977087510901105">Se restableció la configuración del cursor</translation>
 <translation id="8434109185104929038">Rincón de lectura</translation>

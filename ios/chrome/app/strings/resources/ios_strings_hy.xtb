@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Ընտրեք հաշիվները, որոնք ուզում եք արտահանել այլ հավելված։</translation>
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1506063256525392513">Սա անհրաժեշտ է լուսանկարներ անելու և վերբեռնելու, ինչպես նաև QR կոդեր սկանավորելու համար</translation>
+<translation id="1506733063065214205">RCS MLS սպասառու</translation>
 <translation id="1508263560970797965">Շարունակել ինկոգնիտո ռեժիմում</translation>
 <translation id="1509486075633541495">Մտեք հաշիվ</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Ուղարկել խումբը</translation>
 <translation id="2673508731173059946">Անցնել պատճենված հղումով</translation>
 <translation id="2679659833697380">Տեղեկությունները պահվում են ձեր սարքում</translation>
+<translation id="2681572445246787428">Փաստաթղթերի ստորագրում</translation>
 <translation id="2688535388040882469">Ազդերիզներ</translation>
 <translation id="2690858294534178585">Ֆոտոխցիկն օգտագործվում է</translation>
 <translation id="2691653761409724435">Հասանելի չէ անցանց ռեժիմում</translation>
@@ -825,6 +827,7 @@
 <translation id="3997522473364371632">Ադմինիստրատորն արգելել է գաղտնաբառերի փոխանցումը</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4004204301268239848">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում։</translation>
+<translation id="4007463141047732631">Փոփոխել խումբը</translation>
 <translation id="4011489366247192265">Բնագիր</translation>
 <translation id="4017599800655151880">Մանրապատկեր</translation>
 <translation id="4018440314314549819">Պահված գաղտնաբառերի ինքնալրացում</translation>
@@ -905,10 +908,12 @@
 <translation id="429074084062258019">{count,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիր խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
 <translation id="4302061870579014542">Ընտրել դիրքը</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
+<translation id="4306349443295056740">OCSP ստորագրում</translation>
 <translation id="4309403553630140242">Կրկնակի հպեք՝ լրացուցիչ տեղեկություններ ստանալու համար</translation>
 <translation id="4310738531374808763">Անհատականացրեք ձեր գլխավոր էջը</translation>
 <translation id="4320848494125124980">Վերջինները</translation>
 <translation id="4322394346347055525">Փակել մյուս ներդիրները</translation>
+<translation id="4323122584592971322">OID։</translation>
 <translation id="4324735664183300693">Միացնել ծանուցումները</translation>
 <translation id="4326912346867677256">Հպեք «Օգտագործել գաղտնաբառը»՝ ապահով մուտք գործելու համար։</translation>
 <translation id="4327017157997423717">Գների հետագծում <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1030,7 @@
 <translation id="4744428388659507035">Ձեր ներդիրները ձեր բոլոր սարքերում օգտագործելու համար կարգավորումներում միացրեք «Էջանիշներ» ներդիրը։</translation>
 <translation id="4746926359847517643">Դուք միշտ կարող եք պատմության էջից դրանք վերադարձնել։</translation>
 <translation id="4749529195026091676">{count,plural, =1{Ներմուծվել է {count} քարտ}one{Ներմուծվել է {count} քարտ}other{Ներմուծվել է {count} քարտ}}</translation>
+<translation id="4749924365937394956">Սերվերի իսկորոշում</translation>
 <translation id="4751645464639803239">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4752348350801431746">Անջատել անվտանգության ստուգման ծանուցումները…</translation>
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
@@ -1390,12 +1396,14 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="598634819525651074">Մակերես</translation>
 <translation id="5988097621740394599">Դիտեք ձեր ներդիրներում գների իջեցման մասին ծանուցումները։</translation>
 <translation id="5988851877894965432">Բացել URL-ները Chrome-ում</translation>
+<translation id="599343768974649785">Մեծահասակների համար նախատեսված տեքստ</translation>
 <translation id="6006672969046233841">Նոր ներդիր</translation>
 <translation id="6011308810877101166">Բարելավել որոնման առաջարկները</translation>
 <translation id="6012140227487808125">Գաղտնագրում…</translation>
 <translation id="6027619584715411062">Մուտք գործեք՝ ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար։</translation>
 <translation id="6027945736510816438">Արդյո՞ք նկատի ունեիք <ph name="WEBSITE" /></translation>
 <translation id="6032845897905314562">նոր գործառույթ</translation>
+<translation id="6037458223703682108">Թվային ստորագրություն</translation>
 <translation id="6038823991892265570">Կառավարել Google պահեստային տարածքը</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Փակել</translation>
@@ -1539,6 +1547,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6476284679642588870">Կառավարել վճարման եղանակները</translation>
 <translation id="6476800141292307438">Էջը թարգմանվում է <ph name="LANGUAGE" />: Կարգավորումները էկրանի ներքևի հատվածում են:</translation>
 <translation id="647867789226964031">Փոխեք ձեր գաղտնաբառերը</translation>
+<translation id="6480363549849064919">Սպասառուի իսկորոշում</translation>
 <translation id="6494931198667773526">Ավարտը՝</translation>
 <translation id="6503077044568424649">Հաճախակի այցելած</translation>
 <translation id="6503763061813913607">Անվտանգության ստուգման ծանուցումներ</translation>
@@ -1584,6 +1593,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6619015782482868078">Ծովակնագույն թեմա</translation>
 <translation id="6620279676667515405">Չեղարկել</translation>
 <translation id="6625830436658400045">Համաժամացման ձեր կարգավորումները կվերականգնվեն վերջին պահուստավորված տվյալների հիման վրա։ Դուք ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել։</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Փոփոխել պանակը</translation>
 <translation id="6629759408545977279">Աղբյուրը՝ <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Ավելացրեք առցանց վտանգներից պաշտպանության այս լրացուցիչ մակարդակը։</translation>
@@ -2148,6 +2158,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8614671330774943747">Բացել ներդիրների փոխանջատիչը</translation>
 <translation id="862367213447108001">Միշտ ցույց տալ ելնող պատուհաններն այս կայքում</translation>
 <translation id="8625706492572042370">Փոփոխել հիմնական էկրանը</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Կողպված ինկոգնիտո ներդիրներ</translation>
 <translation id="8633025649649592204">Վերջին գործողությունները</translation>
 <translation id="8636825310635137004">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար միացրեք համաժամացումը:</translation>
@@ -2334,6 +2345,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="942624946817804130">Արտահանել</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="94870150074703282">Ջնջե՞լ խումբը</translation>
+<translation id="951090530321144895">Հավաստագրման կենտրոններ</translation>
 <translation id="952704832371081537">Չեղարկել</translation>
 <translation id="95332591904104970">Կապված հավելվածներ</translation>
 <translation id="954667170699278022">Ընթերցանության ցանկ</translation>

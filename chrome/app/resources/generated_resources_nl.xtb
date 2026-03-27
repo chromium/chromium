@@ -6029,6 +6029,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5183344263225877832">Rechten voor alle HID-apparaten resetten?</translation>
 <translation id="5184063094292164363">&amp;JavaScript-console</translation>
 <translation id="5184209580557088469">Er bestaat al een ticket met deze gebruikersnaam</translation>
+<translation id="5184329579814168207">Openen in Chrome</translation>
 <translation id="5184662919967270437">Je apparaat updaten</translation>
 <translation id="5185386675596372454">De nieuwste versie van <ph name="EXTENSION_NAME" /> is uitgezet omdat er meer rechten voor nodig zijn.</translation>
 <translation id="5185500136143151980">Geen internet</translation>
@@ -6881,7 +6882,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5804259315582798390">Kan herstel van lokale gegevens niet aanzetten</translation>
 <translation id="5805268472388605531">Houd de toetsenbordtoetsen ingedrukt om accenttekens en speciale tekens te bekijken</translation>
-<translation id="5805697420284793859">Vensterbeheer</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />, druk op Enter om het bestand te verwijderen</translation>
 <translation id="5806447147478173900">Totale opslagruimte gebruikt door getoonde sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standaard)</translation>
@@ -7040,7 +7040,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">Als je wilt overschakelen naar de volgende invoermethode, druk je op <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Sneltoetsenviewer</translation>
 <translation id="5911545422157959623">Bookmarks zijn niet beschikbaar in de gastmodus</translation>
 <translation id="5914016309240354769">Natuur</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" />-bits):
@@ -8178,7 +8177,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6723839827191551955">Beheer de media die je cast</translation>
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="6723946439672043591">Ander profiel kiezen</translation>
-<translation id="6725073593266469338">UI-service</translation>
 <translation id="6725206449694821596">Internetafdrukprotocol (IPP)</translation>
 <translation id="6725970970008349185">Aantal kandidaten dat per pagina wordt weergegeven</translation>
 <translation id="672609503628871915">Wat is er nieuw?</translation>
@@ -10283,7 +10281,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8184288427634747179">Overschakelen naar <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Meer informatie</translation>
 <translation id="8184472985242519288">Uniform</translation>
-<translation id="8185614942934189676">E-mailadres automatisch geverifieerd</translation>
 <translation id="8186013737729037962">Meer informatie over ingeschreven apparaten voor zakelijke gebruikers</translation>
 <translation id="8186047833733689201">Menu met accenttekens is geopend. Druk op pijl-links of -rechts of de cijfertoetsen om te navigeren en druk op Enter om in te voegen.</translation>
 <translation id="8186609076106987817">De server kan het bestand niet vinden.</translation>
@@ -10649,7 +10646,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Je wordt uitgelogd over <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Meer opties voor <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Tikken bekijken</translation>
 <translation id="843173223122814223">Achtergronden maken met AI</translation>
 <translation id="8431977087510901105">Cursorinstellingen gereset</translation>
 <translation id="8434109185104929038">Leeshoek</translation>

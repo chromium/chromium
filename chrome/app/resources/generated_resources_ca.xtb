@@ -6029,6 +6029,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5183344263225877832">Vols restablir tots els permisos del dispositiu HID?</translation>
 <translation id="5184063094292164363">Consola de &amp;JavaScript</translation>
 <translation id="5184209580557088469">Ja existeix un tiquet amb aquest nom d'usuari</translation>
+<translation id="5184329579814168207">Obre a Chrome</translation>
 <translation id="5184662919967270437">S'està actualitzant el dispositiu</translation>
 <translation id="5185386675596372454">La darrera versió de "<ph name="EXTENSION_NAME" />" s'ha desactivat perquè necessita més permisos.</translation>
 <translation id="5185500136143151980">Sense connexió a Internet</translation>
@@ -6883,7 +6884,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">No s'ha pogut activar la recuperació de dades locals</translation>
 <translation id="5805268472388605531">Mantén premuda qualsevol tecla del teclat per veure'n marques d'èmfasi i caràcters especials</translation>
-<translation id="5805697420284793859">Gestor de finestres</translation>
 <translation id="5806322307130093061">Prem Retorn per suprimir el fitxer <ph name="FILE_NAME" /></translation>
 <translation id="5806447147478173900">Emmagatzematge total utilitzat pels llocs web mostrats: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (valor predeterminat)</translation>
@@ -7042,7 +7042,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> no té connexió</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5911497236110691522">Per canviar al mètode d'introducció de text següent, prem <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Visualitzador de dreceres</translation>
 <translation id="5911545422157959623">Les adreces d'interès no estan disponibles en mode de convidat</translation>
 <translation id="5914016309240354769">Natura</translation>
 <translation id="5914724413750400082">Mòdul (<ph name="MODULUS_NUM_BITS" /> bits):
@@ -8180,7 +8179,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6723839827191551955">Controla el contingut multimèdia que emets</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6723946439672043591">Tria un altre perfil</translation>
-<translation id="6725073593266469338">Servei d'IU</translation>
 <translation id="6725206449694821596">Protocol d'impressió per Internet (IPP)</translation>
 <translation id="6725970970008349185">Nombre de candidats que es mostren per pàgina</translation>
 <translation id="672609503628871915">Novetats</translation>
@@ -10286,7 +10284,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8184288427634747179">Canvia a <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Més informació</translation>
 <translation id="8184472985242519288">Uniforme</translation>
-<translation id="8185614942934189676">L'adreça electrònica s'ha verificat automàticament</translation>
 <translation id="8186013737729037962">Més informació sobre els dispositius inscrits per a empreses</translation>
 <translation id="8186047833733689201">S'ha obert el menú d'accents. Prem les tecles de fletxa dreta o esquerra o bé el teclat numèric per navegar i Retorn per inserir-ne un.</translation>
 <translation id="8186609076106987817">El servidor no ha pogut trobar el fitxer.</translation>
@@ -10652,7 +10649,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8428634594422941299">D'acord</translation>
 <translation id="84297032718407999">Es tancarà la sessió d'aquí a <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Més opcions per a <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Mostra els tocs</translation>
 <translation id="843173223122814223">Crea fons amb IA</translation>
 <translation id="8431977087510901105">La configuració del cursor s'ha restablert</translation>
 <translation id="8434109185104929038">Racó de lectura</translation>

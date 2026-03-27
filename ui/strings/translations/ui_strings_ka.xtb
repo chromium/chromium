@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
-<translation id="1028699632127661925">იგზავნება <ph name="DEVICE_NAME" />-ზე…</translation>
 <translation id="111910763555783249">შეტყობინების პარამეტრები</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 დღის წინ}other{# დღის წინ}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 წუთის წინ}other{# წუთის წინ}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">გაცვლის ბუფერი</translation>
 <translation id="2653844658857826081">ახალი</translation>
 <translation id="2666092431469916601">ზედა</translation>
-<translation id="2701330563083355633">გაზიარებულია <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 წლის წინ}other{# წლის წინ}}</translation>
 <translation id="2878511608894704031">ყველაფრის წაშლა</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 დღეში}other{# დღეში}}</translation>

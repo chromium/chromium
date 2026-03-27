@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
-<translation id="1028699632127661925">Wthi'n anfon i <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">Gosodiadau hysbysiadau</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 diwrnod yn ôl}zero{# diwrnod yn ôl}two{# ddiwrnod yn ôl}few{# diwrnod yn ôl}many{# diwrnod yn ôl}other{# diwrnod yn ôl}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 funud yn ôl}zero{# munud yn ôl}two{# funud yn ôl}few{# munud yn ôl}many{# munud yn ôl}other{# munud yn ôl}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Clipfwrdd</translation>
 <translation id="2653844658857826081">NEWYDD</translation>
 <translation id="2666092431469916601">Brig</translation>
-<translation id="2701330563083355633">Rhannwyd o <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 flwyddyn yn ôl}zero{# blynedd yn ôl}two{# flynedd yn ôl}few{# blynedd yn ôl}many{# blynedd yn ôl}other{# blynedd yn ôl}}</translation>
 <translation id="2878511608894704031">Dileu Popeth</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{mewn 1d}zero{mewn #d}two{mewn #dd}few{mewn #d}many{mewn #d}other{mewn #d}}</translation>

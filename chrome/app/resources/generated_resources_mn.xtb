@@ -6041,6 +6041,7 @@
 <translation id="5183344263225877832">HID төхөөрөмжийн бүх зөвшөөрлийг шинэчлэх үү?</translation>
 <translation id="5184063094292164363">&amp; JavaScript консол</translation>
 <translation id="5184209580557088469">Ийм хэрэглэгчийн нэртэй тасалбар аль хэдийн байна</translation>
+<translation id="5184329579814168207">Chrome-д нээх</translation>
 <translation id="5184662919967270437">Таны төхөөрөмжийг шинэчилж байна</translation>
 <translation id="5185386675596372454"><ph name="EXTENSION_NAME" />-ийн хамгийн сүүлийн хувилбар нь олон зөвшөөрөл шаарддаг учир идэвхгүй болсон байна.</translation>
 <translation id="5185500136143151980">Интернэт алга</translation>
@@ -6897,7 +6898,6 @@
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5804259315582798390">Дотоод өгөгдөл сэргээлтийг идэвхжүүлж чадсангүй</translation>
 <translation id="5805268472388605531">Өргөлтийн тэмдгүүд болон тусгай тэмдэгтүүдийг харахын тулд гарын товч дээр удаана дарна уу</translation>
-<translation id="5805697420284793859">Цонхны менежер</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> файлыг устгахын тулд enter дээр дарна уу</translation>
 <translation id="5806447147478173900">Үзүүлсэн сайтуудын хадгалах сангийн ашиглалтын нийт хэмжээ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (өгөгдмөл)</translation>
@@ -7056,7 +7056,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> офлайн байна</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">Дараагийн оруулах арга руу сэлгэхийн тулд <ph name="KEY_CODES" />-г дарна уу</translation>
-<translation id="5911533659001334206">Товчлол харагч</translation>
 <translation id="5911545422157959623">Зочны горимд хавчуурга боломжгүй</translation>
 <translation id="5914016309240354769">Байгаль</translation>
 <translation id="5914724413750400082">Модулиуд (<ph name="MODULUS_NUM_BITS" /> бит): 
@@ -8194,7 +8193,6 @@
 <translation id="6723839827191551955">Дамжуулж буй медиагаа хянана уу</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
 <translation id="6723946439672043591">Өөр профайл сонгох</translation>
-<translation id="6725073593266469338">UI үйлчилгээ</translation>
 <translation id="6725206449694821596">Интернэт Хэвлэх Протокол (IPP)</translation>
 <translation id="6725970970008349185">Хуудас бүрд үзүүлэх нэр дэвшигчдийн тоо</translation>
 <translation id="672609503628871915">Шинэ зүйл юу байна?</translation>
@@ -10298,7 +10296,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />-д шилжүүлэх</translation>
 <translation id="8184318863960255706">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="8184472985242519288">Нэгэн жигд</translation>
-<translation id="8185614942934189676">Имэйлийг автоматаар баталгаажуулсан</translation>
 <translation id="8186013737729037962">Байгууллагаар бүртгүүлсэн төхөөрөмжийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="8186047833733689201">Өргөлтийн тэмдгийн цэс нээлттэй байна. Шилжихийн тулд зүүн, баруун эсвэл тооны товчнуудыг, оруулахын тулд enter дээр дарна уу.</translation>
 <translation id="8186609076106987817">Сервер файлыг олж чадсангүй.</translation>
@@ -10664,7 +10661,6 @@
 <translation id="8428634594422941299">Ойлголоо</translation>
 <translation id="84297032718407999">Та <ph name="LOGOUT_TIME_LEFT" />-н дараа гарах болно</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" />-н бусад сонголт</translation>
-<translation id="8431190899827883166">Товшилтыг харуулах</translation>
 <translation id="843173223122814223">ХОУ-аар дэвсгэрүүд үүсгэх</translation>
 <translation id="8431977087510901105">Курсорын тохиргоог шинэчилсэн</translation>
 <translation id="8434109185104929038">Уншлагын булан</translation>

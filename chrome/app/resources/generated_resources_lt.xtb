@@ -157,6 +157,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1099070179078143183">Kad galėtų teikti tokias funkcijas kaip apgavikiškos veiklos aptikimas, „Chrome“ gali naudoti DI modelius, kurie veikia tiesiogiai jūsų įrenginyje, nesiunčiant jūsų duomenų į „Google“ serverius. Kai tai išjungta, šios funkcijos gali neveikti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie DI įrenginyje<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Vaizdas nukopijuotas iš „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1100504063505580045">Dabartinė piktograma</translation>
+<translation id="1101267749138963680">Tikrinama, ar saugu...</translation>
 <translation id="1102759278139578486">Nepavyko atsisiųsti pagrindinio mazgo anotacijų failų. Bandykite dar kartą vėliau.</translation>
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Iš karto neteksite prieigos prie skirtukų grupės, o ji bus ištrinta iš visų jūsų įrenginių</translation>
@@ -2918,6 +2919,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2979893796619951531">Išskirti svetainę</translation>
 <translation id="2979966855249721010">Atsižvelgiant į jūsų pomėgius, galite matyti programų rekomendacijų, patarimų ir kt.</translation>
 <translation id="2981113813906970160">Rodyti didelį pelės žymeklį</translation>
+<translation id="2981728693230031897">Apibendrinti šį puslapį naudojant „Gemini“</translation>
 <translation id="2983102365694924129">Pagrįsta jūsų veikla svetainėje. Šis nustatymas išjungtas.</translation>
 <translation id="2983311431122838216">Klausti DI režimu „Google“ paieškoje</translation>
 <translation id="2983373101216420412">Dėklo akumuliatoriaus energijos lygis: <ph name="PERCENTAGE" /> %.</translation>
@@ -6047,6 +6049,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5183344263225877832">Iš naujo nustatyti visus ŽSĮ įrenginio leidimus?</translation>
 <translation id="5184063094292164363">„&amp;JavaScript“·pultas</translation>
 <translation id="5184209580557088469">Bilietas su tokiu naudotojo vardu jau yra</translation>
+<translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5184662919967270437">Įrenginys atnaujinamas</translation>
 <translation id="5185386675596372454">Naujausia „<ph name="EXTENSION_NAME" />“ versija buvo išjungta, nes jai reikia daugiau leidimų.</translation>
 <translation id="5185500136143151980">Nėra interneto ryšio</translation>
@@ -6903,7 +6906,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="5804259315582798390">Nepavyko įgalinti vietinių duomenų atkūrimo</translation>
 <translation id="5805268472388605531">Paspauskite ir palaikykite klaviatūros klavišus, kad pamatytumėte kirčio ženklus ir specialiuosius ženklus</translation>
-<translation id="5805697420284793859">Langų tvarkytuvė</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> paspauskite „Enter“, kad ištrintumėte failą</translation>
 <translation id="5806447147478173900">Iš viso pateiktų svetainių naudojamos vietos saugykloje: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (numatytasis)</translation>
@@ -7062,7 +7064,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5910726859585389579">„<ph name="DEVICE_TYPE" />“ ryšys išjungtas</translation>
 <translation id="5911030830365207728">„Google“ vertėjas</translation>
 <translation id="5911497236110691522">Jei norite perjungti į kitą įvesties metodą, paspauskite <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Sparčiųjų klavišų peržiūros programa</translation>
 <translation id="5911545422157959623">Svečio režimu žymės nepasiekiamos</translation>
 <translation id="5914016309240354769">Gamta</translation>
 <translation id="5914724413750400082">Modulis (<ph name="MODULUS_NUM_BITS" /> bit.):
@@ -8207,7 +8208,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6723839827191551955">Valdykite perduodamą mediją</translation>
 <translation id="6723839937902243910">Maitinimas</translation>
 <translation id="6723946439672043591">Pasirinkti kitą profilį</translation>
-<translation id="6725073593266469338">NS paslauga</translation>
 <translation id="6725206449694821596">Spausdinimo internetu protokolas (IPP)</translation>
 <translation id="6725970970008349185">Kandidatų skaičius, rodomas puslapyje</translation>
 <translation id="672609503628871915">Sužinokite, kas naujo</translation>
@@ -10313,7 +10313,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8184288427634747179">Perjungti į <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Daugiau informacijos</translation>
 <translation id="8184472985242519288">Vienodas</translation>
-<translation id="8185614942934189676">El. pašto adresas patvirtintas automatiškai</translation>
 <translation id="8186013737729037962">Sužinokite daugiau apie įmonės užregistruotus įrenginius</translation>
 <translation id="8186047833733689201">Atidarytas kirčio ženklų meniu. Norėdami naršyti, spauskite rodyklę kairėn, dešinėn arba skaičių klavišus ir „Enter“, kad įterptumėte.</translation>
 <translation id="8186609076106987817">Serveriui nepavyko rasti failo.</translation>
@@ -10679,7 +10678,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8428634594422941299">Supratau</translation>
 <translation id="84297032718407999">Būsite atjungti po <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Daugiau „<ph name="EXTENSION_NAME" />“ parinkčių</translation>
-<translation id="8431190899827883166">Rodyti palietimus</translation>
 <translation id="843173223122814223">Fonų kūrimas naudojant DI</translation>
 <translation id="8431977087510901105">Žymeklio nustatymai nustatyti iš naujo</translation>
 <translation id="8434109185104929038">Skaitymo kampelis</translation>

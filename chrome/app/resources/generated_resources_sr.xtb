@@ -2578,6 +2578,7 @@
 <translation id="2750020734439919571">Још подешавања и дозвола за Chrome апликације</translation>
 <translation id="275010360476017464">Користите микрофон да бисте разговарали са Gemini-јем. Кад разговарате са Gemini-јем, звук се чува у Активностима у Gemini апликацијама (ако су укључене).</translation>
 <translation id="2750602041558385535">Неверификовано преузимање је блокирано</translation>
+<translation id="2751320815618312249">и још <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Померите уста удесно</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> жели да сазна ИД број вашег безбедносног кључа. Сајт ће тачно знати који безбедносни кључ користите.</translation>
 <translation id="275213133112113418">Картица је сачувана</translation>
@@ -4540,6 +4541,7 @@
 <translation id="4107793386654579933">Изаберите пречицу за радњу <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Премести прозор код <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Врати упозорење</translation>
+<translation id="411052834366185695">Мора да садржи најмање 1 цифру</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
 <translation id="4113743276555482284">Лозинка за фајл</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Нема сачуваних лозинки}=1{1 лозинка је проверена}one{{COUNT} лозинка је проверена}few{{COUNT} лозинке су проверене}other{{COUNT} лозинки је проверено}}</translation>
@@ -5029,6 +5031,7 @@
 <translation id="4461483878391246134">Додајте језике за које се превод никада неће нудити</translation>
 <translation id="4462159676511157176">Прилагођени сервери назива</translation>
 <translation id="4465236939126352372">Временско ограничење од <ph name="TIME" /> је подешено за апликацију <ph name="APP_NAME" /></translation>
+<translation id="4466922176191762830">и још <ph name="NUM" /></translation>
 <translation id="4467373268340082204">Погрешан PIN</translation>
 <translation id="4469324811108161144">Белешке могу да сачувају највише <ph name="CHARACTER_LIMIT" /> знакова.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да мења датотеке у директоријуму <ph name="FOLDERNAME" /></translation>
@@ -5443,6 +5446,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{Проверавају се јавни кључ и блок интегритета... Преостало је мање од 1 минута}=1{Проверавају се јавни кључ и блок интегритета... Преостао је 1 минут}one{Проверавају се јавни кључ и блок интегритета... Преостао је # минут}few{Проверавају се јавни кључ и блок интегритета... Преостала су # минута}other{Проверавају се јавни кључ и блок интегритета... Преостало је # минута}}</translation>
 <translation id="4766598565665644999">Сви додаци могу да читају и мењају <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Сазнајте више о онемогућеним додацима.</translation>
+<translation id="4769359569327438364">Мора да садржи најмање 4 цифре</translation>
 <translation id="4769632191812288342">Добијате стандардну заштиту</translation>
 <translation id="4770119228883592393">Затражена је дозвола. Притисните ⌘ + Option + стрелицу надоле да бисте одговорили</translation>
 <translation id="4772914216048388646">Сталожено</translation>
@@ -6031,6 +6035,7 @@
 <translation id="5183344263225877832">Желите да ресетујете све дозволе за HID уређаје?</translation>
 <translation id="5184063094292164363">&amp;JavaScript конзола</translation>
 <translation id="5184209580557088469">Тикет са овим корисничким именом већ постоји</translation>
+<translation id="5184329579814168207">Отвори у Chrome-у</translation>
 <translation id="5184662919967270437">Ажурирање уређаја</translation>
 <translation id="5185386675596372454">Најновија верзија додатка „<ph name="EXTENSION_NAME" />“ је онемогућена јер захтева још дозвола.</translation>
 <translation id="5185500136143151980">Нема интернета</translation>
@@ -6125,6 +6130,7 @@
 <translation id="5240931875940563122">Пријави ме помоћу Android телефона</translation>
 <translation id="5241689948221696942">За неке производе табеле за поређење резимирају рецензије са целог веба</translation>
 <translation id="5242724311594467048">Желите ли да омогућите „<ph name="EXTENSION_NAME" />“?</translation>
+<translation id="5243477050423867768">Мора да садржи најмање 8 цифара и не сме да садржи понављајуће или уређене секвенце</translation>
 <translation id="5244234799035360187">OneDrive ће се сада појавити у апликацији Фајлови</translation>
 <translation id="5244466461749935369">Задржи за сада</translation>
 <translation id="5244474230056479698">Синхронизује се са <ph name="EMAIL" /></translation>
@@ -6885,7 +6891,6 @@
 <translation id="5804241973901381774">Дозволе</translation>
 <translation id="5804259315582798390">Омогућавање опоравка локалних података није успело</translation>
 <translation id="5805268472388605531">Притисните и задржите тастере на тастатури да бисте видели ознаке акцента и специјалне знакове</translation>
-<translation id="5805697420284793859">Менаџер прозора</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> притисните Enter да бисте избрисали фајл</translation>
 <translation id="5806447147478173900">Укупан меморијски простор који користе приказани сајтови: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (подразумевано)</translation>
@@ -7044,7 +7049,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> је офлајн</translation>
 <translation id="5911030830365207728">Google преводилац</translation>
 <translation id="5911497236110691522">Да бисте прешли на следећи метод уноса, притисните <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Приказивач пречица</translation>
 <translation id="5911545422157959623">Обележивачи нису доступни у режиму госта</translation>
 <translation id="5914016309240354769">Природа</translation>
 <translation id="5914724413750400082">Модул (<ph name="MODULUS_NUM_BITS" /> бит(ов)а):
@@ -8043,6 +8047,7 @@
 <translation id="6619990499523117484">Потврдите PIN</translation>
 <translation id="6621282332208609777">Питајте Google или унесите URL</translation>
 <translation id="6621391692573306628">Да бисте послали ову картицу на други уређај, пријавите се у Chrome на оба уређаја</translation>
+<translation id="6622212269189717101">Мора да садржи најмање 6 цифара и не може да садржи понављајуће или уређене секвенце</translation>
 <translation id="6622980291894852883">Настави блокирање слика</translation>
 <translation id="6624036901798307345">У режиму таблета додирните дугме бројача картица на траци с алаткама да бисте отворили нову траку са картицама која приказује сличице сваке картице.</translation>
 <translation id="6624538059730609162">Затвори десни приказ</translation>
@@ -8187,7 +8192,6 @@
 <translation id="6723839827191551955">Контролишите медије које пребацујете</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6723946439672043591">Одабери други профил</translation>
-<translation id="6725073593266469338">Услуга корисничког интерфејса</translation>
 <translation id="6725206449694821596">Интернет протокол за штампање (IPP)</translation>
 <translation id="6725970970008349185">Број кандидата за приказ по страници</translation>
 <translation id="672609503628871915">Прикажи шта је ново</translation>
@@ -10293,7 +10297,6 @@
 <translation id="8184288427634747179">Пребаци на <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Више информација</translation>
 <translation id="8184472985242519288">Једнообразно</translation>
-<translation id="8185614942934189676">Имејл је аутоматски верификован</translation>
 <translation id="8186013737729037962">Сазнајте више о уређајима регистрованим за предузећа</translation>
 <translation id="8186047833733689201">Отворен је мени са дијакритичким знацима. Притискајте тастере улево, удесно или нумеричке тастере за навигацију и Enter за уметање.</translation>
 <translation id="8186609076106987817">Сервер није могао да пронађе датотеку.</translation>
@@ -10659,7 +10662,6 @@
 <translation id="8428634594422941299">Важи</translation>
 <translation id="84297032718407999">Одјавићете се за <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Још опција за: <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Приказ додира</translation>
 <translation id="843173223122814223">Правите позадине помоћу вештачке интелигенције</translation>
 <translation id="8431977087510901105">Подешавања курсора су ресетована</translation>
 <translation id="8434109185104929038">Кутак за читање</translation>

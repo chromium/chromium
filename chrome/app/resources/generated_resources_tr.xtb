@@ -3119,7 +3119,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Şifrenizi mi unuttunuz?</translation>
 <translation id="3132277757485842847">Telefonunuzla bağlantıyı sürdüremedik. Telefonunuzun yakında bulunduğundan, kilidinin ve Bluetooth ile Kablosuz bağlantının da açık olduğundan emin olun.</translation>
 <translation id="3132896062549112541">Kural</translation>
-<translation id="3132996321662585180">Günlük olarak yenile</translation>
+<translation id="3132996321662585180">Her gün yenile</translation>
 <translation id="3134312457920437826">Uzantı desteklenmeyen bir manifest sürümü kullandığından yüklenemiyor.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> denemesi için deneme durumu seçin. Deneme açıklaması: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Varsayılan sarı avatar</translation>
@@ -6027,6 +6027,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5183344263225877832">Tüm insan arabirim cihazı izinleri sıfırlansın mı?</translation>
 <translation id="5184063094292164363">&amp;JavaScript Konsolu</translation>
 <translation id="5184209580557088469">Bu kullanıcı adıyla bir bilet zaten var</translation>
+<translation id="5184329579814168207">Chrome'da aç</translation>
 <translation id="5184662919967270437">Cihazınız güncelleniyor</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" adlı uzantının en yeni sürümü daha fazla izin gerektirdiğinden devre dışı bırakıldı.</translation>
 <translation id="5185500136143151980">İnternet bağlantısı yok</translation>
@@ -6882,7 +6883,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5804241973901381774">İzinler</translation>
 <translation id="5804259315582798390">Yerel veri kurtarma özelliği etkinleştirilemedi</translation>
 <translation id="5805268472388605531">Aksan işaretlerini ve özel karakterleri görmek için klavye tuşlarını basılı tutun</translation>
-<translation id="5805697420284793859">Pencere yöneticisi</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> dosyasını silmek için Enter tuşuna basın</translation>
 <translation id="5806447147478173900">Görüntülenen siteler tarafından kullanılan toplam depolama alanı: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Varsayılan)</translation>
@@ -7041,7 +7041,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> çevrimdışı</translation>
 <translation id="5911030830365207728">Google Çeviri</translation>
 <translation id="5911497236110691522">Sonraki giriş yöntemine geçmek için <ph name="KEY_CODES" /> tuşuna basın.</translation>
-<translation id="5911533659001334206">Kısayol görüntüleyici</translation>
 <translation id="5911545422157959623">Yer işaretleri, misafir modunda kullanılamaz</translation>
 <translation id="5914016309240354769">Doğa</translation>
 <translation id="5914724413750400082">Katsayı (<ph name="MODULUS_NUM_BITS" /> bit):
@@ -8180,7 +8179,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6723839827191551955">Yayınladığınız medyayı kontrol edin</translation>
 <translation id="6723839937902243910">Güç</translation>
 <translation id="6723946439672043591">Başka bir profil seç</translation>
-<translation id="6725073593266469338">Kullanıcı arayüzü hizmeti</translation>
 <translation id="6725206449694821596">İnternet Yazdırma Protokolü (IPP)</translation>
 <translation id="6725970970008349185">Sayfa başına görüntülenecek aday sayısı</translation>
 <translation id="672609503628871915">Yenilikleri görüntüle</translation>
@@ -10285,7 +10283,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> kullanıcısına geç</translation>
 <translation id="8184318863960255706">Daha fazla bilgi</translation>
 <translation id="8184472985242519288">Tek tip</translation>
-<translation id="8185614942934189676">E-posta otomatik olarak doğrulandı</translation>
 <translation id="8186013737729037962">Kuruluş kaydı yapılan cihazlar hakkında daha fazla bilgi</translation>
 <translation id="8186047833733689201">Aksan işaretleri menüsü açık. Gezinmek için sol, sağ veya sayı tuşlarına, eklemek için de Enter'a basın.</translation>
 <translation id="8186609076106987817">Sunucu dosyayı bulamadı.</translation>
@@ -10651,7 +10648,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8428634594422941299">Anladım</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> içinde çıkış yapacaksınız</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> için diğer seçenekler</translation>
-<translation id="8431190899827883166">Dokunmaları göster</translation>
 <translation id="843173223122814223">Yapay zeka ile arka plan üretin</translation>
 <translation id="8431977087510901105">İmleç ayarları sıfırlandı</translation>
 <translation id="8434109185104929038">Okuma köşesi</translation>

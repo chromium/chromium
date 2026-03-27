@@ -6047,6 +6047,7 @@
 <translation id="5183344263225877832">Дали да се ресетираат сите дозволи за HID-уредите?</translation>
 <translation id="5184063094292164363">Конзола за &amp;JavaScript</translation>
 <translation id="5184209580557088469">Билет со ова корисничко име веќе постои</translation>
+<translation id="5184329579814168207">Отвори во Chrome</translation>
 <translation id="5184662919967270437">Уредот се ажурира</translation>
 <translation id="5185386675596372454">Најновата верзија на „<ph name="EXTENSION_NAME" />“ е оневозможена бидејќи бара повеќе дозволи.</translation>
 <translation id="5185500136143151980">Нема интернет</translation>
@@ -6902,7 +6903,6 @@
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5804259315582798390">Не може да се овозможи враќање на локални податоци</translation>
 <translation id="5805268472388605531">Притиснете и задржете ги копчињата на тастатурата за да ги видите ознаките за акцент и специјалните знаци</translation>
-<translation id="5805697420284793859">Управник со прозорци</translation>
 <translation id="5806322307130093061">Притиснете Enter за да ја избришете датотеката <ph name="FILE_NAME" /></translation>
 <translation id="5806447147478173900">Вкупен капацитет искористен од прикажаните сајтови: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (стандардно)</translation>
@@ -7061,7 +7061,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> е офлајн</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">За да се префрлите на следниот метод за внесување, притиснете <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Прикажувач на кратенки</translation>
 <translation id="5911545422157959623">Обележувачите не се достапни во режим на гостин</translation>
 <translation id="5914016309240354769">Природа</translation>
 <translation id="5914724413750400082">Модул (бита: <ph name="MODULUS_NUM_BITS" />):
@@ -8202,7 +8201,6 @@
 <translation id="6723839827191551955">Контролирајте ги аудиовизуелните содржини што ги емитувате</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6723946439672043591">Изберете друг профил</translation>
-<translation id="6725073593266469338">Услуга за кориснички интерфејс</translation>
 <translation id="6725206449694821596">Интернет протокол за печатење (IPP)</translation>
 <translation id="6725970970008349185">Број на кандидати за прикажување по страница</translation>
 <translation id="672609503628871915">Погледнете што има ново</translation>
@@ -10307,7 +10305,6 @@
 <translation id="8184288427634747179">Префрли се на <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Повеќе информации</translation>
 <translation id="8184472985242519288">Унифициран</translation>
-<translation id="8185614942934189676">Е-поштата е потврдена автоматски</translation>
 <translation id="8186013737729037962">Дознајте повеќе за уредите регистрирани на претпријатија</translation>
 <translation id="8186047833733689201">Менито за надредни знаци е отворено. Притиснете ги копчињата за лево, десно или со броеви за движење, а Enter за вметнување.</translation>
 <translation id="8186609076106987817">Серверот не може да ја најде датотеката.</translation>
@@ -10673,7 +10670,6 @@
 <translation id="8428634594422941299">Сфатив</translation>
 <translation id="84297032718407999">Ќе ве одјавиме за <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Повеќе опции за <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Прикажувај допири</translation>
 <translation id="843173223122814223">Создавајте заднини со AI</translation>
 <translation id="8431977087510901105">Поставките за курсорот се ресетирани</translation>
 <translation id="8434109185104929038">Катче за читање</translation>

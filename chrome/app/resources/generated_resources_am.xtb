@@ -6040,6 +6040,7 @@
 <translation id="5183344263225877832">ሁሉም የኤችአይዲ መሣሪያ ፈቃዶች እንደገና ይጀምሩ?</translation>
 <translation id="5184063094292164363">&amp;ጃቫስክሪፕት ኮንሶል</translation>
 <translation id="5184209580557088469">ይህ የተጠቃሚ ስም ያለው ቲኬት አስቀድሞ አለ</translation>
+<translation id="5184329579814168207">በChrome ውስጥ ክፈት</translation>
 <translation id="5184662919967270437">መሣሪያዎን በማዘመን ላይ</translation>
 <translation id="5185386675596372454">አዲሱ የ«<ph name="EXTENSION_NAME" />» መተግበሪያ ስሪት ተጨማሪ ፍቃዶችን ስለሚፈልግ ተሰናክሏል።</translation>
 <translation id="5185500136143151980">ምንም በይነመረብ የለም</translation>
@@ -6895,7 +6896,6 @@
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5804259315582798390">የአካባቢያዊ ውሂብ መልሶ ማግኘትን ማንቃት አልተሳካም</translation>
 <translation id="5805268472388605531">የአጽንዖት ምልክቶች እና ልዩ ቁምፊዎችን ለማየት የቁልፍ ሰሌዳ ቁልፎችን ተጭነው ይያዙ</translation>
-<translation id="5805697420284793859">የWindow አስተዳዳሪ</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> ፋይልን ለመሰረዝ አስገባን ይጫኑ</translation>
 <translation id="5806447147478173900">በሚታዩት ጣቢያዎች ሥራ ላይ የዋለው ጠቅላላ ማከማቻ፦ <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ነባሪ)</translation>
@@ -7054,7 +7054,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ከመስመር ውጭ ነው</translation>
 <translation id="5911030830365207728">Google ትርጉም</translation>
 <translation id="5911497236110691522">ወደ ቀጣዩ የግቤት ስልት ለመቀየር <ph name="KEY_CODES" /> የሚለውን ይጫኑ</translation>
-<translation id="5911533659001334206">የአቋራጭ ተመልካች</translation>
 <translation id="5911545422157959623">እልባቶች በእንግዳ ሁነታ ውስጥ አይገኙም</translation>
 <translation id="5914016309240354769">ተፈጥሮ</translation>
 <translation id="5914724413750400082">ሞዱለስ (<ph name="MODULUS_NUM_BITS" /> ቢት)፦
@@ -8195,7 +8194,6 @@
 <translation id="6723839827191551955">እርስዎ cast በማድረግ ላይ ያሉትን ሚዲያ ይቆጣጠሩ</translation>
 <translation id="6723839937902243910">ኃይል</translation>
 <translation id="6723946439672043591">ሌላ መገለጫ ይምረጡ</translation>
-<translation id="6725073593266469338">የዩአይ አገልግሎት</translation>
 <translation id="6725206449694821596">የበይነመረብ ህትመት ፕሮቶኮል (አይፒፒፒ)</translation>
 <translation id="6725970970008349185">በገጽ የሚታዩ የእጩዎች ብዛት</translation>
 <translation id="672609503628871915">ምን አዲስ ነገር እንዳለ ይመልከቱ</translation>
@@ -10306,7 +10304,6 @@ nil</translation>
 <translation id="8184288427634747179">ወደ <ph name="AVATAR_NAME" /> ቀይር</translation>
 <translation id="8184318863960255706">ተጨማሪ መረጃ</translation>
 <translation id="8184472985242519288">ወጥ የሆነ</translation>
-<translation id="8185614942934189676">ኢሜይል በራስ ሰር ተረጋግጧል</translation>
 <translation id="8186013737729037962">በድርጅት ስለተመዘገቡ መሣሪያዎች የበለጠ ይረዱ</translation>
 <translation id="8186047833733689201">የአነጋገር ምልክቶች ምናሌ ክፍት ነው። ለማሰስ የግራ፣ ቀኝ፣ ወይም የቁጥር ቁልፎችን እና ለማስገባት አስገባን ይጫኑ።</translation>
 <translation id="8186609076106987817">አገልጋዩ ፋይሉን ሊያገኝ አልቻለም።</translation>
@@ -10672,7 +10669,6 @@ nil</translation>
 <translation id="8428634594422941299">ገባኝ</translation>
 <translation id="84297032718407999">በ<ph name="LOGOUT_TIME_LEFT" /> ውስጥ ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="8429928917752180743">ተጨማሪ አማራጮች ለ<ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">መታ ማድረጎችን አሳይ</translation>
 <translation id="843173223122814223">ዳራዎችን በAI ይፍጠሩ</translation>
 <translation id="8431977087510901105">የጠቋሚ ቅንብሮች ዳግም ማስጀመር</translation>
 <translation id="8434109185104929038">የንባብ ክፍል</translation>

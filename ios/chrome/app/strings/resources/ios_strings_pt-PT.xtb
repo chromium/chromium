@@ -827,6 +827,7 @@
 <translation id="3997522473364371632">A partilha de palavras-passe foi desativada pelo seu administrador.</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
+<translation id="4007463141047732631">Editar grupo</translation>
 <translation id="4011489366247192265">De</translation>
 <translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Preencha automaticamente as palavras-passe guardadas</translation>
@@ -905,6 +906,7 @@
 <translation id="4287172530684295552">Marcar como lida</translation>
 <translation id="428768789042547925">Novidades</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
+<translation id="4300830875340617674">Ler cartão e preencher automaticamente</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4306349443295056740">Assinatura OCSP</translation>
@@ -1181,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Ativar câmara</translation>
 <translation id="5229315183665181733">Editar site</translation>
+<translation id="5233111790346066304">Guarde os ficheiros no Google Drive e aceda aos mesmos em qualquer altura.</translation>
 <translation id="5233638681132016545">Novo separador</translation>
 <translation id="5234094073825090254">{count,plural, =1{Marcador guardado na sua Conta Google, {email}.}other{Marcadores guardados na sua Conta Google, {email}.}}</translation>
 <translation id="5234764350956374838">Ignorar</translation>

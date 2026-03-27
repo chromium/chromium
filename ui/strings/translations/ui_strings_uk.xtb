@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
-<translation id="1028699632127661925">Надсилання на пристрій "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="111910763555783249">Налаштування сповіщень</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 день тому}one{# день тому}few{# дні тому}many{# днів тому}other{# дня тому}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 хвилину тому}one{# хвилину тому}few{# хвилини тому}many{# хвилин тому}other{# хвилини тому}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Буфер обміну</translation>
 <translation id="2653844658857826081">НОВЕ</translation>
 <translation id="2666092431469916601">Верх</translation>
-<translation id="2701330563083355633">Надіслано з пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 рік тому}one{# рік тому}few{# роки тому}many{# років тому}other{# року тому}}</translation>
 <translation id="2878511608894704031">Видалити все</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{через 1 дн.}one{через # дн.}few{через # дн.}many{через # дн.}other{через # дн.}}</translation>

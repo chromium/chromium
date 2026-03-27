@@ -2239,6 +2239,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2518024842978892609">Usar os certificados de cliente</translation>
 <translation id="2518620532958109495">Com autorização para mudar automaticamente para ecrã inteiro</translation>
 <translation id="2519250377986324805">Veja como</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nO Gemini precisa da sua ajuda para continuar a trabalhar na sua tarefa.</translation>
 <translation id="2519517390894391510">Nome do perfil do certificado</translation>
 <translation id="2520644704042891903">A aguardar ligação disponível...</translation>
 <translation id="2521427645491031107">A sincronização de apps está definida nas Definições do dispositivo</translation>
@@ -2580,6 +2581,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2750020734439919571">Mais definições e autorizações da app Chrome</translation>
 <translation id="275010360476017464">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada)</translation>
 <translation id="2750602041558385535">Transferência não validada bloqueada</translation>
+<translation id="2751320815618312249">E mais <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Mova a boca para a direita</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> quer saber qual é o número de ID da sua chave de segurança. O site irá saber exatamente qual é a chave de segurança que está a usar.</translation>
 <translation id="275213133112113418">O seu cartão está guardado</translation>
@@ -4543,6 +4545,7 @@ Quer pará-lo?</translation>
 <translation id="4107793386654579933">Selecione um atalho para a ação <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Mover a janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar aviso</translation>
+<translation id="411052834366185695">Tem de ter, pelo menos, 1 dígito</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Palavra-passe do ficheiro</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Não existem palavras-passe guardadas}=1{1 palavra-passe verificada}other{{COUNT} palavras-passe verificadas}}</translation>
@@ -4640,6 +4643,7 @@ Quer pará-lo?</translation>
 <translation id="4190492351494485814">Para a configuração inicial, tem de se ligar à Internet para que os ficheiros possam ser sincronizados com o Chromebook</translation>
 <translation id="4190828427319282529">Realçar foco do teclado</translation>
 <translation id="4191892134568599822">Receber com a funcionalidade <ph name="FEATURE_NAME" />?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nO Gemini está a trabalhar na sua tarefa e vai receber uma notificação se forem necessárias mais ações.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Exclusivo para <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A IA generativa é experimental, está em desenvolvimento inicial e tem atualmente disponibilidade limitada.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">AC fidedigna</translation>
@@ -5032,6 +5036,7 @@ Quer pará-lo?</translation>
 <translation id="4461483878391246134">Adicionar idiomas à opção Nunca disponibilizar tradução</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
 <translation id="4465236939126352372">Limite de tempo de <ph name="TIME" /> definido para a app <ph name="APP_NAME" />.</translation>
+<translation id="4466922176191762830">E mais <ph name="NUM" /></translation>
 <translation id="4467373268340082204">PIN incorreto</translation>
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar ficheiros em <ph name="FOLDERNAME" /></translation>
@@ -5251,6 +5256,7 @@ Quer pará-lo?</translation>
 <translation id="4624054169152573743">Tema de cores</translation>
 <translation id="4625078469366263107">Ativar aplicação</translation>
 <translation id="4625905218692741757">Cor predefinida cinzenta</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nO Gemini pausou a sua tarefa. Volte ao Chrome para a rever.</translation>
 <translation id="4627107755957573804">Permitir que os sites e as apps atualizem as contas existentes para usarem chaves de acesso</translation>
 <translation id="4627442949885028695">Continuar a partir de outro dispositivo</translation>
 <translation id="4628762811416793313">A configuração do contentor do Linux não foi concluída. Tente novamente.</translation>
@@ -5446,6 +5452,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{A verificar a chave pública e o bloqueio de integridade… Falta menos de 1 minuto}=1{A verificar a chave pública e o bloqueio de integridade… Falta 1 minuto}other{A verificar a chave pública e o bloqueio de integridade… Faltam # minutos}}</translation>
 <translation id="4766598565665644999">Todas as extensões podem ler e alterar <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Saiba mais sobre as extensões desativadas.</translation>
+<translation id="4769359569327438364">Tem de ter, pelo menos, 4 dígitos</translation>
 <translation id="4769632191812288342">Tem a Proteção padrão</translation>
 <translation id="4770119228883592393">Autorização solicitada, prima ⌘ + Opção + seta para baixo para responder.</translation>
 <translation id="4772914216048388646">Ordenado</translation>
@@ -6034,6 +6041,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5183344263225877832">Repor todas as autorizações dos dispositivos HID?</translation>
 <translation id="5184063094292164363">Consola de &amp;JavaScript</translation>
 <translation id="5184209580557088469">Já existe uma permissão com este nome de utilizador.</translation>
+<translation id="5184329579814168207">Abrir no Chrome</translation>
 <translation id="5184662919967270437">A atualizar o dispositivo…</translation>
 <translation id="5185386675596372454">A versão mais recente de "<ph name="EXTENSION_NAME" />" foi desativada porque necessita de mais permissões.</translation>
 <translation id="5185500136143151980">Sem Internet</translation>
@@ -6128,6 +6136,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5240931875940563122">Iniciar sessão com telemóvel Android</translation>
 <translation id="5241689948221696942">Para alguns produtos, as tabelas de comparação resumem as críticas de toda a Web</translation>
 <translation id="5242724311594467048">Ativar a extensão "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5243477050423867768">Tem de ter, pelo menos, 8 dígitos e não pode conter sequências repetidas ou ordenadas</translation>
 <translation id="5244234799035360187">O OneDrive aparece agora na app Files</translation>
 <translation id="5244466461749935369">Manter por agora</translation>
 <translation id="5244474230056479698">A sincronizar com <ph name="EMAIL" /></translation>
@@ -6890,7 +6899,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5804259315582798390">Falha ao ativar a recuperação de dados locais</translation>
 <translation id="5805268472388605531">Prima sem soltar as teclas do teclado para ver acentos e carateres especiais</translation>
-<translation id="5805697420284793859">Gestor de janelas</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />, prima Enter para eliminar o ficheiro</translation>
 <translation id="5806447147478173900">Armazenamento total usado pelos sites apresentados: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (predefinição)</translation>
@@ -7049,7 +7057,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está offline.</translation>
 <translation id="5911030830365207728">Google Tradutor</translation>
 <translation id="5911497236110691522">Para mudar para o método de introdução seguinte, prima <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Visualizador de atalhos</translation>
 <translation id="5911545422157959623">Os marcadores não estão disponíveis no modo convidado</translation>
 <translation id="5914016309240354769">Natureza</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
@@ -8044,6 +8051,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6619990499523117484">Confirme o PIN</translation>
 <translation id="6621282332208609777">Pergunte ao Google ou escreva um URL</translation>
 <translation id="6621391692573306628">Para enviar este separador para outro dispositivo, inicie sessão no Chrome em ambos os dispositivos</translation>
+<translation id="6622212269189717101">Tem de ter, pelo menos, 6 dígitos e não pode conter sequências repetidas ou ordenadas</translation>
 <translation id="6622980291894852883">Continuar a bloquear imagens</translation>
 <translation id="6624036901798307345">No modo tablet, toque no botão da barra de ferramentas do contador de separadores para abrir a nova Faixa de separadores que apresenta as miniaturas de cada separador.</translation>
 <translation id="6624538059730609162">Fechar vista direita</translation>
@@ -8188,7 +8196,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6723839827191551955">Controle o conteúdo multimédia que está a transmitir</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6723946439672043591">Escolher outro perfil</translation>
-<translation id="6725073593266469338">Serviço da IU</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Número de candidatos a apresentar por página</translation>
 <translation id="672609503628871915">Descobrir as novidades mais recentes</translation>
@@ -8294,6 +8301,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6798420440063423019">A chave de segurança está bloqueada porque foi introduzido o PIN incorreto demasiadas vezes. Tem de repor a chave de segurança.</translation>
 <translation id="679845623837196966">Mostrar Lista de leitura</translation>
 <translation id="6798578729981748444">Para concluir a importação, feche todas as janelas do Firefox.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nO Gemini concluiu a sua tarefa. Pode vê-la no Chrome.</translation>
 <translation id="6798780071646309401">caps lock ativado</translation>
 <translation id="679905836499387150">Botões da barra de ferramentas ocultos</translation>
 <translation id="6800893479155997609">Principais apps para o seu <ph name="DEVICE_TYPE" /></translation>
@@ -9897,6 +9905,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7916364730877325865">A sua organização não lhe permite ativar a sincronização com esta conta</translation>
 <translation id="791698251820376781">A sua organização não lhe permite iniciar sessão</translation>
 <translation id="7918257978052780342">Inscrever</translation>
+<translation id="7918928051723770926">Tarefa concluída</translation>
 <translation id="7919123827536834358">Traduza automaticamente estes idiomas</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
@@ -10294,7 +10303,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8184288427634747179">Mudar para <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Mais informações</translation>
 <translation id="8184472985242519288">Uniforme</translation>
-<translation id="8185614942934189676">Email validado automaticamente</translation>
 <translation id="8186013737729037962">Saber mais sobre os dispositivos inscritos através de empresas</translation>
 <translation id="8186047833733689201">Menu de acentos aberto. Prima as teclas numéricas ou de seta para a esquerda e direita para navegar e Enter para inserir.</translation>
 <translation id="8186609076106987817">O servidor não conseguiu encontrar o ficheiro.</translation>
@@ -10387,6 +10395,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8244724656154470844">Falha na verificação da atualização.</translation>
 <translation id="8246776524656196770">Proteja a sua chave de segurança com um PIN (número de identificação pessoal)</translation>
 <translation id="824713170151383793">Com DevTools</translation>
+<translation id="8247210755024677100">A iniciar sessão…</translation>
 <translation id="8247795734638043885">Transferir ficheiro inseguro</translation>
 <translation id="8248050856337841185">C&amp;olar</translation>
 <translation id="8248381369318572865">Aceder ao microfone e analisar o seu discurso</translation>
@@ -10660,7 +10669,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">A sessão será terminada dentro de <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Mais opções para <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="843173223122814223">Crie fundos com IA</translation>
 <translation id="8431977087510901105">Definições do cursor repostas</translation>
 <translation id="8434109185104929038">Canto de leitura</translation>
@@ -10831,6 +10839,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8557022314818157177">Continue a tocar na chave de segurança até que a sua impressão digital seja capturada.</translation>
 <translation id="8557100046150195444">Touch ID para continuar</translation>
 <translation id="8557856025359704738">A próxima transferência é a <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558063527625343224">Configure o Google Beam</translation>
 <translation id="8559858985063901027">Chaves de acesso</translation>
 <translation id="8559961053328923750">O Chrome limita a quantidade total de dados que os sites podem partilhar através do navegador para medir o desempenho dos anúncios</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todos numa &amp;nova janela}=1{Abrir numa &amp;nova Janela}other{Abrir todos ({COUNT}) numa &amp;nova janela}}</translation>
@@ -11346,6 +11355,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8898786835233784856">Selecionar separador seguinte</translation>
 <translation id="8898790559170352647">Adicionar conta Microsoft</translation>
 <translation id="8898822736010347272">Envia URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas para a Google para ajudar a detetar novas ameaças e a proteger todos os utilizadores na Web.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nO Gemini deixou de trabalhar na sua tarefa.</translation>
 <translation id="8899851313684471736">Abrir link numa nova &amp;janela</translation>
 <translation id="8900413463156971200">Ativar rede móvel</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que faça uma cópia de segurança dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje.}other{<ph name="MANAGER" /> requer que faça uma cópia de segurança dos dados e devolva este <ph name="DEVICE_TYPE" /> antes do prazo.}}</translation>

@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">وہ اکاؤنٹس منتخب کریں جنہیں آپ کسی دوسری ایپ میں برآمد کرنا چاہتے ہیں۔</translation>
 <translation id="1506061864768559482">تلاش انجن</translation>
 <translation id="1506063256525392513">‏یہ آپ کو تصاویر لینے اور اپ لوڈ کرنے کے ساتھ ساتھ QR کوڈز اسکین کرنے کی اجازت دیتا ہے</translation>
+<translation id="1506733063065214205">‏‫RCS MLS کلائنٹ</translation>
 <translation id="1508263560970797965">پوشیدگی ميں جاري رکھيں</translation>
 <translation id="1509486075633541495">ویب سائٹ میں سائن ان کریں</translation>
 <translation id="1513858653616922153">پاس ورڈ حذف کریں</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">گروپ کا اشتراک کریں</translation>
 <translation id="2673508731173059946">کاپی کردہ لنک ملاحظہ کریں</translation>
 <translation id="2679659833697380">آپ کی معلومات آپ کے آلے میں محفوظ ہے</translation>
+<translation id="2681572445246787428">دستاویز پر دستخط کرنا</translation>
 <translation id="2688535388040882469">بینرز</translation>
 <translation id="2690858294534178585">کیمرا زیر استعمال ہے</translation>
 <translation id="2691653761409724435">آف لائن دستیاب نہیں ہے</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
 <translation id="4302061870579014542">پوزیشن سیٹ کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
+<translation id="4306349443295056740">‏‫OCSP پر دستخط کرنا</translation>
 <translation id="4309403553630140242">مزيد معلومات کے لیے دوبار تھپتھپائيں</translation>
 <translation id="4310738531374808763">اپنے ہوم پیج کو حسب ضرورت بنائیں</translation>
 <translation id="4320848494125124980">حالیہ</translation>
 <translation id="4322394346347055525">دیگر ٹیبز بند کریں</translation>
+<translation id="4323122584592971322">‏OID۔</translation>
 <translation id="4324735664183300693">اطلاعات آن کریں</translation>
 <translation id="4326912346867677256">محفوظ طریقے سے سائن ان کرنے کے لیے "پاس ورڈ استعمال کریں" پر تھپتھپائیں۔</translation>
 <translation id="4327017157997423717"><ph name="PRODUCT_NAME" />، <ph name="PRICE" />، <ph name="DOMAIN" /> پر قیمت کو ٹریک کریں</translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">اپنے تمام آلات پر اپنے بُک مارکس حاصل کرنے کے لیے، ترتیبات میں "بُک مارکس" کو آن کریں۔</translation>
 <translation id="4746926359847517643">یہ آپ کو سرگزشت میں ہمیشہ واپس مل سکتے ہیں۔</translation>
 <translation id="4749529195026091676">{count,plural, =1{‫{count} کارڈ کو درآمد کیا گیا}other{‫{count} کارڈز کو درآمد کیا گیا}}</translation>
+<translation id="4749924365937394956">سرور کی تصدیق</translation>
 <translation id="4751645464639803239">نیا پوشیدگی ٹیب</translation>
 <translation id="4752348350801431746">سیفٹی چیک کی اطلاعات آف کریں…</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
@@ -1390,12 +1395,14 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="598634819525651074">علاقہ</translation>
 <translation id="5988097621740394599">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں۔</translation>
 <translation id="5988851877894965432">‏URLs کو Chrome میں کھولیں</translation>
+<translation id="599343768974649785">فُحش ٹیکسٹ</translation>
 <translation id="6006672969046233841">نیا ٹیب</translation>
 <translation id="6011308810877101166">تلاش کی تجاویز کو بہتر بنائیں</translation>
 <translation id="6012140227487808125">مرموز کاری ہو رہی ہے…</translation>
 <translation id="6027619584715411062">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="6027945736510816438">کیا آپ کا مطلب <ph name="WEBSITE" /> ہے؟</translation>
 <translation id="6032845897905314562">نئی خصوصیت</translation>
+<translation id="6037458223703682108">ڈیجیٹل دستخط</translation>
 <translation id="6038823991892265570">‏‫Google اسٹوریج کا نظم کریں</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">بند کریں</translation>
@@ -1539,6 +1546,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6476284679642588870">ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="6476800141292307438">صفحہ کا <ph name="LANGUAGE" /> میں ترجمہ کیا جا رہا ہے۔ اسکرین کے نچلے حصے کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="647867789226964031">اپنے پاس ورڈز تبدیل کریں</translation>
+<translation id="6480363549849064919">کلائنٹ کی تصدیق</translation>
 <translation id="6494931198667773526">وقت اختتام</translation>
 <translation id="6503077044568424649">سب سے زیادہ ملاحظہ کردہ</translation>
 <translation id="6503763061813913607">سیفٹی چیک کی اطلاعات</translation>
@@ -1584,6 +1592,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6619015782482868078">فیروزی تھیم</translation>
 <translation id="6620279676667515405">منسوخ کریں</translation>
 <translation id="6625830436658400045">آپ کی مطابقت پذیری کی ترتیبات آپ کے آخری بیک اپ کی بنیاد پر بحال کی جائیں گی۔ آپ کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">فولڈر میں ترمیم کریں</translation>
 <translation id="6629759408545977279">منجانب: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">آن لائن خطرات سے تحفظ کی یہ اضافی پرت شامل کریں۔</translation>
@@ -2148,6 +2157,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8614671330774943747">ٹیب سوئچر پر جائیں</translation>
 <translation id="862367213447108001">اس سائٹ پر ہمیشہ پاپ اپس دکھائیں</translation>
 <translation id="8625706492572042370">ہوم اسکرین میں ترمیم کریں</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">مقفل کردہ پوشیدگی ٹیبز</translation>
 <translation id="8633025649649592204">حالیہ سرگرمی</translation>
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
@@ -2334,6 +2344,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="942624946817804130">ایکسپورٹ کریں</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="94870150074703282">گروپ حذف کریں؟</translation>
+<translation id="951090530321144895">‏‫CA جاری کنندگان</translation>
 <translation id="952704832371081537">منسوخ کریں</translation>
 <translation id="95332591904104970">منسلک ایپس</translation>
 <translation id="954667170699278022">پڑھنے کی فہرست</translation>

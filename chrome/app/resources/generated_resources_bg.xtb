@@ -157,6 +157,7 @@
 <translation id="1099070179078143183">За да поддържа функции, като например откриване на измами, Chrome може да използва модели на AI, които се изпълняват директно на устройството ви, без да изпращат данните ви до сървърите на Google. Когато тази настройка е изключена, тези функции може да не работят. <ph name="BEGIN_LINK" />Научете повече зa AI на устройството<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Изображение, копирано от <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Настояща икона</translation>
+<translation id="1101267749138963680">Проверява се за безопасност...</translation>
 <translation id="1102759278139578486">Файловете с пояснения за основния възел не могат да се изтеглят. Опитайте отново по-късно.</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Незабавно ще загубите достъп до групата раздели и тя ще бъде изтрита от всичките ви устройства</translation>
@@ -2911,6 +2912,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2979893796619951531">Изключване на сайта</translation>
 <translation id="2979966855249721010">Може да виждате препоръки за приложения, съвети и др. въз основа на интересите си</translation>
 <translation id="2981113813906970160">Показване на голям курсор на мишката</translation>
+<translation id="2981728693230031897">Обобщаване на тази страница с Gemini</translation>
 <translation id="2983102365694924129">Въз основа на активността ви в даден сайт. Тази настройка е изключена.</translation>
 <translation id="2983311431122838216">Попитайте режима с AI в Google Търсене</translation>
 <translation id="2983373101216420412">Нивото на батерията на калъфа е <ph name="PERCENTAGE" />%.</translation>
@@ -6041,6 +6043,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5183344263225877832">Да се нулират ли разрешенията за всички HID устройства?</translation>
 <translation id="5184063094292164363">&amp;Конзола на JavaScript</translation>
 <translation id="5184209580557088469">Вече съществува пропуск с това потребителско име</translation>
+<translation id="5184329579814168207">Отваряне в Chrome</translation>
 <translation id="5184662919967270437">Устройството ви се актуализира</translation>
 <translation id="5185386675596372454">Най-новата версия на „<ph name="EXTENSION_NAME" />“ бе деактивирана, тъй като изисква повече разрешения.</translation>
 <translation id="5185500136143151980">Няма интернет</translation>
@@ -6897,7 +6900,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5804259315582798390">Активирането на функцията за възстановяване на локалните данни не бе успешно</translation>
 <translation id="5805268472388605531">Натиснете и задръжте клавиш на клавиатурата, за да видите съответните диакритични и специални знаци</translation>
-<translation id="5805697420284793859">Мениджър на прозорците</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />. Натиснете Enter, за да изтриете файла</translation>
 <translation id="5806447147478173900">Общо хранилище, използвано от посочените сайтове: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (по подразбиране)</translation>
@@ -7056,7 +7058,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> е офлайн</translation>
 <translation id="5911030830365207728">Google Преводач</translation>
 <translation id="5911497236110691522">За да превключите към следващия метод на въвеждане, натиснете <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Визуализатор на клавишните комбинации</translation>
 <translation id="5911545422157959623">Отметките не са налице в режима на гост</translation>
 <translation id="5914016309240354769">Природа</translation>
 <translation id="5914724413750400082">Модули (<ph name="MODULUS_NUM_BITS" /> бита):
@@ -8195,7 +8196,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6723839827191551955">Контролирайте предаваната от вас мултимедия</translation>
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="6723946439672043591">Избиране на друг потребителски профил</translation>
-<translation id="6725073593266469338">Услуга за управление на ПИ</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Брой на предложенията, които да се показват на страница</translation>
 <translation id="672609503628871915">Вижте новите неща</translation>
@@ -10301,7 +10301,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8184288427634747179">Превключване към <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Още информация</translation>
 <translation id="8184472985242519288">Еднородна</translation>
-<translation id="8185614942934189676">Имейл адресът е потвърден автоматично</translation>
 <translation id="8186013737729037962">Научете повече за корпоративните устройства</translation>
 <translation id="8186047833733689201">Менюто за диакритични знаци е отворено. За придвижване натиснете клавиша със стрелка за наляво или за надясно или клавишите с цифри, а за вмъкване използвайте Enter.</translation>
 <translation id="8186609076106987817">Сървърът не можа да намери файла.</translation>
@@ -10667,7 +10666,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8428634594422941299">Разбрах</translation>
 <translation id="84297032718407999">Ще излезете от профила си след <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Още опции за <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Показване на докосванията</translation>
 <translation id="843173223122814223">Създаване на фонове с AI</translation>
 <translation id="8431977087510901105">Фабричните настройки за курсора са възстановени</translation>
 <translation id="8434109185104929038">Кът за четене</translation>

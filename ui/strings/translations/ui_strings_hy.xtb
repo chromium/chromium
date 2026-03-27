@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
-<translation id="1028699632127661925">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
 <translation id="111910763555783249">Ծանուցման կարգավորումներ</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 օր առաջ}one{# օր առաջ}other{# օր առաջ}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 րոպե առաջ}one{# րոպե առաջ}other{# րոպե առաջ}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2653844658857826081">ՆՈՐՈՒՅԹ</translation>
 <translation id="2666092431469916601">Վերին</translation>
-<translation id="2701330563083355633">Ուղարկվել է <ph name="DEVICE_NAME" />-ի միջոցով</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 տարի առաջ}one{# տարի առաջ}other{# տարի առաջ}}</translation>
 <translation id="2878511608894704031">Ջնջել բոլորը</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 օրից}one{# օրից}other{# օրից}}</translation>

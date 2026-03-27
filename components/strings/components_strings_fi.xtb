@@ -763,6 +763,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2188375229972301266">Useita reikiä alareunassa</translation>
 <translation id="218940509700321686">CSV-tiedostomuoto</translation>
 <translation id="2190094353033916816">Käytännöllä on eri arvot, joita sovelletaan laite- ja käyttäjätasolla. Käytäntö toimii odotetusti.</translation>
+<translation id="219061769324072544">Credit,Kortti,Debit</translation>
 <translation id="2191980191135734720">Avaa näytön lukitus seuraavassa vaiheessa, yleensä sormenjäljellä. Voit myös vaihtoehtoisesti <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="2195729137168608510">Sähköpostin suojaus</translation>
@@ -917,6 +918,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2400600116338235695">Saa pyytää lupaa sarjaportteihin yhdistämiseen</translation>
 <translation id="2403474027143565107">Tarkka</translation>
 <translation id="240450251994300576">Toissijainen otsikkologo</translation>
+<translation id="2404715426538856682">Credit- ja debit-kortit · IBAN-numerot · Kanta-asiakaskortit</translation>
 <translation id="2404884497378469141">Yritä kopioida tiedostot uudelleen</translation>
 <translation id="2413155254802890957">Vanha</translation>
 <translation id="2413528052993050574">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne ei välttämättä ole voimassa. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
@@ -1365,6 +1367,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3134859781443140237">Paikallinen verkko</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Hae <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Ei mitään}=1{1 tilin kirjautumistiedot}other{# tilin kirjautumistiedot}}</translation>
+<translation id="3139503241401248626">Jos haluat ottaa nämä asetukset käyttöön ja käyttää Google-tilisi tietoja, siirry automaattisen täytön asetuksiin</translation>
 <translation id="3140646734028448730">Liiketoimintapalvelut</translation>
 <translation id="3141093262818886744">Avaa silti</translation>
 <translation id="3141337053413339205">Siirry tälle välilehdelle.</translation>
@@ -2169,6 +2172,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4340810192899866471">Tuo JSON-tiedostosta</translation>
 <translation id="4340982228985273705">Havaintojen mukaan tämä tietokone ei ole yrityksen hallinnoima, joten käytäntö voi asentaa automaattisesti vain Chrome Web Storessa hostattuja laajennuksia. Chrome Web Storen päivitys-URL-osoite on <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Huvipuistot</translation>
+<translation id="4346670990181948854">Matkatiedot · Ajoneuvot</translation>
 <translation id="4348834659292907206">Yhteys sivustoon (<ph name="SITE" />) ei ole turvallinen</translation>
 <translation id="4349365535725594680">Luottamuksellista sisältöä ei voida jakaa</translation>
 <translation id="4349810866125026513">Lataa silti</translation>
@@ -2299,6 +2303,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4594403342090139922">K&amp;umoa poisto</translation>
 <translation id="4598556348158889687">Tallennustilan hallinta</translation>
 <translation id="459914240367517409">Verkkosuunnittelu ja -kehittäminen</translation>
+<translation id="4599572944836204718">Maksa nopeammin Google Paylla, kun kortti on tallennettu. Kortin tiedot salataan Google Walletissa.</translation>
 <translation id="4602465984861132303">Keilailu</translation>
 <translation id="4603727370377253901">Lentojen varaukset</translation>
 <translation id="4607608436550361748">Katso Chromen vinkkejä</translation>
@@ -2588,6 +2593,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, paina sarkainta, niin näet lisää hakupikanäppäimiä tämän hakuehdotuksen jälkeen</translation>
 <translation id="5052488928733955073">Tietojen täyttämisessä on ongelma. Tarkista yhteys.</translation>
 <translation id="5052517576853118371">Aktiiviset aiheet</translation>
+<translation id="5053116470141135293">Virtuaalikortin numero täytetään, kun maksat tällä kortilla, jotta todelliset tietosi pysyvät turvassa. Muokkaa Google Walletissa. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Jos haluat lähettää tiedoston käyttämällä lähijakamista, vapauta tilaa (<ph name="DISK_SPACE_SIZE" />) laitteeltasi}other{Jos haluat lähettää tiedostot käyttämällä lähijakamista, vapauta tilaa (<ph name="DISK_SPACE_SIZE" />) laitteeltasi}}</translation>
 <translation id="5056587122125565772">Luo kuva</translation>
 <translation id="505757197798929356">Lisää avaamisen syy (pakollinen)</translation>
@@ -2957,6 +2963,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5596939519753369075">2 x 3,5 tuumaa</translation>
 <translation id="5597254438174353289">Sininen 3</translation>
+<translation id="5600044805561809264">Voit helposti esittää kysymyksiä jakamistasi välilehdistä selailun aikana.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> tai <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Hallintaa ei tueta</translation>
 <translation id="5605249000617390290">Lue lisää hintaseurannasta</translation>
@@ -3051,6 +3058,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5752519522101347518">Ladataan pankin vahvistussivustoa</translation>
 <translation id="5753570386948603678">Poista historiasta</translation>
 <translation id="5759751709240058861">käyttää ja liikuttaa kameraasi</translation>
+<translation id="5762131895127128324">Ajokortit · Henkilökortit · Passit</translation>
 <translation id="5763042198335101085">Anna voimassa oleva sähköpostiosoite.</translation>
 <translation id="5764725887548570807">Virheellinen alkuperän muoto.</translation>
 <translation id="5764920692828389743">Lähetä tänne: <ph name="EMAIL_ADDRESS" /></translation>
@@ -3362,6 +3370,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6250932670816326647">Kylpy‑ ja vartalotuotteet</translation>
 <translation id="6251906504834538140">{0,plural, =1{Tiedoston siirtäminen estetty}other{<ph name="FILE_COUNT" /> tiedoston siirtäminen estetty}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ylläpidä Chromessa lataamiasi tiedostoja painamalla sarkainta ja sitten Enter</translation>
+<translation id="6253380015872250643">Kortin tallentaminen Google Walletiin</translation>
 <translation id="6254436959401408446">Muisti ei riitä sivun avaamiseen</translation>
 <translation id="625463612687472648">Estä</translation>
 <translation id="6259156558325130047">&amp;Toista uudelleenjärjestely</translation>
@@ -3988,6 +3997,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="7220786058474068424">Käsitellään.</translation>
 <translation id="7221855153210829124">Näytä ilmoitukset</translation>
 <translation id="722454870747268814">Uusi incognito-välilehti</translation>
+<translation id="7225676267118764980">Muuta automaattisen täytön tarjoajaa ja muita asetuksia</translation>
 <translation id="7226892411756387078">Pelkkä teksti</translation>
 <translation id="7227293336683593977">Hintahistoria</translation>
 <translation id="7228306718910595403">Hyväksymistila EU:ssa</translation>
@@ -4258,6 +4268,7 @@ Lisätietoja:
 <translation id="7615932826417658001">Lisää henkilöllisyyskortti</translation>
 <translation id="7616390733770379387">Ne näytetään satunnaisessa järjestyksessä.</translation>
 <translation id="7616645509853975347">Järjestelmänvalvoja on ottanut Chrome Enterprise Connectorsin käyttöön selaimellesi. Nämä liittimet pääsevät osaan datastasi.</translation>
+<translation id="7616747402308801775">Tämä kortti on tallennettu Google Walletiin, joten voit käyttää sitä Googlen palveluissa.</translation>
 <translation id="7617825962482469577">Kirjekuori C7/C6</translation>
 <translation id="7618270539713451657">Kamppailulajit</translation>
 <translation id="7619838219691048931">Viimeinen sivu</translation>
@@ -4580,6 +4591,7 @@ Lisätietoja:
 <translation id="8120720167840853945">Tämä käytäntö ei ohjaa muiden käytäntöjen oletustoimintaa.</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> on asennettu virheellisesti tietokoneellesi tai verkkoon. Pyydä järjestelmänvalvojaasi ratkaisemaan ongelma.</translation>
 <translation id="8130113808541743942">Siirrä kohteeseen…</translation>
+<translation id="813024282736408069">Virtuaalikortin laittaminen päälle automaattista täyttöä varten</translation>
 <translation id="8131740175452115882">Vahvista</translation>
 <translation id="8133495915926741232">Valitse, minkä laajojen aihekategorioiden avulla mainoksia voidaan personoida. Jos laitat laajemman kategorian pois päältä, myös siihen liittyvät aiheet estetään. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Rekrytointi ja henkilöstön hankinta</translation>

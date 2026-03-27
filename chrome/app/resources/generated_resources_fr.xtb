@@ -157,6 +157,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1099070179078143183">Pour activer des fonctionnalités comme la Détection d'escroqueries, Chrome peut utiliser des modèles d'IA qui s'exécutent directement sur votre appareil sans envoyer vos données aux serveurs Google. Lorsque cette option est désactivée, il est possible que ces fonctionnalités ne s'exécutent pas. <ph name="BEGIN_LINK" />En savoir plus sur l'IA sur l'appareil<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Image copiée depuis <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Icône actuelle</translation>
+<translation id="1101267749138963680">Vérification de la sécurité...</translation>
 <translation id="1102759278139578486">Impossible de télécharger les fichiers d'annotation du nœud principal. Réessayez plus tard.</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Vous perdrez immédiatement l'accès à ce groupe d'onglets, qui sera supprimé de tous vos appareils</translation>
@@ -2903,6 +2904,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2979893796619951531">Exclure le site</translation>
 <translation id="2979966855249721010">En fonction de vos centres d'intérêt, vous pouvez voir des recommandations d'applis, des conseils, etc.</translation>
 <translation id="2981113813906970160">Afficher le grand curseur</translation>
+<translation id="2981728693230031897">Résumer cette page avec Gemini</translation>
 <translation id="2983102365694924129">D'après votre activité sur un site. Ce paramètre est désactivé.</translation>
 <translation id="2983311431122838216">Demander au Mode IA dans la recherche Google</translation>
 <translation id="2983373101216420412">Niveau de batterie de l'étui (<ph name="PERCENTAGE" /> %).</translation>
@@ -6029,6 +6031,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5183344263225877832">Réinitialiser toutes les autorisations d'appareil HID ?</translation>
 <translation id="5184063094292164363">Console &amp;JavaScript</translation>
 <translation id="5184209580557088469">Ce nom d'utilisateur est déjà associé à un autre ticket</translation>
+<translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5184662919967270437">Mise à jour de l'appareil...</translation>
 <translation id="5185386675596372454">La nouvelle version de "<ph name="EXTENSION_NAME" />" a été désactivée, car elle nécessite davantage d'autorisations.</translation>
 <translation id="5185500136143151980">Aucun accès à Internet</translation>
@@ -6884,7 +6887,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5804259315582798390">Échec de l'activation de la récupération des données locales</translation>
 <translation id="5805268472388605531">Appuyez de manière prolongée sur les touches du clavier pour afficher les accents et les caractères spéciaux</translation>
-<translation id="5805697420284793859">Gestionnaire de fenêtres</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />, appuyer sur Entrée pour supprimer le fichier</translation>
 <translation id="5806447147478173900">Espace de stockage total utilisé par les sites affichés : <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (par défaut)</translation>
@@ -7043,7 +7045,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> est hors connexion</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5911497236110691522">Pour passer au mode de saisie suivant, appuyez sur <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Visionneuse de raccourcis</translation>
 <translation id="5911545422157959623">Les favoris ne sont pas disponibles en mode Invité</translation>
 <translation id="5914016309240354769">Nature</translation>
 <translation id="5914724413750400082">Module (<ph name="MODULUS_NUM_BITS" /> bits) :
@@ -8184,7 +8185,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6723839827191551955">Contrôlez le contenu multimédia que vous castez</translation>
 <translation id="6723839937902243910">Marche/Arrêt</translation>
 <translation id="6723946439672043591">Choisir un autre profil</translation>
-<translation id="6725073593266469338">Service de gestion de l'interface utilisateur</translation>
 <translation id="6725206449694821596">Protocole d'impression Internet (IPP)</translation>
 <translation id="6725970970008349185">Nombre de suggestions par page</translation>
 <translation id="672609503628871915">Voir les nouveautés</translation>
@@ -10290,7 +10290,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8184288427634747179">Passer à <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Plus d'infos</translation>
 <translation id="8184472985242519288">Uniforme</translation>
-<translation id="8185614942934189676">Adresse e-mail validée automatiquement</translation>
 <translation id="8186013737729037962">En savoir plus sur les appareils enregistrés auprès de l'entreprise</translation>
 <translation id="8186047833733689201">Menu d'accentuation ouvert. Appuyez sur les flèches vers la gauche ou vers la droite ou sur les touches numériques pour naviguer et sur Entrée pour insérer un caractère.</translation>
 <translation id="8186609076106987817">Impossible de trouver le fichier sur le serveur.</translation>
@@ -10656,7 +10655,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Vous allez être déconnecté dans <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Plus d'options pour <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Afficher les éléments sélectionnés</translation>
 <translation id="843173223122814223">Créer des arrière-plans avec l'IA</translation>
 <translation id="8431977087510901105">Paramètres du curseur réinitialisés</translation>
 <translation id="8434109185104929038">Coin lecture</translation>

@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Odaberite račune koje želite izvesti u drugu aplikaciju.</translation>
 <translation id="1506061864768559482">Pretraživač</translation>
 <translation id="1506063256525392513">To vam omogućava da snimate i otpremate fotografije kao i da skenirate QR kodove</translation>
+<translation id="1506733063065214205">RCS MLS klijent</translation>
 <translation id="1508263560970797965">Nastavi u anonimnom načinu rada</translation>
 <translation id="1509486075633541495">Prijava na web lokaciju</translation>
 <translation id="1513858653616922153">Izbriši lozinku</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Dijeli grupu</translation>
 <translation id="2673508731173059946">Posjeti kopirani link</translation>
 <translation id="2679659833697380">Informacije se pohranjuju na uređaju</translation>
+<translation id="2681572445246787428">Potpisivanje dokumenata</translation>
 <translation id="2688535388040882469">Baneri</translation>
 <translation id="2690858294534178585">Kamera se koristi</translation>
 <translation id="2691653761409724435">Nije dostupno offline</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Dodaj karticu u grupu}one{Dodaj kartice u grupu}few{Dodaj kartice u grupu}other{Dodaj kartice u grupu}}</translation>
 <translation id="4302061870579014542">Postavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj lozinki</translation>
+<translation id="4306349443295056740">Potpisivanje OCSP-a</translation>
 <translation id="4309403553630140242">Dodirnite dvaput za više informacija</translation>
 <translation id="4310738531374808763">Prilagodite početnu stranicu</translation>
 <translation id="4320848494125124980">Nedavno</translation>
 <translation id="4322394346347055525">Zatvori ostale kartice</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Uključi obavještenja</translation>
 <translation id="4326912346867677256">Dodirnite "Koristi lozinku" da se sigurno prijavite.</translation>
 <translation id="4327017157997423717">Praćenje cijene proizvoda <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">Za mogućnost pristupanja oznakama na svim uređajima uključite "Oznake" u postavkama.</translation>
 <translation id="4746926359847517643">Uvijek ih možete vratiti u historiji.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Uvezena je {count} kartica}one{Uvezena je {count} kartica}few{Uvezene su {count} kartice}other{Uvezeno je {count} kartica}}</translation>
+<translation id="4749924365937394956">Autentifikacija servera</translation>
 <translation id="4751645464639803239">Nova anonimna kartica</translation>
 <translation id="4752348350801431746">Isključivanje obavještenja o sigurnosnoj provjeri…</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
@@ -1390,12 +1395,14 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="598634819525651074">Područje</translation>
 <translation id="5988097621740394599">Pregledajte padove cijena na svojim karticama.</translation>
 <translation id="5988851877894965432">Otvori URL-ove u Chromeu</translation>
+<translation id="599343768974649785">Eksplicitni tekst</translation>
 <translation id="6006672969046233841">Nova kartica</translation>
 <translation id="6011308810877101166">Poboljšanje prijedloga za pretraživanje</translation>
 <translation id="6012140227487808125">Šifriranje…</translation>
 <translation id="6027619584715411062">Prijavite se da dobijete oznake, lozinke i još mnogo toga na svim uređajima.</translation>
 <translation id="6027945736510816438">Jeste li mislili <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nova funkcija</translation>
+<translation id="6037458223703682108">Digitalni potpis</translation>
 <translation id="6038823991892265570">Upravljajte pohranom na Googleu</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -1539,6 +1546,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6476800141292307438">Prevođenje stranice na <ph name="LANGUAGE" /> jezik. Opcije su dostupne pri dnu ekrana.</translation>
 <translation id="647867789226964031">Promijenite lozinke</translation>
+<translation id="6480363549849064919">Autentifikacija klijenta</translation>
 <translation id="6494931198667773526">Završava se</translation>
 <translation id="6503077044568424649">Najposjećenija</translation>
 <translation id="6503763061813913607">Obavještenja o sigurnosnoj provjeri</translation>
@@ -1584,6 +1592,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6619015782482868078">Tirkizno-plava tema</translation>
 <translation id="6620279676667515405">Otkaži</translation>
 <translation id="6625830436658400045">Postavke sinhronizacije će se vratiti na osnovu posljednje sigurnosne kopije. U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati.</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Uredi folder</translation>
 <translation id="6629759408545977279">Sa: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Dodatno poboljšajte zaštitu od online prijetnji.</translation>
@@ -2148,6 +2157,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="8614671330774943747">Odlazak u Prebacivač kartica</translation>
 <translation id="862367213447108001">Stalni prikaz skočnih prozora na ovoj web lokaciji</translation>
 <translation id="8625706492572042370">Uredite početni ekran</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Zaključane anonimne kartice</translation>
 <translation id="8633025649649592204">Nedavna aktivnost</translation>
 <translation id="8636825310635137004">Da dobijete svoje kartice s drugih uređaja, uključite sinhronizaciju.</translation>
@@ -2334,6 +2344,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="942624946817804130">Izvezi</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="94870150074703282">Izbrisati grupu?</translation>
+<translation id="951090530321144895">Izdavači CA potvrda</translation>
 <translation id="952704832371081537">Otkaži</translation>
 <translation id="95332591904104970">Povezane aplikacije</translation>
 <translation id="954667170699278022">Lista za čitanje</translation>

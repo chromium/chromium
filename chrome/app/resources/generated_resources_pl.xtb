@@ -6011,6 +6011,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5183344263225877832">Zresetować wszystkie uprawnienia urządzenia HID?</translation>
 <translation id="5184063094292164363">Konsola &amp;JavaScript</translation>
 <translation id="5184209580557088469">Istnieje już zgłoszenie przypisane do tej nazwy użytkownika</translation>
+<translation id="5184329579814168207">Otwórz w Chrome</translation>
 <translation id="5184662919967270437">Aktualizuję urządzenie</translation>
 <translation id="5185386675596372454">Najnowsza wersja rozszerzenia „<ph name="EXTENSION_NAME" />” została wyłączona, ponieważ wymaga więcej uprawnień.</translation>
 <translation id="5185500136143151980">Brak internetu</translation>
@@ -6864,7 +6865,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5804259315582798390">Nie udało się włączyć przywracania danych lokalnych</translation>
 <translation id="5805268472388605531">Naciśnij i przytrzymaj klawisze klawiatury, aby wyświetlić znaki akcentu i znaki specjalne</translation>
-<translation id="5805697420284793859">Menedżer okien</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> – naciśnij Enter, aby usunąć plik</translation>
 <translation id="5806447147478173900">Łączna ilość miejsca wykorzystywanego przez wyświetlane witryny: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (domyślnie)</translation>
@@ -7023,7 +7023,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> jest offline</translation>
 <translation id="5911030830365207728">Tłumacz Google</translation>
 <translation id="5911497236110691522">Aby przełączyć się na następną metodę wprowadzania, naciśnij <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Przeglądarka skrótów</translation>
 <translation id="5911545422157959623">Zakładki są niedostępne w trybie gościa</translation>
 <translation id="5914016309240354769">Przyroda</translation>
 <translation id="5914724413750400082">Modulo (<ph name="MODULUS_NUM_BITS" /> b):
@@ -8166,7 +8165,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6723839827191551955">Steruj multimediami, które przesyłasz</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="6723946439672043591">Wybierz inny profil</translation>
-<translation id="6725073593266469338">Usługa UI</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Liczba propozycji wyświetlanych na stronie</translation>
 <translation id="672609503628871915">Zobacz, co nowego</translation>
@@ -10269,7 +10267,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8184288427634747179">Przełącz na: <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Więcej informacji</translation>
 <translation id="8184472985242519288">Jednolity</translation>
-<translation id="8185614942934189676">Adres e-mail został automatycznie zweryfikowany</translation>
 <translation id="8186013737729037962">Więcej informacji o zarejestrowanych urządzeniach firmowych</translation>
 <translation id="8186047833733689201">Menu znaków akcentu zostało otwarte. Aby przechodzić między znakami, naciskaj klawisze w lewo i w prawo lub klawisze numeryczne. Wybór zatwierdzaj klawiszem Enter.</translation>
 <translation id="8186609076106987817">Serwer nie znalazł pliku.</translation>
@@ -10635,7 +10632,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Wylogujemy Cię za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> – więcej opcji</translation>
-<translation id="8431190899827883166">Pokaż kliknięcia</translation>
 <translation id="843173223122814223">Twórz tła za pomocą AI</translation>
 <translation id="8431977087510901105">Ustawienia kursora zostały zresetowane</translation>
 <translation id="8434109185104929038">Kącik do czytania</translation>

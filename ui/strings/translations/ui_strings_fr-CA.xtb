@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
-<translation id="1028699632127661925">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="111910763555783249">Paramètres de notification</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{Il y a 1 jour}one{Il y a # jour}other{Il y a # jours}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Il y a 1 minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Presse-papiers</translation>
 <translation id="2653844658857826081">NOUV.</translation>
 <translation id="2666092431469916601">Haut</translation>
-<translation id="2701330563083355633">Partagé à partir de l'appareil suivant : <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Il y a un an}one{Il y a # an}other{Il y a # ans}}</translation>
 <translation id="2878511608894704031">Tout supprimer</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dans 1 j}one{dans # j}other{dans # j}}</translation>

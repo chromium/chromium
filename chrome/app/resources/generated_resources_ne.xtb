@@ -2580,6 +2580,7 @@
 <translation id="2750020734439919571">Chrome एपसम्बन्धी अन्य सेटिङ तथा अनुमति</translation>
 <translation id="275010360476017464">Gemini सँग कुरा गर्न आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्। तपाईंले Gemini सँग कुरा गर्दा उक्त अडियो Gemini एपहरूमा गरिएका गतिविधि (अन छ भने) मा भण्डारण गरिन्छ।</translation>
 <translation id="2750602041558385535">पुष्टि नगरिएको फाइल डाउनलोड गर्न ब्लक गरिएको छ</translation>
+<translation id="2751320815618312249">थप <ph name="NUM" /> वटा</translation>
 <translation id="2751454300227269244">आफ्नो मुख दायाँतिर लैजानुहोस्</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> तपाईंको सुरक्षा साँचोको ID नम्बर जान्न चाहन्छ। यो साइटलाई तपाईंले कुन सुरक्षा साँचो प्रयोग गरिरहनुभएको छ भन्ने कुरा ठ्याक्कै थाहा हुने छ।</translation>
 <translation id="275213133112113418">तपाईंको कार्ड सेभ गरिएको छ</translation>
@@ -4540,6 +4541,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> कार्यको सर्टकट चयन गर्नुहोस्</translation>
 <translation id="4109135793348361820">विण्डोलाई <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) मा सार्नुहोस्</translation>
 <translation id="4110485659976215879">चेतावनी रिस्टोर गर्नुहोस्</translation>
+<translation id="411052834366185695">कम्तीमा एउटा अङ्कको हुनु पर्छ</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (अफलाइन)</translation>
 <translation id="4113743276555482284">फाइलको पासवर्ड</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{कुनै पनि पासवर्ड सेभ गरिएको छैन}=1{एउटा पासवर्ड जाँच गरियो}other{{COUNT} वटा पासवर्ड जाँच गरिए}}</translation>
@@ -5029,6 +5031,7 @@
 <translation id="4461483878391246134">तपाईं जुन जुन भाषामा अनुवाद गर्ने विकल्प कहिल्यै प्रदान गर्न चाहनुहुन्छ ती भाषाहरू हाल्नुहोस्</translation>
 <translation id="4462159676511157176">अनुकुल नाम सर्भरहरू</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> का हकमा <ph name="TIME" /> समय सीमा सेट गरिएको छ</translation>
+<translation id="4466922176191762830">थप <ph name="NUM" /> वटा</translation>
 <translation id="4467373268340082204">गलत PIN</translation>
 <translation id="4469324811108161144">टिपोटहरूमा बढीमा <ph name="CHARACTER_LIMIT" /> वटा वर्ण समावेश गर्न सकिन्छ।</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा फाइल सम्पादन गर्न सक्ने छ</translation>
@@ -5443,6 +5446,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{सार्वजनिक की तथा इन्टेग्रिटी ब्लक जाँच गरिँदै छ... १ मिनेटभन्दा कम समय बाँकी छ}=1{सार्वजनिक की तथा इन्टेग्रिटी ब्लक जाँच गरिँदै छ... १ मिनेट बाँकी छ}other{सार्वजनिक की तथा इन्टेग्रिटी ब्लक जाँच गरिँदै छ... # मिनेट बाँकी छ}}</translation>
 <translation id="4766598565665644999">सबै एक्स्टेन्सनहरू <ph name="HOST" /> रिड गर्न तथा बदल्न सक्छन्</translation>
 <translation id="4767427586072640478">अफ गरिएका एक्स्टेन्सनहरूका बारेमा थप जान्नुहोस्।</translation>
+<translation id="4769359569327438364">कम्तीमा ४ वटा अङ्कको हुनु पर्छ</translation>
 <translation id="4769632191812288342">तपाईंले मानक सुरक्षा प्राप्त गरिरहनुभएको छ</translation>
 <translation id="4770119228883592393">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न ⌘ + Option + डाउन एरो थिच्नुहोस्</translation>
 <translation id="4772914216048388646">व्यवस्थित</translation>
@@ -6031,6 +6035,7 @@
 <translation id="5183344263225877832">HID डिभाइसलाई दिइएका सबै अनुमति रिसेट गर्ने हो?</translation>
 <translation id="5184063094292164363">&amp;JavaScript कन्सोल</translation>
 <translation id="5184209580557088469">यो युजरनेम भएको टिकट पहिलेदेखि नै छ</translation>
+<translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
 <translation id="5184662919967270437">तपाईँको यन्त्रलाई अद्यावधिक गर्दै</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" को नयाँ संस्करणलाई अक्षम गरिएको छ किनकी यसलाई धेरै अनुमतिहरूको आवश्यकता पर्छ।</translation>
 <translation id="5185500136143151980">इन्टरनेट छैन</translation>
@@ -6125,6 +6130,7 @@
 <translation id="5240931875940563122">Android फोनमार्फत साइन इन गर्नुहोस्</translation>
 <translation id="5241689948221696942">केही उत्पादनहरूका हकमा तुलनात्मक जानकारी भएका तालिकाहरूले वेबमा उपलब्ध समीक्षाहरूको सारांश तयार पार्छन्</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" /> " सक्षम गर्ने?</translation>
+<translation id="5243477050423867768">यो कम्तीमा ८ अङ्कको हुनु पर्छ र दोहोरिने वा क्रमबद्ध रूपमा आउने अङ्कहरू समावेश गर्न पाइँदैन</translation>
 <translation id="5244234799035360187">OneDrive अब Files एपमा देखिने छ</translation>
 <translation id="5244466461749935369">अहिले राखिराख्नुहोस्</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> मा सिंक गर्दै</translation>
@@ -6886,7 +6892,6 @@
 <translation id="5804241973901381774">अनुमतिहरू</translation>
 <translation id="5804259315582798390">लोकल डेटा रिकभर गर्ने सुविधा अन गर्न सकिएन</translation>
 <translation id="5805268472388605531">उच्चारणका चिन्ह र विशेष वर्णहरू हेर्न किबोर्डका कीहरू थिचिराख्नुहोस्</translation>
-<translation id="5805697420284793859">विन्डोको प्रबन्धक</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> फाइल मेटाउन इन्टर थिच्नुहोस्</translation>
 <translation id="5806447147478173900">देखाइएका साइटहरूले प्रयोग गरेको कुल भण्डारण: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">०° (डिफल्ट)</translation>
@@ -7045,7 +7050,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> अफलाइन छ</translation>
 <translation id="5911030830365207728">Google अनुवादक</translation>
 <translation id="5911497236110691522">अर्को इनपुट विधि प्रयोग गर्न <ph name="KEY_CODES" /> थिच्नुहोस्</translation>
-<translation id="5911533659001334206">सर्टकटको दर्शक</translation>
 <translation id="5911545422157959623">बुकमार्कहरू अतिथि मोडमा उपलब्ध हुँदैनन्</translation>
 <translation id="5914016309240354769">प्रकृति</translation>
 <translation id="5914724413750400082">मापांक (<ph name="MODULUS_NUM_BITS" /> बिटहरू): <ph name="MODULUS_HEX_DUMP" /> 
@@ -8039,6 +8043,7 @@
 <translation id="6619990499523117484">आफ्नो PIN को पुष्टि गर्नुहोस्</translation>
 <translation id="6621282332208609777">Google लाई सोध्नुहोस् वा URL टाइप गर्नुहोस्</translation>
 <translation id="6621391692573306628">तपाईं यो ट्याब अर्को डिभाइसमा पठाउन चाहनुहुन्छ भने दुवै डिभाइसमा Chrome मा साइन इन गर्नुहोस्</translation>
+<translation id="6622212269189717101">कम्तीमा ६ वटा अङ्कको हुनु पर्छ र दोहोरिने वा क्रमबद्ध रूपमा आउने अङ्कहरू समावेश गर्न पाइँदैन</translation>
 <translation id="6622980291894852883">तस्वीरहरूलाई ब्लक गर्न जारी राख्नुहोस्</translation>
 <translation id="6624036901798307345">ट्याब्लेट मोडमा भएका बेला प्रत्येक ट्याबको थम्बनेल देखाउने नयाँ ट्याब स्ट्रिप खोल्न ट्याबको सङ्ख्या गन्ने टुलबारको बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="6624538059730609162">दायाँ भ्यू बन्द गर्नुहोस्</translation>
@@ -8183,7 +8188,6 @@
 <translation id="6723839827191551955">आफूले कास्ट गरिरहेको मिडिया नियन्त्रण गर्नुहोस्</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6723946439672043591">अर्कै प्रोफाइल छनौट गर्नुहोस्</translation>
-<translation id="6725073593266469338">UI सम्बन्धी सेवा</translation>
 <translation id="6725206449694821596">इन्टरनेट प्रिन्टिङ प्रोटोकोल (IPPS)</translation>
 <translation id="6725970970008349185">प्रति पृष्ठ प्रदर्शन गरिने उम्मेद्वारहरूको सङ्ख्या</translation>
 <translation id="672609503628871915">नयाँ के छ हेर्नुहोस्</translation>
@@ -10288,7 +10292,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> मा बदल्नुहोस्</translation>
 <translation id="8184318863960255706">थप जानकारी</translation>
 <translation id="8184472985242519288">एकरूपता</translation>
-<translation id="8185614942934189676">इमेल स्वतः पुष्टि गरिएको छ</translation>
 <translation id="8186013737729037962">इन्टरप्राइजका लागि दर्ता गरिएका डिभाइसहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="8186047833733689201">एक्सेन्ट चिन्हहरूको मेनु खुला छ। नेभिगेट गर्न लेफ्ट एरो, राइट एरो वा नम्बर कीहरू थिच्नुहोस् र केही कुरा हाल्न इन्टर की थिच्नुहोस्।</translation>
 <translation id="8186609076106987817">सर्भरले फाइल फेला पार्न सकेन।</translation>
@@ -10654,7 +10657,6 @@
 <translation id="8428634594422941299">बुझेँ</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> मा तपाईंलाई साइन आउट गरिने छ</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> का थप विकल्पहरू</translation>
-<translation id="8431190899827883166">ट्याप देखाउनुहोस्</translation>
 <translation id="843173223122814223">AI प्रयोग गरी ब्याकग्राउन्ड बनाउनुहोस्</translation>
 <translation id="8431977087510901105">कर्सरसम्बन्धी सेटिङ रिसेट गरिएका छन्</translation>
 <translation id="8434109185104929038">पढ्नका लागि शान्त ठाउँ</translation>

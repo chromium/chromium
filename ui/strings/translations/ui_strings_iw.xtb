@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1028699632127661925">הכרטיסייה נשלחת אל <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">הגדרות של הודעות</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{לפני יום אחד}one{לפני # ימים}two{לפני יומיים}other{לפני # ימים}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{לפני דקה אחת}one{לפני # דקות}two{לפני # דקות}other{לפני # דקות}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2653844658857826081">חדש</translation>
 <translation id="2666092431469916601">למעלה</translation>
-<translation id="2701330563083355633">שותפה מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{לפני שנה אחת}one{לפני # שנים}two{לפני שנתיים}other{לפני # שנים}}</translation>
 <translation id="2878511608894704031">מחיקת הכול</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{עוד יום אחד}one{עוד יום אחד}two{עוד 2 ימים}other{עוד # ימים}}</translation>

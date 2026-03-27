@@ -6046,6 +6046,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5183344263225877832">HID түзмөгүнүн бардык уруксаттары баштапкы абалга келтирилсинби?</translation>
 <translation id="5184063094292164363">&amp;JavaScript консолу</translation>
 <translation id="5184209580557088469">Мындай колдонуучунун аты бар билет мурунтан эле түзүлгөн</translation>
+<translation id="5184329579814168207">Chrome'до ачуу</translation>
 <translation id="5184662919967270437">Түзмөгүңүз жаңыртылууда</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" эң акыркы версиясына көбүрөөк уруксат талап кылынгандыктан, ал иштен чыгарылды.</translation>
 <translation id="5185500136143151980">Интернет жок</translation>
@@ -6901,7 +6902,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5804241973901381774">Уруксаттар</translation>
 <translation id="5804259315582798390">Түзмөктөгү маалыматты калыбына келтирүү параметри иштетилген жок</translation>
 <translation id="5805268472388605531">Басым белгилерин жана атайын символдорду көрүү үчүн баскычтоптогу баскычтарды коё бербей басып туруңуз</translation>
-<translation id="5805697420284793859">Терезе башкаргычы</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> файлын өчүрүү үчүн Enter баскычын басыңыз</translation>
 <translation id="5806447147478173900">Көрсөтүлгөн сайттар ээлеген жалпы орун: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Демейки)</translation>
@@ -7060,7 +7060,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> оффлайн режиминде</translation>
 <translation id="5911030830365207728">Google Котормо</translation>
 <translation id="5911497236110691522">Кийинки киргизүү ыкмасына которулуу үчүн <ph name="KEY_CODES" /> баскычтарын басыңыз</translation>
-<translation id="5911533659001334206">Тез баскычтарды карап чыгуу</translation>
 <translation id="5911545422157959623">Кыстармалар конок режиминде жеткиликсиз</translation>
 <translation id="5914016309240354769">Жаратылыш</translation>
 <translation id="5914724413750400082">Модуль (<ph name="MODULUS_NUM_BITS" /> бит):
@@ -8199,7 +8198,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6723839827191551955">Тышкы экранга чыгарып жаткан медиа файлды башкарыңыз</translation>
 <translation id="6723839937902243910">Кубат</translation>
 <translation id="6723946439672043591">Башка профилди тандоо</translation>
-<translation id="6725073593266469338">Интерфейс кызматы</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Баракчада чагылдырыла турган талапкерлердин саны</translation>
 <translation id="672609503628871915">Эмне жаңылык бар</translation>
@@ -10304,7 +10302,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> дегенге өтүү</translation>
 <translation id="8184318863960255706">Көбүрөөк маалымат</translation>
 <translation id="8184472985242519288">Бир ыктай</translation>
-<translation id="8185614942934189676">Электрондук почта автоматтык түрдө ырасталды</translation>
 <translation id="8186013737729037962">Ишканалар аркылуу катталган түзмөктөр тууралуу кеңири маалымат</translation>
 <translation id="8186047833733689201">Басым белгилеринин менюсу ачылды. Багыт алуу үчүн сол, оң же сан баскычтарын, ал эми киргизүү үчүн Enter баскычын басыңыз.</translation>
 <translation id="8186609076106987817">Сервер файлды тапкан жок.</translation>
@@ -10670,7 +10667,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8428634594422941299">Түшүнүктүү</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> кийин тутумдан автоматтык түрдө чыгарыласыз</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" />: башка параметрлери</translation>
-<translation id="8431190899827883166">Басылган жерлерди көрсөтүү</translation>
 <translation id="843173223122814223">Фондорду ЖИ менен түзүңүз</translation>
 <translation id="8431977087510901105">Курсордун параметрлери баштапкы абалга келтирилди</translation>
 <translation id="8434109185104929038">Окуу бурчу</translation>

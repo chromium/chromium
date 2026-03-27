@@ -917,6 +917,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2400600116338235695">Může žádat o připojení k sériovým portům</translation>
 <translation id="2403474027143565107">Přesná</translation>
 <translation id="240450251994300576">Sekundární logo pro záhlaví</translation>
+<translation id="2404715426538856682">Kreditní a debetní karty · IBAN · Věrnostní karty</translation>
 <translation id="2404884497378469141">Zkuste soubory zkopírovat znovu</translation>
 <translation id="2413155254802890957">Stará</translation>
 <translation id="2413528052993050574">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát byl zřejmě zrušen. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
@@ -2164,6 +2165,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4340810192899866471">Importovat ze souboru JSON</translation>
 <translation id="4340982228985273705">Tento počítač nebyl rozpoznán jako spravovaný organizací, proto lze pomocí zásad automaticky instalovat pouze rozšíření hostovaná v Internetovém obchodě Chrome. Adresa URL Internetového obchodu Chrome pro aktualizace je <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Tematické zábavní parky</translation>
+<translation id="4346670990181948854">Cestovní informace · Vozidla</translation>
 <translation id="4348834659292907206">Připojení k webu <ph name="SITE" /> není zabezpečené</translation>
 <translation id="4349365535725594680">Důvěrný obsah nelze sdílet</translation>
 <translation id="4349810866125026513">Přesto nahrát</translation>
@@ -2952,6 +2954,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5596939519753369075">2 × 3,5″</translation>
 <translation id="5597254438174353289">Modrá 3</translation>
+<translation id="5600044805561809264">Při prohlížení můžete snadno pokládat otázky týkající se sdílených karet.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> nebo <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Správa není podporována</translation>
 <translation id="5605249000617390290">Další informace o sledování cen</translation>
@@ -3046,6 +3049,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5752519522101347518">Načítání ověřovacího webu banky</translation>
 <translation id="5753570386948603678">Vymazat z historie</translation>
 <translation id="5759751709240058861">Používání a natáčení kamery</translation>
+<translation id="5762131895127128324">Řidičské průkazy · Průkazy totožnosti · Pasy</translation>
 <translation id="5763042198335101085">Zadejte platnou e-mailovou adresu</translation>
 <translation id="5764725887548570807">Neplatný formát zdroje.</translation>
 <translation id="5764920692828389743">Odeslat na adresu <ph name="EMAIL_ADDRESS" /></translation>
@@ -3982,6 +3986,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7220786058474068424">Zpracovávání</translation>
 <translation id="7221855153210829124">Zobrazovat oznámení</translation>
 <translation id="722454870747268814">Nová anonymní karta</translation>
+<translation id="7225676267118764980">Změna poskytovatele automatického vyplňování a dalších nastavení</translation>
 <translation id="7226892411756387078">Prostý text</translation>
 <translation id="7227293336683593977">Historie ceny</translation>
 <translation id="7228306718910595403">Stav kvalifikace pro EU</translation>

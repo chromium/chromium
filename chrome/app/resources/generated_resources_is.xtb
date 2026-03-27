@@ -6047,6 +6047,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5183344263225877832">Endurstilla allar heimildir HID-tækja?</translation>
 <translation id="5184063094292164363">&amp;JavaScript-stjórnborð</translation>
 <translation id="5184209580557088469">Miði með þessu notandanafni er þegar til</translation>
+<translation id="5184329579814168207">Opna í Chrome</translation>
 <translation id="5184662919967270437">Uppfærir tækið þitt</translation>
 <translation id="5185386675596372454">Nýjasta útgáfa <ph name="EXTENSION_NAME" /> hefur verið gerð óvirk því að hún krefst frekari heimilda.</translation>
 <translation id="5185500136143151980">Engin nettenging</translation>
@@ -6902,7 +6903,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="5804259315582798390">Ekki tókst að virkja endurheimt staðbundinna gagna</translation>
 <translation id="5805268472388605531">Haltu lyklum á lyklaborðinu inni til að sjá áherslumerki og sérstafi</translation>
-<translation id="5805697420284793859">Gluggastjórnun</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> ýttu á Enter til að eyða skrá</translation>
 <translation id="5806447147478173900">Heildargeymslurými sem birt vefsvæði nota: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (sjálfgefið)</translation>
@@ -7061,7 +7061,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> er án nettengingar</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">Ýttu á <ph name="KEY_CODES" /> til að skipta yfir í næstu innfærsluaðferð</translation>
-<translation id="5911533659001334206">Flýtileiðaskoðari</translation>
 <translation id="5911545422157959623">Bókamerki eru ekki tiltæk í gestastillingu</translation>
 <translation id="5914016309240354769">Náttúra</translation>
 <translation id="5914724413750400082">Leifastofn (<ph name="MODULUS_NUM_BITS" /> bitar):
@@ -8202,7 +8201,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6723839827191551955">Stjórnaðu efninu sem þú sendir út</translation>
 <translation id="6723839937902243910">Orka</translation>
 <translation id="6723946439672043591">Veldu annan prófíl</translation>
-<translation id="6725073593266469338">Notendaviðmótsþjónusta</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Fjöldi tillagna til að sýna á hverri síðu</translation>
 <translation id="672609503628871915">Skoða nýjungarnar</translation>
@@ -10307,7 +10305,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8184288427634747179">Skipta yfir í <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Frekari upplýsingar</translation>
 <translation id="8184472985242519288">Jafnt</translation>
-<translation id="8185614942934189676">Netfang staðfest sjálfkrafa</translation>
 <translation id="8186013737729037962">Nánar um tæki sem eru skráð á fyrirtæki</translation>
 <translation id="8186047833733689201">Valmynd áherslumerkja opin. Ýttu á hægri-, vinstri- eða númeralykla til að fletta og Enter til að setja inn.</translation>
 <translation id="8186609076106987817">Þjónninn fann ekki skrána.</translation>
@@ -10673,7 +10670,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8428634594422941299">Ég skil</translation>
 <translation id="84297032718407999">Þú verður skráð(ur) út eftir <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Fleiri valkostir fyrir <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Sýna snertingar</translation>
 <translation id="843173223122814223">Búa til bakgrunna með gervigreind</translation>
 <translation id="8431977087510901105">Stillingar bendils endurstilltar</translation>
 <translation id="8434109185104929038">Lestrarkrókur</translation>

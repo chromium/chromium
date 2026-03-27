@@ -157,6 +157,7 @@
 <translation id="1099070179078143183">Chrome สามารถใช้โมเดล AI ที่ทำงานโดยตรงในอุปกรณ์ของคุณโดยไม่ต้องส่งข้อมูลไปยังเซิร์ฟเวอร์ของ Google เพื่อเปิดใช้งานฟีเจอร์ต่างๆ เช่น การตรวจจับการหลอกลวง เมื่อปิดการตั้งค่านี้ ฟีเจอร์เหล่านี้อาจไม่ทำงาน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับ AI ในอุปกรณ์<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">รูปภาพคัดลอกมาจาก <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">ไอคอนปัจจุบัน</translation>
+<translation id="1101267749138963680">กำลังตรวจสอบความปลอดภัย...</translation>
 <translation id="1102759278139578486">ดาวน์โหลดไฟล์คำอธิบายประกอบของโหนดหลักไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="1104098698795583187">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บนี้ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดของคุณ</translation>
@@ -2902,6 +2903,7 @@
 <translation id="2979893796619951531">ยกเว้นเว็บไซต์</translation>
 <translation id="2979966855249721010">คุณอาจเห็นคําแนะนําแอป เคล็ดลับ และอื่นๆ ตามความสนใจของคุณ</translation>
 <translation id="2981113813906970160">แสดงเคอร์เซอร์เมาส์ขนาดใหญ่</translation>
+<translation id="2981728693230031897">สรุปหน้านี้ด้วย Gemini</translation>
 <translation id="2983102365694924129">อิงตามกิจกรรมของคุณในเว็บไซต์ การตั้งค่านี้ปิดอยู่</translation>
 <translation id="2983311431122838216">ถามในโหมด AI ของ Google Search</translation>
 <translation id="2983373101216420412">ระดับแบตเตอรี่ของกล่อง <ph name="PERCENTAGE" />%</translation>
@@ -6028,6 +6030,7 @@
 <translation id="5183344263225877832">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์ HID ไหม</translation>
 <translation id="5184063094292164363">&amp;คอนโซล JavaScript</translation>
 <translation id="5184209580557088469">มีตั๋วที่ใช้ชื่อผู้ใช้นี้แล้ว</translation>
+<translation id="5184329579814168207">เปิดใน Chrome</translation>
 <translation id="5184662919967270437">กำลังอัปเดตอุปกรณ์</translation>
 <translation id="5185386675596372454">รุ่นใหม่ล่าสุดของ "<ph name="EXTENSION_NAME" />" ถูกปิดใช้งาน เนื่องจากต้องได้รับการอนุญาตมากกว่านี้</translation>
 <translation id="5185500136143151980">ไม่มีอินเทอร์เน็ต</translation>
@@ -6880,7 +6883,6 @@
 <translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="5804259315582798390">เปิดใช้การกู้คืนข้อมูลในเครื่องไม่สำเร็จ</translation>
 <translation id="5805268472388605531">กดแป้นบนแป้นพิมพ์ค้างไว้เพื่อดูเครื่องหมายการเน้นเสียงและสัญลักษณ์พิเศษ</translation>
-<translation id="5805697420284793859">ตัวจัดการหน้าต่าง</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> กด Enter เพื่อลบไฟล์</translation>
 <translation id="5806447147478173900">พื้นที่เก็บข้อมูลทั้งหมดที่เว็บไซต์ต่างๆ ที่แสดงอยู่ใช้: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ค่าเริ่มต้น)</translation>
@@ -7039,7 +7041,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ออฟไลน์</translation>
 <translation id="5911030830365207728">Google แปลภาษา</translation>
 <translation id="5911497236110691522">หากต้องการเปลี่ยนวิธีการป้อนข้อมูลครั้งต่อไป ให้กด <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">การดูแป้นพิมพ์ลัด</translation>
 <translation id="5911545422157959623">บุ๊กมาร์กจะใช้งานไม่ได้ในโหมดผู้มาเยือน</translation>
 <translation id="5914016309240354769">ธรรมชาติ</translation>
 <translation id="5914724413750400082">โมดูลัส (<ph name="MODULUS_NUM_BITS" /> บิต):
@@ -8177,7 +8178,6 @@
 <translation id="6723839827191551955">ควบคุมสื่อที่กำลังแคสต์</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="6723946439672043591">เลือกโปรไฟล์อื่น</translation>
-<translation id="6725073593266469338">บริการ UI</translation>
 <translation id="6725206449694821596">โปรโตคอลการพิมพ์ผ่านอินเทอร์เน็ต (IPP)</translation>
 <translation id="6725970970008349185">จำนวนตัวเลือกที่จะแสดงต่อหนึ่งหน้า</translation>
 <translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
@@ -10282,7 +10282,6 @@
 <translation id="8184288427634747179">สลับเป็น <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">ข้อมูลเพิ่มเติม</translation>
 <translation id="8184472985242519288">แบบเดียวกัน</translation>
-<translation id="8185614942934189676">ยืนยันอีเมลโดยอัตโนมัติแล้ว</translation>
 <translation id="8186013737729037962">ดูข้อมูลเพิ่มเติมเกี่ยวกับอุปกรณ์ที่ลงทะเบียนขององค์กร</translation>
 <translation id="8186047833733689201">เมนูเครื่องหมายเน้นเสียงเปิดอยู่ กดแป้นซ้าย ขวา หรือตัวเลขเพื่อเลือกเครื่องหมายที่ต้องการและกด Enter เพื่อแทรก</translation>
 <translation id="8186609076106987817">เซิร์ฟเวอร์ไม่พบไฟล์</translation>
@@ -10648,7 +10647,6 @@
 <translation id="8428634594422941299">รับทราบ</translation>
 <translation id="84297032718407999">คุณจะออกจากระบบใน <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">ตัวเลือกเพิ่มเติมสำหรับ <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">แสดงการแตะ</translation>
 <translation id="843173223122814223">สร้างพื้นหลังด้วย AI</translation>
 <translation id="8431977087510901105">รีเซ็ตการตั้งค่าเคอร์เซอร์แล้ว</translation>
 <translation id="8434109185104929038">มุมอ่านหนังสือ</translation>

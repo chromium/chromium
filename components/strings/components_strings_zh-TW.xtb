@@ -2839,7 +2839,7 @@
             <ph name="LIST_ITEM" />Cookie 和網站資料
             <ph name="LIST_ITEM" />在表單中輸入的資訊
           <ph name="END_LIST" /></translation>
-<translation id="5434803328547504573">將這個信用卡驗證碼儲存到 Google 錢包 (<ph name="ACCOUNT_EMAIL" />) 可加快結帳速度</translation>
+<translation id="5434803328547504573">將這組信用卡驗證碼儲存到 Google 錢包 (<ph name="ACCOUNT_EMAIL" />) 可加快結帳速度</translation>
 <translation id="5436307623797390637">裝置上的應用程式</translation>
 <translation id="543656192084990644">不允許使用動作感應器</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />，原本為：<ph name="PREVIOUS_VALUE" /></translation>
@@ -2956,6 +2956,7 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5596939519753369075">2 x 3.5 吋</translation>
 <translation id="5597254438174353289">藍色 3</translation>
+<translation id="5600044805561809264">上網時，可以輕鬆詢問分頁的相關問題。</translation>
 <translation id="5603469469737324249">「<ph name="ISSUER_1_NAME" />」或「<ph name="ISSUER_2_NAME" />」</translation>
 <translation id="560412284261940334">系統不支援管理</translation>
 <translation id="5605249000617390290">進一步瞭解價格追蹤功能</translation>
@@ -3254,7 +3255,7 @@
 <translation id="6087312102907839798">相關搜尋</translation>
 <translation id="6089505343295765444">你從 Chrome 歷史記錄中刪除的分頁仍會顯示在比較表中</translation>
 <translation id="6091115085465716987">Google 錢包標誌</translation>
-<translation id="6091691259076781835">將這個信用卡驗證碼儲存到裝置可加快結帳速度</translation>
+<translation id="6091691259076781835">將這組信用卡驗證碼儲存到裝置可加快結帳速度</translation>
 <translation id="6093599771645355227">黃色 1</translation>
 <translation id="6093795393556121384">已成功驗證您的信用卡</translation>
 <translation id="6094253940069566294">編輯車輛</translation>
@@ -3745,7 +3746,7 @@
 <translation id="6849023911358004088">「管理安全性設定」按鈕，啟動後即可在 Chrome 設定中管理安全瀏覽等功能</translation>
 <translation id="6850286078059909152">文字顏色</translation>
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
-<translation id="6854691830678097752">將這個信用卡驗證碼儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />) 可加快結帳速度</translation>
+<translation id="6854691830678097752">將這組信用卡驗證碼儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />) 可加快結帳速度</translation>
 <translation id="6855951327659224749">請先清除表單，才能使用先買後付選項</translation>
 <translation id="6857776781123259569">管理密碼...</translation>
 <translation id="6858034839887287663">A2 x 4</translation>

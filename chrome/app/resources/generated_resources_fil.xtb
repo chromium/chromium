@@ -2594,6 +2594,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2750020734439919571">Higit pang setting at pahintulot ng Chrome app</translation>
 <translation id="275010360476017464">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, naso-store ang audio sa Aktibidad sa Mga Gemini App (kung naka-on ito).</translation>
 <translation id="2750602041558385535">Na-block ang hindi na-verify na pag-download</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" /> pa</translation>
 <translation id="2751454300227269244">Ngumuso pakanan</translation>
 <translation id="2751883373055093745">Gustong malaman ng <ph name="WEBSITE" /> ang numero ng ID ng iyong security key. Eksaktong malalaman ng site kung aling security key ang ginagamit mo.</translation>
 <translation id="275213133112113418">Naka-save ang iyong card</translation>
@@ -4556,6 +4557,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4107793386654579933">Pumili ng shortcut para sa aksyong <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Ilipat ang window sa <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">I-restore ang babala</translation>
+<translation id="411052834366185695">Hindi dapat bababa sa 1 digit</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Password ng file</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Walang naka-save na password}=1{1 password ang nasuri}one{{COUNT} password ang nasuri}other{{COUNT} na password ang nasuri}}</translation>
@@ -5045,6 +5047,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4461483878391246134">Magdagdag ng mga wika sa hindi kailanman iaalok na isalin</translation>
 <translation id="4462159676511157176">Custom na mga server ng pangalan</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> ang limitasyon sa oras na itinakda para sa <ph name="APP_NAME" /></translation>
+<translation id="4466922176191762830">+ <ph name="NUM" /> Pa</translation>
 <translation id="4467373268340082204">Maling PIN</translation>
 <translation id="4469324811108161144">Puwedeng mag-save ng hanggang <ph name="CHARACTER_LIMIT" /> character ang mga tala.</translation>
 <translation id="4469762931504673593">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /></translation>
@@ -5459,6 +5462,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Sinusuri ang pampublikong key at integrity block... Wala nang 1 minuto ang natitira}=1{Sinusuri ang pampublikong key at integrity block... 1 minuto na lang ang natitira}one{Sinusuri ang pampublikong key at integrity block... # minuto na lang ang natitira}other{Sinusuri ang pampublikong key at integrity block... # na minuto na lang ang natitira}}</translation>
 <translation id="4766598565665644999">Puwedeng basahin at baguhin ng lahat ng extension ang <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Matuto pa tungkol sa mga naka-disable na extension.</translation>
+<translation id="4769359569327438364">Hindi dapat bababa sa 4 na digit</translation>
 <translation id="4769632191812288342">Nakakakuha ka ng karaniwang proteksyon</translation>
 <translation id="4770119228883592393">Humiling ng pahintulot, pindutin ang ⌘ + Option + Pababang arrow para tumugon</translation>
 <translation id="4772914216048388646">Maayos</translation>
@@ -6047,6 +6051,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5183344263225877832">I-reset ang lahat ng pahintulot sa HID device?</translation>
 <translation id="5184063094292164363">&amp;JavaScript Console</translation>
 <translation id="5184209580557088469">Mayroon nang ticket na may ganitong username</translation>
+<translation id="5184329579814168207">Buksan sa Chrome</translation>
 <translation id="5184662919967270437">Ina-update ang iyong device</translation>
 <translation id="5185386675596372454">Hindi pinagana ang pinakabagong bersyon ng "<ph name="EXTENSION_NAME" />" dahil nangangailangan ito ng higit pang mga pahintulot.</translation>
 <translation id="5185500136143151980">Walang Internet</translation>
@@ -6141,6 +6146,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5240931875940563122">Mag-sign in gamit ang Android phone</translation>
 <translation id="5241689948221696942">Para sa ilang produkto, ibinubuod ng mga talahanayan sa paghahambing ang mga review mula sa buong web</translation>
 <translation id="5242724311594467048">I-enable ang "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5243477050423867768">Hindi dapat bababa sa 8 digit at hindi puwedeng maglaman ng mga umuulit o may pagkakasunod-sunod na sequence</translation>
 <translation id="5244234799035360187">Lalabas na ang OneDrive sa Files app</translation>
 <translation id="5244466461749935369">Panatilihin sa ngayon</translation>
 <translation id="5244474230056479698">Sini-sync sa <ph name="EMAIL" /></translation>
@@ -6902,7 +6908,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5804259315582798390">Hindi na-enable ang pag-recover ng lokal na data</translation>
 <translation id="5805268472388605531">Pindutin nang matagal ang mga keyboard key para makita ang mga accent mark at special character</translation>
-<translation id="5805697420284793859">Window manager</translation>
 <translation id="5806322307130093061">Pindutin ang enter para i-delete ang file na <ph name="FILE_NAME" /></translation>
 <translation id="5806447147478173900">Kabuuang storage na ginagamit ng mga naka-display na site: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Default)</translation>
@@ -7061,7 +7066,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5910726859585389579">Offline ang <ph name="DEVICE_TYPE" /></translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">Para lumipat sa susunod na pamamaraan ng pag-input, pindutin ang <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Shortcut viewer</translation>
 <translation id="5911545422157959623">Hindi available ang mga bookmark sa guest mode</translation>
 <translation id="5914016309240354769">Kalikasan</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> (na) bit):
@@ -8058,6 +8062,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6619990499523117484">Kumpirmahin ang iyong PIN</translation>
 <translation id="6621282332208609777">Magtanong sa Google o mag-type ng URL</translation>
 <translation id="6621391692573306628">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome sa dalawang device</translation>
+<translation id="6622212269189717101">Hindi dapat bababa sa 6 na digit at hindi puwedeng maglaman ng mga umuulit o pagkakasunod-sunod na sequence</translation>
 <translation id="6622980291894852883">Magpatuloy sa paghaharang ng mga larawan</translation>
 <translation id="6624036901798307345">Sa tablet mode, i-tap ang button ng toolbar para sa pagbibilang ng tab para mabuksan ang bagong tabstrip na nagpapakita ng mga thumbnail ng bawat tab.</translation>
 <translation id="6624538059730609162">Isara ang kanang view</translation>
@@ -8202,7 +8207,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6723839827191551955">Kontrolin ang media na kina-cast mo</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723946439672043591">Pumili ng ibang profile</translation>
-<translation id="6725073593266469338">Serbisyo sa UI</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Bilang ng mga kandidatong ipapakita sa bawat pahina</translation>
 <translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
@@ -10308,7 +10312,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8184288427634747179">Lumipat sa <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Higit pang impormasyon</translation>
 <translation id="8184472985242519288">Magkapareho</translation>
-<translation id="8185614942934189676">Awtomatikong na-verify ang email</translation>
 <translation id="8186013737729037962">Matuto pa tungkol sa mga device na naka-enroll sa enterprise</translation>
 <translation id="8186047833733689201">Bukas ang menu ng mga accent mark. Pindutin ang pakaliwang key, pakanang key, o mga number key para mag-navigate at enter para maglagay.</translation>
 <translation id="8186609076106987817">Hindi makita ng server ang file.</translation>
@@ -10674,7 +10677,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Masa-sign out ka sa loob ng <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Higit pang opsyon para sa <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Ipakita ang mga pag-tap</translation>
 <translation id="843173223122814223">Gumawa ng mga background gamit ang AI</translation>
 <translation id="8431977087510901105">Na-reset ang mga setting ng cursor</translation>
 <translation id="8434109185104929038">Nook sa pagbabasa</translation>

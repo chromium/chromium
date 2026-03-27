@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Изберете профилите, които искате да експортирате в друго приложение.</translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
 <translation id="1506063256525392513">Това ви позволява да правите и качвате снимки, както и да сканирате QR кодове</translation>
+<translation id="1506733063065214205">Клиентска програма за MLS за RCS</translation>
 <translation id="1508263560970797965">Продължаване в режим „инкогнито“</translation>
 <translation id="1509486075633541495">Вход в уебсайта</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Споделяне на групата</translation>
 <translation id="2673508731173059946">Отваряне на копираната връзка</translation>
 <translation id="2679659833697380">Информацията ви се запазва на устройството ви</translation>
+<translation id="2681572445246787428">Подписване на документи</translation>
 <translation id="2688535388040882469">Банери</translation>
 <translation id="2690858294534178585">Камерата се използва</translation>
 <translation id="2691653761409724435">Не е налице офлайн</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Добавяне на раздела към група}other{Добавяне на разделите към група}}</translation>
 <translation id="4302061870579014542">Задаване на позиция</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
+<translation id="4306349443295056740">Подписване на OCSP</translation>
 <translation id="4309403553630140242">Докоснете два пъти за повече информация</translation>
 <translation id="4310738531374808763">Персонализиране на началната страница</translation>
 <translation id="4320848494125124980">Скорошни</translation>
 <translation id="4322394346347055525">Затваряне на другите раздели</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Включване на известията</translation>
 <translation id="4326912346867677256">Докоснете „Използване на паролата“, за да влезете в профила си по сигурен начин.</translation>
 <translation id="4327017157997423717">Проследяване на цената на <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">За да имате достъп до отметките си на всичките си устройства, включете „Отметки“ от настройките.</translation>
 <translation id="4746926359847517643">Винаги можете да ги отворите от историята.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Импортирана е {count} карта}other{Импортирани са {count} карти}}</translation>
+<translation id="4749924365937394956">Удостоверяване на сървъра</translation>
 <translation id="4751645464639803239">Нов раздел в режим „инкогнито“</translation>
 <translation id="4752348350801431746">Изключване на известията от функцията „Проверка на безопасността“…</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
@@ -1390,12 +1395,14 @@
 <translation id="598634819525651074">Площ</translation>
 <translation id="5988097621740394599">Преглед на пониженията на цените в разделите ви.</translation>
 <translation id="5988851877894965432">Отваряне на URL адреси в Chrome</translation>
+<translation id="599343768974649785">Текст с нецензурно съдържание</translation>
 <translation id="6006672969046233841">Нов раздел</translation>
 <translation id="6011308810877101166">Подобряване на предложенията за търсене</translation>
 <translation id="6012140227487808125">Шифрова се…</translation>
 <translation id="6027619584715411062">Влезте в профила си, за да имате достъп до своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="6027945736510816438">Може би имахте предвид <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функция</translation>
+<translation id="6037458223703682108">Цифров подпис</translation>
 <translation id="6038823991892265570">Управление на хранилището в Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затваряне</translation>
@@ -1539,6 +1546,7 @@
 <translation id="6476284679642588870">Управление на начините на плащане</translation>
 <translation id="6476800141292307438">Страницата се превежда на <ph name="LANGUAGE" />. Опциите са достъпни в долната част на екрана.</translation>
 <translation id="647867789226964031">Промяна на паролите ви</translation>
+<translation id="6480363549849064919">Удостоверяване на клиентска програма</translation>
 <translation id="6494931198667773526">Край</translation>
 <translation id="6503077044568424649">Ползвани</translation>
 <translation id="6503763061813913607">Известия от „Проверка на безопасността“</translation>
@@ -1584,6 +1592,7 @@
 <translation id="6619015782482868078">Тема „Вода“</translation>
 <translation id="6620279676667515405">Отказ</translation>
 <translation id="6625830436658400045">Настройките ви за синхронизиране ще бъдат възстановени въз основа на най-скорошното ви резервно копие. Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
+<translation id="6626281667717553020">URI адрес на CPS</translation>
 <translation id="6627583120233659107">Редактиране на папката</translation>
 <translation id="6629759408545977279">От: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Добавете тази допълнителна защита срещу онлайн заплахи.</translation>
@@ -2148,6 +2157,7 @@
 <translation id="8614671330774943747">Към превключвателя на раздели</translation>
 <translation id="862367213447108001">Изскачащите прозорци на този сайт винаги да се показват</translation>
 <translation id="8625706492572042370">Редактиране на началния екран</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Заключени раздели в режим „инкогнито“</translation>
 <translation id="8633025649649592204">Скорошна активност</translation>
 <translation id="8636825310635137004">Включете синхронизирането, за да получите разделите си от другите си устройства.</translation>
@@ -2334,6 +2344,7 @@
 <translation id="942624946817804130">Export</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="94870150074703282">Да се изтрие ли групата?</translation>
+<translation id="951090530321144895">Издатели сертифициращи органи</translation>
 <translation id="952704832371081537">Отказ</translation>
 <translation id="95332591904104970">Свързани приложения</translation>
 <translation id="954667170699278022">Списък за четене</translation>

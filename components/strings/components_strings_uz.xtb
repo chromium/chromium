@@ -1176,6 +1176,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2837891525090413132">Klaviaturadan foydalanish yoki uni qulflashga ruxsat soʻrashi mumkin</translation>
 <translation id="2839032553903800133">Bildirishnomalar bloklandi</translation>
 <translation id="2839501879576190149">Bu soxta sayt</translation>
+<translation id="2840680829170913626">Ushbu variantlarni taklif qilish uchun hisob-kitob sahifasidagi kontent Googlega yuboriladi. Toʻlov tariflari muvofiqlik asosida taqdim etiladi. Avtomatik kiritishda keyinroq toʻlash usullarini berkitish uchun <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> sahifasini oching.</translation>
 <translation id="2843623755398178332">Ulashilgan varaqda zum oʻzgartirish va varaqlash ruxsat etilsinmi?</translation>
 <translation id="2851291081585704741">Internetga ulanmagansiz</translation>
 <translation id="2854163610915391726">Google hisobingizda saqlangan Chrome maʼlumotlarini boshqaring</translation>
@@ -1387,6 +1388,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3162070126914310576">Bu qurilmani hozir qayd qilish imkonsiz, chunki tashkilot boʻlinmasi qayd qilishning boshlangʻich limitiga yetdi. Yordam olish uchun administratoringizga murojaat qiling.</translation>
 <translation id="3162559335345991374">Siz ulangan Wi-Fi tarmog‘i tizimga kirishingizni talab qilishi mumkin.</translation>
 <translation id="316638481603975524">Veb ilovalarni oʻrnatish uchun ruxsat soʻrashi mumkin</translation>
+<translation id="3166788340998560642">Keyingi safar ishlatganingizda Chrome “<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />” amalini taklif qiladi.</translation>
 <translation id="3168744840365648658">Radiotexnika</translation>
 <translation id="3168938241115725594">Klassik avtomobillar</translation>
 <translation id="3169472444629675720">Discover</translation>

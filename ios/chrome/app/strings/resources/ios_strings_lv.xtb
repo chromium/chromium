@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Atlasiet kontus, kurus vēlaties eksportēt uz citu lietotni.</translation>
 <translation id="1506061864768559482">Meklētājprogramma</translation>
 <translation id="1506063256525392513">Varat uzņemt un augšupielādēt fotoattēlus, kā arī skenēt kvadrātkodus</translation>
+<translation id="1506733063065214205">RCS MLS klients</translation>
 <translation id="1508263560970797965">Turpināt inkognito režīmā</translation>
 <translation id="1509486075633541495">Pierakstieties tīmekļa vietnē</translation>
 <translation id="1513858653616922153">Dzēst paroli</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Kopīgot grupu</translation>
 <translation id="2673508731173059946">Apmeklēt kopēto saiti</translation>
 <translation id="2679659833697380">Jūsu informācija tiek saglabāta jūsu ierīcē.</translation>
+<translation id="2681572445246787428">Dokumentu parakstīšana</translation>
 <translation id="2688535388040882469">Paziņojumi ekrāna augšdaļā</translation>
 <translation id="2690858294534178585">Tiek izmantota kamera.</translation>
 <translation id="2691653761409724435">Nav pieejami bezsaistē</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
 <translation id="4302061870579014542">Iestatīt pozīciju</translation>
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
+<translation id="4306349443295056740">OCSP parakstīšana</translation>
 <translation id="4309403553630140242">Veiciet dubultskārienu, lai skatītu plašāku informāciju.</translation>
 <translation id="4310738531374808763">Sākumlapas pielāgošana</translation>
 <translation id="4320848494125124980">Nesenie</translation>
 <translation id="4322394346347055525">Aizvērt citas cilnes</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Ieslēgt paziņojumus</translation>
 <translation id="4326912346867677256">Lai pierakstītos droši, pieskarieties vienumam “Izmantot paroli”.</translation>
 <translation id="4327017157997423717">Produkta cenas izsekošana: <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">Lai grāmatzīmes būtu pieejamas visās jūsu ierīcēs, iestatījumos ieslēdziet slēdzi “Grāmatzīmes”.</translation>
 <translation id="4746926359847517643">Jebkurā laikā vēstures sadaļā varat tās atjaunot</translation>
 <translation id="4749529195026091676">{count,plural, =1{Importēta {count} karte}zero{Importētas {count} kartes}one{Importēta {count} karte}other{Importētas {count} kartes}}</translation>
+<translation id="4749924365937394956">Servera autentifikācija</translation>
 <translation id="4751645464639803239">Jauna inkognito cilne</translation>
 <translation id="4752348350801431746">Izslēgt drošības pārbaudes paziņojumus…</translation>
 <translation id="4759238208242260848">Lejupielādes</translation>
@@ -1390,12 +1395,14 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="598634819525651074">Laukums</translation>
 <translation id="5988097621740394599">Skatiet cenu kritumu savās cilnēs.</translation>
 <translation id="5988851877894965432">Atvērt vietrāžus URL pārlūkā Chrome</translation>
+<translation id="599343768974649785">Necenzēts teksts</translation>
 <translation id="6006672969046233841">Jauna cilne</translation>
 <translation id="6011308810877101166">Uzlabot meklēšanas ieteikumus</translation>
 <translation id="6012140227487808125">Notiek šifrēšana…</translation>
 <translation id="6027619584715411062">Pierakstieties, lai piekļūtu grāmatzīmēm, parolēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="6027945736510816438">Vai domājāt <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">jauna funkcija</translation>
+<translation id="6037458223703682108">Ciparparaksts</translation>
 <translation id="6038823991892265570">Pārvaldīt Google krātuvi</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />. <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Aizvērt</translation>
@@ -1539,6 +1546,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6476284679642588870">Pārvaldīt maksājumu veidus</translation>
 <translation id="6476800141292307438">Lapa tiek tulkota <ph name="LANGUAGE" /> valodā. Pieejamās opcijas redzamas ekrāna apakšdaļā.</translation>
 <translation id="647867789226964031">Paroļu nomaiņa</translation>
+<translation id="6480363549849064919">Klienta autentifikācija</translation>
 <translation id="6494931198667773526">Beigas</translation>
 <translation id="6503077044568424649">Visapmeklētākais</translation>
 <translation id="6503763061813913607">Drošības pārbaudes paziņojumi</translation>
@@ -1584,6 +1592,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6619015782482868078">Akvamarīna motīvs</translation>
 <translation id="6620279676667515405">Atcelt</translation>
 <translation id="6625830436658400045">Jūsu sinhronizācijas iestatījumi tiks atjaunoti, pamatojoties uz pēdējo dublējumu. <ph name="BEGIN_LINK" />Iestatījumos<ph name="END_LINK" /> varat jebkurā laikā izvēlēties, ko sinhronizēt.</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Rediģēt mapi</translation>
 <translation id="6629759408545977279">No: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Pievienojiet šo papildu aizsardzības līmeni pret draudiem tiešsaistē.</translation>
@@ -2148,6 +2157,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8614671330774943747">Pāriet uz ciļņu pārslēdzēju</translation>
 <translation id="862367213447108001">Vienmēr rādīt uznirstošos elementus šajā vietnē</translation>
 <translation id="8625706492572042370">Sākuma ekrāna rediģēšana</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Bloķētas inkognito cilnes</translation>
 <translation id="8633025649649592204">Pēdējās darbības</translation>
 <translation id="8636825310635137004">Ieslēdziet sinhronizāciju, lai būtu pieejamas cilnes no citām jūsu ierīcēm.</translation>
@@ -2334,6 +2344,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="942624946817804130">Export (Eksportēt)</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="94870150074703282">Vai dzēst grupu?</translation>
+<translation id="951090530321144895">CA izsniedzēji</translation>
 <translation id="952704832371081537">Atcelt</translation>
 <translation id="95332591904104970">Piesaistītās lietotnes</translation>
 <translation id="954667170699278022">Lasīšanas saraksts</translation>

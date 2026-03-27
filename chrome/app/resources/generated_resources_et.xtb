@@ -6037,6 +6037,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5183344263225877832">Kas lähtestada kõik HID-seadme õigused?</translation>
 <translation id="5184063094292164363">&amp;JavaScripti konsool</translation>
 <translation id="5184209580557088469">Selle kasutajanimega pilet on juba olemas</translation>
+<translation id="5184329579814168207">Ava Chrome'is</translation>
 <translation id="5184662919967270437">Teie seadme värskendamine</translation>
 <translation id="5185386675596372454">Laienduse <ph name="EXTENSION_NAME" /> uusim versioon on keelatud, sest see nõuab rohkem õigusi.</translation>
 <translation id="5185500136143151980">Internetiühendus puudub</translation>
@@ -6892,7 +6893,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5804241973901381774">Load</translation>
 <translation id="5804259315582798390">Kohalike andmete taastamise lubamine ebaõnnestus</translation>
 <translation id="5805268472388605531">Vajutage pikalt klaviatuuri klahve, et näha rõhu- ja erimärke</translation>
-<translation id="5805697420284793859">Aknahaldur</translation>
 <translation id="5806322307130093061">Faili <ph name="FILE_NAME" /> kustutamiseks vajuta sisestusklahvi</translation>
 <translation id="5806447147478173900">Kuvatud saitide kasutatav salvestusruum kokku: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (vaikeseade)</translation>
@@ -7051,7 +7051,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> on võrguühenduseta</translation>
 <translation id="5911030830365207728">Google'i tõlge</translation>
 <translation id="5911497236110691522">Järgmisele sisestusmeetodile liikumiseks vajutage klahvikombinatsiooni <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Otseteede vaatur</translation>
 <translation id="5911545422157959623">Järjehoidjad ei ole külalisrežiimis saadaval</translation>
 <translation id="5914016309240354769">Loodus</translation>
 <translation id="5914724413750400082">Moodul (<ph name="MODULUS_NUM_BITS" /> bitti):
@@ -8190,7 +8189,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6723839827191551955">Hallake ülekantavat meediat</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="6723946439672043591">Valige teine profiil</translation>
-<translation id="6725073593266469338">Kasutajaliidese teenus</translation>
 <translation id="6725206449694821596">Interneti prindiprotokoll (IPP)</translation>
 <translation id="6725970970008349185">Igal lehel kuvatavate kandidaatide arv</translation>
 <translation id="672609503628871915">Vaadake, mis on uut</translation>
@@ -10296,7 +10294,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8184288427634747179">Aktiveeri <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Lisateave</translation>
 <translation id="8184472985242519288">Ühtne</translation>
-<translation id="8185614942934189676">E-posti aadress on automaatselt kinnitatud.</translation>
 <translation id="8186013737729037962">Lisateave ettevõtte registreeritud seadmete kohta</translation>
 <translation id="8186047833733689201">Rõhumärkide menüü on avatud. Vajutage navigeerimiseks vasakut, paremat või numbriklahvi ja sisestamiseks sisestusklahvi.</translation>
 <translation id="8186609076106987817">Server ei leidnud faili.</translation>
@@ -10662,7 +10659,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8428634594422941299">Selge</translation>
 <translation id="84297032718407999">Teid logitakse välja <ph name="LOGOUT_TIME_LEFT" /> pärast</translation>
 <translation id="8429928917752180743">Rohkem valikuid: <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Puudutuste kuvamine</translation>
 <translation id="843173223122814223">Looge AI abil taustasid</translation>
 <translation id="8431977087510901105">Kursori seaded on lähtestatud</translation>
 <translation id="8434109185104929038">Lugemisnurk</translation>

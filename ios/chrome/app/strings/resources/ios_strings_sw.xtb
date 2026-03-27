@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Chagua akaunti ambazo ungependa kuhamishia kwenye programu nyingine.</translation>
 <translation id="1506061864768559482">Mtambo wa utafutaji</translation>
 <translation id="1506063256525392513">Hali hii hukuwezesha kupiga na kupakia picha pamoja na kuchanganua misimbo ya QR</translation>
+<translation id="1506733063065214205">RCS MLS Client</translation>
 <translation id="1508263560970797965">Endelea Faraghani</translation>
 <translation id="1509486075633541495">Ingia katika akaunti ya tovuti</translation>
 <translation id="1513858653616922153">Futa nenosiri</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Shiriki kikundi</translation>
 <translation id="2673508731173059946">Fungua kiungo ulichonakili</translation>
 <translation id="2679659833697380">Taarifa zako zimehifadhiwa kwenye kifaa chako</translation>
+<translation id="2681572445246787428">Kuweka Saini Kwenye Hati</translation>
 <translation id="2688535388040882469">Mabango</translation>
 <translation id="2690858294534178585">Kamera inatumika</translation>
 <translation id="2691653761409724435">Haipatikani nje ya mtandao</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Weka Kichupo kwenye Kikundi}other{Weka Vichupo kwenye Kikundi}}</translation>
 <translation id="4302061870579014542">Weka nafasi</translation>
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
+<translation id="4306349443295056740">Kuweka Saini ya OCSP</translation>
 <translation id="4309403553630140242">Gusa mara mbili ili upate maelezo zaidi</translation>
 <translation id="4310738531374808763">Badilisha upendavyo ukurasa wako wa kwanza</translation>
 <translation id="4320848494125124980">Majuzi</translation>
 <translation id="4322394346347055525">Funga Vichupo Vingine</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Ruhusu kupokea arifa</translation>
 <translation id="4326912346867677256">Gusa "Tumia Nenosiri" ili uingie katika akaunti kwa usalama.</translation>
 <translation id="4327017157997423717">Fuatilia bei kwenye <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">Ili upate alamisho zako kwenye vifaa vyako vyote, washa kipengele cha “Alamisho” katika mipangilio.</translation>
 <translation id="4746926359847517643">Unaweza kuvipata kwenye historia wakati wowote.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Imepakia kadi {count}}other{Imepakia kadi {count}}}</translation>
+<translation id="4749924365937394956">Uthibitishaji wa Seva</translation>
 <translation id="4751645464639803239">Kichupo Fiche Kipya</translation>
 <translation id="4752348350801431746">Zima arifa za kipengele cha Ukaguzi wa Usalama…</translation>
 <translation id="4759238208242260848">Vipakuliwa</translation>
@@ -1390,12 +1395,14 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="598634819525651074">Kipimo cha Eneo</translation>
 <translation id="5988097621740394599">Angalia puzungo la bei kwenye vichupo vyako.</translation>
 <translation id="5988851877894965432">Fungua URL katika Chrome</translation>
+<translation id="599343768974649785">Maandishi Dhahiri</translation>
 <translation id="6006672969046233841">Kichupo Kipya</translation>
 <translation id="6011308810877101166">Boresha mapendekezo ya utafutaji</translation>
 <translation id="6012140227487808125">Inasimba kwa njia fiche...</translation>
 <translation id="6027619584715411062">Ingia katika akaunti ili upate alamisho, manenosiri na zaidi kwenye vifaa vyako vyote.</translation>
 <translation id="6027945736510816438">Je, ulimaanisha <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">kipengele kipya</translation>
+<translation id="6037458223703682108">Sahihi Dijitali</translation>
 <translation id="6038823991892265570">Dhibiti nafasi ya hifadhi kwenye Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Funga</translation>
@@ -1539,6 +1546,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6476284679642588870">Dhibiti njia za kulipa</translation>
 <translation id="6476800141292307438">Inatafsiri ukurasa katika <ph name="LANGUAGE" />. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
 <translation id="647867789226964031">Badilisha manenosiri yako</translation>
+<translation id="6480363549849064919">Uthibitishaji wa Kiteja</translation>
 <translation id="6494931198667773526">Utaisha</translation>
 <translation id="6503077044568424649">Zinazotembelewa zaidi</translation>
 <translation id="6503763061813913607">Arifa za Kipengele cha Ukaguzi wa Usalama</translation>
@@ -1584,6 +1592,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6619015782482868078">Mandhari ya kijani chepesi</translation>
 <translation id="6620279676667515405">Ghairi</translation>
 <translation id="6625830436658400045">Mipangilio yako ya usawazishaji itarejeshwa kulingana na nakala uliyohifadhi mara ya mwisho. Unaweza kuchagua unachotaka kusawazisha wakati wowote kwenye <ph name="BEGIN_LINK" />mipangilio<ph name="END_LINK" />.</translation>
+<translation id="6626281667717553020">URI ya CPS</translation>
 <translation id="6627583120233659107">Badilisha folda</translation>
 <translation id="6629759408545977279">Kutoka: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Weka safu hii ya ziada ya ulinzi dhidi ya vitisho vya mtandaoni.</translation>
@@ -2148,6 +2157,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8614671330774943747">Nenda kwenye Kibadilishaji cha Vichupo</translation>
 <translation id="862367213447108001">Onyesha madirisha ibukizi kila wakati kwenye tovuti hii</translation>
 <translation id="8625706492572042370">Badilisha Skrini ya Kwanza</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Vichupo vya faraghani vimefungwa</translation>
 <translation id="8633025649649592204">Shughuli za hivi majuzi</translation>
 <translation id="8636825310635137004">Ili upate vichupo kutoka kwenye vifaa vyako vingine, washa kipengele cha usawazishaji.</translation>
@@ -2334,6 +2344,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="942624946817804130">Hamisha</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
 <translation id="94870150074703282">Ungependa kufuta kikundi?</translation>
+<translation id="951090530321144895">Watoaji wa CA</translation>
 <translation id="952704832371081537">Ghairi</translation>
 <translation id="95332591904104970">Programu ulizounganisha</translation>
 <translation id="954667170699278022">Orodha ya Kusoma</translation>

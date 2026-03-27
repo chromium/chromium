@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
-<translation id="1028699632127661925">กำลังส่งไปที่ <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">การตั้งค่าการแจ้งเตือน</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 วันที่ผ่านมา}other{# วันที่ผ่านมา}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
 <translation id="2653844658857826081">ใหม่</translation>
 <translation id="2666092431469916601">ด้านบน</translation>
-<translation id="2701330563083355633">แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ปีที่ผ่านมา}other{# ปีที่ผ่านมา}}</translation>
 <translation id="2878511608894704031">ลบทั้งหมด</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ใน 1 วัน}other{ใน # วัน}}</translation>

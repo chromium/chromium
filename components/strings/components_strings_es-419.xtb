@@ -917,6 +917,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos en serie</translation>
 <translation id="2403474027143565107">Precisa</translation>
 <translation id="240450251994300576">Logotipo del encabezado secundario</translation>
+<translation id="2404715426538856682">Tarjetas de crédito y débito · IBAN · Tarjetas de lealtad</translation>
 <translation id="2404884497378469141">Intenta volver a copiar tus archivos</translation>
 <translation id="2413155254802890957">Antigua</translation>
 <translation id="2413528052993050574">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" /> y se podría revocar el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
@@ -1825,7 +1826,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3828924085048779000">No se permite una frase de contraseña vacía.</translation>
 <translation id="3830139096297532361">El PDF es inaccesible. No se pudieron descargar los archivos de extracción de texto. Vuelve a intentarlo más tarde.</translation>
 <translation id="3830470485672984938">Usar una llave de acceso diferente</translation>
-<translation id="3831065134033923230">Revisar las contraseñas guardadas</translation>
+<translation id="3831065134033923230">Revisa las contraseñas guardadas</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instaló extensiones para funciones adicionales. Las extensiones tienen acceso a algunos de tus datos.</translation>
 <translation id="3832522519263485449">Perforaciones múltiples a la izquierda</translation>
 <translation id="3835233591525155343">Uso de tu dispositivo</translation>
@@ -2169,6 +2170,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4340810192899866471">Importar desde JSON</translation>
 <translation id="4340982228985273705">Esta computadora no se detectó como una empresa administrada, por lo que la política solo puede instalar automáticamente las extensiones alojadas en Chrome Web Store. La URL de actualización de Chrome Web Store es "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Parques temáticos</translation>
+<translation id="4346670990181948854">Información de viaje · Vehículos</translation>
 <translation id="4348834659292907206">La conexión a <ph name="SITE" /> no es segura</translation>
 <translation id="4349365535725594680">No se pudo compartir contenido confidencial</translation>
 <translation id="4349810866125026513">Subir de todos modos</translation>
@@ -2957,6 +2959,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5596939519753369075">5.1 × 8.9 cm (2 × 3.5 in)</translation>
 <translation id="5597254438174353289">Azul 3</translation>
+<translation id="5600044805561809264">Puedes hacerle preguntas fácilmente sobre las pestañas que estás compartiendo mientras navegas.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">No se admite la administración.</translation>
 <translation id="5605249000617390290">Más información sobre el seguimiento de precios</translation>
@@ -3051,6 +3054,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5752519522101347518">Cargando el sitio web de verificación bancaria</translation>
 <translation id="5753570386948603678">Borrar del historial</translation>
 <translation id="5759751709240058861">Usar y mover la cámara</translation>
+<translation id="5762131895127128324">Licencias de conducir · Documentos de identidad · Pasaportes</translation>
 <translation id="5763042198335101085">Escribe una dirección de correo electrónico válida</translation>
 <translation id="5764725887548570807">El formato de origen no es válido.</translation>
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
@@ -3988,6 +3992,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
+<translation id="7225676267118764980">Cambiar el proveedor de autocompletado y otros parámetros de configuración</translation>
 <translation id="7226892411756387078">Texto sin formato</translation>
 <translation id="7227293336683593977">Historial de precios</translation>
 <translation id="7228306718910595403">Estado de calificación de la UE</translation>

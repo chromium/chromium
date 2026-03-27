@@ -157,6 +157,7 @@
 <translation id="1099070179078143183">Խարդախության հայտնաբերման նման գործառույթների աշխատանքի համար Chrome-ը կարող է օգտագործել ԱԲ մոդելներ, որոնք աշխատում են անմիջապես ձեր սարքում՝ առանց ձեր տվյալները Google-ի սերվերներ ուղարկելու։ Երբ այս կարգավորումն անջատված է, այս գործառույթները կարող են չաշխատել։ <ph name="BEGIN_LINK" />Իմանալ ավելին սարքում ներդրված ԱԲ-ի մասին<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Պատկերը պատճենվեց «<ph name="DEVICE_NAME" />» սարքից</translation>
 <translation id="1100504063505580045">Ընթացիկ պատկերակ</translation>
+<translation id="1101267749138963680">Անվտանգության ստուգում…</translation>
 <translation id="1102759278139578486">Չհաջողվեց ներբեռնել հիմնական հանգույցի ծանոթագրության ֆայլերը։ Փորձեք ավելի ուշ։</translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1104098698795583187">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների այս խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
@@ -2579,6 +2580,7 @@
 <translation id="2750020734439919571">Chrome հավելվածի այլ կարգավորումներ և թույլտվություններ</translation>
 <translation id="275010360476017464">Օգտագործեք խոսափողը՝ Gemini-ի հետ զրուցելու համար։ Երբ դուք խոսում եք Gemini-ի հետ, ձայնագրությունը պահվում է Gemini հավելվածների օգտագործման պատմությունում (եթե այն միացված է)։</translation>
 <translation id="2750602041558385535">Չստուգված ներբեռնումն արգելափակվել է</translation>
+<translation id="2751320815618312249">ու ևս <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Բերանը շարժեք դեպի աջ</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> կայքը ցանկանում է իմանալ անվտանգության ձեր բանալու ID համարը։ Կայքը հստակ պետք է իմանա, թե անվտանգության որ բանալին եք դուք օգտագործում։</translation>
 <translation id="275213133112113418">Ձեր քարտը պահվել է</translation>
@@ -2902,6 +2904,7 @@
 <translation id="2979893796619951531">Բացառել կայքը</translation>
 <translation id="2979966855249721010">Ձեր հետաքրքրությունների հիման վրա դուք կարող եք տեսնել հավելվածների առաջարկներ, խորհուրդներ և այլն</translation>
 <translation id="2981113813906970160">Ցույց տալ մկնիկի մեծ նշորդը</translation>
+<translation id="2981728693230031897">Ամփոփել այս էջը Gemini-ի օգնությամբ</translation>
 <translation id="2983102365694924129">Կայքում ձեր գործողությունների հիման վրա։ Այս կարգավորումն անջատված է։</translation>
 <translation id="2983311431122838216">Օգտագործեք ԱԲ ռեժիմը Google Որոնման համար</translation>
 <translation id="2983373101216420412">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="PERCENTAGE" />%։</translation>
@@ -4538,6 +4541,7 @@
 <translation id="4107793386654579933">Ընտրեք դյուրանցում «<ph name="ACTION_NAME" />» գործողության համար</translation>
 <translation id="4109135793348361820">Տեղափոխել պատուհանը <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Վերականգնել նախազգուշացումը</translation>
+<translation id="411052834366185695">Պետք է առնվազն 1 թվանշան լինի</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (անցանց)</translation>
 <translation id="4113743276555482284">Ֆայլի գաղտնաբառ</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Պահված գաղտնաբառեր չկան}=1{Ստուգվում է 1 գաղտնաբառ}one{Ստուգվում է {COUNT} գաղտնաբառ}other{Ստուգվում է {COUNT} գաղտնաբառ}}</translation>
@@ -5027,6 +5031,7 @@
 <translation id="4461483878391246134">Ավելացրեք լեզուներ, որոնց համար թարգմանություն երբեք չպետք է առաջարկվի</translation>
 <translation id="4462159676511157176">Անունների այլ սերվերներ</translation>
 <translation id="4465236939126352372">Նշված է <ph name="TIME" /> սահմանաչափ <ph name="APP_NAME" /> հավելվածի համար</translation>
+<translation id="4466922176191762830">ու ևս <ph name="NUM" /></translation>
 <translation id="4467373268340082204">PIN կոդը սխալ է</translation>
 <translation id="4469324811108161144">Նշումները կարող են պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> կայքը կարող է փոփոխել <ph name="FOLDERNAME" /> պանակի ֆայլերը</translation>
@@ -5441,6 +5446,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{Բաց բանալու և ամբողջականության ստուգում… Մնաց ավելի քիչ, քան 1 րոպե}=1{Բաց բանալու և ամբողջականության ստուգում… Մնաց 1 րոպե}one{Բաց բանալու և ամբողջականության ստուգում… Մնաց # րոպե}other{Բաց բանալու և ամբողջականության ստուգում… Մնաց # րոպե}}</translation>
 <translation id="4766598565665644999">Բոլոր ընդլայնումները կարող են դիտել և փոխել <ph name="HOST" /> կայքը</translation>
 <translation id="4767427586072640478">Իմանալ ավելին անջատված ընդլայնումների մասին։</translation>
+<translation id="4769359569327438364">Պետք է առնվազն 4 թվանշան լինի</translation>
 <translation id="4769632191812288342">Դուք ստանում եք ստանդարտ պաշտպանություն</translation>
 <translation id="4770119228883592393">Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք ⌘ + Option + վար սլաք։</translation>
 <translation id="4772914216048388646">Դասավորված</translation>
@@ -6029,6 +6035,7 @@
 <translation id="5183344263225877832">Զրոյացնե՞լ HID սարքերի բոլոր թույլտվությունները։</translation>
 <translation id="5184063094292164363">&amp;JavaScript վահանակ</translation>
 <translation id="5184209580557088469">Այս օգտանունով տոմս արդեն գոյություն ունի</translation>
+<translation id="5184329579814168207">Բացել Chrome-ով</translation>
 <translation id="5184662919967270437">Սարքի թարմացում</translation>
 <translation id="5185386675596372454">«<ph name="EXTENSION_NAME" />»-ի նոր տարբերակն անջատվել է, քանի որ նրա համար լրացուցիչ թույլտվություններ են պահանջվում:</translation>
 <translation id="5185500136143151980">Կապ չկա</translation>
@@ -6123,6 +6130,7 @@
 <translation id="5240931875940563122">Մուտք գործել Android հեռախոսի միջոցով</translation>
 <translation id="5241689948221696942">Որոշ ապրանքների համար կան համեմատման աղյուսակներ, որոնցում ամփոփված են համացանցից կարծիքները։</translation>
 <translation id="5242724311594467048">Միացնե՞լ «<ph name="EXTENSION_NAME" />» ընդլայնումը:</translation>
+<translation id="5243477050423867768">Պետք է առնվազն 8 թվանշան լինի և չպարունակի կրկնվող կամ հաջորդական թվեր</translation>
 <translation id="5244234799035360187">OneDrive-ն այժմ կցուցադրվի Files հավելվածում</translation>
 <translation id="5244466461749935369">Դեռ թողնել</translation>
 <translation id="5244474230056479698">Համաժամացում <ph name="EMAIL" />-ի հետ</translation>
@@ -6881,7 +6889,6 @@
 <translation id="5804241973901381774">Թույլտվություններ</translation>
 <translation id="5804259315582798390">Չհաջողվեց միացնել սարքի տվյալների վերականգնումը</translation>
 <translation id="5805268472388605531">Շեշտը և հատուկ նշանները տեսնելու համար սեղմած պահեք ստեղնաշարի ստեղները</translation>
-<translation id="5805697420284793859">Պատուհանների կառավարիչ</translation>
 <translation id="5806322307130093061">«<ph name="FILE_NAME" />» ֆայլը ջնջելու համար սեղմեք Enter</translation>
 <translation id="5806447147478173900">Ցուցադրվող կայքերի կողմից օգտագործվող ընդհանուր տարածքը՝ <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (կանխադրված)</translation>
@@ -7040,7 +7047,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> սարքը միացած չէ ինտերնետին</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">Ներածման հաջորդ եղանակին անցնելու համար սեղմեք <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Դյուրանցումների դիտակ</translation>
 <translation id="5911545422157959623">Էջանիշները հասանելի չեն հյուրի ռեժիմում</translation>
 <translation id="5914016309240354769">Բնություն</translation>
 <translation id="5914724413750400082">Մոդուլը (<ph name="MODULUS_NUM_BITS" /> բիթ)՝
@@ -8036,6 +8042,7 @@
 <translation id="6619990499523117484">Հաստատեք ձեր PIN կոդը</translation>
 <translation id="6621282332208609777">Հարցրեք Google-ին կամ մուտքագրեք URL</translation>
 <translation id="6621391692573306628">Այս ներդիրը մեկ այլ սարք ուղարկելու համար մուտք գործեք Chrome երկու սարքերում էլ</translation>
+<translation id="6622212269189717101">Պետք է առնվազն 6 թվանշան լինի և չպարունակի կրկնվող կամ հաջորդական թվեր</translation>
 <translation id="6622980291894852883">Շարունակել պատկերների արգելափակումը</translation>
 <translation id="6624036901798307345">Պլանշետի ռեժիմում սեղմեք ներդիրների հաշվիչի կոճակը գործիքագոտում՝ բացելու նոր ներդիրների հատվածը, որը ցույց է տալիս բոլոր ներդիրների մանրապատկերները։</translation>
 <translation id="6624538059730609162">Փակել աջ դիտակերպը</translation>
@@ -8180,7 +8187,6 @@
 <translation id="6723839827191551955">Կառավարեք մեդիա ֆայլերը, որոնք հեռարձակում եք։</translation>
 <translation id="6723839937902243910">Սնուցում</translation>
 <translation id="6723946439672043591">Ընտրել մեկ այլ պրոֆիլ</translation>
-<translation id="6725073593266469338">Միջերեսի ծառայություն</translation>
 <translation id="6725206449694821596">Ինտերնետի միջոցով տպման հաղորդակարգ (IPP)</translation>
 <translation id="6725970970008349185">Մեկ էջում ցուցադրվող տարբերակների թիվը</translation>
 <translation id="672609503628871915">Իմանալ՝ ինչ նոր բան կա</translation>
@@ -10285,7 +10291,6 @@
 <translation id="8184288427634747179">Անցնել <ph name="AVATAR_NAME" />-ի պրոֆիլ</translation>
 <translation id="8184318863960255706">Լրացուցիչ տեղեկություններ</translation>
 <translation id="8184472985242519288">Միանման</translation>
-<translation id="8185614942934189676">Էլ․ հասցեն ավտոմատ ստուգվել է</translation>
 <translation id="8186013737729037962">Իմանալ ավելին կազմակերպությունների կողմից գրանցված սարքերի մասին</translation>
 <translation id="8186047833733689201">Տարբերիչ նշանների ընտրացանկը բացվեց։ Նավիգացիայի համար սեղմեք ձախ, աջ կամ թվային ստեղները, իսկ զետեղելու համար՝ Enter։</translation>
 <translation id="8186609076106987817">Սերվերը չկարողացավ գտնել ֆայլը:</translation>
@@ -10651,7 +10656,6 @@
 <translation id="8428634594422941299">Պարզ է</translation>
 <translation id="84297032718407999">Դուք դուրս կգրվեք <ph name="LOGOUT_TIME_LEFT" />ից</translation>
 <translation id="8429928917752180743">Լրացուցիչ ընտրանքներ <ph name="EXTENSION_NAME" />-ի համար</translation>
-<translation id="8431190899827883166">Ցույց տալ հպումները</translation>
 <translation id="843173223122814223">Ստեղծեք ֆոներ արհեստական բանականության օգնությամբ</translation>
 <translation id="8431977087510901105">Նշորդի կարգավորումները զրոյացվել են</translation>
 <translation id="8434109185104929038">Ընթերցանության անկյուն</translation>

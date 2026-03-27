@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="1028699632127661925"><ph name="DEVICE_NAME" /> लाई पठाउँदै...</translation>
 <translation id="111910763555783249">सूचना सेटिङहरू</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{ १ दिनअघि}other{ # दिनअघि}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{१ मिनट अगाडि}other{# मिनट अगाडि}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2653844658857826081">नयाँ</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
-<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{१ वर्षअघि}other{# वर्षअघि}}</translation>
 <translation id="2878511608894704031">सबै वस्तु मेट्नुहोस्</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{१ दिनमा}other{# दिनमा}}</translation>

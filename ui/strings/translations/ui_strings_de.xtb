@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1028699632127661925">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
 <translation id="111910763555783249">Benachrichtigungseinstellungen</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{vor 1 Tag}other{vor # Tagen}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{vor 1 Minute}other{vor # Minuten}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Zwischenablage</translation>
 <translation id="2653844658857826081">Neu</translation>
 <translation id="2666092431469916601">Oben</translation>
-<translation id="2701330563083355633">Geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{vor 1 Jahr}other{vor # Jahren}}</translation>
 <translation id="2878511608894704031">Alle löschen</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{in 1 T.}other{in # T.}}</translation>

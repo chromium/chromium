@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">حساب‌های موردنظرتان را برای صادر کردن به برنامه‌ای دیگر انتخاب کنید.</translation>
 <translation id="1506061864768559482">موتور جستجو</translation>
 <translation id="1506063256525392513">با این اجازه می‌توانید عکس بگیرید و بارگذاری کنید و همچنین رمزینه‌های پاسخ‌سریع را اسکن کنید</translation>
+<translation id="1506733063065214205">‏کارخواه RCS MLS</translation>
 <translation id="1508263560970797965">ادامه در حالت «ناشناس»</translation>
 <translation id="1509486075633541495">ورود به سیستم وب‌سایت</translation>
 <translation id="1513858653616922153">حذف گذرواژه</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">هم‌رسانی گروه</translation>
 <translation id="2673508731173059946">بازدید کردن از پیوند کپی‌شده</translation>
 <translation id="2679659833697380">اطلاعات شما در دستگاهتان ذخیره می‌شود</translation>
+<translation id="2681572445246787428">امضای سند</translation>
 <translation id="2688535388040882469">برنما</translation>
 <translation id="2690858294534178585">دوربین درحال استفاده است</translation>
 <translation id="2691653761409724435">به‌صورت آفلاین در دسترس نیست</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{افزودن زبانه به گروه}one{افزودن زبانه به گروه}other{افزودن زبانه‌ها به گروه}}</translation>
 <translation id="4302061870579014542">تنظیم کردن موقعیت</translation>
 <translation id="4304713468139749426">مدیر گذرواژه</translation>
+<translation id="4306349443295056740">‏امضای OCSP</translation>
 <translation id="4309403553630140242">برای اطلاعات بیشتر دو تک‌ضرب بزنید</translation>
 <translation id="4310738531374808763">سفارشی کردن صفحه اصلی شما.</translation>
 <translation id="4320848494125124980">اخیر</translation>
 <translation id="4322394346347055525">بستن برگه‌های دیگر</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">روشن کردن اعلان‌ها</translation>
 <translation id="4326912346867677256">برای ورود ایمن به سیستم، روی «استفاده از گذرواژه» تک‌ضرب بزنید.</translation>
 <translation id="4327017157997423717">ردگیری قیمت <ph name="PRODUCT_NAME" />،‏ <ph name="PRICE" />،‏ <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">برای اینکه نشانک‌ها را در همه دستگاه‌هایتان دریافت کنید، «نشانک‌ها» را در تنظیمات روشن کنید.</translation>
 <translation id="4746926359847517643">همیشه می‌توانید ازطریق سابقه دوباره به آن‌ها دست پیدا کنید.</translation>
 <translation id="4749529195026091676">{count,plural, =1{‫{count} کارت وارد شد}one{‫{count} کارت وارد شد}other{‫{count} کارت وارد شد}}</translation>
+<translation id="4749924365937394956">اصالت‌سنجی سرور</translation>
 <translation id="4751645464639803239">زبانه ناشناس جدید</translation>
 <translation id="4752348350801431746">خاموش کردن اعلان‌های «بررسی ایمنی»…</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
@@ -1390,12 +1395,14 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="598634819525651074">مساحت</translation>
 <translation id="5988097621740394599">کاهش قیمت را در زبانه‌ها مشاهده کنید.</translation>
 <translation id="5988851877894965432">‏باز کردن نشانی‌های وب در Chrome</translation>
+<translation id="599343768974649785">نوشتار صریح</translation>
 <translation id="6006672969046233841">زبانه جدید</translation>
 <translation id="6011308810877101166">بهبود پیشنهادهای جستجو</translation>
 <translation id="6012140227487808125">در حال رمزگذاری…</translation>
 <translation id="6027619584715411062">به سیستم وارد شوید تا نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید.</translation>
 <translation id="6027945736510816438">منظورتان <ph name="WEBSITE" /> بود؟</translation>
 <translation id="6032845897905314562">ویژگی جدید</translation>
+<translation id="6037458223703682108">امضای دیجیتال</translation>
 <translation id="6038823991892265570">‏مدیریت فضای ذخیره‌سازی Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -1539,6 +1546,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6476284679642588870">مدیریت کردن روش‌های پرداخت</translation>
 <translation id="6476800141292307438">ترجمه صفحه به <ph name="LANGUAGE" />. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="647867789226964031">تغییر دادن گذرواژه‌ها</translation>
+<translation id="6480363549849064919">اصالت‌سنجی کارخواه</translation>
 <translation id="6494931198667773526">تاریخ پایان</translation>
 <translation id="6503077044568424649">بیشترین موارد بازدید شده</translation>
 <translation id="6503763061813913607">اعلان‌های «بررسی ایمنی»</translation>
@@ -1584,6 +1592,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6619015782482868078">زمینه سبز آبی‌فام</translation>
 <translation id="6620279676667515405">لغو</translation>
 <translation id="6625830436658400045">تنظیمات همگام‌سازی براساس آخرین نسخه پشتیبان شما بازیابی خواهد شد. همواره می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید چه مواردی همگام‌سازی شود.</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">ویرایش پوشه</translation>
 <translation id="6629759408545977279">از: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">این لایه محافظتی بیشتر را دربرابر تهدیدهای آنلاین اضافه کنید.</translation>
@@ -2148,6 +2157,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8614671330774943747">رفتن به «تعویض‌کننده زبانه»</translation>
 <translation id="862367213447108001">همیشه بالاپرهای این سایت نشان داده شوند</translation>
 <translation id="8625706492572042370">ویرایش صفحه اصلی</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">برگه‌های «ناشناس» قفل‌شده</translation>
 <translation id="8633025649649592204">فعالیت اخیر</translation>
 <translation id="8636825310635137004">برای دسترسی به برگه‌هایتان در دستگاه‌های دیگر، همگام‌سازی را روشن کنید.</translation>
@@ -2334,6 +2344,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="942624946817804130">‏‫Export (صادر کردن)</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="94870150074703282">گروه حذف شود؟</translation>
+<translation id="951090530321144895">‏صادرکنندگان CA</translation>
 <translation id="952704832371081537">لغو</translation>
 <translation id="95332591904104970">برنامه‌های متصل‌شده</translation>
 <translation id="954667170699278022">فهرست خواندن</translation>

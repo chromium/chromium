@@ -157,6 +157,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1099070179078143183">To power features like scam detection, Chrome can use AI models that run directly on your device without sending your data to Google servers. When this is off, these features might not work. <ph name="BEGIN_LINK" />Learn more about on-device AI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Image copied from <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Current icon</translation>
+<translation id="1101267749138963680">Checking for safety…</translation>
 <translation id="1102759278139578486">Can't download main node annotation files. Please try again later.</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">You'll immediately lose access to this tab group, and it will be deleted from all your devices</translation>
@@ -2915,6 +2916,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2979893796619951531">Exclude site</translation>
 <translation id="2979966855249721010">Based on your interests, you may see app recommendations, tips and more</translation>
 <translation id="2981113813906970160">Show large mouse cursor</translation>
+<translation id="2981728693230031897">Summarise this page with Gemini</translation>
 <translation id="2983102365694924129">Based on your activity on a site. This setting is off.</translation>
 <translation id="2983311431122838216">Ask AI Mode in Google Search</translation>
 <translation id="2983373101216420412">Case battery level <ph name="PERCENTAGE" />%.</translation>
@@ -6044,6 +6046,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5183344263225877832">Reset all HID permissions?</translation>
 <translation id="5184063094292164363">&amp;JavaScript Console</translation>
 <translation id="5184209580557088469">A ticket with this username already exists</translation>
+<translation id="5184329579814168207">Open in Chrome</translation>
 <translation id="5184662919967270437">Updating your device</translation>
 <translation id="5185386675596372454">The newest version of "<ph name="EXTENSION_NAME" />" has been disabled because it requires more permissions.</translation>
 <translation id="5185500136143151980">No Internet</translation>
@@ -6899,7 +6902,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5804259315582798390">Failed to enable local data recovery</translation>
 <translation id="5805268472388605531">Press and hold keyboard keys to see accent marks and special characters</translation>
-<translation id="5805697420284793859">Window manager</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> press enter to delete file</translation>
 <translation id="5806447147478173900">Total storage used by displayed sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Default)</translation>
@@ -7058,7 +7060,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">To switch to the next input method, press <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Shortcut viewer</translation>
 <translation id="5911545422157959623">Bookmarks are unavailable in guest mode</translation>
 <translation id="5914016309240354769">Nature</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bits):
@@ -8197,7 +8198,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6723839827191551955">Control the media that you're casting</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723946439672043591">Choose another profile</translation>
-<translation id="6725073593266469338">UI service</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Number of candidates to be displayed per page</translation>
 <translation id="672609503628871915">See what's new</translation>
@@ -10303,7 +10303,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8184288427634747179">Switch to <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">More info</translation>
 <translation id="8184472985242519288">Uniform</translation>
-<translation id="8185614942934189676">Email automatically verified</translation>
 <translation id="8186013737729037962">Learn more about enterprise-enrolled devices</translation>
 <translation id="8186047833733689201">Accent marks menu open. Press left, right or number keys to navigate and enter to insert.</translation>
 <translation id="8186609076106987817">The server could not find the file.</translation>
@@ -10669,7 +10668,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8428634594422941299">Got it</translation>
 <translation id="84297032718407999">You'll be signed out in <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">More options for <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Show taps</translation>
 <translation id="843173223122814223">Create backgrounds with AI</translation>
 <translation id="8431977087510901105">Cursor settings reset</translation>
 <translation id="8434109185104929038">Reading nook</translation>

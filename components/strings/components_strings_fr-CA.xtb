@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">Les sites peuvent demander à se connecter à des ports série</translation>
 <translation id="2403474027143565107">Exacte</translation>
 <translation id="240450251994300576">Logo d'en-tête secondaire</translation>
+<translation id="2404715426538856682">Cartes de crédit et de débit · IBAN · Cartes de fidélité</translation>
 <translation id="2404884497378469141">Réessayez de copier vos fichiers</translation>
 <translation id="2413155254802890957">Anciennes</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
@@ -2168,6 +2169,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4340810192899866471">Importer à partir de JSON</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise, la politique peut donc uniquement installer des extensions hébergées par la boutique Chrome Webstore. L'URL de mise à jour de la boutique Chrome Webstore est « <ph name="CWS_UPDATE_URL" /> ».</translation>
 <translation id="4342742994656318294">Parcs thématiques</translation>
+<translation id="4346670990181948854">Renseignements sur les voyages · Véhicules</translation>
 <translation id="4348834659292907206">La connexion au site <ph name="SITE" /> n'est pas sécurisée</translation>
 <translation id="4349365535725594680">Impossible de partager le contenu confidentiel</translation>
 <translation id="4349810866125026513">Téléverser quand même</translation>
@@ -3051,6 +3053,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5752519522101347518">Chargement du site Web de vérification bancaire en cours…</translation>
 <translation id="5753570386948603678">Supprimer de l'historique</translation>
 <translation id="5759751709240058861">Utiliser et déplacer la caméra de votre appareil</translation>
+<translation id="5762131895127128324">Permis de conduire · Cartes d'identité · Passeports</translation>
 <translation id="5763042198335101085">Entrez une adresse de courriel valide</translation>
 <translation id="5764725887548570807">Format d'origine incorrect.</translation>
 <translation id="5764920692828389743">Envoyer à <ph name="EMAIL_ADDRESS" /></translation>
@@ -3987,6 +3990,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7220786058474068424">Traitement en cours</translation>
 <translation id="7221855153210829124">Afficher les notifications</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée</translation>
+<translation id="7225676267118764980">Modifier le fournisseur de remplissage automatique et d'autres paramètres</translation>
 <translation id="7226892411756387078">Texte brut</translation>
 <translation id="7227293336683593977">Historique des prix</translation>
 <translation id="7228306718910595403">Statut qualifié de l'UE</translation>

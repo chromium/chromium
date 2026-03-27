@@ -157,6 +157,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1099070179078143183">Ca să ofere funcții precum detectarea escrocheriilor, Chrome poate să folosească modele AI care rulează direct pe dispozitivul tău, fără să trimită datele la serverele Google. Când opțiunea este dezactivată, este posibil ca aceste funcții să nu fie disponibile. <ph name="BEGIN_LINK" />Află mai multe despre AI pe dispozitiv<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Imagine copiată de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Pictograma actuală</translation>
+<translation id="1101267749138963680">Se verifică siguranța...</translation>
 <translation id="1102759278139578486">Nu se pot descărca fișierele cu adnotări pentru nodurile principale. Încearcă din nou mai târziu.</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Vei pierde imediat accesul la acest grup de file și el va fi șters de pe toate dispozitivele tale</translation>
@@ -2903,6 +2904,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2979893796619951531">Exclude site-ul</translation>
 <translation id="2979966855249721010">Pe baza intereselor tale, poți vedea recomandări de aplicații, sfaturi și altele</translation>
 <translation id="2981113813906970160">Afișați cursorul de mouse mare</translation>
+<translation id="2981728693230031897">Rezumă pagina cu Gemini</translation>
 <translation id="2983102365694924129">Pe baza activității tale pe un site. Setarea este dezactivată.</translation>
 <translation id="2983311431122838216">Întreabă Modul AI în Căutarea Google</translation>
 <translation id="2983373101216420412">Nivelul bateriei carcasei: <ph name="PERCENTAGE" /> %.</translation>
@@ -6030,6 +6032,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5183344263225877832">Resetezi toate permisiunile pentru dispozitivul HID?</translation>
 <translation id="5184063094292164363">Consolă &amp;JavaScript</translation>
 <translation id="5184209580557088469">Există deja un tichet cu acest nume de utilizator</translation>
+<translation id="5184329579814168207">Deschide în Chrome</translation>
 <translation id="5184662919967270437">Se actualizează dispozitivul</translation>
 <translation id="5185386675596372454">Cea mai nouă versiune a „<ph name="EXTENSION_NAME" />” a fost dezactivată, deoarece necesită permisiuni suplimentare.</translation>
 <translation id="5185500136143151980">Nu există conexiune la internet</translation>
@@ -6884,7 +6887,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5804259315582798390">Nu s-a putut activa recuperarea datelor locale</translation>
 <translation id="5805268472388605531">Apasă lung pe tastele de pe tastatură pentru a vedea semnele de evidențiere și caracterele speciale</translation>
-<translation id="5805697420284793859">Managerul de ferestre</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />, apasă pe Enter pentru a șterge fișierul</translation>
 <translation id="5806447147478173900">Spațiul total de stocare folosit de site-urile afișate: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (prestabilit)</translation>
@@ -7043,7 +7045,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> este offline</translation>
 <translation id="5911030830365207728">Google Traducere</translation>
 <translation id="5911497236110691522">Pentru a trece la următoarea metodă de introducere a textului, apasă pe <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Vizualizatorul de comenzi rapide</translation>
 <translation id="5911545422157959623">Marcajele nu sunt disponibile în modul pentru invitați</translation>
 <translation id="5914016309240354769">Natură</translation>
 <translation id="5914724413750400082">Modul (<ph name="MODULUS_NUM_BITS" /> (de) biți):
@@ -8184,7 +8185,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6723839827191551955">Controlează conținutul media proiectat</translation>
 <translation id="6723839937902243910">Alimentare</translation>
 <translation id="6723946439672043591">Alege alt profil</translation>
-<translation id="6725073593266469338">Serviciul IU</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Numărul de sugestii de afișat pe pagină</translation>
 <translation id="672609503628871915">Vedeți noutățile</translation>
@@ -10290,7 +10290,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8184288427634747179">Comută la <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Mai multe informații</translation>
 <translation id="8184472985242519288">Uniform</translation>
-<translation id="8185614942934189676">Adresa de e-mail a fost confirmată automat</translation>
 <translation id="8186013737729037962">Află mai multe despre dispozitivele înscrise în sistemul companiei</translation>
 <translation id="8186047833733689201">S-a deschis meniul cu mărci ale accentului. Apasă tastele săgeată la stânga, la dreapta sau cifre pentru a naviga și Enter pentru a insera.</translation>
 <translation id="8186609076106987817">Serverul nu a putut găsi fișierul.</translation>
@@ -10656,7 +10655,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8428634594422941299">Am înțeles</translation>
 <translation id="84297032718407999">Vei fi deconectat(ă) peste <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Mai multe opțiuni pentru <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Afișează atingerile</translation>
 <translation id="843173223122814223">Creează fundaluri cu AI</translation>
 <translation id="8431977087510901105">Setările cursorului au fost resetate</translation>
 <translation id="8434109185104929038">Colț de lectură</translation>

@@ -405,6 +405,22 @@ Para obtener más información sobre contextos seguros, consulta la página Secu
 <translation id="1317158052518324525">No permitir la función Autocompletar mejorada.</translation>
 <translation id="1317658068839330898">No permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
 <translation id="1318233005302276244">Permite que los usuarios hagan el seguimiento de sus paquetes en Chrome.</translation>
+<translation id="1321747583289636863">Definir esta política permite especificar el número máximo de conexiones simultáneas al servidor proxy para solicitudes de WebSocket.
+
+Para modificar los límites de solicitudes que no son de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Si no se define esta política, se utilizará el valor predeterminado (32).
+
+Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 32 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo.
+Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar definiendo un valor inferior para esta política.
+
+El valor debe ser igual o superior a 6.
+Si defines un valor inferior a ese límite, se usará 6.
+Si defines un valor inferior al predeterminado (32), lo haces bajo tu propia responsabilidad.
+
+El valor debe ser igual o inferior a 256.
+Si defines un valor superior a ese límite, se usará 256.
+Si defines un valor superior al predeterminado (32), lo haces bajo tu propia responsabilidad.</translation>
 <translation id="1323501563951768821">Los ajustes de F12 usan la combinación de teclas que incluye la tecla modificadora Mayús</translation>
 <translation id="1325547947664414578">Cuando un usuario cambie de un dispositivo <ph name="PRODUCT_OS_NAME" /> a otro con el mismo SO, el servicio <ph name="PRODUCT_NAME" /> abrirá las ventanas de navegador y de aplicaciones del dispositivo anterior en el nuevo.
 Si se habilita esta política, se abrirán las ventanas de navegador y de aplicaciones del último dispositivo <ph name="PRODUCT_OS_NAME" /> usado por el usuario actual automáticamente al iniciar sesión.
@@ -4888,6 +4904,7 @@ Si se habilita esta política o no se define, los usuarios que tengan contraseñ
 Si se inhabilita esta política, los usuarios conservarán los datos de su Gestor de contraseñas, pero su funcionalidad no estará operativa.
 
 Si se define esta política, los usuarios no podrán modificarla en <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4321788213579606602">Número máximo de conexiones simultáneas al servidor proxy para solicitudes que no son de WebSocket</translation>
 <translation id="4322842393287974810">Permite que la aplicación de kiosco sin retardo con inicio automático controle la versión de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Habilitar la atestación remota para proteger el contenido</translation>
 <translation id="4325690621216251241">Añadir un botón para cerrar sesión en la bandeja del sistema</translation>
@@ -7685,6 +7702,7 @@ Si se le asigna el valor false, no podrán acceder a la función.</translation>
 <translation id="6075316301208933536">Si a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> se le asigna el valor <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, al asignar un valor a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> se definirá cuándo deberá dejar de cargarse la batería, en función del porcentaje de carga de la batería. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> debe tener un valor al menos 5 puntos porcentuales inferior al de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Si no se asigna ningún valor a esta política, se aplicará el modo <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> de carga de la batería.</translation>
+<translation id="6080808146443476891">Número máximo de conexiones simultáneas al servidor proxy para solicitudes de WebSocket</translation>
 <translation id="6082161804984853051">Si se le asigna un valor a la política, <ph name="PRODUCT_NAME" /> utilizará el directorio proporcionado para guardar archivos almacenados en caché en el disco independientemente de si los usuarios han especificado el indicador "--disk-cache-dir" o no.
 
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> usa el directorio de caché predeterminado, pero lo usuarios podrán cambiar el ajuste con el indicador de línea de comandos "--disk-cache-dir".
@@ -11091,6 +11109,22 @@ Esta función solo estará disponible en el canal Canary.
 
 Si se habilita esta política o no se define, se podrá acceder a la página.
 Si se inhabilita esta política, la página se bloqueará.</translation>
+<translation id="8264002158987842436">Definir esta política permite especificar el número máximo de conexiones simultáneas al servidor proxy para solicitudes que no son de WebSocket.
+
+Para modificar los límites de solicitudes de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Si no se define esta política, se utilizará el valor predeterminado (32).
+
+Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 32 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo.
+Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar definiendo un valor inferior para esta política.
+
+El valor debe ser igual o superior a 6.
+Si defines un valor inferior a ese límite, se usará 6.
+Si defines un valor inferior al predeterminado (32), lo haces bajo tu propia responsabilidad.
+
+El valor debe ser igual o inferior a 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
+Si defines un valor superior a ese límite, se usará 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
+Si defines un valor superior al predeterminado (32), lo haces bajo tu propia responsabilidad.</translation>
 <translation id="8266778278542911985">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los puertos serie. Si se le asigna el valor 2, se denegará el acceso a los puertos serie.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>

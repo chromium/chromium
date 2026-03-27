@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Velg kontoene du vil eksportere til en annen app.</translation>
 <translation id="1506061864768559482">Søkemotor</translation>
 <translation id="1506063256525392513">Dette gjør at du kan ta og laste opp bilder samt skanne QR-koder</translation>
+<translation id="1506733063065214205">RCS MLS-klient</translation>
 <translation id="1508263560970797965">Fortsett i Inkognito</translation>
 <translation id="1509486075633541495">Logg på nettstedet</translation>
 <translation id="1513858653616922153">Slett passordet</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2673508731173059946">Besøk den kopierte linken</translation>
 <translation id="2679659833697380">Informasjonen din lagres på enheten din</translation>
+<translation id="2681572445246787428">Dokumentsignering</translation>
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Legg fanen til i en gruppe}other{Legg fanene til i en gruppe}}</translation>
 <translation id="4302061870579014542">Velg posisjon</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
+<translation id="4306349443295056740">OCSP-signering</translation>
 <translation id="4309403553630140242">Dobbelttrykk for å se mer informasjon</translation>
 <translation id="4310738531374808763">Tilpass startsiden din</translation>
 <translation id="4320848494125124980">Nylige</translation>
 <translation id="4322394346347055525">Lukk andre faner</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Slå på varsler</translation>
 <translation id="4326912346867677256">Trykk på «Bruk passord» for å logge på trygt.</translation>
 <translation id="4327017157997423717">Spor prisen på <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">For å få bokmerkene dine på alle enhetene dine, slå på «Bokmerker» i innstillingene.</translation>
 <translation id="4746926359847517643">Du kan alltid få dem tilbake i loggen.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Importerte {count} kort}other{Importerte {count} kort}}</translation>
+<translation id="4749924365937394956">Autentisering av tjener</translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4752348350801431746">Slå av varsler fra sikkerhetssjekk…</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
@@ -1390,12 +1395,14 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="598634819525651074">Område</translation>
 <translation id="5988097621740394599">Se avslag på fanene dine.</translation>
 <translation id="5988851877894965432">Åpne nettadresser i Chrome</translation>
+<translation id="599343768974649785">Ikke barnevennlig tekst</translation>
 <translation id="6006672969046233841">Ny fane</translation>
 <translation id="6011308810877101166">Gjør søkeforslagene bedre</translation>
 <translation id="6012140227487808125">Krypterer …</translation>
 <translation id="6027619584715411062">Logg på for å få blant annet bokmerkene og passordene dine på alle enhetene dine.</translation>
 <translation id="6027945736510816438">Mente du <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">ny funksjon</translation>
+<translation id="6037458223703682108">Digital signatur</translation>
 <translation id="6038823991892265570">Administrer Google-lagringsplassen</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
@@ -1539,6 +1546,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6476284679642588870">Administrer betalingsmåter</translation>
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="647867789226964031">Endre passordene dine</translation>
+<translation id="6480363549849064919">Autentisering av klient</translation>
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6503077044568424649">Mest besøkt</translation>
 <translation id="6503763061813913607">Varsler fra sikkerhetssjekk</translation>
@@ -1584,6 +1592,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6619015782482868078">Aqua tema</translation>
 <translation id="6620279676667515405">Avbryt</translation>
 <translation id="6625830436658400045">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
+<translation id="6626281667717553020">CPS-URI</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6629759408545977279">Fra: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Legg til et ekstra lag med beskyttelse mot trusler på nettet.</translation>
@@ -2148,6 +2157,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8614671330774943747">Gå til fanevelgeren</translation>
 <translation id="862367213447108001">Vis alltid forgrunnsvinduer på dette nettstedet</translation>
 <translation id="8625706492572042370">Endre startsiden</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Låste inkognitofaner</translation>
 <translation id="8633025649649592204">Nylig aktivitet</translation>
 <translation id="8636825310635137004">For å få fanene dine fra de andre enhetene du bruker, slå på synkronisering.</translation>
@@ -2334,6 +2344,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="942624946817804130">Eksportér</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="94870150074703282">Vil du slette gruppen?</translation>
+<translation id="951090530321144895">Sertifiseringsinstanser</translation>
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="95332591904104970">Tilknyttede apper</translation>
 <translation id="954667170699278022">Leseliste</translation>

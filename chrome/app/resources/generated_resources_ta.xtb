@@ -2593,6 +2593,7 @@
 <translation id="2750020734439919571">Chrome ஆப்ஸின் கூடுதல் அமைப்புகள் மற்றும் அனுமதிகள்</translation>
 <translation id="275010360476017464">Geminiயுடன் பேச உங்கள் மைக்ரோஃபோனைப் பயன்படுத்தலாம். நீங்கள் Geminiயுடன் பேசும்போது, Gemini ஆப்ஸ் செயல்பாடுகளில் (ஆன் செய்யப்பட்டிருந்தால்) ஆடியோ சேமிக்கப்படும்.</translation>
 <translation id="2750602041558385535">சரிபார்க்கப்படாத பதிவிறக்கம் தடுக்கப்பட்டது</translation>
+<translation id="2751320815618312249">மேலும் <ph name="NUM" /></translation>
 <translation id="2751454300227269244">உங்கள் வாயை வலதுபுறம் நகர்த்தவும்</translation>
 <translation id="2751883373055093745">உங்கள் பாதுகாப்பு விசையின் ஐடி எண்ணை <ph name="WEBSITE" /> தெரிந்துகொள்ள விரும்புகிறது. எந்தப் பாதுகாப்பு விசையைப் பயன்படுத்துகிறீர்கள் என்பதைத் தளம் தெரிந்துகொள்ளும்.</translation>
 <translation id="275213133112113418">உங்கள் கார்டு சேமிக்கப்பட்டது</translation>
@@ -4555,6 +4556,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> செயலுக்கான ஷார்ட்கட்டைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) க்குச் சாளரத்தை நகர்த்து</translation>
 <translation id="4110485659976215879">எச்சரிக்கையை மீட்டெடு</translation>
+<translation id="411052834366185695">குறைந்தது 1 இலக்கம் இருக்க வேண்டும்</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ஆஃப்லைன்)</translation>
 <translation id="4113743276555482284">ஃபைலுக்கான கடவுச்சொல்</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{சேமித்த கடவுச்சொற்கள் எதுவுமில்லை}=1{1 கடவுச்சொல் சரிபார்க்கப்பட்டது}other{{COUNT} கடவுச்சொற்கள் சரிபார்க்கப்பட்டன}}</translation>
@@ -5044,6 +5046,7 @@
 <translation id="4461483878391246134">மொழிபெயர்ப்புத் தேவைப்படாத மொழிகளைச் சேர்க்கும்</translation>
 <translation id="4462159676511157176">பிரத்தியேகப் பெயர் சேவையகங்கள்</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />க்கு அமைக்கப்பட்ட நேர வரம்பு: <ph name="TIME" /></translation>
+<translation id="4466922176191762830">மேலும் <ph name="NUM" /></translation>
 <translation id="4467373268340082204">தவறான பின்</translation>
 <translation id="4469324811108161144">குறிப்புகளில் அதிகபட்சம் <ph name="CHARACTER_LIMIT" /> எழுத்துகள் இருக்கலாம்.</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" /> ஃபோல்டரில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
@@ -5458,6 +5461,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{பொதுக் குறியீட்டையும் முழுமைத்தன்மைத் தடுப்பையும் சரிபார்க்கிறது... 1 நிமிடத்திற்குள் சரிபார்ப்பு நிறைவடையும்}=1{பொதுக் குறியீட்டையும் முழுமைத்தன்மைத் தடுப்பையும் சரிபார்க்கிறது... 1 நிமிடத்திற்கு சரிபார்ப்பு நிறைவடையும்}other{பொதுக் குறியீட்டையும் முழுமைத்தன்மைத் தடுப்பையும் சரிபார்க்கிறது... # நிமிடங்களில் சரிபார்ப்பு நிறைவடையும்}}</translation>
 <translation id="4766598565665644999">அனைத்து நீட்டிப்புகளும் <ph name="HOST" /> தளத்தில் உள்ளவற்றைப் படிக்கலாம் மாற்றலாம்</translation>
 <translation id="4767427586072640478">முடக்கப்பட்ட நீட்டிப்புகள் குறித்து மேலும் அறிக.</translation>
+<translation id="4769359569327438364">குறைந்தது 4 இலக்கங்கள் இருக்க வேண்டும்</translation>
 <translation id="4769632191812288342">நிலையான பாதுகாப்பைப் பெறுகிறீர்கள்</translation>
 <translation id="4770119228883592393">அணுகல் கோரப்பட்டுள்ளது, பதிலளிக்க ⌘ + Option + கீழ்நோக்கிய அம்புக்குறி விசைகளை அழுத்தவும்</translation>
 <translation id="4772914216048388646">நேர்த்தி</translation>
@@ -6046,6 +6050,7 @@
 <translation id="5183344263225877832">அனைத்து HID சாதன அனுமதிகளையும் மீட்டமைக்கவா?</translation>
 <translation id="5184063094292164363">&amp;JavaScript கன்சோல்</translation>
 <translation id="5184209580557088469">இந்தப் பயனர்பெயரில் ஏற்கனவே ஒரு டிக்கெட் உள்ளது</translation>
+<translation id="5184329579814168207">Chrome இல் திற</translation>
 <translation id="5184662919967270437">சாதனத்தைப் புதுப்பிக்கிறது</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" இன் புதிய பதிப்பு முடக்கப்பட்டது, ஏனெனில் அதற்கு கூடுதல் அனுமதி தேவை.</translation>
 <translation id="5185500136143151980">இணைய இணைப்பு இல்லை</translation>
@@ -6140,6 +6145,7 @@
 <translation id="5240931875940563122">Android மொபைல் மூலம் உள்நுழைக</translation>
 <translation id="5241689948221696942">சில தயாரிப்புகளுக்கு, இணையம் முழுவதும் உள்ள கருத்துகளின் சுருக்க விவரத்தை ஒப்பீட்டு அட்டவணைகள் வழங்கும்</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" ஐ இயக்கவா?</translation>
+<translation id="5243477050423867768">குறைந்தது 8 இலக்கங்கள் இருக்க வேண்டும். எல்லாம் ஒரே எண்ணாகவோ வரிசை முறையாகவோ இருக்கக்கூடாது.</translation>
 <translation id="5244234799035360187">OneDrive இப்போது Files ஆப்ஸில் காட்டப்படும்</translation>
 <translation id="5244466461749935369">இப்போது அகற்ற வேண்டாம்</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />க்கு ஒத்திசைக்கிறது</translation>
@@ -6902,7 +6908,6 @@
 <translation id="5804241973901381774">அனுமதிகள்</translation>
 <translation id="5804259315582798390">சாதனத் தரவு மீட்டெடுப்பை இயக்க முடியவில்லை</translation>
 <translation id="5805268472388605531">உச்சரிப்புக் குறிகளையும் சிறப்பு எழுத்துக்குறிகளையும் பார்க்க கீபோர்டு பட்டன்களை அழுத்திப் பிடித்திருக்கவும்</translation>
-<translation id="5805697420284793859">சாளர நிர்வாகி</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> ஃபைலை நீக்க Enter அழுத்தவும்</translation>
 <translation id="5806447147478173900">காட்டப்படும் தளங்கள் பயன்படுத்தும் மொத்தச் சேமிப்பகம்: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (இயல்புநிலை)</translation>
@@ -7061,7 +7066,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ஆஃப்லைனில் உள்ளது</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">அடுத்த உள்ளீட்டு முறைக்கு மாற <ph name="KEY_CODES" /> பட்டன்களை அழுத்தவும்.</translation>
-<translation id="5911533659001334206">Shortcut viewer</translation>
 <translation id="5911545422157959623">கெஸ்ட் பயன்முறையில் புக்மார்க்குகள் கிடைக்காது</translation>
 <translation id="5914016309240354769">இயற்கை</translation>
 <translation id="5914724413750400082">தனிமதிப்பு (<ph name="MODULUS_NUM_BITS" /> பிட்கள்):
@@ -8056,6 +8060,7 @@
 <translation id="6619990499523117484">பின்னை உறுதிசெய்யவும்</translation>
 <translation id="6621282332208609777">Googleளில் கேளுங்கள் அல்லது URLலை டைப் செய்யுங்கள்</translation>
 <translation id="6621391692573306628">இந்தப் பக்கத்தை மற்றொரு சாதனத்திற்கு அனுப்ப, இரண்டு சாதனங்களிலும் Chromeமில் உள்நுழைய வேண்டும்</translation>
+<translation id="6622212269189717101">குறைந்தது 6 இலக்கங்கள் இருக்க வேண்டும். எல்லாம் ஒரே எண்ணாகவோ வரிசை முறையாகவோ இருக்கக்கூடாது.</translation>
 <translation id="6622980291894852883">படங்களைத் தடுப்பதைத் தொடர்க</translation>
 <translation id="6624036901798307345">டேப்லெட் பயன்முறையில், ஒவ்வொரு பக்கத்தின் சிறுபடத்தையும் காட்டும் புதிய உலாவிப்பக்கப் பட்டியைத் திறக்க, பக்க எண்ணிக்கைக் கருவிப்பட்டி பட்டனைத் தட்டவும்.</translation>
 <translation id="6624538059730609162">வலதுபுறக் காட்சியை மூடு</translation>
@@ -8200,7 +8205,6 @@
 <translation id="6723839827191551955">நீங்கள் அலைபரப்பும் மீடியாவைக் கண்ட்ரோல் செய்யலாம்</translation>
 <translation id="6723839937902243910">ஆற்றல்</translation>
 <translation id="6723946439672043591">வேறொரு சுயவிவரத்தைத் தேர்வுசெய்யுங்கள்</translation>
-<translation id="6725073593266469338">UI சேவை</translation>
 <translation id="6725206449694821596">இன்டர்நெட் பிரிண்டிங் புரோட்டோகால் (IPP)</translation>
 <translation id="6725970970008349185">ஒவ்வொரு பக்கத்திலும் காண்பிப்பதற்கான பிரதிநிதிகளின் எண்ணிக்கை</translation>
 <translation id="672609503628871915">புதியதைப் பார்க்கவும்</translation>
@@ -10306,7 +10310,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />க்கு மாறு</translation>
 <translation id="8184318863960255706">மேலும் தகவல்</translation>
 <translation id="8184472985242519288">சீரானது</translation>
-<translation id="8185614942934189676">மின்னஞ்சல் தானாகச் சரிபார்க்கப்பட்டது</translation>
 <translation id="8186013737729037962">நிறுவனத்தில் பதிவுசெய்துள்ள சாதனங்கள் குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
 <translation id="8186047833733689201">ஒலியழுத்தக் குறிகள் மெனு திறக்கப்பட்டது. வழிசெலுத்த இடது, வலது அம்புக்குறி அல்லது எண் பட்டன்களை அழுத்தவும்.</translation>
 <translation id="8186609076106987817">சேவையகத்தால் ஃபைலைக் கண்டறிய முடியவில்லை.</translation>
@@ -10672,7 +10675,6 @@
 <translation id="8428634594422941299">நிராகரி</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> இல் வெளியேற்றப்படுவீர்கள்</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" />க்கான கூடுதல் விருப்பங்கள்</translation>
-<translation id="8431190899827883166">Show taps</translation>
 <translation id="843173223122814223">AI மூலம் பின்புலங்களை உருவாக்குங்கள்</translation>
 <translation id="8431977087510901105">கர்சர் அமைப்புகள் மீட்டமைக்கப்பட்டன</translation>
 <translation id="8434109185104929038">வாசிப்பு அறை</translation>

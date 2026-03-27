@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">選取要匯出至其他應用程式的帳戶。</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1506063256525392513">這項操作可以讓你拍照、上傳相片及掃描 QR 圖碼</translation>
+<translation id="1506733063065214205">RCS MLS 用戶端</translation>
 <translation id="1508263560970797965">繼續使用無痕模式</translation>
 <translation id="1509486075633541495">登入網站</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2673508731173059946">前往複製的連結</translation>
 <translation id="2679659833697380">你的資訊會儲存到裝置</translation>
+<translation id="2681572445246787428">文件簽署</translation>
 <translation id="2688535388040882469">橫幅</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
+<translation id="4306349443295056740">OCSP 簽署</translation>
 <translation id="4309403553630140242">輕觸兩下即可查看更多資訊</translation>
 <translation id="4310738531374808763">自訂你的首頁</translation>
 <translation id="4320848494125124980">近期存取</translation>
 <translation id="4322394346347055525">關閉其他分頁</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">啟用通知</translation>
 <translation id="4326912346867677256">輕觸「使用密碼」即可安全登入。</translation>
 <translation id="4327017157997423717">追蹤「<ph name="PRODUCT_NAME" />」的價格，<ph name="PRICE" />，<ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">如要將書籤同步到所有裝置，請在設定中開啟「書籤」。</translation>
 <translation id="4746926359847517643">你隨時可以從歷史記錄重新開啟這些分頁。</translation>
 <translation id="4749529195026091676">{count,plural, =1{已匯入 {count} 張卡片}other{已匯入 {count} 張卡片}}</translation>
+<translation id="4749924365937394956">伺服器驗證</translation>
 <translation id="4751645464639803239">新無痕分頁</translation>
 <translation id="4752348350801431746">關閉安全檢查通知…</translation>
 <translation id="4759238208242260848">下載</translation>
@@ -1390,12 +1395,14 @@
 <translation id="598634819525651074">面積</translation>
 <translation id="5988097621740394599">在分頁上查看降價資訊。</translation>
 <translation id="5988851877894965432">在 Chrome 中開啟網址</translation>
+<translation id="599343768974649785">明確的文字訊息</translation>
 <translation id="6006672969046233841">新分頁</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6012140227487808125">加密中…</translation>
 <translation id="6027619584715411062">登入後，就能從任何裝置存取自己的書籤、密碼等資訊。</translation>
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6032845897905314562">新功能</translation>
+<translation id="6037458223703682108">數位簽章</translation>
 <translation id="6038823991892265570">管理 Google 儲存空間</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />，<ph name="PUBLISHER_INFORMATION" />，<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -1539,6 +1546,7 @@
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項位於靠近畫面底部的位置。</translation>
 <translation id="647867789226964031">請變更密碼</translation>
+<translation id="6480363549849064919">用戶端驗證</translation>
 <translation id="6494931198667773526">結束時間</translation>
 <translation id="6503077044568424649">最常造訪</translation>
 <translation id="6503763061813913607">安全檢查通知</translation>
@@ -1584,6 +1592,7 @@
 <translation id="6619015782482868078">水藍色主題</translation>
 <translation id="6620279676667515405">取消</translation>
 <translation id="6625830436658400045">系統會根據上次的備份記錄還原同步處理設定。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />選擇要同步的資料。</translation>
+<translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6629759408545977279">來源：<ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">多了這層防護，有效防範線上威脅。</translation>
@@ -2148,6 +2157,7 @@
 <translation id="8614671330774943747">前往分頁切換工具</translation>
 <translation id="862367213447108001">一律顯示這個網站的彈出式視窗</translation>
 <translation id="8625706492572042370">編輯主畫面</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">已鎖定無痕分頁</translation>
 <translation id="8633025649649592204">近期活動</translation>
 <translation id="8636825310635137004">如要存取您在其他裝置上開啟的分頁，請開啟同步處理功能。</translation>
@@ -2334,6 +2344,7 @@
 <translation id="942624946817804130">匯出</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="94870150074703282">要刪除群組嗎？</translation>
+<translation id="951090530321144895">CA 發行者</translation>
 <translation id="952704832371081537">取消</translation>
 <translation id="95332591904104970">連結的應用程式</translation>
 <translation id="954667170699278022">閱讀清單</translation>

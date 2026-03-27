@@ -6046,6 +6046,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5183344263225877832">Vill du återställa alla behörigheter för HID-enheter?</translation>
 <translation id="5184063094292164363">&amp;JavaScript-konsol</translation>
 <translation id="5184209580557088469">Det finns redan en biljett med det här användarnamnet</translation>
+<translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5184662919967270437">Enheten uppdateras</translation>
 <translation id="5185386675596372454">Den senaste versionen av <ph name="EXTENSION_NAME" /> har inaktiverats eftersom ytterligare rättigheter krävs.</translation>
 <translation id="5185500136143151980">Inget internet</translation>
@@ -6901,7 +6902,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5804259315582798390">Det gick inte att aktivera lokal dataåterställning</translation>
 <translation id="5805268472388605531">Tryck länge på tangenterna för att se accenttecken och specialtecken</translation>
-<translation id="5805697420284793859">Fönsterhanterare</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> tryck på Retur för att radera filen</translation>
 <translation id="5806447147478173900">Totalt lagringsutrymme som används av visade webbplatser: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standard)</translation>
@@ -7060,7 +7060,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> är offline</translation>
 <translation id="5911030830365207728">Google Översätt</translation>
 <translation id="5911497236110691522">Om du vill byta till nästa inmatningsmetod trycker du på <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Kortkommandovisare</translation>
 <translation id="5911545422157959623">Bokmärken är inte tillgängliga i gästläge</translation>
 <translation id="5914016309240354769">Natur</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bitar):
@@ -8199,7 +8198,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6723839827191551955">Styr den media du castar</translation>
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="6723946439672043591">Välj en annan profil</translation>
-<translation id="6725073593266469338">Gränssnittstjänst</translation>
 <translation id="6725206449694821596">Protokoll för internetutskrift (IPP)</translation>
 <translation id="6725970970008349185">Antal kandidater som ska visas per sida</translation>
 <translation id="672609503628871915">Kolla nyheterna</translation>
@@ -10305,7 +10303,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8184288427634747179">Växla till <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Mer info</translation>
 <translation id="8184472985242519288">Jämnhög</translation>
-<translation id="8185614942934189676">E-postadressen har verifierats automatiskt</translation>
 <translation id="8186013737729037962">Läs mer om företagsregistrerade enheter</translation>
 <translation id="8186047833733689201">Menyn för accenttecken har öppnats. Tryck på vänster-, höger- eller siffertangenterna för att navigera och på retur för att infoga.</translation>
 <translation id="8186609076106987817">Servern kunde inte hitta filen.</translation>
@@ -10671,7 +10668,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8428634594422941299">Jag förstår</translation>
 <translation id="84297032718407999">Du loggas ut om <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Fler alternativ för <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Visa tryck</translation>
 <translation id="843173223122814223">Skapa bakgrunder med AI</translation>
 <translation id="8431977087510901105">Markörinställningarna har återställts</translation>
 <translation id="8434109185104929038">Läshörna</translation>

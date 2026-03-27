@@ -6037,6 +6037,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5183344263225877832">Vil du tilbakestille alle HID-enhetstillatelser?</translation>
 <translation id="5184063094292164363">&amp;JavaScript-konsoll</translation>
 <translation id="5184209580557088469">Det finnes allerede en sak med dette brukernavnet</translation>
+<translation id="5184329579814168207">Åpne i Chrome</translation>
 <translation id="5184662919967270437">Oppdaterer enheten</translation>
 <translation id="5185386675596372454">Den nyeste versjonen av <ph name="EXTENSION_NAME" /> er deaktivert fordi den krever ytterligere tillatelser.</translation>
 <translation id="5185500136143151980">Ingen internettilkobling</translation>
@@ -6890,7 +6891,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5804259315582798390">Kunne ikke slå på lokal datagjenoppretting</translation>
 <translation id="5805268472388605531">Trykk og hold på tastaturtastene for å se aksenttegn og spesialtegn</translation>
-<translation id="5805697420284793859">Window Manager</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> trykk på Enter for å slette filen</translation>
 <translation id="5806447147478173900">Total mengde lagringsplass som brukes av nettstedene som vises: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standard)</translation>
@@ -7049,7 +7049,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> er uten nett</translation>
 <translation id="5911030830365207728">Google Oversetter</translation>
 <translation id="5911497236110691522">For å bytte til neste inndatametode, trykk på <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Snarveivisning</translation>
 <translation id="5911545422157959623">Bokmerker er ikke tilgjengelige i gjestemodus</translation>
 <translation id="5914016309240354769">Natur</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> biters):
@@ -8188,7 +8187,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6723839827191551955">Kontroller mediene du caster</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723946439672043591">Velg en annen profil</translation>
-<translation id="6725073593266469338">UI-tjeneste</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Antall kandidater som vises per side</translation>
 <translation id="672609503628871915">Se hva som er nytt</translation>
@@ -10294,7 +10292,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8184288427634747179">Bytt til <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Mer informasjon</translation>
 <translation id="8184472985242519288">Helhetlig</translation>
-<translation id="8185614942934189676">E-posten er bekreftet automatisk</translation>
 <translation id="8186013737729037962">Finn ut mer om bedriftsregistrerte enheter</translation>
 <translation id="8186047833733689201">Menyen med aksenttegn er åpen. Trykk på venstrepilen, høyrepilen eller talltastene for å navigere, og trykk på Enter for å sette inn.</translation>
 <translation id="8186609076106987817">Tjeneren fant ikke filen.</translation>
@@ -10660,7 +10657,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8428634594422941299">Greit</translation>
 <translation id="84297032718407999">Du logges av om <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Flere alternativer for <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Vis trykk</translation>
 <translation id="843173223122814223">Lag bakgrunner med AI</translation>
 <translation id="8431977087510901105">Markørinnstillingene er tilbakestilt</translation>
 <translation id="8434109185104929038">Lesekrok</translation>

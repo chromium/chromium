@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">האתר יכול לבקש הרשאה להתחבר ליציאות טוריות</translation>
 <translation id="2403474027143565107">מדויק</translation>
 <translation id="240450251994300576">לוגו משני בכותרת</translation>
+<translation id="2404715426538856682">‏כרטיסי חיוב מיידי ואשראי · מספרי IBAN · כרטיסי מועדון לקוחות</translation>
 <translation id="2404884497378469141">רוצה לנסות שוב להעתיק את הקבצים?</translation>
 <translation id="2413155254802890957">ישנה</translation>
 <translation id="2413528052993050574">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. ייתכן שאישור האבטחה שלו בוטל. הסיבה לכך עשויה להיות הגדרה שגויה או תוקף המיירט את החיבור שלך.</translation>
@@ -2168,6 +2169,7 @@
 <translation id="4340810192899866471">‏ייבוא מקובץ JSON</translation>
 <translation id="4340982228985273705">‏המחשב לא זוהה כמכשיר המנוהל על ידי הארגון, כך שלפי המדיניות מותר להתקין אוטומטית רק תוספים מחנות האינטרנט של Chrome. כתובת האתר לעדכונים מחנות האינטרנט של Chrome היא "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">פארקי שעשועים</translation>
+<translation id="4346670990181948854">מידע על נסיעות · כלי רכב</translation>
 <translation id="4348834659292907206">החיבור אל <ph name="SITE" /> אינו מאובטח</translation>
 <translation id="4349365535725594680">אי אפשר לשתף תוכן סודי</translation>
 <translation id="4349810866125026513">להעלות בכל זאת</translation>
@@ -2961,6 +2963,7 @@ Del</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5596939519753369075">‏2x3.5 אינץ'</translation>
 <translation id="5597254438174353289">כחול 3</translation>
+<translation id="5600044805561809264">במהלך הגלישה, יש לך אפשרות לשאול בקלות שאלות על הכרטיסיות ששיתפת.</translation>
 <translation id="5603469469737324249">‫<ph name="ISSUER_1_NAME" /> או <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ניהול אינו נתמך</translation>
 <translation id="5605249000617390290">מידע נוסף על המעקב אחר מחירים</translation>
@@ -3055,6 +3058,7 @@ Del</translation>
 <translation id="5752519522101347518">האתר לאימות הבנק בטעינה</translation>
 <translation id="5753570386948603678">מחיקה מההיסטוריה</translation>
 <translation id="5759751709240058861">להשתמש במצלמה ולהזיז אותה</translation>
+<translation id="5762131895127128324">רישיונות נהיגה · תעודות מזהות · דרכונים</translation>
 <translation id="5763042198335101085">עליך להזין כתובת אימייל חוקית</translation>
 <translation id="5764725887548570807">פורמט המקור לא תקין.</translation>
 <translation id="5764920692828389743">שליחה לכתובת <ph name="EMAIL_ADDRESS" /></translation>
@@ -3992,6 +3996,7 @@ Del</translation>
 <translation id="7220786058474068424">המערכת מעבדת את התשלום</translation>
 <translation id="7221855153210829124">להציג הודעות</translation>
 <translation id="722454870747268814">כרטיסייה פרטית חדשה</translation>
+<translation id="7225676267118764980">החלפת ספק המילוי האוטומטי והגדרות אחרות</translation>
 <translation id="7226892411756387078">טקסט פשוט</translation>
 <translation id="7227293336683593977">היסטוריית המחירים</translation>
 <translation id="7228306718910595403">סטטוס כשירות של האיחוד האירופי</translation>

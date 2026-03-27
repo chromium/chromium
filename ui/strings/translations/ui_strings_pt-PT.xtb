@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
-<translation id="1028699632127661925">A enviar para <ph name="DEVICE_NAME" />…</translation>
 <translation id="111910763555783249">Definições de notificação</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{Há 1 dia}other{Há # dias}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Há 1 minuto}other{Há # minutos}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2653844658857826081">NOVO</translation>
 <translation id="2666092431469916601">Parte superior</translation>
-<translation id="2701330563083355633">Partilhado a partir do <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Há 1 ano}other{Há # anos}}</translation>
 <translation id="2878511608894704031">Eliminar tudo</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{em 1 d.}other{em # d.}}</translation>

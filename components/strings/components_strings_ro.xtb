@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">Poate solicita permisiunea de a se conecta la porturi seriale</translation>
 <translation id="2403474027143565107">Exactă</translation>
 <translation id="240450251994300576">Sigla secundară din antet</translation>
+<translation id="2404715426538856682">Carduri de credit și de debit · IBAN-uri · Carduri de fidelitate</translation>
 <translation id="2404884497378469141">Încearcă să copiezi din nou fișierele</translation>
 <translation id="2413155254802890957">Veche</translation>
 <translation id="2413528052993050574">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; este posibil ca certificatul său de securitate să fie revocat. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
@@ -2168,6 +2169,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4340810192899866471">Importă din JSON</translation>
 <translation id="4340982228985273705">Acest computer nu este detectat ca fiind gestionat de companie, deci politica poate instala automat doar extensiile găzduite în Magazinul web Chrome. Adresa URL pentru actualizare din Magazinul web Chrome este „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4342742994656318294">Parcuri tematice</translation>
+<translation id="4346670990181948854">Informații despre călătorii · Vehicule</translation>
 <translation id="4348834659292907206">Conexiunea la <ph name="SITE" /> nu este securizată</translation>
 <translation id="4349365535725594680">Nu poți permite accesul la conținut confidențial</translation>
 <translation id="4349810866125026513">Încarcă oricum</translation>
@@ -2956,6 +2958,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5596939519753369075">2 x 3,5 in</translation>
 <translation id="5597254438174353289">Albastru 3</translation>
+<translation id="5600044805561809264">Poți să pui cu ușurință întrebări despre filele pe care le trimiți în timp ce navighezi.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> sau <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gestionarea nu este acceptată</translation>
 <translation id="5605249000617390290">Află mai multe despre urmărirea prețurilor</translation>
@@ -3050,6 +3053,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5752519522101347518">Se încarcă site-ul de verificare bancară</translation>
 <translation id="5753570386948603678">Șterge din istoric</translation>
 <translation id="5759751709240058861">Mișcă și folosește camera</translation>
+<translation id="5762131895127128324">Permise de conducere · Cărți de identitate · Pașapoarte</translation>
 <translation id="5763042198335101085">Introdu o adresă de e-mail validă</translation>
 <translation id="5764725887548570807">Format de origine nevalid.</translation>
 <translation id="5764920692828389743">Trimite la <ph name="EMAIL_ADDRESS" /></translation>
@@ -3987,6 +3991,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="7220786058474068424">Se procesează</translation>
 <translation id="7221855153210829124">Afișeze notificări</translation>
 <translation id="722454870747268814">Filă incognito nouă</translation>
+<translation id="7225676267118764980">Schimbă furnizorul de completare automată și alte setări</translation>
 <translation id="7226892411756387078">Text simplu</translation>
 <translation id="7227293336683593977">Istoricul prețurilor</translation>
 <translation id="7228306718910595403">Starea de calificare UE</translation>

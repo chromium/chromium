@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">직렬 포트에 연결하도록 요청할 수 있음</translation>
 <translation id="2403474027143565107">정확한 위치</translation>
 <translation id="240450251994300576">보조 헤더 로고</translation>
+<translation id="2404715426538856682">신용카드 및 체크카드 · IBAN · 포인트 카드</translation>
 <translation id="2404884497378469141">파일을 다시 복사해 보세요.</translation>
 <translation id="2413155254802890957">이전 주소</translation>
 <translation id="2413528052993050574">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 취소될 수 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
@@ -2168,6 +2169,7 @@
 <translation id="4340810192899866471">JSON에서 가져오기</translation>
 <translation id="4340982228985273705">이 컴퓨터는 기업에서 관리하는 기기가 아닌 것으로 파악되므로, Chrome 웹 스토어에 호스팅된 확장 프로그램만 정책을 통해 자동으로 설치할 수 있습니다. Chrome 웹 스토어의 업데이트 URL은 '<ph name="CWS_UPDATE_URL" />'입니다.</translation>
 <translation id="4342742994656318294">테마파크</translation>
+<translation id="4346670990181948854">여행 정보 · 차량</translation>
 <translation id="4348834659292907206"><ph name="SITE" />에 대한 연결이 안전하지 않음</translation>
 <translation id="4349365535725594680">기밀 콘텐츠를 공유할 수 없음</translation>
 <translation id="4349810866125026513">무시하고 업로드</translation>
@@ -2956,6 +2958,7 @@
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5596939519753369075">2x3.5인치</translation>
 <translation id="5597254438174353289">파란색 3</translation>
+<translation id="5600044805561809264">웹을 탐색하면서 공유 중인 탭에 관해 손쉽게 질문할 수 있습니다.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> 또는 <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">관리가 지원되지 않음</translation>
 <translation id="5605249000617390290">가격 추적 자세히 알아보기</translation>
@@ -3050,6 +3053,7 @@
 <translation id="5752519522101347518">은행 인증 웹사이트 로드 중</translation>
 <translation id="5753570386948603678">기록에서 삭제</translation>
 <translation id="5759751709240058861">카메라 사용 및 이동</translation>
+<translation id="5762131895127128324">운전면허증 · 신분증 · 여권</translation>
 <translation id="5763042198335101085">올바른 이메일 주소를 입력하세요.</translation>
 <translation id="5764725887548570807">원본 형식이 잘못되었습니다.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />(으)로 보내기</translation>
@@ -3987,6 +3991,7 @@
 <translation id="7220786058474068424">처리 중</translation>
 <translation id="7221855153210829124">알림 표시</translation>
 <translation id="722454870747268814">새 시크릿 탭</translation>
+<translation id="7225676267118764980">자동 완성 제공업체 및 기타 설정 변경</translation>
 <translation id="7226892411756387078">일반 텍스트</translation>
 <translation id="7227293336683593977">가격 변동 내역</translation>
 <translation id="7228306718910595403">EU 인증 상태</translation>

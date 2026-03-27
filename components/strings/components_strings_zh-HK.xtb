@@ -917,7 +917,7 @@
 <translation id="2400600116338235695">可要求連接序列連接埠</translation>
 <translation id="2403474027143565107">精確位置</translation>
 <translation id="240450251994300576">次要頁首標誌</translation>
-<translation id="2404715426538856682">信用卡和簽帳金融卡 · IBAN · 會員卡</translation>
+<translation id="2404715426538856682">信用卡和扣帳卡 · IBAN · 會員卡</translation>
 <translation id="2404884497378469141">嘗試再次複製檔案</translation>
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已被撤銷。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
@@ -2168,7 +2168,7 @@
 <translation id="4340810192899866471">從 JSON 匯入</translation>
 <translation id="4340982228985273705">系統偵測到此電腦並非由企業管理，因此政策只容許自動安裝來自「Chrome 網上應用程式商店」的擴充程式。「Chrome 網上應用程式商店」的更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
 <translation id="4342742994656318294">主題公園</translation>
-<translation id="4346670990181948854">旅遊資訊 · 車輛</translation>
+<translation id="4346670990181948854">旅遊資料 · 車輛</translation>
 <translation id="4348834659292907206">與 <ph name="SITE" /> 的連線並不安全</translation>
 <translation id="4349365535725594680">無法分享機密內容</translation>
 <translation id="4349810866125026513">仍要上載</translation>
@@ -3052,7 +3052,7 @@
 <translation id="5752519522101347518">載入緊銀行驗證網站</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
 <translation id="5759751709240058861">使用和移動相機</translation>
-<translation id="5762131895127128324">駕照 · 身分證 · 護照</translation>
+<translation id="5762131895127128324">駕駛執照 · 身分證 · 護照</translation>
 <translation id="5763042198335101085">請輸入有效的電郵地址</translation>
 <translation id="5764725887548570807">來源格式無效。</translation>
 <translation id="5764920692828389743">傳送至 <ph name="EMAIL_ADDRESS" /></translation>
@@ -3990,7 +3990,7 @@
 <translation id="7220786058474068424">正在處理</translation>
 <translation id="7221855153210829124">顯示通知</translation>
 <translation id="722454870747268814">新增無痕式分頁</translation>
-<translation id="7225676267118764980">變更自動填入服務供應商和其他設定</translation>
+<translation id="7225676267118764980">變更自動填入服務和其他設定</translation>
 <translation id="7226892411756387078">純文字</translation>
 <translation id="7227293336683593977">過往價格</translation>
 <translation id="7228306718910595403">歐盟合格狀態</translation>

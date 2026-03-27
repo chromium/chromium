@@ -157,6 +157,7 @@
 <translation id="1099070179078143183">사기 탐지와 같은 기능을 지원하기 위해 Chrome은 Google 서버로 데이터를 전송하지 않고 기기에서 직접 실행되는 AI 모델을 사용할 수 있습니다. 이 기능이 사용 중지되면 이러한 기능이 작동하지 않을 수 있습니다. <ph name="BEGIN_LINK" />온디바이스 AI 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />에서 이미지가 복사됨</translation>
 <translation id="1100504063505580045">현재 아이콘</translation>
+<translation id="1101267749138963680">안전한지 확인 중...</translation>
 <translation id="1102759278139578486">기본 노드 사이트설정 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1104098698795583187">이 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
@@ -2917,6 +2918,7 @@
 <translation id="2979893796619951531">사이트 제외</translation>
 <translation id="2979966855249721010">관심분야에 따라 앱 추천, 도움말 등이 표시될 수 있습니다</translation>
 <translation id="2981113813906970160">큰 마우스 커서 표시</translation>
+<translation id="2981728693230031897">Gemini로 이 페이지 요약</translation>
 <translation id="2983102365694924129">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="2983311431122838216">Google 검색의 AI 모드에서 질문하기</translation>
 <translation id="2983373101216420412">케이스 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
@@ -6044,6 +6046,7 @@
 <translation id="5183344263225877832">모든 HID 기기 권한을 재설정하시겠습니까?</translation>
 <translation id="5184063094292164363">자바스크립트 콘솔(&amp;J)</translation>
 <translation id="5184209580557088469">사용자 이름이 같은 티켓이 이미 존재합니다.</translation>
+<translation id="5184329579814168207">Chrome에서 열기</translation>
 <translation id="5184662919967270437">기기 업데이트 중</translation>
 <translation id="5185386675596372454">'<ph name="EXTENSION_NAME" />'의 최신 버전에 더 많은 권한이 필요하여 사용이 중지되었습니다.</translation>
 <translation id="5185500136143151980">인터넷 연결 없음</translation>
@@ -6899,7 +6902,6 @@
 <translation id="5804241973901381774">권한</translation>
 <translation id="5804259315582798390">로컬 데이터 복구를 사용 설정할 수 없음</translation>
 <translation id="5805268472388605531">키보드 키를 길게 누르면 악센트 기호와 특수문자가 표시됩니다</translation>
-<translation id="5805697420284793859">창 관리자</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> 파일을 삭제하려면 Enter 키를 누르세요</translation>
 <translation id="5806447147478173900">표시된 사이트에서 사용 중인 총 저장용량: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°(기본값)</translation>
@@ -7058,7 +7060,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 기기가 오프라인 상태임</translation>
 <translation id="5911030830365207728">Google 번역</translation>
 <translation id="5911497236110691522">다음 입력 방법으로 전환하려면 <ph name="KEY_CODES" /> 키를 누르세요</translation>
-<translation id="5911533659001334206">바로가기 뷰어</translation>
 <translation id="5911545422157959623">게스트 모드에서는 북마크를 사용할 수 없습니다</translation>
 <translation id="5914016309240354769">자연</translation>
 <translation id="5914724413750400082">모듈러스(<ph name="MODULUS_NUM_BITS" />비트):
@@ -8197,7 +8198,6 @@
 <translation id="6723839827191551955">전송하는 미디어를 제어하세요</translation>
 <translation id="6723839937902243910">전원</translation>
 <translation id="6723946439672043591">다른 프로필 선택</translation>
-<translation id="6725073593266469338">UI 서비스</translation>
 <translation id="6725206449694821596">인터넷 인쇄 프로토콜(IPP)</translation>
 <translation id="6725970970008349185">페이지당 표시할 후보자 수</translation>
 <translation id="672609503628871915">새로운 기능 알아보기</translation>
@@ -10302,7 +10302,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />(으)로 전환</translation>
 <translation id="8184318863960255706">추가 정보</translation>
 <translation id="8184472985242519288">균일</translation>
-<translation id="8185614942934189676">이메일 자동 인증됨</translation>
 <translation id="8186013737729037962">엔터프라이즈 등록 기기에 대해 자세히 알아보기</translation>
 <translation id="8186047833733689201">발음 구별 기호 메뉴를 열었습니다. 이동하려면 왼쪽, 오른쪽 또는 숫자 키를, 삽입하려면 Enter를 누르세요.</translation>
 <translation id="8186609076106987817">서버에서 파일을 찾을 수 없습니다.</translation>
@@ -10668,7 +10667,6 @@
 <translation id="8428634594422941299">확인</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> 후 로그아웃됩니다</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> 옵션 더보기</translation>
-<translation id="8431190899827883166">탭한 항목 표시</translation>
 <translation id="843173223122814223">AI로 배경 만들기</translation>
 <translation id="8431977087510901105">커서 설정 재설정</translation>
 <translation id="8434109185104929038">독서 공간</translation>

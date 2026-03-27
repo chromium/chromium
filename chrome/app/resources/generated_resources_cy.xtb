@@ -6049,6 +6049,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5183344263225877832">Ailosod pob caniatâd dyfais HID?</translation>
 <translation id="5184063094292164363">&amp;Consol JavaScript</translation>
 <translation id="5184209580557088469">Mae tocyn gyda'r enw defnyddiwr hwn eisoes yn bodoli</translation>
+<translation id="5184329579814168207">Agor yn Chrome</translation>
 <translation id="5184662919967270437">Wrthi'n diweddaru'ch dyfais</translation>
 <translation id="5185386675596372454">Mae'r fersiwn fwyaf newydd o "<ph name="EXTENSION_NAME" />" wedi'i analluogi oherwydd bod angen rhagor o ganiatadau arno.</translation>
 <translation id="5185500136143151980">Dim rhyngrwyd</translation>
@@ -6904,7 +6905,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5804241973901381774">Caniatadau</translation>
 <translation id="5804259315582798390">Wedi methu â galluogi adferiad data lleol</translation>
 <translation id="5805268472388605531">Pwyswch a daliwch fysellau bysellfwrdd i weld acenion a nodau arbennig</translation>
-<translation id="5805697420284793859">Rheolwr ffenestri</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> pwyswch Enter i ddileu'r ffeil</translation>
 <translation id="5806447147478173900">Cyfanswm y storfa a ddefnyddir gan y gwefannau a ddangosir: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Diofyn)</translation>
@@ -7063,7 +7063,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5910726859585389579">Mae <ph name="DEVICE_TYPE" /> all-lein</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">I newid i'r dull mewnbynnu nesaf, pwyswch <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Gwyliwr llwybrau byr</translation>
 <translation id="5911545422157959623">Nid yw nodau tudalen ar gael mewn ffurf gwestai</translation>
 <translation id="5914016309240354769">Natur</translation>
 <translation id="5914724413750400082">Modwlws (<ph name="MODULUS_NUM_BITS" /> bit):
@@ -8210,7 +8209,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6723839827191551955">Rheoli'r cyfryngau rydych yn eu castio</translation>
 <translation id="6723839937902243910">Pŵer</translation>
 <translation id="6723946439672043591">Dewis proffil arall</translation>
-<translation id="6725073593266469338">Gwasanaeth UI</translation>
 <translation id="6725206449694821596">Protocol Argraffu Rhyngrwyd (IPP)</translation>
 <translation id="6725970970008349185">Nifer yr ymgeiswyr i'w harddangos fesul tudalen</translation>
 <translation id="672609503628871915">Gweld beth sy'n newydd</translation>
@@ -10315,7 +10313,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8184288427634747179">Newid i <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Rhagor o wybodaeth</translation>
 <translation id="8184472985242519288">Unffurf</translation>
-<translation id="8185614942934189676">E-bost wedi'i ddilysu'n awtomatig</translation>
 <translation id="8186013737729037962">Dysgu rhagor am ddyfeisiau sydd â chofrestriad enterprise</translation>
 <translation id="8186047833733689201">Mae'r ddewislen nodau acen ar agor. Pwyswch y fysell chwith, y fysell dde, neu'r bysellau rhif i lywio ac Enter i fewnosod.</translation>
 <translation id="8186609076106987817">Ni allai'r gweinydd ddod o hyd i'r ffeil.</translation>
@@ -10681,7 +10678,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8428634594422941299">Deall</translation>
 <translation id="84297032718407999">Byddwch yn cael eich allgofnodi mewn <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Rhagor o ddewisiadau ar gyfer <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Dangos tapiau</translation>
 <translation id="843173223122814223">Creu cefndiroedd gydag AI</translation>
 <translation id="8431977087510901105">Ailosod gosodiadau cyrchwr</translation>
 <translation id="8434109185104929038">Cwtsh darllen</translation>

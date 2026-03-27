@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
-<translation id="1028699632127661925">ກຳລັງສົ່ງຫາ <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">ການ​ຕັ້ງ​ຄ່າ​ການ​ແຈ້ງ​ເຕືອນ</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 ວັນ​ກ່ອນ​ນີ້}other{ # ວັນ​ກ່ອນ​ນີ້}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 ນາທີກ່ອນນີ້}other{# ນາທີກ່ອນນີ້}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">ຄລິບບອດ</translation>
 <translation id="2653844658857826081">ໃຫມ່</translation>
 <translation id="2666092431469916601">ດ້ານເທິງ</translation>
-<translation id="2701330563083355633">ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ປີກ່ອນນີ້}other{# ປີກ່ອນນີ້}}</translation>
 <translation id="2878511608894704031">ລຶບທັງໝົດ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ໃນ 1 ມື້}other{ໃນ # ມື້}}</translation>

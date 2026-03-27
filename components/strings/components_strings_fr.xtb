@@ -917,6 +917,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2400600116338235695">Peut demander à se connecter aux ports série</translation>
 <translation id="2403474027143565107">Exacte</translation>
 <translation id="240450251994300576">Logo de l'en-tête secondaire</translation>
+<translation id="2404715426538856682">Cartes de crédit et de débit · IBAN · Cartes de fidélité</translation>
 <translation id="2404884497378469141">Réessayez de copier vos fichiers</translation>
 <translation id="2413155254802890957">Ancienne</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
@@ -2168,6 +2169,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4340810192899866471">Importer à partir d'un fichier JSON</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise. Selon la règle définie, seules les extensions hébergées par le Chrome Web Store peuvent y être installées. L'URL de mise à jour du Chrome Web Store est "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Parcs à thème</translation>
+<translation id="4346670990181948854">Informations de voyage · Véhicules</translation>
 <translation id="4348834659292907206">La connexion à <ph name="SITE" /> n'est pas sécurisée</translation>
 <translation id="4349365535725594680">Impossible de partager le contenu confidentiel</translation>
 <translation id="4349810866125026513">Importer quand même</translation>
@@ -2956,6 +2958,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5596939519753369075">2 x 3,5 pouces</translation>
 <translation id="5597254438174353289">Bleu 3</translation>
+<translation id="5600044805561809264">Vous pouvez facilement poser des questions au sujet des onglets que vous partagez pendant que vous naviguez.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ou <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gestion non acceptée.</translation>
 <translation id="5605249000617390290">En savoir plus sur le suivi des prix</translation>
@@ -3050,6 +3053,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5752519522101347518">Chargement du site Web de validation bancaire…</translation>
 <translation id="5753570386948603678">Supprimer de l'historique</translation>
 <translation id="5759751709240058861">Utiliser et bouger la caméra</translation>
+<translation id="5762131895127128324">Permis de conduire · Cartes d'identité · Passeports</translation>
 <translation id="5763042198335101085">Saisissez une adresse e-mail valide</translation>
 <translation id="5764725887548570807">Format d'origine non valide.</translation>
 <translation id="5764920692828389743">Envoyer à <ph name="EMAIL_ADDRESS" /></translation>
@@ -3988,6 +3992,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="7221855153210829124">Afficher les notifications</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée 
 </translation>
+<translation id="7225676267118764980">Modifier le fournisseur de saisie automatique et d'autres paramètres</translation>
 <translation id="7226892411756387078">Texte brut</translation>
 <translation id="7227293336683593977">Historique des prix</translation>
 <translation id="7228306718910595403">État : certification UE</translation>

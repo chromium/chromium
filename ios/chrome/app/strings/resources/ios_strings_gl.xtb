@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Selecciona as contas que queiras exportar a outra aplicación.</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1506063256525392513">Permíteche tirar e cargar fotos, así como escanear códigos QR</translation>
+<translation id="1506733063065214205">Cliente MLS de RCS</translation>
 <translation id="1508263560970797965">Continuar no modo de incógnito</translation>
 <translation id="1509486075633541495">Iniciar sesión no sitio web</translation>
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2673508731173059946">Visitar ligazón copiada</translation>
 <translation id="2679659833697380">A túa información gárdase no teu dispositivo</translation>
+<translation id="2681572445246787428">Sinatura de documentos</translation>
 <translation id="2688535388040882469">Báners</translation>
 <translation id="2690858294534178585">Estase utilizando a cámara</translation>
 <translation id="2691653761409724435">Non dispoñible sen conexión</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
 <translation id="4302061870579014542">Definir posición</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
+<translation id="4306349443295056740">Sinatura de OCSP</translation>
 <translation id="4309403553630140242">Toca dúas veces para obter máis información</translation>
 <translation id="4310738531374808763">Personaliza a páxina de inicio</translation>
 <translation id="4320848494125124980">Recentes</translation>
 <translation id="4322394346347055525">Pechar outras pestanas</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Activar notificacións</translation>
 <translation id="4326912346867677256">Toca Usar contrasinal para iniciar sesión de maneira segura.</translation>
 <translation id="4327017157997423717">Facer un seguimento do prezo de <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">Activa na configuración a opción Marcadores para poder acceder a eles en todos os teus dispositivos.</translation>
 <translation id="4746926359847517643">Sempre podes recuperalas no historial.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} tarxeta importada}other{{count} tarxetas importadas}}</translation>
+<translation id="4749924365937394956">Autenticación do servidor</translation>
 <translation id="4751645464639803239">Nova pestana do modo de incógnito</translation>
 <translation id="4752348350801431746">Desactivar notificacións de Comprobación de seguranza…</translation>
 <translation id="4759238208242260848">Descargas</translation>
@@ -1390,12 +1395,14 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="598634819525651074">Superficie</translation>
 <translation id="5988097621740394599">Consulta as baixadas de prezo nas túas pestanas.</translation>
 <translation id="5988851877894965432">Abrir URL en Chrome</translation>
+<translation id="599343768974649785">Texto explícito</translation>
 <translation id="6006672969046233841">Nova pestana</translation>
 <translation id="6011308810877101166">Mellorar as suxestións de busca</translation>
 <translation id="6012140227487808125">Encriptando...</translation>
 <translation id="6027619584715411062">Inicia sesión para poder acceder aos teus marcadores, contrasinais e moito máis en todos os teus dispositivos.</translation>
 <translation id="6027945736510816438">Querías dicir "<ph name="WEBSITE" />"?</translation>
 <translation id="6032845897905314562">nova función</translation>
+<translation id="6037458223703682108">Sinatura dixital</translation>
 <translation id="6038823991892265570">Xestionar almacenamento de Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" /> (<ph name="PUBLICATION_DATE" />)</translation>
 <translation id="6040143037577758943">Pechar</translation>
@@ -1539,6 +1546,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6476284679642588870">Xestionar métodos de pago</translation>
 <translation id="6476800141292307438">Traducindo a páxina ao <ph name="LANGUAGE" />. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="647867789226964031">Cambiar os contrasinais</translation>
+<translation id="6480363549849064919">Autenticación do cliente</translation>
 <translation id="6494931198667773526">Finaliza</translation>
 <translation id="6503077044568424649">Máis visitados</translation>
 <translation id="6503763061813913607">Notificacións de Comprobación de seguranza</translation>
@@ -1584,6 +1592,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6619015782482868078">Tema augamariña</translation>
 <translation id="6620279676667515405">Cancelar</translation>
 <translation id="6625830436658400045">Restaurarase a configuración de sincronización segundo a última copia de seguranza. Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
+<translation id="6626281667717553020">URI de CPS</translation>
 <translation id="6627583120233659107">Editar cartafol</translation>
 <translation id="6629759408545977279">Desde: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Engade esta capa adicional de protección contra as ameazas en liña.</translation>
@@ -2148,6 +2157,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8614671330774943747">Ir ao selector de pestanas</translation>
 <translation id="862367213447108001">Mostrar sempre as ventás emerxentes neste sitio</translation>
 <translation id="8625706492572042370">Editar a pantalla de inicio</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Bloquea as pestanas do modo de incógnito</translation>
 <translation id="8633025649649592204">Actividade recente</translation>
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
@@ -2334,6 +2344,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="942624946817804130">Export (Exportar)</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="94870150074703282">Queres eliminar o grupo?</translation>
+<translation id="951090530321144895">Emisores de CA</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="95332591904104970">Aplicacións conectadas</translation>
 <translation id="954667170699278022">Lista de lectura</translation>

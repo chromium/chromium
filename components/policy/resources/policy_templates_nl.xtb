@@ -404,6 +404,22 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="1317158052518324525">Verbeterd automatisch invullen niet toestaan.</translation>
 <translation id="1317658068839330898">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet niet toestaan</translation>
 <translation id="1318233005302276244">Hiermee kunnen gebruikers hun pakketten volgen in Chrome.</translation>
+<translation id="1321747583289636863">Als je het beleid instelt, kun je het maximale aantal gelijktijdige verbindingen met de proxyserver voor WebSocket-verzoeken opgeven.
+
+Zie <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" /> om limieten voor niet-WebSocket-verzoeken aan te passen.
+
+Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.
+
+Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend.
+Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen.
+
+De waarde moet gelijk zijn aan of hoger zijn dan 6.
+Als je een waarde onder die limiet instelt, wordt 6 gebruikt.
+Het tot onder de standaardwaarde (32) verlagen van deze waarde is daarom op eigen risico.
+
+De waarde moet gelijk zijn aan of lager zijn dan 256.
+Als je een waarde boven die limiet instelt, wordt 256 gebruikt.
+Het tot boven de standaardwaarde (32) verhogen van deze waarde is daarom op eigen risico.</translation>
 <translation id="1323501563951768821">De instellingen voor F12 gebruiken de sneltoets met de functietoets Shift</translation>
 <translation id="1325547947664414578">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, start de <ph name="PRODUCT_NAME" />-service de browser- en app-vensters van het vorige apparaat op het nieuwe apparaat.
 Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser- en app-vensters geopend van het <ph name="PRODUCT_OS_NAME" />-apparaat dat de huidige gebruiker het laatst heeft gebruikt.
@@ -4871,6 +4887,7 @@ Als je het beleid aanzet of niet instelt, verliezen gebruikers hun niet-ontsleut
 Als je het beleid uitzet, behouden gebruikers hun gegevens van de wachtwoordmanager, maar werkt de wachtwoordmanager niet.
 
 Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4321788213579606602">Maximumaantal gelijktijdige verbindingen met de proxyserver voor niet-WebSocket-verzoeken</translation>
 <translation id="4322842393287974810">Toestaan dat de kiosk-app die automatisch zonder vertraging is gestart, de <ph name="PRODUCT_OS_NAME" />-versie beheert</translation>
 <translation id="4323412353642577604">Extern attest voor contentbescherming aanzetten</translation>
 <translation id="4325690621216251241">Een afmeldknop toevoegen aan de systeembalk</translation>
@@ -7614,6 +7631,7 @@ Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</tra
 <translation id="6075316301208933536">Als <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> is ingesteld op <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, stel je met <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> in wanneer de batterij stopt met opladen, op basis van het percentage van de batterijlading. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> moet ten minste 5 procentpunten lager zijn dan <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Als je het beleid niet instelt, is de <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> batterijoplaadmodus van toepassing.</translation>
+<translation id="6080808146443476891">Maximumaantal gelijktijdige verbindingen met de proxyserver voor WebSocket-verzoeken</translation>
 <translation id="6082161804984853051">Als je het beleid instelt, kan <ph name="PRODUCT_NAME" /> de door jou opgegeven directory gebruiken voor de opslag van gecachte bestanden op de schrijf, ongeacht of gebruikers de optie '--disk-cache-dir' hebben opgegeven.
 
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaard cachedirectory. Gebruikers kunnen die instelling echter wijzigen met behulp van de opdrachtregel '--disk-cache-dir'.
@@ -10989,6 +11007,22 @@ Deze functie is alleen beschikbaar op het Canary-kanaal.
 
 Als je dit beleid toepast of niet instelt, is de pagina toegankelijk.
 Als je het beleid niet toepast, wordt de pagina geblokkeerd.</translation>
+<translation id="8264002158987842436">Als je het beleid instelt, kun je het maximale aantal gelijktijdige verbindingen met de proxyserver voor niet-WebSocket-verzoeken opgeven.
+
+Zie <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" /> om de limieten voor WebSocket-verzoeken aan te passen.
+
+Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.
+
+Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend.
+Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen.
+
+De waarde moet gelijk zijn aan of hoger zijn dan 6.
+Als je een waarde onder die limiet instelt, wordt 6 gebruikt.
+Het tot onder de standaardwaarde (32) verlagen van deze waarde is daarom op eigen risico.
+
+De waarde moet gelijk zijn aan of lager zijn dan 256 (99 in <ph name="PRODUCT_NAME" /> 147 en eerdere versies).
+Als je een waarde boven die limiet instelt, wordt 256 gebruikt (99 in <ph name="PRODUCT_NAME" /> 147 en eerdere versies).
+Het tot boven de standaardwaarde (32) verhogen van deze waarde is daarom op eigen risico.</translation>
 <translation id="8266778278542911985">Als je het beleid instelt op 3, kunnen websites toegang vragen tot seriële poorten. Als je het beleid instelt op 2, wordt de toegang tot seriële poorten geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>

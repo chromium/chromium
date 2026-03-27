@@ -6034,6 +6034,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5183344263225877832">HID cihazı icazələri sıfırlansın?</translation>
 <translation id="5184063094292164363">JavaScript konsolu</translation>
 <translation id="5184209580557088469">Bu istifadəçi adi ilə bilet artıq mövcuddur</translation>
+<translation id="5184329579814168207">Chrome'da açın</translation>
 <translation id="5184662919967270437">Cihazınız güncəllənir</translation>
 <translation id="5185386675596372454">Yeni "<ph name="EXTENSION_NAME" />" versiyası daha çox icazə tələb etdiyi üçün deaktiv edildi.</translation>
 <translation id="5185500136143151980">İnternet yoxdur</translation>
@@ -6889,7 +6890,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="5804259315582798390">Lokal datanın bərpasını aktivləşdirmək alınmadı</translation>
 <translation id="5805268472388605531">Vurğu işarələrini və xüsusi simvolları görmək üçün klaviatura düymələrini basıb saxlayın</translation>
-<translation id="5805697420284793859">Pəncərə meneceri</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> faylı silmək üçün enter düyməsinə basın</translation>
 <translation id="5806447147478173900">Göstərilən saytlar tərəfindən istifadə olunan cəmi yaddaş: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Defolt)</translation>
@@ -7048,7 +7048,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> oflayndır</translation>
 <translation id="5911030830365207728">Google Tərcümə</translation>
 <translation id="5911497236110691522">Növbəti daxiletmə metoduna keçmək üçün basın: <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Qısayol göstəricisi</translation>
 <translation id="5911545422157959623">Əlfəcinlər qonaq rejimində əlçatan deyil</translation>
 <translation id="5914016309240354769">Təbiət</translation>
 <translation id="5914724413750400082">Modul (<ph name="MODULUS_NUM_BITS" /> bit):
@@ -8185,7 +8184,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6723839827191551955">Yayımladığınız mediaya nəzarət edin</translation>
 <translation id="6723839937902243910">Enerji</translation>
 <translation id="6723946439672043591">Başqa profil seçin</translation>
-<translation id="6725073593266469338">UI xidməti</translation>
 <translation id="6725206449694821596">İnternet Çap Protokolu (IPP)</translation>
 <translation id="6725970970008349185">Hər səhifədə göstəriləcək aday sayı</translation>
 <translation id="672609503628871915">Yeniliklərə baxın</translation>
@@ -10290,7 +10288,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> keçid edin</translation>
 <translation id="8184318863960255706">Daha ətraflı</translation>
 <translation id="8184472985242519288">Uniforma</translation>
-<translation id="8185614942934189676">E-poçt avtomatik yoxlanıldı</translation>
 <translation id="8186013737729037962">Müəssisə tərəfindən qeydiyyatdan keçirilmiş cihazlar haqqında ətraflı məlumat əldə edin</translation>
 <translation id="8186047833733689201">Vurğu işarələri menyusu açıqdır. Naviqasiya üçün sol, sağ və ya rəqəm düymələrini, daxil etmək üçün isə enter düyməsini basın.</translation>
 <translation id="8186609076106987817">Server faylı tapa bilmədi.</translation>
@@ -10656,7 +10653,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8428634594422941299">Anladım</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> ərzində çıxış edəcəksiniz</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> üçün əlavə seçimlər</translation>
-<translation id="8431190899827883166">Vizual reaksiya</translation>
 <translation id="843173223122814223">Sİ ilə arxa fon yaradın</translation>
 <translation id="8431977087510901105">Kursor ayarları sıfırlaması</translation>
 <translation id="8434109185104929038">Oxu guşəsi</translation>

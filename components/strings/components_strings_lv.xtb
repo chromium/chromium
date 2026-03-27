@@ -917,6 +917,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2400600116338235695">Var pieprasīt atļauju veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="2403474027143565107">Precīza</translation>
 <translation id="240450251994300576">Galvenes sekundārais logotips</translation>
+<translation id="2404715426538856682">Kredītkartes un debetkartes · IBAN · Lojalitātes kartes</translation>
 <translation id="2404884497378469141">Mēģiniet vēlreiz kopēt savus failus.</translation>
 <translation id="2413155254802890957">Vecā</translation>
 <translation id="2413528052993050574">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts, iespējams, ir atsaukts. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
@@ -2166,6 +2167,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4340810192899866471">Importēt no JSON formāta</translation>
 <translation id="4340982228985273705">Šo datoru nepārvalda uzņēmums, tāpēc politika var automātiski instalēt tikai tos paplašinājumus, kas tiek mitināti Chrome interneta veikalā. Chrome interneta veikala atjauninājumu URL: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Tematiskie parki</translation>
+<translation id="4346670990181948854">Informācija par ceļojumiem · Transportlīdzekļi</translation>
 <translation id="4348834659292907206">Savienojums ar vietni <ph name="SITE" /> nav drošs</translation>
 <translation id="4349365535725594680">Nevar kopīgot konfidenciālu saturu</translation>
 <translation id="4349810866125026513">Tomēr augšupielādēt</translation>
@@ -2954,6 +2956,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="5596939519753369075">2 x 3,5 collas</translation>
 <translation id="5597254438174353289">Zila 3</translation>
+<translation id="5600044805561809264">Pārlūkošanas laikā varat ērti uzdot jautājumus par cilnēm, ko kopīgojat.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> vai <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Pārvaldīšana netiek atbalstīta.</translation>
 <translation id="5605249000617390290">Uzzināt vairāk par cenu izsekošanu</translation>
@@ -3048,6 +3051,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5752519522101347518">Notiek bankas verifikācijas vietnes ielāde…</translation>
 <translation id="5753570386948603678">Dzēst no vēstures</translation>
 <translation id="5759751709240058861">jūsu kameras izmantošana un kustināšana</translation>
+<translation id="5762131895127128324">Autovadītāja apliecības · Identifikācijas kartes · Pases</translation>
 <translation id="5763042198335101085">Ievadiet derīgu e-pasta adresi</translation>
 <translation id="5764725887548570807">Nederīgs avota formāts.</translation>
 <translation id="5764920692828389743">Sūtīt uz e-pasta adresi <ph name="EMAIL_ADDRESS" /></translation>
@@ -3985,6 +3989,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7220786058474068424">Notiek apstrāde</translation>
 <translation id="7221855153210829124">Rādīt paziņojumus</translation>
 <translation id="722454870747268814">Jauna inkognito cilne</translation>
+<translation id="7225676267118764980">Mainiet automātiskās aizpildes pakalpojumu sniedzēju un citus iestatījumus</translation>
 <translation id="7226892411756387078">Vienkāršs teksts</translation>
 <translation id="7227293336683593977">Cenu vēsture</translation>
 <translation id="7228306718910595403">ES kvalificēts statuss</translation>

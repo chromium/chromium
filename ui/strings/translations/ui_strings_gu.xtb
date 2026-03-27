@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
-<translation id="1028699632127661925"><ph name="DEVICE_NAME" /> પર મોકલી રહ્યાં છીએ...</translation>
 <translation id="111910763555783249">સૂચના સેટિંગ</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 દિવસ પહેલા}one{# દિવસ પહેલાં}other{# દિવસ પહેલાં}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
 <translation id="2653844658857826081">નવું</translation>
 <translation id="2666092431469916601">ઉપર</translation>
-<translation id="2701330563083355633"><ph name="DEVICE_NAME" />માંથી શેર કર્યું</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 વર્ષ પહેલાં}one{# વર્ષ પહેલાં}other{# વર્ષ પહેલાં}}</translation>
 <translation id="2878511608894704031">બધું ડિલીટ કરો</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1દિ. માં}one{#દિ. માં}other{#દિ. માં}}</translation>

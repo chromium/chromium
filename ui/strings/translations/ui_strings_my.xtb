@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
-<translation id="1028699632127661925"><ph name="DEVICE_NAME" /> သို့ ပို့နေသည်...</translation>
 <translation id="111910763555783249">သတိပေးချက် ဆက်တင်များ</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{၁ ရက်အကြာက}other{ # ရက်အကြာက}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{ပြီးခဲ့သည့် ၁ မိနစ်က}other{ပြီးခဲ့သည့် # မိနစ်က}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
 <translation id="2653844658857826081">အသစ်</translation>
 <translation id="2666092431469916601">ထိပ်</translation>
-<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ထံမှ မျှဝေထားပါသည်</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{ပြီးခဲ့သည့် ၁ နှစ်}other{ပြီးခဲ့သည့် # နှစ်}}</translation>
 <translation id="2878511608894704031">အားလုံး ဖျက်ရန်</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{၁ရက် အတွင်း}other{#ရက် အတွင်း}}</translation>

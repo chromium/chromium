@@ -6033,6 +6033,7 @@
 <translation id="5183344263225877832">გსურთ HID მოწყობილობების ყველა ნებართვის გადაყენება?</translation>
 <translation id="5184063094292164363">&amp;JavaScript კონსოლი</translation>
 <translation id="5184209580557088469">ბილეთი მომხმარებლის ამ სახელით უკვე არსებობს</translation>
+<translation id="5184329579814168207">Chrome-ში გახსნა</translation>
 <translation id="5184662919967270437">მიმდინარეობს თქვენი მოწყობილობის განახლება</translation>
 <translation id="5185386675596372454">„<ph name="EXTENSION_NAME" />“-ის უახლესი ვერსია გამორთულია, რადგან იგი მოითხოვს დამატებით ნებართვებს.</translation>
 <translation id="5185500136143151980">ინტერნეტთან კავშირი არ არის</translation>
@@ -6888,7 +6889,6 @@
 <translation id="5804241973901381774">ნებართვები</translation>
 <translation id="5804259315582798390">ადგილობრივი მონაცემების აღდგენა ვერ ჩაირთო</translation>
 <translation id="5805268472388605531">ხანგრძლივად დააჭირეთ კლავიატურის კლავიშებს, რომ იხილოთ აქცენტის ნიშნები და საგანგებო სიმბოლოები</translation>
-<translation id="5805697420284793859">ფანჯრების მმართველი</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />-ის წასაშლელად დააჭირეთ შეყვანის კლავიშს</translation>
 <translation id="5806447147478173900">ნაჩვენები საიტების მიერ გამოყენებული მეხსიერების საერთო მოცულობა: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ნაგულისხმევი)</translation>
@@ -7047,7 +7047,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ხაზგარეშეა</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">შეყვანის მომდევნო მეთოდზე გადასართავად დააჭირეთ შემდეგს: <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">მალსახმობების მნახველი</translation>
 <translation id="5911545422157959623">სანიშნეები მიუწვდომელია სტუმრის რეჟიმში</translation>
 <translation id="5914016309240354769">ბუნება</translation>
 <translation id="5914724413750400082">მოდული (<ph name="MODULUS_NUM_BITS" /> ბიტი):
@@ -8186,7 +8185,6 @@
 <translation id="6723839827191551955">გააკონტროლეთ მედიაკონტენტი, რომლის ტრანსლიერებასაც ახორციელებთ</translation>
 <translation id="6723839937902243910">ენერგია</translation>
 <translation id="6723946439672043591">სხვა პროფილის არჩევა</translation>
-<translation id="6725073593266469338">UI სერვისი</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">საჩვენებელი კანდიდატების რიცხვი ერთ გვერდზე</translation>
 <translation id="672609503628871915">ნახეთ სიახლეებირა სიახლეა</translation>
@@ -10290,7 +10288,6 @@
 <translation id="8184288427634747179">„<ph name="AVATAR_NAME" />“-ზე გადართვა</translation>
 <translation id="8184318863960255706">დაწვრილებით</translation>
 <translation id="8184472985242519288">ერთგვაროვანი</translation>
-<translation id="8185614942934189676">ელფოსტა ავტომატურად დადასტურდა</translation>
 <translation id="8186013737729037962">შეიტყვეთ მეტი ორგანიზაციაში რეგისტრირებული მოწყობილობების შესახებ</translation>
 <translation id="8186047833733689201">გახსნილია მახვილის ნიშნების მენიუ. ნავიგაციისთვის გამოიყენეთ კლავიშები მარცხნივ/მარჯვნივ მიმართული ისრებით ან რიცხვებით, ხოლო ჩასასმელად — კლავიში Enter.</translation>
 <translation id="8186609076106987817">სერვერმა ვერ იპოვა ფაილი.</translation>
@@ -10656,7 +10653,6 @@
 <translation id="8428634594422941299">გასაგებია</translation>
 <translation id="84297032718407999">სისტემიდან თქვენს გამოსვლამდე დარჩა <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">მეტი ვარიანტი <ph name="EXTENSION_NAME" />-ისთვის</translation>
-<translation id="8431190899827883166">შეხებების ჩვენება</translation>
 <translation id="843173223122814223">შექმენით ფონები ხელოვნური ინტელექტის დახმარებით</translation>
 <translation id="8431977087510901105">კურსორის პარამეტრების გადაყენება</translation>
 <translation id="8434109185104929038">საკითხავი კუთხე</translation>

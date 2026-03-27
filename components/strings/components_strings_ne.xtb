@@ -763,6 +763,7 @@
 <translation id="2188375229972301266">फेदमा एकभन्दा बढी प्वाल</translation>
 <translation id="218940509700321686">अल्पविरामले छुट्याइएका मानहरू</translation>
 <translation id="2190094353033916816">यो नीतिमा मेसिन र प्रयोगकर्ताका स्तरमा फरक फरक भ्यालू लागू गरिएका छन्। यो नीतिले अपेक्षा गरेअनुसार नै काम गरिरहेको छ।</translation>
+<translation id="219061769324072544">क्रेडिट,कार्ड,डेबिट</translation>
 <translation id="2191980191135734720">अर्को चरणमा सामान्यतया आफ्नो फिंगरप्रिन्ट प्रयोग गरी आफ्नो स्क्रिन अनलक गर्नुहोस्। तपाईं <ph name="LINK_TEXT" /> पनि सक्नुहुन्छ।</translation>
 <translation id="2194856509914051091">विचार गर्नु पर्ने कुराहरू</translation>
 <translation id="2195729137168608510">इमेल संरक्षण</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3134859781443140237">लोकल नेटवर्क</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> खोज्नुहोस्</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{कुनै पनि होइन}=1{१ खाताको साइन इनसम्बन्धी डेटा}other{# खाताहरूको साइन इनसम्बन्धी डेटा}}</translation>
+<translation id="3139503241401248626">यी सेटिङ अन गर्न र तपाईंको Google खातामा भएको जानकारी प्रयोग गर्न अटोफिल सेवाहरूका सेटिङमा जानुहोस्।</translation>
 <translation id="3140646734028448730">व्यावसायिक सेवाहरू</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3141337053413339205">यो ट्याब प्रयोग गर्नुहोस्</translation>
@@ -2298,6 +2300,7 @@
 <translation id="4594403342090139922">मेटाइलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="4598556348158889687">भण्डारणको व्यवस्थापन</translation>
 <translation id="459914240367517409">वेब डिजाइन तथा विकास</translation>
+<translation id="4599572944836204718">आफ्नो कार्ड सेभ गरेर Google Pay मार्फत अझ छिटो भुक्तानी गर्नुहोस्। कार्डसम्बन्धी विवरणरी Google Wallet मा इन्क्रिप्ट गरिन्छ।</translation>
 <translation id="4602465984861132303">बलिङ</translation>
 <translation id="4603727370377253901">उडानका रिजर्भेसनहरू</translation>
 <translation id="4607608436550361748">Chrome का सुझावहरू हेर्नुहोस्</translation>
@@ -2587,6 +2590,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, खोजसम्बन्धी यो सुझाव प्राप्त भएपछि खोजका थप सर्टकटहरू हेर्न ट्याबमा थिच्नुहोस्</translation>
 <translation id="5052488928733955073">तपाईंको जानकारी भर्ने क्रममा समस्या आयो। आफ्नो इन्टरनेट जाँच्नुहोस्।</translation>
 <translation id="5052517576853118371">सक्रिय विषयहरू</translation>
+<translation id="5053116470141135293">तपाईंको वास्तविक विवरण सुरक्षित राख्न तपाईंले यो कार्ड प्रयोग गरी चेकआउट गर्दा भर्चुअल कार्ड नम्बर हालिने छ। Google Wallet मा गई व्यवस्थापन गर्नुहोस्। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गरी यो फाइल पठाउन आफ्नो डिभाइसको भण्डारणमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}other{नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गरी यी फाइलहरू पठाउन आफ्नो डिभाइसको भण्डारणमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}}</translation>
 <translation id="5056587122125565772">फोटो बनाउनुहोस्</translation>
 <translation id="505757197798929356">खोल्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
@@ -2956,6 +2960,7 @@
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5596939519753369075">२ x ३.५ इन्च</translation>
 <translation id="5597254438174353289">निलो ३</translation>
+<translation id="5600044805561809264">तपाईं ब्राउज गर्दै गर्दा आफूले सेयर गरिरहेका ट्याबका बारेमा सजिलैसँग प्रश्नहरू सोध्न सक्नुहुन्छ।</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> वा <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">व्यवस्थापन समर्थित छैन</translation>
 <translation id="5605249000617390290">मूल्य ट्र्याक गर्ने सुविधाका बारेमा थप जान्नुहोस्</translation>
@@ -3362,6 +3367,7 @@
 <translation id="6250932670816326647">नुहाउने तथा शरीरमा लगाइने उत्पादनहरू</translation>
 <translation id="6251906504834538140">{0,plural, =1{फाइल सार्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल सार्न रोक लगाइएको छ}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफूले Chrome मा डाउनलोड गरेका फाइल व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="6253380015872250643">Google Wallet मा कार्ड सेभ गर्नुहोस्</translation>
 <translation id="6254436959401408446">यो पृष्ठ खोल्नका लागि पर्याप्त मेमोरी छैन</translation>
 <translation id="625463612687472648">अनुमति रद्द गर्नुहोस्</translation>
 <translation id="6259156558325130047">क्रम परिवर्तन गर्ने कार्य &amp;पुन: गर्नुहोस्</translation>
@@ -4258,6 +4264,7 @@
 <translation id="7615932826417658001">परिचय पत्र हाल्नुहोस्</translation>
 <translation id="7616390733770379387">यी सर्च इन्जिनहरू अनियमित क्रममा देखाइन्छन्।</translation>
 <translation id="7616645509853975347">तपाईंका एड्मिनले तपाईंको ब्राउजरमा Chrome Enterprise Connectors अन गर्नुभएको छ। यी कनेक्टरले तपाईंका केही डेटा प्रयोग गर्न सक्छन्।</translation>
+<translation id="7616747402308801775">तपाईं Google का विभिन्न सेवाहरूमा यो कार्ड प्रयोग गर्न सक्नुहोस् भन्नाका लागि यसलाई Google Wallet मा सेभ गरिएको छ।</translation>
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7618270539713451657">मार्सल आर्ट्स</translation>
 <translation id="7619838219691048931">अन्तिम पाना</translation>
@@ -4580,6 +4587,7 @@
 <translation id="8120720167840853945">यो नीतिले अन्य कुनै पनि नीतिको स्वचालित कारबाही नियन्त्रण गरिरहेको छैन।</translation>
 <translation id="8127301229239896662">तपाईंको कम्प्युटर वा नेटवर्कमा "<ph name="SOFTWARE_NAME" />" सही ढङ्गले स्थापना भएन। आफ्नो IT प्रशासकलाई यो समस्या समाधान गर्न लगाउनुहोस्‌।</translation>
 <translation id="8130113808541743942">सारेर यहाँ लैजानुहोस्...</translation>
+<translation id="813024282736408069">अटोफिल गर्न भर्चुअल कार्ड अन गर्नुहोस्</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8133495915926741232">विज्ञापनहरू पर्सनलाइज गर्न कुन कुन बृहत् विषयहरू प्रयोग गर्न दिने भन्ने कुरा छनौट गर्नुहोस्। तपाईंले कुनै बृहत् विषय अफ गर्नुभयो भने त्यससँग सम्बन्धित विषयहरू पनि ब्लक हुने छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">भर्ती तथा नियक्ति गर्ने सेवा</translation>

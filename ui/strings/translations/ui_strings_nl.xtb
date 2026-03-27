@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
-<translation id="1028699632127661925">Verzenden naar <ph name="DEVICE_NAME" />…</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 dag geleden}other{# dagen geleden}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minuut geleden}other{# minuten geleden}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Klembord</translation>
 <translation id="2653844658857826081">NIEUW</translation>
 <translation id="2666092431469916601">Boven</translation>
-<translation id="2701330563083355633">Gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 jaar geleden}other{# jaar geleden}}</translation>
 <translation id="2878511608894704031">Alles verwijderen</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{over 1 d}other{over # d}}</translation>

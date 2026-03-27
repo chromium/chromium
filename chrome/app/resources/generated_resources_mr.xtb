@@ -2593,6 +2593,7 @@
 <translation id="2750020734439919571">अधिक Chrome ॲप सेटिंग्ज आणि परवानग्या</translation>
 <translation id="275010360476017464">Gemini सोबत चॅट करण्यासाठी तुमचा मायक्रोफोन वापरा. तुम्ही Gemini सोबत बोलता, तेव्हा ऑडिओ Gemini अ‍ॅप्स अ‍ॅक्टिव्हिटी (सुरू केलेली असल्यास) यामध्ये स्टोअर केला जातो.</translation>
 <translation id="2750602041558385535">पडताळणी न केलेले डाउनलोड ब्लॉक केले</translation>
+<translation id="2751320815618312249">आणखी <ph name="NUM" /></translation>
 <translation id="2751454300227269244">तुमचे तोंड उजवीकडे हलवा</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> ला तुमच्या सिक्युरिटी कीचा आयडी क्रमांक जाणून घ्यायचा आहे. तुम्ही नेमकी कोणती सिक्युरिटी की वापरत आहात हे साइटला कळेल.</translation>
 <translation id="275213133112113418">तुमचे कार्ड सेव्ह केले आहे</translation>
@@ -4553,6 +4554,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> या कृतीसाठी शॉर्टकट निवडा</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) वर विंडो हलवा</translation>
 <translation id="4110485659976215879">चेतावणी रिस्टोअर करा</translation>
+<translation id="411052834366185695">किमान १ अंक असणे आवश्यक आहे</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफलाइन)</translation>
 <translation id="4113743276555482284">फाइलचा पासवर्ड</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{सेव्ह केलेला पासवर्ड नाही}=1{१ पासवर्ड तपासला आहे}other{{COUNT} पासवर्ड तपासले आहेत}}</translation>
@@ -5042,6 +5044,7 @@
 <translation id="4461483878391246134">भाषांतर करणे कधीही ऑफर न करण्यासाठी भाषा जोडा</translation>
 <translation id="4462159676511157176">कस्टम नाव सर्व्हर</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> साठी सेट केलेली <ph name="TIME" /> ची वेळ मर्यादा</translation>
+<translation id="4466922176191762830">आणखी <ph name="NUM" /></translation>
 <translation id="4467373268340082204">चुकीचा पिन</translation>
 <translation id="4469324811108161144"><ph name="CHARACTER_LIMIT" /> वर्णांपर्यंतच्या टिपा सेव्ह केल्या जाऊ शकतात.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> मधील फाइल संपादित करू शकते</translation>
@@ -5456,6 +5459,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{Checking public key and integrity block... Less than 1 minute remaining}=1{पब्लिक की आणि इंटेग्रिटी ब्लॉक तपासत आहे... १ मिनिट शिल्‍लक आहे}other{पब्लिक की आणि इंटेग्रिटी ब्लॉक तपासत आहे... # मिनिटे शिल्लक आहेत}}</translation>
 <translation id="4766598565665644999">सर्व एक्स्टेंशन <ph name="HOST" /> रीड करू शकतात आणि बदलू शकतात</translation>
 <translation id="4767427586072640478">बंद केलेल्या एक्स्टेंशनबद्दल अधिक जाणून घ्या.</translation>
+<translation id="4769359569327438364">किमान ४ अंकी असणे आवश्यक आहे</translation>
 <translation id="4769632191812288342">तुम्हाला साधारण संरक्षण मिळत आहे</translation>
 <translation id="4770119228883592393">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + डाउन अ‍ॅरो प्रेस करा</translation>
 <translation id="4772914216048388646">क्रमबद्ध</translation>
@@ -6044,6 +6048,7 @@
 <translation id="5183344263225877832">सर्व HID डिव्हाइस परवानग्या रीसेट करायच्या का?</translation>
 <translation id="5184063094292164363">&amp;JavaScript कन्सोल</translation>
 <translation id="5184209580557088469">हे वापरकर्ता नाव असलेले तिकीट आधीपासून अस्तित्वात आहे</translation>
+<translation id="5184329579814168207">Chrome मध्ये उघडा</translation>
 <translation id="5184662919967270437">तुमचे डिव्हाइस अपडेट करीत आहे</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ची नवीनतम आवृत्ती अक्षम केली गेली कारण यासाठी अधिक परवानग्या आवश्यक आहेत.</translation>
 <translation id="5185500136143151980">इंटरनेट नाही</translation>
@@ -6138,6 +6143,7 @@
 <translation id="5240931875940563122">Android फोन वापरून साइन इन करा</translation>
 <translation id="5241689948221696942">काही उत्पादनांसाठी, तुलना सारण्या वेबवरील परीक्षणांचा सारांश देतात</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" सुरू करायचे?</translation>
+<translation id="5243477050423867768">किमान ८ अंकी असणे आवश्यक आहे आणि त्यामध्ये पुनरावृत्ती होणारे किंवा क्रमाने येणारे अंक असू शकत नाहीत</translation>
 <translation id="5244234799035360187">OneDrive हे आता Files ॲपमध्ये दिसेल</translation>
 <translation id="5244466461749935369">आतापुरते ठेवा</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> शी सिंक करत आहे</translation>
@@ -6899,7 +6905,6 @@
 <translation id="5804241973901381774">परवानग्या</translation>
 <translation id="5804259315582798390">स्थानिक डेटा रिकव्‍हरी सेटअप सुरू करता आले नाही</translation>
 <translation id="5805268472388605531">अ‍ॅक्सेंटच्या खुणा आणि विशेष वर्ण पाहण्यासाठी किबोर्डच्या की प्रेस करून धरून ठेवा</translation>
-<translation id="5805697420284793859">विंडो व्यवस्थापक</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> फाइल हटवण्यासाठी एंटर प्रेस करा</translation>
 <translation id="5806447147478173900">दाखवलेल्या साइटनी वापरलेले एकूण स्टोरेज: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">०° (डीफॉल्ट)</translation>
@@ -7058,7 +7063,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ऑफलाइन आहे</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">पुढील इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="KEY_CODES" /> प्रेस करा</translation>
-<translation id="5911533659001334206">शॉर्टकट दर्शक</translation>
 <translation id="5911545422157959623">अतिथी मोडमध्ये बुकमार्क उपलब्ध नाहीत</translation>
 <translation id="5914016309240354769">निसर्ग</translation>
 <translation id="5914724413750400082">मॉड्यूलस (<ph name="MODULUS_NUM_BITS" /> बिट):
@@ -8056,6 +8060,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6619990499523117484">आपल्या पिन ची पुष्टी करा</translation>
 <translation id="6621282332208609777">Google ला विचारा किंवा URL टाइप करा</translation>
 <translation id="6621391692573306628">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा</translation>
+<translation id="6622212269189717101">किमान ६ अंकी असणे आवश्यक आहे आणि त्यामध्ये पुनरावृत्ती होणारे किंवा क्रमाने येणारे अंक असू शकत नाहीत</translation>
 <translation id="6622980291894852883">इमेज ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="6624036901798307345">प्रत्येक टॅबचे थंबनेल दाखवणारी नवीन टॅब स्ट्रिप उघडण्यासाठी टॅबलेट मोडमध्ये, टॅब काउंटर टूलबार बटणवर टॅप करा.</translation>
 <translation id="6624538059730609162">उजवीकडील दृश्य बंद करा</translation>
@@ -8200,7 +8205,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6723839827191551955">तुम्ही कास्ट करत असलेला मीडिया नियंत्रित करा</translation>
 <translation id="6723839937902243910">पॉवर</translation>
 <translation id="6723946439672043591">दुसरी प्रोफाइल निवडा</translation>
-<translation id="6725073593266469338">UI सेवा</translation>
 <translation id="6725206449694821596">इंटरनेट प्रिंट प्रोटोकॉल (IPP)</translation>
 <translation id="6725970970008349185">प्रति पेज दाखवल्या जाणार्‍या उमेदवारांची संख्या</translation>
 <translation id="672609503628871915">नवीन काय ते पहा</translation>
@@ -10306,7 +10310,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> वर स्विच करा</translation>
 <translation id="8184318863960255706">अधिक माहिती</translation>
 <translation id="8184472985242519288">एकसमान</translation>
-<translation id="8185614942934189676">ईमेलची पडताळणी आपोआप केली आहे</translation>
 <translation id="8186013737729037962">एंटरप्राइझने नोंदणी केलेल्या डिव्हाइसविषयी अधिक जाणून घ्या</translation>
 <translation id="8186047833733689201">अ‍ॅक्सेंट मार्कचा मेनू उघडला आहे. नेव्हिगेट करण्यासाठी डावीकडे, उजवीकडे किंवा नंबर की आणि घालण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="8186609076106987817">सर्व्हर फाइल शोधू शकले नाही.</translation>
@@ -10672,7 +10675,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8428634594422941299">समजले</translation>
 <translation id="84297032718407999">तुम्हाला <ph name="LOGOUT_TIME_LEFT" /> मध्ये साइन आउट केले जाईल</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> यासाठी आणखी पर्याय</translation>
-<translation id="8431190899827883166">टॅप दाखवा</translation>
 <translation id="843173223122814223">AI वापरून बॅकग्राउंड तयार करा</translation>
 <translation id="8431977087510901105">कर्सर सेटिंग्‍ज रीसेट</translation>
 <translation id="8434109185104929038">वाचनाचा कोपरा</translation>

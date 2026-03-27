@@ -6044,6 +6044,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5183344263225877832">Đặt lại tất cả các quyền của thiết bị HID?</translation>
 <translation id="5184063094292164363">Bảng điều khiển &amp;JavaScript</translation>
 <translation id="5184209580557088469">Phiếu có tên người dùng này đã tồn tại</translation>
+<translation id="5184329579814168207">Mở trong Chrome</translation>
 <translation id="5184662919967270437">Đang cập nhật thiết bị của bạn</translation>
 <translation id="5185386675596372454">Phiên bản mới nhất của "<ph name="EXTENSION_NAME" />" đã bị tắt vì phiên bản đó yêu cầu nhiều giấy phép hơn.</translation>
 <translation id="5185500136143151980">Không có Internet</translation>
@@ -6899,7 +6900,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5804259315582798390">Không thể bật dịch vụ khôi phục dữ liệu cục bộ</translation>
 <translation id="5805268472388605531">Nhấn và giữ các phím trên bàn phím để xem các dấu phụ và ký tự đặc biệt</translation>
-<translation id="5805697420284793859">Trình quản lý cửa sổ</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> nhấn phím Enter để xoá tệp</translation>
 <translation id="5806447147478173900">Tổng bộ nhớ mà các trang web hiển thị sử dụng: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Mặc định)</translation>
@@ -7058,7 +7058,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> hiện không có kết nối mạng</translation>
 <translation id="5911030830365207728">Google Dịch</translation>
 <translation id="5911497236110691522">Để chuyển sang phương thức nhập tiếp theo, hãy nhấn <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Trình xem phím tắt</translation>
 <translation id="5911545422157959623">Chế độ khách không có tính năng đánh dấu trang</translation>
 <translation id="5914016309240354769">Thiên nhiên</translation>
 <translation id="5914724413750400082">Mô-đun (<ph name="MODULUS_NUM_BITS" /> bit):
@@ -8197,7 +8196,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6723839827191551955">Điều khiển nội dung nghe nhìn bạn đang truyền</translation>
 <translation id="6723839937902243910">Nguồn</translation>
 <translation id="6723946439672043591">Chọn một hồ sơ khác</translation>
-<translation id="6725073593266469338">Dịch vụ giao diện người dùng</translation>
 <translation id="6725206449694821596">Giao thức in qua Internet (IPP)</translation>
 <translation id="6725970970008349185">Số lượng ứng viên để hiển thị trên mỗi trang</translation>
 <translation id="672609503628871915">Xem tính năng mới</translation>
@@ -10305,7 +10303,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8184288427634747179">Chuyển sang <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Thông tin khác</translation>
 <translation id="8184472985242519288">Đồng nhất</translation>
-<translation id="8185614942934189676">Email đã được xác minh tự động</translation>
 <translation id="8186013737729037962">Tìm hiểu thêm về thiết bị do doanh nghiệp đăng ký</translation>
 <translation id="8186047833733689201">Trình đơn dấu trọng âm đã mở. Nhấn phím trái, phải hoặc phím số để di chuyển và nhấn phím Enter để chèn.</translation>
 <translation id="8186609076106987817">Máy chủ không thể tìm thấy tệp.</translation>
@@ -10671,7 +10668,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8428634594422941299">Tôi hiểu</translation>
 <translation id="84297032718407999">Bạn sẽ bị đăng xuất sau <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Lựa chọn khác cho <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Hiển thị điểm khi nhấn</translation>
 <translation id="843173223122814223">Tạo nền bằng AI</translation>
 <translation id="8431977087510901105">Đã đặt lại chế độ cài đặt con trỏ</translation>
 <translation id="8434109185104929038">Góc đọc sách</translation>

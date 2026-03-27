@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
-<translation id="1028699632127661925">Ipinapadala sa <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">Mga setting ng notification</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 araw ang nakalipas}one{# araw ang nakalipas}other{# na araw ang nakalipas}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2653844658857826081">BAGO</translation>
 <translation id="2666092431469916601">Tuktok</translation>
-<translation id="2701330563083355633">Ibinahagi mula kay <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 taon ang nakalipas}one{# taon ang nakalipas}other{# na taon ang nakalipas}}</translation>
 <translation id="2878511608894704031">I-delete Lahat</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{sa loob ng 1 araw}one{sa loob ng # araw}other{sa loob ng # na araw}}</translation>

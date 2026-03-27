@@ -6033,6 +6033,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5183344263225877832">සියලු HID උපාංග අවසර යළි සකසන්න ද?</translation>
 <translation id="5184063094292164363">&amp;JavaScript කොන්සෝලය</translation>
 <translation id="5184209580557088469">මෙම පරිශීලක නාමය සහිත ප්‍රවේශපත්‍රයක් දැනටමත් පවතියි</translation>
+<translation id="5184329579814168207">Chrome තුළ විවෘත කරන්න</translation>
 <translation id="5184662919967270437">ඔබේ උපාංගය යාවත්කාලීන කරමින්</translation>
 <translation id="5185386675596372454">වැඩි අවශ්‍ය බැවින්  "<ph name="EXTENSION_NAME" />" හි නවතම සංස්කරණය අක්‍රීය කරන ලදී.</translation>
 <translation id="5185500136143151980">අන්තර්ජාලය නැත</translation>
@@ -6888,7 +6889,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5804259315582798390">ස්ථානීය දත්ත ප්‍රතිසාධනය සබල කිරීමට අසමත් විය</translation>
 <translation id="5805268472388605531">උච්චාරණ ලකුණු සහ විශේෂ අනුලකුණු බැලීමට යතුරු පුවරු යතුරු ඔබා අල්ලාගෙන සිටින්න</translation>
-<translation id="5805697420284793859">කවුළු කළමනාකරු</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> ගොනුව මැකීමට enter ඔබන්න</translation>
 <translation id="5806447147478173900">සංදර්ශනය වන අඩවි මගින් භාවිත කරන මුළු ගබඩාව: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (පෙරනිමි)</translation>
@@ -7047,7 +7047,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> නොබැඳියි</translation>
 <translation id="5911030830365207728">Google පරිවර්තනය</translation>
 <translation id="5911497236110691522">ඊළඟ ආදාන ක්‍රමයට මාරු වීමට, <ph name="KEY_CODES" /> ඔබන්න</translation>
-<translation id="5911533659001334206">කෙටිමං බලන්නා</translation>
 <translation id="5911545422157959623">ආගන්තුක ප්‍රකාරයේ පිටුසන් නොමැත</translation>
 <translation id="5914016309240354769">ස්වභාව ධර්මය</translation>
 <translation id="5914724413750400082">මොඩියුල (<ph name="MODULUS_NUM_BITS" /> බිටු):
@@ -8186,7 +8185,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6723839827191551955">ඔබ විකාශය කරන මාධ්‍ය පාලනය කරන්න</translation>
 <translation id="6723839937902243910">බලය</translation>
 <translation id="6723946439672043591">වෙනත් පැතිකඩක් තෝරන්න</translation>
-<translation id="6725073593266469338">UI සේවාව</translation>
 <translation id="6725206449694821596">අන්තර්ජාල මුද්‍රණ ප්‍රොටොකෝලය (IPP)</translation>
 <translation id="6725970970008349185">පිටුවක දර්ශනය කළ යුතු ඉල්ලුම් ගණන</translation>
 <translation id="672609503628871915">අළුත් මොනවාදැයි බලන්න</translation>
@@ -10291,7 +10289,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> වෙත මාරුවෙන්න</translation>
 <translation id="8184318863960255706">තවත් තතු</translation>
 <translation id="8184472985242519288">ඒකරූපී</translation>
-<translation id="8185614942934189676">ඉ-තැපෑල ස්වයංක්‍රීයව සත්‍යාපනය කරන ලදි</translation>
 <translation id="8186013737729037962">ව්‍යවසාය ලියාපදිංචි වූ උපාංග ගැන තව දැන ගන්න</translation>
 <translation id="8186047833733689201">උච්චාරණ ලකුණු මෙනුව විවෘතයි. සැරිසැරීමට වම, දකුණ හෝ අංක යතුරු ඔබා ඇතුළත් කිරීමට Enter කරන්න.</translation>
 <translation id="8186609076106987817">සර්වරයට ගොනුව සොයා ගත නොහැක.</translation>
@@ -10657,7 +10654,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8428634594422941299">තේරුණා</translation>
 <translation id="84297032718407999">ඔබ <ph name="LOGOUT_TIME_LEFT" />කින් වරනු ඇත</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> සඳහා තව විකල්ප</translation>
-<translation id="8431190899827883166">තට්ටු කිරීම් පෙන්වන්න</translation>
 <translation id="843173223122814223">AI සමග පසුබිම් සාදන්න</translation>
 <translation id="8431977087510901105">කර්සර සැකසීම් යළි සැකසිණි</translation>
 <translation id="8434109185104929038">කියවීම් මුල්ල</translation>

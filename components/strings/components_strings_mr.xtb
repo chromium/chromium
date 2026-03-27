@@ -763,6 +763,7 @@
 <translation id="2188375229972301266">मल्टिपल पंच बॉटम</translation>
 <translation id="218940509700321686">स्वल्पविरामाने विभक्त केलेली मूल्ये</translation>
 <translation id="2190094353033916816">या धोरणामध्ये मशीन आणि वापरकर्ता या पातळ्यांवर वेगवेगळी मूल्ये लागू केली आहेत. धोरण अपेक्षेप्रमाणे काम करत आहे.</translation>
+<translation id="219061769324072544">क्रेडिट,कार्ड,डेबिट</translation>
 <translation id="2191980191135734720">तुम्ही पुढील पायरीमध्ये साधारणपणे तुमची फिंगरप्रिंट वापरून तुमची स्क्रीन अनलॉक करा. तुम्ही <ph name="LINK_TEXT" /> देखील करू शकता.</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2195729137168608510">ईमेल संरक्षण</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3134859781443140237">स्थानिक नेटवर्क</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> शोधा</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{काहीही नाही}=1{एका खात्यासाठी साइन इन डेटा}other{# खात्यांसाठी साइन इन डेटा}}</translation>
+<translation id="3139503241401248626">ही सेटिंग्ज सुरू करण्यासाठी आणि तुमच्या Google खाते मधील माहिती वापरण्यासाठी, ऑटोफिल सेवा सेटिंग्जला भेट द्या</translation>
 <translation id="3140646734028448730">व्‍यवसाय सेवा</translation>
 <translation id="3141093262818886744">तरीही उघडा</translation>
 <translation id="3141337053413339205">या टॅबवर स्विच करा.</translation>
@@ -2299,6 +2301,7 @@
 <translation id="4594403342090139922">&amp;हटवा पूर्ववत करा</translation>
 <translation id="4598556348158889687">स्टोरेज व्यवस्थापन</translation>
 <translation id="459914240367517409">वेब डिझाइन आणि डेव्हलपमेंट</translation>
+<translation id="4599572944836204718">तुमचे कार्ड सेव्ह केलेले असताना Google Pay वापरून आणखी जलद पेमेंट करा. कार्डचे तपशील Google Wallet मध्ये एन्क्रिप्ट केलेले असतात.</translation>
 <translation id="4602465984861132303">गोलंदाजी</translation>
 <translation id="4603727370377253901">फ्लाइटची आरक्षणे</translation>
 <translation id="4607608436550361748">Chrome शी संबंधित टिपा पहा</translation>
@@ -2588,6 +2591,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, या शोध सूचनेनंतर उपलब्ध असलेल्या आणखी शोध शॉर्टकटसाठी टॅब प्रेस करा</translation>
 <translation id="5052488928733955073">तुमची माहिती भरताना समस्या आली. तुमचे कनेक्शन तपासा.</translation>
 <translation id="5052517576853118371">ॲक्टिव्ह विषय</translation>
+<translation id="5053116470141135293">तुमच्या वास्तविक तपशिलांचे संरक्षण करण्यासाठी तुम्ही हे कार्ड वापरून चेक आउट कराल, तेव्हा व्हर्चुअल कार्ड नंबर भरला जाईल. Google Wallet मध्ये व्यवस्थापित करा. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby सह शेअरिंग वापरून ही फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}other{Nearby सह शेअरिंग वापरून या फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}}</translation>
 <translation id="5056587122125565772">इमेज तयार करा</translation>
 <translation id="505757197798929356">उघड्याचे कारण द्या (आवश्यक)</translation>
@@ -3365,6 +3369,7 @@
 <translation id="6250932670816326647">बाथ आणि शरीराच्या निगेशी संबंधित उत्पादने</translation>
 <translation id="6251906504834538140">{0,plural, =1{फाइल हलवण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल हलवण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
+<translation id="6253380015872250643">Google Wallet मध्ये कार्ड सेव्ह करा</translation>
 <translation id="6254436959401408446">हे पेज उघडण्‍यासाठी पुरेशी मेमरी नाही</translation>
 <translation id="625463612687472648">अनुमती देणे थांबवा</translation>
 <translation id="6259156558325130047">&amp;पुनर्क्रमित करा पुन्हा करा</translation>
@@ -4262,6 +4267,7 @@
 <translation id="7615932826417658001">ओळखपत्र जोडा</translation>
 <translation id="7616390733770379387">ही रँडम क्रमाने दाखवली आहेत.</translation>
 <translation id="7616645509853975347">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुमच्या ब्राउझरवर Chrome एंटरप्राइझ कनेक्टर्स सुरू केली आहेत. या कनेक्टरना तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
+<translation id="7616747402308801775">हे कार्ड Google Wallet मध्ये सेव्ह केले आहे, जेणेकरून तुम्ही ते सर्व Google सेवांवर वापरू शकाल</translation>
 <translation id="7617825962482469577">एन्व्हलप सी७/सी६</translation>
 <translation id="7618270539713451657">मार्शल आर्ट</translation>
 <translation id="7619838219691048931">शेवटचे शीट</translation>
@@ -4584,6 +4590,7 @@
 <translation id="8120720167840853945">हे धोरण इतर कोणत्याही धोरणांचे डीफॉल्ट वर्तन नियंत्रित करत नाही.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" तुमच्या काँप्युटरवर किंवा नेटवर्कवर योग्य रीतीने इंस्टॉल केले नव्हते. तुमच्या अ‍ॅडमिनिस्ट्रेटरला ही समस्या सोडवण्यास सांगा.</translation>
 <translation id="8130113808541743942">यावर हलवा...</translation>
+<translation id="813024282736408069">ऑटोफिलसाठी व्हर्चुअल कार्ड सुरू करा</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8133495915926741232">जाहिराती पर्सनलाइझ करण्यात मदत व्हावी, यासाठी विषयांच्या कोणत्या व्यापक वर्गवाऱ्या वापरल्या जाऊ शकतात हे निवडा. व्यापक वर्गवारी बंद केल्याने त्यासंबंधित विषयदेखील ब्लॉक केले जातील. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">भरती आणि कर्मचारी नेमणूक</translation>

@@ -763,6 +763,7 @@
 <translation id="2188375229972301266">ତଳ ପଟରେ ଏକାଧିକ ପଞ୍ଚ୍</translation>
 <translation id="218940509700321686">କମା ଦ୍ୱାରା-ଅଲଗା ହୋଇଥିବା ମୂଲ୍ୟ</translation>
 <translation id="2190094353033916816">ଏହି ନୀତିରେ ମେସିନ ଏବଂ ୟୁଜର ଲେଭେଲରେ ଭିନ୍ନ ମୂଲ୍ୟ ଲାଗୁ କରାଯାଇଛି। ନୀତିଟି ଆଶାନୁରୂପେ କାର୍ଯ୍ୟ କରୁଛି।</translation>
+<translation id="219061769324072544">କ୍ରେଡିଟ,କାର୍ଡ,ଡେବିଟ</translation>
 <translation id="2191980191135734720">ପରବର୍ତ୍ତୀ ଷ୍ଟେପରେ, ସାଧାରଣତଃ ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରି ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଅନଲକ କରନ୍ତୁ। ଆପଣ <ph name="LINK_TEXT" /> ମଧ୍ୟ କରିପାରିବେ।</translation>
 <translation id="2194856509914051091">ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ</translation>
 <translation id="2195729137168608510">ଇମେଲ୍ ସୁରକ୍ଷା</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3134859781443140237">ସ୍ଥାନୀୟ ନେଟୱାର୍କ</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />କୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ୍ ଇନ୍ ଡାଟା}other{#ଟି ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ୍ ଇନ୍ ଡାଟା}}</translation>
+<translation id="3139503241401248626">ଏହି ସେଟିଂସକୁ ସକ୍ଷମ କରିବା ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ସୂଚନାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, ଅଟୋଫିଲ ସର୍ଭିସେସ ସେଟିଂସକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="3140646734028448730">ବିଜିନେସ ସେବା</translation>
 <translation id="3141093262818886744">ଯେ କୌଣସି ମତେ ଖୋଲନ୍ତୁ</translation>
 <translation id="3141337053413339205">ଏହି ଟାବକୁ ସ୍ୱିଚ କରନ୍ତୁ।</translation>
@@ -2297,6 +2299,7 @@
 <translation id="4594403342090139922">&amp;ଡିଲିଟ୍‌କୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="4598556348158889687">ଷ୍ଟୋରେଜ୍ ପରିଚାଳନା</translation>
 <translation id="459914240367517409">ୱେବ ଡିଜାଇନ ଏବଂ ଡେଭେଲପମେଣ୍ଟ</translation>
+<translation id="4599572944836204718">ଆପଣଙ୍କ କାର୍ଡ ସେଭ ହୋଇଥିବା ସମୟରେ Google Pay ମାଧ୍ୟମରେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରନ୍ତୁ। Google Walletରେ କାର୍ଡ ବିବରଣୀକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="4602465984861132303">ବୋଲିଂ</translation>
 <translation id="4603727370377253901">ଫ୍ଲାଇଟ ରିଜର୍ଭେସନ</translation>
 <translation id="4607608436550361748">Chrome ଟିପ୍ସ ଦେଖନ୍ତୁ</translation>
@@ -2586,6 +2589,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, ଏହି ସର୍ଚ୍ଚ ପରାମର୍ଶ ପରେ ଉପଲବ୍ଧ ଅଧିକ ସର୍ଚ୍ଚ ସର୍ଟକଟ ପାଇଁ ଟାବ ଦବାନ୍ତୁ</translation>
 <translation id="5052488928733955073">ଆପଣଙ୍କ ସୂଚନା ପୂରଣ କରିବାରେ ସମସ୍ୟା ହେଉଛି। ଆପଣଙ୍କ କନେକ୍ସନ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="5052517576853118371">ସକ୍ରିୟ ବିଷୟଗୁଡ଼ିକ</translation>
+<translation id="5053116470141135293">ଆପଣଙ୍କ ପ୍ରକୃତ ବିବରଣୀକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଆପଣ ଏହି କାର୍ଡ ମାଧ୍ୟମରେ ଚେକ ଆଉଟ କଲେ ଏକ ଭର୍ଚୁଆଲ କାର୍ଡ ନମ୍ବର ପୂରଣ କରାଯିବ। Google Walletରେ ପରିଚାଳନା କରନ୍ତୁ। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share ବ୍ୟବହାର କରି ଏହି ଫାଇଲ ପଠାଇବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ (<ph name="DISK_SPACE_SIZE" />) ସ୍ପେସ ଖାଲି କରନ୍ତୁ}other{Nearby Share ବ୍ୟବହାର କରି ଏହି ଫାଇଲଗୁଡ଼ିକୁ ପଠାଇବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ (<ph name="DISK_SPACE_SIZE" />) ସ୍ପେସ ଖାଲି କରନ୍ତୁ}}</translation>
 <translation id="5056587122125565772">ଇମେଜ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="505757197798929356">ଖୋଲିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
@@ -2955,6 +2959,7 @@
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5596939519753369075">2 x 3.5 ଇଞ୍ଚ</translation>
 <translation id="5597254438174353289">ନୀଳ 3</translation>
+<translation id="5600044805561809264">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ସେୟାର କରୁଥିବା ଟାବଗୁଡ଼ିକ ବିଷୟରେ ସହଜରେ ପ୍ରଶ୍ନଗୁଡ଼ିକ ପଚାରିପାରିବେ।</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> କିମ୍ବା <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ପରିଚାଳନା ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="5605249000617390290">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -3360,6 +3365,7 @@
 <translation id="6250932670816326647">ସ୍ନାନ ଏବଂ ବଡି ପ୍ରଡକ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="6251906504834538140">{0,plural, =1{ଫାଇଲକୁ ମୁଭ କରିବାରୁ ବ୍ଲକ କରାଯାଇଛି}other{<ph name="FILE_COUNT" />ଟି ଫାଇଲକୁ ମୁଭ କରିବାରୁ ବ୍ଲକ କରାଯାଇଛି}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeରେ ଆପଣ ଡାଉନଲୋଡ୍ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="6253380015872250643">Google Walletରେ କାର୍ଡ ସେଭ କରନ୍ତୁ</translation>
 <translation id="6254436959401408446">ଏହି ପୃଷ୍ଠା ଖୋଲିବା ପାଇଁ ପର୍ଯ୍ୟାପ୍ତ ମେମୋରୀ ନାହିଁ</translation>
 <translation id="625463612687472648">ଅନୁମତି ଦେବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6259156558325130047">&amp;ରି-ଡୁକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ</translation>
@@ -4256,6 +4262,7 @@
 <translation id="7615932826417658001">ପରିଚୟ କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7616390733770379387">ଏଗୁଡ଼ିକ ରେଣ୍ଡମ ଅର୍ଡରରେ ଦେଖାଯାଏ।</translation>
 <translation id="7616645509853975347">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଆପଣଙ୍କ ବ୍ରାଉଜରରେ Chrome Enterprise Connectors ଚାଲୁ କରିଛନ୍ତି। ଏହି କନେକ୍ଟରଗୁଡ଼ିକ ପାଖରେ ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଆକ୍ସେସ୍ ଅଛି।</translation>
+<translation id="7616747402308801775">ଏହି କାର୍ଡକୁ Google Walletରେ ସେଭ କରାଯାଇଛି ଯାହା ଫଳରେ ଆପଣ ସମଗ୍ର Google ସର୍ଭିସରେ ଏହାକୁ ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="7617825962482469577">ଏନଭେଲପ C7/C6</translation>
 <translation id="7618270539713451657">ମାର୍ସାଲ ଆର୍ଟ୍ସ</translation>
 <translation id="7619838219691048931">ଶେଷ ସିଟ୍</translation>
@@ -4578,6 +4585,7 @@
 <translation id="8120720167840853945">ଏହି ନୀତି ଅନ୍ୟ କୌଣସି ନୀତିର ଡିଫଲ୍ଟ ଆଚରଣକୁ ନିୟନ୍ତ୍ରଣ କରୁନାହିଁ।</translation>
 <translation id="8127301229239896662">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ବା ନେଟ୍‌ୱାର୍କରେ "<ph name="SOFTWARE_NAME" />" ସଠିକ୍ ଭାବରେ ଇନ୍‌ଷ୍ଟଲ୍ ହେଲାନାହିଁ। ଏହି ତ୍ରୁଟିର ସମାଧାନ ପାଇଁ ଆପଣଙ୍କ IT ବ୍ୟବସ୍ଥାପକଙ୍କୁ ପଚାରନ୍ତୁ।</translation>
 <translation id="8130113808541743942">ଏଠାକୁ ମୁଭ କରନ୍ତୁ...</translation>
+<translation id="813024282736408069">ଅଟୋଫିଲ ପାଇଁ ଏକ ଭର୍ଚୁଆଲ କାର୍ଡ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8133495915926741232">ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ବିଷୟଗୁଡ଼ିକର କେଉଁ ବ୍ୟାପକ ବର୍ଗଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା ବାଛନ୍ତୁ। ଏକ ବ୍ୟାପକ ବର୍ଗକୁ ବନ୍ଦ କରିବା ଫଳରେ ଏହା ଏହାର ସମ୍ବନ୍ଧିତ ବିଷୟଗୁଡ଼ିକୁ ମଧ୍ୟ ବ୍ଲକ କରିବ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">ନିଯୁକ୍ତି ଓ କର୍ମଚାରୀ</translation>

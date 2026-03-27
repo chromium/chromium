@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
-<translation id="1028699632127661925">Pošiljanje v napravo <ph name="DEVICE_NAME" /> ...</translation>
 <translation id="111910763555783249">Nastavitve obvestil</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{Pred 1 dnevom}one{Pred # dnevom}two{Pred # dnevoma}few{Pred # dnevi}other{Pred # dnevi}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Pred 1 minuto}one{Pred # minuto}two{Pred # minutama}few{Pred # minutami}other{Pred # minutami}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Odložišče</translation>
 <translation id="2653844658857826081">NEW</translation>
 <translation id="2666092431469916601">Na vrh</translation>
-<translation id="2701330563083355633">V skupno rabo dala naprava: <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Pred 1 letom}one{Pred # letom}two{Pred # letoma}few{Pred # leti}other{Pred # leti}}</translation>
 <translation id="2878511608894704031">Izbriši vse</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{čez 1 d}one{čez # d}two{čez # d}few{čez # d}other{čez # d}}</translation>

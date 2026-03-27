@@ -6020,6 +6020,7 @@
 <translation id="5183344263225877832">HID デバイスの権限をすべてリセットしますか？</translation>
 <translation id="5184063094292164363">JavaScript コンソール(&amp;J)</translation>
 <translation id="5184209580557088469">このユーザー名のチケットはすでに設定されています</translation>
+<translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5184662919967270437">デバイスを更新しています</translation>
 <translation id="5185386675596372454">「<ph name="EXTENSION_NAME" />」の最新バージョンは、さらに許可が必要なため無効になっています。</translation>
 <translation id="5185500136143151980">インターネットに接続されていません</translation>
@@ -6872,7 +6873,6 @@
 <translation id="5804241973901381774">権限</translation>
 <translation id="5804259315582798390">ローカルデータの復元を有効にできませんでした</translation>
 <translation id="5805268472388605531">キーボードのキーを長押しすると、アクセント記号と特殊文字が表示されます</translation>
-<translation id="5805697420284793859">ウィンドウ マネージャ</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />、ファイルを削除するには Enter キーを押してください</translation>
 <translation id="5806447147478173900">表示されたサイトの合計ストレージ使用状況: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（デフォルト）</translation>
@@ -7031,7 +7031,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> はオフラインです</translation>
 <translation id="5911030830365207728">Google 翻訳</translation>
 <translation id="5911497236110691522">次の入力方法に切り替えるには、<ph name="KEY_CODES" /> キーを押します</translation>
-<translation id="5911533659001334206">ショートカット ビューア</translation>
 <translation id="5911545422157959623">ゲストモードではブックマークを使用できません</translation>
 <translation id="5914016309240354769">自然</translation>
 <translation id="5914724413750400082">モジュール（<ph name="MODULUS_NUM_BITS" /> ビット）:
@@ -8169,7 +8168,6 @@
 <translation id="6723839827191551955">キャスト メディアを操作できます</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723946439672043591">別のプロフィールを選択</translation>
-<translation id="6725073593266469338">UI サービス</translation>
 <translation id="6725206449694821596">インターネット印刷プロトコル（IPP）</translation>
 <translation id="6725970970008349185">1 ページに表示する候補数</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
@@ -10273,7 +10271,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> に切り替える</translation>
 <translation id="8184318863960255706">詳細</translation>
 <translation id="8184472985242519288">均一</translation>
-<translation id="8185614942934189676">メールアドレスの自動確認が行われました</translation>
 <translation id="8186013737729037962">企業の登録済みデバイスの詳細</translation>
 <translation id="8186047833733689201">アクセント記号のメニューを開きました。左右の矢印キーまたは数値キーで選択し、Enter キーを押すと挿入されます。</translation>
 <translation id="8186609076106987817">お探しのファイルはサーバーにはありません。</translation>
@@ -10639,7 +10636,6 @@
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">あと <ph name="LOGOUT_TIME_LEFT" />でログアウトします</translation>
 <translation id="8429928917752180743">「<ph name="EXTENSION_NAME" />」に関するその他のオプション</translation>
-<translation id="8431190899827883166">タップを表示</translation>
 <translation id="843173223122814223">AI で背景を作成</translation>
 <translation id="8431977087510901105">カーソルの設定がリセットされました</translation>
 <translation id="8434109185104929038">読書コーナー</translation>

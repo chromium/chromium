@@ -2579,6 +2579,7 @@
 <translation id="2750020734439919571">ଅଧିକ Chrome ଆପ ସେଟିଂସ ଏବଂ ଅନୁମତି</translation>
 <translation id="275010360476017464">Gemini ସହ ଚାଟ କରିବାକୁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ Gemini ସହ କଥା ହେବା ସମୟରେ, Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପରେ ଅଡିଓ ଷ୍ଟୋର ହୋଇଥାଏ (ଯଦି ଏହା ଚାଲୁ ଥାଏ)।</translation>
 <translation id="2750602041558385535">ଯାଞ୍ଚ ହୋଇନଥିବା ଡାଉନଲୋଡକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" /> ଅଧିକ</translation>
 <translation id="2751454300227269244">ଆପଣଙ୍କ ପାଟିକୁ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> ଆପଣଙ୍କ ସୁରକ୍ଷା କୀ'ର ID ନମ୍ବର ଜାଣିବାକୁ ଚାହୁଁଛି। ଆପଣ ପ୍ରକୃତରେ କେଉଁ ସୁରକ୍ଷା କୀ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ସାଇଟଟି ଜାଣିବ।</translation>
 <translation id="275213133112113418">ଆପଣଙ୍କ କାର୍ଡକୁ ସେଭ କରାଯାଇଛି</translation>
@@ -4540,6 +4541,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> କାର୍ଯ୍ୟ ପାଇଁ ଏକ ସର୍ଟକଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)କୁ ୱିଣ୍ଡୋ ନିଅନ୍ତୁ</translation>
 <translation id="4110485659976215879">ଚେତାବନୀକୁ ରିଷ୍ଟୋର କରନ୍ତୁ</translation>
+<translation id="411052834366185695">ଅତି କମରେ 1 ଅଙ୍କ ବିଶିଷ୍ଟ ହେବା ଆବଶ୍ୟକ</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ଅଫ୍‌ଲାଇନ୍)</translation>
 <translation id="4113743276555482284">ଫାଇଲ ପାସୱାର୍ଡ</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{ସେଭ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ}=1{1 ପାସୱାର୍ଡ ଯାଞ୍ଚ କରାଯାଇଛି}other{{COUNT} ପାସୱାର୍ଡ ଯାଞ୍ଚ କରାଯାଇଛି}}</translation>
@@ -5029,6 +5031,7 @@
 <translation id="4461483878391246134">କେବେ ବି ଅନୁବାଦ ଅଫର ନକରିବା ପାଇଁ ଭାଷାଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4462159676511157176">କଷ୍ଟମ୍ ନାମ ସର୍ଭର୍</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> ପାଇଁ <ph name="TIME" />ର ସମୟ ସୀମା ସେଟ୍ କରାଯାଇଛି</translation>
+<translation id="4466922176191762830">+ <ph name="NUM" /> ଅଧିକ</translation>
 <translation id="4467373268340082204">ଭୁଲ PIN</translation>
 <translation id="4469324811108161144">ନୋଟଗୁଡ଼ିକ <ph name="CHARACTER_LIMIT" />ଟି ପର୍ଯ୍ୟନ୍ତ କେରେକ୍ଟର ସେଭ କରିପାରିବ।</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" />ରେ <ph name="ORIGIN" /> ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିପାରିବେ</translation>
@@ -5443,6 +5446,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{ପବ୍ଲିକ କୀ ଏବଂ ଇଣ୍ଟିଗ୍ରେସନ ବ୍ଲକକୁ ଯାଞ୍ଚ କରାଯାଉଛି... 1 ମିନିଟରୁ କମ ସମୟ ବାକି ଅଛି}=1{ପବ୍ଲିକ କୀ ଏବଂ ଇଣ୍ଟିଗ୍ରେସନ ବ୍ଲକକୁ ଯାଞ୍ଚ କରାଯାଉଛି... 1 ମିନିଟ ବାକି ଅଛି}other{ପବ୍ଲିକ କୀ ଏବଂ ଇଣ୍ଟିଗ୍ରେସନ ବ୍ଲକକୁ ଯାଞ୍ଚ କରାଯାଉଛି... # ମିନିଟ ବାକି ଅଛି}}</translation>
 <translation id="4766598565665644999">ସମସ୍ତ ଏକ୍ସଟେନସନ <ph name="HOST" />କୁ ପଢ଼ିପାରିବେ ଓ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="4767427586072640478">ଅକ୍ଷମ କରାଯାଇଥିବା ଏକ୍ସଟେନସନଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
+<translation id="4769359569327438364">ଅତି କମରେ 4 ଅଙ୍କ ବିଶିଷ୍ଟ ହେବା ଆବଶ୍ୟକ</translation>
 <translation id="4769632191812288342">ଆପଣ ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା ପାଉଛନ୍ତି</translation>
 <translation id="4770119228883592393">ଅନୁମତି ପାଇଁ ଅନୁରୋଧ କରାଯାଇଛି, ଉତ୍ତର ଦେବାକୁ ⌘ + Option + ଡାଉନ୍ ତୀର କୀ ଦବାନ୍ତୁ</translation>
 <translation id="4772914216048388646">କ୍ରମବଦ୍ଧ ଭାବେ</translation>
@@ -6030,6 +6034,7 @@
 <translation id="5183344263225877832">ସମସ୍ତ HID ଡିଭାଇସ ଅନୁମତିକୁ ରିସେଟ କରିବେ?</translation>
 <translation id="5184063094292164363">&amp;JavaScript କନସୋଲ୍</translation>
 <translation id="5184209580557088469">ଏହି ଉପଯୋଗକର୍ତ୍ତାନାମ ଥିବା ଏକ ଟିକେଟ୍ ପୂର୍ବରୁ ଅଛି</translation>
+<translation id="5184329579814168207">Chromeରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="5184662919967270437">ଆପଣଙ୍କର ଡିଭାଇସ୍‌ ଅପ୍‌ଡେଟ୍‍ ହେଉଛି</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />"ର ନବୀନତମ ସଂସ୍କରଣ ଅକ୍ଷମ କରାଯାଇଛି କାରଣ ଏହା ଅଧିକ ଅନୁମତି ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="5185500136143151980">ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ନାହିଁ</translation>
@@ -6124,6 +6129,7 @@
 <translation id="5240931875940563122">Android ଫୋନ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="5241689948221696942">କିଛି ଉତ୍ପାଦ ପାଇଁ, ତୁଳନାତ୍ମକ ସାରଣୀଗୁଡ଼ିକ ୱେବର ସମୀକ୍ଷାଗୁଡ଼ିକୁ ସଂକ୍ଷେପ କରିଥାଏ</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"କୁ ସକ୍ଷମ କରିବେ କି?</translation>
+<translation id="5243477050423867768">ଅତି କମରେ 8 ଅଙ୍କ ବିଶିଷ୍ଟ ହେବା ଆବଶ୍ୟକ ଏବଂ ଏଥିରେ ରିପିଟ ହେଉଥିବା କିମ୍ବା କ୍ରମାନ୍ୱିତ ସିକ୍ୱେନ୍ସଗୁଡ଼ିକ ରହିପାରିବ ନାହିଁ</translation>
 <translation id="5244234799035360187">OneDrive ବର୍ତ୍ତମାନ Files ଆପରେ ଦେଖାଯିବ</translation>
 <translation id="5244466461749935369">ବର୍ତ୍ତମାନ ପାଇଁ ରଖନ୍ତୁ</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />କୁ ସିଙ୍କ୍ କରାଯାଉଛି</translation>
@@ -6883,7 +6889,6 @@
 <translation id="5804241973901381774">ଅନୁମତିଗୁଡ଼ିକ</translation>
 <translation id="5804259315582798390">ସ୍ଥାନୀୟ ଡାଟା ରିକଭରି ସକ୍ଷମ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="5805268472388605531">ଆସେଣ୍ଟ ମାର୍କ ଏବଂ ବିଶେଷ କେରେକ୍ଟରଗୁଡ଼ିକ ଦେଖିବା ପାଇଁ କୀବୋର୍ଡ କୀ'ଗୁଡ଼ିକୁ ଦବାଇ ଧରି ରଖନ୍ତୁ</translation>
-<translation id="5805697420284793859">ୱିଣ୍ଡୋ ପରିଚାଳକ</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> ଫାଇଲ ଡିଲିଟ କରିବାକୁ ଏଣ୍ଟର ଦବାନ୍ତୁ</translation>
 <translation id="5806447147478173900">ଡିସପ୍ଲେ ହୋଇଥିବା ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଇଥିବା ମୋଟ ଷ୍ଟୋରେଜ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ଡିଫଲ୍ଟ)</translation>
@@ -7042,7 +7047,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ଅଫଲାଇନ୍ ଅଛି</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">ପରବର୍ତ୍ତୀ ଇନପୁଟ ପଦ୍ଧତିକୁ ସୁଇଚ କରିବା ପାଇଁ <ph name="KEY_CODES" /> ଦବାନ୍ତୁ</translation>
-<translation id="5911533659001334206">ସର୍ଟ୍‍କର୍ଟ ଭ୍ୟୁଅର୍</translation>
 <translation id="5911545422157959623">ଅତିଥି ମୋଡରେ ବୁକମାର୍କଗୁଡ଼ିକ ଉପଲବ୍ଧ ନୁହେଁ</translation>
 <translation id="5914016309240354769">ପ୍ରକୃତି</translation>
 <translation id="5914724413750400082">ମୋଡ୍ୟୁଲସ୍‌ (<ph name="MODULUS_NUM_BITS" /> ବିଟସ୍‍):
@@ -8037,6 +8041,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6619990499523117484">ଆପଣଙ୍କର PIN ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6621282332208609777">Googleକୁ ପଚାରନ୍ତୁ କିମ୍ବା ଏକ URL ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="6621391692573306628">ଏହି ଟାବକୁ ଅନ୍ୟ ଏକ ଡିଭାଇସକୁ ପଠାଇବା ପାଇଁ ଉଭୟ ଡିଭାଇସରେ Chromeକୁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="6622212269189717101">ଅତି କମରେ 6 ଅଙ୍କ ବିଶିଷ୍ଟ ହେବା ଆବଶ୍ୟକ ଏବଂ ଏଥିରେ ରିପିଟ ହେଉଥିବା କିମ୍ବା କ୍ରମାନ୍ୱିତ ସିକ୍ୱେନ୍ସଗୁଡ଼ିକ ରହିପାରିବ ନାହିଁ</translation>
 <translation id="6622980291894852883">ଛବି ବ୍ଲକ୍ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6624036901798307345">ଟାବଲେଟ ମୋଡରେ, ପ୍ରତ୍ୟେକ ଟାବର ଥମ୍ବନେଲକୁ ଦେଖାଉଥିବା ନୂଆ ଟାବ ଷ୍ଟ୍ରିପକୁ ଖୋଲିବା ପାଇଁ ଟାବ କାଉଣ୍ଟର ଟୁଲବାର ବଟନରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="6624538059730609162">ଡାହାଣପଟ ଭ୍ୟୁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -8182,7 +8187,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6723839827191551955">ଆପଣ କାଷ୍ଟ୍ କରୁଥିବା ମିଡିଆକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="6723839937902243910">ପାୱର୍</translation>
 <translation id="6723946439672043591">ଅନ୍ୟ ଏକ ପ୍ରୋଫାଇଲ ବାଛନ୍ତୁ</translation>
-<translation id="6725073593266469338">UI ସେବା</translation>
 <translation id="6725206449694821596">ଇଣ୍ଟର୍ନେଟ୍‍ ପ୍ରିଣ୍ଟିଂ ପ୍ରୋଟୋକଲ୍‍ (IPP)</translation>
 <translation id="6725970970008349185">ପ୍ରତି ପୃଷ୍ଠାରେ ଡିସପ୍ଲେ କରିବା ପାଇଁ ପ୍ରାର୍ଥୀମାନଙ୍କ ସଂଖ୍ୟା</translation>
 <translation id="672609503628871915">କ’ଣ ନୂଆ ଅଛି ଦେଖନ୍ତୁ</translation>
@@ -9797,7 +9801,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="784273751836026224">Linux ଅନଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="784475655832336580">ChromeVox ଚାଲୁ ଥିବା ସମୟରେ କୀବୋର୍ଡ ଫୋକସ ସହ ଆଇଟମକୁ ହାଇଲାଇଟ କରିବା ଉପଲବ୍ଧ ନଥାଏ</translation>
 <translation id="7846161022626028328">ଏକ ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="7846296061357476882">Google ସେବାଗୁଡ଼ିକ</translation>
+<translation id="7846296061357476882">Google ସର୍ଭିସେସ</translation>
 <translation id="7846634333498149051">କୀ'ବୋର୍ଡ</translation>
 <translation id="7848244988854036372">ନୂଆ ଟାବ ଗ୍ରୁପରେ ସବୁ (<ph name="URL_COUNT" />) ଖୋଲନ୍ତୁ</translation>
 <translation id="7848892492535275379"><ph name="USER_EMAIL" /> ପାଇଁ <ph name="CREDENTIAL_TYPE" /></translation>
@@ -10286,7 +10290,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8184318863960255706">ଅଧିକ ସୂଚନା</translation>
 <translation id="8184472985242519288">ସମାନ</translation>
-<translation id="8185614942934189676">ଇମେଲକୁ ସ୍ୱତଃ ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="8186013737729037962">ଏଣ୍ଟରପ୍ରାଇଜ ପଞ୍ଜିକୃତ ଡିଭାଇସଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8186047833733689201">ଆସେଣ୍ଟ ମାର୍କ ମେନୁ ଖୋଲା ଅଛି। ନାଭିଗେଟ କରିବାକୁ ବାମ, ଡାହାଣ କିମ୍ବା ନମ୍ବର କୀ'ଗୁଡ଼ିକୁ ଦବାନ୍ତୁ ଏବଂ ସେଗୁଡ଼ିକୁ ଇନସାର୍ଟ କରିବାକୁ ଲେଖନ୍ତୁ।</translation>
 <translation id="8186609076106987817">ଫାଇଲ୍‌କୁ ସର୍ଭର୍‌ ଖୋଜିପାରିଲା ନାହିଁ।</translation>
@@ -10652,7 +10655,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8428634594422941299">ବୁଝିଗଲି</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" />ରେ ଆପଣ ସାଇନ୍‌ ଆଉଟ୍‌ ହୋ‍ଇଯିବେ</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> ପାଇଁ ଅଧିକ ବିକଳ୍ପ</translation>
-<translation id="8431190899827883166">ଟାପ୍‌ଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="843173223122814223">AI ମାଧ୍ୟମରେ ବେକଗ୍ରାଉଣ୍ଡଗୁଡ଼ିକୁ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8431977087510901105">କର୍ସର ସେଟିଂସ ରିସେଟ</translation>
 <translation id="8434109185104929038">ରିଡିଂ ନୁକ</translation>

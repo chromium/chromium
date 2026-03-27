@@ -157,6 +157,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1099070179078143183">Da bi omogućio značajke kao što je otkrivanje prijevara, Chrome može upotrebljavati AI modele koji se izvode izravno na vašem uređaju bez slanja vaših podataka Googleovim poslužiteljima. Kad je ta postavka isključena, te značajke možda neće funkcionirati. <ph name="BEGIN_LINK" />Saznajte više o AI-ju na uređaju<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">Slika kopirana s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Trenutačna ikona</translation>
+<translation id="1101267749138963680">Provjera sigurnosti...</translation>
 <translation id="1102759278139578486">Ne mogu se preuzeti datoteke sa zabilješkama glavnog čvora. Pokušajte ponovo kasnije.</translation>
 <translation id="1103523840287552314">Uvijek prevedi <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Odmah ćete izgubiti pristup grupi kartica i ona će se izbrisati sa svih vaših uređaja</translation>
@@ -2905,6 +2906,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2979893796619951531">Izuzmi web-lokaciju</translation>
 <translation id="2979966855249721010">Na temelju vaših interesa mogu vam se prikazivati preporuke aplikacija, savjeti i druge informacije</translation>
 <translation id="2981113813906970160">Prikaži veliki pokazivač miša</translation>
+<translation id="2981728693230031897">Izradite sažetak ove stranice uz Gemini</translation>
 <translation id="2983102365694924129">Na temelju vaše aktivnosti na web-lokaciji. Postavka je isključena.</translation>
 <translation id="2983311431122838216">Postavite pitanje pomoću AI načina na Google pretraživanju</translation>
 <translation id="2983373101216420412">Razina baterije kutijice za punjenje: <ph name="PERCENTAGE" />%.</translation>
@@ -6032,6 +6034,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5183344263225877832">Želite li poništiti sva dopuštenja za HID uređaj?</translation>
 <translation id="5184063094292164363">&amp;Konzola JavaScripta</translation>
 <translation id="5184209580557088469">Već postoji tiket s tim korisničkim imenom</translation>
+<translation id="5184329579814168207">Otvori u Chromeu</translation>
 <translation id="5184662919967270437">Ažuriranje uređaja</translation>
 <translation id="5185386675596372454">Najnovija verzija "<ph name="EXTENSION_NAME" />" onemogućena je jer zahtijeva više dozvola.</translation>
 <translation id="5185500136143151980">Nema interneta</translation>
@@ -6884,7 +6887,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5804241973901381774">Dopuštenja</translation>
 <translation id="5804259315582798390">Omogućivanje oporavka lokalnih podataka nije uspjelo</translation>
 <translation id="5805268472388605531">Pritisnite i zadržite tipke tipkovnice da biste vidjeli dijakritičke i posebne znakove</translation>
-<translation id="5805697420284793859">Upravitelj prozora</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> – pritisnite Enter za brisanje datoteke</translation>
 <translation id="5806447147478173900">Ukupna pohrana koju upotrebljavaju prikazane web-lokacije: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (zadano)</translation>
@@ -7043,7 +7045,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5910726859585389579">Uređaj <ph name="DEVICE_TYPE" /> nije povezan s internetom</translation>
 <translation id="5911030830365207728">Google prevoditelj</translation>
 <translation id="5911497236110691522">Da biste prešli na sljedeći način unosa, pritisnite <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">Pregled prečaca</translation>
 <translation id="5911545422157959623">Oznake nisu dostupne u načinu rada za goste</translation>
 <translation id="5914016309240354769">Priroda</translation>
 <translation id="5914724413750400082">Moduli (<ph name="MODULUS_NUM_BITS" /> bitova):
@@ -8185,7 +8186,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6723839827191551955">Upravljajte medijima koje emitirate</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="6723946439672043591">Odaberite drugi profil</translation>
-<translation id="6725073593266469338">Usluga korisničkog sučelja</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Broj kandidata za prikazivanje po stranici</translation>
 <translation id="672609503628871915">Pogledajte što je novo</translation>
@@ -10291,7 +10291,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8184288427634747179">Prijeđi na <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Više informacija</translation>
 <translation id="8184472985242519288">Ujednačeno</translation>
-<translation id="8185614942934189676">E-adresa je automatski potvrđena</translation>
 <translation id="8186013737729037962">Saznajte više o uređajima prijavljenim u organizaciji</translation>
 <translation id="8186047833733689201">Otvoren je izbornik naglasaka. Pritisnite lijevu, desnu ili brojčanu tipku da biste se kretali i tipku Enter za umetanje.</translation>
 <translation id="8186609076106987817">Poslužitelj nije mogao pronaći datoteku.</translation>
@@ -10657,7 +10656,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8428634594422941299">Shvaćam</translation>
 <translation id="84297032718407999">Odjavit ćete se za <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Više opcija za proširenje <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">Prikaži dodire</translation>
 <translation id="843173223122814223">Izrada pozadina pomoću AI-ja</translation>
 <translation id="8431977087510901105">Postavke pokazivača vraćene su na zadano</translation>
 <translation id="8434109185104929038">Kutak za čitanje</translation>

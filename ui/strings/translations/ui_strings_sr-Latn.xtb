@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
-<translation id="1028699632127661925">Šalje se na uređaj <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">Podešavanja obaveštenja</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{Pre 1 dan}one{Pre # dan}few{Pre # dana}other{Pre # dana}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Pre 1 minut}one{Pre # minut}few{Pre # minuta}other{Pre # minuta}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Memorija</translation>
 <translation id="2653844658857826081">NOVO</translation>
 <translation id="2666092431469916601">Vrh</translation>
-<translation id="2701330563083355633">Deljeno sa: <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Pre godinu dana}one{Pre # godinu}few{Pre # godine}other{Pre # godina}}</translation>
 <translation id="2878511608894704031">Izbriši sve</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{za 1 d}one{za # d}few{za # d}other{za # d}}</translation>

@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">สามารถขอเชื่อมต่อกับพอร์ตอนุกรมได้</translation>
 <translation id="2403474027143565107">แน่นอน</translation>
 <translation id="240450251994300576">โลโก้ส่วนหัวรอง</translation>
+<translation id="2404715426538856682">บัตรเครดิตและบัตรเดบิต · IBAN · บัตรสะสมคะแนน</translation>
 <translation id="2404884497378469141">ลองคัดลอกไฟล์อีกครั้ง</translation>
 <translation id="2413155254802890957">เก่า</translation>
 <translation id="2413528052993050574">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการเพิกถอนใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
@@ -2167,6 +2168,7 @@
 <translation id="4340810192899866471">นําเข้าจาก JSON</translation>
 <translation id="4340982228985273705">ไม่มีการตรวจพบว่าคอมพิวเตอร์เครื่องนี้ได้รับการจัดการโดยองค์กร ดังนั้นนโยบายจะติดตั้งเฉพาะส่วนขยายที่โฮสต์ใน Chrome เว็บสโตร์โดยอัตโนมัติ URL การอัปเดตของ Chrome เว็บสโตร์คือ "<ph name="CWS_UPDATE_URL" />"</translation>
 <translation id="4342742994656318294">สวนสนุก</translation>
+<translation id="4346670990181948854">ข้อมูลการเดินทาง · ยานพาหนะ</translation>
 <translation id="4348834659292907206">การเชื่อมต่อกับ <ph name="SITE" /> ไม่ปลอดภัย</translation>
 <translation id="4349365535725594680">แชร์เนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="4349810866125026513">อัปโหลดเลย</translation>
@@ -2955,6 +2957,7 @@
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5596939519753369075">2 x 3.5 นิ้ว</translation>
 <translation id="5597254438174353289">น้ำเงิน 3</translation>
+<translation id="5600044805561809264">คุณสามารถถามคำถามเกี่ยวกับแท็บที่กำลังแชร์ได้อย่างง่ายดายขณะท่องเว็บ</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> หรือ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ไม่สนับสนุนการจัดการ</translation>
 <translation id="5605249000617390290">ดูข้อมูลเพิ่มเติมเกี่ยวกับการติดตามราคา</translation>
@@ -3049,6 +3052,7 @@
 <translation id="5752519522101347518">กำลังโหลดเว็บไซต์การยืนยันธนาคาร</translation>
 <translation id="5753570386948603678">ลบจากประวัติ</translation>
 <translation id="5759751709240058861">ใช้และเคลื่อนย้ายกล้องของคุณ</translation>
+<translation id="5762131895127128324">ใบขับขี่ · บัตรประจำตัว · หนังสือเดินทาง</translation>
 <translation id="5763042198335101085">ป้อนที่อยู่อีเมลที่ถูกต้อง</translation>
 <translation id="5764725887548570807">รูปแบบต้นทางไม่ถูกต้อง</translation>
 <translation id="5764920692828389743">ส่งไปยัง <ph name="EMAIL_ADDRESS" /></translation>
@@ -3986,6 +3990,7 @@
 <translation id="7220786058474068424">กำลังดำเนินการ</translation>
 <translation id="7221855153210829124">แสดงการแจ้งเตือน</translation>
 <translation id="722454870747268814">แท็บที่ไม่ระบุตัวตนใหม่</translation>
+<translation id="7225676267118764980">เปลี่ยนผู้ให้บริการป้อนข้อความอัตโนมัติและการตั้งค่าอื่นๆ</translation>
 <translation id="7226892411756387078">ข้อความธรรมดา</translation>
 <translation id="7227293336683593977">ประวัติราคา</translation>
 <translation id="7228306718910595403">สถานะการผ่านการรับรองของสหภาพยุโรป</translation>

@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Izberite račune, ki jih želite izvoziti v drugo aplikacijo.</translation>
 <translation id="1506061864768559482">Iskalnik</translation>
 <translation id="1506063256525392513">To vam omogoča fotografiranje in nalaganje fotografij ter optično branje kod QR.</translation>
+<translation id="1506733063065214205">Odjemalec RCS MLS</translation>
 <translation id="1508263560970797965">Nadaljuj v anonimnem načinu</translation>
 <translation id="1509486075633541495">Prijavite se na spletnem mestu</translation>
 <translation id="1513858653616922153">Izbris gesla</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Deli skupino</translation>
 <translation id="2673508731173059946">Obisk povezave, ki ste jo kopirali</translation>
 <translation id="2679659833697380">Vaši podatki so shranjeni v napravi</translation>
+<translation id="2681572445246787428">Podpisovanje dokumentov</translation>
 <translation id="2688535388040882469">Pasice</translation>
 <translation id="2690858294534178585">Kamera je v uporabi</translation>
 <translation id="2691653761409724435">Ni na voljo brez povezave</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Dodaj zavihek skupini}one{Dodaj zavihke skupini}two{Dodaj zavihke skupini}few{Dodaj zavihke skupini}other{Dodaj zavihke skupini}}</translation>
 <translation id="4302061870579014542">Nastavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj gesel</translation>
+<translation id="4306349443295056740">Podpis OCSP</translation>
 <translation id="4309403553630140242">Dvakrat se dotaknite, če želite več informacij</translation>
 <translation id="4310738531374808763">Prilagajanje začetne strani</translation>
 <translation id="4320848494125124980">Nedavno</translation>
 <translation id="4322394346347055525">Zapri druge zavihke</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Vklop obvestil</translation>
 <translation id="4326912346867677256">Dotaknite se »Uporabi geslo«, če se želite varno prijaviti.</translation>
 <translation id="4327017157997423717">Spremljanje cene izdelka <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">Če želite dostopati do zaznamkov v vseh napravah, v nastavitvah vklopite »Zaznamke«.</translation>
 <translation id="4746926359847517643">Vedno jih lahko obnovite v zgodovini.</translation>
 <translation id="4749529195026091676">{count,plural, =1{Uvožena je {count} kartica}one{Uvožena je {count} kartica}two{Uvoženi sta {count} kartici}few{Uvožene so {count} kartice}other{Uvoženih je {count} kartic}}</translation>
+<translation id="4749924365937394956">Preverjanje pristnosti strežnika</translation>
 <translation id="4751645464639803239">Nov anonimni zavihek</translation>
 <translation id="4752348350801431746">Izklop obvestil varnostnega preverjanja …</translation>
 <translation id="4759238208242260848">Prenosi</translation>
@@ -1390,12 +1395,14 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="598634819525651074">Površina</translation>
 <translation id="5988097621740394599">Oglejte si znižanja cen na zavihkih.</translation>
 <translation id="5988851877894965432">Odpiranje URL-jev v Chromu</translation>
+<translation id="599343768974649785">Eksplicitno besedilo</translation>
 <translation id="6006672969046233841">Nov zavihek</translation>
 <translation id="6011308810877101166">Izboljšanje predlogov za iskanje</translation>
 <translation id="6012140227487808125">Šifriranje ...</translation>
 <translation id="6027619584715411062">Prijavite se, da boste lahko dostopali do zaznamkov, gesel in drugih podatkov v vseh napravah.</translation>
 <translation id="6027945736510816438">Ali ste mislili <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nova funkcija</translation>
+<translation id="6037458223703682108">Digitalni podpis</translation>
 <translation id="6038823991892265570">Upravljanje prostora za shranjevanje v Googlu</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zapri</translation>
@@ -1539,6 +1546,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6476284679642588870">Upravljanje plačilnih sredstev</translation>
 <translation id="6476800141292307438">Prevajanje strani v ta jezik: <ph name="LANGUAGE" />. Možnosti so na voljo blizu dna zaslona.</translation>
 <translation id="647867789226964031">Spremenite gesla</translation>
+<translation id="6480363549849064919">Preverjanje pristnosti odjemalca</translation>
 <translation id="6494931198667773526">Se konča</translation>
 <translation id="6503077044568424649">Najpogostejše</translation>
 <translation id="6503763061813913607">Obvestila varnostnega preverjanja</translation>
@@ -1584,6 +1592,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6619015782482868078">Turkizno modra tema</translation>
 <translation id="6620279676667515405">Prekliči</translation>
 <translation id="6625830436658400045">Nastavitve sinhronizacije bodo obnovljene na podlagi zadnjega varnostnega kopiranja. V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
+<translation id="6626281667717553020">URI CPS</translation>
 <translation id="6627583120233659107">Uredi mapo</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Dodajte še to raven zaščite pred spletnimi grožnjami.</translation>
@@ -2148,6 +2157,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8614671330774943747">Na preklop med zavihki</translation>
 <translation id="862367213447108001">Vedno prikaži pojavne elemente na tem spletnem mestu</translation>
 <translation id="8625706492572042370">Urejanje začetnega zaslona</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Zaklenjeni anonimni zavihki</translation>
 <translation id="8633025649649592204">Nedavna dejavnost</translation>
 <translation id="8636825310635137004">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo.</translation>
@@ -2334,6 +2344,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="942624946817804130">Izvozi</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="94870150074703282">Želite izbrisati skupino?</translation>
+<translation id="951090530321144895">Izdajatelji overiteljev potrdil</translation>
 <translation id="952704832371081537">Preklic</translation>
 <translation id="95332591904104970">Povezane aplikacije</translation>
 <translation id="954667170699278022">Bralni seznam</translation>

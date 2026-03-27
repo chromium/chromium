@@ -144,6 +144,7 @@
 <translation id="1503814213414825943">Hautatu beste aplikazio batera esportatu nahi dituzun kontuak.</translation>
 <translation id="1506061864768559482">Bilatzailea</translation>
 <translation id="1506063256525392513">Horrela, argazkiak atera eta kargatu ahal izango dituzu, eta QR kodeak eskaneatu</translation>
+<translation id="1506733063065214205">RCS MLS Client</translation>
 <translation id="1508263560970797965">Egin aurrera ezkutuko moduan</translation>
 <translation id="1509486075633541495">Hasi saioa webgunean</translation>
 <translation id="1513858653616922153">Ezabatu pasahitza</translation>
@@ -475,6 +476,7 @@
 <translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2673508731173059946">Joan kopiatu duzun estekara</translation>
 <translation id="2679659833697380">Gailuan gordetzen da informazioa</translation>
+<translation id="2681572445246787428">Dokumentuak sinatzea</translation>
 <translation id="2688535388040882469">Banda-mezuak</translation>
 <translation id="2690858294534178585">Kamera abian da</translation>
 <translation id="2691653761409724435">Ez dago erabilgarri konexiorik gabe</translation>
@@ -905,10 +907,12 @@
 <translation id="429074084062258019">{count,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
 <translation id="4302061870579014542">Ezarri posizioa</translation>
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
+<translation id="4306349443295056740">OCSP sinadura</translation>
 <translation id="4309403553630140242">Informazio gehiago lortzeko, sakatu birritan</translation>
 <translation id="4310738531374808763">Pertsonalizatu orri nagusia</translation>
 <translation id="4320848494125124980">Azkenak</translation>
 <translation id="4322394346347055525">Itxi beste fitxak</translation>
+<translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Aktibatu jakinarazpenak</translation>
 <translation id="4326912346867677256">Saioa modu seguruan hasteko, sakatu "Erabili pasahitza".</translation>
 <translation id="4327017157997423717">Egin prezioaren jaraipena: <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
@@ -1025,6 +1029,7 @@
 <translation id="4744428388659507035">Laster-markak gailu guztietan eskura izateko, aktibatu Laster-markak ezarpenetan.</translation>
 <translation id="4746926359847517643">Beti ireki ahal izango dituzu historiatik.</translation>
 <translation id="4749529195026091676">{count,plural, =1{{count} txartel inportatu da}other{{count} txartel inportatu dira}}</translation>
+<translation id="4749924365937394956">Zerbitzariaren autentifikazioa</translation>
 <translation id="4751645464639803239">Ezkutuko moduko fitxa berria</translation>
 <translation id="4752348350801431746">Desaktibatu segurtasun-egiaztapenaren jakinarazpenak…</translation>
 <translation id="4759238208242260848">Deskargak</translation>
@@ -1390,12 +1395,14 @@
 <translation id="598634819525651074">Azalera</translation>
 <translation id="5988097621740394599">Ikusi prezio-jaitsierak fitxetan.</translation>
 <translation id="5988851877894965432">Ireki URLak Chrome-n</translation>
+<translation id="599343768974649785">Testu esplizitua</translation>
 <translation id="6006672969046233841">Fitxa berria</translation>
 <translation id="6011308810877101166">Hobetu bilaketa-iradokizunak</translation>
 <translation id="6012140227487808125">Enkriptatzen…</translation>
 <translation id="6027619584715411062">Hasi saioa laster-markak, pasahitzak eta bestelako datuak gailu guztietan lortzeko.</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> esan nahi al zenuen?</translation>
 <translation id="6032845897905314562">eginbide berria</translation>
+<translation id="6037458223703682108">Sinadura digitala</translation>
 <translation id="6038823991892265570">Kudeatu Google-ko biltegia</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" /> (<ph name="PUBLICATION_DATE" />)</translation>
 <translation id="6040143037577758943">Itxi</translation>
@@ -1539,6 +1546,7 @@
 <translation id="6476284679642588870">Kudeatu ordainketa-metodoak</translation>
 <translation id="6476800141292307438">Orria itzultzen ari gara. <ph name="LANGUAGE" /> erabiliko da orria bistaratzeko. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
 <translation id="647867789226964031">Aldatu pasahitzak</translation>
+<translation id="6480363549849064919">Bezeroaren autentifikazioa</translation>
 <translation id="6494931198667773526">Amaiera</translation>
 <translation id="6503077044568424649">Bisitatuenak</translation>
 <translation id="6503763061813913607">Segurtasun-egiaztapenaren jakinarazpenak</translation>
@@ -1584,6 +1592,7 @@
 <translation id="6619015782482868078">Akuamarina-koloreko gaia</translation>
 <translation id="6620279676667515405">Utzi</translation>
 <translation id="6625830436658400045">Sinkronizazio-ezarpenak azken babeskopiaren arabera leheneratuko dira. Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
+<translation id="6626281667717553020">CPSaren URIa</translation>
 <translation id="6627583120233659107">Editatu karpeta</translation>
 <translation id="6629759408545977279">Igorlea: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="66306952800092318">Gehitu babes-geruza gehigarri hau sareko mehatxuen aurka.</translation>
@@ -2148,6 +2157,7 @@
 <translation id="8614671330774943747">Joan fitxa-aldatzailera</translation>
 <translation id="862367213447108001">Erakutsi beti leiho gainerakorrak webgune honetan</translation>
 <translation id="8625706492572042370">Editatu orri nagusia</translation>
+<translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Ezkutuko moduko fitxa blokeatuak</translation>
 <translation id="8633025649649592204">Azkenaldiko jarduerak</translation>
 <translation id="8636825310635137004">Beste gailuetako fitxak eskura izateko, aktibatu sinkronizazioa.</translation>
@@ -2334,6 +2344,7 @@
 <translation id="942624946817804130">Export (esportatu)</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="94870150074703282">Taldea ezabatu nahi duzu?</translation>
+<translation id="951090530321144895">Autoritate ziurtagiri-emaileen jaulkitzaileak</translation>
 <translation id="952704832371081537">Utzi</translation>
 <translation id="95332591904104970">Aplikazio konektatuak</translation>
 <translation id="954667170699278022">Irakurketa-zerrenda</translation>

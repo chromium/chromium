@@ -2582,6 +2582,7 @@
 <translation id="2750020734439919571">Дополнительные настройки и разрешения приложений Chrome</translation>
 <translation id="275010360476017464">Используйте микрофон, чтобы общаться с Gemini. Записи разговоров с ним будут сохраняться в истории действий в приложениях Gemini (если она включена).</translation>
 <translation id="2750602041558385535">Скачивание непроверенного файла заблокировано.</translation>
+<translation id="2751320815618312249">и ещё <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Сдвиньте губы вправо</translation>
 <translation id="2751883373055093745">Сайт <ph name="WEBSITE" /> запрашивает доступ к сведениям об идентификаторе ключа безопасности, чтобы знать, какой именно ключ вы используете.</translation>
 <translation id="275213133112113418">Карта сохранена</translation>
@@ -4544,6 +4545,7 @@
 <translation id="4107793386654579933">Выберите сочетание клавиш для действия "<ph name="ACTION_NAME" />"</translation>
 <translation id="4109135793348361820">Перенести окно на рабочий стол пользователя <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Восстановить предупреждение</translation>
+<translation id="411052834366185695">PIN-код должен содержать не менее 1 цифры.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
 <translation id="4113743276555482284">Пароль файла</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Нет сохраненных паролей}=1{Проверен 1 пароль}one{Проверен {COUNT} пароль}few{Проверено {COUNT} пароля}many{Проверено {COUNT} паролей}other{Проверено {COUNT} пароля}}</translation>
@@ -5033,6 +5035,7 @@
 <translation id="4461483878391246134">Добавить языки, для которых никогда не предлагать перевод</translation>
 <translation id="4462159676511157176">Другие серверы имен</translation>
 <translation id="4465236939126352372">Для приложения "<ph name="APP_NAME" />" установлен лимит <ph name="TIME" />.</translation>
+<translation id="4466922176191762830">и ещё <ph name="NUM" /></translation>
 <translation id="4467373268340082204">Неверный PIN-код.</translation>
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> может изменять файлы в папке "<ph name="FOLDERNAME" />".</translation>
@@ -5447,6 +5450,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{Выполняется проверка открытого ключа и контроль целостности. Осталось меньше 1 минуты.}=1{Выполняется проверка открытого ключа и контроль целостности. Осталась 1 минута.}one{Выполняется проверка открытого ключа и контроль целостности. Осталась # минута.}few{Выполняется проверка открытого ключа и контроль целостности. Осталось # минуты.}many{Выполняется проверка открытого ключа и контроль целостности. Осталось # минут.}other{Выполняется проверка открытого ключа и контроль целостности. Осталось # минуты.}}</translation>
 <translation id="4766598565665644999">Все расширения могут читать и изменять данные <ph name="HOST" />.</translation>
 <translation id="4767427586072640478">Подробнее об отключенных расширениях.</translation>
+<translation id="4769359569327438364">PIN-код должен содержать не менее 4 цифр.</translation>
 <translation id="4769632191812288342">Выбрана стандартная защита</translation>
 <translation id="4770119228883592393">Требуется разрешение. Нажмите ⌘ + Option + Стрелка вниз, чтобы ответить.</translation>
 <translation id="4772914216048388646">Спокойное</translation>
@@ -6034,6 +6038,7 @@
 <translation id="5183344263225877832">Сбросить все разрешения для HID-устройств?</translation>
 <translation id="5184063094292164363">Консоль &amp;JavaScript</translation>
 <translation id="5184209580557088469">Билет с таким именем пользователя уже существует.</translation>
+<translation id="5184329579814168207">Открыть в Chrome</translation>
 <translation id="5184662919967270437">Обновление операционной системы…</translation>
 <translation id="5185386675596372454">Новая версия "<ph name="EXTENSION_NAME" />" была отключена, так как для нее требуются дополнительные разрешения.</translation>
 <translation id="5185500136143151980">Нет подключения к интернету</translation>
@@ -6128,6 +6133,7 @@
 <translation id="5240931875940563122">Войти с помощью телефона Android</translation>
 <translation id="5241689948221696942">Для некоторых товаров есть сравнительные таблицы, в которых собраны отзывы из интернета.</translation>
 <translation id="5242724311594467048">Включить приложение "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5243477050423867768">PIN-код должен содержать не менее 8 символов без повторяющихся и идущих по порядку цифр.</translation>
 <translation id="5244234799035360187">OneDrive появится в приложении "Файлы"</translation>
 <translation id="5244466461749935369">Пока оставить</translation>
 <translation id="5244474230056479698">Синхронизация с <ph name="EMAIL" /></translation>
@@ -6889,7 +6895,6 @@
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5804259315582798390">Не удалось включить восстановление локальных данных</translation>
 <translation id="5805268472388605531">Нажмите и удерживайте клавиши, чтобы увидеть диакритические знаки и специальные символы</translation>
-<translation id="5805697420284793859">Менеджер окон</translation>
 <translation id="5806322307130093061">Чтобы удалить файл "<ph name="FILE_NAME" />", нажмите Ввод</translation>
 <translation id="5806447147478173900">Объем хранилища, занятый указанными сайтами: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (по умолчанию)</translation>
@@ -7048,7 +7053,6 @@
 <translation id="5910726859585389579">Устройство <ph name="DEVICE_TYPE" /> не подключено к Интернету</translation>
 <translation id="5911030830365207728">Google Переводчик</translation>
 <translation id="5911497236110691522">Чтобы переключиться на следующий способ ввода, нажмите <ph name="KEY_CODES" />.</translation>
-<translation id="5911533659001334206">Просмотр ярлыков</translation>
 <translation id="5911545422157959623">В гостевом режиме закладки недоступны.</translation>
 <translation id="5914016309240354769">Природа</translation>
 <translation id="5914724413750400082">Модуль (<ph name="MODULUS_NUM_BITS" /> бит):
@@ -8049,6 +8053,7 @@
 <translation id="6619990499523117484">Подтвердите PIN-код</translation>
 <translation id="6621282332208609777">Спросите Google или введите URL</translation>
 <translation id="6621391692573306628">Чтобы отправить вкладку с одного устройства на другое, войдите на них в Chrome.</translation>
+<translation id="6622212269189717101">PIN-код должен содержать не менее 6 символов без повторяющихся и идущих по порядку цифр.</translation>
 <translation id="6622980291894852883">Всегда блокировать изображения</translation>
 <translation id="6624036901798307345">В режиме планшета нажмите кнопку с числом вкладок на панели инструментов, чтобы открыть новую панель с уменьшенными изображениями всех вкладок.</translation>
 <translation id="6624538059730609162">Закрыть правую вкладку</translation>
@@ -8193,7 +8198,6 @@
 <translation id="6723839827191551955">Управляйте воспроизведением транслируемого медиаконтента</translation>
 <translation id="6723839937902243910">Питание</translation>
 <translation id="6723946439672043591">Выбрать другой профиль</translation>
-<translation id="6725073593266469338">Сервис интерфейса</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Количество вариантов, отображаемых на одной странице</translation>
 <translation id="672609503628871915">Узнать, что нового</translation>
@@ -10298,7 +10302,6 @@
 <translation id="8184288427634747179">Переключиться на профиль <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Подробнее</translation>
 <translation id="8184472985242519288">Без объема</translation>
-<translation id="8185614942934189676">Адрес электронной почты проверен автоматически.</translation>
 <translation id="8186013737729037962">Подробнее о корпоративных устройствах…</translation>
 <translation id="8186047833733689201">Меню диакритических знаков открыто. Для навигации нажимайте клавиши Стрелка влево, Стрелка вправо или клавиши с цифрами. Чтобы добавить знак, нажмите Ввод.</translation>
 <translation id="8186609076106987817">Этот файл отсутствует на сервере.</translation>
@@ -10664,7 +10667,6 @@
 <translation id="8428634594422941299">ОК</translation>
 <translation id="84297032718407999">Выход из системы произойдет через <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Другие действия для расширения "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="8431190899827883166">Визуальный отклик</translation>
 <translation id="843173223122814223">Создавайте фоновые изображения с помощью ИИ</translation>
 <translation id="8431977087510901105">Настройки указателя сброшены</translation>
 <translation id="8434109185104929038">Уголок для чтения</translation>

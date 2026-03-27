@@ -157,6 +157,7 @@
 <translation id="1099070179078143183">‏برای فعال کردن ویژگی هایی مانند تشخیص تقلب کروم ، می تواند از مدل های هوش مصنوعی استفاده کند که مستقیما روی دستگاه شما اجرا می شوند و داده های شما را به سرورهای Google ارسال نمی کنند. وقتی این تنظیم خاموش باشد، ممکن است این ویژگی‌ها کار نکنند. <ph name="BEGIN_LINK" />درباره هوشواره درون‌دستگاهی بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">تصویر از <ph name="DEVICE_NAME" /> کپی شده است</translation>
 <translation id="1100504063505580045">نماد کنونی</translation>
+<translation id="1101267749138963680">درحال بررسی ایمنی…</translation>
 <translation id="1102759278139578486">فایل‌های گزارمان گره اصلی بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
 <translation id="1104098698795583187">دسترسی به این گروه زبانه را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
@@ -2912,6 +2913,7 @@
 <translation id="2979893796619951531">مستثنی کردن سایت</translation>
 <translation id="2979966855249721010">ممکن است براساس علایقتان، برنامه‌های توصیه‌شده، نکته، و موارد دیگر ببینید</translation>
 <translation id="2981113813906970160">نمایش نشانگر موشواره بزرگ</translation>
+<translation id="2981728693230031897">‏خلاصه کردن این صفحه با Gemini</translation>
 <translation id="2983102365694924129">براساس فعالیت شما در سایت. این تنظیم خاموش است.</translation>
 <translation id="2983311431122838216">‏پرسیدن از «حالت هوشواره‌ای» در «جستجوی Google»</translation>
 <translation id="2983373101216420412">سطح باتری قاب <ph name="PERCENTAGE" />٪.</translation>
@@ -6041,6 +6043,7 @@
 <translation id="5183344263225877832">همه اجازه‌های دستگاه میانای انسانی بازنشانی شود؟</translation>
 <translation id="5184063094292164363">کنسول &amp;جاوا اسکریپت</translation>
 <translation id="5184209580557088469">بلیتی با این نام کاربری ازقبل وجود دارد</translation>
+<translation id="5184329579814168207">‏باز کردن در Chrome</translation>
 <translation id="5184662919967270437">درحال به‌روزرسانی دستگاه</translation>
 <translation id="5185386675596372454">جدیدترین نسخه از "<ph name="EXTENSION_NAME" />" غیر فعال شده است زیرا به مجوزهای بیشتری نیاز دارد.</translation>
 <translation id="5185500136143151980">اتصال اینترنت وجود ندارد</translation>
@@ -6896,7 +6899,6 @@
 <translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="5804259315582798390">بازیابی داده محلی فعال نشد</translation>
 <translation id="5805268472388605531">برای دیدن نشانه‌های تکیه و نویسه‌های خاص، کلیدهای صفحه‌کلید را فشار دهید و نگه دارید</translation>
-<translation id="5805697420284793859">مدیر پنجره</translation>
 <translation id="5806322307130093061">‏‫<ph name="FILE_NAME" /> برای حذف فایل، کلید Enter را فشار دهید</translation>
 <translation id="5806447147478173900">مجموع فضای ذخیره‌سازی که سایت‌های نشان‌داده‌شده استفاده کرده‌اند: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">۰ درجه (پیش‌فرض)</translation>
@@ -7055,7 +7057,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آفلاین است</translation>
 <translation id="5911030830365207728">‏ترجمه Google</translation>
 <translation id="5911497236110691522">برای رفتن به روش ورودی بعدی، کلیدهای <ph name="KEY_CODES" /> را فشار دهید</translation>
-<translation id="5911533659001334206">نمایشگر میان‌بر</translation>
 <translation id="5911545422157959623">نشانک‌ها در ‏حالت مهمان دردسترس نیست</translation>
 <translation id="5914016309240354769">طبیعت</translation>
 <translation id="5914724413750400082">مدول (<ph name="MODULUS_NUM_BITS" /> بیت):
@@ -8196,7 +8197,6 @@
 <translation id="6723839827191551955">کنترل رسانه‌ای که ارسال می‌کنید</translation>
 <translation id="6723839937902243910">نیرو</translation>
 <translation id="6723946439672043591">انتخاب نمایه دیگر</translation>
-<translation id="6725073593266469338">سرویس واسط کاربر</translation>
 <translation id="6725206449694821596">‏پروتکل چاپ اینترنتی (IPP)</translation>
 <translation id="6725970970008349185">تعداد کاندیداها برای نمایش در هر صفحه</translation>
 <translation id="672609503628871915">مشاهده تازه‌ها</translation>
@@ -10302,7 +10302,6 @@
 <translation id="8184288427634747179">تغییر به <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">اطلاعات بیشتر</translation>
 <translation id="8184472985242519288">یکسان</translation>
-<translation id="8185614942934189676">ایمیلتان به‌طور خودکار درستی‌سنجی شد</translation>
 <translation id="8186013737729037962">درباره دستگاه‌های سازمانی ثبت‌شده بیشتر بدانید</translation>
 <translation id="8186047833733689201">‏منو نشانه‌های تکیه باز شد. کلیدهای چپ، راست، یا شماره‌ها را برای پیمایش فشار دهید و سپس کلید Enter را برای درج فشار دهید.</translation>
 <translation id="8186609076106987817">سرور نتوانست فایل را پیدا کند.</translation>
@@ -10668,7 +10667,6 @@
 <translation id="8428634594422941299">متوجه شدم</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> دیگر از سیستم خارج می‌شوید</translation>
 <translation id="8429928917752180743">گزینه‌های بیشتر برای <ph name="EXTENSION_NAME" /></translation>
-<translation id="8431190899827883166">نمایش تک‌ضرب‌ها</translation>
 <translation id="843173223122814223">ایجاد پس‌زمینه با هوش مصنوعی</translation>
 <translation id="8431977087510901105">بازنشانی کردن تنظیمات مکان‌نما</translation>
 <translation id="8434109185104929038">محل مطالعه</translation>

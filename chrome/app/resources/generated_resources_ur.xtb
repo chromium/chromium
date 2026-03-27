@@ -6032,6 +6032,7 @@
 <translation id="5183344263225877832">‏HID آلے کی تمام اجازتیں ری سیٹ کریں؟</translation>
 <translation id="5184063094292164363">‏JavaScript&amp; کونسول</translation>
 <translation id="5184209580557088469">اس صارف نام کی ایک ٹکٹ پہلے سے موجود ہے</translation>
+<translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
 <translation id="5184662919967270437">آپ کے آلے کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" کا جدید ترین ورژن غیر فعال کر دیا گیا ہے کیونکہ اس کیلئے مزید اجازتیں مطلوب ہیں۔</translation>
 <translation id="5185500136143151980">انٹرنیٹ نہیں ہے</translation>
@@ -6885,7 +6886,6 @@
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5804259315582798390">مقامی ڈیٹا کی بازیابی کو فعال کرنے میں ناکام</translation>
 <translation id="5805268472388605531">لہجے کے نشانات اور مخصوص حروف دیکھنے کے لیے کی بورڈ کی کلیدوں کو چھوئیں اور دبائے رکھیں</translation>
-<translation id="5805697420284793859">ونڈو مینیجر</translation>
 <translation id="5806322307130093061">‏‫<ph name="FILE_NAME" /> فائل کو حذف کرنے کے لیے Enter دبائیں</translation>
 <translation id="5806447147478173900">ڈسپلے کردہ سائٹس کے ذریعہ استعمال کی گئی کل اسٹوریج: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ڈیفالٹ)</translation>
@@ -7044,7 +7044,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آف لائن ہے</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">اندراج کے اگلے طریقے پر سوئچ کرنے کیلئے <ph name="KEY_CODES" /> دبائیں</translation>
-<translation id="5911533659001334206">شارٹ کٹ ناظر</translation>
 <translation id="5911545422157959623">بُک مارکس مہمان وضع میں دستیاب نہیں ہیں</translation>
 <translation id="5914016309240354769">فطرت</translation>
 <translation id="5914724413750400082">ماڈیولس (<ph name="MODULUS_NUM_BITS" /> بٹس):
@@ -8183,7 +8182,6 @@
 <translation id="6723839827191551955">اس میڈیا پر کنٹرول کریں جو آپ کاسٹ کر رہے ہیں</translation>
 <translation id="6723839937902243910">پاور</translation>
 <translation id="6723946439672043591">دوسری پروفائل منتخب کریں</translation>
-<translation id="6725073593266469338">‏UI سروس</translation>
 <translation id="6725206449694821596">‏انٹرنیٹ پرنٹنگ پروٹوکول (IPP)</translation>
 <translation id="6725970970008349185">فی صفحہ ڈسپلے کرنے کیلئے امیدواروں کی تعداد</translation>
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
@@ -10288,7 +10286,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> پر سوئچ کریں</translation>
 <translation id="8184318863960255706">مزید معلومات</translation>
 <translation id="8184472985242519288">یکساں</translation>
-<translation id="8185614942934189676">ای میل کی توثیق خودکار طور پر ہو گئی</translation>
 <translation id="8186013737729037962">انٹرپرائز کے اندراج شدہ آلات کے بارے میں مزید جانیں</translation>
 <translation id="8186047833733689201">ایکسینٹ نشانات کا مینو کھلا ہے۔ نیویگیٹ کرنے کیلئے بائیں، دائیں یا نمبر کی کلیدیں دبائیں اور داخل کرنے کیلئے انٹر دبائیں۔</translation>
 <translation id="8186609076106987817">سرور فائل کو تلاش نہیں کر سکا۔</translation>
@@ -10654,7 +10651,6 @@
 <translation id="8428634594422941299">سمجھ آ گئی</translation>
 <translation id="84297032718407999">آپ <ph name="LOGOUT_TIME_LEFT" /> میں سائن آؤٹ ہو جائیں گے</translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> کیلئے مزید اختیارات</translation>
-<translation id="8431190899827883166">تھپتھپاہٹیں دکھائیں</translation>
 <translation id="843173223122814223">‏AI کی مدد سے پس منظر تخلیق کریں</translation>
 <translation id="8431977087510901105">کرسر کی ترتیبات ری سیٹ ہو گئیں</translation>
 <translation id="8434109185104929038">مطالعے کا گوشہ</translation>

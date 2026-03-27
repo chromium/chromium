@@ -763,6 +763,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2188375229972301266">Višestruko bušenje na dnu</translation>
 <translation id="218940509700321686">Vrednosti razdvojene zarezima</translation>
 <translation id="2190094353033916816">Ove smernice imaju različite vrednosti koje se primenjuju na nivou uređaja i korisnika. Smernice funkcionišu kako treba.</translation>
+<translation id="219061769324072544">Kreditna,kartica,debitna</translation>
 <translation id="2191980191135734720">Otključajte ekran u sledećem koraku, obično pomoću otiska prsta. Možete i da <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Šta treba imati u vidu</translation>
 <translation id="2195729137168608510">Zaštita e-pošte</translation>
@@ -1366,6 +1367,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3134859781443140237">Lokalna mreža</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Pretražite stavku <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{None}=1{podaci za prijavljivanje za 1 nalog}one{podaci za prijavljivanje za # nalog}few{podaci za prijavljivanje za # naloga}other{podaci za prijavljivanje za # naloga}}</translation>
+<translation id="3139503241401248626">Da biste omogućili ova podešavanja i koristili informacije sa Google naloga, idite u podešavanja usluga automatskog popunjavanja.</translation>
 <translation id="3140646734028448730">Poslovne usluge</translation>
 <translation id="3141093262818886744">Ipak otvori</translation>
 <translation id="3141337053413339205">Pređite na ovu karticu</translation>
@@ -2300,6 +2302,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4594403342090139922">&amp;Opozovi brisanje</translation>
 <translation id="4598556348158889687">Upravljanje memorijskim prostorom</translation>
 <translation id="459914240367517409">Veb-dizajn i programiranje</translation>
+<translation id="4599572944836204718">Plaćajte brže pomoću Google Pay-a uz sačuvanu karticu. Detalji o kartici se šifruju u Google novčaniku.</translation>
 <translation id="4602465984861132303">Kuglanje</translation>
 <translation id="4603727370377253901">Rezervacije letova</translation>
 <translation id="4607608436550361748">Prikaži Chrome savete</translation>
@@ -2589,6 +2592,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, pritisnite Tab da biste videli još prečica za pretragu koje su dostupne posle ovog predloga za pretragu</translation>
 <translation id="5052488928733955073">Problem pri popunjavanju informacija. Proverite vezu.</translation>
 <translation id="5052517576853118371">Aktivne teme</translation>
+<translation id="5053116470141135293">Broj virtuelne kartice će biti popunjen prilikom plaćanja ovom karticom radi zaštite stvarnih podataka. Upravljajte u Google novčaniku. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Da biste poslali ovaj fajl pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali ove fajlove pomoću Deljenja u blizini, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
 <translation id="5056587122125565772">Napravi sliku</translation>
 <translation id="505757197798929356">Navedite razlog za otvaranje (obavezno)</translation>
@@ -2958,6 +2962,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="5596939519753369075">2×3,5 in</translation>
 <translation id="5597254438174353289">Plava 3</translation>
+<translation id="5600044805561809264">Dok pregledate možete lako da postavljate pitanja o karticama koje delite.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ili <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
 <translation id="5605249000617390290">Saznajte više o praćenju cena</translation>
@@ -3363,6 +3368,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6250932670816326647">Proizvodi za kupanje i negu tela</translation>
 <translation id="6251906504834538140">{0,plural, =1{Premeštanje fajla je blokirano}one{Premeštanje <ph name="FILE_COUNT" /> fajla je blokirano}few{Premeštanje <ph name="FILE_COUNT" /> fajla je blokirano}other{Premeštanje <ph name="FILE_COUNT" /> fajlova je blokirano}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali fajlovima koje ste preuzeli u Chrome-u</translation>
+<translation id="6253380015872250643">Sačuvajte karticu u Google novčaniku</translation>
 <translation id="6254436959401408446">Nema dovoljno memorije za otvaranje ove stranice</translation>
 <translation id="625463612687472648">Opozovi dozvolu</translation>
 <translation id="6259156558325130047">&amp;Ponovi promenu redosleda</translation>
@@ -4260,6 +4266,7 @@ Dodatni detalji:
 <translation id="7615932826417658001">Dodajte identifikacioni dokument</translation>
 <translation id="7616390733770379387">Prikazuju se nasumičnim redosledom.</translation>
 <translation id="7616645509853975347">Administrator je uključio Chrome Enterprise Connectors u pregledaču. Ovi priključci imaju pristup nekim vašim podacima.</translation>
+<translation id="7616747402308801775">Ova kartica se čuva u Google novčaniku da biste mogli da je koristite u svim Google uslugama.</translation>
 <translation id="7617825962482469577">Koverta C7/C6</translation>
 <translation id="7618270539713451657">Borilačke veštine</translation>
 <translation id="7619838219691048931">Poslednji list</translation>
@@ -4582,6 +4589,7 @@ Dodatni detalji:
 <translation id="8120720167840853945">Ove smernice ne kontrolišu podrazumevano ponašanje drugih smernica.</translation>
 <translation id="8127301229239896662">Softver „<ph name="SOFTWARE_NAME" />“ nije pravilno instaliran na računaru ili mreži. Zatražite od IT administratora da reši ovaj problem.</translation>
 <translation id="8130113808541743942">Premestite u…</translation>
+<translation id="813024282736408069">Uključite virtuelnu karticu za automatsko popunjavanje</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133495915926741232">Odaberite široke kategorije tema koje mogu da se koriste za personalizaciju oglasa. Ako isključite širu kategoriju, blokiraćete i srodne teme. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Zapošljavanje i izbor kadrova</translation>

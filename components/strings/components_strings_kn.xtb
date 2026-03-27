@@ -762,6 +762,7 @@
 <translation id="2188375229972301266">ಕೆಳಭಾಗದಲ್ಲಿ ಅನೇಕ ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="218940509700321686">ಅರ್ಧವಿರಾಮದಿಂದ ಬೇರ್ಪಡಿಸಲಾದ ಮೌಲ್ಯಗಳು</translation>
 <translation id="2190094353033916816">ಈ ನೀತಿಯು ಮಷಿನ್‌ ಮತ್ತು ಬಳಕೆದಾರರ ಹಂತಗಳಲ್ಲಿ ಅನ್ವಯಿಸಲಾದ ವಿಭಿನ್ನ ಮೌಲ್ಯಗಳನ್ನು ಹೊಂದಿದೆ. ನೀತಿಯು ಉದ್ದೇಶಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ.</translation>
+<translation id="219061769324072544">ಕ್ರೆಡಿಟ್,ಕಾರ್ಡ್,ಡೆಬಿಟ್</translation>
 <translation id="2191980191135734720">ಮುಂದಿನ ಹಂತದಲ್ಲಿ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ, ಸಾಮಾನ್ಯವಾಗಿ ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಬಳಸಬೇಕಾಗುತ್ತದೆ. ನೀವು <ph name="LINK_TEXT" /> ಸಹ ಮಾಡಬಹುದು.</translation>
 <translation id="2194856509914051091">ಪರಿಗಣಿಸಬೇಕಾದ ಸಂಗತಿಗಳು</translation>
 <translation id="2195729137168608510">ಇಮೇಲ್ ಭದ್ರತೆ</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3134859781443140237">ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಖಾತೆಯ ಸೈನ್ ಇನ್ ಡೇಟಾ}one{# ಖಾತೆಗಳ ಸೈನ್ ಇನ್ ಡೇಟಾ}other{# ಖಾತೆಗಳ ಸೈನ್ ಇನ್ ಡೇಟಾ}}</translation>
+<translation id="3139503241401248626">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿನ ಪಾವತಿ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು, ಆಟೋಫಿಲ್ ಸೇವೆಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="3140646734028448730">ವ್ಯವಹಾರ ಸೇವೆಗಳು</translation>
 <translation id="3141093262818886744">ಹೇಗಿದ್ದರೂ ತೆರೆಯಿರಿ</translation>
 <translation id="3141337053413339205">ಈ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಾಯಿಸಿ.</translation>
@@ -2297,6 +2299,7 @@
 <translation id="4594403342090139922">&amp;ಅಳಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="4598556348158889687">ಸಂಗ್ರಹಣೆ ನಿರ್ವಹಣೆ</translation>
 <translation id="459914240367517409">ವೆಬ್ ವಿನ್ಯಾಸ ಮತ್ತು ಅಭಿವೃದ್ಧಿ</translation>
+<translation id="4599572944836204718">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಿದಾಗ Google Pay ಮೂಲಕ ವೇಗವಾಗಿ ಪಾವತಿಸಿ. Google Wallet ನಲ್ಲಿ ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4602465984861132303">ಬೌಲಿಂಗ್</translation>
 <translation id="4603727370377253901">ಫ್ಲೈಟ್ ರಿಸರ್ವೇಶನ್‌ಗಳು</translation>
 <translation id="4607608436550361748">Chrome ಸಲಹೆಗಳನ್ನು ನೋಡಿ</translation>
@@ -2586,6 +2589,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, ಈ ಹುಡುಕಾಟ ಸಲಹೆಯ ನಂತರ ಲಭ್ಯವಿರುವ ಹೆಚ್ಚಿನ ಹುಡುಕಾಟದ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳಿಗಾಗಿ ಟ್ಯಾಬ್ ಒತ್ತಿರಿ</translation>
 <translation id="5052488928733955073">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಎದುರಾಗಿದೆ. ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="5052517576853118371">ಸಕ್ರಿಯ ವಿಷಯಗಳು</translation>
+<translation id="5053116470141135293">ನಿಮ್ಮ ನೈಜ ವಿವರಗಳನ್ನು ರಕ್ಷಿಸಲು ಈ ಕಾರ್ಡ್ ಮೂಲಕ ನೀವು ಚೆಕ್ ಔಟ್ ಮಾಡಿದಾಗ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಭರ್ತಿ ಮಾಡಲಾಗುತ್ತದೆ. Google Wallet ನಲ್ಲಿ ನಿರ್ವಹಿಸಿ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್ ಅನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}one{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}other{Nearby ಶೇರ್ ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು (<ph name="DISK_SPACE_SIZE" />) ಮುಕ್ತಗೊಳಿಸಿ}}</translation>
 <translation id="5056587122125565772">ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>
 <translation id="505757197798929356">ತೆರೆಯಲು ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
@@ -3361,6 +3365,7 @@
 <translation id="6250932670816326647">ಸ್ನಾನ ಮತ್ತು ಬಾಡಿ ಉತ್ಪನ್ನಗಳು</translation>
 <translation id="6251906504834538140">{0,plural, =1{ಫೈಲ್ ಸರಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{<ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{<ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನೀವು Chrome ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="6253380015872250643">Google Wallet ನಲ್ಲಿ ಕಾರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="6254436959401408446">ಈ ಪುಟವನ್ನು ತೆರೆಯಲು ಸಾಕಷ್ಟು ಮೆಮೊರಿ ಇಲ್ಲ</translation>
 <translation id="625463612687472648">ಅನುಮತಿಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="6259156558325130047">&amp;ಮರುಕ್ರಮಗೊಳಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
@@ -4258,6 +4263,7 @@
 <translation id="7615932826417658001">ಗುರುತಿನ ಚೀಟಿ ಸೇರಿಸಿ</translation>
 <translation id="7616390733770379387">ಇವುಗಳನ್ನು ರ‍್ಯಾಂಡಮ್ ಆರ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7616645509853975347">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ Chrome Enterprise ಕನೆಕ್ಟರ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿದ್ದಾರೆ. ನಿಮ್ಮ ಕೆಲವೊಂದು ಡೇಟಾಕ್ಕೆ ಈ ಕನೆಕ್ಟರ್‌ಗಳು ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುತ್ತವೆ.</translation>
+<translation id="7616747402308801775">ಈ ಕಾರ್ಡ್ ಅನ್ನು Google Wallet ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, ಇದರಿಂದ ನೀವು Google ಸೇವೆಗಳಾದ್ಯಂತ ಅದನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="7617825962482469577">ಎನ್ವಲಪ್ C7/C6</translation>
 <translation id="7618270539713451657">ಸಮರ ಕಲೆಗಳು</translation>
 <translation id="7619838219691048931">ಕೊನೆಯ ಶೀಟ್</translation>
@@ -4580,6 +4586,7 @@
 <translation id="8120720167840853945">ಈ ನೀತಿಯು ಯಾವುದೇ ಇತರ ನೀತಿಗಳ ಡೀಫಾಲ್ಟ್ ನಡವಳಿಕೆಯನ್ನು ನಿಯಂತ್ರಿಸುತ್ತಿಲ್ಲ.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅಥವಾ ನೆಟ್‌ವರ್ಕ್ ನಲ್ಲಿ ಸರಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗಿಲ್ಲ: ಈ ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ನಿಮ್ಮ IT ನಿರ್ವಾಹಕರಿಗೆ ತಿಳಿಸಿ.</translation>
 <translation id="8130113808541743942">ಇದಕ್ಕೆ ವರ್ಗಾಯಿಸಿ...</translation>
+<translation id="813024282736408069">ಆಟೋಫಿಲ್‌ಗಾಗಿ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8133495915926741232">ಆ್ಯಡ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು ಯಾವ ವಿಶಾಲ ವರ್ಗದ ವಿಷಯವನ್ನು ಬಳಸಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ. ವಿಶಾಲ ವರ್ಗವನ್ನು ಆಫ್ ಮಾಡುವುದರಿಂದ ಅದರ ಸಂಬಂಧಿತ ವಿಷಯಗಳನ್ನು ಸಹ ನಿರ್ಬಂಧಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">ನೇಮಕಾತಿ ಮತ್ತು ಸಿಬ್ಬಂದಿ ವ್ಯವಸ್ಥೆ</translation>

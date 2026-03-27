@@ -763,6 +763,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2188375229972301266">Berbilang tebukan bawah</translation>
 <translation id="218940509700321686">Nilai Dipisahkan Koma</translation>
 <translation id="2190094353033916816">Dasar ini menggunakan nilai yang berbeza yang digunakan pada peringkat mesin dan pengguna. Dasar ini berfungsi seperti yang sepatutnya.</translation>
+<translation id="219061769324072544">Kredit,Kad,Debit</translation>
 <translation id="2191980191135734720">Buka kunci skrin anda dalam langkah seterusnya, lazimnya menggunakan cap jari anda. Anda juga boleh <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2195729137168608510">Perlindungan E-mel</translation>
@@ -1366,6 +1367,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3134859781443140237">Rangkaian setempat</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Cari <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Tiada}=1{data log masuk untuk 1 akaun}other{data log masuk untuk # akaun}}</translation>
+<translation id="3139503241401248626">Untuk mendayakan tetapan ini dan menggunakan maklumat daripada Google Account anda, lawati tetapan perkhidmatan autolengkap.</translation>
 <translation id="3140646734028448730">Perkhidmatan Perniagaan</translation>
 <translation id="3141093262818886744">Buka juga</translation>
 <translation id="3141337053413339205">Beralih kepada tab ini.</translation>
@@ -2301,6 +2303,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4594403342090139922">&amp;Buat asal Pemadaman</translation>
 <translation id="4598556348158889687">Pengurusan storan</translation>
 <translation id="459914240367517409">Reka Bentuk &amp; Pembangunan Web</translation>
+<translation id="4599572944836204718">Bayar lebih pantas dengan Google Pay apabila kad anda disimpan. Butiran kad disulitkan dalam Google Wallet.</translation>
 <translation id="4602465984861132303">Boling</translation>
 <translation id="4603727370377253901">Tempahan penerbangan</translation>
 <translation id="4607608436550361748">Lihat petua Chrome</translation>
@@ -2590,6 +2593,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, Tekan tab untuk melihat lebih banyak pintasan carian yang tersedia selepas cadangan carian ini</translation>
 <translation id="5052488928733955073">Terdapat masalah semasa mengisi maklumat anda. Semak sambungan anda.</translation>
 <translation id="5052517576853118371">Topik aktif</translation>
+<translation id="5053116470141135293">Nombor kad maya akan diisi apabila anda menyemak keluar dengan kad ini untuk melindungi butiran sebenar anda. Urus dalam Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
 <translation id="5056587122125565772">Buat imej</translation>
 <translation id="505757197798929356">Berikan sebab untuk membuka fail (diperlukan)</translation>
@@ -3366,6 +3370,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6250932670816326647">Produk Mandian &amp; Tubuh</translation>
 <translation id="6251906504834538140">{0,plural, =1{Fail disekat daripada dialihkan}other{<ph name="FILE_COUNT" /> fail disekat daripada dialihkan}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus fail yang telah anda muat turun dalam Chrome</translation>
+<translation id="6253380015872250643">Simpan kad dalam Google Wallet</translation>
 <translation id="6254436959401408446">Memori tidak mencukupi untuk membuka halaman ini</translation>
 <translation id="625463612687472648">Hentikan kebenaran</translation>
 <translation id="6259156558325130047">&amp;Buat Asal Susun Semula</translation>
@@ -4263,6 +4268,7 @@ Butiran tambahan:
 <translation id="7615932826417658001">Tambahkan kad pengenalan</translation>
 <translation id="7616390733770379387">Enjin carian ini ditunjukkan dalam tertib rawak.</translation>
 <translation id="7616645509853975347">Pentadbir anda telah menghidupkan Chrome Enterprise Connectors pada penyemak imbas anda. Penyambung ini boleh mengakses sesetengah data anda.</translation>
+<translation id="7616747402308801775">Kad ini disimpan dalam Google Wallet supaya anda dapat menggunakan kad ini merentas perkhidmatan Google</translation>
 <translation id="7617825962482469577">Sampul C7/C6</translation>
 <translation id="7618270539713451657">Seni Mempertahankan Diri</translation>
 <translation id="7619838219691048931">Helaian akhir</translation>
@@ -4585,6 +4591,7 @@ Butiran tambahan:
 <translation id="8120720167840853945">Dasar ini tidak mengawal gelagat lalai sebarang dasar lain.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak dipasang dengan betul pada komputer atau rangkaian anda. Minta pentadbir IT anda menyelesaikan isu ini.</translation>
 <translation id="8130113808541743942">Alihkan kepada…</translation>
+<translation id="813024282736408069">Hidupkan kad maya untuk menggunakan autolengkap</translation>
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8133495915926741232">Pilih kategori topik yang luas yang boleh digunakan untuk memeribadikan iklan. Tindakan mematikan kategori yang lebih luas akan turut menyekat topik yang berkaitan dengan kategori tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Perekrutan &amp; Pengambilan Pekerja</translation>

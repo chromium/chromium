@@ -917,6 +917,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2400600116338235695">Can ask to connect to serial ports</translation>
 <translation id="2403474027143565107">Precise</translation>
 <translation id="240450251994300576">Secondary header logo</translation>
+<translation id="2404715426538856682">Credit and debit cards · IBANs · Loyalty cards</translation>
 <translation id="2404884497378469141">Try copying your files again</translation>
 <translation id="2413155254802890957">Old</translation>
 <translation id="2413528052993050574">This server could not prove that it is <ph name="DOMAIN" />; its security certificate might be revoked. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
@@ -2168,6 +2169,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4340810192899866471">Import from JSON</translation>
 <translation id="4340982228985273705">This computer is not detected as enterprise managed, so policy can only automatically install extensions hosted on the Chrome Web Store. The Chrome Web Store update URL is '<ph name="CWS_UPDATE_URL" />'.</translation>
 <translation id="4342742994656318294">Theme parks</translation>
+<translation id="4346670990181948854">Travel info · Vehicles</translation>
 <translation id="4348834659292907206">The connection to <ph name="SITE" /> is not secure</translation>
 <translation id="4349365535725594680">Can’t share confidential content</translation>
 <translation id="4349810866125026513">Upload anyway</translation>
@@ -2956,6 +2958,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5596627076506792578">More options</translation>
 <translation id="5596939519753369075">2.0 in x 3.5 in</translation>
 <translation id="5597254438174353289">Blue 3</translation>
+<translation id="5600044805561809264">You can easily ask questions about the tabs that you're sharing as you browse.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> or <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Management not supported</translation>
 <translation id="5605249000617390290">Learn more about price tracking</translation>
@@ -3050,6 +3053,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5752519522101347518">Loading bank verification website</translation>
 <translation id="5753570386948603678">Delete from history</translation>
 <translation id="5759751709240058861">Use and move your camera</translation>
+<translation id="5762131895127128324">Driving licences · Identity cards · Passports</translation>
 <translation id="5763042198335101085">Enter a valid email address</translation>
 <translation id="5764725887548570807">Invalid origin format.</translation>
 <translation id="5764920692828389743">Send to <ph name="EMAIL_ADDRESS" /></translation>
@@ -3987,6 +3991,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="7220786058474068424">Processing</translation>
 <translation id="7221855153210829124">Show notifications</translation>
 <translation id="722454870747268814">New Incognito tab</translation>
+<translation id="7225676267118764980">Change autofill provider and other settings</translation>
 <translation id="7226892411756387078">Plain text</translation>
 <translation id="7227293336683593977">Price history</translation>
 <translation id="7228306718910595403">EU Qualified Status</translation>

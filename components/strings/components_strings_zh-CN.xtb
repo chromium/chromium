@@ -917,6 +917,7 @@
 <translation id="2400600116338235695">可以询问能否连接到串行端口</translation>
 <translation id="2403474027143565107">精确位置</translation>
 <translation id="240450251994300576">次要标题徽标</translation>
+<translation id="2404715426538856682">信用卡和借记卡 · IBAN · 会员卡</translation>
 <translation id="2404884497378469141">尝试重新复制文件</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
@@ -2164,6 +2165,7 @@
 <translation id="4340810192899866471">从 JSON 文件导入</translation>
 <translation id="4340982228985273705">系统检测到，此计算机不是由企业管理，因此政策只能自动安装 Chrome 应用商店中的扩展程序。对应的 Chrome 应用商店更新网址为“<ph name="CWS_UPDATE_URL" />”。</translation>
 <translation id="4342742994656318294">主题乐园</translation>
+<translation id="4346670990181948854">旅行信息 · 车辆</translation>
 <translation id="4348834659292907206">与 <ph name="SITE" /> 的连接不安全</translation>
 <translation id="4349365535725594680">无法共享机密内容</translation>
 <translation id="4349810866125026513">仍然上传</translation>
@@ -2952,6 +2954,7 @@
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5596939519753369075">2 x 3.5 英寸</translation>
 <translation id="5597254438174353289">蓝色 3</translation>
+<translation id="5600044805561809264">您可以在浏览时轻松询问有关您正在分享的标签页的问题。</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" />或<ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">不支持管理</translation>
 <translation id="5605249000617390290">详细了解价格跟踪</translation>
@@ -3046,6 +3049,7 @@
 <translation id="5752519522101347518">正在加载银行验证网站</translation>
 <translation id="5753570386948603678">从下载记录中删除</translation>
 <translation id="5759751709240058861">使用和移动您的摄像头</translation>
+<translation id="5762131895127128324">驾照 · 身份证 · 护照</translation>
 <translation id="5763042198335101085">请输入有效的电子邮件地址</translation>
 <translation id="5764725887548570807">源格式无效。</translation>
 <translation id="5764920692828389743">发送至 <ph name="EMAIL_ADDRESS" /></translation>
@@ -3739,7 +3743,7 @@
 <translation id="6849023911358004088">“管理安全设置”按钮，激活它即可在 Chrome 设置中管理您的安全浏览设置和其他设置</translation>
 <translation id="6850286078059909152">文字颜色</translation>
 <translation id="6852204201400771460">要重新加载应用吗？</translation>
-<translation id="6854691830678097752">为了加快结账速度，请将此银行卡验证码 (CVC) 保存到账号 <ph name="ACCOUNT_EMAIL" /> 中</translation>
+<translation id="6854691830678097752">若要加快结账速度，可将此银行卡验证码 (CVC) 保存到账号 <ph name="ACCOUNT_EMAIL" /> 中</translation>
 <translation id="6855951327659224749">清除表单才能使用先买后付选项</translation>
 <translation id="6857776781123259569">管理密码…</translation>
 <translation id="6858034839887287663">A2x4</translation>
@@ -3982,6 +3986,7 @@
 <translation id="7220786058474068424">正在处理</translation>
 <translation id="7221855153210829124">显示通知</translation>
 <translation id="722454870747268814">新的无痕式标签页</translation>
+<translation id="7225676267118764980">更改自动填充服务提供商和其他设置</translation>
 <translation id="7226892411756387078">纯文本</translation>
 <translation id="7227293336683593977">既往价格</translation>
 <translation id="7228306718910595403">遵守欧盟规定的状态</translation>

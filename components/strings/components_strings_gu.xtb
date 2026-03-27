@@ -763,6 +763,7 @@
 <translation id="2188375229972301266">નીચેની બાજુએ એકથી વધુ કાણાં પાડો</translation>
 <translation id="218940509700321686">અલ્પવિરામથી વિભાજિત મૂલ્યો</translation>
 <translation id="2190094353033916816">આ પૉલિસીમાં મશીન અને વપરાશકર્તાના લેવલ પર અલગ-અલગ મૂલ્યો લાગુ કરવામાં આવ્યા છે. પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે.</translation>
+<translation id="219061769324072544">ક્રેડિટ,કાર્ડ,ડેબિટ</translation>
 <translation id="2191980191135734720">આગલા પગલામાં, સામાન્ય રીતે તમારી ફિંગરપ્રિન્ટનો ઉપયોગ કરીને, તમારી સ્ક્રીનને અનલૉક કરો. તમે <ph name="LINK_TEXT" /> પણ કરી શકો છો.</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="2195729137168608510">ઇમેઇલ સુરક્ષા</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3134859781443140237">સ્થાનિક નેટવર્ક</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> શોધો</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{કોઈ નહીં}=1{1 એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}one{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}other{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}}</translation>
+<translation id="3139503241401248626">આ સેટિંગ ચાલુ કરવા અને તમારા Google એકાઉન્ટમાંની માહિતીનો ઉપયોગ કરવા માટે, ઑટોમૅટિક રીતે ભરવાની સુવિધાઓના સેટિંગની મુલાકાત લો</translation>
 <translation id="3140646734028448730">વ્યવસાય સેવાઓ</translation>
 <translation id="3141093262818886744">તેમ છતાં ખોલો</translation>
 <translation id="3141337053413339205">આ ટૅબ પર સ્વિચ કરો.</translation>
@@ -2300,6 +2302,7 @@
 <translation id="4594403342090139922">&amp;ડિલીટ રદ કરો</translation>
 <translation id="4598556348158889687">સ્ટોરેજ સંચાલન</translation>
 <translation id="459914240367517409">વેબ ડિઝાઇન અને ડેવલપમેન્ટ</translation>
+<translation id="4599572944836204718">તમારું કાર્ડ સાચવેલું હોય ત્યારે Google Pay વડે વધુ ઝડપથી ચુકવણી કરો. કાર્ડની વિગતો Google Walletમાં એન્ક્રિપ્ટેડ હોય છે.</translation>
 <translation id="4602465984861132303">બૉલિંગ</translation>
 <translation id="4603727370377253901">ફ્લાઇટ રિઝર્વેશન</translation>
 <translation id="4607608436550361748">Chrome વિશે ટિપ જુઓ</translation>
@@ -2589,6 +2592,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, શોધ સંબંધિત આ સૂચન પછી ઉપલબ્ધ વધુ શોધ શૉર્ટકટ માટે ટૅબ દબાવો</translation>
 <translation id="5052488928733955073">તમારી માહિતી ભરવામાં સમસ્યા આવી. તમારું કનેક્શન ચેક કરો.</translation>
 <translation id="5052517576853118371">સક્રિય વિષયો</translation>
+<translation id="5053116470141135293">તમારી વાસ્તવિક વિગતોનું રક્ષણ કરવા માટે, જ્યારે તમે આ કાર્ડ વડે ચેકઆઉટ કરશો ત્યારે વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવશે. Google Walletમાં મેનેજ કરો. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}one{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}other{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલો મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}}</translation>
 <translation id="5056587122125565772">છબી બનાવો</translation>
 <translation id="505757197798929356">ખોલવાનું કારણ આપો (આવશ્યક છે)</translation>
@@ -2958,6 +2962,7 @@
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5596939519753369075">2 x 3.5 ઇંચ</translation>
 <translation id="5597254438174353289">વાદળી 3</translation>
+<translation id="5600044805561809264">બ્રાઉઝ કરતી વખતે તમે જે ટૅબ શેર કરી રહ્યા હો, તેના વિશે સરળતાથી પ્રશ્નો પૂછી શકો છો.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> અથવા <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">સંચાલન સમર્થિત નથી</translation>
 <translation id="5605249000617390290">કિંમત ટ્રૅક કરવાની સુવિધા વિશે વધુ જાણો</translation>
@@ -3364,6 +3369,7 @@
 <translation id="6250932670816326647">સ્નાન અને શરીરની સંભાળ રાખવા સંબંધિત પ્રોડક્ટ</translation>
 <translation id="6251906504834538140">{0,plural, =1{ફાઇલને ખસેડવાથી બ્લૉક કરી છે}one{<ph name="FILE_COUNT" /> ફાઇલને ખસેડવાથી બ્લૉક કરી છે}other{<ph name="FILE_COUNT" /> ફાઇલને ખસેડવાથી બ્લૉક કરી છે}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં તમે ડાઉનલોડ કરેલી ફાઇલો મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
+<translation id="6253380015872250643">Google Walletમાં કાર્ડ સાચવો</translation>
 <translation id="6254436959401408446">આ પેજ ખોલવા માટે પૂરતી મેમરી નથી</translation>
 <translation id="625463612687472648">મંજૂરી આપવાનું રોકો</translation>
 <translation id="6259156558325130047">&amp;પુનઃક્રમાંકિત કરવું ફરી કરો</translation>
@@ -4261,6 +4267,7 @@
 <translation id="7615932826417658001">ઓળખ કાર્ડ ઉમેરો</translation>
 <translation id="7616390733770379387">આ બધાને કોઈપણ ક્રમમાં બતાવવામાં આવ્યા છે.</translation>
 <translation id="7616645509853975347">તમારા વ્યવસ્થાપકે તમારા બ્રાઉઝર પર Chrome Enterprise Connectors ચાલુ કર્યુ છે. આ કનેક્ટરને તમારા અમુક ડેટાનો ઍક્સેસ છે.</translation>
+<translation id="7616747402308801775">આ કાર્ડ Google Walletમાં સાચવવામાં આવ્યું છે, જેથી તમે Googleની બધી સેવાઓમાં તેનો ઉપયોગ કરી શકો</translation>
 <translation id="7617825962482469577">એન્વલપ C7/C6</translation>
 <translation id="7618270539713451657">માર્શલ આર્ટ્સ</translation>
 <translation id="7619838219691048931">છેલ્લી શીટ</translation>
@@ -4583,6 +4590,7 @@
 <translation id="8120720167840853945">આ પૉલિસી અન્ય કોઈપણ પૉલિસીઓની ડિફૉલ્ટ વર્તણૂકને નિયંત્રિત કરી રહી નથી.</translation>
 <translation id="8127301229239896662">તમારા કમ્પ્યુટરમાં અથવા નેટવર્ક પર "<ph name="SOFTWARE_NAME" />" યોગ્ય રીતે ઇન્સ્ટૉલ થયું નથી. તમારા IT વ્યવસ્થાપકને આ સમસ્યા હલ કરવાનું કહો.</translation>
 <translation id="8130113808541743942">આમાં ખસેડો...</translation>
+<translation id="813024282736408069">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે વર્ચ્યુઅલ કાર્ડ ચાલુ કરો</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8133495915926741232">જાહેરાતોને મનગમતી બનાવવામાં સહાય કરવા માટે વિષયોની કઈ વ્યાપક કૅટેગરીનો ઉપયોગ કરી શકાય તે પસંદ કરો. વ્યાપક કૅટેગરીને બંધ કરવાથી તેના સંબંધિત મુદ્દા પણ બ્લૉક કરવામાં આવશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">ભરતી અને કર્મચારીની નિયુક્તિ</translation>

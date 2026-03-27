@@ -157,7 +157,7 @@
 <translation id="1099070179078143183">為提供詐騙偵測等功能，Chrome 可以使用直接在裝置上執行的 AI 模型，而無需將資料傳送到 Google 伺服器。如果關閉設定，這些功能可能無法正常運作。<ph name="BEGIN_LINK" />進一步瞭解裝置內置 AI<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">從「<ph name="DEVICE_NAME" />」複製的圖片</translation>
 <translation id="1100504063505580045">目前圖示</translation>
-<translation id="1101267749138963680">正在檢查是否安全...</translation>
+<translation id="1101267749138963680">正在檢查安全性…</translation>
 <translation id="1102759278139578486">無法下載主節點註釋檔案，請稍後再試。</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">你將立即無法再存取此分頁群組，且該群組會從你的所有裝置中刪除</translation>
@@ -2915,7 +2915,7 @@
 <translation id="2979893796619951531">排除網站</translation>
 <translation id="2979966855249721010">根據你的興趣，你可能會見到應用程式建議、提示等內容</translation>
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
-<translation id="2981728693230031897">使用 Gemini 歸納本頁摘要</translation>
+<translation id="2981728693230031897">使用 Gemini 撮要此頁面</translation>
 <translation id="2983102365694924129">根據您在網站上的活動推薦。此設定已關閉。</translation>
 <translation id="2983311431122838216">問 Google 搜尋的 AI 模式</translation>
 <translation id="2983373101216420412">充電盒電量係 <ph name="PERCENTAGE" />%。</translation>
@@ -6042,6 +6042,7 @@
 <translation id="5183344263225877832">要重設所有 HID 裝置權限嗎？</translation>
 <translation id="5184063094292164363">JavaScript 控制器(&amp;J)</translation>
 <translation id="5184209580557088469">已有票證使用此使用者名稱</translation>
+<translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5184662919967270437">正在更新裝置</translation>
 <translation id="5185386675596372454">由於最新版本的「<ph name="EXTENSION_NAME" />」需要更多權限，因此已經停用。</translation>
 <translation id="5185500136143151980">沒有互聯網連線</translation>
@@ -6894,7 +6895,6 @@
 <translation id="5804241973901381774">權限</translation>
 <translation id="5804259315582798390">無法啟用本機資料復原功能</translation>
 <translation id="5805268472388605531">按住鍵盤按鍵以查看重音標記和特殊字元</translation>
-<translation id="5805697420284793859">視窗管理員</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />，㩒 Enter 制就可以刪除檔案</translation>
 <translation id="5806447147478173900">已顯示網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (預設)</translation>
@@ -7053,7 +7053,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 已離線</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
 <translation id="5911497236110691522">如要切換至下一個輸入法，請按下 <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">快速鍵檢視器</translation>
 <translation id="5911545422157959623">在訪客模式下無法使用書籤</translation>
 <translation id="5914016309240354769">大自然</translation>
 <translation id="5914724413750400082">模數 (<ph name="MODULUS_NUM_BITS" /> 位元)：
@@ -8191,7 +8190,6 @@
 <translation id="6723839827191551955">控制目前投放的媒體</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723946439672043591">選擇其他設定檔</translation>
-<translation id="6725073593266469338">使用者介面服務</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPPS)</translation>
 <translation id="6725970970008349185">每頁顯示的候選字個數</translation>
 <translation id="672609503628871915">查看最新內容</translation>
@@ -10294,7 +10292,6 @@
 <translation id="8184288427634747179">切換至<ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
-<translation id="8185614942934189676">已自動驗證電郵</translation>
 <translation id="8186013737729037962">進一步瞭解企業註冊裝置</translation>
 <translation id="8186047833733689201">打開咗重音符號選單。㩒向左掣、向右掣或者數字掣就可瀏覽，而㩒 Enter 掣就可插入重音符號。</translation>
 <translation id="8186609076106987817">伺服器無法找到這個檔案。</translation>
@@ -10660,7 +10657,6 @@
 <translation id="8428634594422941299">知道了</translation>
 <translation id="84297032718407999">您將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8429928917752180743">「<ph name="EXTENSION_NAME" />」的其他選項</translation>
-<translation id="8431190899827883166">顯示輕按選項</translation>
 <translation id="843173223122814223">以 AI 製作背景</translation>
 <translation id="8431977087510901105">重設咗游標設定</translation>
 <translation id="8434109185104929038">閱讀角</translation>

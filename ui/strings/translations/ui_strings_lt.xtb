@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
-<translation id="1028699632127661925">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="111910763555783249">Pranešimų nustatymai</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{Prieš 1 dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}many{Prieš # minutės}other{Prieš # minučių}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">Iškarpinė</translation>
 <translation id="2653844658857826081">NAUJ.</translation>
 <translation id="2666092431469916601">Į viršų</translation>
-<translation id="2701330563083355633">Bendrinta iš „<ph name="DEVICE_NAME" />“</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Prieš 1 metus}one{Prieš # metus}few{Prieš # metus}many{Prieš # metų}other{Prieš # metų}}</translation>
 <translation id="2878511608894704031">Ištrinti viską</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{po 1 d.}one{po # d.}few{po # d.}many{po # d.}other{po # d.}}</translation>

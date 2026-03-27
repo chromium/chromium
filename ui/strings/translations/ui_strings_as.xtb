@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
-<translation id="1028699632127661925"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
 <translation id="111910763555783249">জাননীৰ ছেটিং</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{১ দিন পূর্বে}one{# দিন পূর্বে}other{# দিন পূর্বে}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{১ মিনিট পূর্বে}one{#  মিনিট পূর্বে}other{#  মিনিট পূর্বে}}</translation>
@@ -70,7 +69,6 @@
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
 <translation id="2653844658857826081">নতুন</translation>
 <translation id="2666092431469916601">শীর্ষ</translation>
-<translation id="2701330563083355633"><ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{১ বছৰ পূর্বে}one{# বছৰ পূর্বে}other{# বছৰ পূর্বে}}</translation>
 <translation id="2878511608894704031">সকলো মচক</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{১ দিনত}one{# দিনত}other{# দিনত}}</translation>

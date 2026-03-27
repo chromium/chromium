@@ -157,6 +157,7 @@
 <translation id="1099070179078143183">‏لتشغيل ميزات مثل "رصد عمليّة خداع"، يمكن أن يستخدم Chrome نماذج الذكاء الاصطناعي التي تعمل مباشرةً على جهازك بدون إرسال بياناتك إلى خوادم Google. وفي حال إيقاف هذا الإعداد، قد لا تعمل هذه الميزات. <ph name="BEGIN_LINK" />مزيد من المعلومات حول الذكاء الاصطناعي على الجهاز<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708">تم نسخ الصورة من <ph name="DEVICE_NAME" />.</translation>
 <translation id="1100504063505580045">الرمز الحالي</translation>
+<translation id="1101267749138963680">جارٍ التحقّق من السلامة...</translation>
 <translation id="1102759278139578486">يتعذَّر تنزيل ملفات التعليقات التوضيحية للعقدة الرئيسية. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="1104098698795583187">ستفقد على الفور إمكانية الوصول إلى مجموعة علامات التبويب هذه، وسيتم حذفها من جميع أجهزتك</translation>
@@ -2907,6 +2908,7 @@
 <translation id="2979893796619951531">إبقاء الموقع الإلكتروني نشطًا</translation>
 <translation id="2979966855249721010">بناءً على اهتماماتك، قد تظهر لك اقتراحات بشأن التطبيقات ونصائح وغير ذلك</translation>
 <translation id="2981113813906970160">عرض مؤشر الماوس الكبير</translation>
+<translation id="2981728693230031897">‏تلخيص هذه الصفحة باستخدام Gemini</translation>
 <translation id="2983102365694924129">تستند هذه الاقتراحات إلى نشاطك على المواقع الإلكترونية. هذا الإعداد غير مفعَّل.</translation>
 <translation id="2983311431122838216">‏طرح سؤال على "وضع AI" في "بحث Google"</translation>
 <translation id="2983373101216420412">مستوى شحن بطارية الحافظة %<ph name="PERCENTAGE" />.</translation>
@@ -6034,6 +6036,7 @@
 <translation id="5183344263225877832">‏هل تريد إعادة ضبط جميع أذونات أجهزة الواجهة البشرية (HID)؟</translation>
 <translation id="5184063094292164363">‏و&amp;حدة تحكم JavaScript</translation>
 <translation id="5184209580557088469">تتوفر تذكرة باسم المستخدم هذا مسبقًا.</translation>
+<translation id="5184329579814168207">‏الفتح في Chrome</translation>
 <translation id="5184662919967270437">تحديث جهازك</translation>
 <translation id="5185386675596372454">تم إيقاف أحدث إصدار من "<ph name="EXTENSION_NAME" />" لأنه يتطلب المزيد من الأذونات.</translation>
 <translation id="5185500136143151980">لا يتوفّر اتصال بالإنترنت</translation>
@@ -6889,7 +6892,6 @@
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5804259315582798390">تعذَّر تفعيل ميزة استرداد البيانات المحلّية</translation>
 <translation id="5805268472388605531">اضغط مع الاستمرار على مفاتيح لوحة المفاتيح لإظهار علامات التشكيل والرموز الخاصة.</translation>
-<translation id="5805697420284793859">مدير النوافذ</translation>
 <translation id="5806322307130093061">‏‫<ph name="FILE_NAME" />: يمكنك الضغط على مفتاح Enter لحذف الملف</translation>
 <translation id="5806447147478173900">إجمالي مساحة التخزين التي تستخدمها المواقع الإلكترونية المعروضة: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0 درجة (تلقائي)</translation>
@@ -7048,7 +7050,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> غير متصل</translation>
 <translation id="5911030830365207728">‏ترجمة Google</translation>
 <translation id="5911497236110691522">للتبديل إلى أسلوب الإدخال التالي، اضغط على <ph name="KEY_CODES" /></translation>
-<translation id="5911533659001334206">عارض الاختصارات</translation>
 <translation id="5911545422157959623">الإشارات المرجعية غير متاحة في وضع الضيف.</translation>
 <translation id="5914016309240354769">طبيعة</translation>
 <translation id="5914724413750400082">المعامل (<ph name="MODULUS_NUM_BITS" /> بت):
@@ -8195,7 +8196,6 @@
 <translation id="6723839827191551955">التحكم في ملفات الوسائط التي يتم بثها</translation>
 <translation id="6723839937902243910">الطاقة</translation>
 <translation id="6723946439672043591">اختيار ملف شخصي آخر</translation>
-<translation id="6725073593266469338">خدمة واجهة المستخدم</translation>
 <translation id="6725206449694821596">‏بروتوكول الطباعة على الإنترنت (IPP)</translation>
 <translation id="6725970970008349185">عدد المرشحين المراد عرضهم لكل صفحة</translation>
 <translation id="672609503628871915">تعرف على الجديد</translation>
@@ -10301,7 +10301,6 @@
 <translation id="8184288427634747179">التبديل إلى <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">مزيد من المعلومات</translation>
 <translation id="8184472985242519288">مُوحَّدة</translation>
-<translation id="8185614942934189676">تم تأكيد عنوان البريد الإلكتروني تلقائيًا</translation>
 <translation id="8186013737729037962">مزيد من المعلومات حول الأجهزة المسجّلة في المؤسسة</translation>
 <translation id="8186047833733689201">‏تم فتح قائمة علامات التشكيل. اضغط على مفتاح السهم المتّجه لليمين أو اليسار أو مفاتيح الأرقام لاختيار علامة التشكيل ثم اضغط على Enter لإدخالها.</translation>
 <translation id="8186609076106987817">تعذر على الخادم العثور على الملف.</translation>
@@ -10668,7 +10667,6 @@
 <translation id="8428634594422941299">حسنًا</translation>
 <translation id="84297032718407999">سيتم تسجيل خروجك خلال <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="8429928917752180743">خيارات إضافية حول "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="8431190899827883166">عرض النقرات</translation>
 <translation id="843173223122814223">إنشاء خلفيات باستخدام الذكاء الاصطناعي</translation>
 <translation id="8431977087510901105">إعادة ضبط إعدادات المؤشر</translation>
 <translation id="8434109185104929038">زاوية للقراءة</translation>

@@ -763,6 +763,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por vírgulas</translation>
 <translation id="2190094353033916816">Esta política tem valores diferentes aplicados aos níveis da máquina e do utilizador. A política está a funcionar conforme previsto.</translation>
+<translation id="219061769324072544">Crédito,Cartão,Débito</translation>
 <translation id="2191980191135734720">Desbloqueie o ecrã no passo seguinte, normalmente, com a sua impressão digital. Também pode <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2195729137168608510">Protecção de email</translation>
@@ -1176,6 +1177,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2837891525090413132">Pode pedir para bloquear e usar o teclado</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
 <translation id="2839501879576190149">O site seguinte é falso</translation>
+<translation id="2840680829170913626">O conteúdo da página de pagamento é partilhado com a Google para oferecer estas opções. Os planos de pagamento estão sujeitos a elegibilidade. Para ocultar as opções para pagar depois no preenchimento automático, aceda às <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Quer deslocar e fazer zoom no seu separador partilhado?</translation>
 <translation id="2851291081585704741">Está offline</translation>
 <translation id="2854163610915391726">Faça a gestão das informações do Chrome que guarda na sua Conta Google</translation>
@@ -1366,6 +1368,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3134859781443140237">Rede local</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Pesquisar <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Sem}=1{dados de início de sessão para 1 conta}other{dados de início de sessão para # contas}}</translation>
+<translation id="3139503241401248626">Para ativar estas definições e usar as informações da sua Conta Google, aceda às definições dos serviços de preenchimento automático</translation>
 <translation id="3140646734028448730">Serviços empresariais</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141337053413339205">Mudar para este separador.</translation>
@@ -1386,6 +1389,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3162070126914310576">Não é possível inscrever este dispositivo neste momento porque a sua unidade organizacional atingiu o limite de inscrição inicial. Contacte o seu administrador para receber assistência.</translation>
 <translation id="3162559335345991374">A rede Wi-Fi que está a utilizar pode exigir que visite a respetiva página de início de sessão.</translation>
 <translation id="316638481603975524">Pode pedir para instalar apps Web</translation>
+<translation id="3166788340998560642">O Chrome vai oferecer a opção de as guardar na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> da próxima vez que as usar</translation>
 <translation id="3168744840365648658">Equipamento de rádio</translation>
 <translation id="3168938241115725594">Veículos clássicos</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2300,6 +2304,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4594403342090139922">&amp;Anular eliminação</translation>
 <translation id="4598556348158889687">Gestão de armazenamento</translation>
 <translation id="459914240367517409">Web design e programação</translation>
+<translation id="4599572944836204718">Pague mais rapidamente com o Google Pay quando o seu cartão for guardado. As informações do cartão são encriptadas na Carteira do Google.</translation>
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Reservas de voos</translation>
 <translation id="4607608436550361748">Ver sugestões do Chrome</translation>
@@ -2589,6 +2594,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, prima Tab para ver mais atalhos de pesquisa disponíveis após esta sugestão de pesquisa</translation>
 <translation id="5052488928733955073">Ocorreu um problema ao preencher as informações. Verifique a sua ligação.</translation>
 <translation id="5052517576853118371">Tópicos ativos</translation>
+<translation id="5053116470141135293">É preenchido um número de cartão virtual quando faz pagamentos com este cartão para proteger os seus detalhes reais. Faça a gestão na Carteira do Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
 <translation id="5056587122125565772">Criar imagem</translation>
 <translation id="505757197798929356">Indique o motivo para a abertura (obrigatório)</translation>
@@ -3365,6 +3371,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6250932670816326647">Produtos para o banho e o corpo</translation>
 <translation id="6251906504834538140">{0,plural, =1{A movimentação do ficheiro foi bloqueada}other{A movimentação de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para gerir ficheiros que transferiu no Chrome</translation>
+<translation id="6253380015872250643">Guarde o cartão na Carteira do Google</translation>
 <translation id="6254436959401408446">Não existe memória suficiente para abrir esta página</translation>
 <translation id="625463612687472648">Deixar de permitir</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenação</translation>
@@ -4261,6 +4268,7 @@ Detalhes adicionais:
 <translation id="7615932826417658001">Adicione o cartão de identificação</translation>
 <translation id="7616390733770379387">Estes são apresentados por ordem aleatória.</translation>
 <translation id="7616645509853975347">O seu administrador ativou os Chrome Enterprise Connectors no navegador. Estes conetores têm acesso a alguns dos seus dados.</translation>
+<translation id="7616747402308801775">Este cartão está guardado na Carteira do Google para que o possa usar nos serviços Google</translation>
 <translation id="7617825962482469577">Envelope C7/C6</translation>
 <translation id="7618270539713451657">Artes marciais</translation>
 <translation id="7619838219691048931">Folha final</translation>
@@ -4583,6 +4591,7 @@ Detalhes adicionais:
 <translation id="8120720167840853945">Esta política não está a controlar o comportamento predefinido de outras políticas.</translation>
 <translation id="8127301229239896662">O "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao gestor de TI que resolva este problema.</translation>
 <translation id="8130113808541743942">Mova para…</translation>
+<translation id="813024282736408069">Ative um cartão virtual para o preenchimento automático</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Escolha as categorias amplas de tópicos que podem ser usadas para ajudar a personalizar anúncios. A desativação de uma categoria mais ampla também bloqueia os respetivos tópicos relacionados. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Recrutamento e pessoal</translation>

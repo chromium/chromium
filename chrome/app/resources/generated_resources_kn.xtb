@@ -2586,6 +2586,7 @@
 <translation id="2750020734439919571">ಇನ್ನಷ್ಟು Chrome ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಅನುಮತಿಗಳು</translation>
 <translation id="275010360476017464">Gemini ಜೊತೆಗೆ ಚಾಟ್‌ ಮಾಡಲು ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್‌ ಅನ್ನು ಬಳಸಿ. ನೀವು Gemini ಜೊತೆಗೆ ಮಾತನಾಡುವಾಗ, ಆಡಿಯೋ Gemini ಆ್ಯಪ್‌ಗಳ ಚಟುವಟಿಕೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗುತ್ತದೆ (ಅದು ಆನ್‌ ಆಗಿದ್ದರೆ).</translation>
 <translation id="2750602041558385535">ಪರಿಶೀಲಿಸದ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="2751320815618312249">+ ಇನ್ನೂ <ph name="NUM" /></translation>
 <translation id="2751454300227269244">ನಿಮ್ಮ ಬಾಯಿಯನ್ನು ಬಲಬದಿಗೆ ಮೂವ್ ಮಾಡುವುದು</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> ನಿಮ್ಮ ಭದ್ರತಾ ಕೀಯ ID ಸಂಖ್ಯೆಯನ್ನು ತಿಳಿಯಲು ಬಯಸುತ್ತದೆ. ನೀವು ಯಾವ ಭದ್ರತೆ ಕೀಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ ಎಂಬುದು ಸೈಟ್‌ಗೆ ನಿಖರವಾಗಿ ತಿಳಿಯುತ್ತದೆ.</translation>
 <translation id="275213133112113418">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -4547,6 +4548,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> ಆ್ಯಕ್ಷನ್‌ಗಾಗಿ ಶಾರ್ಟ್‌ಕಟ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4109135793348361820">ವಿಂಡೋವನ್ನು <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ಗೆ ಸರಿಸಿ</translation>
 <translation id="4110485659976215879">ಎಚ್ಚರಿಕೆಯನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
+<translation id="411052834366185695">ಕನಿಷ್ಠ 1 ಅಂಕಿ ಇರಬೇಕು</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ಆಫ್‌ಲೈನ್)</translation>
 <translation id="4113743276555482284">ಫೈಲ್ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{ಯಾವುದೇ ಸೇವ್ ಮಾಡಿರುವ ಪಾಸ್‍‍ವರ್ಡ್‍ಗಳಿಲ್ಲ}=1{1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
@@ -5036,6 +5038,7 @@
 <translation id="4461483878391246134">ಅನುವಾದವನ್ನು ಒದಗಿಸದ ಭಾಷೆಗಳ ಪಟ್ಟಿಗೆ ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4462159676511157176">ಕಸ್ಟಮ್ ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ಗಾಗಿ <ph name="TIME" /> ಸಮಯದ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ</translation>
+<translation id="4466922176191762830">+ ಇನ್ನೂ <ph name="NUM" /></translation>
 <translation id="4467373268340082204">ಪಿನ್‌ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="4469324811108161144">ಟಿಪ್ಪಣಿಗಳು ಗರಿಷ್ಠ <ph name="CHARACTER_LIMIT" /> ಅಕ್ಷರಗಳನ್ನು ಉಳಿಸಬಲ್ಲವು.</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" /> ನಲ್ಲಿ <ph name="ORIGIN" /> ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
@@ -5450,6 +5453,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{ಸಾರ್ವಜನಿಕ ಕೀ ಮತ್ತು ಇಂಟಿಗ್ರಿಟಿ ಬ್ಲಾಕ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ... 1 ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಸಮಯ ಉಳಿದಿದೆ}=1{ಸಾರ್ವಜನಿಕ ಕೀ ಮತ್ತು ಇಂಟಿಗ್ರಿಟಿ ಬ್ಲಾಕ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ... 1 ನಿಮಿಷ ಬಾಕಿ ಉಳಿದಿದೆ}one{ಸಾರ್ವಜನಿಕ ಕೀ ಮತ್ತು ಇಂಟಿಗ್ರಿಟಿ ಬ್ಲಾಕ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ... # ನಿಮಿಷಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{ಸಾರ್ವಜನಿಕ ಕೀ ಮತ್ತು ಇಂಟಿಗ್ರಿಟಿ ಬ್ಲಾಕ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ... # ನಿಮಿಷಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
 <translation id="4766598565665644999">ಎಲ್ಲಾ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು <ph name="HOST" /> ಅನ್ನು ಓದಬಹುದು ಮತ್ತು ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="4767427586072640478">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾದ ವಿಸ್ತರಣೆಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
+<translation id="4769359569327438364">ಕನಿಷ್ಠ 4 ಅಂಕಿಗಳನ್ನು ಹೊಂದಿರಬೇಕು</translation>
 <translation id="4769632191812288342">ನೀವು ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆಯನ್ನು ಪಡೆದುಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="4770119228883592393">ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ, ಪ್ರತಿಕ್ರಿಯಿಸಲು ⌘ + ಆಯ್ಕೆ + ಡೌನ್ ಆ್ಯರೋ ಒತ್ತಿರಿ</translation>
 <translation id="4772914216048388646">ಕ್ರಮಬದ್ಧ</translation>
@@ -6038,6 +6042,7 @@
 <translation id="5183344263225877832">ಎಲ್ಲಾ HID ಸಾಧನದ ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5184063094292164363">&amp;JavaScript ಕನ್ಸೋಲ್</translation>
 <translation id="5184209580557088469">ಈ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಹೊಂದಿರುವ ಟಿಕೆಟ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
+<translation id="5184329579814168207">Chrome ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="5184662919967270437">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ನ ಹೊಸ ಆವೃತ್ತಿಗೆ ಹೆಚ್ಚಿನ ಅನುಮತಿಗಳ ಅಗತ್ಯವಿರುವ ಕಾರಣ ಅದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="5185500136143151980">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ</translation>
@@ -6132,6 +6137,7 @@
 <translation id="5240931875940563122">Android ಫೋನ್‌ನಿಂದ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5241689948221696942">ಕೆಲವು ಉತ್ಪನ್ನಗಳಿಗೆ, ಹೋಲಿಕೆ ಟೇಬಲ್‌ಗಳು ವೆಬ್‌ನಾದ್ಯಂತ ವಿಮರ್ಶೆಗಳನ್ನು ಸಾರಾಂಶಗೊಳಿಸುತ್ತವೆ</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" ಸಕ್ರಿಯಗೊಳಿಸುವುದೆ?</translation>
+<translation id="5243477050423867768">ಕನಿಷ್ಠ 8 ಅಂಕಿಗಳಾಗಿರಬೇಕು ಮತ್ತು ಪುನರಾವರ್ತಿತ ಅಥವಾ ಕ್ರಮಬದ್ಧ ಸೀಕ್ವೆನ್ಸ್‌ಗಳನ್ನು ಹೊಂದಿರಬಾರದು</translation>
 <translation id="5244234799035360187">OneDrive ಈಗ Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಕಾಣಿಸುತ್ತಿದೆ</translation>
 <translation id="5244466461749935369">ಸದ್ಯಕ್ಕೆ ಇರಿಸಿ</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> ಗೆ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -6893,7 +6899,6 @@
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
 <translation id="5804259315582798390">ಸ್ಥಳೀಯ ಡೇಟಾ ರಿಕವರಿಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="5805268472388605531">ಉಚ್ಚಾರಣಾ ಗುರುತುಗಳು ಮತ್ತು ವಿಶೇಷ ಅಕ್ಷರಗಳನ್ನು ನೋಡಲು ಕೀಬೋರ್ಡ್ ಕೀಗಳನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ</translation>
-<translation id="5805697420284793859">ವಿಂಡೋ ಮ್ಯಾನೇಜರ್</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> ಫೈಲ್ ಅನ್ನು ಅಳಿಸಲು Enter ಕೀ ಒತ್ತಿರಿ</translation>
 <translation id="5806447147478173900">ಪ್ರದರ್ಶಿಸಲಾದ ಸೈಟ್‌ಗಳು ಬಳಸಿದ ಒಟ್ಟು ಸಂಗ್ರಹಣೆ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ಡೀಫಾಲ್ಟ್)</translation>
@@ -7052,7 +7057,6 @@
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911497236110691522">ಮುಂದಿನ ಇನ್‌ಪುಟ್ ವಿಧಾನಕ್ಕೆ ಬದಲಾಯಿಸಲು, <ph name="KEY_CODES" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
-<translation id="5911533659001334206">ಶಾರ್ಟ್‌ಕಟ್ ವೀಕ್ಷಕ</translation>
 <translation id="5911545422157959623">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="5914016309240354769">ಪ್ರಕೃತಿ</translation>
 <translation id="5914724413750400082">ಮಾಡ್ಯುಲಸ್ (<ph name="MODULUS_NUM_BITS" /> ಬಿಟ್‍ಗಳು):
@@ -8049,6 +8053,7 @@
 <translation id="6619990499523117484">ನಿಮ್ಮ ಪಿನ್ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6621282332208609777">Google ಅನ್ನು ಕೇಳಿ ಅಥವಾ URL ಅನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="6621391692573306628">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಲು, ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="6622212269189717101">ಕನಿಷ್ಠ 6 ಅಂಕಿಗಳಾಗಿರಬೇಕು ಮತ್ತು ಪುನರಾವರ್ತಿತ ಅಥವಾ ಕ್ರಮಬದ್ಧ ಸೀಕ್ವೆನ್ಸ್‌ಗಳನ್ನು ಹೊಂದಿರಬಾರದು</translation>
 <translation id="6622980291894852883">ಚಿತ್ರಗಳನ್ನು ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="6624036901798307345">ಟ್ಯಾಬ್ಲೆಟ್ ಮೋಡ್‌ನಲ್ಲಿ, ಪ್ರತಿ ಟ್ಯಾಬ್‌ನ ಥಂಬ್‌ನೇಲ್‌ಗಳನ್ನು ತೋರಿಸುವ ಹೊಸ ಟ್ಯಾಬ್ ಸ್ಟ್ರೈಪ್ ತೆರೆಯಲು, ಟ್ಯಾಬ್ ಕೌಂಟರ್ ಪರಿಕರಪಟ್ಟಿಯ ಬಟನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="6624538059730609162">ಬಲ ವೀಕ್ಷಣೆಯನ್ನು ಮುಚ್ಚಿರಿ</translation>
@@ -8193,7 +8198,6 @@
 <translation id="6723839827191551955">ನೀವು ಬಿತ್ತರಿಸುವ ಮೀಡಿಯಾವನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="6723839937902243910">ಪವರ್‌</translation>
 <translation id="6723946439672043591">ಇನ್ನೊಂದು ಪ್ರೊಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="6725073593266469338">UI ಸೇವೆ</translation>
 <translation id="6725206449694821596">ಇಂಟರ್ನೆಟ್ ಮುದ್ರಿಸುವಿಕೆಯ ಪ್ರೊಟೊಕಾಲ್ (IPP)</translation>
 <translation id="6725970970008349185">ಪ್ರತಿ ಪುಟವನ್ನು ಪ್ರದರ್ಶಿಸಲು ಅಭ್ಯರ್ಥಿಗಳ ಸಂಖ್ಯೆ</translation>
 <translation id="672609503628871915">ಹೊಸದೇನಿದೆ ನೋಡಿ</translation>
@@ -10296,7 +10300,6 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="8184318863960255706">ಹೆಚ್ಚಿನ ಮಾಹಿತಿ</translation>
 <translation id="8184472985242519288">ಏಕರೂಪ</translation>
-<translation id="8185614942934189676">ಇಮೇಲ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ದೃಢೀಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="8186013737729037962">ಎಂಟರ್‌ಪ್ರೈಸ್-ನೋಂದಣಿ ಮಾಡಿದ ಸಾಧನಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8186047833733689201">ಉಚ್ಚಾರಣೆಯ ಗುರುತುಗಳ ಮೆನು ತೆರೆಯಲಾಗಿದೆ. ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಎಡ, ಬಲ ಅಥವಾ ಸಂಖ್ಯೆಯ ಕೀಗಳನ್ನು ಒತ್ತಿ ಮತ್ತು ಸೇರಿಸಲು Enter ಕೀ ಒತ್ತಿ.</translation>
 <translation id="8186609076106987817">ಸರ್ವರ್‌ಗೆ ಫೈಲ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.</translation>
@@ -10662,7 +10665,6 @@
 <translation id="8428634594422941299">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="84297032718407999">ಇಷ್ಟು ಸಮಯ ಆದ ಮೇಲೆ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ: <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743"><ph name="EXTENSION_NAME" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
-<translation id="8431190899827883166">ಟ್ಯಾಪ್‌ ಪಾಯಿಂಟ್‌‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="843173223122814223">AI ಮೂಲಕ ಹಿನ್ನೆಲೆಗಳನ್ನು ರಚಿಸಿ</translation>
 <translation id="8431977087510901105">ಕರ್ಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8434109185104929038">ಓದುವ ಮೂಲೆ</translation>
