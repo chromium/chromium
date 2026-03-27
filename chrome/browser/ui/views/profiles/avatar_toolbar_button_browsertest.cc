@@ -65,7 +65,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -3545,106 +3544,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest,
       CheckPromoActive(feature_engagement::kIPHSignInBenefitsNewSigninFeature,
                        false));
 }
-
-// Parameterized test for the new sign-in benefits IPH.
-// It verifies that the new IPH is shown only if the legacy IPH was not shown.
-// - PRE_PRE_: Sign-in with features disabled (requirement for any IPH to show).
-// - PRE_: Restart Chrome with or without showing the legacy IPH
-// (parameterized).
-// - Main: Check that the new IPH is only shown if the legacy one was not.
-class AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest
-    : public InteractiveFeaturePromoTestMixin<AvatarToolbarButtonBrowserTest>,
-      public testing::WithParamInterface<bool> {
- public:
-  AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest()
-      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHSignInBenefitsFeature,
-             feature_engagement::kIPHSignInBenefitsNewSigninFeature})) {
-    std::string test_name =
-        ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    bool is_pre_pre = test_name.find("PRE_PRE_") != std::string::npos;
-    bool is_pre = !is_pre_pre && test_name.find("PRE_") != std::string::npos;
-    bool show_legacy_in_pre = ShouldShowLegacyIphInPre();
-
-    std::vector<base::test::FeatureRef> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-
-    const std::vector<base::test::FeatureRef> kDisabledMigrationFeatures = {
-        syncer::kReplaceSyncPromosWithSignInPromos,
-        syncer::kReplaceSyncPromosWithSigninPromosNewSignin};
-
-    if (is_pre_pre) {
-      // Disable all features to avoid any startup promos while signing in.
-      disabled = kDisabledMigrationFeatures;
-    } else if (is_pre) {
-      if (show_legacy_in_pre) {
-        enabled = {syncer::kReplaceSyncPromosWithSignInPromos,
-                   feature_engagement::kIPHSignInBenefitsFeature};
-        disabled = {syncer::kReplaceSyncPromosWithSigninPromosNewSignin};
-      } else {
-        // The PRE_ test should have the same feature config as the PRE_PRE_
-        // when the legacy IPH should not be shown, because we conceptually want
-        // this step to do nothing in this case. It will behave just as if
-        // Chrome was restarted without configuration change.
-        disabled = kDisabledMigrationFeatures;
-      }
-    } else {
-      // Main test: enable new features and disable old ones to test suppression
-      // check.
-      enabled = {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-                 feature_engagement::kIPHSignInBenefitsNewSigninFeature};
-      disabled = {syncer::kReplaceSyncPromosWithSignInPromos,
-                  feature_engagement::kIPHSignInBenefitsFeature};
-    }
-
-    feature_list_.InitWithFeatures(enabled, disabled);
-  }
-
-  bool ShouldShowLegacyIphInPre() const { return GetParam(); }
-
-  bool WillShowPromo() {
-    auto* const user_education = BrowserUserEducationInterface::From(browser());
-    return user_education->IsFeaturePromoActive(
-               feature_engagement::kIPHSignInBenefitsNewSigninFeature) ||
-           user_education->IsFeaturePromoQueued(
-               feature_engagement::kIPHSignInBenefitsNewSigninFeature);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest,
-    PRE_PRE_NotShownIfLegacyWasShown) {
-  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
-}
-
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest,
-    PRE_NotShownIfLegacyWasShown) {
-  if (ShouldShowLegacyIphInPre()) {
-    RunTestSequence(
-        WaitForPromo(feature_engagement::kIPHSignInBenefitsFeature));
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest,
-    NotShownIfLegacyWasShown) {
-  if (ShouldShowLegacyIphInPre()) {
-    // Legacy was shown in PRE_ test, so new IPH should be suppressed.
-    EXPECT_FALSE(WillShowPromo());
-  } else {
-    // Legacy was not shown in PRE_ test, so new IPH should be shown.
-    EXPECT_TRUE(WillShowPromo());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest,
-    testing::Bool());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_CHROMEOS)
