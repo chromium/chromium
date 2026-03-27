@@ -42,7 +42,9 @@ const ui::ColorProvider& AndroidTabStripModelAdapter::GetColorProvider() const {
 }
 
 void AndroidTabStripModelAdapter::CloseTab(size_t tab_index) {
-  NOTREACHED() << "not implemented";
+  auto tabs = GetTabs();
+  CHECK(tab_index < tabs.size());
+  model_->CloseTab(tabs.at(tab_index));
 }
 
 std::optional<int> AndroidTabStripModelAdapter::GetIndexForHandle(

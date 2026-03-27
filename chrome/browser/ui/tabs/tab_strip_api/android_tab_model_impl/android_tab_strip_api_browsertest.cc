@@ -118,4 +118,23 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Activate) {
   ASSERT_EQ(tab1, model_->GetActiveTab());
 }
 
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Close) {
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(3, model_->GetTabCount());
+
+  auto* tab0 = model_->GetTab(0);  // <--- keep open
+  auto* tab1 = model_->GetTab(1);  // <--- target to close
+  auto* tab2 = model_->GetTab(2);  // <--- target to close
+
+  auto result = service_->CloseNodes({
+      tabs_api::NodeId::FromTabHandle(tab1->GetHandle()),
+      tabs_api::NodeId::FromTabHandle(tab2->GetHandle()),
+  });
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(1, model_->GetTabCount());
+  ASSERT_EQ(tab0, model_->GetTab(0));
+}
+
 }  // namespace
