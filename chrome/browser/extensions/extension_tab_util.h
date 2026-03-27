@@ -251,10 +251,13 @@ class ExtensionTabUtil {
   static GURL ResolvePossiblyRelativeURL(const std::string& url_string,
                                          const Extension* extension);
 
-  // Navigates to a URL in a specific web contents.
+  // Navigates to a URL, triggered by a given `source_contents`. Navigation may
+  // be asynchronous and `done_callback` is invoked when the navigate has been
+  // fully initiated.
   static void NavigateToURL(WindowOpenDisposition disposition,
-                            content::WebContents* web_contents,
-                            const GURL& url);
+                            content::WebContents* source_contents,
+                            const GURL& url,
+                            base::OnceClosure done_callback);
 
   // Returns true if navigating to `url` could kill a page or the browser
   // itself, whether by simulating a crash, browser quit, thread hang, or

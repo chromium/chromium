@@ -14,8 +14,10 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/browser_created_waiter.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -162,43 +164,49 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
   content::WebContents* web_contents = GetActiveWebContents();
 
   int initial_tab_count = GetTabCount();
+  base::RunLoop loop1;
   ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::CURRENT_TAB,
-                                  web_contents, GURL("chrome://version"));
+                                  web_contents, GURL("chrome://version"),
+                                  loop1.QuitClosure());
+  loop1.Run();
   EXPECT_EQ(initial_tab_count, GetTabCount());
   auto url1 = GetActiveWebContents()->GetURL();
   EXPECT_THAT(url1, GURL("chrome://version"));
 
+  base::RunLoop loop2;
   ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                  web_contents, GURL("chrome://history"));
-
+                                  web_contents, GURL("chrome://history"),
+                                  loop2.QuitClosure());
+  loop2.Run();
   EXPECT_EQ(initial_tab_count + 1, GetTabCount());
   auto url2 = GetActiveWebContents()->GetURL();
   EXPECT_THAT(url2, GURL("chrome://history"));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLWindow) {
   content::WebContents* web_contents = GetActiveWebContents();
 
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  BrowserCreatedWaiter browser_created_waiter;
 
+  base::RunLoop loop;
   ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
-                                  web_contents, GURL("chrome://version"));
+                                  web_contents, GURL("chrome://version"),
+                                  loop.QuitClosure());
+  loop.Run();
 
   // Wait for the new browser to be created and get its pointer.
-  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* const new_browser = browser_created_waiter.Wait();
   ASSERT_TRUE(new_browser);
 
   // Ensure it's not the same as the original browser.
-  ASSERT_NE(browser(), new_browser);
-  auto url = new_browser->GetTabStripModel()->GetActiveWebContents()->GetURL();
-  EXPECT_THAT(url, GURL("chrome://version"));
-#else
-  EXPECT_DEATH(ExtensionTabUtil::NavigateToURL(
-                   WindowOpenDisposition::NEW_WINDOW, GetActiveWebContents(),
-                   GURL("chrome://version")),
-               "");
-#endif
+  ASSERT_NE(browser_window_interface(), new_browser);
+  TabListInterface* tab_list = TabListInterface::From(new_browser);
+  ASSERT_TRUE(tab_list);
+  content::WebContents* new_web_contents =
+      tab_list->GetActiveTab()->GetContents();
+  content::WaitForLoadStop(new_web_contents);
+  ASSERT_TRUE(new_web_contents);
+  EXPECT_THAT(new_web_contents->GetURL(), GURL("chrome://version"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, SupportsTabGroups) {
