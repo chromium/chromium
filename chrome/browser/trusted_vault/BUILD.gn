@@ -70,6 +70,7 @@ if (is_android) {
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/signin",
       "//chrome/browser/webauthn",
+      "//chrome/browser/webauthn:test_support",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
