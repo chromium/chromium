@@ -49,53 +49,39 @@ struct mojo::EnumTraits<chromecast::media::mojom::AudioCodec,
     return chromecast::media::mojom::AudioCodec::kAudioCodecUnknown;
   }
 
-  static bool FromMojom(chromecast::media::mojom::AudioCodec input,
-                        chromecast::media::AudioCodec* output) {
+  static chromecast::media::AudioCodec FromMojom(
+      chromecast::media::mojom::AudioCodec input) {
     switch (input) {
       case (chromecast::media::mojom::AudioCodec::kAudioCodecUnknown):
-        *output = chromecast::media::AudioCodec::kAudioCodecUnknown;
-        return true;
+        return chromecast::media::AudioCodec::kAudioCodecUnknown;
       case (chromecast::media::mojom::AudioCodec::kCodecAAC):
-        *output = chromecast::media::AudioCodec::kCodecAAC;
-        return true;
+        return chromecast::media::AudioCodec::kCodecAAC;
       case (chromecast::media::mojom::AudioCodec::kCodecMP3):
-        *output = chromecast::media::AudioCodec::kCodecMP3;
-        return true;
+        return chromecast::media::AudioCodec::kCodecMP3;
       case (chromecast::media::mojom::AudioCodec::kCodecPCM):
-        *output = chromecast::media::AudioCodec::kCodecPCM;
-        return true;
+        return chromecast::media::AudioCodec::kCodecPCM;
       case (chromecast::media::mojom::AudioCodec::kCodecPCM_S16BE):
-        *output = chromecast::media::AudioCodec::kCodecPCM_S16BE;
-        return true;
+        return chromecast::media::AudioCodec::kCodecPCM_S16BE;
       case (chromecast::media::mojom::AudioCodec::kCodecVorbis):
-        *output = chromecast::media::AudioCodec::kCodecVorbis;
-        return true;
+        return chromecast::media::AudioCodec::kCodecVorbis;
       case (chromecast::media::mojom::AudioCodec::kCodecOpus):
-        *output = chromecast::media::AudioCodec::kCodecOpus;
-        return true;
+        return chromecast::media::AudioCodec::kCodecOpus;
       case (chromecast::media::mojom::AudioCodec::kCodecEAC3):
-        *output = chromecast::media::AudioCodec::kCodecEAC3;
-        return true;
+        return chromecast::media::AudioCodec::kCodecEAC3;
       case (chromecast::media::mojom::AudioCodec::kCodecAC3):
-        *output = chromecast::media::AudioCodec::kCodecAC3;
-        return true;
+        return chromecast::media::AudioCodec::kCodecAC3;
       case (chromecast::media::mojom::AudioCodec::kCodecDTS):
-        *output = chromecast::media::AudioCodec::kCodecDTS;
-        return true;
+        return chromecast::media::AudioCodec::kCodecDTS;
       case (chromecast::media::mojom::AudioCodec::kCodecDTSXP2):
-        *output = chromecast::media::AudioCodec::kCodecDTSXP2;
-        return true;
+        return chromecast::media::AudioCodec::kCodecDTSXP2;
       case (chromecast::media::mojom::AudioCodec::kCodecDTSE):
-        *output = chromecast::media::AudioCodec::kCodecDTSE;
-        return true;
+        return chromecast::media::AudioCodec::kCodecDTSE;
       case (chromecast::media::mojom::AudioCodec::kCodecFLAC):
-        *output = chromecast::media::AudioCodec::kCodecFLAC;
-        return true;
+        return chromecast::media::AudioCodec::kCodecFLAC;
       case (chromecast::media::mojom::AudioCodec::kCodecMpegHAudio):
-        *output = chromecast::media::AudioCodec::kCodecMpegHAudio;
-        return true;
+        return chromecast::media::AudioCodec::kCodecMpegHAudio;
     }
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -122,29 +108,23 @@ struct mojo::EnumTraits<chromecast::media::mojom::ChannelLayout,
     return chromecast::media::mojom::ChannelLayout::kUnsupported;
   }
 
-  static bool FromMojom(chromecast::media::mojom::ChannelLayout input,
-                        chromecast::media::ChannelLayout* output) {
+  static chromecast::media::ChannelLayout FromMojom(
+      chromecast::media::mojom::ChannelLayout input) {
     switch (input) {
       case (chromecast::media::mojom::ChannelLayout::kUnsupported):
-        *output = chromecast::media::ChannelLayout::UNSUPPORTED;
-        return true;
+        return chromecast::media::ChannelLayout::UNSUPPORTED;
       case (chromecast::media::mojom::ChannelLayout::kMono):
-        *output = chromecast::media::ChannelLayout::MONO;
-        return true;
+        return chromecast::media::ChannelLayout::MONO;
       case (chromecast::media::mojom::ChannelLayout::kStereo):
-        *output = chromecast::media::ChannelLayout::STEREO;
-        return true;
+        return chromecast::media::ChannelLayout::STEREO;
       case (chromecast::media::mojom::ChannelLayout::kSurround_5_1):
-        *output = chromecast::media::ChannelLayout::SURROUND_5_1;
-        return true;
+        return chromecast::media::ChannelLayout::SURROUND_5_1;
       case (chromecast::media::mojom::ChannelLayout::kBitstream):
-        *output = chromecast::media::ChannelLayout::BITSTREAM;
-        return true;
+        return chromecast::media::ChannelLayout::BITSTREAM;
       case (chromecast::media::mojom::ChannelLayout::kDiscrete):
-        *output = chromecast::media::ChannelLayout::DISCRETE;
-        return true;
+        return chromecast::media::ChannelLayout::DISCRETE;
     }
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -179,41 +159,31 @@ struct mojo::EnumTraits<chromecast::media::mojom::SampleFormat,
     return chromecast::media::mojom::SampleFormat::kUnknownSampleFormat;
   }
 
-  static bool FromMojom(chromecast::media::mojom::SampleFormat input,
-                        chromecast::media::SampleFormat* output) {
+  static chromecast::media::SampleFormat FromMojom(
+      chromecast::media::mojom::SampleFormat input) {
     switch (input) {
       case (chromecast::media::mojom::SampleFormat::kUnknownSampleFormat):
-        *output = chromecast::media::SampleFormat::kUnknownSampleFormat;
-        return true;
+        return chromecast::media::SampleFormat::kUnknownSampleFormat;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatU8):
-        *output = chromecast::media::SampleFormat::kSampleFormatU8;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatU8;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatS16):
-        *output = chromecast::media::SampleFormat::kSampleFormatS16;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatS16;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatS32):
-        *output = chromecast::media::SampleFormat::kSampleFormatS32;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatS32;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatF32):
-        *output = chromecast::media::SampleFormat::kSampleFormatF32;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatF32;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatPlanarU8):
-        *output = chromecast::media::SampleFormat::kSampleFormatPlanarU8;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatPlanarU8;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatPlanarS16):
-        *output = chromecast::media::SampleFormat::kSampleFormatPlanarS16;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatPlanarS16;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatPlanarF32):
-        *output = chromecast::media::SampleFormat::kSampleFormatPlanarF32;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatPlanarF32;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatPlanarS32):
-        *output = chromecast::media::SampleFormat::kSampleFormatPlanarS32;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatPlanarS32;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatS24):
-        *output = chromecast::media::SampleFormat::kSampleFormatS24;
-        return true;
+        return chromecast::media::SampleFormat::kSampleFormatS24;
     }
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -234,20 +204,17 @@ struct mojo::EnumTraits<chromecast::media::mojom::EncryptionScheme,
     return chromecast::media::mojom::EncryptionScheme::kUnencrypted;
   }
 
-  static bool FromMojom(chromecast::media::mojom::EncryptionScheme input,
-                        chromecast::media::EncryptionScheme* output) {
+  static chromecast::media::EncryptionScheme FromMojom(
+      chromecast::media::mojom::EncryptionScheme input) {
     switch (input) {
       case (chromecast::media::mojom::EncryptionScheme::kUnencrypted):
-        *output = chromecast::media::EncryptionScheme::kUnencrypted;
-        return true;
+        return chromecast::media::EncryptionScheme::kUnencrypted;
       case (chromecast::media::mojom::EncryptionScheme::kAesCtr):
-        *output = chromecast::media::EncryptionScheme::kAesCtr;
-        return true;
+        return chromecast::media::EncryptionScheme::kAesCtr;
       case (chromecast::media::mojom::EncryptionScheme::kAesCbc):
-        *output = chromecast::media::EncryptionScheme::kAesCbc;
-        return true;
+        return chromecast::media::EncryptionScheme::kAesCbc;
     }
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -266,17 +233,15 @@ struct mojo::EnumTraits<chromecast::media::mojom::StreamId,
     return chromecast::media::mojom::StreamId::kPrimary;
   }
 
-  static bool FromMojom(chromecast::media::mojom::StreamId input,
-                        chromecast::media::StreamId* output) {
+  static chromecast::media::StreamId FromMojom(
+      chromecast::media::mojom::StreamId input) {
     switch (input) {
       case (chromecast::media::mojom::StreamId::kPrimary):
-        *output = chromecast::media::StreamId::kPrimary;
-        return true;
+        return chromecast::media::StreamId::kPrimary;
       case (chromecast::media::mojom::StreamId::kSecondary):
-        *output = chromecast::media::StreamId::kSecondary;
-        return true;
+        return chromecast::media::StreamId::kSecondary;
     }
-    return false;
+    NOTREACHED();
   }
 };
 

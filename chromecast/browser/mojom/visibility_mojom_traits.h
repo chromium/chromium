@@ -13,11 +13,6 @@
   case InputType::x:           \
     return OutputType::x;
 
-#define CASE_TRANSLATE_MOJOM_ENUM(x) \
-  case InputType::x:                 \
-    *out = OutputType::x;            \
-    return true;
-
 namespace mojo {
 
 template <>
@@ -38,17 +33,17 @@ struct EnumTraits<chromecast::mojom::VisibilityType,
     NOTREACHED();
   }
 
-  static bool FromMojom(chromecast::mojom::VisibilityType type,
-                        chromecast::VisibilityType* out) {
+  static chromecast::VisibilityType FromMojom(
+      chromecast::mojom::VisibilityType type) {
     using InputType = chromecast::mojom::VisibilityType;
     using OutputType = chromecast::VisibilityType;
     switch (type) {
-      CASE_TRANSLATE_MOJOM_ENUM(UNKNOWN);
-      CASE_TRANSLATE_MOJOM_ENUM(FULL_SCREEN);
-      CASE_TRANSLATE_MOJOM_ENUM(PARTIAL_OUT);
-      CASE_TRANSLATE_MOJOM_ENUM(HIDDEN);
-      CASE_TRANSLATE_MOJOM_ENUM(TILE);
-      CASE_TRANSLATE_MOJOM_ENUM(TRANSIENTLY_HIDDEN);
+      CASE_TRANSLATE_ENUM(UNKNOWN);
+      CASE_TRANSLATE_ENUM(FULL_SCREEN);
+      CASE_TRANSLATE_ENUM(PARTIAL_OUT);
+      CASE_TRANSLATE_ENUM(HIDDEN);
+      CASE_TRANSLATE_ENUM(TILE);
+      CASE_TRANSLATE_ENUM(TRANSIENTLY_HIDDEN);
     }
     NOTREACHED();
   }
@@ -73,22 +68,21 @@ struct EnumTraits<chromecast::mojom::VisibilityPriority,
     NOTREACHED();
   }
 
-  static bool FromMojom(chromecast::mojom::VisibilityPriority priority,
-                        chromecast::VisibilityPriority* out) {
+  static chromecast::VisibilityPriority FromMojom(
+      chromecast::mojom::VisibilityPriority priority) {
     using InputType = chromecast::mojom::VisibilityPriority;
     using OutputType = chromecast::VisibilityPriority;
     switch (priority) {
       case chromecast::mojom::VisibilityPriority::DESTROYED:
         LOG(WARNING) << "Cannot convert mojom::VisibilityPriority::DESTROYED";
-        *out = chromecast::VisibilityPriority::HIDDEN;
-        return true;
-        CASE_TRANSLATE_MOJOM_ENUM(DEFAULT);
-        CASE_TRANSLATE_MOJOM_ENUM(TRANSIENT_TIMEOUTABLE);
-        CASE_TRANSLATE_MOJOM_ENUM(HIGH_PRIORITY_INTERRUPTION);
-        CASE_TRANSLATE_MOJOM_ENUM(STICKY_ACTIVITY);
-        CASE_TRANSLATE_MOJOM_ENUM(TRANSIENT_STICKY);
-        CASE_TRANSLATE_MOJOM_ENUM(HIDDEN);
-        CASE_TRANSLATE_MOJOM_ENUM(HIDDEN_STICKY);
+        return chromecast::VisibilityPriority::HIDDEN;
+        CASE_TRANSLATE_ENUM(DEFAULT);
+        CASE_TRANSLATE_ENUM(TRANSIENT_TIMEOUTABLE);
+        CASE_TRANSLATE_ENUM(HIGH_PRIORITY_INTERRUPTION);
+        CASE_TRANSLATE_ENUM(STICKY_ACTIVITY);
+        CASE_TRANSLATE_ENUM(TRANSIENT_STICKY);
+        CASE_TRANSLATE_ENUM(HIDDEN);
+        CASE_TRANSLATE_ENUM(HIDDEN_STICKY);
     }
     NOTREACHED();
   }
