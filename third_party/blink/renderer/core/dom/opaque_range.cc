@@ -58,10 +58,6 @@ bool OpaqueRange::collapsed() const {
   return start_offset_in_value_ == end_offset_in_value_;
 }
 
-bool OpaqueRange::IsStaticRange() const {
-  return false;
-}
-
 Document& OpaqueRange::OwnerDocument() const {
   return *owner_document_;
 }

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<style>
+::highlight(test-highlight) {
+  background-color: yellow;
+  color: red;
+}
+</style>
+<p>No highlight should be visible; the range was disconnected before paint.</p>
+<input type="text" id="input" value="Hello World">
+<script>
+const input = document.getElementById('input');
+const range = input.createValueRange(0, 5);
+const highlight = new Highlight(range);
+CSS.highlights.set('test-highlight', highlight);
+range.disconnect();
+</script>

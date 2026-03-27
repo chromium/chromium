@@ -27,6 +27,7 @@ class CORE_EXPORT AbstractRange : public ScriptWrappable {
                                         Node* end_root_container);
   static unsigned LengthOfContents(const Node*);
   virtual bool IsStaticRange() const = 0;
+  virtual bool IsOpaqueRange() const { return false; }
   virtual Document& OwnerDocument() const = 0;
 
  protected:

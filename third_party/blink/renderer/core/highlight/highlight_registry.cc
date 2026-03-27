@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlight_hit_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlights_from_point_options.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
+#include "third_party/blink/renderer/core/dom/opaque_range.h"
 #include "third_party/blink/renderer/core/dom/static_range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
@@ -60,7 +61,18 @@ HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {
 bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,
                                                  Document* document) const {
   if (abstract_range->OwnerDocument() != document ||
-      abstract_range->collapsed() || !abstract_range->startContainer() ||
+      abstract_range->collapsed()) {
+    return false;
+  }
+
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+    if (auto* opaque_range = DynamicTo<OpaqueRange>(abstract_range)) {
+      TextControlElement* element = opaque_range->GetElement();
+      return element && element->isConnected();
+    }
+  }
+
+  if (!abstract_range->startContainer() ||
       !abstract_range->startContainer()->isConnected() ||
       !abstract_range->endContainer() ||
       !abstract_range->endContainer()->isConnected()) {
@@ -128,7 +140,20 @@ void HighlightRegistry::ValidateHighlightMarkers() {
     const auto& highlight = highlight_registry_map_entry->highlight;
     for (const auto& abstract_range : highlight->GetRanges()) {
       if (IsAbstractRangePaintable(abstract_range, document)) {
-        EphemeralRange eph_range(abstract_range);
+        EphemeralRange eph_range;
+        if (RuntimeEnabledFeatures::OpaqueRangeEnabled() &&
+            abstract_range->IsOpaqueRange()) {
+          auto* opaque_range = static_cast<OpaqueRange*>(abstract_range.Get());
+          Range* inner_range = opaque_range->BuildValueGeometryContext();
+          if (inner_range) {
+            eph_range = EphemeralRange(inner_range);
+          } else {
+            continue;
+          }
+        } else {
+          eph_range = EphemeralRange(abstract_range);
+        }
+
         markers_controller.AddCustomHighlightMarker(eph_range, highlight_name,
                                                     highlight);
       }
@@ -366,13 +391,25 @@ HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
       // node (i.e., the range encloses a shadow tree), do not return it when
       // the hit is on a node inside that shadow tree. Only consider ranges
       // within the same tree scope as the hit node.
-      if (abstract_range->startContainer()->GetTreeScope() !=
-          hit_node->GetTreeScope()) {
+      auto* opaque_range = RuntimeEnabledFeatures::OpaqueRangeEnabled()
+                               ? DynamicTo<OpaqueRange>(abstract_range.Get())
+                               : nullptr;
+      if (!opaque_range && abstract_range->startContainer()->GetTreeScope() !=
+                               hit_node->GetTreeScope()) {
         continue;
       }
 
       if (IsAbstractRangePaintable(abstract_range, document)) {
-        EphemeralRange ephemeral_range(abstract_range);
+        EphemeralRange ephemeral_range;
+        if (opaque_range) {
+          Range* inner_range = opaque_range->BuildValueGeometryContext();
+          if (!inner_range) {
+            continue;
+          }
+          ephemeral_range = EphemeralRange(inner_range);
+        } else {
+          ephemeral_range = EphemeralRange(abstract_range);
+        }
         Vector<gfx::QuadF> quads = ComputeTextBounds(ephemeral_range);
         for (const auto& quad : quads) {
           if (quad.Contains(hit_point)) {

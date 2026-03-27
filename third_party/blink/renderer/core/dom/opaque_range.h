@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -50,7 +51,8 @@ class CORE_EXPORT OpaqueRange final : public AbstractRange {
   unsigned endOffset() const override;
 
   bool collapsed() const override;
-  bool IsStaticRange() const override;
+  bool IsStaticRange() const override { return false; }
+  bool IsOpaqueRange() const override { return true; }
   Document& OwnerDocument() const override;
 
   // Update after a text replacement at `change_offset`: removes
@@ -69,13 +71,15 @@ class CORE_EXPORT OpaqueRange final : public AbstractRange {
   DOMRectList* getClientRects() const;
   DOMRect* getBoundingClientRect() const;
 
- private:
-  // Internal helper that prepares a DOM Range anchored to the inner editor
-  // text node. Offsets are clamped to the current text length. Returns nullptr
-  // if geometry is unavailable (e.g. element disconnected, missing inner
-  // editor, etc).
+  // Returns the associated text control element, or nullptr if disconnected.
+  TextControlElement* GetElement() const { return element_.Get(); }
+
+  // Creates a DOM Range spanning the stored value offsets within the element's
+  // inner editor. Forces style/layout update. Returns nullptr if the element is
+  // disconnected, has no layout object, or has no inner editor.
   Range* BuildValueGeometryContext() const;
 
+ private:
   Member<Document> owner_document_;
 
   // The observed text-control element.
@@ -85,6 +89,13 @@ class CORE_EXPORT OpaqueRange final : public AbstractRange {
   // text edits.
   unsigned start_offset_in_value_ = 0;
   unsigned end_offset_in_value_ = 0;
+};
+
+template <>
+struct DowncastTraits<OpaqueRange> {
+  static bool AllowFrom(const AbstractRange& abstract_range) {
+    return abstract_range.IsOpaqueRange();
+  }
 };
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_OPAQUE_RANGE_H_

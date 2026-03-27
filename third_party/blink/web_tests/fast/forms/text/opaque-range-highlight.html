@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<style>
+::highlight(test-highlight) {
+  background-color: yellow;
+  color: red;
+}
+</style>
+<p>The text "Hello" should be highlighted yellow with red text in both controls.</p>
+<input type="text" id="input" value="Hello World"><br><br>
+<textarea id="textarea">Hello World</textarea>
+<script>
+const input = document.getElementById('input');
+const textarea = document.getElementById('textarea');
+
+const range1 = input.createValueRange(0, 5);
+const range2 = textarea.createValueRange(0, 5);
+
+const highlight = new Highlight(range1, range2);
+CSS.highlights.set('test-highlight', highlight);
+</script>
