@@ -137,12 +137,15 @@ source_set("java_script_features") {
     "actuation_target_java_script_feature.mm",
     "click_tool_java_script_feature.h",
     "click_tool_java_script_feature.mm",
+    "type_tool_java_script_feature.h",
+    "type_tool_java_script_feature.mm",
   ]
 
   deps = [
     ":actuation_interface",
     ":actuation_target_ts",
     ":click_tool_ts",
+    ":type_tool_ts",
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
@@ -163,6 +166,7 @@ source_set("unit_tests") {
     "click_tool_unittest.mm",
     "history_tool_unittest.mm",
     "navigate_tool_unittest.mm",
+    "type_tool_java_script_feature_unittest.mm",
     "type_tool_js_unittest.mm",
   ]
   deps = [
@@ -176,7 +180,10 @@ source_set("unit_tests") {
     ":type_tool_ts",
     "//base/test:test_support",
     "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/common",
+    "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:autofill_form_features",
+    "//components/autofill/ios/form_util:autofill_form_features_ts_bundling",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actuation/model:actuation_error",
