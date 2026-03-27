@@ -75,7 +75,8 @@ skia::mojom::AlphaType EnumTraits<skia::mojom::AlphaType, SkAlphaType>::ToMojom(
 }
 
 // static
-SkAlphaType EnumTraits<skia::mojom::AlphaType, SkAlphaType>::FromMojom(
+std::optional<SkAlphaType>
+EnumTraits<skia::mojom::AlphaType, SkAlphaType>::FromMojom(
     skia::mojom::AlphaType in) {
   switch (in) {
     case skia::mojom::AlphaType::ALPHA_TYPE_OPAQUE:
@@ -86,9 +87,9 @@ SkAlphaType EnumTraits<skia::mojom::AlphaType, SkAlphaType>::FromMojom(
       return kUnpremul_SkAlphaType;
     case skia::mojom::AlphaType::UNKNOWN:
       // Unknown types should not be sent over mojo.
-      NOTREACHED();
+      break;
   }
-  NOTREACHED();
+  return std::nullopt;
 }
 
 // static
@@ -117,7 +118,8 @@ skia::mojom::ColorType EnumTraits<skia::mojom::ColorType, SkColorType>::ToMojom(
 }
 
 // static
-SkColorType EnumTraits<skia::mojom::ColorType, SkColorType>::FromMojom(
+std::optional<SkColorType>
+EnumTraits<skia::mojom::ColorType, SkColorType>::FromMojom(
     skia::mojom::ColorType in) {
   switch (in) {
     case skia::mojom::ColorType::ALPHA_8:
@@ -137,7 +139,7 @@ SkColorType EnumTraits<skia::mojom::ColorType, SkColorType>::FromMojom(
       // UNKNOWN or unsupported values should not be sent over mojo.
       break;
   }
-  NOTREACHED();
+  return std::nullopt;
 }
 
 // static

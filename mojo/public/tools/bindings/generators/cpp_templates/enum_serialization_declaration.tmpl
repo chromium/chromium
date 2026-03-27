@@ -22,7 +22,6 @@ struct Serializer<{{mojom_type}}, MaybeConstUserType> {
       *output = Traits::FromMojom(known_value);
       return true;
     } else if constexpr (requires { {Traits::FromMojom(known_value) } -> std::same_as<std::optional<UserType>>; }) {
-      static_assert(!HasInfallibleConversion({{mojom_type}}()), "{{mojom_type}} has an infallible conversion, use a non-optional return type.");
       auto from_mojom = Traits::FromMojom(known_value);
       if (from_mojom) { *output = *from_mojom; }
       return from_mojom.has_value();
