@@ -708,12 +708,21 @@ TabDragController::Liveness TabDragController::Drag(
         RestoreAttachedWindowForDrag();
       }
 
-      // Drag the window relative to `start_point_in_screen_` to pretend that
-      // this was the plan all along.
-      const gfx::Vector2d drag_offset =
-          start_point_in_screen_ -
-          attached_context_->GetWidget()->GetWindowBoundsInScreen().origin();
-      return RunMoveLoop(point_in_screen, drag_offset);
+      // If we're in fullscreen and can't restore the window (e.g. macOS
+      // immersive fullscreen), don't enter the move loop. Moving a
+      // fullscreen window causes visual glitches where the browser view
+      // shifts and the background is exposed. Fall through to normal tab
+      // dragging instead.
+      const bool should_drag_window =
+          !was_source_fullscreen_ || did_restore_window_;
+      if (should_drag_window) {
+        // Drag the window relative to `start_point_in_screen_` to pretend
+        // that this was the plan all along.
+        const gfx::Vector2d drag_offset =
+            start_point_in_screen_ -
+            attached_context_->GetWidget()->GetWindowBoundsInScreen().origin();
+        return RunMoveLoop(point_in_screen, drag_offset);
+      }
     }
 
     current_state_ = DragState::kDraggingTabs;
@@ -1536,10 +1545,10 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
                                               point_in_screen);
     }
 
+    const bool is_fullscreen = attached_context_->GetWidget()->IsFullscreen();
     const bool restore_window =
         attached_context_->GetWidget()->IsMaximized() ||
-        (attached_context_->GetWidget()->IsFullscreen() &&
-         CanRestoreFullscreenWindowDuringDrag());
+        (is_fullscreen && CanRestoreFullscreenWindowDuringDrag());
     if (attached_context_ == source_context_) {
       did_restore_window_ = restore_window;
     }
@@ -1547,10 +1556,17 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       RestoreAttachedWindowForDrag();
     }
 
-    const gfx::Vector2d drag_offset =
-        point_in_screen -
-        attached_context_->GetWidget()->GetWindowBoundsInScreen().origin();
-    return RunMoveLoop(point_in_screen, drag_offset);
+    // If we're in fullscreen and can't restore the window (e.g. macOS
+    // immersive fullscreen), don't enter the move loop. Moving a
+    // fullscreen window causes visual glitches. Fall through to create
+    // a new non-fullscreen browser window instead.
+    const bool should_drag_window = !is_fullscreen || restore_window;
+    if (should_drag_window) {
+      const gfx::Vector2d drag_offset =
+          point_in_screen -
+          attached_context_->GetWidget()->GetWindowBoundsInScreen().origin();
+      return RunMoveLoop(point_in_screen, drag_offset);
+    }
   }
 
   const gfx::Size new_size = CalculateDraggedWindowSize(attached_context_);
