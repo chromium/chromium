@@ -76,7 +76,8 @@ class CORE_EXPORT ModuleRecord final {
   static Vector<ModuleRequest> ModuleRequests(ScriptState*,
                                               v8::Local<v8::Module> record);
 
-  static v8::Local<v8::Value> V8Namespace(v8::Local<v8::Module> record);
+  static v8::Local<v8::Value> V8Namespace(v8::Local<v8::Module> record,
+                                          v8::ModuleImportPhase import_phase);
 
   // ToBlinkImportAttributes deserializes v8::FixedArray encoded import
   // attributes to blink::ImportAttribute. When

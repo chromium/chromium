@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "v8/include/v8-callbacks.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -308,8 +309,8 @@ TEST_F(ModuleRecordTest, Evaluate) {
   EXPECT_EQ("bar", ToCoreString(scope.GetIsolate(),
                                 v8::Local<v8::String>::Cast(value)));
 
-  v8::Local<v8::Object> module_namespace =
-      v8::Local<v8::Object>::Cast(ModuleRecord::V8Namespace(module));
+  v8::Local<v8::Object> module_namespace = v8::Local<v8::Object>::Cast(
+      ModuleRecord::V8Namespace(module, v8::ModuleImportPhase::kEvaluation));
   EXPECT_FALSE(module_namespace.IsEmpty());
   v8::Local<v8::Value> exported_value =
       module_namespace

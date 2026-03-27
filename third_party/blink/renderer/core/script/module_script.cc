@@ -138,14 +138,23 @@ ScriptEvaluationResult ModuleScript::RunScriptOnScriptStateAndReturnValue(
     ScriptState* script_state,
     ExecuteScriptPolicy execute_script_policy,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
+  CHECK_EQ(execute_script_policy,
+           ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
+  return RunScriptOnScriptStateAndReturnValueWithImportPhase(
+      script_state, std::move(rethrow_errors),
+      v8::ModuleImportPhase::kEvaluation);
+}
+
+ScriptEvaluationResult
+ModuleScript::RunScriptOnScriptStateAndReturnValueWithImportPhase(
+    ScriptState* script_state,
+    V8ScriptRunner::RethrowErrorsOption rethrow_errors,
+    v8::ModuleImportPhase phase) {
   DCHECK_EQ(script_state, SettingsObject()->GetScriptState());
   DCHECK(script_state);
   probe::EvaluateScriptBlock probe_scope(*script_state, BaseUrl(),
                                          /*module=*/true, /*sanitize=*/false);
-
-  DCHECK_EQ(execute_script_policy,
-            ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
-  return V8ScriptRunner::EvaluateModule(this, std::move(rethrow_errors));
+  return V8ScriptRunner::EvaluateModule(this, std::move(rethrow_errors), phase);
 }
 
 std::ostream& operator<<(std::ostream& stream,

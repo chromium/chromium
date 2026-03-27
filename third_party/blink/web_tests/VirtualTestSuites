@@ -1784,6 +1784,27 @@
     "expires": "Apr 4, 2026"
   },
   {
+    "prefix": "javascript-defer-phase-imports",
+    "owners": [
+      "caiolima@igalia.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/basic-deferred-evaluation.tentative.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/cyclic-tla-defer-eval.tentative.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/cyclic-tla-fn-defer-eval.tentative.html",
+      "external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/tla-deferred-evaluation.tentative.html"
+    ],
+    "args": [
+      "--enable-features=V8Flag_js_defer_import_eval"
+    ],
+    "expires": "Apr 4, 2027"
+  },
+  {
     "prefix": "js-shared-memory",
     "platforms": [
       "Linux",

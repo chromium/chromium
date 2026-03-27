@@ -73,9 +73,11 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
  public:
   ModuleResolutionSuccessCallback(
       ScriptPromiseResolver<IDLAny>* promise_resolver,
-      ModuleScript* module_script)
+      ModuleScript* module_script,
+      v8::ModuleImportPhase import_phase)
       : ModuleResolutionCallback(promise_resolver),
-        module_script_(module_script) {}
+        module_script_(module_script),
+        import_phase_(import_phase) {}
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(module_script_);
@@ -86,11 +88,13 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
   void React(ScriptState* script_state, ScriptValue value) final {
     ScriptState::Scope scope(script_state);
     v8::Local<v8::Module> record = module_script_->V8Module();
-    v8::Local<v8::Value> module_namespace = ModuleRecord::V8Namespace(record);
+    v8::Local<v8::Value> module_namespace =
+        ModuleRecord::V8Namespace(record, import_phase_);
     promise_resolver_->Resolve(module_namespace);
   }
 
   Member<ModuleScript> module_script_;
+  v8::ModuleImportPhase import_phase_;
 };
 
 // Callback for modules with top-level await.
@@ -161,10 +165,9 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
   // <spec step="9">Otherwise, set promise to the result of running a module
   // script given result and true.</spec>
   ScriptEvaluationResult result =
-      module_script->RunScriptOnScriptStateAndReturnValue(
-          script_state,
-          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
-          V8ScriptRunner::RethrowErrorsOption::Rethrow(String()));
+      module_script->RunScriptOnScriptStateAndReturnValueWithImportPhase(
+          script_state, V8ScriptRunner::RethrowErrorsOption::Rethrow(String()),
+          import_phase_);
 
   switch (result.GetResultType()) {
     case ScriptEvaluationResult::ResultType::kException:
@@ -186,7 +189,7 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
       result.GetPromise(script_state)
           .Then(script_state,
                 MakeGarbageCollected<ModuleResolutionSuccessCallback>(
-                    promise_resolver_, module_script),
+                    promise_resolver_, module_script, import_phase_),
                 MakeGarbageCollected<ModuleResolutionFailureCallback>(
                     promise_resolver_));
       break;

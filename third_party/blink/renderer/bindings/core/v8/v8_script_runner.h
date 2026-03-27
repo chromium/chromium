@@ -141,7 +141,8 @@ class CORE_EXPORT V8ScriptRunner final {
   // See the class comments of RethrowErrorsOption and ScriptEvaluationResult
   // for exception handling and return value semantics.
   static ScriptEvaluationResult EvaluateModule(ModuleScript*,
-                                               RethrowErrorsOption);
+                                               RethrowErrorsOption,
+                                               v8::ModuleImportPhase phase);
 
   // Only to be used from ModuleRecord::ReportException().
   static void ReportExceptionForModule(v8::Isolate*,
