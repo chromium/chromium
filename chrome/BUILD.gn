@@ -1641,7 +1641,6 @@ if (is_android) {
     deps = [
       ":dependencies",
       "//chrome/browser/flags:flags_android",
-      "//chrome/browser/payments:impl",
       "//chrome/browser/ui",
       "//chrome/child",
       "//chrome/common",

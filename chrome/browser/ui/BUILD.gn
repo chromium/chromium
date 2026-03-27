@@ -5808,7 +5808,6 @@ static_library("test_support") {
     "//chrome/app/theme:theme_resources",
     "//chrome/browser",
     "//chrome/browser/devtools",
-    "//chrome/browser/payments",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill/payments:test_support",
     "//chrome/browser/ui/browser_window",
