@@ -863,15 +863,6 @@ BASE_FEATURE(kIPHiOSOneTimeDefaultBrowserNotificationFeature,
              "IPH_iOSOneTimeDefaultBrowserNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Non-FET feature.
-BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
-    &kDefaultBrowserEligibilitySlidingWindow,
-    /*name=*/"sliding-window-days",
-    /*default_value=*/180};
-
 BASE_FEATURE(kIPHiOSAIHubNewBadge,
              "IPH_iOSAIHubNewBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);

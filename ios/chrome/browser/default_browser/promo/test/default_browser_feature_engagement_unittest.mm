@@ -350,13 +350,8 @@ TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserGroupTest) {
   tracker->Dismissed(feature_engagement::kIPHiOSPromoStaySafeFeature);
 }
 
-// Verify generic promo triggers with sliding window experiment.
-TEST_F(DefaultBrowserFeatureEngagementTest,
-       GenericPromoSlidingWindowExperimentTest) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeatures(
-      {feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature,
-       feature_engagement::kDefaultBrowserEligibilitySlidingWindow});
+// Verify generic promo triggers multiple times after cooldown window.
+TEST_F(DefaultBrowserFeatureEngagementTest, ReoccuringGenericPromoTest) {
   std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
 
   // Make sure the preconditions are satisfied.

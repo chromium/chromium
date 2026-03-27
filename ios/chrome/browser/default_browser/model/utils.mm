@@ -325,6 +325,7 @@ NSString* const kTailoredPromoInteractionCount =
     @"tailoredPromoInteractionCount";
 constexpr base::TimeDelta kBlueDotPromoDuration = base::Days(15);
 constexpr base::TimeDelta kBlueDotPromoReoccurrancePeriod = base::Days(360);
+const int kDefaultBrowserSlidingWindowDays = 180;
 
 // Migration to FET keys.
 NSString* const kNonModalPromoMigrationDone = @"kNonModalPromoMigrationDone";
@@ -424,8 +425,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {
-  if (base::FeatureList::IsEnabled(
-          feature_engagement::kDefaultBrowserEligibilitySlidingWindow)) {
     // When the total promo count is 1 it means that user has seen only the FRE
     // promo. The cooldown from FRE will be taken care of in
     // ```ComputeCooldown```. Here we only need to check the timestamp of the
@@ -433,14 +432,7 @@ bool HasUserInteractedWithFullscreenPromoBefore() {
     return DisplayedFullscreenPromoCount() > 1 &&
            HasRecordedEventForKeyLessThanDelay(
                kLastTimeUserInteractedWithFullscreenPromo,
-               base::Days(
-                   feature_engagement::
-                       kDefaultBrowserEligibilitySlidingWindowParam.Get()));
-  }
-
-  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
-      kUserHasInteractedWithFullscreenPromo);
-  return number.boolValue;
+               base::Days(kDefaultBrowserSlidingWindowDays));
 }
 
 bool HasUserInteractedWithTailoredFullscreenPromoBefore() {

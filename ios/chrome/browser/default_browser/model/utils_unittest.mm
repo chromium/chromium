@@ -30,8 +30,8 @@ constexpr base::TimeDelta kMoreThan14Days = base::Days(14) + base::Minutes(1);
 // More than 6 hours.
 constexpr base::TimeDelta kMoreThan6Hours = base::Hours(6) + base::Minutes(1);
 
-// About 6 months.
-constexpr base::TimeDelta k6Months = base::Days(6 * 365 / 12);
+// About 5 months.
+constexpr base::TimeDelta k5Months = base::Days(5 * 365 / 12);
 
 // About 1 year.
 constexpr base::TimeDelta kMoreThan1Year = base::Days(365) + base::Days(1);
@@ -147,50 +147,9 @@ TEST_F(DefaultBrowserUtilsTest, TailoredPromoDoesNotAppearTwoTimes) {
 }
 
 // Tests that past interactions with the default browser promo are correctly
-// detected when the sliding eligibility window experiment is disabled.
+// detected.
 TEST_F(DefaultBrowserUtilsTest,
-       HasUserInteractedWithFullscreenPromoBeforeSlidingWindowDisabled) {
-  feature_list_.InitWithFeatures({/*enabled=*/},
-                                 {/*disabled=*/feature_engagement::
-                                      kDefaultBrowserEligibilitySlidingWindow});
-
-  // Test when there are no interaction recorded yet.
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test that logging first run doesn't affect it.
-  LogUserInteractionWithFirstRunPromo();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test with multiple interactions.
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan6Hours, 1, 2);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 2, 3);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test with a single, more distant interaction.
-  ClearDefaultBrowserPromoData();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k6Months, 1, 2);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-
-  // Test with a single, even more distant interaction.
-  ClearDefaultBrowserPromoData();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k2Years, 1, 2);
-  EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
-}
-
-// Tests that past interactions with the default browser promo are correctly
-// detected when the sliding eligibility window experiment is enabled and set
-// to 365 days.
-TEST_F(DefaultBrowserUtilsTest,
-       HasUserInteractedWithFullscreenPromoBeforeSlidingWindowEnabled) {
-  base::FieldTrialParams feature_params;
-  feature_params["sliding-window-days"] = "365";
-  feature_list_.InitAndEnableFeatureWithParameters(
-      feature_engagement::kDefaultBrowserEligibilitySlidingWindow,
-      feature_params);
-
+       HasUserInteractedWithFullscreenPromoBeforeTest) {
   // Test when there are no interaction recorded yet.
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
@@ -208,7 +167,7 @@ TEST_F(DefaultBrowserUtilsTest,
   // window limit).
   ClearDefaultBrowserPromoData();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k6Months, 1, 2);
+  SimulateUserInteractionWithFullscreenPromo(k5Months, 1, 2);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test with a single interaction that's outside the sliding window limit.
@@ -225,21 +184,14 @@ TEST_F(DefaultBrowserUtilsTest,
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
   SimulateUserInteractionWithFullscreenPromo(k2Years, 2, 3);
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  SimulateUserInteractionWithFullscreenPromo(k6Months, 3, 4);
+  SimulateUserInteractionWithFullscreenPromo(k5Months, 3, 4);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
   SimulateUserInteractionWithFullscreenPromo(kMoreThan14Days, 4, 5);
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
 }
 
-// Tests that sliding window experiment doesn't not affect the cooldown from
-// FRE.
-TEST_F(DefaultBrowserUtilsTest, CooldownFromFRESlidingWindowEnabled) {
-  base::FieldTrialParams feature_params;
-  feature_params["sliding-window-days"] = "365";
-  feature_list_.InitAndEnableFeatureWithParameters(
-      feature_engagement::kDefaultBrowserEligibilitySlidingWindow,
-      feature_params);
-
+// Tests that cooldown from FRE is correct.
+TEST_F(DefaultBrowserUtilsTest, CooldownFromFRETest) {
   // Test when there are no interaction recorded yet.
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
@@ -492,25 +444,21 @@ TEST_F(DefaultBrowserUtilsTest,
 }
 
 TEST_F(DefaultBrowserUtilsTest, GetGenericDefaultBrowserPromoTimestampTest) {
-  feature_list_.InitWithFeatures({/*enabled=*/},
-                                 {/*disabled=*/feature_engagement::
-                                      kDefaultBrowserEligibilitySlidingWindow});
+  // First need to interact with FRE.
+  LogUserInteractionWithFirstRunPromo();
+
   // When user hasn't seen generic promo, returns unixepoch.
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
   EXPECT_EQ(base::Time::UnixEpoch(), GetGenericDefaultBrowserPromoTimestamp());
 
-  // When latest is not the generic promo and generic promo hasn't been seen,
-  // returns unixepoch.
-  LogUserInteractionWithTailoredFullscreenPromo();
-  EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
-  EXPECT_EQ(base::Time::UnixEpoch(), GetGenericDefaultBrowserPromoTimestamp());
-
   // When user seen a generic promo, returns the latest timestamp.
+  LogFullscreenDefaultBrowserPromoDisplayed();
   LogUserInteractionWithFullscreenPromo();
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
   EXPECT_NE(base::Time::UnixEpoch(), GetGenericDefaultBrowserPromoTimestamp());
 
   // When latest is not the generic promo, still returns the latest timestamp.
+  LogFullscreenDefaultBrowserPromoDisplayed();
   LogUserInteractionWithTailoredFullscreenPromo();
   EXPECT_TRUE(HasUserInteractedWithFullscreenPromoBefore());
   EXPECT_NE(base::Time::UnixEpoch(), GetGenericDefaultBrowserPromoTimestamp());
@@ -561,7 +509,7 @@ TEST_F(DefaultBrowserUtilsTest, TestDefaultBrowserBlueDotFirstDisplay) {
 TEST_F(DefaultBrowserUtilsTest,
        TestResetDefaultBrowserBlueDotDisplayTimestampIfNeeded) {
   // It will not recent if the timestamp is less than 1 year old.
-  base::Time timestamp = base::Time::Now() - k6Months;
+  base::Time timestamp = base::Time::Now() - k5Months;
   local_state_->SetTime(prefs::kIosDefaultBrowserBlueDotPromoFirstDisplay,
                         timestamp);
   ResetDefaultBrowserBlueDotDisplayTimestampIfNeeded();

@@ -108,33 +108,22 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config.storage_type = StorageType::DEVICE;
 
-    if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
-      // Show this promo once in number of days specified by the feature param.
-      config.trigger = EventConfig(
-          "generic_default_browser_promo_trigger", Comparator(EQUAL, 0),
-          feature_engagement::kDefaultBrowserEligibilitySlidingWindowParam
-              .Get(),
-          feature_engagement::kMaxStoragePeriod);
-    } else {
-      // Show this promo only once.
-      config.trigger = EventConfig("generic_default_browser_promo_trigger",
-                                   Comparator(EQUAL, 0),
-                                   feature_engagement::kMaxStoragePeriod,
-                                   feature_engagement::kMaxStoragePeriod);
-    }
+    // Show this promo once every 180 days.
+    config.trigger = EventConfig("generic_default_browser_promo_trigger",
+                                 Comparator(EQUAL, 0), 180,
+                                 feature_engagement::kMaxStoragePeriod);
 
     // The off-cycle promo should count as a generic promo impression,
     // effectively putting it back on cooldown.
     config.event_configs.insert(EventConfig(
-        "default_browser_off_cycle_promo_trigger", Comparator(EQUAL, 0),
-        feature_engagement::kDefaultBrowserEligibilitySlidingWindowParam.Get(),
+        "default_browser_off_cycle_promo_trigger", Comparator(EQUAL, 0), 180,
         feature_engagement::kMaxStoragePeriod));
 
-      // Show the promo if promo specific conditions are met during last 21
-      // days.
-      config.event_configs.insert(
-          EventConfig("generic_default_browser_promo_conditions_met",
-                      Comparator(GREATER_THAN, 0), 21, 365));
+    // Show the promo if promo specific conditions are met during last 21
+    // days.
+    config.event_configs.insert(
+        EventConfig("generic_default_browser_promo_conditions_met",
+                    Comparator(GREATER_THAN, 0), 21, 365));
 
     return config;
   } else if (kIPHiOSPromoAllTabsFeature.name == feature->name) {

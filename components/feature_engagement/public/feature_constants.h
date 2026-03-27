@@ -380,18 +380,6 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHiOSOneTimeDefaultBrowserNotificationFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiImageRemixFeature);
 
-// A feature flag to enable and parametrize the sliding window of time for a
-// user's eligibility to be shown a default browser promo. This is not an FET
-// feature, but there is a related FET feature that needs to adjust its config
-// rules based on this feature, so it needs to be declared here.
-FEATURE_CONSTANTS_DECLARE_FEATURE(kDefaultBrowserEligibilitySlidingWindow);
-
-// The param for the default browser eligibility sliding window, measured in
-// days.
-COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
-extern const base::FeatureParam<int>
-    kDefaultBrowserEligibilitySlidingWindowParam;
-
 // FET feature flag that enables AI Hub "New" badge.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSAIHubNewBadge);
 
