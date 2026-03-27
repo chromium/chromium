@@ -1,0 +1,77 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui;
+
+import androidx.annotation.Px;
+
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+
+/**
+ * A helper class to help manage some behaviors of {@code SnackbarManager} for a {@code
+ * ChromeActivity}.
+ */
+@NullMarked
+public class ChromeActivitySnackbarHelper implements ChangeObserver {
+    private final SettableNonNullObservableSupplier<Integer> mSupplier =
+            ObservableSuppliers.createNonNull(0);
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final Callback<EdgeToEdgeController> mEdgeToEdgeControllerObserver =
+            this::onEdgeToEdgeControllerChanged;
+
+    private @Nullable EdgeToEdgeController mCurrentEdgeToEdgeController;
+
+    /**
+     * Constructs a new ChromeActivitySnackbarHelper.
+     *
+     * @param edgeToEdgeControllerSupplier The supplier for the EdgeToEdgeController.
+     */
+    public ChromeActivitySnackbarHelper(
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
+                mEdgeToEdgeControllerObserver);
+    }
+
+    /** Returns the supplier for the snackbar bottom margin. */
+    public NonNullObservableSupplier<Integer> getBottomMarginSupplier() {
+        return mSupplier;
+    }
+
+    /** Destroys the supplier, removing observers. */
+    public void destroy() {
+        if (mCurrentEdgeToEdgeController != null) {
+            mCurrentEdgeToEdgeController.unregisterObserver(this);
+            mCurrentEdgeToEdgeController = null;
+        }
+        mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeControllerObserver);
+    }
+
+    private void onEdgeToEdgeControllerChanged(@Nullable EdgeToEdgeController controller) {
+        if (mCurrentEdgeToEdgeController != null) {
+            mCurrentEdgeToEdgeController.unregisterObserver(this);
+        }
+        mCurrentEdgeToEdgeController = controller;
+        if (mCurrentEdgeToEdgeController != null) {
+            mCurrentEdgeToEdgeController.registerObserver(this);
+            mSupplier.set(mCurrentEdgeToEdgeController.getBottomInsetPx());
+        } else {
+            mSupplier.set(0);
+        }
+    }
+
+    @Override
+    public void onToEdgeChange(
+            @Px int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
+        mSupplier.set(bottomInset);
+    }
+}

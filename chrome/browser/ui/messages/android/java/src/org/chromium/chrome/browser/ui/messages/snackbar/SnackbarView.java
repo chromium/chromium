@@ -28,9 +28,10 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarSwipeHandler.Delegate;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -61,6 +62,9 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private final ViewGroup mOriginalParent;
     private final int mMaxWidth;
     private final int mSnackbarMargin;
+    private final NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
+    private final int mDefaultBottomMargin;
+    private final Callback<Integer> mAdditionalBottomMarginPxObserver = this::updateBottomMargin;
     protected ViewGroup mParent;
     protected Snackbar mSnackbar;
     private final View mRootContentView;
@@ -100,8 +104,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      * @param parentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
      *     Animator#start is called instead.
-     * @param edgeToEdgeSupplier The supplier publishes the changes of the edge-to-edge state and
-     *     the expected bottom paddings when edge-to-edge is on.
+     * @param additionalBottomMarginPxSupplier The bottom margin to be added to the snackbar view
+     *     when shown.
      */
     public SnackbarView(
             Activity activity,
@@ -109,9 +113,11 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             Snackbar snackbar,
             ViewGroup parentView,
             @Nullable WindowAndroid windowAndroid,
-            @Nullable EdgeToEdgeController edgeToEdgeSupplier) {
+            NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier) {
         mOriginalParent = parentView;
         mWindowAndroid = windowAndroid;
+        mAdditionalBottomMarginPxSupplier = additionalBottomMarginPxSupplier;
+        additionalBottomMarginPxSupplier.addSyncObserver(mAdditionalBottomMarginPxObserver);
 
         mRootContentView = activity.findViewById(android.R.id.content);
         mParent = mOriginalParent;
@@ -170,8 +176,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         // margin has to be applied to the snackbar view itself to avoid weird visual clipping
         // in its dismissal animation.
         FrameLayout.LayoutParams lp = getLayoutParams();
-        int bottomInsetPx = edgeToEdgeSupplier != null ? edgeToEdgeSupplier.getBottomInsetPx() : 0;
-        lp.bottomMargin = lp.bottomMargin + bottomInsetPx;
+        mDefaultBottomMargin = lp.bottomMargin;
+        lp.bottomMargin = lp.bottomMargin + mAdditionalBottomMarginPxSupplier.get();
         mContainerView.setLayoutParams(lp);
         // Set a max width of 480dp for both mobile and tablet.
         mMaxWidth = mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_width_max);
@@ -210,6 +216,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         // Prevent clicks during dismissal animations. Intentionally not using setEnabled(false) to
         // avoid unnecessary text color changes in this transitory state.
         mActionButtonView.setOnClickListener(null);
+        mAdditionalBottomMarginPxSupplier.removeObserver(mAdditionalBottomMarginPxObserver);
         Pair<Float, Float> translateData = mSnackbarSwipeHandler.getTranslateData();
         AnimatorSet moveAnimator = new AnimatorSet();
         if (translateData.first != 0) {
@@ -473,6 +480,12 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
     private @Px int getMaximumTranslateX() {
         return mContainerView.getResources().getDisplayMetrics().widthPixels;
+    }
+
+    private void updateBottomMargin(int additionalBottomMarginPx) {
+        FrameLayout.LayoutParams lp = getLayoutParams();
+        lp.bottomMargin = mDefaultBottomMargin + additionalBottomMarginPx;
+        mContainerView.setLayoutParams(lp);
     }
 
     public ViewGroup getViewForTesting() {

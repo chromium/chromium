@@ -61,7 +61,7 @@ public class SnackbarSwipeTest {
                                     mActivity,
                                     mParent,
                                     /* windowAndroid= */ null,
-                                    /* edgeToEdgeControllerSupplier= */ null,
+                                    /* additionalBottomMarginPxSupplier= */ null,
                                     /* modalDialogManager= */ null);
                     SnackbarManager.setDurationForTesting(10000);
                 });

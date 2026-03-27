@@ -201,6 +201,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.ui.BottomContainer;
+import org.chromium.chrome.browser.ui.ChromeActivitySnackbarHelper;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -394,6 +395,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     private final SettableMonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier =
             ObservableSuppliers.createMonotonic();
+    private @Nullable ChromeActivitySnackbarHelper mChromeActivitySnackbarHelper;
 
     // Timestamp in ms when initial layout inflation begins
     private long mInflateInitialLayoutBeginMs;
@@ -656,12 +658,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             mBottomContainer = findViewById(R.id.bottom_container);
 
+            mChromeActivitySnackbarHelper =
+                    new ChromeActivitySnackbarHelper(getEdgeToEdgeSupplier());
             SnackbarManager snackbarManager =
                     new SnackbarManager(
                             this,
                             mBottomContainer,
                             getWindowAndroid(),
-                            getEdgeToEdgeSupplier(),
+                            mChromeActivitySnackbarHelper.getBottomMarginSupplier(),
                             getModalDialogManager());
             mSnackbarManagerSupplier.set(snackbarManager);
             getInsetObserver().addObserver(snackbarManager);
@@ -1840,6 +1844,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (snackbarManager != null) {
             SnackbarManagerProvider.detach(snackbarManager);
             snackbarManager.destroy();
+            assumeNonNull(mChromeActivitySnackbarHelper);
+            mChromeActivitySnackbarHelper.destroy();
         }
 
         if (mBackPressManager != null) {

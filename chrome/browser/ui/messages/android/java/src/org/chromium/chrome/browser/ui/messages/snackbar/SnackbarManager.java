@@ -22,13 +22,11 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -138,10 +136,9 @@ public class SnackbarManager
     private final Deque<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new ArrayDeque<>();
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
-
-    private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
-            mEdgeToEdgeControllerSupplier;
+    private final NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     private final @Nullable ModalDialogManager mModalDialogManager;
+
     private @Nullable SnackbarView mView;
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
@@ -154,21 +151,25 @@ public class SnackbarManager
      * @param snackbarParentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
      *     Animator#start is called instead.
-     * @param edgeToEdgeControllerSupplier The supplier publishes the changes of the edge-to-edge
-     *     state and the expected bottom paddings when edge-to-edge is on.
+     * @param additionalBottomMarginPxSupplier The supplier publishes the changes of the additional
+     *     bottom margin in pixels.
      * @param modalDialogManager The ModalDialogManager to observe for dialog visibility.
      */
     public SnackbarManager(
             Activity activity,
             ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid,
-            @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
-                    edgeToEdgeControllerSupplier,
+            @Nullable NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier,
             @Nullable ModalDialogManager modalDialogManager) {
         mActivity = activity;
         mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
         mWindowAndroid = windowAndroid;
+        if (additionalBottomMarginPxSupplier != null) {
+            mAdditionalBottomMarginPxSupplier = additionalBottomMarginPxSupplier;
+        } else {
+            mAdditionalBottomMarginPxSupplier = ObservableSuppliers.createNonNull(0);
+        }
 
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
         if (ApplicationStatus.getStateForActivity(mActivity) == ActivityState.STARTED
@@ -176,7 +177,7 @@ public class SnackbarManager
             onStart();
         }
         mIsShowingSupplier = ObservableSuppliers.createNonNull(isShowing());
-        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+
         mModalDialogManager = modalDialogManager;
         if (mModalDialogManager != null) {
             mModalDialogManager.addObserver(this);
@@ -411,9 +412,7 @@ public class SnackbarManager
                                 currentSnackbar,
                                 mOriginalParentView,
                                 mWindowAndroid,
-                                mEdgeToEdgeControllerSupplier != null
-                                        ? mEdgeToEdgeControllerSupplier.get()
-                                        : null);
+                                mAdditionalBottomMarginPxSupplier);
                 mView.show();
 
                 // If there is a temporary parent set, reparent accordingly. We override here
