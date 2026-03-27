@@ -154,6 +154,14 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
     config.features_disabled.push_back(kContentPushNotifications);
   }
 
+  if ([self isRunningTest:@selector
+            (testMagicStackCompactedSetUpListCompleteAllItems)]) {
+    config.features_enabled_and_params.push_back(
+        {kIOSExpandedSetupList,
+         {{kIOSExpandedSetupListVariationParam,
+           kIOSExpandedSetupListVariationParamSafariImport}}});
+  }
+
   return config;
 }
 
