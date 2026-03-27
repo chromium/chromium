@@ -165,6 +165,10 @@ void RenderWidgetHostViewMac::SetCurrentDeviceScaleFactor(
   screen_infos_.mutable_current().device_scale_factor = device_scale_factor;
 }
 
+bool RenderWidgetHostViewMac::ShouldWaitRemoteCompositorFrameOnResize() const {
+  return remote_ns_view_.is_bound();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratedWidgetMacNSView, public:
 

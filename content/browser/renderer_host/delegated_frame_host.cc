@@ -46,6 +46,13 @@ constexpr float kFrameContentCaptureQuality = 0.4f;
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
+// DelegatedFrameHostClient
+
+cc::DeadlinePolicy DelegatedFrameHostClient::GetResizeDeadlinePolicy() const {
+  return cc::DeadlinePolicy::UseSpecifiedDeadline(0u);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // DelegatedFrameHost
 
 DelegatedFrameHost::DelegatedFrameHost(const viz::FrameSinkId& frame_sink_id,
@@ -342,23 +349,21 @@ void DelegatedFrameHost::EmbedSurface(
   if (!primary_surface_id ||
       primary_surface_id->local_surface_id() != local_surface_id_) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-    // On Windows and Linux, we would like to produce new content as soon as
-    // possible or the OS will create an additional black gutter. Until we can
-    // block resize on surface synchronization on these platforms, we will not
-    // block UI on the top-level renderer. The exception to this is if we're
-    // using an infinite deadline, in which case we should respect the
-    // specified deadline and block UI since that's what was requested.
-    //
-    // On macOS, we want to generate new content as quickly as possible;
-    // otherwise, the waiting time for the render process will make users feel
-    // sluggish when resizing windows.
+    // On Windows, Linux, and macOS, we would like to produce new content as
+    // soon as possible or the OS will create an additional black gutter.
+    // Until we can block resize on surface synchronization on these
+    // platforms, we will not block UI on the top-level renderer. The
+    // exception is if we're using an infinite deadline, in which case we
+    // should respect the specified deadline and block UI since that's what
+    // was requested. The actual deadline policy is determined by the
+    // client via GetResizeDeadlinePolicy().
     if (deadline_policy.policy_type() !=
             cc::DeadlinePolicy::kUseInfiniteDeadline &&
         !current_frame_size_in_dip_.IsEmpty() &&
         current_frame_size_in_dip_ != surface_dip_size_) {
-      deadline_policy = cc::DeadlinePolicy::UseSpecifiedDeadline(0u);
+      deadline_policy = client_->GetResizeDeadlinePolicy();
     }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     current_frame_size_in_dip_ = surface_dip_size_;
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
         new_primary_surface_id, current_frame_size_in_dip_, GetGutterColor(),
