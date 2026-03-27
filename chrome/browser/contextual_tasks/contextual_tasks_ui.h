@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
@@ -170,12 +169,6 @@ class ContextualTasksUI
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle() override;
   GURL GetWebUiUrl() override;
-  bool IsInitComplete() override;
-  void OnInitComplete() override;
-  void AddObserver(contextual_tasks::ContextualTasksUIInterface::Observer*
-                       observer) override;
-  void RemoveObserver(contextual_tasks::ContextualTasksUIInterface::Observer*
-                          observer) override;
 
   void ClearContextualSessionHandle();
 
@@ -350,9 +343,6 @@ class ContextualTasksUI
   std::optional<std::string> thread_title_;
 
   mojo::Remote<contextual_tasks::mojom::Page> page_;
-
-  base::ObserverList<contextual_tasks::ContextualTasksUIInterface::Observer>
-      observers_;
 
   mojo::Receiver<contextual_tasks_internals::mojom::
                      ContextualTasksInternalsPageHandlerFactory>

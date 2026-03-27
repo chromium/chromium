@@ -524,7 +524,6 @@ void ContextualTasksUI::CreatePageHandler(
     }
   }
 #endif
-  OnInitComplete();
 }
 
 void ContextualTasksUI::OnRefreshTokenUpdatedForAccount(
@@ -627,26 +626,6 @@ const GURL& ContextualTasksUI::GetInnerFrameUrl() const {
 
 content::WebContents* ContextualTasksUI::GetInnerWebContents() const {
   return embedded_web_contents_.get();
-}
-
-bool ContextualTasksUI::IsInitComplete() {
-  return page_handler_ != nullptr;
-}
-
-void ContextualTasksUI::OnInitComplete() {
-  for (auto& observer : observers_) {
-    observer.OnInitComplete();
-  }
-}
-
-void ContextualTasksUI::AddObserver(
-    contextual_tasks::ContextualTasksUIInterface::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ContextualTasksUI::RemoveObserver(
-    contextual_tasks::ContextualTasksUIInterface::Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 bool ContextualTasksUI::IsShownInTab() {
@@ -999,8 +978,7 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
   GURL last_committed_url =
       tab ? tab->GetContents()->GetLastCommittedURL() : GURL::EmptyGURL();
 
-  if (!CanUpdateSuggestedTabContext(tab, last_committed_url) ||
-      !GetTaskId().has_value()) {
+  if (!CanUpdateSuggestedTabContext(tab, last_committed_url)) {
 #if !BUILDFLAG(IS_ANDROID)
     if (composebox_handler_) {
       // Inform the handler that the current tab cannot be added as an autochip.

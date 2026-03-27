@@ -183,9 +183,6 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is to a contextual tasks WebUI page.
   static bool IsContextualTasksUrl(const GURL& url);
 
-  // Gets the contextual task Id from a contextual task host URL.
-  static base::Uuid GetTaskIdFromUrl(const GURL& url);
-
   // Returns whether the provided URL represents a contextual tasks "display
   // URL" that should lead to the contextual tasks WebUI page upon navigation.
   bool IsContextualTasksDisplayUrl(const GURL& url);
