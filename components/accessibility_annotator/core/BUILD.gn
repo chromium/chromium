@@ -21,6 +21,7 @@ source_set("core") {
     "//components/accessibility_annotator/core/storage",
     "//components/history/core/browser",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core",
     "//url",
   ]
 }

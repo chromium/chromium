@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/annotation_reducer/one_p_service.pb.h"
+#include "components/accessibility_annotator/core/annotation_reducer/util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -237,23 +238,8 @@ void OnePResolverImpl::OnModelExecutionComplete(
     return;
   }
 
-  std::string_view response_string = response->answer();
-
-  // Strip markdown code blocks if present. Models may wrap JSON in
-  // ```json...```.
-  if (base::StartsWith(response_string, "```json",
-                       base::CompareCase::SENSITIVE)) {
-    response_string.remove_prefix(7);
-  } else if (base::StartsWith(response_string, "```",
-                              base::CompareCase::SENSITIVE)) {
-    response_string.remove_prefix(3);
-  }
-
-  if (base::EndsWith(response_string, "```", base::CompareCase::SENSITIVE)) {
-    response_string.remove_suffix(3);
-  }
-
-  response_string = base::TrimWhitespaceASCII(response_string, base::TRIM_ALL);
+  std::string_view response_string =
+      StripMarkdownCodeBlocks(response->answer());
 
   // Parse the sanitized model response string into JSON.
   std::optional<base::Value> value =

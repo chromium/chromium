@@ -21,9 +21,10 @@
 namespace accessibility_annotator {
 
 AccessibilityQueryService::AccessibilityQueryService(
-    std::vector<std::unique_ptr<MemoryDataProvider>> data_providers)
+    std::vector<std::unique_ptr<MemoryDataProvider>> data_providers,
+    optimization_guide::RemoteModelExecutor* remote_model_executor)
     : data_providers_(std::move(data_providers)),
-      classifier_(CreateQueryClassifier()) {}
+      classifier_(CreateQueryClassifier(remote_model_executor)) {}
 
 AccessibilityQueryService::~AccessibilityQueryService() = default;
 
@@ -40,7 +41,16 @@ void AccessibilityQueryService::Query(
     return;
   }
 
-  ClassifiedQuery classified_query = classifier_.Run(std::u16string(query));
+  classifier_.Run(
+      std::u16string(query),
+      base::BindOnce(&AccessibilityQueryService::OnClassificationComplete,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(update_callback)));
+}
+
+void AccessibilityQueryService::OnClassificationComplete(
+    base::RepeatingCallback<void(MemorySearchResults)> update_callback,
+    ClassifiedQuery classified_query) {
   if (classified_query.intent == QueryIntentType::kUnknown) {
     update_callback.Run(
         MemorySearchResults(MemorySearchStatus::kUnsupportedQuery));

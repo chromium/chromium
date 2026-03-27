@@ -13,25 +13,65 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/util.h"
+
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/features/annotation_reducer_query_classifier.pb.h"
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 namespace accessibility_annotator {
 
 namespace {
 
-ClassifiedQuery CompositeClassify(base::span<const QueryClassifier> classifiers,
-                                  std::u16string_view query) {
-  for (const QueryClassifier& classifier : classifiers) {
-    ClassifiedQuery classified_query = classifier.Run(query);
-    if (classified_query.intent != QueryIntentType::kUnknown) {
-      return classified_query;
-    }
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+// The key for the intent string in the JSON returned by Gemini.
+constexpr char kIntentKeyFromGemini[] = "intent";
+// The key for the filter words list in the JSON returned by Gemini.
+constexpr char kFilterWordsKeyFromGemini[] = "filter_words";
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+
+// Calls the classifiers sequentially until one of them returns a result
+// different than `QueryIntentType::kUnknown`. The `index` parameter indicates
+// the current classifier to try.
+void CompositeClassify(std::vector<QueryClassifier> classifiers,
+                       size_t index,
+                       std::u16string query,
+                       base::OnceCallback<void(ClassifiedQuery)> callback) {
+  // If all classifiers were queried, return ClassifiedQuery with unknown
+  // intent.
+  if (index >= classifiers.size()) {
+    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+    return;
   }
-  return ClassifiedQuery(QueryIntentType::kUnknown);
+
+  classifiers[index].Run(
+      query, base::BindOnce(
+                 [](std::vector<QueryClassifier> classifiers, size_t index,
+                    std::u16string query,
+                    base::OnceCallback<void(ClassifiedQuery)> callback,
+                    ClassifiedQuery result) {
+                   // The first classifier that finds a result returns it.
+                   if (result.intent != QueryIntentType::kUnknown) {
+                     std::move(callback).Run(std::move(result));
+                     return;
+                   }
+                   // If `QueryIntentType::kUnknown` was returned from the
+                   // previous classifier, delegate the request to the next
+                   // classifier.
+                   CompositeClassify(std::move(classifiers), index + 1,
+                                     std::move(query), std::move(callback));
+                 },
+                 std::move(classifiers), index, query, std::move(callback)));
 }
 
 // Classifies the query by performing substring matching against a predefined
@@ -39,7 +79,8 @@ ClassifiedQuery CompositeClassify(base::span<const QueryClassifier> classifiers,
 // punctuation, and stripping stop words before attempting matches. If a
 // keyword phrase is found as a standalone phrase, it sets the corresponding
 // intent and extracts the remaining words in the query as required words.
-ClassifiedQuery KeywordQueryClassify(std::u16string_view query) {
+void KeywordQueryClassify(std::u16string_view query,
+                          base::OnceCallback<void(ClassifiedQuery)> callback) {
   // Hardcoded list of stop words.
   // TODO(crbug.com/485682510): Load stopwords from a single JSON.
   static constexpr auto kStopWords =
@@ -88,7 +129,8 @@ ClassifiedQuery KeywordQueryClassify(std::u16string_view query) {
   normalized_query = base::JoinString(all_words, u" ");
 
   if (normalized_query.empty()) {
-    return ClassifiedQuery(QueryIntentType::kUnknown);
+    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+    return;
   }
 
   QueryIntentType matched_intent = QueryIntentType::kUnknown;
@@ -248,7 +290,8 @@ ClassifiedQuery KeywordQueryClassify(std::u16string_view query) {
   try_match(QueryIntentType::kIban, u"iban", u"bank account");
 
   if (matched_intent == QueryIntentType::kUnknown) {
-    return ClassifiedQuery(QueryIntentType::kUnknown);
+    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+    return;
   }
 
   // Remove the matched keyword phrase from the query and extract the remaining
@@ -258,13 +301,100 @@ ClassifiedQuery KeywordQueryClassify(std::u16string_view query) {
   std::vector<std::u16string> filter_words = base::SplitString(
       normalized_query, u" ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  return ClassifiedQuery(matched_intent, std::move(filter_words));
+  std::move(callback).Run(
+      ClassifiedQuery(matched_intent, std::move(filter_words)));
 }
 
-ClassifiedQuery GeminiClassify(std::u16string_view query) {
-  // TODO(crbug.com/490211801): Implement Gemini model call within MES.
-  return ClassifiedQuery(QueryIntentType::kUnknown);
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+// Handles the completion of the Gemini model execution. Sanitizes the
+// response string (stripping Markdown if present), parses the JSON
+// classification result, and invokes the `callback` with the identified
+// intent and filter words.
+void OnGeminiClassificationComplete(
+    base::OnceCallback<void(ClassifiedQuery)> callback,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  auto callback_with_unknown_type = [&]() {
+    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+  };
+
+  if (!result.response.has_value()) {
+    callback_with_unknown_type();
+    return;
+  }
+
+  const optimization_guide::proto::Any& response_any = result.response.value();
+  std::optional<
+      optimization_guide::proto::AnnotationReducerQueryClassifierResponse>
+      response = optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::AnnotationReducerQueryClassifierResponse>(
+          response_any);
+
+  if (!response || response->classification().empty()) {
+    callback_with_unknown_type();
+    return;
+  }
+
+  std::string_view response_string =
+      StripMarkdownCodeBlocks(response->classification());
+
+  // Parse the sanitized model response string into JSON.
+  // The expected format is {"intent": "...", "filter_words": ["...", "..."]}
+  std::optional<base::Value> value =
+      base::JSONReader::Read(response_string, base::JSON_PARSE_RFC);
+  if (!value || !value->is_dict()) {
+    callback_with_unknown_type();
+    return;
+  }
+
+  const base::DictValue* dict = value->GetIfDict();
+  if (!dict) {
+    callback_with_unknown_type();
+    return;
+  }
+
+  const std::string* intent_str = dict->FindString(kIntentKeyFromGemini);
+  if (!intent_str) {
+    callback_with_unknown_type();
+    return;
+  }
+
+  QueryIntentType intent = StringToQueryIntentType(*intent_str);
+  std::vector<std::u16string> filter_words;
+
+  if (const base::ListValue* filter_words_list =
+          dict->FindList(kFilterWordsKeyFromGemini)) {
+    for (const auto& filter_word : *filter_words_list) {
+      if (filter_word.is_string()) {
+        filter_words.push_back(base::UTF8ToUTF16(filter_word.GetString()));
+      }
+    }
+  }
+
+  std::move(callback).Run(ClassifiedQuery(intent, std::move(filter_words)));
 }
+
+// Initiates an asynchronous classification of the `query` using the Gemini
+// model via the provided `remote_model_executor`.
+void GeminiClassify(
+    optimization_guide::RemoteModelExecutor* remote_model_executor,
+    std::u16string_view query,
+    base::OnceCallback<void(ClassifiedQuery)> callback) {
+  if (!remote_model_executor) {
+    std::move(callback).Run(ClassifiedQuery(QueryIntentType::kUnknown));
+    return;
+  }
+
+  optimization_guide::proto::AnnotationReducerQueryClassifierRequest request;
+  request.set_query(base::UTF16ToUTF8(query));
+
+  remote_model_executor->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::
+          kAnnotationReducerQueryClassifier,
+      request, optimization_guide::ModelExecutionOptions(),
+      base::BindOnce(&OnGeminiClassificationComplete, std::move(callback)));
+}
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 }  // namespace
 
@@ -278,11 +408,15 @@ ClassifiedQuery::ClassifiedQuery(ClassifiedQuery&&) = default;
 ClassifiedQuery& ClassifiedQuery::operator=(ClassifiedQuery&&) = default;
 ClassifiedQuery::~ClassifiedQuery() = default;
 
-QueryClassifier CreateQueryClassifier() {
+QueryClassifier CreateQueryClassifier(
+    optimization_guide::RemoteModelExecutor* remote_model_executor) {
   std::vector<QueryClassifier> classifiers = {
       internal::CreateKeywordQueryClassifier(),
-      internal::CreateGeminiClassifier()};
-  return base::BindRepeating(&CompositeClassify, std::move(classifiers));
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+      internal::CreateGeminiClassifier(remote_model_executor)
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+  };
+  return base::BindRepeating(&CompositeClassify, std::move(classifiers), 0);
 }
 
 namespace internal {
@@ -307,12 +441,25 @@ bool ContainsStandalonePhrase(std::u16string_view haystack,
 }
 
 QueryClassifier CreateKeywordQueryClassifier() {
-  return base::BindRepeating(&KeywordQueryClassify);
+  return base::BindRepeating(
+      [](std::u16string query,
+         base::OnceCallback<void(ClassifiedQuery)> callback) {
+        KeywordQueryClassify(query, std::move(callback));
+      });
 }
 
-QueryClassifier CreateGeminiClassifier() {
-  return base::BindRepeating(&GeminiClassify);
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+QueryClassifier CreateGeminiClassifier(
+    optimization_guide::RemoteModelExecutor* remote_model_executor) {
+  return base::BindRepeating(
+      [](optimization_guide::RemoteModelExecutor* remote_model_executor,
+         std::u16string query,
+         base::OnceCallback<void(ClassifiedQuery)> callback) {
+        GeminiClassify(remote_model_executor, query, std::move(callback));
+      },
+      remote_model_executor);
 }
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 }  // namespace internal
 

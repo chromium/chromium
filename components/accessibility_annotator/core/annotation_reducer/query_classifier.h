@@ -11,6 +11,11 @@
 
 #include "base/functional/callback.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
+
+namespace optimization_guide {
+class RemoteModelExecutor;
+}  // namespace optimization_guide
 
 namespace accessibility_annotator {
 
@@ -35,13 +40,15 @@ struct ClassifiedQuery {
   std::vector<std::u16string> filter_words;
 };
 
-// A callback that classifies the intent of a given query.
+// A callback that classifies the intent of a given query asynchronously.
 using QueryClassifier =
-    base::RepeatingCallback<ClassifiedQuery(std::u16string_view)>;
+    base::RepeatingCallback<void(std::u16string,
+                                 base::OnceCallback<void(ClassifiedQuery)>)>;
 
 // Creates a default instance of the query classifier, which orchestrates
 // multiple underlying classifiers.
-QueryClassifier CreateQueryClassifier();
+QueryClassifier CreateQueryClassifier(
+    optimization_guide::RemoteModelExecutor* remote_model_executor);
 
 namespace internal {
 
@@ -58,9 +65,12 @@ bool ContainsStandalonePhrase(std::u16string_view haystack,
 // Creates a query classifier that uses keyword matching.
 QueryClassifier CreateKeywordQueryClassifier();
 
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 // Creates a query classifier that uses Gemini within Model Execution
 // Service.
-QueryClassifier CreateGeminiClassifier();
+QueryClassifier CreateGeminiClassifier(
+    optimization_guide::RemoteModelExecutor* remote_model_executor);
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 }  // namespace internal
 

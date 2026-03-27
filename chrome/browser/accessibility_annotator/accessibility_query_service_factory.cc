@@ -11,6 +11,8 @@
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/core/accessibility_query_service.h"
 #include "components/accessibility_annotator/core/annotation_reducer/sync_bridge_data_provider.h"
@@ -39,6 +41,7 @@ AccessibilityQueryServiceFactory::AccessibilityQueryServiceFactory()
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
   DependsOn(AccessibilityAnnotatorBackendFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 AccessibilityQueryServiceFactory::~AccessibilityQueryServiceFactory() = default;
@@ -57,13 +60,17 @@ AccessibilityQueryServiceFactory::BuildServiceInstanceForBrowserContext(
       autofill::PersonalDataManagerFactory::GetForBrowserContext(context),
       autofill::AutofillEntityDataManagerFactory::GetForProfile(profile)));
 
+  auto* optimization_guide_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+
   if (auto* backend =
           AccessibilityAnnotatorBackendFactory::GetForProfile(profile)) {
     data_providers.push_back(
         std::make_unique<SyncBridgeDataProvider>(*backend));
   }
 
-  return std::make_unique<AccessibilityQueryService>(std::move(data_providers));
+  return std::make_unique<AccessibilityQueryService>(
+      std::move(data_providers), optimization_guide_service);
 }
 
 bool AccessibilityQueryServiceFactory::ServiceIsCreatedWithBrowserContext()

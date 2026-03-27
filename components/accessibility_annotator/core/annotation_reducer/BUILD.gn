@@ -42,12 +42,17 @@ source_set("annotation_reducer") {
     "query_intent_type_util.h",
     "sync_bridge_data_provider.cc",
     "sync_bridge_data_provider.h",
+    "util.cc",
+    "util.h",
   ]
 
   public_deps = [ "//base" ]
   deps = [
     "//components/accessibility_annotator/core/data_models",
     "//components/accessibility_annotator/core/storage",
+    "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
 
@@ -69,6 +74,10 @@ source_set("unit_tests") {
     "//components/accessibility_annotator/core/data_models",
     "//components/accessibility_annotator/core/storage",
     "//components/accessibility_annotator/core/storage:test_support",
+    "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/core:model_execution_test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
