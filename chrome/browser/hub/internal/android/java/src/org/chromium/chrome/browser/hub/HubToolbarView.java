@@ -50,7 +50,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
-import org.chromium.chrome.browser.ui.actions.FullButtonData;
+import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.interpolators.Interpolators;

@@ -6,14 +6,15 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/actions/ActionButtonData.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionId.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionRegistry.java",
-    "java/src/org/chromium/chrome/browser/ui/actions/DelegateButtonData.java",
-    "java/src/org/chromium/chrome/browser/ui/actions/DisplayButtonData.java",
-    "java/src/org/chromium/chrome/browser/ui/actions/DrawableButtonData.java",
-    "java/src/org/chromium/chrome/browser/ui/actions/FullButtonData.java",
-    "java/src/org/chromium/chrome/browser/ui/actions/ResourceButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/button/ActionButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/button/DelegateButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/button/DisplayButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/button/DrawableButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/button/FullButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/button/ResourceButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/button/TabSwitcherDrawableButtonData.java",
   ]
 
   deps = [
@@ -28,9 +29,9 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.actions"
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/actions/ActionRegistryUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/actions/DelegateButtonDataUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/actions/DrawableButtonDataUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/actions/ResourceButtonDataUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/button/DelegateButtonDataUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/button/DrawableButtonDataUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/button/ResourceButtonDataUnitTest.java",
   ]
 
   deps = [

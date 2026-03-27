@@ -13,7 +13,7 @@ import android.widget.Button;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.actions.FullButtonData;
+import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 
 /** Util class for applying data to buttons. */
 @NullMarked

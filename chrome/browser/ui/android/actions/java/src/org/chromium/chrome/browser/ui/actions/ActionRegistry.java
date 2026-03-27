@@ -10,6 +10,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 
 /**
  * A central registry for {@link FullButtonData}, allowing components to register actions that other

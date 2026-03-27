@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 
 /** Unit tests for {@link ActionRegistry}. */
 @RunWith(BaseRobolectricTestRunner.class)

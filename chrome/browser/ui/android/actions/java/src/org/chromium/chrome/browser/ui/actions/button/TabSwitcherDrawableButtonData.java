@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.hub;
+package org.chromium.chrome.browser.ui.actions.button;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -12,7 +12,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.actions.DrawableButtonData;
 
 import java.util.Objects;
 
