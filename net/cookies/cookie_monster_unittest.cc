@@ -8640,7 +8640,9 @@ TEST_F(CookieMonsterTest, RejectsHiddenHttpPrefix) {
       /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
   EXPECT_FALSE(cookie);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_AMBIGUOUS_SERIALIZATION}));
 }
 
 // Test that hidden __Host-Http- prefixes in cookie values are rejected.
@@ -8661,7 +8663,9 @@ TEST_F(CookieMonsterTest, RejectsHiddenHostHttpPrefix) {
       /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther, &status);
   EXPECT_FALSE(cookie);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_AMBIGUOUS_SERIALIZATION}));
 }
 
 }  // namespace net

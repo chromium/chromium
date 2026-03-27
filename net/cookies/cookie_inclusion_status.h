@@ -113,8 +113,13 @@ class NET_EXPORT CookieInclusionStatus {
     // Cookie was set with an invalid Path attribute (path was modified during
     // canonicalization, indicating the original path was malformed).
     EXCLUDE_INVALID_PATH = 28,
+    // Cookie was rejected in parsing due to having an ambiguous serialization.
+    // This can result from having an empty name and a value containing an
+    // equals sign, such as a cookie line "=Foo=Bar", which is serialized as
+    // "Foo=Bar" and could shadow a cookie named "Foo".
+    EXCLUDE_AMBIGUOUS_SERIALIZATION = 29,
     // This should be kept last.
-    MAX_EXCLUSION_REASON = EXCLUDE_INVALID_PATH
+    MAX_EXCLUSION_REASON = EXCLUDE_AMBIGUOUS_SERIALIZATION
   };
 
   // Reason to warn about a cookie. Any information contained in

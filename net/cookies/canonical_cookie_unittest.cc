@@ -522,6 +522,63 @@ TEST(CanonicalCookieTest, CreateSanitizedNonAsciiCookieNameAndValue) {
       CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER));
 }
 
+TEST(CanonicalCookieTest, ParseEmptyNameAmbiguousValue) {
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> cc;
+  base::Time creation_time = base::Time::Now();
+  std::optional<base::Time> server_time = std::nullopt;
+  GURL url("http://www.example.com/test/foo.html");
+
+  const struct TestCase {
+    const char* cookie_line;
+    bool parsed_with_feature_enabled;
+    bool parsed_with_feature_disabled;
+    const char* name_if_parsed;
+    const char* value_if_parsed;
+  } kTestCases[] = {
+      {"=Foo=Bar", false, true, "", "Foo=Bar"},
+      {"  =Foo=Bar", false, true, "", "Foo=Bar"},
+      {"=Foo = Bar", false, true, "", "Foo = Bar"},
+      {"=Foo", true, true, "", "Foo"},
+      {"==Bar", false, true, "", "=Bar"},
+      {"Foo", true, true, "", "Foo"},
+      {"Foo=Bar", true, true, "Foo", "Bar"},
+      {"=Foo=Bar; Secure; HttpOnly", false, true, "", "Foo=Bar"},
+      {"=Foo; Path=/test; Secure; SameSite=Lax", true, true, "", "Foo"},
+      {"Foo", true, true, "", "Foo"},
+      {"Secure", true, true, "", "Secure"},
+  };
+
+  const auto run_test = [&](bool TestCase::* expect_parsed) {
+    for (const auto& test_case : kTestCases) {
+      for (const auto source_type :
+           {CookieSourceType::kHTTP, CookieSourceType::kScript}) {
+        cc = CanonicalCookie::Create(url, test_case.cookie_line, creation_time,
+                                     server_time, std::nullopt, source_type,
+                                     &status);
+        EXPECT_EQ(cc != nullptr, test_case.*expect_parsed);
+        EXPECT_EQ(status.IsInclude(), test_case.*expect_parsed);
+        if (cc) {
+          EXPECT_EQ(cc->Name(), test_case.name_if_parsed);
+          EXPECT_EQ(cc->Value(), test_case.value_if_parsed);
+        } else {
+          EXPECT_TRUE(
+              status.HasExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                            EXCLUDE_AMBIGUOUS_SERIALIZATION));
+        }
+      }
+    }
+  };
+
+  run_test(&TestCase::parsed_with_feature_enabled);
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        features::kCookieParseRejectEmptyNameAmbiguous);
+    run_test(&TestCase::parsed_with_feature_disabled);
+  }
+}
+
 // Test that a cookie string with an empty domain attribute generates a
 // canonical host cookie.
 TEST(CanonicalCookieTest, CreateHostCookieFromString) {
@@ -3089,7 +3146,9 @@ TEST(CanonicalCookieTest, SecureCookiePrefix) {
                                        /*cookie_partition_key=*/std::nullopt,
                                        CookieSourceType::kOther, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_AMBIGUOUS_SERIALIZATION}));
   EXPECT_FALSE(CanonicalCookie::Create(https_url, "=__Secure-A; Secure",
                                        creation_time, server_time,
                                        /*cookie_partition_key=*/std::nullopt,
@@ -3225,7 +3284,9 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
       /*cookie_partition_key=*/std::nullopt, CookieSourceType::kOther,
       &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_AMBIGUOUS_SERIALIZATION}));
   EXPECT_FALSE(CanonicalCookie::Create(https_url, "=__Host-A; Path=/; Secure;",
                                        creation_time, server_time,
                                        /*cookie_partition_key=*/std::nullopt,
@@ -3255,7 +3316,9 @@ TEST(CanonicalCookieTest, HiddenHttpCookiePrefix) {
       server_time, /*cookie_partition_key=*/std::nullopt,
       CookieSourceType::kOther, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_AMBIGUOUS_SERIALIZATION}));
 
   EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "=__Http-A; Secure; HttpOnly;", creation_time, server_time,
@@ -3285,7 +3348,9 @@ TEST(CanonicalCookieTest, HiddenHostHttpCookiePrefix) {
       creation_time, server_time, /*cookie_partition_key=*/std::nullopt,
       CookieSourceType::kOther, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_AMBIGUOUS_SERIALIZATION}));
 
   // While tricky, this isn't considered hidden and is fine.
   EXPECT_TRUE(CanonicalCookie::CreateForTesting(
@@ -4028,6 +4093,12 @@ TEST(CanonicalCookieTest, TestEmptyNameHistograms) {
   CookieSourceType source_type = CookieSourceType::kHTTP;
   CookieInclusionStatus status;
 
+  // Some of these cookies are forbidden by the base::Feature below, so disable
+  // it to test the histogram.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kCookieParseRejectEmptyNameAmbiguous);
+
   {
     base::HistogramTester histograms;
     EXPECT_TRUE(CanonicalCookie::Create(
@@ -4085,8 +4156,12 @@ TEST(CanonicalCookieTest, BuildCookieLine) {
                                         CookieSourceType::kOther, server_time));
   MatchCookieLineToVector("A=B; C; D=E; F=G; D=E", cookies);
   // BuildCookieLine should match the spec in the case of an empty name with a
-  // value containing an equal sign (even if it currently produces "invalid"
-  // cookie lines).
+  // value containing an equal sign (even if it produces "invalid" cookie lines
+  // and creating such a cookie requires disabling a default enabled
+  // base::Feature).
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kCookieParseRejectEmptyNameAmbiguous);
   cookies.push_back(CanonicalCookie::CreateForTesting(
       url, "=H=I", now, CookieSourceType::kOther, server_time));
   MatchCookieLineToVector("A=B; C; D=E; F=G; D=E; H=I", cookies);
@@ -4108,12 +4183,18 @@ TEST(CanonicalCookieTest, BuildCookieAttributesLine) {
   EXPECT_EQ("C; domain=example.com; path=/",
             CanonicalCookie::BuildCookieAttributesLine(*cookie));
   // BuildCookieAttributesLine should match the spec in the case of an empty
-  // name with a value containing an equal sign (even if it currently produces
-  // "invalid" cookie lines).
-  cookie = CanonicalCookie::CreateForTesting(
-      url, "=H=I", now, CookieSourceType::kOther, server_time);
-  EXPECT_EQ("H=I; domain=example.com; path=/",
-            CanonicalCookie::BuildCookieAttributesLine(*cookie));
+  // name with a value containing an equal sign (even if it produces "invalid"
+  // cookie lines and creating such a cookie requires disabling a default
+  // enabled base::Feature).
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        features::kCookieParseRejectEmptyNameAmbiguous);
+    cookie = CanonicalCookie::CreateForTesting(
+        url, "=H=I", now, CookieSourceType::kOther, server_time);
+    EXPECT_EQ("H=I; domain=example.com; path=/",
+              CanonicalCookie::BuildCookieAttributesLine(*cookie));
+  }
   // BuildCookieAttributesLine should include all attributes.
   cookie = CanonicalCookie::CreateForTesting(
       url,

@@ -259,6 +259,8 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {ExclusionReason::EXCLUDE_NO_COOKIE_CONTENT, "EXCLUDE_NO_COOKIE_CONTENT"},
       {ExclusionReason::EXCLUDE_ANONYMOUS_CONTEXT, "EXCLUDE_ANONYMOUS_CONTEXT"},
       {ExclusionReason::EXCLUDE_INVALID_PATH, "EXCLUDE_INVALID_PATH"},
+      {ExclusionReason::EXCLUDE_AMBIGUOUS_SERIALIZATION,
+       "EXCLUDE_AMBIGUOUS_SERIALIZATION"},
   };
   static_assert(
       std::size(exclusion_reasons) == ExclusionReasonBitset::kValueCount,

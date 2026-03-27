@@ -356,6 +356,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (parsed_cookie.Name().empty()) {
     UMA_HISTOGRAM_BOOLEAN("Cookie.Parse.EmptyNameAmbiguousValue",
                           parsed_cookie.Value().contains('='));
+
+    if (base::FeatureList::IsEnabled(
+            net::features::kCookieParseRejectEmptyNameAmbiguous) &&
+        parsed_cookie.Value().contains('=')) {
+      status->AddExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_AMBIGUOUS_SERIALIZATION);
+    }
   }
 
   std::optional<std::string> cookie_domain =

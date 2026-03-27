@@ -841,6 +841,12 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpSocketPoolProxyLimitWebSocket);
 // for the kDnsOverHttps partition.
 NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreQuicCryptoConfigMemoryPressureForDoh);
 
+// If enabled, cookie parsing will reject a cookie line whose first
+// semicolon-separated substring looks like "=Foo=Bar", i.e. starts with an
+// equals sign and has another equals sign. Such cookies have an ambiguous
+// serialization.
+NET_EXPORT BASE_DECLARE_FEATURE(kCookieParseRejectEmptyNameAmbiguous);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

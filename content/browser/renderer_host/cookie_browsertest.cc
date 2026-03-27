@@ -672,7 +672,33 @@ class RestrictedCookieManagerInterceptor
   mojo::Remote<network::mojom::RestrictedCookieManager> real_rcm_;
 };
 
-IN_PROC_BROWSER_TEST_P(CookieBrowserTest, NoNameCookieMetrics) {
+// For tests of the UseCounters about nameless cookies, we disable the
+// base::Feature that forbids some of these cookies from being created.
+class CookieBrowserTestAllowingNamelessAmbiguous : public CookieBrowserTest {
+ public:
+  CookieBrowserTestAllowingNamelessAmbiguous() {
+    features_.InitAndDisableFeature(
+        net::features::kCookieParseRejectEmptyNameAmbiguous);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CookieBrowserTestAllowingNamelessAmbiguous,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      std::string name =
+          std::get<0>(info.param) ? "GetOnSetEnabled" : "GetOnSetDisabled";
+      name += "_";
+      name += std::get<1>(info.param) ? "Async" : "Sync";
+      return name;
+    });
+
+IN_PROC_BROWSER_TEST_P(CookieBrowserTestAllowingNamelessAmbiguous,
+                       NoNameCookieMetrics) {
   UseCounterTrackingContentBrowserClient content_browser_client;
 
   // Same-Site:none w/o Secure cookies are used to count cookie sets.
