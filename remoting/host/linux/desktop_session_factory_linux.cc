@@ -242,8 +242,8 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::SetScreenResolution(
     const ScreenResolution& resolution) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO: crbug.com/475611769 - Implement.
-  NOTIMPLEMENTED_LOG_ONCE();
+  // No-op since screen resolution change is always handled by the desktop
+  // process.
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::ReconnectNetworkChannel(

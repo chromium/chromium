@@ -22,7 +22,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
@@ -198,7 +197,7 @@ std::unique_ptr<DesktopSession> DaemonProcessLinux::DoCreateDesktopSession(
 void DaemonProcessLinux::DoCrashNetworkProcess(const base::Location& location) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  NOTIMPLEMENTED();
+  network_launcher_->Crash(location);
 }
 
 void DaemonProcessLinux::LaunchNetworkProcess() {
