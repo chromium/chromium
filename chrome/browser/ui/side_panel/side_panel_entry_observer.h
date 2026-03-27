@@ -30,6 +30,17 @@ class SidePanelEntryObserver : public base::CheckedObserver {
   // Called when a SidePanelEntry is hidden.
   virtual void OnEntryHidden(SidePanelEntry* entry) {}
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/496962614): Combine with above method, update all
+  // implementations, and bring to Desktop.
+  // Note: We don't overload this method with OnEntryHidden(SidePanelEntry*)
+  // because it would cause ambiguity when using base::ObserverList::Notify
+  // with a member function pointer.
+  // Called when a SidePanelEntry is hidden.
+  virtual void OnEntryHiddenWithReason(SidePanelEntry* entry,
+                                       SidePanelEntryHideReason reason) {}
+#endif
+
  protected:
   ~SidePanelEntryObserver() override = default;
 };
