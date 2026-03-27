@@ -1204,8 +1204,10 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
     viewport.height = static_cast<float>(input_coded_size.height());
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
-    CHECK(viewport.width <= 10000.0f && viewport.width >= 0.0f);
-    CHECK(viewport.height <= 10000.0f && viewport.height >= 0.0f);
+    CHECK(0.0f <= viewport.width &&
+          viewport.width <= static_cast<float>(pivot_image_->size().width()));
+    CHECK(0.0f <= viewport.height &&
+          viewport.height <= static_cast<float>(pivot_image_->size().height()));
     vkCmdSetViewport(record.handle(), 0, 1, &viewport);
 
     VkRect2D scissor{};
