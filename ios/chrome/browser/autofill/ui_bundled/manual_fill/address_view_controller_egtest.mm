@@ -154,6 +154,17 @@ void CheckChipButtonsOfExampleProfile() {
   [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
+  // Scroll up a little to see clearly the address information even on smaller
+  // screens.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   ChipButton(profile.GetInfo(
+                                       autofill::ADDRESS_HOME_LINE2, locale)),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 50)
+      onElementWithMatcher:manual_fill::ProfilesTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
   CheckChipButtonVisibility(
       profile.GetInfo(autofill::ADDRESS_HOME_CITY, locale));
   CheckChipButtonVisibility(
