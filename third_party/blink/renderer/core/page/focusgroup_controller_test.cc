@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
@@ -3124,6 +3125,122 @@ TEST_F(FocusgroupControllerTest, FocusgroupTabEscapeFromTextarea) {
   SendTab(ta);
   EXPECT_EQ(GetDocument().FocusedElement(), b)
       << "Tab from <textarea> should go to adjacent item (B)";
+}
+
+// Exercises arrow key handler behavior with radio button elements.
+// Radio buttons are arrow key handlers because they consume arrow keys
+// on both axes for radio group navigation. When a radio button is focused,
+// focusgroup arrow navigation should not move focus away from it, preventing
+// focus traps where native radio navigation conflicts with focusgroup
+// navigation.
+TEST_F(FocusgroupControllerTest, FocusgroupWithRadio) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=btn1 type="button">Bold</button>
+      <label><input id=r1 type="radio" name="a">radio 1</label>
+      <label><input id=r2 type="radio" name="a">radio 2</label>
+      <button id=btn2 type="button">Italic</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* btn1 = GetElementById("btn1");
+  auto* r1 = GetElementById("r1");
+  auto* r2 = GetElementById("r2");
+  auto* btn2 = GetElementById("btn2");
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(r1);
+  ASSERT_TRUE(r2);
+  ASSERT_TRUE(btn2);
+
+  // Arrow key can navigate TO the radio button (entry works).
+  btn1->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), btn1);
+  auto* right_event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, btn1);
+  SendEvent(right_event);
+  EXPECT_EQ(GetDocument().FocusedElement(), r1)
+      << "Arrow right should navigate to radio (entry allowed)";
+
+  // Once focused on a radio, arrow right should move to r2 via native radio
+  // group navigation, NOT to btn2 via focusgroup.
+  auto* right_from_radio = KeyDownEvent(ui::DomKey::ARROW_RIGHT, r1);
+  SendEvent(right_from_radio);
+  EXPECT_EQ(GetDocument().FocusedElement(), r2)
+      << "Arrow from r1 should navigate to r2 via native radio navigation";
+
+  // Tab from radio: focus should move to the next adjacent focusgroup item
+  // (btn2), ensuring content after the arrow key handler remains reachable.
+  auto* tab_event = KeyDownEvent(ui::DomKey::TAB, r2);
+  SendEvent(tab_event);
+  EXPECT_EQ(GetDocument().FocusedElement(), btn2)
+      << "Tab from radio arrow key handler should go to next adjacent item";
+}
+
+// Exercises Shift+Tab from a radio arrow key handler in a separate test to
+// keep assertions independent.
+TEST_F(FocusgroupControllerTest, FocusgroupWithRadioShiftTab) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=btn1 type="button">Bold</button>
+      <label><input id=r1 type="radio" name="a">radio 1</label>
+      <label><input id=r2 type="radio" name="a">radio 2</label>
+      <button id=btn2 type="button">Italic</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* btn1 = GetElementById("btn1");
+  auto* r1 = GetElementById("r1");
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(r1);
+
+  r1->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), r1);
+
+  auto* shift_tab_event =
+      KeyDownEvent(ui::DomKey::TAB, r1, WebInputEvent::kShiftKey);
+  SendEvent(shift_tab_event);
+  // Shift+Tab from r1: the focused arrow key handler entry override ensures
+  // adjacent items are reachable. btn1 is the previous adjacent item.
+  EXPECT_EQ(GetDocument().FocusedElement(), btn1)
+      << "Shift+Tab from radio arrow key handler should go to previous "
+         "adjacent item";
+}
+
+// Tab from an unchecked radio that was focused via native radio group
+// navigation. The focused arrow key handler entry override ensures the next
+// adjacent focusable item is reachable.
+TEST_F(FocusgroupControllerTest, FocusgroupWithUncheckedRadioTab) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=btn1 type="button">Bold</button>
+      <label><input id=r1 type="radio" name="a">radio 1</label>
+      <label><input id=r2 type="radio" name="a" checked>radio 2</label>
+      <button id=btn2 type="button">Italic</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* r1 = GetElementById("r1");
+  auto* r2 = GetElementById("r2");
+  ASSERT_TRUE(r1);
+  ASSERT_TRUE(r2);
+
+  // Programmatically focus an unchecked radio (simulates what happens after
+  // native radio group arrow navigation checks a different radio).
+  r1->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), r1);
+  ASSERT_FALSE(To<HTMLInputElement>(r1)->Checked());
+
+  auto* tab_event = KeyDownEvent(ui::DomKey::TAB, r1);
+  SendEvent(tab_event);
+  // The focused arrow key handler entry override makes all other items in
+  // the focusgroup reachable. r2 (checked) is keyboard-focusable and is the
+  // next adjacent item.
+  EXPECT_NE(GetDocument().FocusedElement(), GetDocument().body())
+      << "Tab must not escape the focusgroup entirely";
+  EXPECT_EQ(GetDocument().FocusedElement(), r2)
+      << "Tab from unchecked radio should go to next adjacent item";
 }
 
 }  // namespace blink

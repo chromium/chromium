@@ -805,7 +805,13 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
       continue;
     }
     if (opted_out_subtree_root) {
-      if (ContainsKeyboardFocusableContent(*opted_out_subtree_root)) {
+      // A focused element always acts as a segment barrier. The user is
+      // currently interacting with this element and Tab must be able to
+      // escape past it. This matters for elements that are focused but not
+      // keyboard-focusable in the sequential sense (e.g., an unchecked radio
+      // button focused via native radio group arrow navigation).
+      if (opted_out_subtree_root->IsFocusedElementInDocument() ||
+          ContainsKeyboardFocusableContent(*opted_out_subtree_root)) {
         return nullptr;
       }
       // Since we've determined this excluded subtree has no focusable content,

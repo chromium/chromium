@@ -2360,7 +2360,9 @@ FocusgroupFlags HTMLInputElement::NativeArrowKeyAxes() const {
   // Text fields use arrow keys for cursor movement (both axes).
   // Steppable inputs (number, range, date, etc.) use arrow keys for value
   // adjustment.
-  if (IsTextField() || IsSteppable()) {
+  // Radio buttons use arrow keys to navigate between radios in the same group.
+  if (IsTextField() || IsSteppable() ||
+      FormControlType() == FormControlType::kInputRadio) {
     return FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
   }
   return HTMLElement::NativeArrowKeyAxes();
