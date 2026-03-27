@@ -25,14 +25,11 @@ def class_accessors(sb, java_classes, module_name):
     # due to having hidden visibility. However, this duplication is safe because
     # it will always hold the same value, so the copies can't get out-of-sync.
     sb(f"""\
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunique-object-duplication"
 inline jclass {escaped_name}_clazz(JNIEnv* env) {{
   static const char kClassName[] = "{java_class.full_name_with_slashes}";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, {split_arg}&cached_class);
 }}
-#pragma clang diagnostic pop
 #endif
 
 """)
@@ -75,9 +72,20 @@ def header_preamble(script_name,
   if user_includes:
     sb.extend(f'#include "{x}"\n' for x in user_includes)
     sb.append('\n')
+
+  if not is_shared_header:
+    sb.append("""\
+// Field, class, and method accessors use inline functions with static
+// variables for caching.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunique-object-duplication"
+""")
   preamble = ''.join(sb)
 
-  epilogue = f"""
-#endif  // {header_guard}
-"""
+  sb = []
+  if not is_shared_header:
+    sb.append('#pragma clang diagnostic pop\n')
+  sb.append(f'#endif  // {header_guard}\n')
+  epilogue = ''.join(sb)
+
   return preamble, epilogue

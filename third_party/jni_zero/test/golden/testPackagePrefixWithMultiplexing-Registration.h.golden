@@ -10,6 +10,10 @@
 
 #include "overridden/jni_zero_internal.h"
 
+// Field, class, and method accessors use inline functions with static
+// variables for caching.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunique-object-duplication"
 
 extern const int64_t kJniZeroHashWhole = 3865356290363738592LL;
 extern const int64_t kJniZeroHashPriority = 0LL;
@@ -209,5 +213,5 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_VOOOOOOOOOOOOOOO
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18);
 }
 
-
+#pragma clang diagnostic pop
 #endif  // TEMP_DIR_HEADER_

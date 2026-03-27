@@ -55,5 +55,4 @@ using ::org::jni_zero::JSampleUniqueAnnotations_Handle;
 #endif
 
 
-
 #endif  // org_jni_1zero_SampleUniqueAnnotations_SHARED_JNI

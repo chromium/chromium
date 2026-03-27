@@ -151,14 +151,12 @@ class CalledByNative:
   def __init__(self,
                parsed_called_by_native,
                *,
-               is_system_class,
                unchecked=False):
     self.name = parsed_called_by_native.name
     self.signature = parsed_called_by_native.signature
     self.static = parsed_called_by_native.static
     self.unchecked = parsed_called_by_native.unchecked or unchecked
     self.java_class = parsed_called_by_native.java_class
-    self.is_system_class = is_system_class
     self.is_constructor = self.name == '<init>'
 
     # Computed once we know if overloads exist.
@@ -189,7 +187,6 @@ class Field:
   java_type: java_types.JavaType
   static: bool
   final: bool
-  is_system_class: bool
   const_value: Optional[str] = None
 
 
@@ -261,7 +258,6 @@ class JniObject:
               java_type=f.java_type,
               static=f.static,
               final=f.final,
-              is_system_class=from_javap,
               const_value=f.const_value)
         for f in parsed_file.fields
     ]
@@ -291,8 +287,7 @@ class JniObject:
     for parsed_called_by_native in parsed_file.called_by_natives:
       called_by_natives.append(
           CalledByNative(parsed_called_by_native,
-                         unchecked=from_javap and javap_unchecked_exceptions,
-                         is_system_class=from_javap))
+                         unchecked=from_javap and javap_unchecked_exceptions))
 
     _AssignMethodIdFunctionNames(parsed_file.type_resolver, called_by_natives)
     self.called_by_natives = called_by_natives
@@ -433,11 +428,8 @@ def _generate_headers(jni_mode,
     ]
     if fields_needing_accessors:
       with sb.section('FieldId Accessors'):
-        sb('#pragma clang diagnostic push\n')
-        sb('#pragma clang diagnostic ignored "-Wunique-object-duplication"\n')
         called_by_native_header.field_accessors(sb, jni_obj.java_class,
                                                 fields_needing_accessors)
-        sb('#pragma clang diagnostic pop\n')
 
   with sb.namespace(jni_obj.jni_namespace):
     if jni_obj.natives and not enable_definition_macros:

@@ -27,5 +27,4 @@ using ::org::jni_zero::JSampleModule;
 #endif
 
 
-
 #endif  // org_jni_1zero_SampleModule_SHARED_JNI

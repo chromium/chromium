@@ -111,5 +111,4 @@ using ::org::jni_zero::JSampleNonProxy_OnFrameAvailableListener;
 #endif
 
 
-
 #endif  // org_jni_1zero_SampleNonProxy_SHARED_JNI

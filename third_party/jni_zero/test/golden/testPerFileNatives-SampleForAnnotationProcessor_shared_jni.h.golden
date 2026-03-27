@@ -97,5 +97,4 @@ using ::org::stubs::JMyClass_SecondNestedInterface;
 #endif
 
 
-
 #endif  // org_jni_1zero_SampleForAnnotationProcessor_SHARED_JNI
