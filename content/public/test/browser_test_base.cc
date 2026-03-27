@@ -334,11 +334,9 @@ void BrowserTestBase::SetUp() {
   if (!UseProductionQuotaSettings()) {
     // By default use hardcoded quota settings to have a consistent testing
     // environment.
-    const int kQuota = 5 * 1024 * 1024;
-    quota_settings_ =
-        std::make_unique<storage::QuotaSettings>(kQuota * 5, kQuota, 0, 0);
-    StoragePartitionImpl::SetDefaultQuotaSettingsForTesting(
-        quota_settings_.get());
+    static storage::QuotaSettings quota_settings(
+        storage::GetHardCodedSettings(1024 * 1024 * 1024));
+    StoragePartition::SetDefaultQuotaSettingsForTesting(&quota_settings);
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

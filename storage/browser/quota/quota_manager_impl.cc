@@ -2814,9 +2814,10 @@ void QuotaManagerImpl::DidGetQuotaSettingsForBucketCreation(
     const QuotaSettings& settings) {
   const int64_t quota =
       GetQuotaForStorageKey(bucket_params.storage_key, settings);
-  int64_t max_buckets = (quota == kNoLimit) ? 0 : (quota / kTypicalBucketUsage);
-  CHECK_EQ(max_buckets == 0, IsStorageUnlimited(bucket_params.storage_key),
-           base::NotFatalUntil::M148);
+  int64_t max_buckets = (quota == kNoLimit)
+                            ? 0
+                            : std::max(int64_t{1}, quota / kTypicalBucketUsage);
+  CHECK_EQ(max_buckets == 0, IsStorageUnlimited(bucket_params.storage_key));
 
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
