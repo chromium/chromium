@@ -4,13 +4,13 @@
 
 onload = function() {
   setTimeout(function() {
-    var target =
-        "http://127.0.0.1:" +
+    const target =
+        'http://127.0.0.1:' +
         location.search.substr(1) +
-        "/extensions/api_test/webnavigation/crossProcess/empty.html";
+        '/extensions/api_test/webnavigation/crossProcess/empty.html';
     location.href =
-        "http://www.a.com:" +
+        'http://www.a.com:' +
         location.search.substr(1) +
-        "/server-redirect?" + target;
+        `/server-redirect?${target}`;
   }, 0);
 };

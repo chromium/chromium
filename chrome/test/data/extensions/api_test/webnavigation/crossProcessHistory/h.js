@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 function updateHistory() {
-  history.pushState({}, "", "empty.html");
+  history.pushState({}, '', 'empty.html');
 }
 
 onload = function() {
-  var frame = document.getElementById("frame");
-  frame.src = "http://127.0.0.1:" + location.search.substr(1) + "/test5";
+  const frame = document.getElementById('frame');
+  frame.src = `http://127.0.0.1:${location.search.substr(1)}/test5`;
 };

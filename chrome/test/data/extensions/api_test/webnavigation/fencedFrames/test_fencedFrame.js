@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webnavigation/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
-  let getURL = chrome.runtime.getURL;
-  let tab = await promise(chrome.tabs.create, {url: 'about:blank'});
-  let config = await promise(chrome.test.getConfig);
+  const getURL = chrome.runtime.getURL;
+  const tab = await promise(chrome.tabs.create, {url: 'about:blank'});
+  const config = await promise(chrome.test.getConfig);
 
-  let port = config.testServer.port;
-  let URL_MAIN = getURL('main.html');
-  let URL_INTERMEDIATE_IFRAME = getURL('iframe.html');
-  let URL_FENCED_FRAME = 'https://a.test:' + port +
-      '/extensions/api_test/webnavigation/fencedFrames/frame.html';
+  const port = config.testServer.port;
+  const urlMain = getURL('main.html');
+  const urlIntermediateIframe = getURL('iframe.html');
+  const urlFencedFrame = `https://a.test:${port}/` +
+      'extensions/api_test/webnavigation/fencedFrames/frame.html';
 
   chrome.test.runTests([
     // Navigates from an extension page to a HTTP page to contain
@@ -34,7 +34,7 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_MAIN
+                url: urlMain
               }
             },
             {
@@ -51,7 +51,7 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: URL_MAIN
+                url: urlMain
               }
             },
             {
@@ -66,7 +66,7 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_MAIN
+                url: urlMain
               }
             },
             {
@@ -81,7 +81,7 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_MAIN
+                url: urlMain
               }
             },
             {
@@ -96,7 +96,7 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_INTERMEDIATE_IFRAME
+                url: urlIntermediateIframe
               }
             },
             {
@@ -114,7 +114,7 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: URL_INTERMEDIATE_IFRAME
+                url: urlIntermediateIframe
               }
             },
             {
@@ -130,7 +130,7 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_INTERMEDIATE_IFRAME
+                url: urlIntermediateIframe
               }
             },
             {
@@ -146,7 +146,7 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_INTERMEDIATE_IFRAME
+                url: urlIntermediateIframe
               }
             },
             {
@@ -161,7 +161,7 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_FENCED_FRAME
+                url: urlFencedFrame
               }
             },
             {
@@ -179,7 +179,7 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: URL_FENCED_FRAME
+                url: urlFencedFrame
               }
             },
             {
@@ -195,7 +195,7 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_FENCED_FRAME
+                url: urlFencedFrame
               }
             },
             {
@@ -211,7 +211,7 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: URL_FENCED_FRAME
+                url: urlFencedFrame
               }
             }
           ],
@@ -221,7 +221,7 @@ loadScript.then(async function() {
             navigationOrder('a.test-'),
           ]);
 
-      chrome.tabs.update(tab.id, {url: URL_MAIN});
+      chrome.tabs.update(tab.id, {url: urlMain});
     },
 
     function testGetAllFrames() {
@@ -262,7 +262,7 @@ loadScript.then(async function() {
                 frameId: 0,
                 frameType: 'outermost_frame',
                 parentFrameId: -1,
-                url: URL_MAIN
+                url: urlMain
               },
               {
                 errorOccurred: false,
@@ -272,7 +272,7 @@ loadScript.then(async function() {
                 frameType: 'sub_frame',
                 parentDocumentId: 0,
                 parentFrameId: 0,
-                url: URL_INTERMEDIATE_IFRAME
+                url: urlIntermediateIframe
               },
               {
                 errorOccurred: false,
@@ -282,7 +282,7 @@ loadScript.then(async function() {
                 frameType: 'fenced_frame',
                 parentDocumentId: 1,
                 parentFrameId: 1,
-                url: URL_FENCED_FRAME
+                url: urlFencedFrame
               }
             ],
             details);

@@ -2,115 +2,115 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webnavigation/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
-  let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
-  let config = await promise(chrome.test.getConfig);
-  let port = config.testServer.port;
+  const tab = await promise(chrome.tabs.create, {url: 'about:blank'});
+  const config = await promise(chrome.test.getConfig);
+  const port = config.testServer.port;
 
-  let URL_A = "http://www.a.com:" + port +
-    "/extensions/api_test/webnavigation/crash/a.html";
-  let URL_B = "http://www.a.com:" + port +
-    "/extensions/api_test/webnavigation/crash/b.html";
+  const urlA = `http://www.a.com:${port}/` +
+      'extensions/api_test/webnavigation/crash/a.html';
+  const urlB = `http://www.a.com:${port}/` +
+      'extensions/api_test/webnavigation/crash/b.html';
 
   chrome.test.runTests([
     // Navigates to an URL, then the renderer crashes, the navigates to
     // another URL.
     function crash() {
       expect([
-        { label: "a-onBeforeNavigate",
-          event: "onBeforeNavigate",
-          details: { documentLifecycle: "active",
+        { label: 'a-onBeforeNavigate',
+          event: 'onBeforeNavigate',
+          details: { documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: -1,
                      tabId: 0,
                      timeStamp: 0,
-                     url: URL_A }},
-        { label: "a-onCommitted",
-          event: "onCommitted",
+                     url: urlA }},
+        { label: 'a-onCommitted',
+          event: 'onCommitted',
           details: { documentId: 1,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
                      transitionQualifiers: [],
-                     transitionType: "typed",
-                     url: URL_A }},
-        { label: "a-onDOMContentLoaded",
-          event: "onDOMContentLoaded",
+                     transitionType: 'typed',
+                     url: urlA }},
+        { label: 'a-onDOMContentLoaded',
+          event: 'onDOMContentLoaded',
           details: { documentId: 1,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
-                     url: URL_A }},
-        { label: "a-onCompleted",
-          event: "onCompleted",
+                     url: urlA }},
+        { label: 'a-onCompleted',
+          event: 'onCompleted',
           details: { documentId: 1,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
-                     url: URL_A }},
-        { label: "b-onBeforeNavigate",
-          event: "onBeforeNavigate",
-          details: { documentLifecycle: "active",
+                     url: urlA }},
+        { label: 'b-onBeforeNavigate',
+          event: 'onBeforeNavigate',
+          details: { documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: -1,
                      tabId: 0,
                      timeStamp: 0,
-                     url: URL_B }},
-        { label: "b-onCommitted",
-          event: "onCommitted",
+                     url: urlB }},
+        { label: 'b-onCommitted',
+          event: 'onCommitted',
           details: { documentId: 2,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
                      transitionQualifiers: [],
-                     transitionType: "typed",
-                     url: URL_B }},
-        { label: "b-onDOMContentLoaded",
-          event: "onDOMContentLoaded",
+                     transitionType: 'typed',
+                     url: urlB }},
+        { label: 'b-onDOMContentLoaded',
+          event: 'onDOMContentLoaded',
           details: { documentId: 2,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
-                     url: URL_B }},
-        { label: "b-onCompleted",
-          event: "onCompleted",
+                     url: urlB }},
+        { label: 'b-onCompleted',
+          event: 'onCompleted',
           details: { documentId: 2,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
-                     url: URL_B }}],
-        [ navigationOrder("a-"), navigationOrder("b-") ]);
+                     url: urlB }}],
+        [ navigationOrder('a-'), navigationOrder('b-') ]);
 
       // Notify the api test that we're waiting for the user.
       chrome.test.notifyPass();

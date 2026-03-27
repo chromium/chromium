@@ -2,63 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/webnavigation/framework.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
-  let getURL = chrome.runtime.getURL;
-  let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
+  const getURL = chrome.runtime.getURL;
+  const tab = await promise(chrome.tabs.create, {url: 'about:blank'});
 
   chrome.test.runTests([
     // Navigates to an URL.
     function simpleLoad() {
       expect([
-        { label: "a-onBeforeNavigate",
-          event: "onBeforeNavigate",
-          details: { documentLifecycle: "active",
+        { label: 'a-onBeforeNavigate',
+          event: 'onBeforeNavigate',
+          details: { documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: -1,
                      tabId: 0,
                      timeStamp: 0,
                      url: getURL('a.html') }},
-        { label: "a-onCommitted",
-          event: "onCommitted",
+        { label: 'a-onCommitted',
+          event: 'onCommitted',
           details: { documentId: 1,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
                      transitionQualifiers: [],
-                     transitionType: "link",
+                     transitionType: 'link',
                      url: getURL('a.html') }},
-        { label: "a-onDOMContentLoaded",
-          event: "onDOMContentLoaded",
+        { label: 'a-onDOMContentLoaded',
+          event: 'onDOMContentLoaded',
           details: { documentId: 1,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
                      url: getURL('a.html') }},
-        { label: "a-onCompleted",
-          event: "onCompleted",
+        { label: 'a-onCompleted',
+          event: 'onCompleted',
           details: { documentId: 1,
-                     documentLifecycle: "active",
+                     documentLifecycle: 'active',
                      frameId: 0,
-                     frameType: "outermost_frame",
+                     frameType: 'outermost_frame',
                      parentFrameId: -1,
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
                      url: getURL('a.html') }}],
-        [ navigationOrder("a-") ]);
+        [ navigationOrder('a-') ]);
       chrome.tabs.update(tab.id, { url: getURL('a.html') });
     },
   ]);

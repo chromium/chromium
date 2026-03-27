@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const scriptUrl = "_test_resources/api_test/webnavigation/framework.js";
-let loadScript = chrome.test.loadScript(scriptUrl);
+const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
+const loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(() => {
-  chrome.test.sendMessage("ready", async function (response) {
-    let config = await promise(chrome.test.getConfig);
-    let port = config.testServer.port;
-    let actual_fenced_frame_url =
+  chrome.test.sendMessage('ready', async function (response) {
+    const config = await promise(chrome.test.getConfig);
+    const port = config.testServer.port;
+    const actual_fenced_frame_url =
       `https://b.test:${port}` +
       `/extensions/api_test/webnavigation/fencedFramesMappedURL/frame.html`;
 
@@ -18,7 +18,7 @@ loadScript.then(() => {
         chrome.test.listenOnce(
           chrome.webNavigation.onBeforeNavigate,
           function (details) {
-            chrome.test.assertEq(details.frameType, "fenced_frame");
+            chrome.test.assertEq(details.frameType, 'fenced_frame');
             chrome.test.assertEq(details.url, actual_fenced_frame_url);
           }
         );
@@ -27,13 +27,13 @@ loadScript.then(() => {
         chrome.test.listenOnce(
           chrome.webNavigation.onCommitted,
           function (details) {
-            chrome.test.assertEq(details.frameType, "fenced_frame");
+            chrome.test.assertEq(details.frameType, 'fenced_frame');
             chrome.test.assertEq(details.url, actual_fenced_frame_url);
           }
         );
       },
     ]);
 
-    chrome.test.sendMessage("ready");
+    chrome.test.sendMessage('ready');
   });
 });

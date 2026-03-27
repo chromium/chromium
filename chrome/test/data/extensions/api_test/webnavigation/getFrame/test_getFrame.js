@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
-const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
+const SCRIPT_URL = '_test_resources/api_test/webnavigation/framework.js';
 let ready;
-let onScriptLoad = chrome.test.loadScript(scriptUrl);
+const onScriptLoad = chrome.test.loadScript(SCRIPT_URL);
 
 const kNotSpecifiedErrorMessage =
   'Either documentId or both tabId and frameId must be specified.';
@@ -13,26 +13,26 @@ const kNotSpecifiedErrorMessage =
 if (inServiceWorker) {
   ready = onScriptLoad;
 } else {
-  let onWindowLoad = new Promise((resolve) => {
+  const onWindowLoad = new Promise((resolve) => {
     window.onload = resolve;
   });
   ready = Promise.all([onWindowLoad, onScriptLoad]);
 }
 
 ready.then(async function() {
-  var URL = chrome.runtime.getURL("a.html");
-  var URL_FRAMES = chrome.runtime.getURL("b.html");
-  let config = await promise(chrome.test.getConfig);
-  let port = config.testServer.port;
-  var processId = -1;
-  var documentId;
-  let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
+  const url = chrome.runtime.getURL('a.html');
+  const urlFrames = chrome.runtime.getURL('b.html');
+  const config = await promise(chrome.test.getConfig);
+  const port = config.testServer.port;
+  let processId = -1;
+  let documentId;
+  const tab = await promise(chrome.tabs.create, {url: 'about:blank'});
 
   chrome.test.runTests([
     async function testGetFrame() {
-      var done = chrome.test.listenForever(chrome.webNavigation.onCommitted,
+      const done = chrome.test.listenForever(chrome.webNavigation.onCommitted,
         function (details) {
-          if (details.tabId != tab.id || details.url != URL)
+          if (details.tabId != tab.id || details.url != url)
             return;
           processId = details.processId;
           documentId = details.documentId;
@@ -41,17 +41,17 @@ ready.then(async function() {
               function(details) {
             chrome.test.assertEq(
                 {errorOccurred: false,
-                 url: URL,
+                 url: url,
                  parentFrameId: -1,
                  documentId: documentId,
-                 documentLifecycle: "active",
-                 frameType: "outermost_frame",
+                 documentLifecycle: 'active',
+                 frameType: 'outermost_frame',
                },
                 details);
             done();
           });
       });
-      chrome.tabs.update(tab.id, {url: URL});
+      chrome.tabs.update(tab.id, {url: url});
     },
 
     function testGetInvalidFrame() {
@@ -86,11 +86,11 @@ ready.then(async function() {
         function (details) {
           chrome.test.assertEq({
               errorOccurred: false,
-              url: URL,
+              url: url,
               parentFrameId: -1,
               documentId: documentId,
-              documentLifecycle: "active",
-              frameType: "outermost_frame",
+              documentLifecycle: 'active',
+              frameType: 'outermost_frame',
             }, details);
           chrome.test.succeed();
       });
@@ -103,11 +103,11 @@ ready.then(async function() {
         function (details) {
           chrome.test.assertEq({
               errorOccurred: false,
-              url: URL,
+              url: url,
               parentFrameId: -1,
               documentId: documentId,
-              documentLifecycle: "active",
-              frameType: "outermost_frame",
+              documentLifecycle: 'active',
+              frameType: 'outermost_frame',
             }, details);
           chrome.test.succeed();
       });
@@ -126,9 +126,9 @@ ready.then(async function() {
     function testGetFrameInvalidDocumentId() {
       chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0,
                                      processId: processId,
-                                     documentId: "42AB"},
+                                     documentId: '42AB'},
         function (details) {
-          chrome.test.assertLastError("Invalid documentId.");
+          chrome.test.assertLastError('Invalid documentId.');
           chrome.test.assertEq(null, details);
           chrome.test.succeed();
       });
@@ -141,10 +141,10 @@ ready.then(async function() {
                 frameId: 0,
                 parentFrameId: -1,
                 processId: processId,
-                url: URL,
+                url: url,
                 documentId: documentId,
-                documentLifecycle: "active",
-                frameType: "outermost_frame"}],
+                documentLifecycle: 'active',
+                frameType: 'outermost_frame'}],
                details);
           chrome.test.succeed();
       });
@@ -159,13 +159,13 @@ ready.then(async function() {
 
       const urlPrefix =
       `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
-      const initialUrl = urlPrefix + "a.html?initial";
-      const prerenderTargetUrl = urlPrefix + "a.html";
-      const initiatorUrl = urlPrefix + "prerender.html";
+      const initialUrl = `${urlPrefix}a.html?initial`;
+      const prerenderTargetUrl = `${urlPrefix}a.html`;
+      const initiatorUrl = `${urlPrefix}prerender.html`;
 
-      let tab = await promise(chrome.tabs.create, {url: initialUrl});
+      const tab = await promise(chrome.tabs.create, {url: initialUrl});
 
-      var done = chrome.test.listenForever(
+      const done = chrome.test.listenForever(
         chrome.webNavigation.onCommitted,
         function (details) {
           // Ignore frames other than the pre-rendered frame.
@@ -184,8 +184,8 @@ ready.then(async function() {
                     processId: details.processId,
                     url: prerenderTargetUrl,
                     documentId: details.documentId,
-                    documentLifecycle: "prerender",
-                    frameType: "outermost_frame"}],
+                    documentLifecycle: 'prerender',
+                    frameType: 'outermost_frame'}],
                     frameDetails.filter(ob => ob.url === prerenderTargetUrl));
               done();
           });
@@ -193,20 +193,20 @@ ready.then(async function() {
 
       // TODO(crbug.com/40206306): Modify the testcase to be triggering
       // concurrent multiple prerendering pages once it is supported.
-      // Navigate to a page that initiates prerendering "a.html".
-      chrome.tabs.update(tab.id, {"url": initiatorUrl});
+      // Navigate to a page that initiates prerendering 'a.html'.
+      chrome.tabs.update(tab.id, {url: initiatorUrl});
     },
     async function testGetPrerenderingFramesAndSubframes() {
       const urlPrefix =
       `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
-      const initialUrl = urlPrefix + "a.html?initial";
-      const prerenderTargetUrl = urlPrefix + "c.html";
-      const prerenderTargetSubframeUrl = urlPrefix + "a.html";
-      const initiatorUrl = urlPrefix + "prerender_multipleframes.html";
+      const initialUrl = `${urlPrefix}a.html?initial`;
+      const prerenderTargetUrl = `${urlPrefix}c.html`;
+      const prerenderTargetSubframeUrl = `${urlPrefix}a.html`;
+      const initiatorUrl = `${urlPrefix}prerender_multipleframes.html`;
 
-      let tab = await promise(chrome.tabs.create, {"url": initialUrl});
+      const tab = await promise(chrome.tabs.create, {url: initialUrl});
 
-      var done = chrome.test.listenForever(
+      const done = chrome.test.listenForever(
         chrome.webNavigation.onCommitted,
         function (details) {
           // Ignore frames other than the pre-rendered subframe to ensure all
@@ -229,8 +229,8 @@ ready.then(async function() {
                     processId: details.processId,
                     url: prerenderTargetUrl,
                     documentId: details.parentDocumentId,
-                    documentLifecycle: "prerender",
-                    frameType: "outermost_frame"},
+                    documentLifecycle: 'prerender',
+                    frameType: 'outermost_frame'},
                     {errorOccurred: false,
                     frameId: details.frameId,
                     parentFrameId: details.parentFrameId,
@@ -238,17 +238,17 @@ ready.then(async function() {
                     url: prerenderTargetSubframeUrl,
                     documentId: details.documentId,
                     parentDocumentId: details.parentDocumentId,
-                    documentLifecycle: "prerender",
-                    frameType: "sub_frame"}],
+                    documentLifecycle: 'prerender',
+                    frameType: 'sub_frame'}],
                     frameDetails.filter(ob => ob.documentLifecycle ===
-                      "prerender"));
+                      'prerender'));
               done();
           });
       });
 
-      // Navigate to a page that initiates prerendering "c.html", which contains
-      // a subframe "a.html".
-      chrome.tabs.update(tab.id, {"url": initiatorUrl});
+      // Navigate to a page that initiates prerendering 'c.html', which contains
+      // a subframe 'a.html'.
+      chrome.tabs.update(tab.id, {url: initiatorUrl});
     },
     async function testGetPrerenderingFramesInNewTab() {
       // This test is not valid for MV3+ because it uses
@@ -260,13 +260,13 @@ ready.then(async function() {
 
       const urlPrefix =
           `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
-      const initialUrl = urlPrefix + 'a.html?initial';
-      const prerenderTargetUrl = urlPrefix + 'c.html';
-      const initiatorUrl = urlPrefix + 'prerender_new_tab.html';
+      const initialUrl = `${urlPrefix}a.html?initial`;
+      const prerenderTargetUrl = `${urlPrefix}c.html`;
+      const initiatorUrl = `${urlPrefix}prerender_new_tab.html`;
 
-      let initiatorTab = await promise(chrome.tabs.create, {'url': initialUrl});
+      const initiatorTab = await promise(chrome.tabs.create, {url: initialUrl});
 
-      var done = chrome.test.listenForever(
+      const done = chrome.test.listenForever(
           chrome.webNavigation.onCommitted, function(details) {
             // Ignore frames other than the pre-rendered frame.
             if (details.url != prerenderTargetUrl)
@@ -303,9 +303,9 @@ ready.then(async function() {
                 });
           });
 
-      // Navigate to a page that initiates prerendering "c.html", which contains
-      // a subframe "a.html".
-      chrome.tabs.update(initiatorTab.id, {'url': initiatorUrl});
+      // Navigate to a page that initiates prerendering 'c.html', which contains
+      // a subframe 'a.html'.
+      chrome.tabs.update(initiatorTab.id, {url: initiatorUrl});
     },
     async function testGetActivatedPrerenderingFrames() {
       // This test is not valid for MV3+ because it uses
@@ -317,13 +317,13 @@ ready.then(async function() {
 
       const urlPrefix =
           `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
-      const initialUrl = urlPrefix + "a.html?initial";
-      const prerenderTargetUrl = urlPrefix + "a.html";
-      const initiatorUrl = urlPrefix + "prerender.html";
+      const initialUrl = `${urlPrefix}a.html?initial`;
+      const prerenderTargetUrl = `${urlPrefix}a.html`;
+      const initiatorUrl = `${urlPrefix}prerender.html`;
 
-      let tab = await promise(chrome.tabs.create, {"url": initialUrl});
+      const tab = await promise(chrome.tabs.create, {url: initialUrl});
 
-      var done = chrome.test.listenForever(
+      const done = chrome.test.listenForever(
         chrome.webNavigation.onCommitted,
         function (details) {
           // Ignore frames other than the pre-rendered frame.
@@ -334,7 +334,7 @@ ready.then(async function() {
           if (details.documentLifecycle === 'prerender') {
             // Inject a script that activates the pre-rendered page.
             chrome.tabs.executeScript(tab.id,
-              {code: 'window.location.href = "./a.html";'});
+              {code: `window.location.href = './a.html';`});
             return;
           }
 
@@ -348,17 +348,17 @@ ready.then(async function() {
                     processId: details.processId,
                     url: prerenderTargetUrl,
                     documentId: details.documentId,
-                    documentLifecycle: "active",
-                    frameType: "outermost_frame"}],
+                    documentLifecycle: 'active',
+                    frameType: 'outermost_frame'}],
                     frameDetails.filter(ob => ob.url === prerenderTargetUrl));
               done();
           });
       });
 
-      // Navigate to a page that initiates prerendering "a.html".
-      chrome.tabs.update(tab.id, {"url": initiatorUrl});
+      // Navigate to a page that initiates prerendering 'a.html'.
+      chrome.tabs.update(tab.id, {url: initiatorUrl});
     },
-    // Load an URL with a frame which is detached during load.
+    // Load an url with a frame which is detached during load.
     // getAllFrames should only return the remaining (main) frame.
     async function testFrameDetach() {
       // TODO(crbug.com/40758628): Extremely flaky for Service Worker. Note that
@@ -366,11 +366,11 @@ ready.then(async function() {
       if (inServiceWorker)
         chrome.test.succeed();
 
-      let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
-      var done = chrome.test.listenForever(
+      const tab = await promise(chrome.tabs.create, {url: 'about:blank'});
+      const done = chrome.test.listenForever(
         chrome.webNavigation.onCommitted,
         function (details) {
-          if (details.tabId != tab.id || details.url != URL_FRAMES)
+          if (details.tabId != tab.id || details.url != urlFrames)
             return;
           processId = details.processId;
           documentId = details.documentId;
@@ -382,15 +382,15 @@ ready.then(async function() {
                     frameId: 0,
                     parentFrameId: -1,
                     processId: processId,
-                    url: URL_FRAMES,
+                    url: urlFrames,
                     documentId: documentId,
-                    documentLifecycle: "active",
-                    frameType: "outermost_frame"}],
+                    documentLifecycle: 'active',
+                    frameType: 'outermost_frame'}],
                    details);
               chrome.test.succeed();
           });
       });
-      chrome.tabs.update(tab.id, {url: URL_FRAMES});
+      chrome.tabs.update(tab.id, {url: urlFrames});
     },
   ]);
 });

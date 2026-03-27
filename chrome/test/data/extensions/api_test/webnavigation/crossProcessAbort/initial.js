@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var target =
-    location.origin + location.pathname.replace("initial.html", "empty.html");
+const target =
+    location.origin + location.pathname.replace('initial.html', 'empty.html');
 
 onload = function() {
   setTimeout(function() {
-    location.href = "http://127.0.0.1:" + location.search.substr(1);
+    location.href = `http://127.0.0.1:${location.search.substr}`(1);
   }, 0);
 };
 
