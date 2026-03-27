@@ -77,6 +77,7 @@ import java.util.concurrent.CountDownLatch;
  * either {@link UiThread} or {@link BinderThread}.
  */
 @NullMarked
+@SuppressWarnings("ThreadConstraint")
 public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Impl {
     private static final String TAG = "BookmarkWidget";
     private static final String ACTION_CHANGE_FOLDER_SUFFIX = ".CHANGE_FOLDER";

@@ -146,6 +146,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
+    @SuppressWarnings("ThreadConstraint")
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
         var savedInstanceState = getSavedInstanceState();

@@ -23,7 +23,6 @@ import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -327,12 +326,9 @@ public class DownloadUtils {
      * @param filePath File path to get a URI for.
      * @return URI that points at that file, either as a content:// URI or a file:// URI.
      */
-    @MainThread
     public static Uri getUriForItem(String filePath) {
         if (ContentUriUtils.isContentUri(filePath)) return Uri.parse(filePath);
 
-        // It's ok to use blocking calls on main thread here, since the user is waiting to open or
-        // share the file to other apps.
         boolean isOnSDCard = DownloadDirectoryProvider.isDownloadOnSDCard(filePath);
         if (isOnSDCard) {
             // Use custom file provider to generate content URI for download on SD card.
