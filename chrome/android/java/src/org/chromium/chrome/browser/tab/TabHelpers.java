@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.ui.side_panel.SidePanelRegistryBridgeFactory;
 
 /** Helper class that initializes various tab UserData objects. */
 @NullMarked
@@ -44,7 +43,6 @@ public final class TabHelpers {
         TabBrowserControlsConstraintsHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
         AccessibilityTabHelper.createForTab(tab);
-        SidePanelRegistryBridgeFactory.createTabScopedBridge(tab);
 
         // The following will start prefetching data for the price drops feature, so
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).

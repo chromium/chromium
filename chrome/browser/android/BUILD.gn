@@ -14,6 +14,7 @@ source_set("tabs_public") {
   public_deps = [
     "//base",
     "//chrome/browser/tab",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/common:buildflags",
     "//components/sessions:session_id",
     "//components/split_tabs",
@@ -37,6 +38,7 @@ source_set("tabs_impl") {
     "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/sync",
     "//chrome/browser/ui/contextual_search",
+    "//chrome/browser/ui/side_panel/android",
     "//components/external_intents/android",
     "//components/favicon/content",
     "//components/lens",

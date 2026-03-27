@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/tab_features.h"
 
+#include <memory>
+
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
@@ -18,6 +20,8 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
+#include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -45,6 +49,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       std::make_unique<NewTabPagePreloadPipelineManager>(web_contents);
 
   TabInterface* const tab = TabInterface::GetFromContents(web_contents);
+  tab_scoped_side_panel_registry_ =
+      AndroidSidePanelEnabledFn::IsEnabled()
+          ? std::make_unique<SidePanelRegistry>(tab)
+          : nullptr;
+
   if (base::FeatureList::IsEnabled(features::kGlicActor)) {
     actor_tab_data_ =
         GetUserDataFactory().CreateInstance<actor::ActorTabData>(*tab, tab);

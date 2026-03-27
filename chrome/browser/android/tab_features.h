@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
@@ -61,6 +62,8 @@ class TabFeatures {
  private:
   // Returns the factory used to create owned components.
   static ui::UserDataFactoryWithOwner<TabInterface>& GetUserDataFactory();
+
+  std::unique_ptr<SidePanelRegistry> tab_scoped_side_panel_registry_;
 
   std::unique_ptr<actor::ActorTabData> actor_tab_data_;
 
