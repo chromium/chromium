@@ -281,7 +281,11 @@ void SaveAndFillDialog::DismissThrobberAndUpdateMainView() {
   if (controller_->GetDialogState() == SaveAndFillDialogState::kUploadDialog) {
     GetBubbleFrameView()->SetTitleView(
         std::make_unique<TitleWithIconAfterLabelView>(
-            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+            GetWindowTitle(),
+            base::FeatureList::IsEnabled(
+                features::kAutofillEnableWalletBrandingV2)
+                ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
+                : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
   } else {
     auto title_view = std::make_unique<views::Label>(
         GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
