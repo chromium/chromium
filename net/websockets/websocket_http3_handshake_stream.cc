@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -21,6 +22,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
+#include "net/quic/quic_http_utils.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_basic_stream.h"
@@ -162,12 +164,13 @@ int WebSocketHttp3HandshakeStream::ReadResponseHeaders(
   return ERR_IO_PENDING;
 }
 
-// TODO(momoka): Implement this.
 int WebSocketHttp3HandshakeStream::ReadResponseBody(
     IOBuffer* buf,
     int buf_len,
     CompletionOnceCallback callback) {
-  return OK;
+  // Callers should instead call Upgrade() to get a WebSocketStream
+  // and call ReadFrames() on that.
+  NOTREACHED();
 }
 
 void WebSocketHttp3HandshakeStream::Close(bool not_reusable) {
@@ -176,6 +179,7 @@ void WebSocketHttp3HandshakeStream::Close(bool not_reusable) {
     stream_closed_ = true;
     stream_error_ = ERR_CONNECTION_CLOSED;
   }
+  stream_adapter_.reset();
 }
 
 // TODO(momoka): Implement this.
@@ -227,11 +231,17 @@ int WebSocketHttp3HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   return 0;
 }
 
-// TODO(momoka): Implement this.
-void WebSocketHttp3HandshakeStream::Drain(HttpNetworkSession* session) {}
+// Not reachable for WebSocket streams, but delegate to `Close()` for safety.
+void WebSocketHttp3HandshakeStream::Drain(HttpNetworkSession* session) {
+  Close(/*not_reusable=*/true);
+}
 
-// TODO(momoka): Implement this.
-void WebSocketHttp3HandshakeStream::SetPriority(RequestPriority priority) {}
+void WebSocketHttp3HandshakeStream::SetPriority(RequestPriority priority) {
+  priority_ = priority;
+  if (stream_adapter_) {
+    ApplyPriorityToStream();
+  }
+}
 
 // TODO(momoka): Implement this.
 void WebSocketHttp3HandshakeStream::PopulateNetErrorDetails(
@@ -337,9 +347,17 @@ void WebSocketHttp3HandshakeStream::OnClose(int status) {
   }
 }
 
+void WebSocketHttp3HandshakeStream::ApplyPriorityToStream() {
+  DCHECK(stream_adapter_);
+  uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority_);
+  stream_adapter_->SetPriority(
+      quic::QuicStreamPriority(quic::HttpStreamPriority{urgency}));
+}
+
 void WebSocketHttp3HandshakeStream::ReceiveAdapterAndStartRequest(
     std::unique_ptr<WebSocketQuicStreamAdapter> adapter) {
   stream_adapter_ = std::move(adapter);
+  ApplyPriorityToStream();
   // WriteHeaders returns synchronously.
   stream_adapter_->WriteHeaders(std::move(http3_request_headers_), false);
 }

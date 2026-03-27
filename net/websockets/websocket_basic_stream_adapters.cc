@@ -266,6 +266,13 @@ size_t WebSocketQuicStreamAdapter::WriteHeaders(
                                                    nullptr);
 }
 
+void WebSocketQuicStreamAdapter::SetPriority(
+    const quic::QuicStreamPriority& priority) {
+  if (websocket_quic_spdy_stream_) {
+    websocket_quic_spdy_stream_->SetPriority(priority);
+  }
+}
+
 // WebSocketBasicStream::Adapter methods.
 int WebSocketQuicStreamAdapter::Read(IOBuffer* buf,
                                      int buf_len,

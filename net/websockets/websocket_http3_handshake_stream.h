@@ -132,6 +132,9 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
 
   void OnHandshakeConfirmed(CompletionOnceCallback callback, int rv);
 
+  // Applies the current `priority_` to the underlying QUIC stream.
+  void ApplyPriorityToStream();
+
   HandshakeResult result_ = HandshakeResult::HTTP3_INCOMPLETE;
 
   // True if `stream_` has been created then closed.
