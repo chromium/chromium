@@ -30,7 +30,6 @@ found in the LICENSE file.
         android:id="@id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/site_search_additional_sites_button_label"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
 </LinearLayout>

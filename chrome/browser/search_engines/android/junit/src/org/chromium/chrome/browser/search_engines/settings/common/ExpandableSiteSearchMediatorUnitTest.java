@@ -44,11 +44,13 @@ import java.util.List;
 /** Unit tests for {@link ExpandableSiteSearchMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ExpandableSiteSearchMediatorUnitTest {
+    private static final String MORE_BUTTON_TEXT = "More";
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
+    @Mock private ListItem mMockListItem;
 
     private Context mContext;
     private ModelList mModelList;
@@ -71,6 +73,8 @@ public class ExpandableSiteSearchMediatorUnitTest {
                         withSettings()
                                 .useConstructor(mContext, mModelList, mProfile)
                                 .defaultAnswer(Mockito.CALLS_REAL_METHODS));
+
+        Mockito.doReturn(mMockListItem).when(mMediator).createListItem(Mockito.any());
     }
 
     @Test
@@ -89,11 +93,8 @@ public class ExpandableSiteSearchMediatorUnitTest {
     public void testHiddenItemsManagement() {
         assertTrue(mMediator.areExpandableItemsEmptyForTesting());
 
-        ListItem item1 = new ListItem(0, null);
-        ListItem item2 = new ListItem(0, null);
-
-        mMediator.addExpandableItemForTesting(item1);
-        mMediator.addExpandableItemForTesting(item2);
+        mMediator.addExpandableItemForTesting(mMockListItem);
+        mMediator.addExpandableItemForTesting(mMockListItem);
 
         assertFalse(mMediator.areExpandableItemsEmptyForTesting());
 
@@ -103,15 +104,17 @@ public class ExpandableSiteSearchMediatorUnitTest {
     }
 
     @Test
-    public void testSetUpMoreButtonIfNeeded_AtThreshold() {
-        mMediator.setUpMoreButtonIfNeeded(ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS);
+    public void testSetUpMoreButtonIfNeeded_NoStagedUrls() {
+        setUpStagedUrls(0);
+        mMediator.setUpMoreButtonIfNeeded(MORE_BUTTON_TEXT);
 
         assertEquals(0, mModelList.size());
     }
 
     @Test
-    public void testSetUpMoreButtonIfNeeded_AboveThreshold() {
-        mMediator.setUpMoreButtonIfNeeded(ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS + 1);
+    public void testSetUpMoreButtonIfNeeded_WithStagedUrls() {
+        setUpStagedUrls(1);
+        mMediator.setUpMoreButtonIfNeeded(MORE_BUTTON_TEXT);
 
         assertEquals(1, mModelList.size());
         ListItem moreItem = mModelList.get(0);
@@ -122,16 +125,20 @@ public class ExpandableSiteSearchMediatorUnitTest {
 
     @Test
     public void testSetUpMoreButtonIfNeeded_InitiallyExpandedAndNowAboveThreshold() {
+        setUpStagedUrls(1);
         // Expand the list first
         mMediator.onMoreButtonClicked(new PropertyModel(SiteSearchProperties.ALL_KEYS));
         assertTrue(mMediator.isExpandedForTesting());
-        mModelList.clear();
 
-        mMediator.setUpMoreButtonIfNeeded(ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS + 1);
+        // Clear the list and populate again
+        mMediator.clearAllItems();
+        setUpStagedUrls(1);
+        mMediator.setUpMoreButtonIfNeeded(MORE_BUTTON_TEXT);
+        mMediator.maybeExpandListFromPreviousState();
 
         // Should still be expanded
         assertTrue(mMediator.isExpandedForTesting());
-        assertEquals(1, mModelList.size());
+        assertEquals(2, mModelList.size());
         ListItem moreItem = mModelList.get(0);
         assertEquals(SiteSearchProperties.ViewType.MORE, moreItem.type);
         assertTrue(moreItem.model.get(SiteSearchProperties.IS_EXPANDED));
@@ -145,7 +152,7 @@ public class ExpandableSiteSearchMediatorUnitTest {
         assertTrue(mMediator.isExpandedForTesting());
         mModelList.clear();
 
-        mMediator.setUpMoreButtonIfNeeded(ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS);
+        mMediator.setUpMoreButtonIfNeeded(MORE_BUTTON_TEXT);
 
         // After refresh, there should be no "More" button and the state will become collapsed
         assertFalse(mMediator.isExpandedForTesting());
@@ -158,7 +165,7 @@ public class ExpandableSiteSearchMediatorUnitTest {
         mModelList.clear();
 
         int totalUrls = ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS + 2;
-        setUpStagedUrls(totalUrls);
+        populateTemplateUrls(totalUrls);
 
         mMediator.maybeExpandListFromPreviousState();
         assertEquals(totalUrls, mModelList.size());
@@ -169,7 +176,7 @@ public class ExpandableSiteSearchMediatorUnitTest {
     @Test
     public void testMaybeExpandListFromPreviousState_NotExpanded() {
         int totalUrls = ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS + 2;
-        setUpStagedUrls(totalUrls);
+        populateTemplateUrls(totalUrls);
 
         mMediator.maybeExpandListFromPreviousState();
         assertEquals(ExpandableSiteSearchMediator.DEFAULT_MAX_ROWS, mModelList.size());
@@ -219,15 +226,19 @@ public class ExpandableSiteSearchMediatorUnitTest {
         assertEquals(SiteSearchProperties.ViewType.MORE, mModelList.get(1).type);
     }
 
-    private void setUpStagedUrls(int totalUrls) {
-        ListItem mockListItem = new ListItem(0, null);
-        Mockito.doReturn(mockListItem).when(mMediator).createListItem(Mockito.any());
-
+    private void populateTemplateUrls(int totalUrls) {
         List<TemplateUrl> urls = new ArrayList<>();
         for (int i = 0; i < totalUrls; i++) {
             urls.add(new FakeTemplateUrl("url" + i, "keyword" + i));
         }
 
         mMediator.populateTemplateUrls(urls);
+    }
+
+    private void setUpStagedUrls(int totalStagedUrls) {
+        for (int i = 0; i < totalStagedUrls; i++) {
+            mMediator.addStagedUrlForTesting(
+                    new FakeTemplateUrl("stagedUrl" + i, "stagedKeyword" + i));
+        }
     }
 }

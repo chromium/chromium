@@ -546,6 +546,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_INACTIVE_SHORTCUTS_HEADER" desc="Header for 'Inactive Shortcuts' section">
         Inactive shortcuts
       </message>
+      <message name="IDS_SITE_SEARCH_ADDITIONAL_INACTIVE_SHORTCUTS_BUTTON_LABEL" desc="Label for the 'Additional inactive shortcuts' button.">
+        Additional inactive sites
+      </message>
       <message name="IDS_SITE_SEARCH_EXTENSIONS_HEADER" desc="Header for 'Extensions' section">
         Extensions
       </message>

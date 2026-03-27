@@ -84,19 +84,20 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
      * Evaluates whether a "More" button is needed and appends it to the ModelList if so. Subclasses
      * should call this at the end of their {@link #refreshList()} implementation.
      *
-     * @param numUrls The total number of available URLs for this category.
+     * @param text The text to display on the "More" button.
      */
-    protected void setUpMoreButtonIfNeeded(int numUrls) {
-        if (numUrls <= DEFAULT_MAX_ROWS) {
+    protected void setUpMoreButtonIfNeeded(String text) {
+        if (mStagedUrls.isEmpty()) {
             // If the user originally had more than DEFAULT_MAX_ROWS items and the state is
             // expanded, after refresh, the number of items becomes less than or equal to
-            // DEFAULT_MAX_ROWS, we should collapse the list.
+            // DEFAULT_MAX_ROWS (mStagedUrls thus becomes empty), we should collapse the list.
             mIsExpanded = false;
             return;
         }
         PropertyModel moreButtonModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
                         .with(SiteSearchProperties.IS_EXPANDED, mIsExpanded)
+                        .with(SiteSearchProperties.TEXT, text)
                         .build();
         moreButtonModel.set(
                 SiteSearchProperties.ON_CLICK, v -> onMoreButtonClicked(moreButtonModel));
@@ -161,6 +162,10 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
 
     void addExpandableItemForTesting(ListItem item) {
         mExpandableItems.add(item);
+    }
+
+    void addStagedUrlForTesting(TemplateUrl url) {
+        mStagedUrls.add(url);
     }
 
     boolean areExpandableItemsEmptyForTesting() {

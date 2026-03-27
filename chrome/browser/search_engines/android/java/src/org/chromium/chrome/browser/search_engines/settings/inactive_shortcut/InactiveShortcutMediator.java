@@ -48,7 +48,9 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
                         TemplateUrlCategory.INACTIVE_SITE_SEARCH);
 
         populateTemplateUrls(urls);
-        setUpMoreButtonIfNeeded(urls.size());
+        setUpMoreButtonIfNeeded(
+                mContext.getString(
+                        R.string.site_search_additional_inactive_shortcuts_button_label));
         maybeExpandListFromPreviousState();
     }
 

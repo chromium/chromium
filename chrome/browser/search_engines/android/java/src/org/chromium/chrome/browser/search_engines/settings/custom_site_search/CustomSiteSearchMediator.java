@@ -58,7 +58,8 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
 
         populateTemplateUrls(urls);
         setUpAddButton();
-        setUpMoreButtonIfNeeded(urls.size());
+        setUpMoreButtonIfNeeded(
+                mContext.getString(R.string.site_search_additional_sites_button_label));
         maybeExpandListFromPreviousState();
     }
 
