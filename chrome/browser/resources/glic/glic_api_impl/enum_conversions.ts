@@ -54,6 +54,12 @@ export function enumToClient(
   val: mojomGlic.CaptureScreenshotErrorReason | null):
     glicApi.CaptureScreenshotErrorReason | undefined;
 export function enumToClient(
+  val: mojomGlic.ClientCapabilities):
+    glicApi.ClientCapabilities;
+export function enumToClient(
+  val: mojomGlic.ClientCapabilities | null):
+    glicApi.ClientCapabilities | undefined;
+export function enumToClient(
   val: mojomGlic.CreateTaskErrorReason):
     glicApi.CreateTaskErrorReason;
 export function enumToClient(
@@ -261,6 +267,12 @@ export function enumFromClient(
 export function enumFromClient(
   val: glicApi.CaptureScreenshotErrorReason | undefined):
     mojomGlic.CaptureScreenshotErrorReason | null;
+export function enumFromClient(
+  val: glicApi.ClientCapabilities):
+    mojomGlic.ClientCapabilities;
+export function enumFromClient(
+  val: glicApi.ClientCapabilities | undefined):
+    mojomGlic.ClientCapabilities | null;
 export function enumFromClient(
   val: glicApi.CreateTaskErrorReason):
     mojomGlic.CreateTaskErrorReason;

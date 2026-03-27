@@ -2105,3 +2105,11 @@ enum HostCapability {
   // Indicates that the host supports the invoke mechanism.
   kInvoke = 8,
 };
+
+// @generate glic_api
+// Lists capabilities that the glic web client may support.
+enum ClientCapabilities {
+  // The glic web client does not use favicons in TabData, so they can
+  // be omitted from TabData.
+  kIgnoresTabDataFavicons = 0,
+};

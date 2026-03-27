@@ -190,6 +190,13 @@ export declare interface GlicWebClient {
    */
   stopMicrophone?(): Promise<void>;
 
+  /**
+   * Returns the list of capabilities of the glic web client.
+   * This will be called by Chrome once, prior to initialize(),
+   * and the result will be cached for the lifetime of the web client.
+   */
+  getClientCapabilities?(): Set<ClientCapabilities>;
+
   // !!! ATTENTION !!!
   // Avoid adding new methods to this interface! Instead, to push information to
   // the web client it's much more preferable to add new functions to
@@ -447,6 +454,18 @@ export declare interface GlicBrowserHost {
    * not found with the given ID.
    */
   getTabById?(tabId: string): ObservableValue<TabData>;
+
+  /**
+   * Returns an observable of the favicon for the given tab.
+   *
+   * New in March 2026. This will replace favicon access from TabData.
+   * This is the only favicon access that works on Android.
+   *
+   * The returned observable is completed when the tab is destroyed, or one is
+   * not found with the given ID. If the tab has no favicon, the observable
+   * will emit undefined.
+   */
+  getTabFaviconById?(tabId: string): ObservableValue<Blob|undefined>;
 
   /**
    * Makes the given tab the active tab in its window and activates its window.
@@ -902,7 +921,8 @@ export declare interface GlicBrowserHost {
   getSkillToInvoke?(): ObservableValue<Skill>;
 
   /**
-   * Returns the list of capabilities of the glic host.
+   * Returns the list of capabilities of the glic host. The returned set of
+   * capabilities will not change during the lifetime of the web client.
    */
   getHostCapabilities?(): Set<HostCapability>;
 
@@ -1691,13 +1711,17 @@ export declare interface TabData {
    * Returns the favicon for the tab, encoded as a PNG image. An image is
    * returned only if the page is loaded enough for it to be available and the
    * page specifies a favicon.
+   *
+   * @deprecated Use `getTabFaviconById` instead. This does not work on Android.
+   * Favicons may be omitted if the client capability
+   * `IGNORES_TAB_DATA_FAVICONS` is present on this instance.
    */
   favicon?(): Promise<Blob|undefined>;
   /**
    * The favicon URL. Only available if the page is loaded enough and it
    * specifies a favicon.
    *
-   * @todo Investigate render performance of data urls. crbug.com/429237829
+   * @deprecated Should no longer be used, will be removed in the future.
    */
   faviconUrl?: string;
   /**
@@ -2930,6 +2954,15 @@ export enum HostCapability {
   PDF_ZERO_STATE = 7,
   // Indicates that the host supports the invoke mechanism.
   INVOKE = 8,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Lists capabilities that the glic web client may support.
+export enum ClientCapabilities {
+  // The glic web client does not use favicons in TabData, so they can
+  // be omitted from TabData.
+  IGNORES_TAB_DATA_FAVICONS = 0,
 }
 
 ///////////////////////////////////////////////
