@@ -20,6 +20,8 @@ BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
 
 BASE_DECLARE_FEATURE(kGlicInvoke);
 
+BASE_DECLARE_FEATURE(kGlicSummarizeVideoSuggestion);
+
 BASE_DECLARE_FEATURE(kGlicContextMenu);
 extern const base::FeatureParam<std::string> kGlicContextMenuArm;
 extern const base::FeatureParam<bool> kGlicContextMenuWithOnboarding;
