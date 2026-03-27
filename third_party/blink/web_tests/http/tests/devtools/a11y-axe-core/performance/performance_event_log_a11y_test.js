@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
-import {PerformanceTestRunner} from 'performance_test_runner';
-
 import * as Timeline from 'devtools/panels/timeline/timeline.js';
+import {PerformanceTestRunner} from 'performance_test_runner';
+import {TestRunner} from 'test_runner';
 
 (async function() {
-
   await TestRunner.showPanel('timeline');
   TestRunner.addResult('Performance panel loaded.');
 
-  const tabbedPane = Timeline.TimelinePanel.TimelinePanel.instance().flameChart.detailsView.tabbedPane;
+  const tabbedPane = Timeline.TimelinePanel.TimelinePanel.instance()
+                         .flameChart.detailsView.tabbedPane;
   tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.EventLog);
 
   TestRunner.addResult('Loading a performance model.');
@@ -47,14 +46,16 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
     },
   ];
   const view = tabbedPane.visibleView;
-  const traceEngineData = await PerformanceTestRunner.createTraceEngineDataFromEvents(testData);
-  const mainThreadEvents = traceEngineData.Renderer.processes.get(100).threads.get(1).entries;
+  const traceEngineData =
+      await PerformanceTestRunner.createTraceEngineDataFromEvents(testData);
+  const mainThreadEvents =
+      traceEngineData.Renderer.processes.get(100).threads.get(1).entries;
 
-  view.setModelWithEvents(null, mainThreadEvents, traceEngineData);
-  view.updateContents(Timeline.TimelineSelection.selectionFromRangeMicroSeconds(
-      traceEngineData.Meta.traceBounds.min,
-      traceEngineData.Meta.traceBounds.max
-  ));
+  view.model = {selectedEvents: mainThreadEvents, parsedTrace: traceEngineData};
+  view.activeSelection =
+      Timeline.TimelineSelection.selectionFromRangeMicroSeconds(
+          traceEngineData.Meta.traceBounds.min,
+          traceEngineData.Meta.traceBounds.max);
 
   TestRunner.addResult('Running aXe on the event log pane.');
   await AxeCoreTestRunner.runValidation(view.contentElement);
