@@ -328,11 +328,11 @@ void ServiceWorkerClient::AddMatchingRegistration(
     return;
   }
   size_t key = registration->scope().spec().size();
-  if (matching_registrations_.contains(key)) {
+  auto [it, inserted] = matching_registrations_.try_emplace(key, registration);
+  if (!inserted) {
     return;
   }
   registration->AddListener(this);
-  matching_registrations_[key] = registration;
 
   if (container_host()) {
     container_host()->ReturnRegistrationForReadyIfNeeded();
