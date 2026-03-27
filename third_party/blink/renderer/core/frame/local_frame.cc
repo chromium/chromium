@@ -832,7 +832,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   frame_visibility_observers_.clear();
 
   not_restored_reasons_.reset();
-  microtasks_pauser_.reset();
   prescient_networking_.reset();
   link_preview_triggerer_.reset();
 
