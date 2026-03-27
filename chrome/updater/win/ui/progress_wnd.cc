@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -135,12 +136,145 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
 
   SetMarqueeMode(true);
 
-  SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
+  SetControlText(IDC_INSTALLER_STATE_TEXT,
                  GetLocalizedString(IDS_INITIALIZING_BASE, lang()).c_str());
   ChangeControlState();
 
   handled = true;
   return 1;  // Let the system set the focus.
+}
+
+LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
+                                  WPARAM wparam,
+                                  LPARAM lparam,
+                                  BOOL& handled) {
+  // Configuration for the rainbow geometry.
+  static constexpr size_t kNumStops = 7;
+  static constexpr size_t kNumSegments = kNumStops - 1;
+  static constexpr size_t kNumVertices = kNumStops * 2;  // Top + bottom row
+  static constexpr size_t kNumTriangles = kNumSegments * 2;
+
+  // Layout ratios.
+  static constexpr double kYEdgeRatio = 0.69;
+  static constexpr double kYCenterRatio = 0.98;
+
+  // Static data for stops and colors.
+  static constexpr std::array<double, kNumStops> kStops = {
+      0.0, 0.17, 0.32, 0.50, 0.66, 0.81, 1.0};
+
+  static constexpr std::array<COLORREF, kNumStops> kColors = {
+      RGB(255, 255, 220),  // Light Yellow
+      RGB(255, 240, 210),  // Light Orange
+      RGB(255, 225, 225),  // Light Red
+      RGB(255, 235, 245),  // Light Pink
+      RGB(250, 230, 255),  // Light Magenta
+      RGB(240, 230, 255),  // Light Violet
+      RGB(220, 255, 255)   // Light Aqua
+  };
+
+  const HDC hdc = reinterpret_cast<HDC>(wparam);
+  CRect rect;
+  GetClientRect(&rect);
+
+  const int width = rect.right - rect.left;
+  const int height = rect.bottom - rect.top;
+
+  // Define the curve parameters:
+  // y_edge: The height where the rainbow starts at the left/right edges.
+  // y_center: The height where the rainbow is thinnest at the center.
+  const int y_edge = static_cast<int>(height * kYEdgeRatio);
+  const int y_center = static_cast<int>(height * kYCenterRatio);
+
+  // Fill the top area with solid white.
+  CRect top_rect = {rect.left, rect.top, rect.right, y_edge};
+  ::FillRect(hdc, &top_rect,
+             static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
+
+  // Define the rainbow mesh vertices.
+  std::array<TRIVERTEX, kNumVertices> vertices;
+  auto v_span = base::span(vertices);
+
+  auto set_vertex = [](base::span<TRIVERTEX> vertices, size_t index, int x,
+                       int y, COLORREF color) {
+    TRIVERTEX& vertex = vertices[index];
+    vertex.x = x;
+    vertex.y = y;
+    vertex.Red = static_cast<COLOR16>(GetRValue(color) << 8);
+    vertex.Green = static_cast<COLOR16>(GetGValue(color) << 8);
+    vertex.Blue = static_cast<COLOR16>(GetBValue(color) << 8);
+    vertex.Alpha = 0;
+  };
+
+  for (size_t i = 0; i < kNumStops; ++i) {
+    const double stop = kStops[i];
+    const int x = static_cast<int>(width * stop);
+
+    // Calculate the concave (U-shaped) boundary using a parabola.
+    const double factor = (2.0 * stop - 1.0);
+    const int y_boundary =
+        static_cast<int>(y_center - (y_center - y_edge) * (factor * factor));
+
+    // Top row of the mesh (White boundary following the curve).
+    set_vertex(v_span, i, x, y_boundary, RGB(255, 255, 255));
+
+    // Bottom row of the mesh (Light rainbow colors).
+    set_vertex(v_span, i + kNumStops, x, height, kColors[i]);
+  }
+
+  // Create the triangles, 2 triangles per segment.
+  std::array<GRADIENT_TRIANGLE, kNumTriangles> mesh;
+  for (size_t i = 0; i < kNumSegments; ++i) {
+    // Triangle 1.
+    GRADIENT_TRIANGLE& tri1 = mesh[i * 2];
+    tri1.Vertex1 = static_cast<ULONG>(i);
+    tri1.Vertex2 = static_cast<ULONG>(i + 1);
+    tri1.Vertex3 = static_cast<ULONG>(i + kNumStops);
+
+    // Triangle 2.
+    GRADIENT_TRIANGLE& tri2 = mesh[i * 2 + 1];
+    tri2.Vertex1 = static_cast<ULONG>(i + 1);
+    tri2.Vertex2 = static_cast<ULONG>(i + kNumStops + 1);
+    tri2.Vertex3 = static_cast<ULONG>(i + kNumStops);
+  }
+
+  ::GradientFill(hdc, v_span.data(), static_cast<ULONG>(v_span.size()),
+                 mesh.data(), static_cast<ULONG>(mesh.size()),
+                 GRADIENT_FILL_TRIANGLE);
+
+  handled = TRUE;
+  return 1;
+}
+
+HBRUSH ProgressWnd::OnCtlColorStatic(WTL::CDCHandle dc,
+                                     WTL::CStatic wndStatic) {
+  dc.SetBkMode(TRANSPARENT);
+  return static_cast<HBRUSH>(::GetStockObject(NULL_BRUSH));
+}
+
+void ProgressWnd::SetControlText(int id, const std::wstring& text) {
+  const HWND hwnd_control = GetDlgItem(id);
+  if (!hwnd_control || !::IsWindow(hwnd_control)) {
+    return;
+  }
+
+  // Reduces flicker by only updating the control if the text has changed.
+  std::wstring current_text;
+  ui::GetDlgItemText(*this, id, &current_text);
+  if (text == current_text) {
+    return;
+  }
+
+  // Get the control's rectangle relative to the dialog.
+  CRect rect;
+  ::GetWindowRect(hwnd_control, &rect);
+  ScreenToClient(&rect);
+
+  // Invalidate the area on the parent. This forces the parent to redraw the
+  // gradient in this specific spot.
+  InvalidateRect(&rect, TRUE);
+
+  // Update the text.
+  ::SetWindowText(hwnd_control, text.c_str());
 }
 
 // If closing is disabled, then it does not close the window.
@@ -270,7 +404,7 @@ LRESULT ProgressWnd::OnInstallStopped(UINT msg,
 }
 
 void ProgressWnd::HandleCancelRequest() {
-  SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
+  SetControlText(IDC_INSTALLER_STATE_TEXT,
                  GetLocalizedString(IDS_CANCELING_BASE, lang()).c_str());
 
   if (is_canceled_) {
@@ -290,7 +424,7 @@ void ProgressWnd::OnCheckingForUpdate() {
 
   cur_state_ = States::STATE_CHECKING_FOR_UPDATE;
 
-  SetDlgItemText(
+  SetControlText(
       IDC_INSTALLER_STATE_TEXT,
       GetLocalizedString(IDS_WAITING_TO_CONNECT_BASE, lang()).c_str());
 
@@ -311,7 +445,7 @@ void ProgressWnd::OnWaitingToDownload(const std::string& app_id,
   }
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
   SetMarqueeMode(true);
-  SetDlgItemText(IDC_INSTALLER_STATE_TEXT, L"");
+  SetControlText(IDC_INSTALLER_STATE_TEXT, L"");
   ChangeControlState();
 }
 
@@ -354,12 +488,7 @@ void ProgressWnd::OnDownloading(
                             lang());
   }
 
-  // Reduces flicker by only updating the control if the text has changed.
-  std::wstring current_text;
-  ui::GetDlgItemText(*this, IDC_INSTALLER_STATE_TEXT, &current_text);
-  if (s != current_text) {
-    SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
-  }
+  SetControlText(IDC_INSTALLER_STATE_TEXT, s.c_str());
 
   SetMarqueeMode(pos == 0);
   if (pos > 0) {
@@ -379,7 +508,7 @@ void ProgressWnd::OnWaitingRetryDownload(const std::string& app_id,
 
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
   SetMarqueeMode(true);
-  SetDlgItemText(IDC_INSTALLER_STATE_TEXT, L"");
+  SetControlText(IDC_INSTALLER_STATE_TEXT, L"");
   ChangeControlState();
 }
 
@@ -393,7 +522,7 @@ void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
   if (States::STATE_WAITING_TO_INSTALL != cur_state_) {
     cur_state_ = States::STATE_WAITING_TO_INSTALL;
     SetMarqueeMode(true);
-    SetDlgItemText(
+    SetControlText(
         IDC_INSTALLER_STATE_TEXT,
         GetLocalizedString(IDS_WAITING_TO_INSTALL_BASE, lang()).c_str());
     ChangeControlState();
@@ -413,7 +542,7 @@ void ProgressWnd::OnInstalling(
 
   if (States::STATE_INSTALLING != cur_state_) {
     cur_state_ = States::STATE_INSTALLING;
-    SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
+    SetControlText(IDC_INSTALLER_STATE_TEXT,
                    GetLocalizedString(IDS_INSTALLING_BASE, lang()).c_str());
     ChangeControlState();
   }
@@ -524,12 +653,12 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
       break;
     case CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS:
       cur_state_ = States::STATE_COMPLETE_RESTART_ALL_BROWSERS;
-      SetDlgItemText(IDC_BUTTON1,
+      SetControlText(IDC_BUTTON1,
                      GetLocalizedString(IDS_RESTART_NOW_BASE, lang()).c_str());
-      SetDlgItemText(
+      SetControlText(
           IDC_BUTTON2,
           GetLocalizedString(IDS_RESTART_LATER_BASE, lang()).c_str());
-      SetDlgItemText(
+      SetControlText(
           IDC_COMPLETE_TEXT,
           GetLocalizedStringF(IDS_TEXT_RESTART_ALL_BROWSERS_BASE,
                               base::UTF16ToWide(bundle_name()), lang())
@@ -538,12 +667,12 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
       break;
     case CompletionCodes::COMPLETION_CODE_RESTART_BROWSER:
       cur_state_ = States::STATE_COMPLETE_RESTART_BROWSER;
-      SetDlgItemText(IDC_BUTTON1,
+      SetControlText(IDC_BUTTON1,
                      GetLocalizedString(IDS_RESTART_NOW_BASE, lang()).c_str());
-      SetDlgItemText(
+      SetControlText(
           IDC_BUTTON2,
           GetLocalizedString(IDS_RESTART_LATER_BASE, lang()).c_str());
-      SetDlgItemText(
+      SetControlText(
           IDC_COMPLETE_TEXT,
           GetLocalizedStringF(IDS_TEXT_RESTART_BROWSER_BASE,
                               base::UTF16ToWide(bundle_name()), lang())
@@ -552,12 +681,12 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
       break;
     case CompletionCodes::COMPLETION_CODE_REBOOT:
       cur_state_ = States::STATE_COMPLETE_REBOOT;
-      SetDlgItemText(IDC_BUTTON1,
+      SetControlText(IDC_BUTTON1,
                      GetLocalizedString(IDS_RESTART_NOW_BASE, lang()).c_str());
-      SetDlgItemText(
+      SetControlText(
           IDC_BUTTON2,
           GetLocalizedString(IDS_RESTART_LATER_BASE, lang()).c_str());
-      SetDlgItemText(
+      SetControlText(
           IDC_COMPLETE_TEXT,
           GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE,
                               base::UTF16ToWide(bundle_name()), lang())

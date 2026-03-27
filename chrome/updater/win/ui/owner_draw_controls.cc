@@ -18,6 +18,34 @@
 
 namespace updater::ui {
 
+namespace {
+
+// Draws the parent's background (the gradient) onto a child's DC.
+void DrawParentBackground(HWND hwnd, HDC hdc, const RECT& rect) {
+  const HWND parent_hwnd = ::GetParent(hwnd);
+  if (!parent_hwnd) {
+    return;
+  }
+
+  CPoint pt(0, 0);
+  if (!::MapWindowPoints(hwnd, parent_hwnd, &pt, 1) &&
+      ::GetLastError() != ERROR_SUCCESS) {
+    return;
+  }
+
+  // Offset the DC so the parent draws the gradient at the correct coordinates
+  // relative to the child's position.
+  if (!::OffsetWindowOrgEx(hdc, pt.x, pt.y, &pt)) {
+    return;
+  }
+  ::SendMessage(parent_hwnd, WM_ERASEBKGND, reinterpret_cast<WPARAM>(hdc), 0);
+
+  // Restore the original origin.
+  ::SetWindowOrgEx(hdc, pt.x, pt.y, nullptr);
+}
+
+}  // namespace
+
 // Returns the system color corresponding to `high_contrast_color_index` if the
 // system is in high contrast mode. Otherwise, it returns `normal_color`.
 COLORREF GetColor(COLORREF normal_color, int high_contrast_color_index) {
@@ -120,10 +148,13 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
   CRect button_rect;
   GetClientRect(&button_rect);
 
-  COLORREF bk_color(is_mouse_hovering_
-                        ? GetColor(kCaptionBkHover, COLOR_HIGHLIGHT)
-                        : GetColor(bk_color_, COLOR_WINDOW));
-  dc.FillSolidRect(&button_rect, bk_color);
+  if (is_mouse_hovering_) {
+    // Keep the hover highlight solid.
+    dc.FillSolidRect(&button_rect, GetColor(kCaptionBkHover, COLOR_HIGHLIGHT));
+  } else {
+    // Draw the parent's gradient background.
+    DrawParentBackground(m_hWnd, dc, button_rect);
+  }
 
   int rgn_width = button_rect.Width() * 12 / 31;
   int rgn_height = button_rect.Height() * 12 / 31;
@@ -296,11 +327,11 @@ LRESULT OwnerDrawTitleBarWindow::OnEraseBkgnd(UINT,
                                               BOOL& handled) {
   handled = true;
 
-  WTL::CDC dc(reinterpret_cast<HDC>(wparam));
   CRect rect;
   GetClientRect(&rect);
 
-  dc.FillSolidRect(&rect, GetColor(bk_color_, COLOR_WINDOW));
+  // Draw the parent's gradient background.
+  DrawParentBackground(m_hWnd, reinterpret_cast<HDC>(wparam), rect);
   return 1;
 }
 
@@ -548,6 +579,10 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
   WTL::CPaintDC dcPaint(m_hWnd);
   WTL::CMemoryDC dc(dcPaint, client_rect);
 
+  // Draw the parent's gradient background into the memory DC first. This
+  // ensures the empty areas of the progress bar show the gradient.
+  DrawParentBackground(m_hWnd, dc.m_hDC, client_rect);
+
   // FillRgn appears to have a bug with RTL/mirroring where it does not paint
   // the first pixel of the rightmost rectangle with the 'rgn' created above.
   // Since the region is rectangles, instead of using FillRgn, this code gets
@@ -561,21 +596,9 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
     for (DWORD count = 0; count < rgndata.rdh.nCount; count++) {
       CRect r = reinterpret_cast<RECT*>(
           UNSAFE_TODO(rgndata.Buffer + count * sizeof(RECT)));
-      CRect bottom_edge_rect = r;
 
-      // Have a 2-pixel bottom edge.
-      r.DeflateRect(0, 0, 0, 2);
-      bottom_edge_rect.top = r.bottom;
-
-      WTL::CBrushHandle bottom_edge_brush(
-          reinterpret_cast<HBRUSH>(GetParent().SendMessage(
-              WM_CTLCOLORSTATIC, reinterpret_cast<WPARAM>(dc.m_hDC),
-              reinterpret_cast<LPARAM>(m_hWnd))));
-      dc.FillRect(&bottom_edge_rect, bottom_edge_brush);
-
+      // Draw the frame for the empty part of the bar.
       dc.FrameRect(r, empty_frame_brush_);
-      r.DeflateRect(1, 1);
-      dc.FillSolidRect(r, GetColor(empty_fill_color_, COLOR_WINDOWTEXT));
     }
   }
 

@@ -7,6 +7,15 @@
 
 #include <windows.h>
 
+// clang-format off
+// This needs to be included before ATL headers.
+#include "base/win/atl.h"
+// clang-format on
+
+#include <atlapp.h>
+#include <atlcrack.h>
+#include <atlgdi.h>
+
 #include <array>
 #include <memory>
 #include <optional>
@@ -114,6 +123,8 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   BEGIN_MSG_MAP(ProgressWnd)
     MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
     MESSAGE_HANDLER(WM_INSTALL_STOPPED, OnInstallStopped)
+    MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
+    MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
     COMMAND_HANDLER(IDC_BUTTON1, BN_CLICKED, OnClickedButton)
     COMMAND_HANDLER(IDC_BUTTON2, BN_CLICKED, OnClickedButton)
     COMMAND_HANDLER(IDC_CLOSE, BN_CLICKED, OnClickedButton)
@@ -190,6 +201,13 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
                           WORD id,
                           HWND wnd_ctl,
                           BOOL& handled);  // NOLINT
+  LRESULT OnEraseBkgnd(UINT msg,
+                       WPARAM wparam,
+                       LPARAM lparam,
+                       BOOL& handled);  // NOLINT
+  HBRUSH OnCtlColorStatic(WTL::CDCHandle dc, WTL::CStatic wndStatic);
+
+  void SetControlText(int id, const std::wstring& text);
 
   // Returns true if this window is closed.
   bool MaybeCloseWindow() override;
