@@ -863,12 +863,6 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
-  if (input->IsLanguageModelMessageSequence() &&
-      input->GetAsLanguageModelMessageSequence().empty()) {
-    resolver->Resolve();
-    return promise;
-  }
-
   ConvertPromptInputsToMojo(
       script_state, signal, input, info_, /*json_schema=*/"",
       blink::BindOnce(&AppendClient::Create, WrapPersistent(script_state),

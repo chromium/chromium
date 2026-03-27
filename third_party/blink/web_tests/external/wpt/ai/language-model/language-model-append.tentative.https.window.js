@@ -23,17 +23,6 @@ promise_test(async () => {
   assert_equals(session.contextUsage, promptUsage);
 }, 'Check contextUsage increases from a simple LanguageModel.append() call');
 
-promise_test(async (t) => {
-  await ensureLanguageModel();
-  const session = await createLanguageModel();
-  assert_equals(session.contextUsage, 0);
-  await session.append([]);
-  assert_equals(session.contextUsage, 0);
-  // Invalid input should be stringified.
-  await session.append({});
-  assert_greater_than(session.contextUsage, 0);
-}, 'Check empty Object input for LanguageModel.append()');
-
 promise_test(async t => {
   await ensureLanguageModel();
   const session = await createLanguageModel();
@@ -63,3 +52,17 @@ promise_test(async t => {
       t, TypeError, session.append([{role: 'system', content: 'bar'}]));
   await result3;
 }, 'append() should reject system role messages after other messages');
+
+promise_test(async (t) => {
+  await ensureLanguageModel();
+  const model = await createLanguageModel();
+
+  // null, undefined, and objects are coerced to strings.
+  await model.append(null);
+  await model.append(undefined);
+  await model.append({});
+  await model.append('');
+  await model.append([]);
+  await model.append([{ role: 'user', content: [] }]);
+  await model.append([{role: 'user', content: [{type: 'text', value: ''}]}]);
+}, 'LanguageModel.append() allows empty and coerced inputs');

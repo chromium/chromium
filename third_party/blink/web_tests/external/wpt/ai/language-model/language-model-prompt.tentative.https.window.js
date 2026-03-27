@@ -35,6 +35,24 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   await ensureLanguageModel();
+  const model = await createLanguageModel();
+
+  // null, undefined, and objects are coerced to strings.
+  assert_regexp_match(await model.prompt(null), /null/);
+  assert_regexp_match(await model.prompt(undefined), /undefined/);
+  assert_equals(typeof await model.prompt({}), 'string');
+  assert_equals(typeof await model.prompt(''), 'string');
+  assert_equals(typeof await model.prompt([]), 'string');
+  assert_equals(
+      typeof await model.prompt([{role: 'user', content: []}]), 'string');
+  assert_equals(
+      typeof await model.prompt(
+          [{role: 'user', content: [{type: 'text', value: ''}]}]),
+      'string');
+}, 'LanguageModel.prompt() allows empty and coerced inputs');
+
+promise_test(async (t) => {
+  await ensureLanguageModel();
   const session = await createLanguageModel();
   assert_regexp_match(await session.prompt('What is the capital of France?'), /paris/i);
 }, 'Check capital of France');
