@@ -14,6 +14,11 @@
 // sequence.
 class ApplicationLocaleStorage {
  public:
+  enum class LocaleFormat {
+    kChromeNormalized,
+    kBCP47,
+  };
+
   using OnLocaleChangedCallbackList =
       base::RepeatingCallbackList<void(const std::string&)>;
 
@@ -23,7 +28,8 @@ class ApplicationLocaleStorage {
   ~ApplicationLocaleStorage();
 
   // Returns current locale string.
-  const std::string& Get() const;
+  const std::string& Get(
+      LocaleFormat format = LocaleFormat::kChromeNormalized) const;
 
   // Changes the locale string.
   void Set(std::string new_locale);
@@ -34,7 +40,8 @@ class ApplicationLocaleStorage {
       OnLocaleChangedCallbackList::CallbackType cb);
 
  private:
-  std::string locale_;
+  std::string chrome_normalized_locale_;
+  std::string bcp47_locale_;
   OnLocaleChangedCallbackList on_locale_changed_callback_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);

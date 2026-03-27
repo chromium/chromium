@@ -70,7 +70,7 @@ class MockAimEligibilityService : public AimEligibilityService {
   // provided by the KeyedService factory. We therefore need to implement them
   // in this unit test.
   std::string GetCountryCode() const override { return "US"; }
-  std::string GetLocale() const override { return "en-US"; }
+  std::string GetLocaleImpl() const override { return "en-US"; }
 };
 
 class MockAiThreadSyncBridge : public AiThreadSyncBridge {

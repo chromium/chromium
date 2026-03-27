@@ -31,7 +31,7 @@ ChromeAimEligibilityService::ChromeAimEligibilityService(
                             template_url_service,
                             url_loader_factory,
                             identity_manager,
-                            GetLocale(),
+                            GetLocaleImpl(),
                             std::move(configuration)) {}
 
 ChromeAimEligibilityService::~ChromeAimEligibilityService() = default;
@@ -41,9 +41,10 @@ std::string ChromeAimEligibilityService::GetCountryCode() const {
       g_browser_process->variations_service()));
 }
 
-std::string ChromeAimEligibilityService::GetLocale() const {
-  return g_browser_process ? g_browser_process->GetFeatures()
-                                 ->application_locale_storage()
-                                 ->Get()
-                           : "";
+std::string ChromeAimEligibilityService::GetLocaleImpl() const {
+  return g_browser_process
+             ? g_browser_process->GetFeatures()
+                   ->application_locale_storage()
+                   ->Get(ApplicationLocaleStorage::LocaleFormat::kBCP47)
+             : "";
 }

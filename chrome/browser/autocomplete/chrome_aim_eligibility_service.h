@@ -31,7 +31,7 @@ class ChromeAimEligibilityService : public AimEligibilityService {
 
   // AimEligibilityService:
   std::string GetCountryCode() const override;
-  std::string GetLocale() const override;
+  std::string GetLocaleImpl() const override;
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_CHROME_AIM_ELIGIBILITY_SERVICE_H_

@@ -230,10 +230,23 @@ class AimEligibilityService
  protected:
   // Virtual methods for platform-specific country and locale access.
   virtual std::string GetCountryCode() const = 0;
-  virtual std::string GetLocale() const = 0;
+
+  // Returns the locale in the BCP 47 IETF standard.
+  // Natively enforces that the result from platform overrides does not contain
+  // underscores.
+  std::string GetLocale() const;
+
+  // Platform-specific implementation for fetching the locale.
+  // Implementations MUST return the locale natively formatted to the IETF BCP
+  // 47 standard (with hyphens).
+  virtual std::string GetLocaleImpl() const = 0;
 
  private:
   friend class AimEligibilityServiceFriend;
+
+  // Verifies that the provided locale strictly conforms to the IETF BCP 47
+  // standard by explicitly ensuring no underscores are present.
+  static bool IsIetfBcp47(const std::string& locale);
 
   // Converts RequestSource enum to histogram suffix string.
   static std::string RequestSourceToString(RequestSource source);

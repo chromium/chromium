@@ -31,7 +31,7 @@ class IOSChromeAimEligibilityService : public AimEligibilityService {
 
   // AimEligibilityService:
   std::string GetCountryCode() const override;
-  std::string GetLocale() const override;
+  std::string GetLocaleImpl() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_AIM_MODEL_IOS_CHROME_AIM_ELIGIBILITY_SERVICE_H_

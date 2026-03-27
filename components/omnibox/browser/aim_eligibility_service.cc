@@ -381,6 +381,20 @@ AimEligibilityService::~AimEligibilityService() {
   }
 }
 
+// static
+bool AimEligibilityService::IsIetfBcp47(const std::string& locale) {
+  return locale.find('_') == std::string::npos;
+}
+
+std::string AimEligibilityService::GetLocale() const {
+  std::string locale = GetLocaleImpl();
+  DCHECK(IsIetfBcp47(locale))
+      << "GetLocaleImpl() must return a BCP 47 formatted locale with hyphens, "
+         "not underscores: "
+      << locale;
+  return locale;
+}
+
 bool AimEligibilityService::IsCountry(const std::string& country) const {
   // Country codes are in lowercase ISO 3166-1 alpha-2 format; e.g., us, br, in.
   // See components/variations/service/variations_service.h

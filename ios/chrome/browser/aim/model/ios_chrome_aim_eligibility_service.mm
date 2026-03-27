@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service.h"
 
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -21,7 +22,7 @@ IOSChromeAimEligibilityService::IOSChromeAimEligibilityService(
                             template_url_service,
                             url_loader_factory,
                             identity_manager,
-                            GetLocale(),
+                            GetLocaleImpl(),
                             std::move(configuration)) {}
 
 IOSChromeAimEligibilityService::~IOSChromeAimEligibilityService() = default;
@@ -34,9 +35,19 @@ std::string IOSChromeAimEligibilityService::GetCountryCode() const {
       [[NSLocale currentLocale].countryCode lowercaseString]);
 }
 
-std::string IOSChromeAimEligibilityService::GetLocale() const {
+std::string IOSChromeAimEligibilityService::GetLocaleImpl() const {
+  std::string locale;
   if (experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
-    return "en_US";
+    locale = "en-US";
+  } else {
+    NSString* localeIdentifier = [NSLocale currentLocale].localeIdentifier;
+    if (!localeIdentifier) {
+      // Locale might be nil on simulator
+      localeIdentifier = @"en-US";
+    }
+
+    locale = base::SysNSStringToUTF8(localeIdentifier);
   }
-  return base::SysNSStringToUTF8([NSLocale currentLocale].localeIdentifier);
+  base::ReplaceChars(locale, "_", "-", &locale);
+  return locale;
 }

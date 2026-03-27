@@ -18,6 +18,16 @@ TEST(ApplicationLocaleStorageTest, GetShouldReturnPreviousSet) {
   EXPECT_EQ(locale_storage.Get(), "en-US");
 }
 
+TEST(ApplicationLocaleStorageTest, GetBCP47Format) {
+  ApplicationLocaleStorage locale_storage;
+  locale_storage.Set("es_419");
+  EXPECT_EQ(locale_storage.Get(
+                ApplicationLocaleStorage::LocaleFormat::kChromeNormalized),
+            "es_419");
+  EXPECT_EQ(locale_storage.Get(ApplicationLocaleStorage::LocaleFormat::kBCP47),
+            "es-419");
+}
+
 TEST(ApplicationLocaleStorageTest, SetShouldTriggerCallback) {
   std::vector<std::string> history;
   base::RepeatingCallback callback = base::BindLambdaForTesting(

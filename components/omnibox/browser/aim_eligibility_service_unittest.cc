@@ -45,6 +45,10 @@ class AimEligibilityServiceFriend {
         response, AimEligibilityService::EligibilityResponseSource::kUser,
         AimEligibilityService::AuthenticationMethod::kNone);
   }
+
+  static bool IsIetfBcp47(const std::string& locale) {
+    return AimEligibilityService::IsIetfBcp47(locale);
+  }
 };
 
 namespace {
@@ -66,7 +70,7 @@ class MockAimEligibilityServiceForInterception : public AimEligibilityService {
   ~MockAimEligibilityServiceForInterception() override = default;
 
   MOCK_METHOD(std::string, GetCountryCode, (), (const, override));
-  MOCK_METHOD(std::string, GetLocale, (), (const, override));
+  MOCK_METHOD(std::string, GetLocaleImpl, (), (const, override));
 
   void SetAimEligibilityResponse(omnibox::AimEligibilityResponse response) {
     AimEligibilityServiceFriend::UpdateMostRecentResponse(this, response);
@@ -195,7 +199,7 @@ TEST_F(AimEligibilityServiceTest, ClientLocaleParam) {
       {{"mode", "get_with_locale"}});
 
   // Set the locale.
-  EXPECT_CALL(*aim_eligibility_service_, GetLocale())
+  EXPECT_CALL(*aim_eligibility_service_, GetLocaleImpl())
       .WillRepeatedly(testing::Return("es-419"));
 
   // Trigger the request.
@@ -251,7 +255,7 @@ TEST_F(AimEligibilityServiceTest, RequestMode_GetWithLocale) {
       omnibox::kAimServerEligibilityIncludeClientLocale,
       {{"mode", "get_with_locale"}});
 
-  EXPECT_CALL(*aim_eligibility_service_, GetLocale())
+  EXPECT_CALL(*aim_eligibility_service_, GetLocaleImpl())
       .WillRepeatedly(testing::Return("es-419"));
 
   EXPECT_EQ(
@@ -277,7 +281,7 @@ TEST_F(AimEligibilityServiceTest, RequestMode_EnabledDefault) {
   feature_list.InitAndEnableFeature(
       omnibox::kAimServerEligibilityIncludeClientLocale);
 
-  EXPECT_CALL(*aim_eligibility_service_, GetLocale())
+  EXPECT_CALL(*aim_eligibility_service_, GetLocaleImpl())
       .WillRepeatedly(testing::Return("es-419"));
 
   // Default when enabled without params is now GetWithLocale.
@@ -305,7 +309,7 @@ TEST_F(AimEligibilityServiceTest, RequestMode_PostWithProto) {
       omnibox::kAimServerEligibilityIncludeClientLocale,
       {{"mode", "post_with_proto"}});
 
-  EXPECT_CALL(*aim_eligibility_service_, GetLocale())
+  EXPECT_CALL(*aim_eligibility_service_, GetLocaleImpl())
       .WillRepeatedly(testing::Return("es-419"));
 
   EXPECT_EQ(
@@ -499,4 +503,17 @@ TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureDisabled) {
 
   // Should be true regardless of response if feature is disabled.
   EXPECT_TRUE(aim_eligibility_service_->IsFuseboxEligible());
+}
+
+TEST_F(AimEligibilityServiceTest, IsIetfBcp47) {
+  // Valid BCP 47 strings (no underscores)
+  EXPECT_TRUE(AimEligibilityServiceFriend::IsIetfBcp47("en"));
+  EXPECT_TRUE(AimEligibilityServiceFriend::IsIetfBcp47("en-US"));
+  EXPECT_TRUE(AimEligibilityServiceFriend::IsIetfBcp47("es-419"));
+  EXPECT_TRUE(AimEligibilityServiceFriend::IsIetfBcp47("sr-Latn-RS"));
+
+  // Invalid strings (contains underscores)
+  EXPECT_FALSE(AimEligibilityServiceFriend::IsIetfBcp47("en_US"));
+  EXPECT_FALSE(AimEligibilityServiceFriend::IsIetfBcp47("fr_CA"));
+  EXPECT_FALSE(AimEligibilityServiceFriend::IsIetfBcp47("sr_Latn_RS"));
 }
