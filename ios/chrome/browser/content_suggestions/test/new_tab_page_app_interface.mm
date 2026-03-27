@@ -91,6 +91,12 @@ using set_up_list_prefs::SetUpListItemState;
       .complete;
 }
 
++ (BOOL)setUpListItemSafariImportInMagicStackIsComplete {
+  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
+             set_up_list::kSafariImportItemID)
+      .complete;
+}
+
 + (NewTabPageColorPalette*)currentBackgroundColor {
   return ntp_home::CurrentBackgroundColor();
 }

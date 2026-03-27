@@ -147,7 +147,6 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
   config.features_enabled.push_back(kMostVisitedTilesCustomizationIOS);
-  config.features_disabled.push_back(kIOSExpandedSetupList);
   config.additional_args.push_back("--test-ios-module-ranker=mvt");
   if ([self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
@@ -336,24 +335,6 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
       base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"SetUpList item Default Browser not completed.");
 
-  // TODO:(crbug.com/480153437): Enable `kIOSExpandedSetupList` and update this
-  // test to work with the new setup list.
-  // Tap the autofill item.
-  TapView(set_up_list::kAutofillItemID);
-  id<GREYMatcher> CPEPromoView =
-      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
-  [[EarlGrey selectElementWithMatcher:CPEPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the CPE promo.
-  TapSecondaryActionButton();
-
-  condition = ^{
-    return [NewTabPageAppInterface setUpListItemAutofillInMagicStackIsComplete];
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"SetUpList item Autofill not completed.");
-
   // Completed Set Up List items last one impression
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
@@ -370,6 +351,42 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
   // Dismiss Notification opt-in screen.
   TapPromoStyleSecondaryActionButton();
 
+  // Completed Set Up List items last one impression
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+
+  // Tap the Safari Import item.
+  TapView(set_up_list::kSafariImportItemID);
+  id<GREYMatcher> cancelButton = chrome_test_util::NavigationBarCancelButton();
+  [[EarlGrey selectElementWithMatcher:cancelButton]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
+
+  condition = ^{
+    return [NewTabPageAppInterface
+        setUpListItemSafariImportInMagicStackIsComplete];
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"SetUpList item Safari Import not completed.");
+
+  // Completed Set Up List items last one impression
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+
+  // Tap the autofill item.
+  TapView(set_up_list::kAutofillItemID);
+  id<GREYMatcher> CPEPromoView =
+      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
+  [[EarlGrey selectElementWithMatcher:CPEPromoView]
+      assertWithMatcher:grey_notNil()];
+
+  // Dismiss the CPE promo.
+  TapSecondaryActionButton();
   // Verify the All Set item is shown.
   condition = ^{
     NSError* error = nil;

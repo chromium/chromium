@@ -48,6 +48,10 @@
 // complete.
 + (BOOL)setUpListItemAutofillInMagicStackIsComplete;
 
+// Returns YES if the Safari Import SetUpListItemView item in the Magic Stack is
+// complete.
++ (BOOL)setUpListItemSafariImportInMagicStackIsComplete;
+
 // Returns the current color palette of the NTP's background.
 + (NewTabPageColorPalette*)currentBackgroundColor;
 
