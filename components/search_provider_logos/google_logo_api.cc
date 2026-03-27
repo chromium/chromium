@@ -122,6 +122,53 @@ ParseEncodedImageData(const std::string& encoded_image_data) {
   return result;
 }
 
+/**
+ * Helper function to parse the mural metadata information from the Google
+ * Doodle Logo response. The Mural image metadata is a non-optional field, and
+ * comes in both light and dark variations.
+ *
+ * Murals are the extended artwork images of the Google Doodles, and can serve
+ * as a replacement for the latter on larger surfaces. Unlike Doodles, Mural
+ * images are served as urls rather than base64 encoded data.
+ */
+void ParseMuralMetadata(const base::DictValue* mural,
+                        const GURL& base_url,
+                        bool is_dark,
+                        MuralMetadata& mural_metadata) {
+  // While the mural image metadata is non-optional, it is not required to
+  // render the Doodle. Users can always fallback to regular the Doodle image.
+  if (!mural) {
+    DLOG(WARNING)
+        << (is_dark ? "Dark " : "")
+        << "Mural Image metadata is missing when parsing the Logo response";
+    return;
+  }
+  mural_metadata.mural_url = ParseUrl(*mural, "url", base_url);
+  mural_metadata.is_animated_gif =
+      mural->FindBool("is_animated_gif").value_or(false);
+  mural_metadata.width_px = mural->FindInt("width").value_or(0);
+  mural_metadata.height_px = mural->FindInt("height").value_or(0);
+
+  // Similarly, the core content area is non-optional as well, but it is not
+  // required to render the Mural itself.
+  const base::DictValue* core_content_area =
+      mural->FindDict("core_content_area");
+  if (!core_content_area) {
+    DLOG(WARNING)
+        << (is_dark ? "Dark " : "")
+        << "Mural Core Content Area is missing when parsing the Logo response";
+  } else {
+    mural_metadata.core_content_area.height_px =
+        core_content_area->FindInt("height").value_or(0);
+    mural_metadata.core_content_area.left_px =
+        core_content_area->FindInt("left").value_or(0);
+    mural_metadata.core_content_area.top_px =
+        core_content_area->FindInt("top").value_or(0);
+    mural_metadata.core_content_area.width_px =
+        core_content_area->FindInt("width").value_or(0);
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
@@ -233,6 +280,14 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
       short_link_str.insert(0, "https:");
       logo->metadata.short_link = GURL(std::move(short_link_str));
     }
+  }
+
+  // Extract the Doodle Mural information.
+  if (is_simple || is_animated) {
+    ParseMuralMetadata(ddljson->FindDict("mural_image"), base_url,
+                       /*is_dark=*/false, logo->metadata.mural_metadata);
+    ParseMuralMetadata(ddljson->FindDict("dark_mural_image"), base_url,
+                       /*is_dark=*/true, logo->metadata.dark_mural_metadata);
   }
 
   logo->metadata.full_page_url =

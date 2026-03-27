@@ -32,6 +32,28 @@ enum class LogoType {
   INTERACTIVE,
 };
 
+struct MuralCoreContentArea {
+  int height_px = 0;
+  int left_px = 0;
+  int top_px = 0;
+  int width_px = 0;
+};
+
+struct MuralMetadata {
+  MuralMetadata();
+  MuralMetadata(const MuralMetadata&);
+  MuralMetadata(MuralMetadata&&) noexcept;
+  MuralMetadata& operator=(const MuralMetadata&);
+  MuralMetadata& operator=(MuralMetadata&&) noexcept;
+  ~MuralMetadata();
+
+  GURL mural_url;
+  MuralCoreContentArea core_content_area;
+  bool is_animated_gif = false;
+  int width_px = 0;
+  int height_px = 0;
+};
+
 // Note: whenever a new field is added here, LogoCache must be updated to
 // serialize and deserialize that field.
 struct LogoMetadata {
@@ -105,6 +127,10 @@ struct LogoMetadata {
   // INTERACTIVE: appropriate dimensions for the iframe.
   int iframe_width_px = 0;
   int iframe_height_px = 0;
+
+  // The mural metadata containing the mural information.
+  MuralMetadata mural_metadata;
+  MuralMetadata dark_mural_metadata;
 
   // For use by LogoService ---------------------------------------------------
 

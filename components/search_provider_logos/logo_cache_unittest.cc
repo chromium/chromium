@@ -55,6 +55,23 @@ LogoMetadata GetExampleMetadata() {
   metadata.height_px = 200;
   metadata.dark_width_px = 600;
   metadata.dark_height_px = 230;
+  metadata.mural_metadata.mural_url = GURL("https://www.google.com/mural.png");
+  metadata.dark_mural_metadata.mural_url =
+      GURL("https://www.google.com/dark_mural.png");
+  metadata.mural_metadata.is_animated_gif = true;
+  metadata.dark_mural_metadata.is_animated_gif = true;
+  metadata.mural_metadata.width_px = 800;
+  metadata.mural_metadata.height_px = 400;
+  metadata.mural_metadata.core_content_area.width_px = 500;
+  metadata.mural_metadata.core_content_area.height_px = 200;
+  metadata.mural_metadata.core_content_area.left_px = 150;
+  metadata.mural_metadata.core_content_area.top_px = 100;
+  metadata.dark_mural_metadata.width_px = 800;
+  metadata.dark_mural_metadata.height_px = 400;
+  metadata.dark_mural_metadata.core_content_area.width_px = 500;
+  metadata.dark_mural_metadata.core_content_area.height_px = 200;
+  metadata.dark_mural_metadata.core_content_area.left_px = 150;
+  metadata.dark_mural_metadata.core_content_area.top_px = 100;
   return metadata;
 }
 
@@ -152,6 +169,38 @@ void ExpectMetadataEqual(const LogoMetadata& expected_metadata,
             actual_metadata.iframe_height_px);
   EXPECT_EQ(expected_metadata.dark_background_color,
             actual_metadata.dark_background_color);
+  EXPECT_EQ(expected_metadata.mural_metadata.mural_url,
+            actual_metadata.mural_metadata.mural_url);
+  EXPECT_EQ(expected_metadata.dark_mural_metadata.mural_url,
+            actual_metadata.dark_mural_metadata.mural_url);
+  EXPECT_EQ(expected_metadata.mural_metadata.is_animated_gif,
+            actual_metadata.mural_metadata.is_animated_gif);
+  EXPECT_EQ(expected_metadata.dark_mural_metadata.is_animated_gif,
+            actual_metadata.dark_mural_metadata.is_animated_gif);
+  EXPECT_EQ(expected_metadata.mural_metadata.width_px,
+            actual_metadata.mural_metadata.width_px);
+  EXPECT_EQ(expected_metadata.mural_metadata.height_px,
+            actual_metadata.mural_metadata.height_px);
+  EXPECT_EQ(expected_metadata.dark_mural_metadata.width_px,
+            actual_metadata.dark_mural_metadata.width_px);
+  EXPECT_EQ(expected_metadata.dark_mural_metadata.height_px,
+            actual_metadata.dark_mural_metadata.height_px);
+  EXPECT_EQ(expected_metadata.mural_metadata.core_content_area.width_px,
+            actual_metadata.mural_metadata.core_content_area.width_px);
+  EXPECT_EQ(expected_metadata.mural_metadata.core_content_area.height_px,
+            actual_metadata.mural_metadata.core_content_area.height_px);
+  EXPECT_EQ(expected_metadata.mural_metadata.core_content_area.left_px,
+            actual_metadata.mural_metadata.core_content_area.left_px);
+  EXPECT_EQ(expected_metadata.mural_metadata.core_content_area.top_px,
+            actual_metadata.mural_metadata.core_content_area.top_px);
+  EXPECT_EQ(expected_metadata.dark_mural_metadata.core_content_area.width_px,
+            actual_metadata.dark_mural_metadata.core_content_area.width_px);
+  EXPECT_EQ(expected_metadata.dark_mural_metadata.core_content_area.height_px,
+            actual_metadata.dark_mural_metadata.core_content_area.height_px);
+  EXPECT_EQ(expected_metadata.dark_mural_metadata.core_content_area.left_px,
+            actual_metadata.dark_mural_metadata.core_content_area.left_px);
+  EXPECT_EQ(expected_metadata.dark_mural_metadata.core_content_area.top_px,
+            actual_metadata.dark_mural_metadata.core_content_area.top_px);
 }
 
 void ExpectLogosEqual(const EncodedLogo& expected_logo,

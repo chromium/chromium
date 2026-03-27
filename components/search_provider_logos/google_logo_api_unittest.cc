@@ -324,6 +324,107 @@ TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
   EXPECT_EQ(LogoType::ANIMATED, logo->metadata.type);
 }
 
+TEST(GoogleNewLogoApiTest, ParsesMuralDoodle) {
+  const GURL base_url("https://base.doo/");
+  const std::string json = R"json()]}'
+  {
+    "ddljson": {
+      "doodle_type": "SIMPLE",
+      "mural_image": {
+        "url": "/logos/doodles/mural.png",
+        "is_animated_gif": true,
+        "width": 800,
+        "height": 400,
+        "core_content_area": {
+          "width": 200,
+          "height": 100,
+          "left": 50,
+          "top": 25
+        }
+      },
+      "dark_mural_image": {
+        "url": "/logos/doodles/dark_mural.png",
+        "is_animated_gif": true,
+        "width": 800,
+        "height": 400,
+        "core_content_area": {
+          "width": 300,
+          "height": 150,
+          "left": 60,
+          "top": 30
+        }
+      }
+    }
+  })json";
+
+  bool failed = false;
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
+
+  ASSERT_FALSE(failed);
+  ASSERT_TRUE(logo);
+  EXPECT_EQ(LogoType::SIMPLE, logo->metadata.type);
+  EXPECT_EQ(GURL("https://base.doo/logos/doodles/mural.png"),
+            logo->metadata.mural_metadata.mural_url);
+  EXPECT_TRUE(logo->metadata.mural_metadata.is_animated_gif);
+  EXPECT_EQ(800, logo->metadata.mural_metadata.width_px);
+  EXPECT_EQ(400, logo->metadata.mural_metadata.height_px);
+  EXPECT_EQ(200, logo->metadata.mural_metadata.core_content_area.width_px);
+  EXPECT_EQ(100, logo->metadata.mural_metadata.core_content_area.height_px);
+  EXPECT_EQ(50, logo->metadata.mural_metadata.core_content_area.left_px);
+  EXPECT_EQ(25, logo->metadata.mural_metadata.core_content_area.top_px);
+
+  EXPECT_EQ(GURL("https://base.doo/logos/doodles/dark_mural.png"),
+            logo->metadata.dark_mural_metadata.mural_url);
+  EXPECT_TRUE(logo->metadata.dark_mural_metadata.is_animated_gif);
+  EXPECT_EQ(800, logo->metadata.dark_mural_metadata.width_px);
+  EXPECT_EQ(400, logo->metadata.dark_mural_metadata.height_px);
+  EXPECT_EQ(300, logo->metadata.dark_mural_metadata.core_content_area.width_px);
+  EXPECT_EQ(150,
+            logo->metadata.dark_mural_metadata.core_content_area.height_px);
+  EXPECT_EQ(60, logo->metadata.dark_mural_metadata.core_content_area.left_px);
+  EXPECT_EQ(30, logo->metadata.dark_mural_metadata.core_content_area.top_px);
+}
+
+TEST(GoogleNewLogoApiTest, ParsesIncompleteMuralDoodle) {
+  const GURL base_url("https://base.doo/");
+  const std::string json = R"json()]}'
+  {
+    "ddljson": {
+      "doodle_type": "SIMPLE",
+      "mural_image": {
+        "url": "/logos/doodles/mural.png"
+      }
+    }
+  })json";
+
+  bool failed = false;
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
+
+  ASSERT_FALSE(failed);
+  ASSERT_TRUE(logo);
+  EXPECT_EQ(LogoType::SIMPLE, logo->metadata.type);
+  EXPECT_EQ(GURL("https://base.doo/logos/doodles/mural.png"),
+            logo->metadata.mural_metadata.mural_url);
+  EXPECT_FALSE(logo->metadata.mural_metadata.is_animated_gif);
+  EXPECT_EQ(0, logo->metadata.mural_metadata.width_px);
+  EXPECT_EQ(0, logo->metadata.mural_metadata.height_px);
+  EXPECT_EQ(0, logo->metadata.mural_metadata.core_content_area.width_px);
+  EXPECT_EQ(0, logo->metadata.mural_metadata.core_content_area.height_px);
+  EXPECT_EQ(0, logo->metadata.mural_metadata.core_content_area.left_px);
+  EXPECT_EQ(0, logo->metadata.mural_metadata.core_content_area.top_px);
+
+  EXPECT_EQ(GURL(), logo->metadata.dark_mural_metadata.mural_url);
+  EXPECT_FALSE(logo->metadata.dark_mural_metadata.is_animated_gif);
+  EXPECT_EQ(0, logo->metadata.dark_mural_metadata.width_px);
+  EXPECT_EQ(0, logo->metadata.dark_mural_metadata.height_px);
+  EXPECT_EQ(0, logo->metadata.dark_mural_metadata.core_content_area.width_px);
+  EXPECT_EQ(0, logo->metadata.dark_mural_metadata.core_content_area.height_px);
+  EXPECT_EQ(0, logo->metadata.dark_mural_metadata.core_content_area.left_px);
+  EXPECT_EQ(0, logo->metadata.dark_mural_metadata.core_content_area.top_px);
+}
+
 TEST(GoogleNewLogoApiTest, ParsesLoggingUrls) {
   const GURL base_url("https://base.doo/");
   const std::string json = R"json()]}'
