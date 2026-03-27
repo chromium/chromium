@@ -38,31 +38,24 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
     NOTREACHED() << "Unknown mode " << static_cast<int>(mode);
   }
 
-  static bool FromMojom(printing::mojom::PdfRenderSettings_Mode input,
-                        printing::PdfRenderSettings::Mode* output) {
+  static printing::PdfRenderSettings::Mode FromMojom(
+      printing::mojom::PdfRenderSettings_Mode input) {
     using MojomMode = printing::mojom::PdfRenderSettings_Mode;
     using PrintMode = printing::PdfRenderSettings::Mode;
     switch (input) {
       case MojomMode::NORMAL:
-        *output = PrintMode::NORMAL;
-        return true;
+        return PrintMode::NORMAL;
 #if BUILDFLAG(IS_WIN)
       case MojomMode::TEXTONLY:
-        *output = PrintMode::TEXTONLY;
-        return true;
-        return true;
+        return PrintMode::TEXTONLY;
       case MojomMode::POSTSCRIPT_LEVEL2:
-        *output = PrintMode::POSTSCRIPT_LEVEL2;
-        return true;
+        return PrintMode::POSTSCRIPT_LEVEL2;
       case MojomMode::POSTSCRIPT_LEVEL3:
-        *output = PrintMode::POSTSCRIPT_LEVEL3;
-        return true;
+        return PrintMode::POSTSCRIPT_LEVEL3;
       case MojomMode::EMF_WITH_REDUCED_RASTERIZATION:
-        *output = PrintMode::EMF_WITH_REDUCED_RASTERIZATION;
-        return true;
+        return PrintMode::EMF_WITH_REDUCED_RASTERIZATION;
       case MojomMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS:
-        *output = PrintMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS;
-        return true;
+        return PrintMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS;
 #endif
     }
     NOTREACHED() << "Unknown mode " << static_cast<int>(input);

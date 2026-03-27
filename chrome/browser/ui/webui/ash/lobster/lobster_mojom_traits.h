@@ -42,40 +42,30 @@ struct EnumTraits<lobster::mojom::StatusCode, ash::LobsterErrorCode> {
     return lobster_status_code_map.at(error_code);
   }
 
-  static bool FromMojom(lobster::mojom::StatusCode input,
-                        ash::LobsterErrorCode* out) {
+  static ash::LobsterErrorCode FromMojom(lobster::mojom::StatusCode input) {
     switch (input) {
       case lobster::mojom::StatusCode::kBlockedOutputs:
-        *out = ash::LobsterErrorCode::kBlockedOutputs;
-        return true;
+        return ash::LobsterErrorCode::kBlockedOutputs;
       case lobster::mojom::StatusCode::kNoInternetConnection:
-        *out = ash::LobsterErrorCode::kNoInternetConnection;
-        return true;
+        return ash::LobsterErrorCode::kNoInternetConnection;
       case lobster::mojom::StatusCode::kUnknown:
-        *out = ash::LobsterErrorCode::kUnknown;
-        return true;
+        return ash::LobsterErrorCode::kUnknown;
       case lobster::mojom::StatusCode::kResourceExhausted:
-        *out = ash::LobsterErrorCode::kResourceExhausted;
-        return true;
+        return ash::LobsterErrorCode::kResourceExhausted;
       case lobster::mojom::StatusCode::kInvalidArgument:
-        *out = ash::LobsterErrorCode::kInvalidArgument;
-        return true;
+        return ash::LobsterErrorCode::kInvalidArgument;
       case lobster::mojom::StatusCode::kBackendFailure:
-        *out = ash::LobsterErrorCode::kBackendFailure;
-        return true;
+        return ash::LobsterErrorCode::kBackendFailure;
       case lobster::mojom::StatusCode::kUnsupportedLanguage:
-        *out = ash::LobsterErrorCode::kUnsupportedLanguage;
-        return true;
+        return ash::LobsterErrorCode::kUnsupportedLanguage;
       case lobster::mojom::StatusCode::kRestrictedRegion:
-        *out = ash::LobsterErrorCode::kRestrictedRegion;
-        return true;
+        return ash::LobsterErrorCode::kRestrictedRegion;
       case lobster::mojom::StatusCode::kContainsPeople:
-        *out = ash::LobsterErrorCode::kContainsPeople;
-        return true;
+        return ash::LobsterErrorCode::kContainsPeople;
       case lobster::mojom::StatusCode::kOk:
         LOG(ERROR) << "Can not convert Lobster mojom OK status code into "
                       "LobsterErrorCode";
-        return false;
+        NOTREACHED();
     }
   }
 };
@@ -169,45 +159,34 @@ struct EnumTraits<lobster::mojom::WebUIMetricEvent, ash::LobsterMetricState> {
     }
   }
 
-  static bool FromMojom(lobster::mojom::WebUIMetricEvent mojom_metric_event,
-                        ash::LobsterMetricState* out) {
+  static ash::LobsterMetricState FromMojom(
+      lobster::mojom::WebUIMetricEvent mojom_metric_event) {
     switch (mojom_metric_event) {
       case lobster::mojom::WebUIMetricEvent::kUnknown:
         LOG(ERROR) << "Unknown Lobster WebUI Metric event";
-        return false;
+        NOTREACHED();
       case lobster::mojom::WebUIMetricEvent::kQueryPageImpression:
-        *out = ash::LobsterMetricState::kQueryPageImpression;
-        return true;
+        return ash::LobsterMetricState::kQueryPageImpression;
       case lobster::mojom::WebUIMetricEvent::kRequestInitialCandidates:
-        *out = ash::LobsterMetricState::kRequestInitialCandidates;
-        return true;
+        return ash::LobsterMetricState::kRequestInitialCandidates;
       case lobster::mojom::WebUIMetricEvent::kRequestInitialCandidatesSuccess:
-        *out = ash::LobsterMetricState::kRequestInitialCandidatesSuccess;
-        return true;
+        return ash::LobsterMetricState::kRequestInitialCandidatesSuccess;
       case lobster::mojom::WebUIMetricEvent::kRequestInitialCandidatesError:
-        *out = ash::LobsterMetricState::kRequestInitialCandidatesError;
-        return true;
+        return ash::LobsterMetricState::kRequestInitialCandidatesError;
       case lobster::mojom::WebUIMetricEvent::kInitialCandidatesImpression:
-        *out = ash::LobsterMetricState::kInitialCandidatesImpression;
-        return true;
+        return ash::LobsterMetricState::kInitialCandidatesImpression;
       case lobster::mojom::WebUIMetricEvent::kRequestMoreCandidates:
-        *out = ash::LobsterMetricState::kRequestMoreCandidates;
-        return true;
+        return ash::LobsterMetricState::kRequestMoreCandidates;
       case lobster::mojom::WebUIMetricEvent::kRequestMoreCandidatesSuccess:
-        *out = ash::LobsterMetricState::kRequestMoreCandidatesSuccess;
-        return true;
+        return ash::LobsterMetricState::kRequestMoreCandidatesSuccess;
       case lobster::mojom::WebUIMetricEvent::kRequestMoreCandidatesError:
-        *out = ash::LobsterMetricState::kRequestMoreCandidatesError;
-        return true;
+        return ash::LobsterMetricState::kRequestMoreCandidatesError;
       case lobster::mojom::WebUIMetricEvent::kMoreCandidatesAppended:
-        *out = ash::LobsterMetricState::kMoreCandidatesAppended;
-        return true;
+        return ash::LobsterMetricState::kMoreCandidatesAppended;
       case lobster::mojom::WebUIMetricEvent::kFeedbackThumbsUp:
-        *out = ash::LobsterMetricState::kFeedbackThumbsUp;
-        return true;
+        return ash::LobsterMetricState::kFeedbackThumbsUp;
       case lobster::mojom::WebUIMetricEvent::kFeedbackThumbsDown:
-        *out = ash::LobsterMetricState::kFeedbackThumbsDown;
-        return true;
+        return ash::LobsterMetricState::kFeedbackThumbsDown;
     }
     NOTREACHED();
   }

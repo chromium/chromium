@@ -19,19 +19,16 @@ app_home::mojom::RunOnOsLoginMode EnumTraits<
   }
 }
 
-bool EnumTraits<app_home::mojom::RunOnOsLoginMode, web_app::RunOnOsLoginMode>::
-    FromMojom(app_home::mojom::RunOnOsLoginMode input,
-              web_app::RunOnOsLoginMode* output) {
+web_app::RunOnOsLoginMode
+EnumTraits<app_home::mojom::RunOnOsLoginMode, web_app::RunOnOsLoginMode>::
+    FromMojom(app_home::mojom::RunOnOsLoginMode input) {
   switch (input) {
     case app_home::mojom::RunOnOsLoginMode::kNotRun:
-      *output = web_app::RunOnOsLoginMode::kNotRun;
-      return true;
+      return web_app::RunOnOsLoginMode::kNotRun;
     case app_home::mojom::RunOnOsLoginMode::kWindowed:
-      *output = web_app::RunOnOsLoginMode::kWindowed;
-      return true;
+      return web_app::RunOnOsLoginMode::kWindowed;
     case app_home::mojom::RunOnOsLoginMode::kMinimized:
-      *output = web_app::RunOnOsLoginMode::kMinimized;
-      return true;
+      return web_app::RunOnOsLoginMode::kMinimized;
   }
 }
 }  // namespace mojo

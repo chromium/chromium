@@ -17,8 +17,8 @@ class EnumTraits<enterprise_companion::mojom::PolicyFetchReason,
  public:
   static enterprise_companion::mojom::PolicyFetchReason ToMojom(
       policy::PolicyFetchReason reason);
-  static bool FromMojom(enterprise_companion::mojom::PolicyFetchReason input,
-                        policy::PolicyFetchReason* output);
+  static policy::PolicyFetchReason FromMojom(
+      enterprise_companion::mojom::PolicyFetchReason input);
 };
 
 }  // namespace mojo

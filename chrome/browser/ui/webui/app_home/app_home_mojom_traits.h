@@ -15,8 +15,8 @@ struct EnumTraits<app_home::mojom::RunOnOsLoginMode,
                   web_app::RunOnOsLoginMode> {
   static app_home::mojom::RunOnOsLoginMode ToMojom(
       web_app::RunOnOsLoginMode input);
-  static bool FromMojom(app_home::mojom::RunOnOsLoginMode input,
-                        web_app::RunOnOsLoginMode* output);
+  static web_app::RunOnOsLoginMode FromMojom(
+      app_home::mojom::RunOnOsLoginMode input);
 };
 }  // namespace mojo
 

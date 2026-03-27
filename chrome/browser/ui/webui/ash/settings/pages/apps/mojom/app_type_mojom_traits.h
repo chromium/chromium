@@ -20,7 +20,7 @@ using Readiness = ash::settings::app_notification::mojom::Readiness;
 template <>
 struct EnumTraits<Readiness, apps::Readiness> {
   static Readiness ToMojom(apps::Readiness input);
-  static bool FromMojom(Readiness input, apps::Readiness* output);
+  static apps::Readiness FromMojom(Readiness input);
 };
 
 template <>

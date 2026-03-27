@@ -105,18 +105,15 @@ EnumTraits<WebPrintingSides, DuplexMode>::ToMojom(
 }
 
 // static
-bool EnumTraits<WebPrintingSides, DuplexMode>::FromMojom(WebPrintingSides input,
-                                                         DuplexMode* output) {
+DuplexMode EnumTraits<WebPrintingSides, DuplexMode>::FromMojom(
+    WebPrintingSides input) {
   switch (input) {
     case WebPrintingSides::kOneSided:
-      *output = DuplexMode::kSimplex;
-      return true;
+      return DuplexMode::kSimplex;
     case WebPrintingSides::kTwoSidedLongEdge:
-      *output = DuplexMode::kLongEdge;
-      return true;
+      return DuplexMode::kLongEdge;
     case WebPrintingSides::kTwoSidedShortEdge:
-      *output = DuplexMode::kShortEdge;
-      return true;
+      return DuplexMode::kShortEdge;
   }
   NOTREACHED();
 }
@@ -138,18 +135,14 @@ blink::mojom::WebPrintQuality EnumTraits<WebPrintQuality, Quality>::ToMojom(
 }
 
 // static
-bool EnumTraits<WebPrintQuality, Quality>::FromMojom(WebPrintQuality input,
-                                                     Quality* output) {
+Quality EnumTraits<WebPrintQuality, Quality>::FromMojom(WebPrintQuality input) {
   switch (input) {
     case WebPrintQuality::kDraft:
-      *output = Quality::kDraft;
-      return true;
+      return Quality::kDraft;
     case WebPrintQuality::kNormal:
-      *output = Quality::kNormal;
-      return true;
+      return Quality::kNormal;
     case WebPrintQuality::kHigh:
-      *output = Quality::kHigh;
-      return true;
+      return Quality::kHigh;
   }
   NOTREACHED();
 }

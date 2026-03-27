@@ -15,8 +15,8 @@ struct EnumTraits<mac_notifications::mojom::NotificationOperation,
                   NotificationOperation> {
   static mac_notifications::mojom::NotificationOperation ToMojom(
       NotificationOperation input);
-  static bool FromMojom(mac_notifications::mojom::NotificationOperation input,
-                        NotificationOperation* output);
+  static NotificationOperation FromMojom(
+      mac_notifications::mojom::NotificationOperation input);
 };
 
 }  // namespace mojo

@@ -32,40 +32,29 @@ Readiness EnumTraits<Readiness, apps::Readiness>::ToMojom(
   }
 }
 
-bool EnumTraits<Readiness, apps::Readiness>::FromMojom(
-    Readiness input,
-    apps::Readiness* output) {
+apps::Readiness EnumTraits<Readiness, apps::Readiness>::FromMojom(
+    Readiness input) {
   switch (input) {
     case Readiness::kUnknown:
-      *output = apps::Readiness::kUnknown;
-      return true;
+      return apps::Readiness::kUnknown;
     case Readiness::kReady:
-      *output = apps::Readiness::kReady;
-      return true;
+      return apps::Readiness::kReady;
     case Readiness::kDisabledByBlocklist:
-      *output = apps::Readiness::kDisabledByBlocklist;
-      return true;
+      return apps::Readiness::kDisabledByBlocklist;
     case Readiness::kDisabledByPolicy:
-      *output = apps::Readiness::kDisabledByPolicy;
-      return true;
+      return apps::Readiness::kDisabledByPolicy;
     case Readiness::kDisabledByUser:
-      *output = apps::Readiness::kDisabledByUser;
-      return true;
+      return apps::Readiness::kDisabledByUser;
     case Readiness::kTerminated:
-      *output = apps::Readiness::kTerminated;
-      return true;
+      return apps::Readiness::kTerminated;
     case Readiness::kUninstalledByUser:
-      *output = apps::Readiness::kUninstalledByUser;
-      return true;
+      return apps::Readiness::kUninstalledByUser;
     case Readiness::kRemoved:
-      *output = apps::Readiness::kRemoved;
-      return true;
+      return apps::Readiness::kRemoved;
     case Readiness::kUninstalledByNonUser:
-      *output = apps::Readiness::kUninstalledByNonUser;
-      return true;
+      return apps::Readiness::kUninstalledByNonUser;
     case Readiness::kDisabledByLocalSettings:
-      *output = apps::Readiness::kDisabledByLocalSettings;
-      return true;
+      return apps::Readiness::kDisabledByLocalSettings;
   }
 }
 

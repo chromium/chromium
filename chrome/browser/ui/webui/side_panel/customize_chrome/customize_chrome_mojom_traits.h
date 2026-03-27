@@ -36,8 +36,8 @@ struct EnumTraits<side_panel::mojom::CustomizeChromeSection,
     return section_map.at(input);
   }
 
-  static bool FromMojom(side_panel::mojom::CustomizeChromeSection input,
-                        CustomizeChromeSection* out) {
+  static CustomizeChromeSection FromMojom(
+      side_panel::mojom::CustomizeChromeSection input) {
     static constexpr auto section_map =
         base::MakeFixedFlatMap<side_panel::mojom::CustomizeChromeSection,
                                CustomizeChromeSection>(
@@ -55,8 +55,7 @@ struct EnumTraits<side_panel::mojom::CustomizeChromeSection,
               CustomizeChromeSection::kToolbar},
              {side_panel::mojom::CustomizeChromeSection::kFooter,
               CustomizeChromeSection::kFooter}});
-    *out = section_map.at(input);
-    return true;
+    return section_map.at(input);
   }
 };
 

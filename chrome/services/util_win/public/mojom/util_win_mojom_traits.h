@@ -22,15 +22,14 @@ struct EnumTraits<chrome::mojom::SelectFileDialogType,
                   ui::SelectFileDialog::Type> {
   static chrome::mojom::SelectFileDialogType ToMojom(
       ui::SelectFileDialog::Type input);
-  static bool FromMojom(chrome::mojom::SelectFileDialogType input,
-                        ui::SelectFileDialog::Type* output);
+  static ui::SelectFileDialog::Type FromMojom(
+      chrome::mojom::SelectFileDialogType input);
 };
 
 template <>
 struct EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type> {
   static chrome::mojom::CertificateType ToMojom(CertificateInfo::Type input);
-  static bool FromMojom(chrome::mojom::CertificateType input,
-                        CertificateInfo::Type* output);
+  static CertificateInfo::Type FromMojom(chrome::mojom::CertificateType input);
 };
 
 template <>
@@ -38,8 +37,8 @@ struct EnumTraits<chrome::mojom::ShortcutOperation,
                   base::win::ShortcutOperation> {
   static chrome::mojom::ShortcutOperation ToMojom(
       base::win::ShortcutOperation input);
-  static bool FromMojom(chrome::mojom::ShortcutOperation input,
-                        base::win::ShortcutOperation* output);
+  static base::win::ShortcutOperation FromMojom(
+      chrome::mojom::ShortcutOperation input);
 };
 
 template <>

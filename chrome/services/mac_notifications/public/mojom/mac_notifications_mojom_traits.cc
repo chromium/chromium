@@ -4,6 +4,8 @@
 
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -29,20 +31,17 @@ EnumTraits<mac_notifications::mojom::NotificationOperation,
 }
 
 // static
-bool EnumTraits<mac_notifications::mojom::NotificationOperation,
-                NotificationOperation>::
-    FromMojom(mac_notifications::mojom::NotificationOperation input,
-              NotificationOperation* output) {
+NotificationOperation
+EnumTraits<mac_notifications::mojom::NotificationOperation,
+           NotificationOperation>::
+    FromMojom(mac_notifications::mojom::NotificationOperation input) {
   switch (input) {
     case mac_notifications::mojom::NotificationOperation::kClick:
-      *output = NotificationOperation::kClick;
-      return true;
+      return NotificationOperation::kClick;
     case mac_notifications::mojom::NotificationOperation::kClose:
-      *output = NotificationOperation::kClose;
-      return true;
+      return NotificationOperation::kClose;
     case mac_notifications::mojom::NotificationOperation::kSettings:
-      *output = NotificationOperation::kSettings;
-      return true;
+      return NotificationOperation::kSettings;
   }
   NOTREACHED();
 }

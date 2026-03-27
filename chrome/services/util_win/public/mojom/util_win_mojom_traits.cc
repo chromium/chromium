@@ -44,32 +44,24 @@ chrome::mojom::SelectFileDialogType EnumTraits<
 }
 
 // static
-bool EnumTraits<chrome::mojom::SelectFileDialogType,
-                ui::SelectFileDialog::Type>::
-    FromMojom(chrome::mojom::SelectFileDialogType input,
-              ui::SelectFileDialog::Type* output) {
+ui::SelectFileDialog::Type
+EnumTraits<chrome::mojom::SelectFileDialogType, ui::SelectFileDialog::Type>::
+    FromMojom(chrome::mojom::SelectFileDialogType input) {
   switch (input) {
     case chrome::mojom::SelectFileDialogType::kNone:
-      *output = ui::SelectFileDialog::Type::SELECT_NONE;
-      return true;
+      return ui::SelectFileDialog::Type::SELECT_NONE;
     case chrome::mojom::SelectFileDialogType::kFolder:
-      *output = ui::SelectFileDialog::Type::SELECT_FOLDER;
-      return true;
+      return ui::SelectFileDialog::Type::SELECT_FOLDER;
     case chrome::mojom::SelectFileDialogType::kUploadFolder:
-      *output = ui::SelectFileDialog::Type::SELECT_UPLOAD_FOLDER;
-      return true;
+      return ui::SelectFileDialog::Type::SELECT_UPLOAD_FOLDER;
     case chrome::mojom::SelectFileDialogType::kExistingFolder:
-      *output = ui::SelectFileDialog::Type::SELECT_EXISTING_FOLDER;
-      return true;
+      return ui::SelectFileDialog::Type::SELECT_EXISTING_FOLDER;
     case chrome::mojom::SelectFileDialogType::kSaveAsFile:
-      *output = ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE;
-      return true;
+      return ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE;
     case chrome::mojom::SelectFileDialogType::kOpenFile:
-      *output = ui::SelectFileDialog::Type::SELECT_OPEN_FILE;
-      return true;
+      return ui::SelectFileDialog::Type::SELECT_OPEN_FILE;
     case chrome::mojom::SelectFileDialogType::kOpenMultiFile:
-      *output = ui::SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE;
-      return true;
+      return ui::SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE;
   }
   NOTREACHED();
 }
@@ -106,20 +98,16 @@ EnumTraits<chrome::mojom::ShortcutOperation, ::base::win::ShortcutOperation>::
 }
 
 // static
-bool EnumTraits<chrome::mojom::ShortcutOperation,
-                ::base::win::ShortcutOperation>::
-    FromMojom(chrome::mojom::ShortcutOperation input,
-              ::base::win::ShortcutOperation* output) {
+::base::win::ShortcutOperation
+EnumTraits<chrome::mojom::ShortcutOperation, ::base::win::ShortcutOperation>::
+    FromMojom(chrome::mojom::ShortcutOperation input) {
   switch (input) {
     case chrome::mojom::ShortcutOperation::kCreateAlways:
-      *output = base::win::ShortcutOperation::kCreateAlways;
-      return true;
+      return base::win::ShortcutOperation::kCreateAlways;
     case chrome::mojom::ShortcutOperation::kReplaceExisting:
-      *output = base::win::ShortcutOperation::kReplaceExisting;
-      return true;
+      return base::win::ShortcutOperation::kReplaceExisting;
     case chrome::mojom::ShortcutOperation::kUpdateExisting:
-      *output = base::win::ShortcutOperation::kUpdateExisting;
-      return true;
+      return base::win::ShortcutOperation::kUpdateExisting;
   }
 
   NOTREACHED();
@@ -133,19 +121,16 @@ bool StructTraits<chrome::mojom::FileFilterSpecDataView, ui::FileFilterSpec>::
 }
 
 // static
-bool EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::
-    FromMojom(chrome::mojom::CertificateType input,
-              CertificateInfo::Type* output) {
+CertificateInfo::Type
+EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::FromMojom(
+    chrome::mojom::CertificateType input) {
   switch (input) {
     case chrome::mojom::CertificateType::kNoCertificate:
-      *output = CertificateInfo::Type::NO_CERTIFICATE;
-      return true;
+      return CertificateInfo::Type::NO_CERTIFICATE;
     case chrome::mojom::CertificateType::kCertificateInFile:
-      *output = CertificateInfo::Type::CERTIFICATE_IN_FILE;
-      return true;
+      return CertificateInfo::Type::CERTIFICATE_IN_FILE;
     case chrome::mojom::CertificateType::kCertificateInCatalog:
-      *output = CertificateInfo::Type::CERTIFICATE_IN_CATALOG;
-      return true;
+      return CertificateInfo::Type::CERTIFICATE_IN_CATALOG;
   }
 
   NOTREACHED();

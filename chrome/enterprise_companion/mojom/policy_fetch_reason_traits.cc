@@ -29,25 +29,22 @@ enterprise_companion::mojom::PolicyFetchReason EnumTraits<
   }
 }
 
-bool EnumTraits<enterprise_companion::mojom::PolicyFetchReason,
-                policy::PolicyFetchReason>::
-    FromMojom(enterprise_companion::mojom::PolicyFetchReason input,
-              policy::PolicyFetchReason* output) {
+policy::PolicyFetchReason
+EnumTraits<enterprise_companion::mojom::PolicyFetchReason,
+           policy::PolicyFetchReason>::
+    FromMojom(enterprise_companion::mojom::PolicyFetchReason input) {
   switch (input) {
     case enterprise_companion::mojom::PolicyFetchReason::UNSPECIFIED:
-      *output = policy::PolicyFetchReason::kUnspecified;
-      return true;
+      return policy::PolicyFetchReason::kUnspecified;
 
     case enterprise_companion::mojom::PolicyFetchReason::USER_REQUEST:
-      *output = policy::PolicyFetchReason::kUserRequest;
-      return true;
+      return policy::PolicyFetchReason::kUserRequest;
 
     case enterprise_companion::mojom::PolicyFetchReason::SCHEDULED:
-      *output = policy::PolicyFetchReason::kScheduled;
-      return true;
+      return policy::PolicyFetchReason::kScheduled;
   }
 
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

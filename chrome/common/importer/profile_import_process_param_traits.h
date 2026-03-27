@@ -32,15 +32,13 @@ struct EnumTraits<chrome::mojom::ImportedPasswordForm::Scheme,
     NOTREACHED();
   }
 
-  static bool FromMojom(chrome::mojom::ImportedPasswordForm::Scheme input,
-                        user_data_importer::ImportedPasswordForm::Scheme* out) {
+  static user_data_importer::ImportedPasswordForm::Scheme FromMojom(
+      chrome::mojom::ImportedPasswordForm::Scheme input) {
     switch (input) {
       case chrome::mojom::ImportedPasswordForm::Scheme::kHtml:
-        *out = user_data_importer::ImportedPasswordForm::Scheme::kHtml;
-        return true;
+        return user_data_importer::ImportedPasswordForm::Scheme::kHtml;
       case chrome::mojom::ImportedPasswordForm::Scheme::kBasic:
-        *out = user_data_importer::ImportedPasswordForm::Scheme::kBasic;
-        return true;
+        return user_data_importer::ImportedPasswordForm::Scheme::kBasic;
     }
     NOTREACHED();
   }

@@ -24,22 +24,21 @@ template <>
 struct EnumTraits<blink::mojom::WebPrintingSides, printing::mojom::DuplexMode> {
   static blink::mojom::WebPrintingSides ToMojom(
       printing::mojom::DuplexMode input);
-  static bool FromMojom(blink::mojom::WebPrintingSides input,
-                        printing::mojom::DuplexMode* output);
+  static printing::mojom::DuplexMode FromMojom(
+      blink::mojom::WebPrintingSides input);
 };
 
 template <>
 struct EnumTraits<blink::mojom::WebPrintQuality, printing::mojom::Quality> {
   static blink::mojom::WebPrintQuality ToMojom(printing::mojom::Quality input);
-  static bool FromMojom(blink::mojom::WebPrintQuality input,
-                        printing::mojom::Quality* output);
+  static printing::mojom::Quality FromMojom(
+      blink::mojom::WebPrintQuality input);
 };
 
 template <>
 struct EnumTraits<blink::mojom::WebPrinterState, ipp_pstate_t> {
   static blink::mojom::WebPrinterState ToMojom(ipp_pstate_t input);
-  static bool FromMojom(blink::mojom::WebPrinterState input,
-                        ipp_pstate_t* output) {
+  static ipp_pstate_t FromMojom(blink::mojom::WebPrinterState input) {
     NOTREACHED();
   }
 };
@@ -49,9 +48,8 @@ struct EnumTraits<blink::mojom::WebPrinterStateReason,
                   printing::PrinterStatus::PrinterReason::Reason> {
   static blink::mojom::WebPrinterStateReason ToMojom(
       printing::PrinterStatus::PrinterReason::Reason input);
-  static bool FromMojom(
-      blink::mojom::WebPrinterStateReason input,
-      printing::PrinterStatus::PrinterReason::Reason* output) {
+  static printing::PrinterStatus::PrinterReason::Reason FromMojom(
+      blink::mojom::WebPrinterStateReason input) {
     NOTREACHED();
   }
 };
