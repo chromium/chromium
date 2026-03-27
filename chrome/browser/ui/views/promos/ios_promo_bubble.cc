@@ -24,6 +24,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -152,7 +153,10 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpPaymentBubble(
   config.bubble_title_id =
       IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT;
   config.bubble_subtitle_id =
-      IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT;
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletBrandingV2)
+          ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT_V2
+          : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT;
   config.promo_title_id = IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE;
   config.promo_description_id =
       IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
