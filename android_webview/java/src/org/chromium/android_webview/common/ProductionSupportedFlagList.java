@@ -1374,6 +1374,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PASS_NULL_FAVICON_TO_ON_PAGE_STARTED,
                 "Passes a null favicon to the onPageStarted method."),
+        Flag.baseFeature("PrefetchPrerenderIntegration"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
