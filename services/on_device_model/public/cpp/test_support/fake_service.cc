@@ -147,10 +147,12 @@ void FakeOnDeviceSession::Append(
     // Bind now to catch disconnects.
     remote.Bind(std::move(client));
   }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeOnDeviceSession::AppendImpl,
-                                weak_factory_.GetWeakPtr(), std::move(options),
-                                std::move(remote)));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeOnDeviceSession::AppendImpl,
+                     weak_factory_.GetWeakPtr(), std::move(options),
+                     std::move(remote)),
+      settings_->append_delay);
 }
 
 void FakeOnDeviceSession::Generate(

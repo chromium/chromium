@@ -40,7 +40,8 @@ struct FakeOnDeviceServiceSettings final {
   FakeOnDeviceServiceSettings();
   ~FakeOnDeviceServiceSettings();
 
-  // If non-zero this amount of delay is added before the response is sent.
+  // Synthetic delays to simulate async append and generate model steps.
+  base::TimeDelta append_delay;
   base::TimeDelta execute_delay;
 
   // The delay before running the GetDeviceAndPerformanceInfo() response
@@ -68,6 +69,7 @@ struct FakeOnDeviceServiceSettings final {
   // If not-zero, used as the output from GetSizeInTokens().
   uint32_t size_in_tokens = 0;
 
+  void set_append_delay(base::TimeDelta delay) { append_delay = delay; }
   void set_execute_delay(base::TimeDelta delay) { execute_delay = delay; }
 
   void set_estimated_performance_delay(base::TimeDelta delay) {

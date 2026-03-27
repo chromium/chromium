@@ -39,7 +39,8 @@
 // for model execution.
 class AILanguageModel : public AIContextBoundObject,
                         public blink::mojom::AILanguageModel,
-                        public optimization_guide::TextSafetyClient {
+                        public optimization_guide::TextSafetyClient,
+                        public on_device_model::mojom::ContextClient {
  public:
   using PromptApiMetadata = optimization_guide::proto::PromptApiMetadata;
 
@@ -182,6 +183,9 @@ class AILanguageModel : public AIContextBoundObject,
       mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> session)
       override;
 
+  // on_device_model::mojom::ContextClient:
+  void OnComplete(uint32_t tokens_processed) override;
+
   blink::mojom::AILanguageModelInstanceInfoPtr GetLanguageModelInstanceInfo();
 
   // Returns the total number of tokens that the model can hold.
@@ -216,6 +220,11 @@ class AILanguageModel : public AIContextBoundObject,
   void PromptGetInputSizeComplete(base::OnceClosure on_complete,
                                   std::optional<uint32_t> result);
   void OnPromptOutputComplete();
+
+  // Called if the create client disconnects while appending initial prompts.
+  void OnCreateClientDisconnected();
+  // Called if the receiver for initial prompt appending is disconnected.
+  void OnInitialAppendDisconnected();
 
   void AppendInternal(
       std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
@@ -272,6 +281,12 @@ class AILanguageModel : public AIContextBoundObject,
   base::WeakPtr<OptimizationGuideLogger> logger_;
 
   mojo::Receiver<blink::mojom::AILanguageModel> receiver_{this};
+
+  // Held while processing initial prompts, before resolving session creation.
+  mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> create_client_;
+  // Handles results from appending initial prompts to the session.
+  mojo::Receiver<on_device_model::mojom::ContextClient>
+      initial_append_receiver_{this};
 
   base::WeakPtrFactory<AILanguageModel> weak_ptr_factory_{this};
 };

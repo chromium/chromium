@@ -631,6 +631,25 @@ TEST_F(AILanguageModelTest, InitialPromptsTooLarge) {
   ASSERT_EQ(result.error().quota_error_info->quota, kTestMaxTokens);
 }
 
+TEST_F(AILanguageModelTest, CreateResolvesAfterInitialPromptsAreAppended) {
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->initial_prompts.push_back(MakePrompt(Role::kSystem, "hi"));
+
+  fake_broker_->settings().set_append_delay(base::Seconds(5));
+
+  TestCreateLanguageModelClient language_model_client;
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  // Creation will not be complete yet, because Append is delayed.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(language_model_client.result().IsReady());
+
+  // Fast forward time to allow Append to complete.
+  task_environment()->FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(language_model_client.result().IsReady());
+}
+
 TEST_F(AILanguageModelTest, InputTooLarge) {
   auto session = CreateSession();
 

@@ -898,29 +898,58 @@ void AILanguageModel::InitializeSafetyChecksComplete(
     mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
         create_client,
     optimization_guide::SafetyChecker::Result safety_result) {
-  mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client(
-      std::move(create_client));
   // TODO(crbug.com/415808003): Add more fine grained errors on safety check
   // failure.
   if (safety_result.failed_to_run || safety_result.is_unsafe ||
       safety_result.is_unsupported_language) {
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client(
+        std::move(create_client));
     on_device_ai::SendClientRemoteError(
         client,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
+
+  create_client_.Bind(std::move(create_client));
+  create_client_.set_disconnect_handler(
+      base::BindOnce(&AILanguageModel::OnCreateClientDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
   if (input) {
     initial_input_ = input.Clone();
-    // No ContextClient is passed here since this operation should never be
-    // cancelled unless the session is destroyed.
     initial_session_->Append(
         MakeAppendOptions(std::move(input),
                           on_device_model::mojom::InputSource::kUserInput),
-        {});
+        initial_append_receiver_.BindNewPipeAndPassRemote());
+    initial_append_receiver_.set_disconnect_handler(
+        base::BindOnce(&AILanguageModel::OnInitialAppendDisconnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // Proceed with session creation, leaving `initial_input_` null.
+    OnComplete(/*tokens_processed=*/0);
   }
-  initial_session_->Clone(current_session_.BindNewPipeAndPassReceiver());
+}
 
-  client->OnResult(BindRemote(), GetLanguageModelInstanceInfo());
+void AILanguageModel::OnComplete(uint32_t tokens_processed) {
+  initial_session_->Clone(current_session_.BindNewPipeAndPassReceiver());
+  if (create_client_) {
+    create_client_->OnResult(BindRemote(), GetLanguageModelInstanceInfo());
+    create_client_.reset();
+  }
+  initial_append_receiver_.reset();
+}
+
+void AILanguageModel::OnCreateClientDisconnected() {
+  RemoveFromSet();
+}
+
+void AILanguageModel::OnInitialAppendDisconnected() {
+  if (create_client_) {
+    on_device_ai::SendClientRemoteError(
+        create_client_,
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    create_client_.reset();
+  }
+  RemoveFromSet();
 }
 
 void AILanguageModel::ForkInternal(
