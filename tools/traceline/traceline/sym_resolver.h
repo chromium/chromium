@@ -125,8 +125,8 @@ class SymResolver {
     int addr = static_cast<int>(info.info.Address);
     int base = static_cast<int>(info.info.ModBase);
 
-    if (dlls_.count(base) == 1) {
-      name.append(dlls_[base]);
+    if (auto it = dlls_.find(base); it != dlls_.end()) {
+      name.append(it->second);
     } else {
       name.append("unknown_mod");
     }
