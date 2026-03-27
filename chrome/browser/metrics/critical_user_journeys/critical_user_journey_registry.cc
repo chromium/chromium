@@ -18,8 +18,9 @@ CriticalUserJourneyRegistry::~CriticalUserJourneyRegistry() = default;
 void CriticalUserJourneyRegistry::AddJourneys() {
   AddJourney(
       CriticalUserJourney::Builder("ViewDownloadedFileJourney")
-          .AddCustomEventStep(kDownloadEndedCustomEventId,
-                              /*metric_id=*/1)
+          .AddStep(kDownloadEndedCustomEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent,
+                   /*metric_id=*/1)
           .AddAnyOf({Branch(kToolbarDownloadBubbleElementId,
                             ui::InteractionSequence::StepType::kShown,
                             /*metric_id=*/2),
@@ -33,16 +34,18 @@ void CriticalUserJourneyRegistry::AddJourneys() {
 
   AddJourney(
       CriticalUserJourney::Builder("ViewDownloadedFileFromAppMenuJourney")
-          .AddCustomEventStep(kDownloadEndedCustomEventId,
-                              /*metric_id=*/1)
+          .AddStep(kDownloadEndedCustomEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent,
+                   /*metric_id=*/1)
           .AddStep(kToolbarAppMenuButtonElementId,
                    ui::InteractionSequence::StepType::kActivated,
                    /*metric_id=*/2)
           .AddStep(AppMenuModel::kDownloadsMenuItem,
                    ui::InteractionSequence::StepType::kActivated,
                    /*metric_id=*/3)
-          .AddCustomEventStep(kDownloadedFileOpenedCustomEventId,
-                              /*metric_id=*/4)
+          .AddStep(kDownloadedFileOpenedCustomEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent,
+                   /*metric_id=*/4)
           .Build());
 }
 

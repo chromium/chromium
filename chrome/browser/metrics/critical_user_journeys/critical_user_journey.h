@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -40,11 +41,10 @@ class CriticalUserJourney {
     explicit Builder(std::string name);
     ~Builder();
 
-    Builder& AddStep(ui::ElementIdentifier id,
-                     ui::InteractionSequence::StepType type,
-                     int metric_id);
-    Builder& AddCustomEventStep(ui::CustomElementEventType event_type,
-                                int metric_id);
+    Builder& AddStep(
+        std::variant<ui::ElementIdentifier, ui::CustomElementEventType> event,
+        ui::InteractionSequence::StepType type,
+        int metric_id);
     Builder& AddAnyOf(const std::vector<Branch>& branches);
     Builder& AddCustomCompletionCallback(base::RepeatingClosure callback);
 

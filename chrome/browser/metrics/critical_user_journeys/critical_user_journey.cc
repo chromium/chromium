@@ -28,28 +28,23 @@ CriticalUserJourney::Builder::Builder(std::string name)
 CriticalUserJourney::Builder::~Builder() = default;
 
 CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddStep(
-    ui::ElementIdentifier id,
+    std::variant<ui::ElementIdentifier, ui::CustomElementEventType> event,
     ui::InteractionSequence::StepType type,
     int metric_id) {
-  // TODO(dljames): Consolidate AddStep and AddCustomEventStep into a single
-  // function with a variant for the ElementIdentifier.
-  CHECK_NE(type, ui::InteractionSequence::StepType::kCustomEvent)
-      << "To add custom events use AddCustomEventStep instead of AddStep.";
   auto step = std::make_unique<CriticalUserJourneyStep>();
-  step->id = id;
+  step->metric_id = metric_id;
   step->type = type;
-  step->metric_id = metric_id;
-  steps_.push_back(std::move(step));
-  return *this;
-}
 
-CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddCustomEventStep(
-    ui::CustomElementEventType event_type,
-    int metric_id) {
-  auto step = std::make_unique<CriticalUserJourneyStep>();
-  step->custom_event_type = event_type;
-  step->type = ui::InteractionSequence::StepType::kCustomEvent;
-  step->metric_id = metric_id;
+  if (std::holds_alternative<ui::CustomElementEventType>(event)) {
+    CHECK_EQ(type, ui::InteractionSequence::StepType::kCustomEvent)
+        << "Custom events implicitly require type kCustomEvent.";
+    step->custom_event_type = std::get<ui::CustomElementEventType>(event);
+  } else {
+    CHECK_NE(type, ui::InteractionSequence::StepType::kCustomEvent)
+        << "Element identifiers require a non-custom StepType.";
+    step->id = std::get<ui::ElementIdentifier>(event);
+  }
+
   steps_.push_back(std::move(step));
   return *this;
 }
