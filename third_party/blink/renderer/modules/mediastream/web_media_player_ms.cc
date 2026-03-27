@@ -1693,4 +1693,11 @@ void WebMediaPlayerMS::UnregisterFrameSinkHierarchy() {
     bridge_->UnregisterFrameSinkHierarchy();
 }
 
+void WebMediaPlayerMS::ReparentFrameSinkHierarchy(
+    const viz::FrameSinkId& new_parent_frame_sink_id) {
+  if (bridge_) {
+    bridge_->ReparentFrameSinkHierarchy(new_parent_frame_sink_id);
+  }
+}
+
 }  // namespace blink

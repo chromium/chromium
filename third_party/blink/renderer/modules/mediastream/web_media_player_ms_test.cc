@@ -1927,6 +1927,26 @@ TEST_P(WebMediaPlayerMSTest, EnabledStateChangedForWebRtcAudio) {
   testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
 }
 
+TEST_P(WebMediaPlayerMSTest, ReparentFrameSinkHierarchy) {
+  InitializeWebMediaPlayerMS();
+
+  MockMediaStreamVideoRenderer* provider = LoadAndGetFrameProvider(true);
+  const int kTestBrake = static_cast<int>(FrameType::TEST_BRAKE);
+  Vector<int> timestamps({0, kTestBrake});
+
+  provider->QueueFrames(timestamps);
+  message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
+
+  if (enable_surface_layer_for_video_) {
+    EXPECT_CALL(*surface_layer_bridge_ptr_, ReparentFrameSinkHierarchy(_));
+  } else {
+    EXPECT_CALL(*surface_layer_bridge_ptr_, ReparentFrameSinkHierarchy(_))
+        .Times(0);
+  }
+  viz::FrameSinkId new_id(1, 2);
+  player_->ReparentFrameSinkHierarchy(new_id);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          WebMediaPlayerMSTest,
                          ::testing::Combine(::testing::Bool(),

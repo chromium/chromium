@@ -216,6 +216,8 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   void RegisterFrameSinkHierarchy() override;
   void UnregisterFrameSinkHierarchy() override;
+  void ReparentFrameSinkHierarchy(
+      const viz::FrameSinkId& new_parent_frame_sink_id) override;
 
   void RecordAutoPictureInPictureInfo(
       const media::PictureInPictureEventsInfo::AutoPipInfo&
