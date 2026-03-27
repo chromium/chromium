@@ -57,6 +57,8 @@ PriceInsightsInfo::~PriceInsightsInfo() = default;
 DiscountInfo::DiscountInfo() = default;
 DiscountInfo::DiscountInfo(const DiscountInfo&) = default;
 DiscountInfo& DiscountInfo::operator=(const DiscountInfo&) = default;
+DiscountInfo::DiscountInfo(DiscountInfo&&) = default;
+DiscountInfo& DiscountInfo::operator=(DiscountInfo&&) = default;
 DiscountInfo::~DiscountInfo() = default;
 
 UrlInfo::UrlInfo() = default;

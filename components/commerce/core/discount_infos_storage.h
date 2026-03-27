@@ -61,8 +61,7 @@ class DiscountInfosStorage : public history::HistoryServiceObserver {
 
   // When loading from local db, remove duplicate discounts that have the same
   // discount code.
-  std::vector<DiscountInfo> RemoveDuplicateDiscountsFromProto(
-      const std::vector<DiscountInfo>& infos);
+  void RemoveDuplicateDiscountsFromProto(std::vector<DiscountInfo>& infos);
 
   raw_ptr<SessionProtoStorage<DiscountInfosContent>> proto_db_;
 

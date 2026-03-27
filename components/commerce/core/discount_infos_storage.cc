@@ -4,9 +4,14 @@
 
 #include "components/commerce/core/discount_infos_storage.h"
 
+#include <set>
+#include <vector>
+
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_constants.h"
@@ -40,7 +45,6 @@ void DiscountInfosStorage::SaveDiscounts(
     const GURL& url,
     const std::vector<DiscountInfo>& infos) {
   DiscountInfosContent proto;
-  proto.set_key(url.spec());
   for (const DiscountInfo& info : infos) {
     if (info.expiry_time_sec.has_value() && info.discount_code.has_value()) {
       discount_infos_db::DiscountInfoContent* discount_proto =
@@ -66,23 +70,23 @@ void DiscountInfosStorage::SaveDiscounts(
       discount_proto->set_offer_id(info.offer_id);
     }
   }
-  if (proto.discounts().size() > 0) {
-    proto_db_->InsertContent(url.spec(), proto,
-                             base::BindOnce([](bool succeeded) {}));
+  if (!proto.discounts().empty()) {
+    proto.set_key(url.spec());
+    proto_db_->InsertContent(url.spec(), proto, base::DoNothing());
   } else {
     DeleteDiscountsForUrl(url.spec());
   }
 }
 
 void DiscountInfosStorage::DeleteDiscountsForUrl(const std::string& url) {
-  proto_db_->DeleteOneEntry(url, base::BindOnce([](bool succeeded) {}));
+  proto_db_->DeleteOneEntry(url, base::DoNothing());
 }
 
 void DiscountInfosStorage::OnLoadDiscounts(const GURL& url,
                                            DiscountInfoCallback callback,
                                            bool succeeded,
                                            DiscountInfosKeyAndValues data) {
-  if (!succeeded || data.size() == 0) {
+  if (!succeeded || data.empty()) {
     std::move(callback).Run(url, {});
     return;
   }
@@ -91,21 +95,21 @@ void DiscountInfosStorage::OnLoadDiscounts(const GURL& url,
     std::vector<DiscountInfo> valid_infos =
         GetUnexpiredDiscountsFromProto(value);
 
-    if (valid_infos.size() == 0) {
+    if (valid_infos.empty()) {
       // Delete the entry in the db if no unexpired discounts found.
       DeleteDiscountsForUrl(key);
     } else {
       // Update local database if expired discounts found.
-      if ((int)(valid_infos.size()) != value.discounts().size()) {
+      if (base::MakeStrictNum(valid_infos.size()) != value.discounts().size()) {
         SaveDiscounts(GURL(key), valid_infos);
       }
-      unexpired_infos.insert(unexpired_infos.end(), valid_infos.begin(),
-                             valid_infos.end());
+      unexpired_infos.insert(unexpired_infos.end(),
+                             std::make_move_iterator(valid_infos.begin()),
+                             std::make_move_iterator(valid_infos.end()));
     }
   }
-  std::vector<DiscountInfo> unique_infos =
-      RemoveDuplicateDiscountsFromProto(unexpired_infos);
-  std::move(callback).Run(url, std::move(unique_infos));
+  RemoveDuplicateDiscountsFromProto(unexpired_infos);
+  std::move(callback).Run(url, std::move(unexpired_infos));
 }
 
 std::vector<DiscountInfo> DiscountInfosStorage::GetUnexpiredDiscountsFromProto(
@@ -119,7 +123,7 @@ std::vector<DiscountInfo> DiscountInfosStorage::GetUnexpiredDiscountsFromProto(
       continue;
     }
 
-    DiscountInfo info;
+    DiscountInfo& info = infos.emplace_back();
     info.id = content.id();
     info.type = DiscountType(content.type());
     info.language_code = content.language_code();
@@ -132,37 +136,27 @@ std::vector<DiscountInfo> DiscountInfosStorage::GetUnexpiredDiscountsFromProto(
       info.discount_code = content.discount_code();
     }
     info.offer_id = content.offer_id();
-    infos.push_back(info);
   }
 
   return infos;
 }
 
-std::vector<DiscountInfo>
-DiscountInfosStorage::RemoveDuplicateDiscountsFromProto(
-    const std::vector<DiscountInfo>& infos) {
-  std::vector<DiscountInfo> unique_infos;
-  std::map<std::string, bool> existing_codes;
-
-  for (const DiscountInfo& info : infos) {
+void DiscountInfosStorage::RemoveDuplicateDiscountsFromProto(
+    std::vector<DiscountInfo>& infos) {
+  std::set<std::string> existing_codes;
+  // Remove duplicate values while retaining the original order.
+  std::erase_if(infos, [&](const DiscountInfo& info) {
     DCHECK(info.discount_code.has_value());
-    const std::string& discount_code = info.discount_code.value();
-    // Check if the discount code is already present in the map.
-    if (!existing_codes.contains(discount_code)) {
-      // If not present, add the discount code to the map and to the result
-      // vector.
-      existing_codes[discount_code] = true;
-      unique_infos.push_back(info);
-    }
-  }
-  return unique_infos;
+    auto [_, inserted] = existing_codes.insert(info.discount_code.value());
+    return !inserted;
+  });
 }
 
 void DiscountInfosStorage::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {
-    proto_db_->DeleteAllContent(base::BindOnce([](bool succeeded) {}));
+    proto_db_->DeleteAllContent(base::DoNothing());
     return;
   }
 

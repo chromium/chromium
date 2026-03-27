@@ -56,6 +56,8 @@ struct DiscountInfo {
   DiscountInfo();
   DiscountInfo(const DiscountInfo&);
   DiscountInfo& operator=(const DiscountInfo&);
+  DiscountInfo(DiscountInfo&&);
+  DiscountInfo& operator=(DiscountInfo&&);
   ~DiscountInfo();
 
   DiscountClusterType cluster_type = DiscountClusterType::kUnspecified;
