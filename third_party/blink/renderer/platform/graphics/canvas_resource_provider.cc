@@ -941,7 +941,7 @@ CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource(
       return nullptr;
     }
 
-    FlushCanvas(reason);
+    FlushCanvas();
 
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
@@ -959,7 +959,7 @@ CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource(
   // backing SharedImage). Hence, we must make sure that the SI is updated to
   // reflect the ops made in the current write access (if any) and give up any
   // such write access.
-  FlushCanvas(reason);
+  FlushCanvas();
   EndWriteAccess();
 
   return resource_;
@@ -1120,7 +1120,7 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   }
 
   if (!cached_snapshot_) {
-    FlushCanvas(FlushReason::kOther);
+    FlushCanvas();
     EndWriteAccess();
     cached_snapshot_ = resource_->Bitmap();
 
@@ -1962,7 +1962,7 @@ ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimer() {
 }
 
 std::optional<cc::PaintRecord>
-CanvasNon2DResourceProviderSharedImage::FlushCanvas(FlushReason reason) {
+CanvasNon2DResourceProviderSharedImage::FlushCanvas() {
   if (!recorder_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
