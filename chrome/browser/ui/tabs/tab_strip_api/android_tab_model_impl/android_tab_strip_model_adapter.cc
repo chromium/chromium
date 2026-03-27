@@ -25,7 +25,11 @@ AndroidTabStripModelAdapter::AndroidTabStripModelAdapter(TabModel* model)
 AndroidTabStripModelAdapter::~AndroidTabStripModelAdapter() = default;
 
 std::vector<tabs::TabHandle> AndroidTabStripModelAdapter::GetTabs() const {
-  NOTREACHED() << "not implemented";
+  std::vector<tabs::TabHandle> handles;
+  for (auto* tab_interface : model_->GetAllTabs()) {
+    handles.push_back(tab_interface->GetHandle());
+  }
+  return handles;
 }
 
 types::TabStates AndroidTabStripModelAdapter::GetTabStates(
@@ -52,7 +56,9 @@ std::optional<int> AndroidTabStripModelAdapter::GetIndexForHandle(
 }
 
 void AndroidTabStripModelAdapter::ActivateTab(size_t index) {
-  NOTREACHED() << "not implemented";
+  auto handles = GetTabs();
+  CHECK(index < handles.size());
+  model_->ActivateTab(handles.at(index));
 }
 
 void AndroidTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
@@ -70,8 +76,7 @@ mojom::ContainerPtr AndroidTabStripModelAdapter::GetTabStripTopology(
   auto window_container = mojom::Container::New();
   auto window_data = mojom::Window::New();
 
-  window_data->id =
-      NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id()));
+  window_data->id = NodeId::FromWindowId(GetWindowId());
   window_container->data = mojom::Data::NewWindow(std::move(window_data));
 
   auto tab_strip = tabs_api::mojom::Container::New();
@@ -158,7 +163,7 @@ const tabs::TabCollection* AndroidTabStripModelAdapter::GetRoot() const {
 }
 
 std::string AndroidTabStripModelAdapter::GetWindowId() const {
-  NOTREACHED() << "not implemented";
+  return base::NumberToString(model_->GetSessionId().id());
 }
 
 }  // namespace tabs_api

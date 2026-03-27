@@ -44,7 +44,7 @@ class AndroidTabStripApiBrowserTest : public AndroidBrowserTest {
   std::unique_ptr<tabs_api::TabStripService> service_;
 };
 
-IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Instantiates) {
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Get) {
   // Initial state test, there should be one tab.
   ASSERT_EQ(1, model_->GetTabCount());
   {
@@ -99,6 +99,23 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Create) {
 
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(2, model_->GetTabCount());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Activate) {
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(2, model_->GetTabCount());
+
+  auto* tab0 = model_->GetTab(0);
+  auto* tab1 = model_->GetTab(1);
+
+  model_->ActivateTab(tab0->GetHandle());
+  ASSERT_EQ(tab0, model_->GetActiveTab());
+
+  auto result =
+      service_->ActivateTab(tabs_api::NodeId::FromTabHandle(tab1->GetHandle()));
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(tab1, model_->GetActiveTab());
 }
 
 }  // namespace
