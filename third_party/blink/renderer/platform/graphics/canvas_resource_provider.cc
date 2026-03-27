@@ -168,7 +168,7 @@ sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
   return SkSurfaces::Raster(info, &props);
 }
 
-void Canvas2DResourceProviderBitmap::RasterRecord(
+void Canvas2DResourceProviderBitmap::RasterRecordForCanvas2D(
     cc::PaintRecord last_recording) {
   return UnacceleratedRasterRecordForCanvas2D(last_recording);
 }
@@ -1142,7 +1142,7 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   return cached_snapshot_;
 }
 
-void Canvas2DResourceProviderSharedImage::RasterRecord(
+void Canvas2DResourceProviderSharedImage::RasterRecordForCanvas2D(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
@@ -1994,7 +1994,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
   clear_frame_for_canvas2d_ = false;
   cc::PaintRecord recording;
   recording = recorder_->ReleaseMainRecording();
-  RasterRecord(recording);
+  RasterRecordForCanvas2D(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
   ReleaseLockedImages();
@@ -2137,7 +2137,7 @@ void CanvasResourceProvider::ClearAtCreationForCanvas2D() {
     recorder.getRecordingCanvas().clear(SkColors::kTransparent);
   }
 
-  RasterRecord(recorder.ReleaseMainRecording());
+  RasterRecordForCanvas2D(recorder.ReleaseMainRecording());
 }
 
 void CanvasResourceProvider::RestoreBackBufferForCanvas2D(

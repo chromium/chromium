@@ -213,7 +213,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
                          const gfx::ColorSpace& color_space,
                          Delegate* delegate);
 
-  virtual void RasterRecord(cc::PaintRecord) = 0;
+  virtual void RasterRecordForCanvas2D(cc::PaintRecord) = 0;
   void UnacceleratedRasterRecordForCanvas2D(cc::PaintRecord);
 
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
@@ -322,7 +322,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
-  void RasterRecord(cc::PaintRecord last_recording) override;
+  void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
   bool IsCanvas2D() const override { return true; }
   bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
                               const void* pixels,
@@ -564,7 +564,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   // CanvasResourceProvider:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
-  void RasterRecord(cc::PaintRecord last_recording) override;
+  void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
   bool IsCanvas2D() const override { return true; }
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
@@ -673,7 +673,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
-  void RasterRecord(cc::PaintRecord last_recording) override;
+  void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override {
+    NOTREACHED();
+  }
   bool IsCanvas2D() const override { return false; }
   bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
                               const void* pixels,
@@ -733,6 +735,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
+  void RasterRecord(cc::PaintRecord last_recording);
+
   void FlushCanvas();
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
