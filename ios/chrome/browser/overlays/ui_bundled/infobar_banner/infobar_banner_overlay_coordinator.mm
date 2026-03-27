@@ -89,7 +89,7 @@
 #pragma mark - InfobarBannerPositioner
 
 - (CGFloat)bannerYPosition {
-  if (!self.browser) {
+  if (!self.started || !self.browser) {
     return 0;
   }
   LayoutGuideCenter* layoutGuideCenter =

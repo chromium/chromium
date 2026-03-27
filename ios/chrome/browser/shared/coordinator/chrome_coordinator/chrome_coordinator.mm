@@ -37,7 +37,7 @@
   // Browser can only be nil after -stop. Coordinators should typically not
   // execute any code after this point, and definitely should not refer to
   // browser.
-  CHECK(_browser.get(), base::NotFatalUntil::M147);
+  CHECK(_browser.get(), base::NotFatalUntil::M155);
   return _browser.get();
 }
 
@@ -46,7 +46,7 @@
   // Profile can only be nil after -stop. Coordinators should typically not
   // execute any code after this point, and definitely should not refer to
   // profile.
-  CHECK(profile, base::NotFatalUntil::M147);
+  CHECK(profile, base::NotFatalUntil::M155);
   return profile;
 }
 
