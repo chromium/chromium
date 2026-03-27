@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
@@ -66,13 +67,12 @@ class QueryContextualizer {
         base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
             callback) = 0;
 
-    // Triggers an upload of the tab context with the retrieved data.
-    // `callback` must be run with success/failure status.
-    virtual void UploadTabContextWithData(
-        TabId id,
-        std::optional<int64_t> context_id,
-        std::unique_ptr<lens::ContextualInputData> data,
-        base::OnceCallback<void(bool)> callback) = 0;
+    // Returns whether the tab is still valid.
+    virtual bool IsTabValid(TabId id) = 0;
+
+    // Returns the image encoding options to use for tab contextualization.
+    virtual std::optional<lens::ImageEncodingOptions>
+    GetTabViewportEncodingOptionsForQueryContextualizer() = 0;
 
     // Called when the page context is ineligible.
     virtual void OnPageContextIneligible() = 0;

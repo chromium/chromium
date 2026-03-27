@@ -190,18 +190,28 @@ void QueryContextualizer::OnTabContextualizationFetched(
     return;
   }
 
-  delegate_->UploadTabContextWithData(
-      tab_id, maybe_context_id, std::move(page_content_data),
-      base::BindOnce(
-          [](base::WeakPtr<QueryContextualizer> orchestrator, TabId id,
-             base::RepeatingClosure barrier, bool success) {
-            if (orchestrator) {
-              orchestrator->delegate_->OnTabProcessedForQueryContextualization(
-                  id);
-            }
-            barrier.Run();
-          },
-          weak_factory_.GetWeakPtr(), tab_id, barrier_closure));
+  if (!session_handle) {
+    delegate_->OnTabProcessedForQueryContextualization(tab_id);
+    barrier_closure.Run();
+    return;
+  }
+
+  if (!delegate_->IsTabValid(tab_id)) {
+    delegate_->OnTabProcessedForQueryContextualization(tab_id);
+    barrier_closure.Run();
+    return;
+  }
+
+  auto context_token = session_handle->CreateContextToken();
+  if (maybe_context_id.has_value()) {
+    page_content_data->context_id = maybe_context_id.value();
+  }
+  session_handle->StartTabContextUploadFlow(
+      context_token, std::move(page_content_data),
+      delegate_->GetTabViewportEncodingOptionsForQueryContextualizer());
+
+  delegate_->OnTabProcessedForQueryContextualization(tab_id);
+  barrier_closure.Run();
 }
 
 std::vector<QueryContextualizer::TabUpdate>

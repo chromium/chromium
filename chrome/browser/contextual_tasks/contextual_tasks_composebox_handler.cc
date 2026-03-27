@@ -446,14 +446,6 @@ void ContextualTasksComposeboxHandler::GetPageContext(
       std::move(callback));
 }
 
-void ContextualTasksComposeboxHandler::UploadTabContextWithData(
-    contextual_tasks::QueryContextualizer::TabId id,
-    std::optional<int64_t> context_id,
-    std::unique_ptr<lens::ContextualInputData> data,
-    base::OnceCallback<void(bool)> callback) {
-  ComposeboxHandler::UploadTabContextWithData(id, context_id, std::move(data),
-                                              std::move(callback));
-}
 
 void ContextualTasksComposeboxHandler::OnPageContextIneligible() {
   web_ui_interface_->OnPageContextEligibilityChecked(false);

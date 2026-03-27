@@ -44,12 +44,10 @@ class MockQueryContextualizerDelegate : public QueryContextualizer::Delegate {
        base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
            callback),
       (override));
-  MOCK_METHOD(void,
-              UploadTabContextWithData,
-              (QueryContextualizer::TabId id,
-               std::optional<int64_t> context_id,
-               std::unique_ptr<lens::ContextualInputData> data,
-               base::OnceCallback<void(bool)> callback),
+  MOCK_METHOD(bool, IsTabValid, (QueryContextualizer::TabId id), (override));
+  MOCK_METHOD(std::optional<lens::ImageEncodingOptions>,
+              GetTabViewportEncodingOptionsForQueryContextualizer,
+              (),
               (override));
   MOCK_METHOD(void, OnPageContextIneligible, (), (override));
   MOCK_METHOD(void,
@@ -313,15 +311,16 @@ TEST_F(QueryContextualizerTest, Contextualize_RecontextualizeExpiredTab) {
         std::move(callback).Run(std::move(data));
       });
 
-  // Expect UploadTabContextWithData call.
-  EXPECT_CALL(*delegate_,
-              UploadTabContextWithData(tab_id, std::optional<int64_t>(12345),
-                                       testing::_, testing::_))
-      .WillOnce([](QueryContextualizer::TabId id,
-                   std::optional<int64_t> context_id,
+  // Expect IsTabValid call.
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow call.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
                    std::unique_ptr<lens::ContextualInputData> data,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(data->context_id, 12345);
       });
 
   EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
@@ -404,15 +403,16 @@ TEST_F(QueryContextualizerTest, Contextualize_RecontextualizeContentChanged) {
         std::move(callback).Run(std::move(data));
       });
 
-  // Expect UploadTabContextWithData call because content changed.
-  EXPECT_CALL(*delegate_,
-              UploadTabContextWithData(tab_id, std::optional<int64_t>(12345),
-                                       testing::_, testing::_))
-      .WillOnce([](QueryContextualizer::TabId id,
-                   std::optional<int64_t> context_id,
+  // Expect IsTabValid call.
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow call because content changed.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
                    std::unique_ptr<lens::ContextualInputData> data,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(data->context_id, 12345);
       });
 
   EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
@@ -506,9 +506,9 @@ TEST_F(QueryContextualizerTest,
         std::move(callback).Run(std::move(data));
       });
 
-  // Expect UploadTabContextWithData call to NOT be called.
-  EXPECT_CALL(*delegate_, UploadTabContextWithData(testing::_, testing::_,
-                                                   testing::_, testing::_))
+  // Expect StartTabContextUploadFlow call to NOT be called.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
       .Times(0);
 
   EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
@@ -552,9 +552,9 @@ TEST_F(QueryContextualizerTest, Contextualize_ActiveTabNotInContext) {
   // Expect GetPageContext call to NOT be called.
   EXPECT_CALL(*delegate_, GetPageContext(testing::_, testing::_)).Times(0);
 
-  // Expect UploadTabContextWithData call to NOT be called.
-  EXPECT_CALL(*delegate_, UploadTabContextWithData(testing::_, testing::_,
-                                                   testing::_, testing::_))
+  // Expect StartTabContextUploadFlow call to NOT be called.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
       .Times(0);
 
   base::MockCallback<base::OnceClosure> done_callback;
@@ -602,9 +602,9 @@ TEST_F(QueryContextualizerTest, Contextualize_ActiveTabUrlMismatch) {
   // Expect GetPageContext call to NOT be called.
   EXPECT_CALL(*delegate_, GetPageContext(testing::_, testing::_)).Times(0);
 
-  // Expect UploadTabContextWithData call to NOT be called.
-  EXPECT_CALL(*delegate_, UploadTabContextWithData(testing::_, testing::_,
-                                                   testing::_, testing::_))
+  // Expect StartTabContextUploadFlow call to NOT be called.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
       .Times(0);
 
   base::MockCallback<base::OnceClosure> done_callback;
@@ -690,15 +690,16 @@ TEST_F(QueryContextualizerTest,
         std::move(callback).Run(std::move(data));
       });
 
-  // Expect UploadTabContextWithData call because bitmap changed.
-  EXPECT_CALL(*delegate_,
-              UploadTabContextWithData(tab_id, std::optional<int64_t>(12345),
-                                       testing::_, testing::_))
-      .WillOnce([](QueryContextualizer::TabId id,
-                   std::optional<int64_t> context_id,
+  // Expect IsTabValid call.
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow call because bitmap changed.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
                    std::unique_ptr<lens::ContextualInputData> data,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(data->context_id, 12345);
       });
 
   EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
@@ -795,19 +796,22 @@ TEST_F(QueryContextualizerTest,
         std::move(callback).Run(std::move(data));
       });
 
-  // Expect UploadTabContextWithData call to be called, but with empty
+  // Expect IsTabValid call.
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow call to be called, but with empty
   // context_input.
-  EXPECT_CALL(*delegate_, UploadTabContextWithData(
-                              tab_id, testing::Optional(12345),
-                              testing::Pointee(testing::Field(
-                                  &lens::ContextualInputData::context_input,
-                                  testing::Eq(std::nullopt))),
-                              testing::_))
-      .WillOnce([](QueryContextualizer::TabId id,
-                   std::optional<int64_t> context_id,
+  EXPECT_CALL(
+      *session_handle_,
+      StartTabContextUploadFlow(testing::_,
+                                testing::Pointee(testing::Field(
+                                    &lens::ContextualInputData::context_input,
+                                    testing::Eq(std::nullopt))),
+                                testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
                    std::unique_ptr<lens::ContextualInputData> data,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(data->context_id, 12345);
       });
 
   EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
@@ -905,19 +909,22 @@ TEST_F(QueryContextualizerTest,
         std::move(callback).Run(std::move(data));
       });
 
-  // Expect UploadTabContextWithData call to be called, but with empty
+  // Expect IsTabValid call.
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow call to be called, but with empty
   // context_input.
-  EXPECT_CALL(*delegate_, UploadTabContextWithData(
-                              tab_id, testing::Optional(12345),
-                              testing::Pointee(testing::Field(
-                                  &lens::ContextualInputData::context_input,
-                                  testing::Eq(std::nullopt))),
-                              testing::_))
-      .WillOnce([](QueryContextualizer::TabId id,
-                   std::optional<int64_t> context_id,
+  EXPECT_CALL(
+      *session_handle_,
+      StartTabContextUploadFlow(testing::_,
+                                testing::Pointee(testing::Field(
+                                    &lens::ContextualInputData::context_input,
+                                    testing::Eq(std::nullopt))),
+                                testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
                    std::unique_ptr<lens::ContextualInputData> data,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(data->context_id, 12345);
       });
 
   EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));

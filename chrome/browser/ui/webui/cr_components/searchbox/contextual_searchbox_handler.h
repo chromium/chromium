@@ -264,10 +264,9 @@ class ContextualSearchboxHandler
       int32_t id,
       base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
           callback) override;
-  void UploadTabContextWithData(int32_t id,
-                                std::optional<int64_t> context_id,
-                                std::unique_ptr<lens::ContextualInputData> data,
-                                RecontextualizeTabCallback callback) override;
+  bool IsTabValid(int32_t id) override;
+  std::optional<lens::ImageEncodingOptions>
+  GetTabViewportEncodingOptionsForQueryContextualizer() override;
   void OnPageContextIneligible() override;
   void OnTabProcessedForQueryContextualization(int32_t id) override;
 

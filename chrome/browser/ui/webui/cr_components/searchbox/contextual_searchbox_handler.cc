@@ -638,35 +638,14 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
   }
 }
 
-void ContextualSearchboxHandler::UploadTabContextWithData(
-    int32_t tab_id,
-    std::optional<int64_t> context_id,
-    std::unique_ptr<lens::ContextualInputData> data,
-    RecontextualizeTabCallback callback) {
-  auto* contextual_session_handle = GetContextualSessionHandle();
-  if (!contextual_session_handle) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
-    return;
-  }
+bool ContextualSearchboxHandler::IsTabValid(int32_t id) {
+  const tabs::TabHandle handle = tabs::TabHandle(id);
+  return handle.Get() != nullptr;
+}
 
-  // TODO(crbug.com/458050417): Move more of the tab context logic to
-  // ContextualSessionHandle.
-  const tabs::TabHandle handle = tabs::TabHandle(tab_id);
-  tabs::TabInterface* const tab = handle.Get();
-  if (!tab) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
-    return;
-  }
-
-  auto context_token = contextual_session_handle->CreateContextToken();
-  if (context_id.has_value()) {
-    data->context_id = context_id.value();
-  }
-  UploadTabContext(context_token, std::move(data));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
+std::optional<lens::ImageEncodingOptions> ContextualSearchboxHandler::
+    GetTabViewportEncodingOptionsForQueryContextualizer() {
+  return CreateImageEncodingOptions();
 }
 
 void ContextualSearchboxHandler::RecordTabAddedMetric(
