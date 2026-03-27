@@ -5,8 +5,25 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
-# TODO(crbug.com/40682351): Extract //chrome/browser/payments/android source files
-# from //chrome/browser/BUILD.gn into an independent build target here.
+source_set("service_worker_payment_app_bridge") {
+  sources = [ "service_worker_payment_app_bridge.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/webdata_services",
+    "//components/payments/content",
+    "//components/payments/content:utils",
+    "//components/payments/content/android",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/gfx",
+    "//url",
+  ]
+}
 
 # TODO(crbug.com/40741093): remove the dependency on chrome_java.
 robolectric_library("junit_test_support") {

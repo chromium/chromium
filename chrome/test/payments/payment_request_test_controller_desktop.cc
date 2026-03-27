@@ -14,6 +14,7 @@
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/payment_ui_observer.h"
+#include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/global_routing_id.h"

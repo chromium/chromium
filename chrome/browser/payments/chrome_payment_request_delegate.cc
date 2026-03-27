@@ -33,6 +33,8 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_dialog.h"
+#include "components/payments/content/secure_payment_confirmation_controller.h"
+#include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "components/payments/content/ssl_validity_checker.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/payment_prefs.h"

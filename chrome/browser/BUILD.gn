@@ -1613,6 +1613,7 @@ static_library("browser") {
     "//chrome/browser/page_info:impl",
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/password_manager",
+    "//chrome/browser/payments",
     "//chrome/browser/payments/browser_binding:browser_bound_key_deleter",
     "//chrome/browser/performance_monitor",
     "//chrome/browser/permissions",
@@ -2925,7 +2926,6 @@ static_library("browser") {
       "password_manager/android/password_store_bridge.h",
       "password_manager/android/save_update_password_message_delegate.cc",
       "password_manager/android/save_update_password_message_delegate.h",
-      "payments/android/service_worker_payment_app_bridge.cc",
       "performance_manager/policies/discard_page_with_crashed_subframe_policy.cc",
       "performance_manager/policies/discard_page_with_crashed_subframe_policy.h",
       "performance_manager/policies/process_rank_policy_android.cc",
@@ -3416,9 +3416,12 @@ static_library("browser") {
   } else {
     #!is_android
     deps += [
+      "//chrome/browser/payments:impl",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",
     ]
+
+    allow_circular_includes_from += [ "//chrome/browser/payments:impl" ]
 
     sources += [
       "accessibility/ax_main_node_annotator_controller.cc",
@@ -3694,14 +3697,6 @@ static_library("browser") {
       "password_manager/password_change_delegate_impl.h",
       "password_manager/web_app_profile_switcher.cc",
       "password_manager/web_app_profile_switcher.h",
-      "payments/chrome_payment_request_delegate.cc",
-      "payments/chrome_payment_request_delegate.h",
-      "payments/payment_request_display_manager_factory.cc",
-      "payments/payment_request_display_manager_factory.h",
-      "payments/payment_request_factory.cc",
-      "payments/payment_request_factory.h",
-      "payments/webapps/twa_package_helper.cc",
-      "payments/webapps/twa_package_helper.h",
       "performance_manager/execution_context_priority/side_panel_loading_voter.cc",
       "performance_manager/execution_context_priority/side_panel_loading_voter.h",
       "performance_manager/mechanisms/page_loader.cc",
