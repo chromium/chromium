@@ -197,6 +197,7 @@ class CC_EXPORT LayerTreeImpl {
 
   OwnedLayerImplList DetachLayers();
   OwnedLayerImplList DetachLayersKeepingRootLayerForTesting();
+  OwnedLayerImplList SwapLayers(OwnedLayerImplList new_layers);
 
   void SetPropertyTrees(const PropertyTrees& property_trees,
                         PropertyTreesChangeState& change_state,
@@ -256,6 +257,7 @@ class CC_EXPORT LayerTreeImpl {
    private:
     Iterator it_;
   };
+  size_t num_layers() const { return layer_list_.size(); }
   using const_iterator = IteratorAdapter<OwnedLayerImplList::const_iterator>;
   using const_reverse_iterator =
       IteratorAdapter<OwnedLayerImplList::const_reverse_iterator>;
