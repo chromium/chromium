@@ -153,11 +153,14 @@ export class AppStyleUpdater {
   }
 
   setLineSpacing() {
-    this.setStyle_(
-        '--line-height',
-        `${
-            chrome.readingMode.getLineSpacingValue(
-                chrome.readingMode.lineSpacing)}`);
+    const lineHeight =
+        chrome.readingMode.getLineSpacingValue(chrome.readingMode.lineSpacing);
+    this.setStyle_('--line-height', `${lineHeight}`);
+
+    const minLineHeight = chrome.readingMode.getLineSpacingValue(
+        chrome.readingMode.standardLineSpacing);
+    const pSpacing = minLineHeight ? (lineHeight / minLineHeight) : lineHeight;
+    this.setStyle_('--paragraph-spacing', `${pSpacing}em`);
   }
 
   setLetterSpacing() {

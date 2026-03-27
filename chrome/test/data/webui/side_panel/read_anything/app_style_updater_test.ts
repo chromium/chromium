@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {AppStyleUpdater, BrowserProxy, LineFocusType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertNotEquals, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertGT, assertNotEquals, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp} from './common.js';
@@ -198,15 +198,34 @@ suite('AppStyleUpdater', () => {
   });
 
   test('line spacing depends on font size', () => {
-    setAppFontSize(10);
     chrome.readingMode.lineSpacing = 10;
+
+    setAppFontSize(10);
     updater.setLineSpacing();
-    assertEquals('100px', computeStyle('line-height'));
+    const lineHeight1 = parseInt(computeStyle('line-height'));
 
     setAppFontSize(12);
+    updater.setLineSpacing();
+    const lineHeight2 = parseInt(computeStyle('line-height'));
+
+    assertGT(lineHeight2, lineHeight1);
+  });
+
+  test('paragraph spacing depends on line spacing', () => {
+    setAppFontSize(10);
+
+    chrome.readingMode.lineSpacing = 10;
+    updater.setLineSpacing();
+    const lineSpacing1 = parseInt(computeStyle('line-height'));
+    const pSpacing1 = parseInt(computeStyle('--paragraph-spacing'));
+
     chrome.readingMode.lineSpacing = 16;
     updater.setLineSpacing();
-    assertEquals('192px', computeStyle('line-height'));
+    const lineSpacing2 = parseInt(computeStyle('line-height'));
+    const pSpacing2 = parseInt(computeStyle('--paragraph-spacing'));
+
+    assertGT(lineSpacing2, lineSpacing1);
+    assertGT(pSpacing2, pSpacing1);
   });
 
   test('letter spacing depends on font size', () => {
@@ -219,6 +238,23 @@ suite('AppStyleUpdater', () => {
     chrome.readingMode.letterSpacing = 16;
     updater.setLetterSpacing();
     assertEquals('192px', computeStyle('letter-spacing'));
+  });
+
+  test('word spacing depends on letter spacing', () => {
+    setAppFontSize(10);
+
+    chrome.readingMode.letterSpacing = 10;
+    updater.setLetterSpacing();
+    const letterSpacing1 = +computeStyle('letter-spacing').replace('px', '');
+    const wordSpacing1 = +computeStyle('word-spacing').replace('px', '');
+
+    chrome.readingMode.letterSpacing = 16;
+    updater.setLetterSpacing();
+    const letterSpacing2 = +computeStyle('letter-spacing').replace('px', '');
+    const wordSpacing2 = +computeStyle('word-spacing').replace('px', '');
+
+    assertGT(letterSpacing2, letterSpacing1);
+    assertGT(wordSpacing2, wordSpacing1);
   });
 
   test('font size scales', () => {
@@ -934,7 +970,7 @@ suite('AppStyleUpdater', () => {
     updater.setAllTextStyles();
 
     assertEquals('20px', computeStyle('font-size'));
-    assertEquals('80px', computeStyle('line-height'));
+    assertEquals('100px', computeStyle('line-height'));
     assertEquals('60px', computeStyle('letter-spacing'));
     assertStringContains(
         computeStyle('font-family'), chrome.readingMode.fontName);

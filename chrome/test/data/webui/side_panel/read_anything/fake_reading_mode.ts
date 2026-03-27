@@ -358,7 +358,7 @@ export class FakeReadingMode {
   // Returns the actual spacing value to use based on the given lineSpacing
   // category.
   getLineSpacingValue(lineSpacing: number): number {
-    return lineSpacing;
+    return lineSpacing + 1;
   }
 
   // Returns the actual spacing value to use based on the given letterSpacing

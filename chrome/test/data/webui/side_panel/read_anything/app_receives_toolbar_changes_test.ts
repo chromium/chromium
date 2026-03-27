@@ -114,7 +114,9 @@ suite('AppReceivesToolbarChanges', () => {
   test('on line spacing change container line spacing updated', () => {
     for (let lineSpacingEnum = 0; lineSpacingEnum < 4; lineSpacingEnum++) {
       emitLineSpacing(lineSpacingEnum);
-      assertEquals(lineSpacingEnum, containerLineSpacing());
+      assertEquals(
+          chrome.readingMode.getLineSpacingValue(lineSpacingEnum),
+          containerLineSpacing());
     }
   });
 
