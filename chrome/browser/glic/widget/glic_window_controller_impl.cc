@@ -160,7 +160,11 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
   host_observation_.Observe(&host());
 }
 
-GlicWindowControllerImpl::~GlicWindowControllerImpl() = default;
+GlicWindowControllerImpl::~GlicWindowControllerImpl() {
+  for (auto& observer : modal_dialog_host_observers_) {
+    observer.OnHostDestroying();
+  }
+}
 
 void GlicWindowControllerImpl::WebClientInitializeFailed() {
   if (state_ == State::kWaitingForGlicToLoad) {
@@ -603,11 +607,8 @@ void GlicWindowControllerImpl::SetupAndShowGlicWidget(Browser* browser) {
   GetGlicView()->SetWebContents(host().webui_contents());
   GetGlicView()->UpdateBackgroundColor();
 
-  // TODO(crbug.com/439745838): This be needed for sidepanel.
   // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
   // enterprise users) via constrained_window APIs.
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(
-      host().webui_contents());
   web_modal::WebContentsModalDialogManager::FromWebContents(
       host().webui_contents())
       ->SetDelegate(this);

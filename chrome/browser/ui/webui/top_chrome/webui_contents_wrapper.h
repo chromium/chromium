@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui_name_variants.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -28,10 +29,12 @@
 // This class notifies the Host when it should be shown or hidden via ShowUI()
 // and CloseUI() in addition to passing through resize events so the Host can
 // adjust bounds accordingly.
-class WebUIContentsWrapper : public content::WebContentsDelegate,
-                             public content::WebContentsObserver,
-                             public ProfileObserver,
-                             public TopChromeWebUIController::Embedder {
+class WebUIContentsWrapper
+    : public content::WebContentsDelegate,
+      public content::WebContentsObserver,
+      public ProfileObserver,
+      public TopChromeWebUIController::Embedder,
+      public web_modal::WebContentsModalDialogManagerDelegate {
  public:
   class Host {
    public:
@@ -74,6 +77,8 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
         const blink::mojom::WindowFeatures& window_features,
         bool user_gesture,
         bool* was_blocked);
+    virtual web_modal::WebContentsModalDialogHost*
+    GetWebContentsModalDialogHost(content::WebContents* web_contents);
   };
 
   WebUIContentsWrapper(const GURL& webui_url,
@@ -123,6 +128,10 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
+
+  // web_modal::WebContentsModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

@@ -24,6 +24,7 @@ source_set("top_chrome") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:webui_name_variants",
+    "//components/web_modal",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",

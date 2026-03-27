@@ -34,6 +34,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/security_principal.h"
@@ -521,6 +522,8 @@ WebUIContentsPreloadManager::CreateNewContents(
   // Propagates user prefs to web contents.
   // This is needed by, for example, text selection color on ChromeOS.
   PrefsTabHelper::CreateForWebContents(web_contents.get());
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      web_contents.get());
   WebUIContentsPreloadState::CreateForWebContents(web_contents.get());
   task_manager::WebContentsTags::CreateForToolContents(
       web_contents.get(), IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI);

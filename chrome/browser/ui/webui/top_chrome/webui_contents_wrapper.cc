@@ -13,6 +13,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -82,6 +83,12 @@ content::WebContents* WebUIContentsWrapper::Host::AddNewContents(
   return nullptr;
 }
 
+web_modal::WebContentsModalDialogHost*
+WebUIContentsWrapper::Host::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return nullptr;
+}
+
 WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
                                            Profile* profile,
                                            int task_manager_string_id,
@@ -100,6 +107,11 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
   web_contents_->SetIgnoreZoomGestures(true);
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
+
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      web_contents_.get());
+  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_.get())
+      ->SetDelegate(this);
 
   PrefsTabHelper::CreateForWebContents(web_contents_.get());
   InitializePageLoadMetricsForWebContents(web_contents_.get());
@@ -228,6 +240,12 @@ content::WebContents* WebUIContentsWrapper::AddNewContents(
                                        target_url, disposition, window_features,
                                        user_gesture, was_blocked)
                : nullptr;
+}
+
+web_modal::WebContentsModalDialogHost*
+WebUIContentsWrapper::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return host_ ? host_->GetWebContentsModalDialogHost(web_contents) : nullptr;
 }
 
 void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {

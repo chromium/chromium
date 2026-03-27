@@ -76,6 +76,10 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // This method handles navigation to `webui_url` internally.
   // A new preloaded contents will be created, unless the system is under heavy
   // memory pressure.
+  //
+  // Note: The returned WebContents has a WebContentsModalDialogManager
+  // initialized, but its delegate is NOT set. Consumers must set the delegate
+  // (e.g. via WebUIContentsWrapper) before any web-modal dialogs can be shown.
   RequestResult Request(const GURL& webui_url,
                         content::BrowserContext* browser_context);
 

@@ -111,6 +111,9 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
 }
 
 WebUIBubbleDialogView::~WebUIBubbleDialogView() {
+  for (auto& observer : observer_list_) {
+    observer.OnHostDestroying();
+  }
   ClearContentsWrapper();
 }
 
@@ -142,6 +145,12 @@ gfx::Size WebUIBubbleDialogView::CalculatePreferredSize(
   preferred_size.SetToMax(kMinSize);
   preferred_size.SetToMin(GetWidget()->GetWorkAreaBoundsInScreen().size());
   return preferred_size;
+}
+
+void WebUIBubbleDialogView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  for (auto& observer : observer_list_) {
+    observer.OnPositionRequiresUpdate();
+  }
 }
 
 void WebUIBubbleDialogView::AddedToWidget() {
@@ -220,6 +229,34 @@ void WebUIBubbleDialogView::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
   draggable_region_ = ComputeDraggableRegion(regions);
+}
+
+web_modal::WebContentsModalDialogHost*
+WebUIBubbleDialogView::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return this;
+}
+
+gfx::NativeView WebUIBubbleDialogView::GetHostView() const {
+  return GetWidget()->GetNativeView();
+}
+
+gfx::Point WebUIBubbleDialogView::GetDialogPosition(const gfx::Size& size) {
+  return gfx::Point(std::max(0, (width() - size.width()) / 2), 0);
+}
+
+gfx::Size WebUIBubbleDialogView::GetMaximumDialogSize() {
+  return GetWidget()->GetWindowBoundsInScreen().size();
+}
+
+void WebUIBubbleDialogView::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void WebUIBubbleDialogView::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 bool WebUIBubbleDialogView::ShouldDescendIntoChildForEventHandling(

@@ -9,7 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "components/web_modal/modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -31,7 +34,8 @@ class WebView;
 // BubbleDialogDelegateView base class.
 class WebUIBubbleDialogView : public views::WidgetObserver,
                               public views::BubbleDialogDelegateView,
-                              public WebUIContentsWrapper::Host {
+                              public WebUIContentsWrapper::Host,
+                              public web_modal::WebContentsModalDialogHost {
   METADATA_HEADER(WebUIBubbleDialogView, views::BubbleDialogDelegateView)
 
  public:
@@ -61,6 +65,7 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void AddedToWidget() override;
   gfx::Rect GetBubbleBounds() override;
   std::unique_ptr<views::FrameView> CreateFrameView(
@@ -79,6 +84,15 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
+
+  // web_modal::WebContentsModalDialogHost:
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& size) override;
+  gfx::Size GetMaximumDialogSize() override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
   WebUIContentsWrapper* get_contents_wrapper_for_testing() {
     return contents_wrapper_.get();
@@ -112,6 +126,8 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   // only used to set the initial bounds of the bubble when initially shown, the
   // bubble will then retain its dragged position until dismissed.
   std::optional<SkRegion> draggable_region_;
+
+  base::ObserverList<web_modal::ModalDialogHostObserver> observer_list_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};
