@@ -1,0 +1,14 @@
+In file included from custom_multiple_namespaces.cpp:5:
+./custom_multiple_namespaces.h:12:1: warning: [blink-gc] Class 'HeapObjectA' requires a trace method.
+class HeapObjectA : public cppgc::GarbageCollected<HeapObjectA> {
+^
+./custom_multiple_namespaces.h:13:3: note: [blink-gc] Untraced field 'm_member' declared here:
+  cppgc::Member<HeapObjectA> m_member;
+  ^
+./custom_multiple_namespaces.h:20:1: warning: [blink-gc] Class 'HeapObjectB' requires a trace method.
+class HeapObjectB : public cppgc::GarbageCollected<HeapObjectB> {
+^
+./custom_multiple_namespaces.h:21:3: note: [blink-gc] Untraced field 'm_member' declared here:
+  cppgc::Member<HeapObjectB> m_member;
+  ^
+2 warnings generated.

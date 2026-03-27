@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-blink-gc-plugin -Xclang check-namespace=custom_a -Xclang -plugin-arg-blink-gc-plugin -Xclang check-namespace=custom_b

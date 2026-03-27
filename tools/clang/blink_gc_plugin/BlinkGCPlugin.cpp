@@ -35,6 +35,7 @@ class BlinkGCPluginAction : public PluginASTAction {
   bool ParseArgs(const CompilerInstance&,
                  const std::vector<std::string>& args) override {
     for (const auto& arg : args) {
+      llvm::StringRef s(arg);
       if (arg == "dump-graph") {
         options_.dump_graph = true;
       } else if (arg == "enable-persistent-in-unique-ptr-check") {
@@ -45,6 +46,12 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.enable_extra_padding_check = true;
       } else if (arg == "disable-off-heap-collections-of-gced-check") {
         options_.enable_off_heap_collections_of_gced_check = false;
+      } else if (s.consume_front("check-namespace=")) {
+        options_.checked_namespaces.insert(s.str());
+      } else if (s.consume_front("check-directory=")) {
+        options_.checked_directories.push_back(s.str());
+      } else if (s.consume_front("ignore-directory=")) {
+        options_.ignored_directories.push_back(s.str());
       } else {
         llvm::errs() << "Unknown blink-gc-plugin argument: " << arg << "\n";
         return false;

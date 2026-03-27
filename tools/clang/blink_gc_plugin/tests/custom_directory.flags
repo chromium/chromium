@@ -1,0 +1,1 @@
+-I. -Xclang -plugin-arg-blink-gc-plugin -Xclang check-directory=custom_dir/

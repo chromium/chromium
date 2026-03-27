@@ -1,0 +1,8 @@
+In file included from custom_namespace.cpp:5:
+./custom_namespace.h:15:1: warning: [blink-gc] Class 'HeapObject' requires a trace method.
+class HeapObject : public cppgc::GarbageCollected<HeapObject> {
+^
+./custom_namespace.h:16:3: note: [blink-gc] Untraced field 'm_member' declared here:
+  cppgc::Member<HeapObject> m_member;
+  ^
+1 warning generated.
