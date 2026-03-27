@@ -23,7 +23,7 @@ export function getHtml(this: OmniboxPopupAppElement) {
   ${this.isContentSharingEnabled_ && this.computeShowRecentTabChip_() ? html`
     <composebox-recent-tab-chip id="recentTabChip"
         class="upload-button contextual-chip"
-        .recentTab="${this.recentTabForChip_}"
+        .recentTab="${this.recentTabForChip_!}"
         @add-tab-context="${this.onAddTabContext_}">
     </composebox-recent-tab-chip>
   ` : nothing}

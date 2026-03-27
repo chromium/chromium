@@ -59,7 +59,7 @@ export class PrivateStateTokensAppElement extends CrLitElement {
   accessor data: ListItem[] = [];
   accessor itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
 
-  protected metadata_?: Metadata;
+  protected metadata_: Metadata = nullMetadataObj;
   private handleNavigationToMetadata_ =
       this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_METADATA);
   private handleNavigationToList_ =

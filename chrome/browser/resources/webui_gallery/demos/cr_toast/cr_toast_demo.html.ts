@@ -16,7 +16,8 @@ export function getHtml(this: CrToastDemoElement) {
       @checked-changed="${this.onShowDismissButtonCheckedChanged_}">
     Show dismiss button
   </cr-checkbox>
-  <cr-input type="number" label="Duration (ms)" .value="${this.duration_}"
+  <cr-input type="number" label="Duration (ms)"
+      .value="${this.duration_.toString()}"
       @value-changed="${this.onDurationValueChanged_}">
   </cr-input>
 

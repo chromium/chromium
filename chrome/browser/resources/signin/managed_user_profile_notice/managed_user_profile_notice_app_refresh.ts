@@ -102,7 +102,7 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
   protected accessor appMode_: AppMode = AppMode.FIRST_RUN;
   protected accessor processingSubtitle_: string =
       loadTimeData.getString('processingSubtitle');
-  protected accessor selectedDataHandling_: BrowsingDataHandling|null = null;
+  protected accessor selectedDataHandling_: BrowsingDataHandling|undefined;
   private accessor usePrimaryAndTonalButtons_: boolean =
       loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
 

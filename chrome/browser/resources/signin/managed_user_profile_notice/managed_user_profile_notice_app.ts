@@ -134,7 +134,7 @@ export class ManagedUserProfileNoticeAppElement extends
   protected accessor processingSubtitle_: string =
       loadTimeData.getString('processingSubtitle');
   protected accessor showUserDataHandling_: boolean = false;
-  protected accessor selectedDataHandling_: BrowsingDataHandling|null = null;
+  protected accessor selectedDataHandling_: BrowsingDataHandling|undefined;
   private accessor usePrimaryAndTonalButtons_: boolean =
       loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
 

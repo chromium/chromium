@@ -43,7 +43,7 @@ export class ManagedUserProfileNoticeDataHandlingElement extends CrLitElement {
   accessor separateDataChoiceDetails: string = '';
   accessor mergeDataChoiceTitle: string = '';
   accessor mergeDataChoiceDetails: string = '';
-  accessor selectedDataHandling: BrowsingDataHandling|null = null;
+  accessor selectedDataHandling: BrowsingDataHandling|undefined;
 
   override firstUpdated() {
     const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');

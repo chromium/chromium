@@ -38,7 +38,7 @@ export function getHtml(this: CrToolbarDemoElement) {
     <cr-input label="Menu label" .value="${this.menuLabel_}"
         @value-changed="${this.onMenuLabelValueChanged_}"></cr-input>
     <cr-input label="Max window width for narrow mode"
-        .value="${this.narrowThreshold_}"
+        .value="${this.narrowThreshold_.toString()}"
         @value-changed="${this.onNarrowThresholdValueChanged_}"></cr-input>
     <cr-checkbox ?checked="${this.alwaysShowLogo_}"
         @checked-changed="${this.onAlwaysShowLogoCheckedChanged_}">

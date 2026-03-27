@@ -546,12 +546,12 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     this.text_ = e.detail.value;
   }
 
-  protected onTopKValueChanged_(e: CustomEvent<{value: number}>) {
-    this.topK_ = e.detail.value;
+  protected onTopKValueChanged_(e: CustomEvent<{value: string}>) {
+    this.topK_ = Number(e.detail.value);
   }
 
-  protected onTemperatureValueChanged_(e: CustomEvent<{value: number}>) {
-    this.temperature_ = e.detail.value;
+  protected onTemperatureValueChanged_(e: CustomEvent<{value: string}>) {
+    this.temperature_ = Number(e.detail.value);
   }
 
   protected onUsePlatformModelCheckedChanged_(

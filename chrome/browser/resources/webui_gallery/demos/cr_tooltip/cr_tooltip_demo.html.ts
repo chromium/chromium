@@ -33,7 +33,8 @@ export function getHtml(this: CrTooltipDemoElement) {
 
 <h1>Customize tooltips</h1>
 <div class="demos">
-  <cr-input type="number" min="0" max="24" .value="${this.tooltipOffset_}"
+  <cr-input type="number" min="0" max="24"
+      .value="${this.tooltipOffset_.toString()}"
       @input="${this.onTooltipOffsetInput_}" label="Tooltip offset (px)">
   </cr-input>
   <label>Tooltip position</label>

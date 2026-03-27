@@ -17,7 +17,7 @@ export function getHtml(this: ProfilePickerAppElement) {
 
   <cr-lazy-render-lit id="profileTypeChoice" .template="${() => html`
       <profile-type-choice slot="view"
-          .profileThemeInfo="${this.newProfileThemeInfo}"
+          .profileThemeInfo="${this.newProfileThemeInfo!}"
           .profileCreationInProgress="${this.profileCreationInProgress}">
       </profile-type-choice>`}">
   </cr-lazy-render-lit>

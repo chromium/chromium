@@ -128,6 +128,12 @@ export interface RegisteredApp {
   brandCode?: string;
 }
 
+interface PolicyRecord {
+  [key: string]: PolicyValue;
+}
+
+export type PolicyValue = string|number|PolicyRecord;
+
 /**
  * Represents the set of policies loaded by the updater.
  */
@@ -140,7 +146,7 @@ export interface PolicySet {
  * Represents a single policy and its values by source.
  */
 export interface PolicyData {
-  valuesBySource: {[key: string]: unknown};
+  valuesBySource: {[key: string]: PolicyValue};
   prevailingSource: string;
 }
 
@@ -605,8 +611,8 @@ function parseBoolean(
 /**
  * Parses an object field from a message.
  */
-function parseObject(message: Record<string, unknown>, fieldName: string):
-    Record<string, unknown>|undefined {
+function parseObject<T = Record<string, unknown>>(
+    message: Record<string, unknown>, fieldName: string): T|undefined {
   const value = message[fieldName];
   if (value === undefined || value === null) {
     return undefined;
@@ -617,7 +623,7 @@ function parseObject(message: Record<string, unknown>, fieldName: string):
             typeof value}', expected 'object'`,
     );
   }
-  return value as Record<string, unknown>;
+  return value as T;
 }
 
 /**
@@ -821,7 +827,8 @@ function parseScope(
  * Parses PolicyData from a message.
  */
 function parsePolicyData(message: Record<string, unknown>): PolicyData {
-  const valuesBySource = required(parseObject, message, 'valuesBySource');
+  const valuesBySource = required<PolicyRecord>(
+      parseObject<PolicyRecord>, message, 'valuesBySource');
   const prevailingSource = required(parseString, message, 'prevailingSource');
   return {valuesBySource, prevailingSource};
 }

@@ -12,7 +12,7 @@ import '../icons.html.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {PolicyData} from '../event_history.js';
+import type {PolicyData, PolicyValue} from '../event_history.js';
 
 import {getCss} from './enterprise_policy_table_section.css.js';
 import {getHtml} from './enterprise_policy_table_section.html.js';
@@ -60,8 +60,8 @@ export class EnterprisePolicyTableSectionElement extends CrLitElement {
     this.requestUpdate();
   }
 
-  protected prevailingValue(item: RowData): unknown {
-    return item.policy.valuesBySource[item.policy.prevailingSource];
+  protected prevailingValue(item: RowData): PolicyValue {
+    return item.policy.valuesBySource[item.policy.prevailingSource]!;
   }
 }
 

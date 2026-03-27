@@ -150,7 +150,7 @@ export function getHtml(this: UserEducationInternalsElement) {
                 max="${this.currentChromeVersion_ + 10}"
                 error-message="Number must be within 10 of the current Chrome version (${
                     this.currentChromeVersion_})"
-                .value="${this.whatsNewVersionToRequest_}">
+                .value="${this.whatsNewVersionToRequest_.toString()}">
               <cr-button slot="suffix"
                   @click="${this.onWhatsNewVersionOverrideClick_}">
                 Set

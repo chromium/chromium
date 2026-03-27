@@ -60,12 +60,13 @@ export function getHtml(this: ToolsElement) {
 <div class="output-options">
   <cr-input id="topKInput" type="number" min="1" max="128" label="Top K"
       error-message="Top K must be between 1 and 128" auto-validate
-      .value="${this.topK_}" @value-changed="${this.onTopKValueChanged_}">
+      .value="${this.topK_.toString()}"
+      @value-changed="${this.onTopKValueChanged_}">
   </cr-input>
   <cr-input id="temperatureInput" type="number" min="0" max="2"
       label="Temperature" auto-validate
       error-message="Temperature must be between 0 and 2"
-      .value="${this.temperature_}"
+      .value="${this.temperature_.toString()}"
       @value-changed="${this.onTemperatureValueChanged_}">
   </cr-input>
 </div>

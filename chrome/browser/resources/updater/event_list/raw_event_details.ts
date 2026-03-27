@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {HistoryEvent, MergedHistoryEvent} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getCss} from './raw_event_details.css.js';
@@ -34,7 +35,8 @@ export class RawEventDetailsElement extends CrLitElement {
   }
 
   accessor label: string = loadTimeData.getString('viewRawDetails');
-  accessor events: Array<Record<string, unknown>> = [];
+  accessor events:
+      Array<HistoryEvent|MergedHistoryEvent|Record<string, unknown>> = [];
   protected accessor expanded: boolean = false;
 
   protected onExpandedChanged(e: CustomEvent<{value: boolean}>) {
