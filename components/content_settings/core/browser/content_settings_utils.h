@@ -95,9 +95,6 @@ bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
                                         const base::Value& value,
                                         bool is_one_time = false);
 
-// Returns whether the chooser permission is allowlisted for auto-revoking.
-bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type);
-
 // Returns true if the type and metadata correspond
 // to a permission decision that was made by Related Website Sets.
 bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,

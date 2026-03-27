@@ -168,19 +168,13 @@ TEST(ContentSettingsUtilsTest, CanBeAutoRevokedAsUnusedPermission) {
   EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
       ContentSettingsType::ADS, ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
-  // Chooser permissions that are allowlisted should be auto-revoked.
-  EXPECT_TRUE(IsPermissionEligibleForAutoRevocation(
+  EXPECT_FALSE(IsPermissionEligibleForAutoRevocation(
       ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA));
-  EXPECT_TRUE(CanBeAutoRevokedAsUnusedPermission(
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
       ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
       base::Value("foo")));
-
-  // Chooser permissions that are allowlisted but without any value
-  // should not be auto-revoked.
   EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
       ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, base::Value()));
-
-  // Chooser permissions that are not allowlisted should not be auto-revoked.
   EXPECT_FALSE(IsPermissionEligibleForAutoRevocation(
       ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(

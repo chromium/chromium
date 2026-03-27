@@ -210,28 +210,6 @@ TEST_F(ObjectPermissionContextBaseTest,
   EXPECT_EQ(object2_, objects[0]->value);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(ObjectPermissionContextBaseTest, GrantObjectPermission_SetsConstraints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kRecordChooserPermissionLastVisitedTimestamps}, {});
-
-  base::Time now = base::Time::Now();
-  file_system_access_context_.GrantObjectPermission(origin1_, object1_.Clone());
-
-  auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context());
-  content_settings::SettingInfo info;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    hcsm->GetWebsiteSetting(
-        origin1_.GetURL(), GURL(),
-        ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, &info);
-    auto timestamp = info.metadata.last_visited();
-    // The last_visited should lie between today and a week ago.
-    return timestamp >= (now - base::Days(7)) && timestamp <= now;
-  })) << "Timeout waiting for saving grant object";
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 TEST_F(ObjectPermissionContextBaseTest, GetOriginsWithGrants) {
   MockPermissionObserver mock_observer;
   context_.AddObserver(&mock_observer);

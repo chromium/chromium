@@ -185,12 +185,6 @@ bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
 bool CanTrackLastVisit(ContentSettingsType type) {
   DCHECK(WebsiteSettingsRegistry::GetInstance()->Get(type)) << type;
 
-  // Chooser based content settings will not be tracked by default.
-  // Only allowlisted ones should be tracked.
-  if (IsChooserPermissionEligibleForAutoRevocation(type)) {
-    return true;
-  }
-
   auto* info = PermissionSettingsRegistry::GetInstance()->Get(type);
   return info && info->delegate().CanTrackLastVisit();
 }
@@ -214,8 +208,7 @@ bool IsPermissionEligibleForAutoRevocation(ContentSettingsType type) {
 
   auto* permission_settings_info =
       PermissionSettingsRegistry::GetInstance()->Get(type);
-  return (permission_settings_info && CanTrackLastVisit(type)) ||
-         IsChooserPermissionEligibleForAutoRevocation(type);
+  return permission_settings_info && CanTrackLastVisit(type);
 }
 
 bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
@@ -263,16 +256,8 @@ bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
                setting.value()) &&
            CanTrackLastVisit(type);
   } else {
-    // If the value is already empty, no need to revoke the permission.
-    return IsChooserPermissionEligibleForAutoRevocation(type) &&
-           !value.is_none();
+    return false;
   }
-}
-
-bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type) {
-  // Currently, only File System Access is allowlisted for auto-revoking unused
-  // site permissions among chooser-based permissions.
-  return type == ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA;
 }
 
 const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
