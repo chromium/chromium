@@ -26,6 +26,12 @@ def main():
   command_line = [
       CUJ_RUNNER, '--platform=adb', '--tests=speedometer_3.1', '--variants=$'
   ]
+
+  # If ISOLATED_OUTDIR exists, pass it to the runner.
+  isolated_outdir = os.environ.get('ISOLATED_OUTDIR')
+  if isolated_outdir:
+    command_line.append(f'--out-dir={isolated_outdir}')
+
   proc = subprocess.run(command_line, check=False, env=env)
   status = proc.returncode
 
