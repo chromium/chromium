@@ -5,6 +5,7 @@
 #include "chrome/browser/multistep_filter/chrome_filter_navigation_observer.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
@@ -14,6 +15,7 @@
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
+#include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -183,7 +185,11 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
 
   ASSERT_TRUE(captured_delegate);
 
-  UrlFilterSuggestion suggestion("Test", GURL("https://suggestion.com"));
+  const GURL suggestion_url("https://suggestion.com");
+  std::vector<FilterAttributeUiLabel> attribute_ui_labels = {};
+  UrlFilterSuggestion suggestion(
+      suggestion_url, base::UTF8ToUTF16(GetEtldPlusOne(suggestion_url)),
+      base::Time::Now(), std::move(attribute_ui_labels));
   EXPECT_CALL(*mock_controller,
               OnSuggestionGenerated(testing::Optional(suggestion)));
   captured_delegate->OnSuggestionGenerated(suggestion);

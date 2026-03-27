@@ -5,7 +5,6 @@
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 
 #include "base/functional/bind.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -49,7 +48,7 @@ void FilterUiController::OnSuggestionGenerated(
   const GURL& current_url = web_contents->GetLastCommittedURL();
 
   if (ShouldSuppressSuggestions(current_url) ||
-      IsUrlSubsumedBy(suggestion->url(), current_url)) {
+      IsUrlSubsumedBy(suggestion->navigation_url, current_url)) {
     return;
   }
 
@@ -69,10 +68,10 @@ void FilterUiController::ClearSuggestion() {
 
 void FilterUiController::ApplySuggestion() {
   if (!current_url_filter_suggestion_ ||
-      current_url_filter_suggestion_->url().is_empty()) {
+      current_url_filter_suggestion_->navigation_url.is_empty()) {
     return;
   }
-  GURL url = current_url_filter_suggestion_->url();
+  GURL url = current_url_filter_suggestion_->navigation_url;
   // Clearing the suggestion prevents the toast close callback from marking
   // this as a dismissal because it invalidates the dismissal weak pointers.
   ClearSuggestion();
@@ -90,7 +89,7 @@ void FilterUiController::ShowSuggestionUi(
     if (ToastController* toast_controller =
             browser_window_interface->GetFeatures().toast_controller()) {
       ToastParams params(ToastId::kMultistepFilterSuggestion);
-      // TODO(crbug.com/491202866) : Override the suggestion string in the
+      // TODO(crbug.com/491202866): Override the suggestion string in the
       // toast.
 
       // Associate the dismissal with the URL where the suggestion was shown.

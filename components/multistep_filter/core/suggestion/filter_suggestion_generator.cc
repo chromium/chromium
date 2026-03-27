@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <optional>
 #include <string>
 #include <utility>
@@ -14,8 +15,10 @@
 #include "base/barrier_callback.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
+#include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
@@ -85,10 +88,8 @@ void FilterSuggestionGenerator::OnAllAnnotationsFetched(
   // Sort the aggregated list of annotations by `creation_timestamp` in
   // descending order to prioritize the most recently created annotations when
   // limiting the number of candidates.
-  std::ranges::sort(all_annotations,
-                    [](const FilterAnnotation& a, const FilterAnnotation& b) {
-                      return a.creation_timestamp > b.creation_timestamp;
-                    });
+  std::ranges::sort(all_annotations, std::ranges::greater(),
+                    &FilterAnnotation::creation_timestamp);
 
   // Limit the number of candidates to bound the size of the payload sent to the
   // server.
@@ -98,15 +99,18 @@ void FilterSuggestionGenerator::OnAllAnnotationsFetched(
                           all_annotations.end());
   }
 
+  base::span<const FilterAnnotation> all_annotations_span = all_annotations;
   annotation_index_client_->GetFilterSuggestionCandidates(
-      url, all_annotations,
+      url, all_annotations_span,
       base::BindOnce(
           &FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(all_annotations)));
 }
 
 void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
     base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+    std::vector<FilterAnnotation> annotations,
     std::optional<std::vector<FilterSuggestionCandidate>> candidates) {
   if (!candidates || candidates->empty()) {
     std::move(callback).Run(std::nullopt);
@@ -115,7 +119,35 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
   // TODO(crbug.com/493511925): For the time being, the first candidate is
   // chosen by default. Implement the logic to select the best execution
   // candidate.
-  std::move(callback).Run(UrlFilterSuggestion(std::move(candidates->front())));
+  FilterSuggestionCandidate& candidate = candidates->front();
+
+  std::vector<FilterAnnotation>::iterator matching_annotation_it =
+      std::ranges::find(annotations, candidate.filter_annotation_id,
+                        &FilterAnnotation::id);
+  if (matching_annotation_it == annotations.end()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::vector<FilterAttributeUiLabel> attribute_ui_labels;
+  for (FilterSuggestionCandidateAttribute& candidate_attribute :
+       candidate.attributes) {
+    auto it = std::ranges::find_if(
+        matching_annotation_it->attributes,
+        [&](const FilterAttribute& annotation_attribute) {
+          return annotation_attribute.key == candidate_attribute.key;
+        });
+    if (it != matching_annotation_it->attributes.end()) {
+      attribute_ui_labels.emplace_back(std::move(candidate_attribute),
+                                       std::move(*it));
+    }
+  }
+
+  std::move(callback).Run(UrlFilterSuggestion(
+      std::move(candidate.navigation_url),
+      base::UTF8ToUTF16(matching_annotation_it->source_domain),
+      matching_annotation_it->creation_timestamp,
+      std::move(attribute_ui_labels)));
 }
 
 }  // namespace multistep_filter

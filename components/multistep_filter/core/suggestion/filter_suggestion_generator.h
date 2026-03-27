@@ -66,6 +66,7 @@ class FilterSuggestionGenerator {
       std::vector<std::vector<FilterAnnotation>> filter_annotations);
   void OnFilterSuggestionCandidatesFetched(
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      std::vector<FilterAnnotation> annotations,
       std::optional<std::vector<FilterSuggestionCandidate>> candidates);
 
   // The client used to fetch supported task types and URL filter suggestions.
