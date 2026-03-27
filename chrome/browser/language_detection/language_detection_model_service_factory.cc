@@ -9,10 +9,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/language_detection/core/browser/language_detection_model_service.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/translate/core/common/translate_util.h"
 
 // static
@@ -42,7 +44,8 @@ LanguageDetectionModelServiceFactory::LanguageDetectionModelServiceFactory()
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   if (translate::IsTFLiteLanguageDetectionEnabled()) {
-    DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+    DependsOn(
+        OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
   }
 }
 
@@ -58,15 +61,17 @@ LanguageDetectionModelServiceFactory::BuildServiceInstanceForBrowserContext(
 
   // The optimization guide service must be available for the translate model
   // service to be created.
-  auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(context));
+  auto* global_state_service =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
 
-  if (opt_guide) {
+  if (global_state_service) {
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     return std::make_unique<language_detection::LanguageDetectionModelService>(
-        opt_guide, background_task_runner);
+        &global_state_service->GetGlobalState().prediction_manager(),
+        background_task_runner);
   }
   return nullptr;
 }

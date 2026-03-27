@@ -12,7 +12,9 @@
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/permissions/request_type.h"
 
-class OptimizationGuideKeyedService;
+namespace optimization_guide {
+class OptimizationGuideModelProvider;
+}  // namespace optimization_guide
 
 namespace permissions {
 
@@ -24,7 +26,7 @@ class PredictionModelHandlerProvider
       public passage_embeddings::EmbedderMetadataObserver {
  public:
   explicit PredictionModelHandlerProvider(
-      OptimizationGuideKeyedService* optimization_guide,
+      optimization_guide::OptimizationGuideModelProvider* optimization_guide,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
       passage_embeddings::Embedder* passage_embedder);
   ~PredictionModelHandlerProvider() override;

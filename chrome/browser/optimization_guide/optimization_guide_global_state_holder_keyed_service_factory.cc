@@ -6,13 +6,19 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 // static
 OptimizationGuideGlobalStateHolderKeyedService*
 OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<OptimizationGuideGlobalStateHolderKeyedService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+  // TODO: crbug.com/481734987 - remove this check to decouple hints and model
+  // delivery.
+  if (optimization_guide::features::IsOptimizationHintsEnabled()) {
+    return static_cast<OptimizationGuideGlobalStateHolderKeyedService*>(
+        GetInstance()->GetServiceForBrowserContext(profile, true));
+  }
+  return nullptr;
 }
 
 // static

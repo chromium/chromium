@@ -8,8 +8,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
@@ -44,7 +45,8 @@ PredictionModelHandlerProviderFactory::PredictionModelHandlerProviderFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
   DependsOn(
       passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance());
 }
@@ -59,13 +61,17 @@ PredictionModelHandlerProviderFactory::BuildServiceInstanceForBrowserContext(
              "PredictionModelHandlerProviderFactory::"
              "BuildServiceInstanceForBrowserContext";
   Profile* profile = Profile::FromBrowserContext(context);
-  OptimizationGuideKeyedService* optimization_guide =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  OptimizationGuideGlobalStateHolderKeyedService* global_state_service =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          profile);
 
-  if (!optimization_guide) {
-    VLOG(1) << "[PermissionsAI]: OptimizationGuideKeyedService not available.";
+  if (!global_state_service) {
+    VLOG(1) << "[PermissionsAI]: "
+               "OptimizationGuideGlobalStateHolderKeyedService not available.";
     return nullptr;
   }
+  optimization_guide::OptimizationGuideModelProvider* optimization_guide =
+      &global_state_service->GetGlobalState().prediction_manager();
   passage_embeddings::Embedder* passage_embedder = nullptr;
   passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider =
       nullptr;

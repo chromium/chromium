@@ -6,8 +6,9 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -41,7 +42,8 @@ PassageEmbedderModelObserverFactory::PassageEmbedderModelObserverFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
 }
 
 PassageEmbedderModelObserverFactory::~PassageEmbedderModelObserverFactory() =
@@ -59,8 +61,14 @@ PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
   // When the history embeddings feature is on, observe launched target even
   // when in the experiment group, as we never want to use both models at once.
   // Observe launched target by default, as the user could opt in at any time.
+  OptimizationGuideGlobalStateHolderKeyedService* global_state_service =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          profile);
+
   return std::make_unique<PassageEmbedderModelObserver>(
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      global_state_service
+          ? &global_state_service->GetGlobalState().prediction_manager()
+          : nullptr,
       ChromePassageEmbeddingsServiceController::Get());
 }
 

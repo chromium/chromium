@@ -10,7 +10,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
@@ -49,7 +48,7 @@ inline OptimizationTarget getNotificationsAiv4OptTarget() {
 }  // namespace
 
 PredictionModelHandlerProvider::PredictionModelHandlerProvider(
-    OptimizationGuideKeyedService* optimization_guide,
+    optimization_guide::OptimizationGuideModelProvider* optimization_guide,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     passage_embeddings::Embedder* passage_embedder)
     : passage_embedder_(passage_embedder) {

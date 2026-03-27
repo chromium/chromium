@@ -65,7 +65,7 @@ constexpr char kAIv4ResponseGeolocationHistogram[] =
     "Permissions.AIv4.Response.Geolocation";
 
 std::unique_ptr<KeyedService> BuildPredictionModelHandler(
-    OptimizationGuideKeyedService* optimization_guide,
+    optimization_guide::OptimizationGuideModelProvider* optimization_guide,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     passage_embeddings::Embedder* passage_embedder,
     content::BrowserContext* context) {
