@@ -39,11 +39,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "account-storage-prefs-themes-search-engines",
-    "owners": [ "ankushkush@google.com", "chrome-sync-dev@google.com" ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "ack-copy-output-request-early-for-view-transition",
     "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org", "jonross@chromium.org" ],
     "expiry_milestone": 150
@@ -8302,19 +8297,6 @@
     "name": "sensitive-content-while-switching-tabs",
     "owners": ["jkeitel@google.com"],
     "expiry_milestone": 145
-  },
-  {
-    "name": "separate-local-and-account-search-engines",
-    "owners": [
-      "ankushkush@google.com",
-      "chrome-sync-dev@google.com"
-    ],
-    "expiry_milestone": 137
-  },
-  {
-    "name": "separate-local-and-account-themes",
-    "owners": ["ankushkush@google.com", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 137
   },
   {
     "name": "separate-web-app-shortcut-badge-icon",

@@ -1287,20 +1287,6 @@ inline constexpr char kSeparateWebAppShortcutBadgeIconDescription[] =
     "The shortcut app badge is painted in the UI instead of being part of the "
     "shortcut app icon, and more effects are added for the icon.";
 
-inline constexpr char kSeparateLocalAndAccountSearchEnginesName[] =
-    "Separate local and account search engines";
-inline constexpr char kSeparateLocalAndAccountSearchEnginesDescription[] =
-    "Keeps the local and the account search engines separate. If the user "
-    "signs out or sync is turned off, the account search engines are removed "
-    "while the pre-existing/local search engines are left behind.";
-
-inline constexpr char kSeparateLocalAndAccountThemesName[] =
-    "Separate local and account themes";
-inline constexpr char kSeparateLocalAndAccountThemesDescription[] =
-    "Keeps the local and the account theme separate. If the user signs out or "
-    "sync is turned off, only the account theme is removed and the "
-    "pre-existing local theme is restored.";
-
 inline constexpr char kGetDisplayMediaConfersActivationName[] =
     "getDisplayMedia() confers transient activation.";
 inline constexpr char kGetDisplayMediaConfersActivationDescription[] =
@@ -6111,14 +6097,6 @@ inline constexpr char kYourSavedInfoSettingsPageAndroidDescription[] =
 
 // FLAG_DESCRIPTIONS_ANDROID_END
 // Non-Android -----------------------------------------------------------------
-
-inline constexpr char kAccountStoragePrefsThemesAndSearchEnginesName[] =
-    "Account storage of preferences, themes and search engines";
-inline constexpr char kAccountStoragePrefsThemesAndSearchEnginesDescription[] =
-    "When enabled, keeps account preferences, themes and search-engines "
-    "separate from the local data. If the user signs out or sync is turned "
-    "off, only the account data is removed while the pre-existing/local data "
-    "is left behind.";
 
 inline constexpr char kAllowAllSitesToInitiateMirroringName[] =
     "Allow all sites to initiate mirroring";
