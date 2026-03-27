@@ -948,8 +948,6 @@ static_library("browser") {
     "push_messaging/push_messaging_service_impl.h",
     "push_messaging/push_messaging_unsubscribed_entry.cc",
     "push_messaging/push_messaging_unsubscribed_entry.h",
-    "renderer_context_menu/context_menu_content_type_factory.cc",
-    "renderer_context_menu/context_menu_content_type_factory.h",
     "renderer_preferences_util.cc",
     "renderer_preferences_util.h",
     "resource_coordinator/resource_coordinator_parts.cc",
@@ -1352,13 +1350,37 @@ static_library("browser") {
 
     # TODO(crbug.com/353332589): Remove this circular dependency once the following
     # headers get componentized:
-    # c/b/custom_handlers/protocol_handler_registry_factory.h"
-    # c/b/profiles/profile_io_data.h"
-    # c/b/history/top_sites_factory.h"
-    # c/b/history_embeddings/history_embeddings_service_factory.h"
-    # c/b/history_embeddings/history_embeddings_utils.h"
-    # c/b/browser_process_platform_part.h"
+    # c/b/custom_handlers/protocol_handler_registry_factory.h
+    # c/b/profiles/profile_io_data.h
+    # c/b/history/top_sites_factory.h
+    # c/b/history_embeddings/history_embeddings_service_factory.h
+    # c/b/history_embeddings/history_embeddings_utils.h
+    # c/b/browser_process_platform_part.h
     "//chrome/browser/autocomplete:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency once
+    # renderer_context_menu no longer depends on the following browser code:
+    # c/b/accessibility/accessibility_labels_service.h
+    # c/b/accessibility/accessibility_labels_service_factory.h
+    # c/b/download/download_prefs.h
+    # c/b/enterprise/data_protection/data_protection_clipboard_utils.h
+    # c/b/language/language_model_manager_factory.h
+    # c/b/password_manager/chrome_password_manager_client.h
+    # c/b/plugins/chrome_plugin_service_filter.h
+    # c/b/policy/chrome_policy_blocklist_service_factory.h
+    # c/b/printing/print_preview_context_menu_observer.h
+    # c/b/printing/print_preview_dialog_controller.h
+    # c/b/printing/print_view_manager_common.h
+    # c/b/profiles/profile_manager.h
+    # c/b/profiles/profile_window.h
+    # c/b/sharing/click_to_call/click_to_call_context_menu_observer.h
+    # c/b/sharing/click_to_call/click_to_call_metrics.h
+    # c/b/sharing/click_to_call/click_to_call_utils.h
+    # c/b/spellchecker/spellcheck_factory.h
+    # c/b/spellchecker/spellcheck_service.h
+    # c/b/supervised_user/supervised_user_url_filtering_service_factory.h
+    # c/b/translate/translate_service.h
+    "//chrome/browser/renderer_context_menu:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependencies when the following
     # headers get componentized:
@@ -1670,6 +1692,8 @@ static_library("browser") {
     "//chrome/browser/reduce_accept_language:impl",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/regional_capabilities:metrics_provider_impl",
+    "//chrome/browser/renderer_context_menu",
+    "//chrome/browser/renderer_context_menu:impl",
     "//chrome/browser/renderer_host",
     "//chrome/browser/resources/accessibility:resources",
     "//chrome/browser/safe_browsing",
@@ -3760,18 +3784,6 @@ static_library("browser") {
       "profiles/delete_profile_helper.h",
       "profiles/profile_window.cc",
       "profiles/profile_window.h",
-      "renderer_context_menu/accessibility_labels_bubble_model.cc",
-      "renderer_context_menu/accessibility_labels_bubble_model.h",
-      "renderer_context_menu/accessibility_labels_menu_observer.cc",
-      "renderer_context_menu/accessibility_labels_menu_observer.h",
-      "renderer_context_menu/link_to_text_menu_observer.cc",
-      "renderer_context_menu/link_to_text_menu_observer.h",
-      "renderer_context_menu/render_view_context_menu.cc",
-      "renderer_context_menu/render_view_context_menu.h",
-      "renderer_context_menu/spelling_bubble_model.cc",
-      "renderer_context_menu/spelling_bubble_model.h",
-      "renderer_context_menu/spelling_menu_observer.cc",
-      "renderer_context_menu/spelling_menu_observer.h",
       "repost_form_warning_controller.cc",
       "repost_form_warning_controller.h",
       "resource_coordinator/discard_metrics_lifecycle_unit_observer.cc",
@@ -4828,8 +4840,6 @@ static_library("browser") {
       "policy/status_provider/device_local_account_policy_status_provider.h",
       "policy/status_provider/user_cloud_policy_status_provider_chromeos.cc",
       "policy/status_provider/user_cloud_policy_status_provider_chromeos.h",
-      "renderer_context_menu/read_write_card_observer.cc",
-      "renderer_context_menu/read_write_card_observer.h",
       "screen_ai/screen_ai_downloader_chromeos.cc",
       "screen_ai/screen_ai_downloader_chromeos.h",
       "sharesheet/share_action/example_action.cc",
@@ -6766,8 +6776,6 @@ static_library("browser") {
       "policy/messaging_layer/util/manual_test_heartbeat_event.h",
       "policy/messaging_layer/util/manual_test_heartbeat_event_factory.cc",
       "policy/messaging_layer/util/manual_test_heartbeat_event_factory.h",
-      "renderer_context_menu/spelling_options_submenu_observer.cc",
-      "renderer_context_menu/spelling_options_submenu_observer.h",
     ]
   }
 
@@ -7312,12 +7320,6 @@ static_library("browser") {
       "policy/value_provider/extension_install_policies_value_provider.h",
       "policy/value_provider/extension_policies_value_provider.cc",
       "policy/value_provider/extension_policies_value_provider.h",
-      "renderer_context_menu/context_menu_content_type_app_mode.cc",
-      "renderer_context_menu/context_menu_content_type_app_mode.h",
-      "renderer_context_menu/context_menu_content_type_extension_popup.cc",
-      "renderer_context_menu/context_menu_content_type_extension_popup.h",
-      "renderer_context_menu/context_menu_content_type_platform_app.cc",
-      "renderer_context_menu/context_menu_content_type_platform_app.h",
       "sync_file_system/conflict_resolution_policy.h",
       "sync_file_system/drive_backend/callback_helper.h",
       "sync_file_system/drive_backend/callback_tracker.cc",
