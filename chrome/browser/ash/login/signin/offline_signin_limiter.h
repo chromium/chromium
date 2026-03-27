@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
@@ -16,6 +17,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
+class PrefService;
 class Profile;
 
 namespace base {
@@ -32,9 +34,12 @@ class OfflineSigninLimiter : public KeyedService,
                              public base::PowerSuspendObserver,
                              public session_manager::SessionManagerObserver {
  public:
+  // `local_state` must be non-null and must outlive `this`.
   // `profile` and `clock` must remain valid until Shutdown() is called. If
   // `clock` is NULL, the shared base::DefaultClock instance will be used.
-  OfflineSigninLimiter(Profile* profile, const base::Clock* clock);
+  OfflineSigninLimiter(PrefService* local_state,
+                       Profile* profile,
+                       const base::Clock* clock);
   OfflineSigninLimiter(const OfflineSigninLimiter&) = delete;
   OfflineSigninLimiter& operator=(const OfflineSigninLimiter&) = delete;
   ~OfflineSigninLimiter() override;  // public for testing purpose only.
@@ -93,6 +98,7 @@ class OfflineSigninLimiter : public KeyedService,
   // Helper function to get user for the given profile_.
   const user_manager::User& GetUser();
 
+  const raw_ref<PrefService> local_state_;
   raw_ptr<Profile> profile_;
   raw_ptr<const base::Clock> clock_;
 

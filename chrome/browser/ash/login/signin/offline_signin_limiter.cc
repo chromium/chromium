@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/prefs/pref_service.h"
@@ -113,9 +112,11 @@ void OfflineSigninLimiter::OnSessionStateChanged() {
   }
 }
 
-OfflineSigninLimiter::OfflineSigninLimiter(Profile* profile,
+OfflineSigninLimiter::OfflineSigninLimiter(PrefService* local_state,
+                                           Profile* profile,
                                            const base::Clock* clock)
-    : profile_(profile),
+    : local_state_(CHECK_DEREF(local_state)),
+      profile_(profile),
       clock_(clock ? clock : base::DefaultClock::GetInstance()),
       offline_signin_limit_timer_(std::make_unique<base::WallClockTimer>()),
       offline_lock_screen_signin_limit_timer_(
@@ -346,7 +347,7 @@ void OfflineSigninLimiter::UpdateOnlineSigninData(
     std::optional<base::TimeDelta> limit) {
   const user_manager::User& user = GetUser();
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetLastOnlineSignin(user.GetAccountId(), time);
   known_user.SetOfflineSigninLimit(user.GetAccountId(), limit);
 

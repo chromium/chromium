@@ -6,6 +6,7 @@
 
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -50,8 +51,9 @@ OfflineSigninLimiterFactory::~OfflineSigninLimiterFactory() = default;
 std::unique_ptr<KeyedService>
 OfflineSigninLimiterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<OfflineSigninLimiter>(static_cast<Profile*>(context),
-                                                clock_for_testing_);
+  PrefService* local_state = g_browser_process->local_state();
+  return std::make_unique<OfflineSigninLimiter>(
+      local_state, static_cast<Profile*>(context), clock_for_testing_);
 }
 
 }  // namespace ash

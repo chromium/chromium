@@ -115,7 +115,8 @@ void OfflineSigninLimiterTest::CreateLimiter() {
   DestroyLimiter();
   // OfflineSigninLimiter has a private constructor.
   limiter_ = base::WrapUnique(new OfflineSigninLimiter(
-      profile_.get(), task_environment_.GetMockClock()));
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
+      task_environment_.GetMockClock()));
   timer_ = limiter_->GetTimerForTesting();
 }
 
