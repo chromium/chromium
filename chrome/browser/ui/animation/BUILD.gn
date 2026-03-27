@@ -44,5 +44,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/interaction:test_support",
+    "//ui/gfx:test_support",
   ]
 }

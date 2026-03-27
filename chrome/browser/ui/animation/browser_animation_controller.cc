@@ -131,8 +131,13 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
       current_values_.emplace(sequence, sequence_spec.keyframes.front().value);
     }
     current_duration_ = current_motion_spec_.GetDuration();
-    animator_->Start(current_duration_);
-    Notify(BrowserAnimationUpdate::kStarted);
+    if (gfx::Animation::ShouldRenderRichAnimation()) {
+      animator_->Start(current_duration_);
+      Notify(BrowserAnimationUpdate::kStarted);
+    } else {
+      Notify(BrowserAnimationUpdate::kStarted);
+      AnimationEnded(nullptr);
+    }
   }
 
   bool Cancel() {
@@ -185,7 +190,7 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
   }
 
   // gfx::AnimationDelegate:
-  void AnimationEnded(const gfx::Animation* animation) override {
+  void AnimationEnded(const gfx::Animation*) override {
     UpdateValues(current_duration_, 1.0);
     Notify(BrowserAnimationUpdate::kEnded);
     current_motion_ = BrowserAnimationMotion();

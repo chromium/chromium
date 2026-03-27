@@ -20,6 +20,7 @@
 #include "ui/base/identifier/unique_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace {
@@ -570,4 +571,18 @@ TEST_F(BrowserAnimationControllerTest, AnimationRestartedCallbacks) {
   EXPECT_CALL(callback, Run(controller(), BrowserAnimationUpdate::kProgressed))
       .Times(testing::AtLeast(1));
   task_environment().FastForwardBy(base::Milliseconds(200));
+}
+
+TEST_F(BrowserAnimationControllerTest, RichAnimationOff) {
+  const auto lock = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  UNCALLED_MOCK_CALLBACK(BrowserAnimationCallback, callback);
+  const auto subscription =
+      controller()->Subscribe(kTestAnimationGroup, callback.Get());
+
+  EXPECT_CALLS_IN_SCOPE_2(
+      callback, Run(controller(), BrowserAnimationUpdate::kStarted), callback,
+      Run(controller(), BrowserAnimationUpdate::kEnded),
+      controller()->Start(kTestAnimationGroup, kTestAnimationMotion1));
 }
