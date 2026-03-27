@@ -56,7 +56,6 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -109,9 +108,10 @@ public class UrlBar extends AutocompleteEditText {
     private boolean mFocused;
     private boolean mFocusEventEmitted;
     private boolean mAllowFocus = true;
+    private boolean mAllowMultilineInput;
+    private boolean mCurrentInputCanBeWrapped;
 
     private boolean mPendingScroll;
-    private boolean mIsInCct;
 
     // Captures the current intended text scroll type.
     // This may not be effective if mPendingScroll is true.
@@ -319,21 +319,13 @@ public class UrlBar extends AutocompleteEditText {
     public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
         mFocused = focused;
 
-        if (!mFocused) mFocusEventEmitted = false;
+        if (!mFocused) {
+            mCurrentInputCanBeWrapped = false;
+            mFocusEventEmitted = false;
+        }
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
-        if (!mIsInCct
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
-                && OmniboxFeatures.sMultilineEditField.isEnabled()) {
-            setInputIsMultilineEligible(false);
-            if (focused) {
-                setSingleLine(false);
-                setMaxLines(MULTILINE_EDIT_MAX_LINES);
-            } else {
-                setSingleLine(true);
-                setMaxLines(1);
-            }
-        }
+        updateUrlBarForMultilineInput();
         setHorizontalFadingEdgeEnabled(!focused);
 
         if (focused) {
@@ -366,9 +358,23 @@ public class UrlBar extends AutocompleteEditText {
         setFocusableInTouchMode(allowFocus);
     }
 
-    /** Sets the property indicating the URL bar is used by Custom Tab. */
-    public void setIsInCct(boolean isInCct) {
-        mIsInCct = isInCct;
+    /** Sets whether this {@link UrlBar} allows multiline input. */
+    public void setAllowMultilineInput(boolean allowMultilineInput) {
+        if (mAllowMultilineInput == allowMultilineInput) return;
+        mAllowMultilineInput = allowMultilineInput;
+        updateUrlBarForMultilineInput();
+    }
+
+    private void updateUrlBarForMultilineInput() {
+        if (mFocused && mAllowMultilineInput) {
+            setSingleLine(false);
+            setMaxLines(MULTILINE_EDIT_MAX_LINES);
+            setHorizontallyScrolling(!mCurrentInputCanBeWrapped);
+        } else {
+            setSingleLine(true);
+            setMaxLines(1);
+            setHorizontallyScrolling(true);
+        }
     }
 
     /**
@@ -476,10 +482,10 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public void setInputIsMultilineEligible(boolean isMultilineEligible) {
-        isMultilineEligible &= mFocused;
-        if (OmniboxFeatures.allowMultilineEditField() && !mIsInCct) {
-            setHorizontallyScrolling(!isMultilineEligible);
-        }
+        if (mCurrentInputCanBeWrapped == isMultilineEligible) return;
+
+        mCurrentInputCanBeWrapped = isMultilineEligible;
+        updateUrlBarForMultilineInput();
     }
 
     @Override
@@ -1263,10 +1269,6 @@ public class UrlBar extends AutocompleteEditText {
     float getMaxHeightOfFont() {
         var fontMetrics = getPaint().getFontMetrics();
         return fontMetrics.bottom - fontMetrics.top;
-    }
-
-    boolean getIsInCctForTesting() {
-        return mIsInCct;
     }
 
     /**

@@ -116,6 +116,10 @@ class UrlBarProperties {
     /** Whether focus should be allowed on the view. */
     public static final WritableBooleanPropertyKey ALLOW_FOCUS = new WritableBooleanPropertyKey();
 
+    /** Whether multiline input should be allowed on the view. */
+    public static final WritableBooleanPropertyKey ALLOW_MULTILINE_INPUT =
+            new WritableBooleanPropertyKey();
+
     /** Specified the autocomplete text to be shown to the user. */
     public static final WritableObjectPropertyKey<AutocompleteText> AUTOCOMPLETE_TEXT =
             new WritableObjectPropertyKey<>();
@@ -145,9 +149,6 @@ class UrlBarProperties {
      */
     public static final WritableBooleanPropertyKey INCOGNITO_COLORS_ENABLED =
             new WritableBooleanPropertyKey();
-
-    /** Whether UrlBar is running in Cct. */
-    public static final WritableBooleanPropertyKey IS_IN_CCT = new WritableBooleanPropertyKey();
 
     /** The callback to be notified on url key events. */
     public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_DOWN_LISTENER =
@@ -199,6 +200,7 @@ class UrlBarProperties {
             new PropertyKey[] {
                 ACTION_MODE_CALLBACK,
                 ALLOW_FOCUS,
+                ALLOW_MULTILINE_INPUT,
                 AUTOCOMPLETE_TEXT,
                 DELEGATE,
                 FOCUS_CHANGE_CALLBACK,
@@ -206,7 +208,6 @@ class UrlBarProperties {
                 HINT_TEXT,
                 HINT_TEXT_COLOR,
                 INCOGNITO_COLORS_ENABLED,
-                IS_IN_CCT,
                 KEY_DOWN_LISTENER,
                 LONG_CLICK_LISTENER,
                 SELECT_ALL_ON_FOCUS,

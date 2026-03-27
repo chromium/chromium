@@ -366,13 +366,6 @@ public class UrlBarMediatorUnitTest {
     }
 
     @Test
-    public void setIsInCct() {
-        Assert.assertFalse(mModel.get(UrlBarProperties.IS_IN_CCT));
-        mMediator.setIsInCct(true);
-        Assert.assertTrue(mModel.get(UrlBarProperties.IS_IN_CCT));
-    }
-
-    @Test
     public void setShowOriginOnly() {
         UrlBarData baseData =
                 UrlBarData.create(

@@ -451,6 +451,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/GlifStrokeDrawableTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/KeyboardHideHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarBackgroundDrawableUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/LocationBarCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediatorTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarTabletUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipManagerUnitTest.java",
