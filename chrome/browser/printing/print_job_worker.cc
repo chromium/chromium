@@ -58,14 +58,21 @@ void FailedNotificationCallback(PrintJob* print_job) {
 
 }  // namespace
 
+bool PrintJobWorkerThread::IsRunning() const {
+  return Thread::IsRunning() && !is_cleaned_up_.IsSet();
+}
+
+void PrintJobWorkerThread::CleanUp() {
+  is_cleaned_up_.Set();
+}
+
 PrintJobWorker::PrintJobWorker(
     std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
     std::unique_ptr<PrintingContext> printing_context,
     PrintJob* print_job)
     : printing_context_delegate_(std::move(printing_context_delegate)),
       printing_context_(std::move(printing_context)),
-      print_job_(print_job),
-      thread_("Printing_Worker") {
+      print_job_(print_job) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 

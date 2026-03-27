@@ -185,9 +185,10 @@ bool Thread::StartWithOptions(Options options) {
   DCHECK(options.IsValid());
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
   DCHECK(!delegate_);
-  DCHECK(!IsRunning());
-  DCHECK(!stopping_) << "Starting a non-joinable thread a second time? That's "
-                     << "not allowed!";
+  DCHECK_NE(state_, State::kStopping)
+      << "Can't restart a thread which wasn't fully Stop()'ed.";
+  DCHECK_NE(state_, State::kRunning)
+      << "Trying to start a thread that's already running.";
 #if BUILDFLAG(IS_WIN)
   DCHECK((com_status_ != STA) ||
          (options.message_pump_type == MessagePumpType::UI));
@@ -219,6 +220,7 @@ bool Thread::StartWithOptions(Options options) {
   }
 
   start_event_.Reset();
+  state_ = State::kRunning;
 
   // Hold |thread_lock_| while starting the new thread to synchronize with
   // Stop() while it's not guaranteed to be sequenced (until crbug/629139 is
@@ -304,7 +306,7 @@ void Thread::Stop() {
   // an implicit memory barrier and no lock is thus required for this check).
   DCHECK(!delegate_);
 
-  stopping_ = false;
+  state_ = State::kStopped;
 }
 
 void Thread::StopSoon() {
@@ -312,11 +314,10 @@ void Thread::StopSoon() {
   // enable this check.
   // DCHECK(owning_sequence_checker_.CalledOnValidSequence());
 
-  if (stopping_ || !delegate_) {
+  if (state_ != State::kRunning) {
     return;
   }
-
-  stopping_ = true;
+  state_ = State::kStopping;
 
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&Thread::ThreadQuitHelper, Unretained(this)));
@@ -341,17 +342,9 @@ bool Thread::IsRunning() const {
   // enable this check.
   // DCHECK(owning_sequence_checker_.CalledOnValidSequence());
 
-  // If the thread's already started (i.e. |delegate_| is non-null) and
-  // not yet requested to stop (i.e. |stopping_| is false) we can just return
-  // true. (Note that |stopping_| is touched only on the same sequence that
-  // starts / started the new thread so we need no locking here.)
-  if (delegate_ && !stopping_) {
-    return true;
-  }
-  // Otherwise check the |running_| flag, which is set to true by the new thread
-  // only while it is inside Run().
-  AutoLock lock(running_lock_);
-  return running_;
+  // Note that |state_| is touched only on the same sequence that
+  // starts / started the new thread so we need no locking here.
+  return state_ == State::kRunning || state_ == State::kStopping;
 }
 
 void Thread::Run(RunLoop* run_loop) {
@@ -425,21 +418,11 @@ void Thread::ThreadMain() {
   // Let the thread do extra initialization.
   Init();
 
-  {
-    AutoLock lock(running_lock_);
-    running_ = true;
-  }
-
   start_event_.Signal();
 
   RunLoop run_loop;
   run_loop_ = &run_loop;
   Run(run_loop_);
-
-  {
-    AutoLock lock(running_lock_);
-    running_ = false;
-  }
 
   // Let the thread do extra cleanup.
   CleanUp();

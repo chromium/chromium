@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -23,6 +24,20 @@ namespace printing {
 class PrintJob;
 class PrintedDocument;
 class PrintedPage;
+
+class PrintJobWorkerThread : public base::Thread {
+ public:
+  PrintJobWorkerThread() : Thread("Printing_Worker") {}
+  ~PrintJobWorkerThread() override = default;
+
+  bool IsRunning() const;
+
+  void CleanUp() override;
+
+ private:
+  // True if CleanUp() has been called.
+  base::AtomicFlag is_cleaned_up_;
+};
 
 // Worker thread code. It manages the PrintingContext, which can be blocking
 // and/or run a message loop. This object calls back into the PrintJob in order
@@ -153,7 +168,7 @@ class PrintJobWorker {
   PageNumber page_number_;
 
   // Thread to run worker tasks.
-  base::Thread thread_;
+  PrintJobWorkerThread thread_;
 
   // Thread-safe pointer to task runner of the `thread_`.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

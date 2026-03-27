@@ -313,15 +313,16 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // on Stop() -- non-joinable threads can't be joined (must be leaked).
   bool joinable_ = true;
 
-  // If true, we're in the middle of stopping, and shouldn't access
-  // |message_loop_|. It may non-nullptr and invalid.
-  // Should be written on the thread that created this thread. Also read data
-  // could be wrong on other threads.
-  bool stopping_ = false;
+  enum class State {
+    kRunning,
+    kStopping,
+    kStopped,
+  };
 
-  // True while inside of Run().
-  bool running_ = false;
-  mutable base::Lock running_lock_;  // Protects |running_|.
+  // Indicates the current state of the thread. If kStopping, |message_loop_|
+  // shouldn't be accessed: It may be non-nullptr and invalid. Reads and writes
+  // must happen on the sequence that created this thread.
+  State state_ = State::kStopped;
 
   // The thread's handle.
   PlatformThreadHandle thread_;

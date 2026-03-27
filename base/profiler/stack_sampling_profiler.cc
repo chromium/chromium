@@ -114,6 +114,9 @@ class StackSamplingProfiler::SamplingThread : public Thread {
     // posted.
     static void ShutdownAssumingIdle(bool simulate_intervening_add);
 
+    // Returns whether the sampling thread is currently running or not.
+    static bool IsSamplingThreadRunning();
+
    private:
     // Calls the sampling threads ShutdownTask and then signals an event.
     static void ShutdownTaskAndSignalEvent(SamplingThread* sampler,
@@ -374,6 +377,17 @@ void StackSamplingProfiler::SamplingThread::TestPeer::
                                WaitableEvent* event) {
   sampler->ShutdownTask(add_events);
   event->Signal();
+}
+
+// static
+bool StackSamplingProfiler::SamplingThread::TestPeer::
+    IsSamplingThreadRunning() {
+  SamplingThread* sampler = SamplingThread::GetInstance();
+  if (!sampler->IsRunning()) {
+    return false;
+  }
+  AutoLock lock(sampler->thread_execution_state_lock_);
+  return sampler->thread_execution_state_ == RUNNING;
 }
 
 AtomicSequenceNumber StackSamplingProfiler::SamplingThread::CollectionContext::
@@ -812,7 +826,7 @@ void StackSamplingProfiler::TestPeer::Reset() {
 
 // static
 bool StackSamplingProfiler::TestPeer::IsSamplingThreadRunning() {
-  return SamplingThread::GetInstance()->IsRunning();
+  return SamplingThread::TestPeer::IsSamplingThreadRunning();
 }
 
 // static
