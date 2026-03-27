@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -32,6 +33,9 @@ class PropertyListenerHelper;
 // and later. Used in a `CatapAudioInputStream` to provide the audio stream.
 // The current implementation supports mono and stereo capture.
 class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
+  // TODO(b/495779613): Remove once the underlying UaF issue is fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Interface for listening to audio property changes. It's safe to call delete
   // on the `CatapAudioInputStreamSource` in the callbacks.
