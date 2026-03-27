@@ -77,6 +77,11 @@ TEST(AiModeContextLibraryConverterTest, ConvertPdfContext) {
   pdf->set_title("PDF Document");
 
   std::vector<contextual_search::FileInfo> local_contexts;
+  contextual_search::FileInfo file_info;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(789);
+  file_info.tab_session_id = SessionID::FromSerializedValue(20);
+  local_contexts.push_back(file_info);
 
   std::vector<UrlResource> url_resources =
       ConvertAiModeContextToUrlResources(message, local_contexts);
@@ -84,7 +89,8 @@ TEST(AiModeContextLibraryConverterTest, ConvertPdfContext) {
   ASSERT_EQ(url_resources.size(), 1u);
   EXPECT_EQ(url_resources[0].url, GURL("https://example.com/doc.pdf"));
   EXPECT_EQ(url_resources[0].title, "PDF Document");
-  EXPECT_FALSE(url_resources[0].tab_id.has_value());
+  EXPECT_TRUE(url_resources[0].tab_id.has_value());
+  EXPECT_EQ(url_resources[0].tab_id->id(), 20);
   EXPECT_EQ(url_resources[0].context_id, 789u);
 }
 
@@ -97,6 +103,11 @@ TEST(AiModeContextLibraryConverterTest, ConvertImageContext) {
   image->set_title("Image Document");
 
   std::vector<contextual_search::FileInfo> local_contexts;
+  contextual_search::FileInfo file_info;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(101);
+  file_info.tab_session_id = SessionID::FromSerializedValue(30);
+  local_contexts.push_back(file_info);
 
   std::vector<UrlResource> url_resources =
       ConvertAiModeContextToUrlResources(message, local_contexts);
@@ -104,7 +115,8 @@ TEST(AiModeContextLibraryConverterTest, ConvertImageContext) {
   ASSERT_EQ(url_resources.size(), 1u);
   EXPECT_EQ(url_resources[0].url, GURL("https://example.com/img.png"));
   EXPECT_EQ(url_resources[0].title, "Image Document");
-  EXPECT_FALSE(url_resources[0].tab_id.has_value());
+  EXPECT_TRUE(url_resources[0].tab_id.has_value());
+  EXPECT_EQ(url_resources[0].tab_id->id(), 30);
   EXPECT_EQ(url_resources[0].context_id, 101u);
 }
 
@@ -148,13 +160,27 @@ TEST(AiModeContextLibraryConverterTest, ConvertMixedContexts) {
 
   // Local contexts for Webpage
   std::vector<contextual_search::FileInfo> local_contexts;
-  contextual_search::FileInfo fi;
-  fi.request_id.emplace();
-  fi.request_id->set_context_id(1);
-  fi.tab_url = GURL("http://web.com");
-  fi.tab_title = "Web Title";
-  fi.tab_session_id = SessionID::FromSerializedValue(50);
-  local_contexts.push_back(fi);
+  contextual_search::FileInfo fi1;
+  fi1.request_id.emplace();
+  fi1.request_id->set_context_id(1);
+  fi1.tab_url = GURL("http://web.com");
+  fi1.tab_title = "Web Title";
+  fi1.tab_session_id = SessionID::FromSerializedValue(50);
+  local_contexts.push_back(fi1);
+
+  // Local contexts for PDF
+  contextual_search::FileInfo fi2;
+  fi2.request_id.emplace();
+  fi2.request_id->set_context_id(2);
+  fi2.tab_session_id = SessionID::FromSerializedValue(51);
+  local_contexts.push_back(fi2);
+
+  // Local contexts for Image
+  contextual_search::FileInfo fi3;
+  fi3.request_id.emplace();
+  fi3.request_id->set_context_id(3);
+  fi3.tab_session_id = SessionID::FromSerializedValue(52);
+  local_contexts.push_back(fi3);
 
   std::vector<UrlResource> result =
       ConvertAiModeContextToUrlResources(message, local_contexts);
@@ -165,17 +191,22 @@ TEST(AiModeContextLibraryConverterTest, ConvertMixedContexts) {
   EXPECT_EQ(result[0].context_id, 1u);
   EXPECT_EQ(result[0].url, GURL("http://web.com"));
   EXPECT_EQ(result[0].title, "Webpage");
+  EXPECT_TRUE(result[0].tab_id.has_value());
   EXPECT_EQ(result[0].tab_id->id(), 50);
 
   // Check PDF
   EXPECT_EQ(result[1].context_id, 2u);
   EXPECT_EQ(result[1].url, GURL("http://pdf.com"));
   EXPECT_EQ(result[1].title, "PDF");
+  EXPECT_TRUE(result[1].tab_id.has_value());
+  EXPECT_EQ(result[1].tab_id->id(), 51);
 
   // Check Image
   EXPECT_EQ(result[2].context_id, 3u);
   EXPECT_EQ(result[2].url, GURL("http://img.com"));
   EXPECT_EQ(result[2].title, "Image");
+  EXPECT_TRUE(result[2].tab_id.has_value());
+  EXPECT_EQ(result[2].tab_id->id(), 52);
 }
 
 }  // namespace contextual_tasks
