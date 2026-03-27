@@ -32,7 +32,8 @@ class ContentAnalysisBrowserTestBase {
   // Adds a request-body pair to `expected_requests_` that is expected to be
   // sent to the embedded test server by the test before it completes.
   void AddExpectedScanningRequest(const ContentAnalysisData& data,
-                                  const std::string& body);
+                                  const std::string& body,
+                                  const std::vector<std::string>& headers = {});
 
  private:
   // Returns true if `received_request` matches `expected_request`.
@@ -42,6 +43,11 @@ class ContentAnalysisBrowserTestBase {
   // Returns the value to be set in the ConnectorAnalysisRequest::device_token
   // field.
   std::string ExpectedDeviceToken();
+
+  // Returns the value to be set in ConnectorAnalysisRequest::device_token and
+  // ConnectorAnalysisRequest::client_metadata::profile::dm_token for
+  // profile-managed requests.
+  std::string ExpectedProfileToken();
 
   // Helpers called by `HandleRequest()` to validate different kinds of content
   // scanning requests received by the embedded test server.
@@ -63,8 +69,22 @@ class ContentAnalysisBrowserTestBase {
   std::unique_ptr<net::test_server::HttpResponse> SendContentMetadataResponse();
 
   raw_ptr<net::EmbeddedTestServer> embedded_test_server_;
-  std::vector<std::pair<ContentAnalysisRequest, std::string>>
-      expected_requests_;
+
+  struct ExpectedRequest {
+    ExpectedRequest(ContentAnalysisRequest request,
+                    std::string body,
+                    std::vector<std::string> headers);
+    ExpectedRequest(const ExpectedRequest&);
+    ExpectedRequest(ExpectedRequest&&);
+    ExpectedRequest& operator=(const ExpectedRequest&);
+    ExpectedRequest& operator=(ExpectedRequest&&);
+    ~ExpectedRequest();
+
+    ContentAnalysisRequest request;
+    std::string body;
+    std::vector<std::string> headers;
+  };
+  std::vector<ExpectedRequest> expected_requests_;
 
   // Track whether `AddExpectedScanningRequest()` has been called or not for
   // each different type of auth request.

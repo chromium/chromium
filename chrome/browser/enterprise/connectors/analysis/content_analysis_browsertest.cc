@@ -14,10 +14,13 @@
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/enterprise/connectors/core/content_analysis_browser_test_base.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -33,7 +36,10 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
       : test::ContentAnalysisBrowserTestBase(&embedded_https_test_server()) {
     management_context_mixin_ =
         enterprise::test::ManagementContextMixin::Create(
-            &mixin_host_, this, {.is_cloud_machine_managed = true});
+            &mixin_host_, this,
+            {.is_cloud_user_managed = true,
+             .is_cloud_machine_managed = true,
+             .affiliated = true});
   }
   ~ContentAnalysisBrowserTest() override = default;
 
@@ -51,6 +57,10 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
         base::Unretained(this)));
     embedded_https_test_server().StartAcceptingConnections();
 
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+
     MixinBasedPlatformBrowserTest::SetUpOnMainThread();
   }
 
@@ -65,10 +75,25 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
   void SetUpInProcessBrowserTestFixture() override {
     policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
 
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ContentAnalysisBrowserTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+
     MixinBasedPlatformBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  void EnableScanning(AnalysisConnector connector) {
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
+  }
+
+  void EnableScanning(AnalysisConnector connector, bool machine_scope) {
     constexpr char kBlockingDlpScans[] = R"({
       "service_provider": "google",
       "enable": [
@@ -81,7 +106,7 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
     })";
 
     test::SetAnalysisConnector(browser()->profile()->GetPrefs(), connector,
-                               kBlockingDlpScans, true);
+                               kBlockingDlpScans, machine_scope);
   }
 
   std::string text() { return "b" + std::string(100, 'a') + "b"; }
@@ -89,12 +114,15 @@ class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
  protected:
   std::unique_ptr<enterprise::test::ManagementContextMixin>
       management_context_mixin_;
+  base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, PasteAllowed) {
-  EnableScanning(BULK_DATA_ENTRY);
+  EnableScanning(BULK_DATA_ENTRY, /*machine_scope=*/true);
 
   ContentAnalysisDelegate::Data data;
   data.text.emplace_back(text());
@@ -125,7 +153,11 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, PasteAllowed) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, FileAttachAllowed) {
-  EnableScanning(FILE_ATTACHED);
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+
+  EnableScanning(FILE_ATTACHED, /*machine_scope=*/false);
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
@@ -142,7 +174,9 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, FileAttachAllowed) {
                                                      ->GetActiveWebContents()
                                                      ->GetLastCommittedURL(),
                                                  &data, FILE_ATTACHED));
-  AddExpectedScanningRequest(data, text());
+
+  AddExpectedScanningRequest(data, text(),
+                             {"Authorization: Bearer access_token"});
 
   base::RunLoop run_loop;
   ContentAnalysisDelegate::CreateForWebContents(

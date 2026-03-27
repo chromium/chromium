@@ -141,6 +141,23 @@ std::unique_ptr<net::test_server::HttpResponse> AllowResponse(
 
 }  // namespace
 
+ContentAnalysisBrowserTestBase::ExpectedRequest::ExpectedRequest(
+    ContentAnalysisRequest request,
+    std::string body,
+    std::vector<std::string> headers)
+    : request(request), body(body), headers(headers) {}
+ContentAnalysisBrowserTestBase::ExpectedRequest::ExpectedRequest(
+    const ExpectedRequest&) = default;
+ContentAnalysisBrowserTestBase::ExpectedRequest::ExpectedRequest(
+    ExpectedRequest&&) = default;
+ContentAnalysisBrowserTestBase::ExpectedRequest&
+ContentAnalysisBrowserTestBase::ExpectedRequest::operator=(
+    const ExpectedRequest&) = default;
+ContentAnalysisBrowserTestBase::ExpectedRequest&
+ContentAnalysisBrowserTestBase::ExpectedRequest::operator=(ExpectedRequest&&) =
+    default;
+ContentAnalysisBrowserTestBase::ExpectedRequest::~ExpectedRequest() = default;
+
 ContentAnalysisBrowserTestBase::ContentAnalysisBrowserTestBase(
     net::EmbeddedTestServer* embedded_test_server)
     : embedded_test_server_(embedded_test_server) {}
@@ -148,8 +165,8 @@ ContentAnalysisBrowserTestBase::ContentAnalysisBrowserTestBase(
 ContentAnalysisBrowserTestBase::~ContentAnalysisBrowserTestBase() {
   EXPECT_TRUE(expected_requests_.empty())
       << "Expected request not received during the test: "
-      << ToValue(expected_requests_[0].first) << "\n"
-      << expected_requests_[0].second;
+      << ToValue(expected_requests_[0].request) << "\n"
+      << expected_requests_[0].body;
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -192,12 +209,18 @@ ContentAnalysisBrowserTestBase::HandleResumableMetadataRequest(
 
   auto expected = std::find_if(
       expected_requests_.begin(), expected_requests_.end(),
-      [&content_analysis_request, this](const auto& entry) {
-        return MatchesRequest(content_analysis_request, entry.first);
+      [&content_analysis_request, &request, this](const auto& entry) {
+        for (const std::string& header : entry.headers) {
+          if (request.all_headers.find(header) == std::string::npos) {
+            return false;
+          }
+        }
+        return MatchesRequest(content_analysis_request, entry.request);
       });
 
   EXPECT_NE(expected, expected_requests_.end())
-      << "Unexpected Resumable Metadata request: "
+      << "Unexpected Resumable Metadata request: " << request.all_headers
+      << "\n"
       << ToValue(content_analysis_request);
 
   // Don't remove `expected` from `expected_requests_` here since we're still
@@ -212,18 +235,15 @@ ContentAnalysisBrowserTestBase::HandleResumableContentRequest(
     const net::test_server::HttpRequest& request) {
   // TODO(crbug.com/488379628): Add logic to validate headers.
 
-  auto expected =
-      std::find_if(expected_requests_.begin(), expected_requests_.end(),
-                   [&request](const auto& entry) {
-                     return request.content == entry.second;
-                   });
+  auto expected = std::find_if(
+      expected_requests_.begin(), expected_requests_.end(),
+      [&request](const auto& entry) { return request.content == entry.body; });
 
   EXPECT_NE(expected, expected_requests_.end())
       << "Unexpected Resumable Content request: " << request.content;
 
-  ContentAnalysisRequest content_analysis_request = expected->first;
+  ContentAnalysisRequest content_analysis_request = expected->request;
   expected_requests_.erase(expected);
-
   return AllowResponse(content_analysis_request);
 }
 
@@ -238,9 +258,14 @@ ContentAnalysisBrowserTestBase::HandleMultipartRequest(
 
   auto expected = std::find_if(
       expected_requests_.begin(), expected_requests_.end(),
-      [&content_analysis_request, &body, this](const auto& entry) {
-        return MatchesRequest(content_analysis_request, entry.first) &&
-               body == entry.second;
+      [&content_analysis_request, &body, &request, this](const auto& entry) {
+        for (const std::string& header : entry.headers) {
+          if (request.all_headers.find(header) == std::string::npos) {
+            return false;
+          }
+        }
+        return MatchesRequest(content_analysis_request, entry.request) &&
+               body == entry.body;
       });
 
   EXPECT_NE(expected, expected_requests_.end())
@@ -252,10 +277,14 @@ ContentAnalysisBrowserTestBase::HandleMultipartRequest(
 
 void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
     const ContentAnalysisData& data,
-    const std::string& body) {
+    const std::string& body,
+    const std::vector<std::string>& headers) {
   ContentAnalysisRequest request;
   request.set_analysis_connector(GetAnalysisConnector(data));
-  request.set_device_token(ExpectedDeviceToken());
+  // TODO(crbug.com/488379628): Add logic to evaluate more profile management
+  // cases instead of just relying on the headers not being empty.
+  request.set_device_token(headers.empty() ? ExpectedDeviceToken()
+                                           : ExpectedProfileToken());
 
   // The fields set above are the only ones expected from an authorization
   // request, so we can add it to `expected_requests_` immediately if it's not
@@ -274,6 +303,8 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
 
   auto* client_metadata = request.mutable_client_metadata();
   client_metadata->mutable_device()->set_dm_token(ExpectedDeviceToken());
+  client_metadata->mutable_profile()->set_dm_token("profile_dm_token");
+  client_metadata->mutable_device()->set_dm_token(ExpectedDeviceToken());
   client_metadata->set_is_chrome_os_managed_guest_session(false);
 
   auto* request_data = request.mutable_request_data();
@@ -281,8 +312,15 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
     *request_data->mutable_copied_text_source() = data.clipboard_source;
   }
   request_data->set_destination(data.url.spec());
-  // TODO(crbug.com/488379628): Add logic for managed profiles.
-  request_data->set_email("");
+  // TODO(crbug.com/488379628): Add better logic for managed profiles.
+  bool has_auth_header = false;
+  for (const std::string& header : headers) {
+    if (header.starts_with("Authorization:")) {
+      has_auth_header = true;
+    }
+  }
+  request_data->set_email(
+      (has_auth_header || data.settings.per_profile) ? "test@example.com" : "");
   request_data->set_source(data.clipboard_source.url());
   request_data->set_tab_url(data.url.spec());
   request_data->set_url(data.url.spec());
@@ -311,7 +349,7 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
   referrer_chain->set_type(safe_browsing::ReferrerChainEntry::EVENT_URL);
   referrer_chain->set_url(data.url.spec());
 
-  expected_requests_.emplace_back(request, body);
+  expected_requests_.emplace_back(request, body, headers);
 }
 
 bool ContentAnalysisBrowserTestBase::MatchesRequest(
@@ -383,6 +421,16 @@ std::string ContentAnalysisBrowserTestBase::ExpectedDeviceToken() {
 #endif
 }
 
+std::string ContentAnalysisBrowserTestBase::ExpectedProfileToken() {
+  // TODO(crbug.com/488379628): Handle more complex profile/device management
+  // cases.
+#if BUILDFLAG(IS_CHROMEOS)
+  return "device_dm_token";
+#else
+  return "profile_dm_token";
+#endif
+}
+
 void ContentAnalysisBrowserTestBase::AddAuthRequestIfNeeded(
     const ContentAnalysisData& data,
     ContentAnalysisRequest request) {
@@ -393,12 +441,12 @@ void ContentAnalysisBrowserTestBase::AddAuthRequestIfNeeded(
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (!paste_auth_request_added_ &&
       request.analysis_connector() == BULK_DATA_ENTRY) {
-    expected_requests_.emplace_back(request, "");
+    expected_requests_.emplace_back(request, "", std::vector<std::string>());
     paste_auth_request_added_ = true;
   }
   if (!file_attach_auth_request_added_ &&
       request.analysis_connector() == FILE_ATTACHED) {
-    expected_requests_.emplace_back(request, "");
+    expected_requests_.emplace_back(request, "", std::vector<std::string>());
     file_attach_auth_request_added_ = true;
   }
 }
