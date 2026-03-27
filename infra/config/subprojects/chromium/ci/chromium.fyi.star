@@ -1567,6 +1567,10 @@ ci.builder(
         mixins = [
             "linux-jammy",
             "arm64",
+            "gce",  # So as not to take up baremetal arm bots for VM testing.
+            # TODO(crbug.com/493903786): Can remove the increased expirations
+            # if/when the full resources are delivered.
+            "very_limited_capacity_bot",
         ],
         per_test_modifications = {
             "remoting_unittests": targets.remove(
