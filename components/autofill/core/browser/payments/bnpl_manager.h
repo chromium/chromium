@@ -347,6 +347,10 @@ class BnplManager : public AutofillManager::Observer {
   // Set when suggestions are shown, and reset when a BNPL flow is finished.
   UpdateSuggestionsCallback update_suggestions_callback_;
 
+  // True if the user has seen the amount extraction AI terms before. Set when
+  // suggestions are shown, and reset when a BNPL flow is ended.
+  std::optional<bool> user_has_seen_bnpl_ai_terms_before_;
+
   // Observes the AutofillManager so the BnplManager will be notified when
   // autofill suggestions are hidden.
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>

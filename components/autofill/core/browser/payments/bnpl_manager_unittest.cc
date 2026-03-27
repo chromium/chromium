@@ -2230,6 +2230,64 @@ TEST_F(
                    .IsAutofillHasSeenBnplPrefEnabled());
 }
 
+TEST_F(BnplManagerTest, HasSeenAmountExtractionAiTerms_PrioritizesCachedValue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableAiBasedAmountExtraction,
+       features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+
+  ASSERT_FALSE(test_api(*bnpl_manager_).HasSeenAmountExtractionAiTerms());
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry)};
+
+  // Caches false.
+  bnpl_manager_->OnCreditCardSuggestionsShown(suggestions, base::DoNothing());
+
+  // Update preference to true.
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .SetAutofillAmountExtractionAiTermsSeen();
+
+  // Should still return false using the cached value.
+  EXPECT_FALSE(test_api(*bnpl_manager_).HasSeenAmountExtractionAiTerms());
+
+  test_api(*bnpl_manager_).Reset();
+
+  // Should read from prefs and return true.
+  EXPECT_TRUE(test_api(*bnpl_manager_).HasSeenAmountExtractionAiTerms());
+}
+
+TEST_F(BnplManagerTest,
+       HasSeenAmountExtractionAiTerms_TabsDisabled_IgnoresCache) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{features::kAutofillEnablePayNowPayLaterTabs});
+
+  ASSERT_FALSE(test_api(*bnpl_manager_).HasSeenAmountExtractionAiTerms());
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry)};
+
+  bnpl_manager_->OnCreditCardSuggestionsShown(suggestions, base::DoNothing());
+
+  // Update preference to true.
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .SetAutofillAmountExtractionAiTermsSeen();
+
+  // Should read from prefs directly and return true.
+  EXPECT_TRUE(test_api(*bnpl_manager_).HasSeenAmountExtractionAiTerms());
+}
+
 TEST_F(BnplManagerTest,
        OnCreditCardSuggestionsShown_CreditCardFormEventLoggerNotified) {
   base::test::ScopedFeatureList scoped_feature_list{

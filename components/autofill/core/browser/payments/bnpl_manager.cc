@@ -259,6 +259,13 @@ void BnplManager::OnCreditCardSuggestionsShown(
 
   update_suggestions_callback_ = update_suggestions_callback;
 
+  // Only set `user_has_seen_bnpl_ai_terms_before_` if it has not already been
+  // set. This is because `OnCreditCardSuggestionsShown()` may be called
+  // again when suggestions are updated.
+  if (!user_has_seen_bnpl_ai_terms_before_.has_value()) {
+    user_has_seen_bnpl_ai_terms_before_ = HasSeenAmountExtractionAiTerms();
+  }
+
   if (!update_suggestions_barrier_callback_.has_value()) {
     return;
   }
@@ -460,6 +467,11 @@ void BnplManager::OnSuggestionsHidden(AutofillManager& manager,
 }
 
 bool BnplManager::HasSeenAmountExtractionAiTerms() const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs) &&
+      user_has_seen_bnpl_ai_terms_before_.has_value()) {
+    return user_has_seen_bnpl_ai_terms_before_.value();
+  }
   return payments_autofill_client()
       .GetPaymentsDataManager()
       .IsAutofillAmountExtractionAiTermsSeenPrefEnabled();
@@ -504,6 +516,7 @@ void BnplManager::Reset() {
   ongoing_flow_state_.reset();
   autofill_suggestion_trigger_source_.reset();
   update_suggestions_callback_.Reset();
+  user_has_seen_bnpl_ai_terms_before_.reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
