@@ -55,12 +55,6 @@ void CurrentThread::RemoveDestructionObserver(
   current_->RemoveDestructionObserver(destruction_observer);
 }
 
-void CurrentThread::SetTaskRunner(
-    scoped_refptr<SingleThreadTaskRunner> task_runner) {
-  DCHECK(current_->IsBoundToCurrentThread());
-  current_->SetTaskRunner(std::move(task_runner));
-}
-
 bool CurrentThread::IsBoundToCurrentThread() const {
   return current_ == GetCurrentSequenceManagerImpl();
 }

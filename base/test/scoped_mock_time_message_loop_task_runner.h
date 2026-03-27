@@ -41,6 +41,10 @@ class ScopedMockTimeMessageLoopTaskRunner {
  private:
   const scoped_refptr<TestMockTimeTaskRunner> task_runner_;
   scoped_refptr<SingleThreadTaskRunner> previous_task_runner_;
+  std::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
+      current_default_handle_;
+  std::optional<SingleThreadTaskRunner::MainThreadDefaultHandle>
+      main_thread_default_task_runner_handle_;
 };
 
 }  // namespace base

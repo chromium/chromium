@@ -112,10 +112,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
     raw_ptr<SequencedTaskSource> task_source = nullptr;            // Not owned.
     raw_ptr<RunLoop::NestingObserver> nesting_observer = nullptr;  // Not owned.
-    std::unique_ptr<SingleThreadTaskRunner::CurrentDefaultHandle>
+    std::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
         thread_task_runner_handle;
     // Only used if this thread represents the main thread of the process.
-    std::unique_ptr<SingleThreadTaskRunner::MainThreadDefaultHandle>
+    std::optional<SingleThreadTaskRunner::MainThreadDefaultHandle>
         main_thread_default_task_runner_handle;
 
     // Indicates that we should yield DoWork between each task to let a possibly

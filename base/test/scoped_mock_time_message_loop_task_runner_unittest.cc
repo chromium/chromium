@@ -40,9 +40,8 @@ TestPendingTask PopFront(base::circular_deque<TestPendingTask>* pending_tasks) {
 class ScopedMockTimeMessageLoopTaskRunnerTest : public testing::Test {
  public:
   ScopedMockTimeMessageLoopTaskRunnerTest()
-      : original_task_runner_(new TestMockTimeTaskRunner()) {
-    CurrentThread::Get()->SetTaskRunner(original_task_runner_);
-  }
+      : original_task_runner_(new TestMockTimeTaskRunner()),
+        current_default_handle_(original_task_runner_) {}
 
   ScopedMockTimeMessageLoopTaskRunnerTest(
       const ScopedMockTimeMessageLoopTaskRunnerTest&) = delete;
@@ -58,6 +57,8 @@ class ScopedMockTimeMessageLoopTaskRunnerTest : public testing::Test {
   scoped_refptr<TestMockTimeTaskRunner> original_task_runner_;
 
   test::SingleThreadTaskEnvironment task_environment_;
+  SingleThreadTaskRunner::CurrentHandleOverrideForTesting
+      current_default_handle_;
 };
 
 // Verifies a new TaskRunner is installed while a

@@ -115,6 +115,8 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
   class CurrentHandleOverrideForTesting;
 
   class BASE_EXPORT CurrentDefaultHandle {
+    struct MayAlreadyExist {};
+
    public:
     // Sets the value returned by `SingleThreadTaskRunner::GetCurrentDefault()`
     // and `SequencedTaskRunner::GetCurrentDefault()` to `task_runner` within
@@ -128,6 +130,11 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
 
     ~CurrentDefaultHandle();
 
+    // Same as the public constructor, but there may already be a current
+    // default `SingleThreadTaskRunner` on this thread.
+    CurrentDefaultHandle(scoped_refptr<SingleThreadTaskRunner> task_runner,
+                         MayAlreadyExist);
+
    private:
     friend class SingleThreadTaskRunner;
 
@@ -140,6 +147,8 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
     friend class CurrentHandleOverrideForTesting;
     friend class sequence_manager::internal::
         CurrentDefaultHandleOverrideForRunOrPostTask;
+    friend class ScopedMockTimeMessageLoopTaskRunner;
+    friend class ScopedMockTimeMessageLoopTaskRunnerTest;
     FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
                              NestedRunLoopAllowedUnderHandleOverride);
     FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
@@ -148,13 +157,6 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
                              OverrideWithNull);
     FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
                              OverrideWithNonNull);
-
-    struct MayAlreadyExist {};
-
-    // Same as the public constructor, but there may already be a current
-    // default `SingleThreadTaskRunner` on this thread.
-    CurrentDefaultHandle(scoped_refptr<SingleThreadTaskRunner> task_runner,
-                         MayAlreadyExist);
 
     scoped_refptr<SingleThreadTaskRunner> task_runner_;
     // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of
@@ -183,7 +185,11 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
   };
 
   class BASE_EXPORT MainThreadDefaultHandle {
+    struct MayAlreadyExist {};
+
    public:
+    ~MainThreadDefaultHandle();
+
     // Sets the value returned by
     // `SingleThreadTaskRunner::GetMainThreadDefault()` to `task_runner` within
     // its scope. `task_runner` must belong to the current thread. There must
@@ -192,11 +198,15 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
     // ScopedCanOverrideMainThreadDefaultHandle.
     explicit MainThreadDefaultHandle(
         scoped_refptr<SingleThreadTaskRunner> task_runner);
-
-    ~MainThreadDefaultHandle();
+    explicit MainThreadDefaultHandle(
+        scoped_refptr<SingleThreadTaskRunner> task_runner,
+        MayAlreadyExist);
 
    private:
     friend class SingleThreadTaskRunner;
+    friend class ScopedMockTimeMessageLoopTaskRunner;
+    FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerMainThreadDefaultHandleTest,
+                             NestedRunLoopAllowedUnderHandleOverride);
 
     scoped_refptr<SingleThreadTaskRunner> task_runner_;
 
@@ -206,16 +216,6 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
     // Some tests requires the ability to override the `previous_handle_`.
     // TODO(pmonette): Remove this when this is no longer the case.
     raw_ptr<MainThreadDefaultHandle> previous_handle_ = nullptr;
-  };
-
-  // Allows overriding the main thread default handle in some test
-  // configuration. Callers must be friended to avoid spreading its usage.
-  class BASE_EXPORT ScopedCanOverrideMainThreadDefaultHandle {
-   private:
-    friend class ScopedMockTimeMessageLoopTaskRunner;
-
-    ScopedCanOverrideMainThreadDefaultHandle();
-    ~ScopedCanOverrideMainThreadDefaultHandle();
   };
 
  protected:

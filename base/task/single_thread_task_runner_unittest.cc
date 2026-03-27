@@ -317,6 +317,22 @@ TEST(SingleThreadTaskRunnerMainThreadDefaultHandleTest, Basic) {
                          SingleThreadTaskRunner::GetMainThreadDefault());
 }
 
+// Verify that running a `RunLoop` is supported in the scope of a
+// `MainThreadDefaultHandle` with `MayAlreadyExist`.
+TEST(SingleThreadTaskRunnerMainThreadDefaultHandleTest,
+     NestedRunLoopAllowedUnderHandleOverride) {
+  test::SingleThreadTaskEnvironment task_environment;
+  EXPECT_TRUE(SingleThreadTaskRunner::HasMainThreadDefault());
+  scoped_refptr<SingleThreadTaskRunner> task_runner(
+      MakeRefCounted<TestSimpleTaskRunner>());
+  SingleThreadTaskRunner::MainThreadDefaultHandle sttrcd_override(
+      task_runner,
+      SingleThreadTaskRunner::MainThreadDefaultHandle::MayAlreadyExist{});
+  EXPECT_TRUE(SingleThreadTaskRunner::HasMainThreadDefault());
+  EXPECT_EQ(task_runner, SingleThreadTaskRunner::GetMainThreadDefault());
+  RunLoop().RunUntilIdle();
+}
+
 TEST(SingleThreadTaskRunnerCurrentBestEffortTest, SequenceManagerSingleQueue) {
   // TaskEnvironment wraps a SequenceManager with a single default task queue.
   test::TaskEnvironment task_env;

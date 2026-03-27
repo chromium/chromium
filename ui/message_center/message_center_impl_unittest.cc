@@ -179,7 +179,8 @@ class MessageCenterImplTest : public testing::Test {
     MessageCenter::Initialize(std::make_unique<FakeLockScreenController>());
     message_center_ = MessageCenter::Get();
     task_environment_ =
-        std::make_unique<base::test::SingleThreadTaskEnvironment>();
+        std::make_unique<base::test::SingleThreadTaskEnvironment>(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     run_loop_ = std::make_unique<base::RunLoop>();
     closure_ = run_loop_->QuitClosure();
   }
@@ -268,7 +269,7 @@ class MessageCenterImplTest : public testing::Test {
         message_center_impl()->lock_screen_controller());
   }
 
- private:
+ protected:
   raw_ptr<MessageCenter> message_center_;
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -499,14 +500,6 @@ TEST_F(MessageCenterImplTest, PopupTimersControllerStartMultipleTimers) {
 }
 
 TEST_F(MessageCenterImplTest, PopupTimersControllerRestartOnUpdate) {
-  scoped_refptr<base::SingleThreadTaskRunner> old_task_runner =
-      base::SingleThreadTaskRunner::GetCurrentDefault();
-
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
-      base::MakeRefCounted<base::TestMockTimeTaskRunner>(
-          base::Time::Now(), base::TimeTicks::Now());
-  base::CurrentThread::Get()->SetTaskRunner(task_runner);
-
   NotifierId notifier_id(GURL("https://example.com"));
 
   message_center()->AddNotification(std::make_unique<Notification>(
@@ -529,7 +522,7 @@ TEST_F(MessageCenterImplTest, PopupTimersControllerRestartOnUpdate) {
 
   // Fast forward the |task_runner| by one second less than the auto-close timer
   // frequency for Web Notifications. (As set by the |notifier_id|.)
-  task_runner->FastForwardBy(base::Seconds(dismiss_time - 1));
+  task_environment_->FastForwardBy(base::Seconds(dismiss_time - 1));
   ASSERT_EQ(popup_timers_controller->timer_finished(), 0);
 
   // Trigger a replacement of the notification in the timer controller.
@@ -537,15 +530,13 @@ TEST_F(MessageCenterImplTest, PopupTimersControllerRestartOnUpdate) {
 
   // Fast forward the |task_runner| by one second less than the auto-close timer
   // frequency for Web Notifications again. It should have been reset.
-  task_runner->FastForwardBy(base::Seconds(dismiss_time - 1));
+  task_environment_->FastForwardBy(base::Seconds(dismiss_time - 1));
   ASSERT_EQ(popup_timers_controller->timer_finished(), 0);
 
   // Now fast forward the |task_runner| by two seconds (to avoid flakiness),
   // after which the timer should have fired.
-  task_runner->FastForwardBy(base::Seconds(2));
+  task_environment_->FastForwardBy(base::Seconds(2));
   ASSERT_EQ(popup_timers_controller->timer_finished(), 1);
-
-  base::CurrentThread::Get()->SetTaskRunner(old_task_runner);
 }
 
 TEST_F(MessageCenterImplTest, Renotify) {

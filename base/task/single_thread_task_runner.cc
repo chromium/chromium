@@ -29,8 +29,6 @@ constinit thread_local SingleThreadTaskRunner::CurrentDefaultHandle*
 constinit SingleThreadTaskRunner::MainThreadDefaultHandle*
     main_thread_default_handle = nullptr;
 
-bool can_override = false;
-
 // This function can be removed, and the calls below replaced with direct
 // variable accesses, once the MSAN workaround is not necessary.
 SingleThreadTaskRunner::CurrentDefaultHandle* GetCurrentDefaultHandle() {
@@ -159,6 +157,13 @@ SingleThreadTaskRunner::CurrentHandleOverrideForTesting::
 
 SingleThreadTaskRunner::MainThreadDefaultHandle::MainThreadDefaultHandle(
     scoped_refptr<SingleThreadTaskRunner> task_runner)
+    : MainThreadDefaultHandle(std::move(task_runner), MayAlreadyExist{}) {
+  CHECK(!previous_handle_);
+}
+
+SingleThreadTaskRunner::MainThreadDefaultHandle::MainThreadDefaultHandle(
+    scoped_refptr<SingleThreadTaskRunner> task_runner,
+    MayAlreadyExist)
     : task_runner_(std::move(task_runner)),
       // `task_runner` belongs to this thread, so if there's a BEST_EFFORT task
       // runner for the thread GetCurrentBestEffortTaskRunner will return it.
@@ -166,25 +171,12 @@ SingleThreadTaskRunner::MainThreadDefaultHandle::MainThreadDefaultHandle(
           SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
               PassKey<SingleThreadTaskRunner>())),
       previous_handle_(main_thread_default_handle) {
-  CHECK(!main_thread_default_handle || can_override);
   main_thread_default_handle = this;
 }
 
 SingleThreadTaskRunner::MainThreadDefaultHandle::~MainThreadDefaultHandle() {
   DCHECK_EQ(main_thread_default_handle, this);
   main_thread_default_handle = previous_handle_;
-}
-
-SingleThreadTaskRunner::ScopedCanOverrideMainThreadDefaultHandle::
-    ScopedCanOverrideMainThreadDefaultHandle() {
-  CHECK(!can_override);
-  can_override = true;
-}
-
-SingleThreadTaskRunner::ScopedCanOverrideMainThreadDefaultHandle::
-    ~ScopedCanOverrideMainThreadDefaultHandle() {
-  CHECK(can_override);
-  can_override = false;
 }
 
 }  // namespace base
