@@ -2251,6 +2251,7 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_BACK, IDS_CONTENT_CONTEXT_BACK);
   menu_model_.AddItemWithStringId(IDC_FORWARD, IDS_CONTENT_CONTEXT_FORWARD);
   menu_model_.AddItemWithStringId(IDC_RELOAD, IDS_CONTENT_CONTEXT_RELOAD);
+  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   MaybeAppendOpenGlicItem();
   menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
                                   IDS_CONTENT_CONTEXT_SAVEPAGEAS);
@@ -4815,7 +4816,6 @@ void RenderViewContextMenu::ExecProtocolHandlerSettings(int event_flags) {
 void RenderViewContextMenu::MaybeAppendOpenGlicItem() {
   // Append an item for opening Glic
   if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile())) {
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     std::string arm = features::kGlicContextMenuArm.Get();
     bool show_summarize_page = (arm == "arm2");
     menu_model_.AddItemWithStringIdAndIcon(
